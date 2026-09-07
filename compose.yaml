@@ -1,0 +1,64 @@
+services:
+  frontend:
+    build: .
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "3000"
+      DATA_DIR: /data
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:8080}
+      WALK_ROUTER_URL: http://valhalla:8002/route
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      STORY_MODEL: ${STORY_MODEL:-codex/gpt-5.6-sol-medium}
+      WRITER_MODEL: ${WRITER_MODEL:-codex/gpt-5.6-sol-low}
+      MAX_DAILY_JOBS: ${MAX_DAILY_JOBS:-6}
+    volumes:
+      - backend_data:/data
+    depends_on:
+      valhalla:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/story-service',{signal:AbortSignal.timeout(4000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+  valhalla:
+    image: ghcr.io/valhalla/valhalla-scripted:latest
+    environment:
+      tile_urls: ${VALHALLA_TILE_URL:-https://download.bbbike.org/osm/bbbike/Moscow/Moscow.osm.pbf}
+      use_tiles_ignore_pbf: "True"
+      build_tar: "True"
+      serve_tiles: "True"
+      server_threads: ${VALHALLA_THREADS:-2}
+      build_elevation: "False"
+      build_admins: "False"
+      build_time_zones: "False"
+      build_transit: "False"
+      use_default_speeds_config: "False"
+    volumes:
+      - valhalla_data:/custom_files
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--max-time", "5", "http://127.0.0.1:8002/status"]
+      interval: 30s
+      timeout: 10s
+      start_period: 1h
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  backend_data:
+  valhalla_data:
