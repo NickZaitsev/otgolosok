@@ -2,24 +2,35 @@
   "name": "otgolosok",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.20.0"
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev:https": "next dev --experimental-https",
+    "build": "node scripts/build-map.mjs && next build && node scripts/build-service-worker.mjs",
+    "start": "pnpm dlx serve out",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run && node --test backend/*.test.mjs",
+    "generator:dev": "STATIC_DIR=out node backend/server.mjs"
   },
   "dependencies": {
+    "leaflet": "1.9.4",
     "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^24.13.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.0"
   },
   "packageManager": "pnpm@10.24.0"
 }
