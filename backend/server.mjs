@@ -6,6 +6,7 @@ import { pathToFileURL } from "node:url";
 import { createStore } from "./store.mjs";
 import { createProvider } from "./provider.mjs";
 import { createYandexTts } from "./yandex-tts.mjs";
+import { ttsVoiceOptions } from "./tts-voices.mjs";
 import { normalizeAddress, addressKey, publicJob, failure } from "./domain.mjs";
 import { safeError, startWorker } from "./pipeline.mjs";
 import { createPlaceResolver } from "./places.mjs";
@@ -48,8 +49,8 @@ export async function sendFile(req,res,path,type,immutable=false) {
 
 export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),adminToken=process.env.ADMIN_TOKEN}) {
   const speechProviders={openai:provider,yandex:yandexTts};
-  const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider)},
-    {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(provider&&yandexTts)}];
+  const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
+    {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(provider&&yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
   const worker=provider&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory}):null;
   const authorizeAdmin=adminAuth(adminToken);
   const server=httpServer(async(req,res)=>{
@@ -77,7 +78,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
               json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;
             }
             const input=await body(req,match[2]==="edit"?32768:2048);
-            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!["revision",...(match[2]==="edit"?["draft"]:["ttsProvider"])].includes(key)))throw failure("BAD_REQUEST");
+            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!["revision",...(match[2]==="edit"?["draft"]:["ttsProvider","ttsVoice"])].includes(key)))throw failure("BAD_REQUEST");
             if(match[2]==="edit") {
               const draft=input.draft;
               if(!draft||typeof draft!=="object"||Array.isArray(draft)||Object.keys(draft).some(key=>!["title","paragraphs"].includes(key))||!Array.isArray(draft.paragraphs)||draft.paragraphs.some(p=>!p||typeof p!=="object"||Array.isArray(p)||Object.keys(p).some(key=>!["text","factIds"].includes(key))))throw failure("BAD_REQUEST");
@@ -85,9 +86,12 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
             } else {
               const selected=input.ttsProvider===undefined?"openai":input.ttsProvider;
               if(!["openai","yandex"].includes(selected))throw failure("BAD_REQUEST");
+              const options=ttsProviders.find(option=>option.id===selected);
+              const voice=input.ttsVoice===undefined?options.defaultVoice:input.ttsVoice;
+              if(!options.voices.some(option=>option.id===voice))throw failure("BAD_REQUEST");
               if(!provider){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
               if(!speechProviders[selected]){json(res,503,{error:{code:"TTS_UNAVAILABLE",message:"Selected speech provider unavailable."}});return;}
-              job=store.approveAdmin(match[1],input.revision,selected);
+              job=store.approveAdmin(match[1],input.revision,selected,voice);
             }
           }
           json(res,job?200:404,job?{job:adminDetail(job,Boolean(provider),safeError,ttsProviders)}:{error:{code:"NOT_FOUND",message:"Job not found."}});

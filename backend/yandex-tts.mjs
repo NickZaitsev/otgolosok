@@ -34,7 +34,7 @@ function unpackAudio(bytes) {
 
 export function createYandexTts({ apiKey, voice = "marina", fetchImpl = fetch }) {
   if (typeof apiKey !== "string" || !apiKey.trim() || !/^[a-z][a-z0-9_-]{0,63}$/.test(voice)) throw failure("PROVIDER_CONFIG");
-  async function speech(script, { signal } = {}) {
+  async function speech(script, { signal, voice: selectedVoice = voice } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(150000), ...(signal ? [signal] : [])]);
     const chunks = [];
     let size = 0;
@@ -43,7 +43,7 @@ export function createYandexTts({ apiKey, voice = "marina", fetchImpl = fetch })
       const res = await fetchImpl("https://tts.api.cloud.yandex.net/tts/v3/utteranceSynthesis", {
         method: "POST", redirect: "error", signal: deadline,
         headers: { Authorization: `Api-Key ${apiKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ text, hints: [{ voice }, { speed: 1 }], unsafeMode: true,
+        body: JSON.stringify({ text, hints: [{ voice: selectedVoice }, { speed: 1 }], unsafeMode: true,
           outputAudioSpec: { containerAudio: { containerAudioType: "MP3" } } }),
       });
       if (!res.ok) { await res.body?.cancel(); throw failure("TTS_FAILED"); }

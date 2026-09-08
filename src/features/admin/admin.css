@@ -60,6 +60,7 @@
 .admin-publish { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 2px solid var(--ink); }
 .admin-publish > button { margin-top: 1rem; }
 .admin-tts { max-width: 32rem; margin-top: 1.5rem; }
+.admin-voice-label { margin-top: 1rem; }
 .admin-tts .admin-meta { margin-top: .6rem; }
 .admin-desk .admin-confirm { max-width: 42rem; margin-top: 1.5rem; font-size: .95rem; }
 .admin-result { margin-top: 1.5rem; }

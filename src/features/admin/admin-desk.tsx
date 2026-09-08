@@ -21,6 +21,7 @@ export function AdminDesk() {
   const [baseline, setBaseline] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [ttsProvider, setTtsProvider] = useState<TtsProvider>("openai");
+  const [ttsVoice, setTtsVoice] = useState("");
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -40,6 +41,7 @@ export function AdminDesk() {
     setTokenInput(""); setAuthenticated(false); setJobs([]); setOffset(0); setHasMore(false);
     setJob(null); setDraft(null); setBaseline(""); setConfirmed(false); setConflict(false); setNotice("");
     setTtsProvider("openai");
+    setTtsVoice("");
   }
 
   // One operation owns the controller, including login + deep-link loading.
@@ -94,7 +96,10 @@ export function AdminDesk() {
   function accept(value: Job, preserveTts = false) {
     const next = initialDraft(value);
     setJob(value); setDraft(next); setBaseline(JSON.stringify(next)); setConfirmed(false); setConflict(false);
-    if (!preserveTts) setTtsProvider(value.data.ttsProvider);
+    if (!preserveTts) {
+      setTtsProvider(value.data.ttsProvider);
+      setTtsVoice(value.data.ttsVoice ?? value.ttsProviders.find(option => option.id === value.data.ttsProvider)?.defaultVoice ?? "");
+    }
     setJobs(current => current.map(item => item.id === value.id ? value : item));
     window.history.replaceState(window.history.state, "", `/admin?job=${value.id}`);
   }
@@ -121,7 +126,8 @@ export function AdminDesk() {
   const editable = job?.stage === "review_required" && Boolean(facts.length);
   const savedUnchanged = Boolean(job?.data.editorDraft && draft && JSON.stringify(draft) === JSON.stringify(job.data.editorDraft));
   const selectedTts = job?.ttsProviders.find(option => option.id === ttsProvider);
-  const approvalAllowed = Boolean(job?.canApprove && selectedTts?.available && savedUnchanged && !dirty && !conflict && confirmed);
+  const selectedVoice = selectedTts?.voices.find(voice => voice.id === ttsVoice);
+  const approvalAllowed = Boolean(job?.canApprove && selectedTts?.available && selectedVoice && savedUnchanged && !dirty && !conflict && confirmed);
 
   return (
     <main className="admin-desk">
@@ -211,19 +217,29 @@ export function AdminDesk() {
                 <div className="admin-tts">
                   <label htmlFor="admin-tts-provider">Сервис озвучивания</label>
                   <select id="admin-tts-provider" value={ttsProvider} disabled={Boolean(busy) || !editable || conflict} aria-describedby="admin-tts-note" onChange={event => {
-                    setTtsProvider(event.target.value as TtsProvider); setConfirmed(false);
+                    const next = event.target.value as TtsProvider;
+                    setTtsProvider(next);
+                    setTtsVoice(job.ttsProviders.find(option => option.id === next)?.defaultVoice ?? "");
+                    setConfirmed(false);
                   }}>
                     {job.ttsProviders.map(option => <option key={option.id} value={option.id} disabled={!option.available}>{option.label}{option.available ? "" : " — недоступен"}</option>)}
                   </select>
+                  <label className="admin-voice-label" htmlFor="admin-tts-voice">Голос</label>
+                  <select id="admin-tts-voice" value={ttsVoice} disabled={Boolean(busy) || !editable || conflict || !selectedTts?.available} onChange={event => {
+                    setTtsVoice(event.target.value); setConfirmed(false);
+                  }}>
+                    {ttsVoice && !selectedVoice ? <option value={ttsVoice} disabled>{ttsVoice} — недоступен</option> : null}
+                    {selectedTts?.voices.map(voice => <option key={voice.id} value={voice.id}>{voice.label}{voice.id === selectedTts.defaultVoice ? " (по умолчанию)" : ""}</option>)}
+                  </select>
                   <p id="admin-tts-note" className="admin-meta">{job.ttsProviders.some(option => option.id === "yandex" && option.available)
-                    ? "Выбранный сервис озвучит утверждённый текст. Повторная попытка использует тот же сервис."
+                    ? "Текст будет озвучен выбранным голосом. Повторная попытка использует тот же сервис и голос."
                     : "Яндекс SpeechKit недоступен. Для подключения нужен ключ Яндекса в настройках сервера."}</p>
                 </div>
                 <label className="admin-confirm"><input type="checkbox" checked={confirmed} disabled={Boolean(busy) || !job.canApprove || !savedUnchanged || dirty || conflict} onChange={event => setConfirmed(event.target.checked)} /><span>Я сверил текст с цитатами, проверил адрес и подтверждаю сохранённую версию для публикации и озвучивания.</span></label>
                 <button className="admin-primary" disabled={Boolean(busy) || !approvalAllowed} onClick={() => {
-                  if (!approvalAllowed || request.current || !window.confirm(`Утвердить сохранённый текст и озвучить через ${selectedTts?.label}?`)) return;
+                  if (!approvalAllowed || request.current || !window.confirm(`Утвердить сохранённый текст и озвучить через ${selectedTts?.label}, голос «${selectedVoice?.label}»?`)) return;
                   void run("Отправка на озвучивание…", async signal => {
-                    accept((await api<{ job: Job }>(`/${job.id}/approve`, signal, { revision: job.revision, ttsProvider })).job);
+                    accept((await api<{ job: Job }>(`/${job.id}/approve`, signal, { revision: job.revision, ttsProvider, ttsVoice })).job);
                     setNotice("Текст утверждён. Озвучивание поставлено в очередь. Обновите задание, чтобы проверить готовность.");
                   });
                 }}>Утвердить и озвучить</button>

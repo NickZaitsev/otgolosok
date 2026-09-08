@@ -142,7 +142,8 @@ export async function runJob(initial, {store,provider,speechProviders={openai:pr
       const selected = job.data.ttsProvider ?? "openai";
       const speechProvider = Object.hasOwn(speechProviders, selected) ? speechProviders[selected] : null;
       if (!speechProvider) throw failure("TTS_FAILED");
-      const audio = await narrate(job.data.story,speechProvider,audioDirectory,deadline);
+      const narrationProvider = job.data.ttsVoice ? {...speechProvider,voice:job.data.ttsVoice} : speechProvider;
+      const audio = await narrate(job.data.story,narrationProvider,audioDirectory,deadline);
       update("voicing",{audio});
     }
     update("ready",{elapsedSec:Math.round((Date.now()-Date.parse(job.createdAt))/1000),attemptElapsedSec:Math.round((Date.now()-started)/1000),completedAt:new Date().toISOString()});

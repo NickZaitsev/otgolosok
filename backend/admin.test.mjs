@@ -58,7 +58,7 @@ test("admin routes authenticate before lookup, never cache, and project only saf
   const res = await f.request(`/${job.id}`); const value = await res.json();
   assert.deepEqual(Object.keys(value), ["job"]);
   assert.deepEqual(Object.keys(value.job).sort(), ["id", "address", "stage", "revision", "updatedAt", "error", "data", "canApprove", "ttsProviders"].sort());
-  assert.deepEqual(Object.keys(value.job.data), ["ttsProvider", "editorDraft", "draft", "draftCandidate", "evidence", "review", "factReview"]);
+  assert.deepEqual(Object.keys(value.job.data), ["ttsProvider", "ttsVoice", "editorDraft", "draft", "draftCandidate", "evidence", "review", "factReview"]);
   assert.equal(value.job.canApprove, false);
   assert.equal(JSON.stringify(value).includes("PRIVATE_"), false);
   assert.equal(JSON.stringify(value).includes("<"), false);
@@ -226,28 +226,33 @@ test("editorial audio failure and retry never call models or alter the approved 
 });
 
 test("Yandex selection is persisted, audited and reused after an audio-only retry", async t => {
-  const yandexTts = { ttsProvider: "yandex", privateKey: "PRIVATE_YANDEX_KEY" };
+  const yandexTts = { ttsProvider: "yandex", voice: "marina", privateKey: "PRIVATE_YANDEX_KEY" };
   const f = await fixture(t, { yandexTts });
   const original = f.seed();
   const saved = f.store.editAdmin(original.id, original.revision, f.draft);
-  const response = await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider: "yandex" });
+  const response = await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider: "yandex", ttsVoice: "kirill" });
   assert.equal(response.status, 200);
   const { job } = await response.json();
   assert.equal(job.data.ttsProvider, "yandex");
-  assert.deepEqual(job.ttsProviders, [{ id: "openai", label: "OpenAI", available: true }, { id: "yandex", label: "Яндекс SpeechKit", available: true }]);
+  assert.deepEqual(job.ttsProviders.map(({ id, label, available }) => ({ id, label, available })), [{ id: "openai", label: "OpenAI", available: true }, { id: "yandex", label: "Яндекс SpeechKit", available: true }]);
+  assert.equal(job.data.ttsVoice, "kirill");
+  assert.equal(job.ttsProviders[1].defaultVoice, "marina");
+  assert.ok(job.ttsProviders[1].voices.some(voice => voice.id === "kirill"));
   assert.equal(JSON.stringify(job).includes("PRIVATE_"), false);
   const approved = f.store.get(saved.id);
   assert.equal(approved.data.editorialApproval.ttsProvider, "yandex");
+  assert.equal(approved.data.editorialApproval.ttsVoice, "kirill");
   const provider = { response: async () => assert.fail("Research must not repeat") };
   const options = { store: f.store, provider, speechProviders: { openai: provider, yandex: yandexTts } };
   const failed = await runJob(f.store.claimNext(), { ...options, narrate: async (_story, selected) => {
-    assert.equal(selected, yandexTts); throw new Error("PRIVATE_FAILURE");
+    assert.deepEqual(selected, { ...yandexTts, voice: "kirill" }); throw new Error("PRIVATE_FAILURE");
   } });
   assert.equal(failed.stage, "failed");
   assert.equal(failed.error.code, "TTS_FAILED");
   f.store.retry(job.id, failed.revision);
+  yandexTts.voice = "dasha"; // A configuration change must not change the approved voice.
   const ready = await runJob(f.store.claimNext(), { ...options, narrate: async (story, selected) => {
-    assert.equal(selected, yandexTts); assert.deepEqual(story, approved.data.story);
+    assert.deepEqual(selected, { ...yandexTts, voice: "kirill" }); assert.deepEqual(story, approved.data.story);
     return { url: "yandex-audio", durationSec: 100 };
   } });
   assert.equal(ready.stage, "ready");
@@ -280,4 +285,46 @@ test("a missing Yandex provider after restart never falls back to OpenAI", async
   assert.equal(failed.stage, "failed");
   assert.equal(failed.error.code, "TTS_FAILED");
   assert.equal(failed.data.ttsProvider, "yandex");
+});
+
+test("approval rejects voices from another service and malformed values without consuming quota", async t => {
+  const f = await fixture(t, { maxDaily: 2, yandexTts: { voice: "marina" } });
+  const original = f.seed();
+  const saved = f.store.editAdmin(original.id, original.revision, f.draft);
+  for (const ttsProvider of ["openai", "yandex"]) {
+    for (const ttsVoice of ["", "unknown", "__proto__", "constructor", null, {}, [], 42, "a".repeat(100), ttsProvider === "openai" ? "marina" : "marin"]) {
+      assert.equal((await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider, ttsVoice })).status, 400);
+      assert.deepEqual(f.store.get(saved.id), saved);
+    }
+  }
+  assert.equal((await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider: "openai", ttsVoice: "cedar" })).status, 200);
+  assert.equal(f.store.get(saved.id).data.ttsVoice, "cedar");
+});
+
+test("approval without a voice freezes the configured default including custom server voices", async t => {
+  for (const voice of ["ermil", "custom_voice"]) {
+    const f = await fixture(t, { yandexTts: { voice } });
+    const original = f.seed();
+    const saved = f.store.editAdmin(original.id, original.revision, f.draft);
+    const detail = (await (await f.request(`/${saved.id}`)).json()).job;
+    const options = detail.ttsProviders.find(option => option.id === "yandex");
+    assert.equal(options.defaultVoice, voice);
+    assert.ok(options.voices.some(option => option.id === voice));
+    assert.equal(detail.data.ttsVoice, null);
+    const response = await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider: "yandex" });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).job.data.ttsVoice, voice);
+    assert.equal(f.store.get(saved.id).data.editorialApproval.ttsVoice, voice);
+  }
+});
+
+test("legacy completed jobs show their recorded audio voice and malformed values remain private", async t => {
+  const f = await fixture(t);
+  const original = f.seed();
+  let job = f.store.update(original.id, { stage: "ready", data: { ...original.data, audio: { voice: "ermil" }, ttsProvider: "yandex" } }, original.revision);
+  assert.equal((await (await f.request(`/${job.id}`)).json()).job.data.ttsVoice, "ermil");
+  job = f.store.update(job.id, { data: { ...job.data, ttsVoice: { secret: "PRIVATE_VALUE" }, audio: { voice: "<script>bad()</script>" } } }, job.revision);
+  const detail = (await (await f.request(`/${job.id}`)).json()).job;
+  assert.equal(detail.data.ttsVoice, null);
+  assert.equal(JSON.stringify(detail).includes("PRIVATE_VALUE"), false);
 });

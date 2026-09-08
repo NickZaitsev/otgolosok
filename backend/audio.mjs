@@ -17,7 +17,7 @@ export async function createNarration(story, provider, directory, signal) {
     const bytes = await readFile(join(directory, `${metadata.sha256}.mp3`));
     if (sha256(bytes) === metadata.sha256) return metadata;
   } catch { /* No complete previously validated asset. */ }
-  const bytes = await provider.speech(script, {signal});
+  const bytes = await provider.speech(script, {signal,voice:provider.voice});
   const sourcePath = join(directory, `${key}.source.tmp`);
   const outputPath = join(directory, `${key}.encoded.tmp.mp3`);
   try {
