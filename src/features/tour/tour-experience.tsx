@@ -31,13 +31,14 @@ import {
   type WakeLockController,
   type WakeLockStatus,
 } from "@/lib/wake-lock";
-import type { Poi, Route } from "./types";
+import type { Route } from "./types";
 import { StorySources, StoryText } from "./story-content";
 import { RouteNotes } from "./route-notes";
 import { AroundScreen } from "../explore/around-screen";
 import { RouteMap } from "./route-map";
 import { getWalkChapters, WalkPlanPreview } from "./walk-plan";
 import { AudioPlayerControls } from "./audio-player-controls";
+import { loadPublishedRoute } from "./published-route-cache";
 import { usePlaybackProgress } from "./use-playback-progress";
 import { formatPlaybackTime, type PlaybackCheckpoint } from "@/lib/audio/playback-progress";
 
@@ -103,10 +104,12 @@ export function TourExperience({ route }: { route: Route }) {
       <p className="dek">Маршрут готовится. Точки прогулки появятся здесь позже.</p>
     </section></main>;
   }
-  return <AvailableTour route={route} firstPoi={firstPoi} />;
+  return <AvailableTour route={route} />;
 }
 
-function AvailableTour({ route, firstPoi }: { route: Route; firstPoi: Poi }) {
+function AvailableTour({ route: initialRoute }: { route: Route }) {
+  const [route, setRoute] = useState(initialRoute);
+  const firstPoi = route.pois[0];
   const [phase, setPhase] = useState<SessionPhase>("reading");
   const [audioStatus, setAudioStatus] = useState<AudioStatus>("locked");
   const [wakeStatus, setWakeStatus] = useState<WakeLockStatus>("idle");
@@ -134,6 +137,18 @@ function AvailableTour({ route, firstPoi }: { route: Route; firstPoi: Poi }) {
   const playbackSourceRef = useRef<string | null>(null);
   const restoringOffsetRef = useRef(false);
   const lastSavedTimeRef = useRef(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20000);
+    void loadPublishedRoute(initialRoute, controller.signal)
+      .then(value => {
+        // A listening session keeps its exact text, audio and resume offsets.
+        if (!controller.signal.aborted) setRoute(current => sessionActiveRef.current ? current : value);
+      })
+      .catch(() => { /* The bundled walk remains available offline. */ })
+      .finally(() => clearTimeout(timer));
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [initialRoute]);
   const usesTestAudio = !firstPoi.story.audio_url;
   const hasStoryText = firstPoi.story.text_status === "ready" && firstPoi.story.paragraphs.length > 0;
   const storyMinutes = Math.ceil(firstPoi.story.duration_sec / 60);

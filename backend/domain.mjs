@@ -103,7 +103,7 @@ export function validateDraft(draft, evidence) {
 export function publicJob(job) {
   return { id: job.id, address: job.address, stage: job.stage, revision: job.revision,
     createdAt: job.createdAt, updatedAt: job.updatedAt,
-    story: job.data.story ?? null, audio: job.data.audio ?? null,
+    story: job.data.story ?? null, audio: job.data.audio ?? job.data.revoice?.previousAudio ?? null,
     elapsedSec: TERMINAL.has(job.stage) && job.data.elapsedSec !== undefined ? job.data.elapsedSec : Math.round((Date.now() - Date.parse(job.createdAt)) / 1000),
     error: job.error, canRetry: job.stage === "failed" && job.attempts < 3 };
 }

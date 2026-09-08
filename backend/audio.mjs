@@ -5,7 +5,8 @@ import { execFile } from "node:child_process";
 import { failure, sha256 } from "./domain.mjs";
 
 const exec = promisify(execFile);
-export async function createNarration(story, provider, directory, signal) {
+export async function createNarration(story, provider, directory, signal, { minDurationSec = 45, maxDurationSec = 150 } = {}) {
+  if (!Number.isFinite(minDurationSec) || !Number.isFinite(maxDurationSec) || minDurationSec <= 0 || maxDurationSec < minDurationSec || maxDurationSec > 600) throw failure("AUDIO_DURATION");
   const script = story.paragraphs.map((paragraph) => paragraph.text).join("\n\n");
   const ttsProvider = provider.ttsProvider ?? "openai";
   const key = sha256(JSON.stringify({script,model:provider.ttsModel,voice:provider.voice,version:1,
@@ -15,7 +16,7 @@ export async function createNarration(story, provider, directory, signal) {
   try {
     const metadata = JSON.parse(await readFile(metadataPath, "utf8"));
     const bytes = await readFile(join(directory, `${metadata.sha256}.mp3`));
-    if (sha256(bytes) === metadata.sha256) return metadata;
+    if (sha256(bytes) === metadata.sha256 && (metadata.durationSec === undefined || (metadata.durationSec >= minDurationSec && metadata.durationSec <= maxDurationSec))) return metadata;
   } catch { /* No complete previously validated asset. */ }
   const bytes = await provider.speech(script, {signal,voice:provider.voice});
   const sourcePath = join(directory, `${key}.source.tmp`);
@@ -25,7 +26,7 @@ export async function createNarration(story, provider, directory, signal) {
     await exec("ffmpeg", ["-v","error","-y","-threads","1","-filter_threads","1","-i",sourcePath,"-af","loudnorm=I=-16:TP=-1.5:LRA=11","-ac","1","-ar","24000","-b:a","64k","-map_metadata","-1",outputPath], {timeout:25000,signal,maxBuffer:16000});
     const measured = await exec("ffprobe", ["-v","error","-show_entries","format=duration","-of","json",outputPath], {timeout:10000,signal,maxBuffer:16000});
     const durationSec = Number(JSON.parse(measured.stdout).format?.duration);
-    if (!Number.isFinite(durationSec) || durationSec < 45 || durationSec > 150) throw failure("AUDIO_DURATION");
+    if (!Number.isFinite(durationSec) || durationSec < minDurationSec || durationSec > maxDurationSec) throw failure("AUDIO_DURATION");
     const encoded = await readFile(outputPath);
     const hash = sha256(encoded);
     await rename(outputPath, join(directory, `${hash}.mp3`));

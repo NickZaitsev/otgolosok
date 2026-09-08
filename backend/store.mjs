@@ -2,9 +2,10 @@ import { randomUUID } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { editorialDraft } from "./admin.mjs";
+import { editorialDraft, hasValidStoryText } from "./admin.mjs";
 import { sha256 } from "./domain.mjs";
 import { validVoiceId } from "./tts-voices.mjs";
+import { createWalkAdminStore } from "./walk-admin.mjs";
 
 const STAGES = new Set([
   "queued",
@@ -60,6 +61,10 @@ function decode(row) {
   return row ? JSON.parse(row.record_json) : null;
 }
 
+function isAddressJob(job) {
+  return (job?.kind ?? "address") === "address";
+}
+
 export function createStore(
   databasePath,
   { now = Date.now, maxActive = 2, maxDaily = 6 } = {},
@@ -77,6 +82,10 @@ export function createStore(
 
   const db = new DatabaseSync(databasePath);
   let closed = false;
+
+  db.function("casefold", { deterministic: true }, (value) =>
+    typeof value === "string" ? value.toLocaleLowerCase("ru-RU") : "",
+  );
 
   db.exec("PRAGMA journal_mode = WAL");
   db.exec("PRAGMA busy_timeout = 5000");
@@ -169,7 +178,10 @@ export function createStore(
     if (Number(created) + Number(retries) >= maxDaily) throw codedError("DAILY_LIMIT");
   }
 
+  const walkAdminStore = createWalkAdminStore({ db, now, transaction, checkCapacity });
+
   return {
+    ...walkAdminStore,
     createOrGet({ key, address }) {
       if (typeof key !== "string" || key.length === 0) {
         throw new TypeError("key must be a non-empty string");
@@ -215,17 +227,42 @@ export function createStore(
       return decode(findById.get(id));
     },
 
-    listAdmin({ limit = 50, offset = 0 } = {}) {
-      if (!Number.isSafeInteger(limit) || limit < 1 || limit > 50 || !Number.isSafeInteger(offset) || offset < 0) throw codedError("BAD_REQUEST");
-      const rows = db.prepare("SELECT record_json FROM jobs ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?").all(limit + 1, offset);
+    listAdmin({ limit = 50, offset = 0, q = "", stage = "", relevance = "active" } = {}) {
+      if (!Number.isSafeInteger(limit) || limit < 1 || limit > 50 || !Number.isSafeInteger(offset) || offset < 0
+        || typeof q !== "string" || q.length > 200 || (stage !== "" && !STAGES.has(stage))
+        || !["active", "irrelevant", "all"].includes(relevance)) throw codedError("BAD_REQUEST");
+      const filters = ["COALESCE(json_extract(record_json, '$.kind'), 'address') = 'address'"];
+      const parameters = [];
+      if (stage) { filters.push("stage = ?"); parameters.push(stage); }
+      if (relevance === "active") filters.push("COALESCE(json_extract(record_json, '$.irrelevant'), 0) != 1");
+      if (relevance === "irrelevant") filters.push("COALESCE(json_extract(record_json, '$.irrelevant'), 0) = 1");
+      if (q.trim()) {
+        filters.push("(instr(casefold(json_extract(record_json, '$.address')), casefold(?)) > 0 OR instr(id, lower(?)) > 0)");
+        parameters.push(q.trim(), q.trim());
+      }
+      const where = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
+      const rows = db.prepare(`SELECT record_json FROM jobs ${where} ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`)
+        .all(...parameters, limit + 1, offset);
       return { jobs: rows.slice(0, limit).map(decode), hasMore: rows.length > limit };
+    },
+
+    setRelevanceAdmin(id, expectedRevision, irrelevant) {
+      if (typeof irrelevant !== "boolean") throw codedError("BAD_REQUEST");
+      return transaction(() => {
+        const job = decode(findById.get(id));
+        if (!job) return null;
+        if (!isAddressJob(job) || job.revision !== expectedRevision) throw codedError("CONFLICT");
+        // Queue visibility is independent of processing: keep its revision so an
+        // in-flight worker can finish. update() preserves this top-level flag.
+        return save({ ...job, irrelevant, updatedAt: isoNow(now) });
+      });
     },
 
     editAdmin(id, expectedRevision, draft) {
       return transaction(() => {
         const job = decode(findById.get(id));
         if (!job) return null;
-        if (job.revision !== expectedRevision || job.stage !== "review_required") throw codedError("CONFLICT");
+        if (!isAddressJob(job) || job.revision !== expectedRevision || job.stage !== "review_required" || job.irrelevant) throw codedError("CONFLICT");
         const valid = editorialDraft(job.data, draft);
         const editorDraft = { title: valid.title, paragraphs: valid.paragraphs };
         return save({ ...job, data: { ...job.data, editorDraft }, revision: job.revision + 1, updatedAt: isoNow(now) });
@@ -238,7 +275,7 @@ export function createStore(
       return transaction(() => {
         const job = decode(findById.get(id));
         if (!job) return null;
-        if (job.revision !== expectedRevision || job.stage !== "review_required") throw codedError("CONFLICT");
+        if (!isAddressJob(job) || job.revision !== expectedRevision || job.stage !== "review_required" || job.irrelevant) throw codedError("CONFLICT");
         const story = { ...editorialDraft(job.data), verification: "editorial" };
         checkCapacity();
         const timestamp = isoNow(now);
@@ -249,10 +286,45 @@ export function createStore(
       });
     },
 
+    revoiceAdmin(id, expectedRevision, ttsProvider = "openai", ttsVoice = null) {
+      if (!["openai", "yandex"].includes(ttsProvider)) throw codedError("BAD_REQUEST");
+      if (ttsVoice !== null && !validVoiceId(ttsVoice)) throw codedError("BAD_REQUEST");
+      return transaction(() => {
+        const job = decode(findById.get(id));
+        if (!job) return null;
+        if (!isAddressJob(job) || job.revision !== expectedRevision || !["ready", "failed"].includes(job.stage) || job.irrelevant) throw codedError("CONFLICT");
+        if (!hasValidStoryText(job.data?.story)) throw codedError("BAD_REQUEST");
+        checkCapacity();
+        const timestamp = isoNow(now);
+        const previousAudio = job.data.audio ?? job.data.revoice?.previousAudio ?? null;
+        db.prepare("INSERT INTO retries (created_at) VALUES (?)").run(timestamp);
+        return save({ ...job, stage: "queued", error: null, revision: job.revision + 1, updatedAt: timestamp,
+          data: { ...job.data, audio: null, ttsProvider, ttsVoice,
+            revoice: { requestedAt: timestamp, previousAudio } } });
+      });
+    },
+
+    retryAdmin(id, expectedRevision, ttsProvider = "openai", ttsVoice = null) {
+      if (!["openai", "yandex"].includes(ttsProvider)) throw codedError("BAD_REQUEST");
+      if (ttsVoice !== null && !validVoiceId(ttsVoice)) throw codedError("BAD_REQUEST");
+      return transaction(() => {
+        const job = decode(findById.get(id));
+        if (!job) return null;
+        if (!isAddressJob(job) || job.revision !== expectedRevision || job.irrelevant) throw codedError("CONFLICT");
+        if (job.stage !== "failed" || job.attempts >= 3) throw codedError("RETRY_LIMIT");
+        checkCapacity();
+        const timestamp = isoNow(now);
+        db.prepare("INSERT INTO retries (created_at) VALUES (?)").run(timestamp);
+        return save({ ...job, stage: "queued", error: null, updatedAt: timestamp, revision: job.revision + 1,
+          data: { ...job.data, ttsProvider, ttsVoice } });
+      });
+    },
+
     retry(id, expectedRevision) {
       return transaction(() => {
         const job = decode(findById.get(id));
         if (!job) return null;
+        if (!isAddressJob(job)) throw codedError("CONFLICT");
         // A repeated click while the same retry is queued must not enqueue again.
         if (!TERMINAL_STAGES.includes(job.stage)) return job;
         if (job.revision !== expectedRevision) throw codedError("CONFLICT");
@@ -302,7 +374,7 @@ export function createStore(
       });
     },
 
-    claimNext() {
+    claimNext({ audioOnly = false } = {}) {
       return transaction(() => {
         const working = db.prepare(`
           SELECT 1
@@ -319,6 +391,7 @@ export function createStore(
           SELECT record_json
           FROM jobs
           WHERE stage = 'queued'
+            ${audioOnly ? "AND (json_extract(record_json, '$.kind') = 'walk_chapter' OR json_type(record_json, '$.data.story') = 'object')" : ""}
           ORDER BY created_at ASC, id ASC
           LIMIT 1
         `).get();
