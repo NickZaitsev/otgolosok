@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createWalkPlanner } from './walks.mjs';
+import discoveryCatalog from './walk-discovery-catalog.mjs';
 
 const start={address:'Москва, Арбат, 1',location:{lat:55.75,lon:37.60}};
 const stop=n=>({address:`Москва, Арбат, ${n+2}`,location:{lat:55.75+n*0.001,lon:37.60}});
@@ -25,7 +26,7 @@ function route(request,time=100) {
 const candidates=()=>({elements:[1,2,3,4].map(n=>({type:'way',center:stop(n).location,tags:{name:`House ${n}`,building:'yes',historic:'building','addr:street':'Арбат','addr:housenumber':String(n+2)}}))});
 function fixture(handler) {
   const calls=[];
-  const plan=createWalkPlanner({routerUrl:'https://router.test/route',overpassUrl:'https://osm.test/',minIntervalMs:0,fetchImpl:async(url,options)=>{
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',overpassUrl:'https://osm.test/',discoveryElements:null,minIntervalMs:0,fetchImpl:async(url,options)=>{
     calls.push({url:String(url),options});
     return Response.json(await handler(String(url),options,calls));
   }});
@@ -115,7 +116,7 @@ test('rejects malformed, oversized, and failing upstream responses',async()=>{
   }
   for(const data of [{}, {elements:[],remark:'timeout'}, {elements:Array(501).fill({})}]) {
     const {plan}=fixture(()=>data);
-    await assert.rejects(plan({start,mode:'loop',minutes:30}),{code:'WALK_UNAVAILABLE'});
+    await assert.rejects(plan({start,mode:'loop',minutes:30}),{code:'WALK_DISCOVERY_UNAVAILABLE'});
   }
 });
 
@@ -135,4 +136,64 @@ test('total deadline also covers a stalled response body',async()=>{
   const plan=createWalkPlanner({routerUrl:'https://router.test/route',timeoutMs:20,fetchImpl:async()=>new Response(new ReadableStream({start(){},cancel(){cancelled=true;}}))});
   await assert.rejects(plan(input()),{code:'WALK_UNAVAILABLE'});
   assert.equal(cancelled,true);
+});
+
+test('offline discovery routes both modes without contacting Overpass',async()=>{
+  const elements=candidates().elements;
+  const original=structuredClone(elements);
+  const calls=[];
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:elements,minIntervalMs:0,fetchImpl:async(url,options)=>{
+    assert.equal(url,'https://router.test/route');
+    calls.push(JSON.parse(options.body));
+    return Response.json(route(calls.at(-1)));
+  }});
+  for(const mode of ['loop','open']) {
+    const result=await plan({start,mode,minutes:30});
+    assert.deepEqual(result.stops,[1,2,3,4].map(stop));
+    assert.equal(calls.at(-1).costing,'pedestrian');
+    assert.equal(calls.at(-1).locations.length,mode==='loop'?6:5);
+  }
+  assert.equal(calls.length,2);
+  assert.deepEqual(elements,original);
+});
+
+test('offline discovery applies the radius and building filters without external fallback',async()=>{
+  const elements=candidates().elements;
+  elements.push({...elements[0],center:{lat:55.9,lon:37.6}});
+  elements[1]={...elements[1],tags:{...elements[1].tags,building:'no'}};
+  elements[2]={...elements[2],tags:{...elements[2].tags,'addr:housenumber':'<bad>'}};
+  elements[3]={...elements[3],tags:{...elements[3].tags,historic:'no'}};
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:elements,fetchImpl:async()=>assert.fail('must not fetch')});
+  await assert.rejects(plan({start,mode:'loop',minutes:30}),{code:'WALK_NOT_FOUND'});
+});
+
+test('bundled Moscow catalog supports automatic discovery by default',async()=>{
+  assert.equal(discoveryCatalog.license,'ODbL-1.0');
+  assert.match(discoveryCatalog.sourceSha256,/^[a-f0-9]{64}$/);
+  assert.ok(discoveryCatalog.elements.length>100);
+  const calls=[];
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',fetchImpl:async(url,options)=>{
+    assert.equal(url,'https://router.test/route');
+    calls.push(JSON.parse(options.body));
+    throw new Error('router unavailable');
+  }});
+  await assert.rejects(plan({start:{address:'Москва, Арбат, 1',location:{lat:55.7521,lon:37.6007}},mode:'loop',minutes:30}),{code:'WALK_UNAVAILABLE'});
+  assert.equal(calls.length,1);
+  assert.ok(calls[0].locations.length>=4);
+});
+
+test('Overpass transport failures and deadlines identify discovery, then release the gate',async()=>{
+  let failDiscovery=true;
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',overpassUrl:'https://osm.test/',discoveryElements:null,minIntervalMs:0,timeoutMs:20,fetchImpl:async(url,options)=>{
+    if(url==='https://osm.test/') {
+      if(failDiscovery)return new Promise(()=>{});
+      return Response.json(candidates());
+    }
+    return Response.json(route(JSON.parse(options.body)));
+  }});
+  await assert.rejects(plan({start,mode:'loop',minutes:30}),{code:'WALK_DISCOVERY_UNAVAILABLE'});
+  failDiscovery=false;
+  assert.equal((await plan({start,mode:'loop',minutes:30})).stops.length,4);
+  const unavailable=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:null,fetchImpl:async()=>{throw new Error('private');}});
+  await assert.rejects(unavailable({start,mode:'loop',minutes:30}),{code:'WALK_DISCOVERY_UNAVAILABLE',message:'WALK_DISCOVERY_UNAVAILABLE'});
 });

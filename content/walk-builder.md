@@ -37,18 +37,39 @@
 
 The example is schematic, not an actual route. `geometry` in real responses is decoded exclusively from routed Valhalla pedestrian legs, in travel order. `stops` excludes start and the automatic return point. Distance is summed from leg lengths and rounded to meters; walking time is summed from leg times and rounded up to minutes. Routing can snap to the walking network within 150 m of each requested point. No straight-line or driving fallback is used.
 
-Automatic discovery queries named OSM buildings tagged historic, heritage, or museum, with both street and house number. Search radius is `min(1800, minutes * 20)` meters. Invalid names, addresses, coordinates, duplicate buildings, and out-of-radius results are discarded. Up to four stops are ordered by nearest neighbor from start. The actual walking route must fit the requested duration, a 90 m/min distance ceiling, and a detour ceiling of `max(1200 m, 4 * direct waypoint distance)`. Over-budget automatic routes drop the final stop and retry, down to two stops, with at most three routing calls. Manual routes never reorder or silently remove stops. Discovery is heuristic, not a globally optimal tour search.
+Automatic discovery uses the bundled Moscow OSM building catalog, without an external lookup. Eligible buildings are named, tagged historic, heritage, or museum, with both street and house number. Search radius is `min(1800, minutes * 20)` meters. Invalid names, addresses, coordinates, duplicate buildings, and out-of-radius results are discarded. Up to four stops are ordered by nearest neighbor from start. The actual walking route must fit the requested duration, a 90 m/min distance ceiling, and a detour ceiling of `max(1200 m, 4 * direct waypoint distance)`. Over-budget automatic routes drop the final stop and retry, down to two stops, with at most three routing calls. Manual routes never reorder or silently remove stops. Discovery is heuristic, not a globally optimal tour search.
 
 OSM labels and tags are map information, not verified historical facts. Historical claims remain the responsibility of the story research pipeline.
 
 ## Configuration
 
 - **Required:** `WALK_ROUTER_URL` is the complete Valhalla `/route` endpoint, for example `http://127.0.0.1:8002/route`. Run a Valhalla instance with current Moscow OSM tiles and pedestrian costing enabled, or configure a compatible hosted service whose usage policy permits your deployment. No public router is assumed reliable or enabled by default. Unset configuration returns `503 WALK_UNAVAILABLE`.
-- **Optional:** `WALK_OVERPASS_URL` is an Overpass interpreter endpoint; default `https://overpass-api.de/api/interpreter`. Respect its usage policy and availability; configure your own instance for sustained production use. Manual routing never calls Overpass.
+- **Default:** local discovery from `backend/walk-discovery-catalog.mjs`, generated from the Moscow OSM extract. The catalog ships in the backend image. Too few eligible nearby buildings returns `WALK_NOT_FOUND`; it does not trigger a remote fallback.
+- **Optional:** `WALK_DISCOVERY_SOURCE=overpass` explicitly enables external discovery. Only in this mode, `WALK_OVERPASS_URL` selects an Overpass interpreter endpoint; default `https://overpass-api.de/api/interpreter`. Respect its usage policy and availability; configure your own instance for sustained production use. Manual routing never calls Overpass. Merely setting `WALK_OVERPASS_URL` does not disable the local catalog.
 - Valhalla requests explicitly set `costing: pedestrian`, kilometer units, polyline6 shapes, and break locations. Do not point this setting at OSRM or a driving-only router. Upstreams are trusted operator configuration, never URLs from user input. HTTP is supported for local deployment; use HTTPS for remote providers.
 - `APP_ORIGIN` must match the frontend origin. No OpenAI key or story provider is needed. No external paid generation is invoked.
 
-The planner has a process-local one-request concurrency gate and a two-second minimum interval between accepted requests, a 12-second total deadline covering discovery and all routing attempts, a 1 MiB limit per upstream response, a 12,000-point geometry limit, and no redirects. Overpass has an eight-second query timeout and requests at most 160 elements. Network failures, malformed results, inconsistent geometry, and timeouts fail closed. The injected `createWalkPlanner({fetchImpl, now, routerUrl, overpassUrl, timeoutMs, minIntervalMs})` enables isolated tests; `createApp({planWalk})` accepts an injected planner.
+The planner has a process-local one-request concurrency gate and a two-second minimum interval between accepted requests, a 12-second total deadline covering discovery and all routing attempts, a 1 MiB limit per upstream response, a 12,000-point geometry limit, and no redirects. Optional Overpass discovery has an eight-second query timeout and requests at most 160 elements. Network failures, malformed results, inconsistent geometry, and timeouts fail closed. The injected `createWalkPlanner({fetchImpl, now, routerUrl, overpassUrl, discoveryElements, timeoutMs, minIntervalMs})` enables isolated tests; `discoveryElements: null` enables Overpass and an array supplies a local catalog. `createApp({planWalk})` accepts an injected planner.
+
+### Refreshing the local catalog
+
+Regenerate the catalog when updating the Moscow PBF used by Valhalla. Python and
+Pyosmium are build tools only; the running backend requires neither. The builder
+extracts nodes, ways and multipolygon buildings, uses bounding-box centers as
+Overpass does, and retains the OSM IDs, relevant tags, source SHA-256 and ODbL
+attribution. It excludes buildings outside the application's Moscow rectangle.
+The catalog is a snapshot and will not pick up later OSM edits until refreshed.
+
+```sh
+python3 -m venv /tmp/otgolosok-osmium
+/tmp/otgolosok-osmium/bin/pip install osmium==4.3.1
+/tmp/otgolosok-osmium/bin/python scripts/build-walk-discovery.py /path/to/Moscow.osm.pbf
+node --test backend/walks.test.mjs backend/server.test.mjs
+```
+
+Review and commit the generated module, then deploy the backend. Source data:
+[BBBike Moscow extract](https://download.bbbike.org/osm/bbbike/Moscow/),
+[OpenStreetMap attribution and ODbL license](https://www.openstreetmap.org/copyright).
 
 For multiple server processes, add shared rate limiting at the reverse proxy. The application gate is global within a process, not per-client, so it limits upstream consumption but does not provide fair access between users. Keep reverse-proxy request/body timeouts enabled as well.
 
@@ -62,6 +83,7 @@ Responses have `{ "error": { "code": "WALK_INVALID", "message": "..." } }`, with
 | 403 | No walk-specific code | Same-origin check failed |
 | 404 | `WALK_NOT_FOUND` | Too few candidates or no acceptable route within the limits |
 | 429 | `WALK_BUSY` | Gate or cooldown active; `Retry-After: 2` |
-| 503 | `WALK_UNAVAILABLE` | Router unset, upstream failure, malformed result, or deadline exceeded |
+| 503 | `WALK_DISCOVERY_UNAVAILABLE` | Optional external stop discovery failed or timed out; manual stops can still be used |
+| 503 | `WALK_UNAVAILABLE` | Router unset, routing failure, malformed geometry, or routing deadline exceeded |
 
 Run mocked backend tests with Node 24 or newer: `node --test backend/*.test.mjs`. Tests make no live routing, discovery, or generation requests.

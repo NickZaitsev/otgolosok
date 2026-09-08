@@ -70,7 +70,7 @@ test('walk planning is independent of story provider and protected by origin',as
 test('walk errors are sanitized and walk-only body allowance is bounded',async(t)=>{
   let calls=0;
   const f=await fixture(t,{planWalk:async input=>{calls++;if(input.code)throw Object.assign(new Error('secret'),{code:input.code});return {};}});
-  for(const [code,status] of [['WALK_INVALID',400],['WALK_BUSY',429],['WALK_NOT_FOUND',404],['WALK_UNAVAILABLE',503],['PRIVATE_ERROR',503]]) {
+  for(const [code,status] of [['WALK_INVALID',400],['WALK_BUSY',429],['WALK_NOT_FOUND',404],['WALK_DISCOVERY_UNAVAILABLE',503],['WALK_UNAVAILABLE',503],['PRIVATE_ERROR',503]]) {
     const res=await f.post('/api/walk-plan',{code});assert.equal(res.status,status);assert.equal((await res.text()).includes('secret'),false);
     if(status===429)assert.equal(res.headers.get('retry-after'),'2');
   }

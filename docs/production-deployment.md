@@ -27,11 +27,12 @@ It uses one build/server thread, 0.75 CPU, 768 MiB RAM and a 1280 MiB combined
 RAM/swap ceiling. Port 8002 is internal only. Readiness probes `/status`;
 the generator uses `WALK_ROUTER_URL=http://valhalla:8002/route`.
 
-Production explicitly sets
-`WALK_OVERPASS_URL=https://maps.mail.ru/osm/tools/overpass/api/interpreter`
-in the infrastructure Compose template. Discovery retains its existing POST
-method, application headers, query, 12-second deadline and concurrency limit.
-No automatic multi-provider retries or fabricated route fallbacks are used.
+Automatic stop discovery uses the bundled Moscow OSM catalog. The infrastructure
+template retains `WALK_OVERPASS_URL=https://maps.mail.ru/osm/tools/overpass/api/interpreter`,
+but this URL is only used if `WALK_DISCOVERY_SOURCE=overpass` is explicitly set.
+The planner retains its 12-second deadline and concurrency limit. No automatic
+multi-provider retries or fabricated route fallbacks are used. Refresh the
+catalog alongside the Valhalla extract; see `content/walk-builder.md`.
 
 The generator deployment builds/waits for Valhalla before replacing the backend,
 waits at most ten minutes for existing jobs to become idle, stops the single
@@ -112,3 +113,33 @@ increasing graph coverage or concurrency.
 - The reported job `5a242404-42b6-431b-95c6-d395b7656ee5` remains failed with
   `canRetry: true`; deployment did not resume it or initiate paid synthesis.
 - Generator and Valhalla are healthy with zero restarts.
+
+## Walk discovery outage fix — 2026-09-08, 14:59 UTC
+
+- Reproduced automatic `/api/walk-plan` returning HTTP 503 after 12 seconds,
+  while a manual pedestrian route returned HTTP 200. Mail.ru Overpass requests
+  alternated between success and timeout; other public instances also failed
+  bounded probes. The routing graph was healthy.
+- Replaced default external discovery with a bundled catalog of 229 addressed
+  historic, heritage or museum buildings, extracted from the existing production
+  `Moscow.osm.pbf`. Source SHA-256:
+  `86b5684276bc35a231cd3afba53647cd261731eccba34bdf89f9d553ba2a91b5`.
+  Catalog generation skipped no incomplete building geometries. Refresh this
+  snapshot when updating the graph's source extract.
+- Optional Overpass discovery now has its own public error code and recommends
+  adding manual stops; it no longer reports a routing outage.
+- Lint, TypeScript, 152 frontend and 114 backend tests passed. A synthetic OSM
+  fixture verified node, way and multipolygon centers and deterministic output.
+- Six pre-deployment loop/open probes from Arbat, Kozhevnicheskaya and
+  Lavrushinsky used only internal Valhalla requests and completed in 63–256 ms.
+- Deployed with `make deploy-otgolosok-generator`. Backup:
+  `backups/generator-20260908T145925Z/generator.tar.gz`. The generator was idle
+  before replacement; Valhalla was not restarted.
+- Public automatic loop/open requests with 30-, 60- and 90-minute budgets and a
+  manual route all returned HTTP 200 (76–1583 ms). `/walk` and
+  `/api/story-service` returned HTTP 200; cross-origin planning returned 403.
+- All nine existing jobs remained byte-for-byte unchanged; SQLite quick check
+  passed. No story generation or speech synthesis was requested.
+- Browser interaction verification was unavailable: the in-app execution tool
+  was absent and the separate browser connector reported an occupied profile.
+  Public endpoint checks and automated frontend tests passed as described above.
