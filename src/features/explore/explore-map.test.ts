@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import type { MapViewState } from "./explore-map";
+import type { MapFocus, MapViewState } from "./explore-map";
 
 const mock=vi.hoisted(()=>({effects:[] as Array<()=>void|(()=>void)>,maps:[] as Array<{setView:ReturnType<typeof vi.fn<([lat,lng]:number[],zoom:number)=>unknown>>;panBy:ReturnType<typeof vi.fn>;fire:(event:string)=>void}>}));
 vi.mock("react",()=>({
@@ -31,7 +31,7 @@ import { ExploreMap } from "./explore-map";
 
 afterEach(()=>{mock.effects=[];mock.maps=[];vi.unstubAllGlobals();});
 
-async function mount(viewState?:MapViewState,focus:{lat:number;lon:number}|null=null){
+async function mount(viewState?:MapViewState,focus:MapFocus|null=null){
   vi.stubGlobal("matchMedia",()=>({matches:true}));
   vi.stubGlobal("ResizeObserver",class{observe(){} disconnect(){}});
   mock.effects=[];
@@ -76,6 +76,17 @@ it("does not share the nearby viewport with maps that do not opt in",async()=>{
   expect(other.map.setView).toHaveBeenCalledExactlyOnceWith([55.7249,37.6507],16);
   other.cleanup?.();
   expect(state.current?.zoom).toBe(14);
+});
+
+it("opens a Moscow overview from a foreign viewport and preserves it across navigation",async()=>{
+  const state:MapViewState={current:{center:{lat:52.52,lon:13.405},zoom:19,focus:null}};
+  const focus:MapFocus={lat:55.74,lon:37.62,zoom:12};
+  const first=await mount(state,focus);
+  expect(first.map.setView).toHaveBeenLastCalledWith([55.74,37.62],12,{animate:false});
+  first.cleanup?.();
+  const returned=await mount(state,focus);
+  expect(returned.map.setView).toHaveBeenCalledExactlyOnceWith([55.74,37.62],12);
+  returned.cleanup?.();
 });
 
 it("ignores late resize events from an unmounted map without losing the saved view",async()=>{

@@ -6,9 +6,10 @@ import type { Coordinates } from "../tour/types";
 import "leaflet/dist/leaflet.css";
 
 export type MapItem = {id:string; title:string; location:Coordinates; number?:number; pending?:boolean};
-export type MapViewState = {current: {center:Coordinates; zoom:number; focus:Coordinates|null}|null};
+export type MapFocus = Coordinates & {zoom?:number};
+export type MapViewState = {current: {center:Coordinates; zoom:number; focus:MapFocus|null}|null};
 export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometry,mapLabel,viewState}: {
-  items: MapItem[]; selectedId?:string; focus:Coordinates|null; user:(Coordinates&{accuracyM:number})|null;
+  items: MapItem[]; selectedId?:string; focus:MapFocus|null; user:(Coordinates&{accuracyM:number})|null;
   onSelect:(id:string)=>void; onPoint:(point:Coordinates)=>void;
   geometry?: Coordinates[]; mapLabel?: string; viewState?: MapViewState;
 }) {
@@ -78,8 +79,8 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     // A remount must not replay the old selection over a manually moved view.
     if(focus===appliedFocus.current)return;
     appliedFocus.current=focus;
-    rt.map.setView([focus.lat,focus.lon],Math.max(rt.map.getZoom(),16),{animate:false});
-    rt.map.panBy([0,80],{animate:false});
+    rt.map.setView([focus.lat,focus.lon],focus.zoom??Math.max(rt.map.getZoom(),16),{animate:false});
+    if(focus.zoom===undefined)rt.map.panBy([0,80],{animate:false});
   },[focus,ready]);
 
   useEffect(()=>{
