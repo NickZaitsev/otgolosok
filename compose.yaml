@@ -22,6 +22,8 @@ services:
       ADMIN_TOKEN: ${ADMIN_TOKEN:-}
       STORY_MODEL: ${STORY_MODEL:-codex/gpt-5.6-sol-medium}
       WRITER_MODEL: ${WRITER_MODEL:-codex/gpt-5.6-sol-low}
+      YANDEX_TTS_API_KEY: ${YANDEX_TTS_API_KEY:-}
+      YANDEX_TTS_VOICE: ${YANDEX_TTS_VOICE:-marina}
       MAX_DAILY_JOBS: ${MAX_DAILY_JOBS:-6}
     volumes:
       - backend_data:/data

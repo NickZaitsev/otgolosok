@@ -44,7 +44,7 @@ export function safeError(error, hasStory = false) {
     message: errorMessages[code] ?? (hasStory ? errorMessages.TTS_FAILED : "Не удалось подготовить историю. Можно повторить попытку.")};
 }
 
-export async function runJob(initial, {store,provider,audioDirectory,fetchPage=fetchSource,narrate=createNarration,signal,timeoutMs=600000}) {
+export async function runJob(initial, {store,provider,speechProviders={openai:provider},audioDirectory,fetchPage=fetchSource,narrate=createNarration,signal,timeoutMs=600000}) {
   let job = initial;
   const started = Date.now();
   const deadline = AbortSignal.any([AbortSignal.timeout(timeoutMs), ...(signal ? [signal] : [])]);
@@ -139,7 +139,10 @@ export async function runJob(initial, {store,provider,audioDirectory,fetchPage=f
     }
     if (!job.data.audio) {
       update("voicing");
-      const audio = await narrate(job.data.story,provider,audioDirectory,deadline);
+      const selected = job.data.ttsProvider ?? "openai";
+      const speechProvider = Object.hasOwn(speechProviders, selected) ? speechProviders[selected] : null;
+      if (!speechProvider) throw failure("TTS_FAILED");
+      const audio = await narrate(job.data.story,speechProvider,audioDirectory,deadline);
       update("voicing",{audio});
     }
     update("ready",{elapsedSec:Math.round((Date.now()-Date.parse(job.createdAt))/1000),attemptElapsedSec:Math.round((Date.now()-started)/1000),completedAt:new Date().toISOString()});

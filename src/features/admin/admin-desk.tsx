@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { draftCheck, initialDraft, safeSourceLink, stages, type Draft, type Job, type Summary } from "./model";
+import { draftCheck, initialDraft, safeSourceLink, stages, type Draft, type Job, type Summary, type TtsProvider } from "./model";
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 class ApiError extends Error {
@@ -20,6 +20,7 @@ export function AdminDesk() {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [baseline, setBaseline] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [ttsProvider, setTtsProvider] = useState<TtsProvider>("openai");
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -38,6 +39,7 @@ export function AdminDesk() {
     token.current = "";
     setTokenInput(""); setAuthenticated(false); setJobs([]); setOffset(0); setHasMore(false);
     setJob(null); setDraft(null); setBaseline(""); setConfirmed(false); setConflict(false); setNotice("");
+    setTtsProvider("openai");
   }
 
   // One operation owns the controller, including login + deep-link loading.
@@ -89,9 +91,10 @@ export function AdminDesk() {
     return result;
   }
 
-  function accept(value: Job) {
+  function accept(value: Job, preserveTts = false) {
     const next = initialDraft(value);
     setJob(value); setDraft(next); setBaseline(JSON.stringify(next)); setConfirmed(false); setConflict(false);
+    if (!preserveTts) setTtsProvider(value.data.ttsProvider);
     setJobs(current => current.map(item => item.id === value.id ? value : item));
     window.history.replaceState(window.history.state, "", `/admin?job=${value.id}`);
   }
@@ -117,7 +120,8 @@ export function AdminDesk() {
   const check = draft ? draftCheck(draft, facts) : null;
   const editable = job?.stage === "review_required" && Boolean(facts.length);
   const savedUnchanged = Boolean(job?.data.editorDraft && draft && JSON.stringify(draft) === JSON.stringify(job.data.editorDraft));
-  const approvalAllowed = Boolean(job?.canApprove && savedUnchanged && !dirty && !conflict && confirmed);
+  const selectedTts = job?.ttsProviders.find(option => option.id === ttsProvider);
+  const approvalAllowed = Boolean(job?.canApprove && selectedTts?.available && savedUnchanged && !dirty && !conflict && confirmed);
 
   return (
     <main className="admin-desk">
@@ -201,14 +205,25 @@ export function AdminDesk() {
               </div>
               <footer className="admin-publish"><h3>Решение редактора</h3><p>{check?.words} слов из 100–250 · {check?.facts} из минимум 5 фактов · {draft.paragraphs.length} абзацев из 2–6.</p><p className="admin-meta">У каждого абзаца должен быть текст и хотя бы один подтверждающий факт. Сохранение не запускает озвучивание.</p>
                 <button disabled={Boolean(busy) || !editable || !check?.valid || conflict || (!dirty && Boolean(job.data.editorDraft))} onClick={() => void run("Сохранение текста…", async signal => {
-                  accept((await api<{ job: Job }>(`/${job.id}/edit`, signal, { revision: job.revision, draft })).job);
+                  accept((await api<{ job: Job }>(`/${job.id}/edit`, signal, { revision: job.revision, draft })).job, true);
                   setNotice("Редакторский текст сохранён. Проверьте его и подтвердите решение перед озвучиванием.");
                 })}>Сохранить текст</button>
+                <div className="admin-tts">
+                  <label htmlFor="admin-tts-provider">Сервис озвучивания</label>
+                  <select id="admin-tts-provider" value={ttsProvider} disabled={Boolean(busy) || !editable || conflict} aria-describedby="admin-tts-note" onChange={event => {
+                    setTtsProvider(event.target.value as TtsProvider); setConfirmed(false);
+                  }}>
+                    {job.ttsProviders.map(option => <option key={option.id} value={option.id} disabled={!option.available}>{option.label}{option.available ? "" : " — недоступен"}</option>)}
+                  </select>
+                  <p id="admin-tts-note" className="admin-meta">{job.ttsProviders.some(option => option.id === "yandex" && option.available)
+                    ? "Выбранный сервис озвучит утверждённый текст. Повторная попытка использует тот же сервис."
+                    : "Яндекс SpeechKit недоступен. Для подключения нужен ключ Яндекса в настройках сервера."}</p>
+                </div>
                 <label className="admin-confirm"><input type="checkbox" checked={confirmed} disabled={Boolean(busy) || !job.canApprove || !savedUnchanged || dirty || conflict} onChange={event => setConfirmed(event.target.checked)} /><span>Я сверил текст с цитатами, проверил адрес и подтверждаю сохранённую версию для публикации и озвучивания.</span></label>
                 <button className="admin-primary" disabled={Boolean(busy) || !approvalAllowed} onClick={() => {
-                  if (!approvalAllowed || request.current || !window.confirm("Утвердить сохранённый текст и поставить озвучивание в очередь?")) return;
+                  if (!approvalAllowed || request.current || !window.confirm(`Утвердить сохранённый текст и озвучить через ${selectedTts?.label}?`)) return;
                   void run("Отправка на озвучивание…", async signal => {
-                    accept((await api<{ job: Job }>(`/${job.id}/approve`, signal, { revision: job.revision })).job);
+                    accept((await api<{ job: Job }>(`/${job.id}/approve`, signal, { revision: job.revision, ttsProvider })).job);
                     setNotice("Текст утверждён. Озвучивание поставлено в очередь. Обновите задание, чтобы проверить готовность.");
                   });
                 }}>Утвердить и озвучить</button>

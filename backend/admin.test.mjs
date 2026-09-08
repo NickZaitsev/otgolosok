@@ -6,9 +6,9 @@ import { adminAuth } from "./admin.mjs";
 import { validateDraft, validateFacts, sha256 } from "./domain.mjs";
 import { runJob } from "./pipeline.mjs";
 
-async function fixture(t, { provider = {}, maxDaily = 100, maxActive = 2, adminToken = "test-secret" } = {}) {
+async function fixture(t, { provider = {}, yandexTts = null, maxDaily = 100, maxActive = 2, adminToken = "test-secret" } = {}) {
   const store = createStore(":memory:", { maxDaily, maxActive });
-  const app = createApp({ store, provider, adminToken, origin: "https://site.test", workerEnabled: false });
+  const app = createApp({ store, provider, yandexTts, adminToken, origin: "https://site.test", workerEnabled: false });
   await new Promise(done => app.server.listen(0, "127.0.0.1", done));
   t.after(async () => { await app.close(); store.close(); });
   const base = `http://127.0.0.1:${app.server.address().port}`;
@@ -57,8 +57,8 @@ test("admin routes authenticate before lookup, never cache, and project only saf
   }
   const res = await f.request(`/${job.id}`); const value = await res.json();
   assert.deepEqual(Object.keys(value), ["job"]);
-  assert.deepEqual(Object.keys(value.job).sort(), ["id", "address", "stage", "revision", "updatedAt", "error", "data", "canApprove"].sort());
-  assert.deepEqual(Object.keys(value.job.data), ["editorDraft", "draft", "draftCandidate", "evidence", "review", "factReview"]);
+  assert.deepEqual(Object.keys(value.job).sort(), ["id", "address", "stage", "revision", "updatedAt", "error", "data", "canApprove", "ttsProviders"].sort());
+  assert.deepEqual(Object.keys(value.job.data), ["ttsProvider", "editorDraft", "draft", "draftCandidate", "evidence", "review", "factReview"]);
   assert.equal(value.job.canApprove, false);
   assert.equal(JSON.stringify(value).includes("PRIVATE_"), false);
   assert.equal(JSON.stringify(value).includes("<"), false);
@@ -156,6 +156,7 @@ test("approval is atomic, consumes retry quota, audits the draft, and continues 
   assert.deepEqual(approved.data.draft, original.data.draft);
   assert.deepEqual(approved.data.review, original.data.review);
   assert.equal(approved.data.story.verification, "editorial");
+  assert.equal(approved.data.ttsProvider, "openai");
   assert.equal(approved.data.editorialApproval.draftHash, sha256(JSON.stringify(saved.data.editorDraft)));
   assert.equal(approved.data.editorialApproval.approvedAt, approved.updatedAt);
   let modelCalls = 0, fetches = 0, voices = 0;
@@ -222,4 +223,61 @@ test("editorial audio failure and retry never call models or alter the approved 
   assert.equal(ready.stage, "ready"); assert.equal(calls, 0);
   assert.deepEqual(ready.data.editorialApproval, approved.data.editorialApproval);
   assert.deepEqual(ready.data.story, approved.data.story);
+});
+
+test("Yandex selection is persisted, audited and reused after an audio-only retry", async t => {
+  const yandexTts = { ttsProvider: "yandex", privateKey: "PRIVATE_YANDEX_KEY" };
+  const f = await fixture(t, { yandexTts });
+  const original = f.seed();
+  const saved = f.store.editAdmin(original.id, original.revision, f.draft);
+  const response = await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider: "yandex" });
+  assert.equal(response.status, 200);
+  const { job } = await response.json();
+  assert.equal(job.data.ttsProvider, "yandex");
+  assert.deepEqual(job.ttsProviders, [{ id: "openai", label: "OpenAI", available: true }, { id: "yandex", label: "Яндекс SpeechKit", available: true }]);
+  assert.equal(JSON.stringify(job).includes("PRIVATE_"), false);
+  const approved = f.store.get(saved.id);
+  assert.equal(approved.data.editorialApproval.ttsProvider, "yandex");
+  const provider = { response: async () => assert.fail("Research must not repeat") };
+  const options = { store: f.store, provider, speechProviders: { openai: provider, yandex: yandexTts } };
+  const failed = await runJob(f.store.claimNext(), { ...options, narrate: async (_story, selected) => {
+    assert.equal(selected, yandexTts); throw new Error("PRIVATE_FAILURE");
+  } });
+  assert.equal(failed.stage, "failed");
+  assert.equal(failed.error.code, "TTS_FAILED");
+  f.store.retry(job.id, failed.revision);
+  const ready = await runJob(f.store.claimNext(), { ...options, narrate: async (story, selected) => {
+    assert.equal(selected, yandexTts); assert.deepEqual(story, approved.data.story);
+    return { url: "yandex-audio", durationSec: 100 };
+  } });
+  assert.equal(ready.stage, "ready");
+  assert.equal(ready.data.audio.url, "yandex-audio");
+  assert.deepEqual(ready.data.editorialApproval, approved.data.editorialApproval);
+});
+
+test("unavailable and invalid speech selections do not modify the job or consume quota", async t => {
+  const f = await fixture(t, { maxDaily: 2 });
+  const original = f.seed();
+  const saved = f.store.editAdmin(original.id, original.revision, f.draft);
+  const detail = (await (await f.request(`/${saved.id}`)).json()).job;
+  assert.equal(detail.ttsProviders.find(option => option.id === "yandex").available, false);
+  for (const ttsProvider of ["invalid", "__proto__", "constructor", null, {}, 1]) {
+    assert.equal((await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider })).status, 400);
+  }
+  assert.equal((await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider: "yandex" })).status, 503);
+  assert.deepEqual(f.store.get(saved.id), saved);
+  assert.equal((await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider: "openai" })).status, 200);
+});
+
+test("a missing Yandex provider after restart never falls back to OpenAI", async t => {
+  const f = await fixture(t);
+  const original = f.seed();
+  const saved = f.store.editAdmin(original.id, original.revision, f.draft);
+  f.store.approveAdmin(saved.id, saved.revision, "yandex");
+  const failed = await runJob(f.store.claimNext(), { store: f.store, provider: {},
+    narrate: async () => assert.fail("Must not substitute another provider"),
+  });
+  assert.equal(failed.stage, "failed");
+  assert.equal(failed.error.code, "TTS_FAILED");
+  assert.equal(failed.data.ttsProvider, "yandex");
 });
