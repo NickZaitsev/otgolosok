@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-export const PIPELINE_VERSION = "address-story-v2";
+export const PIPELINE_VERSION = "place-history-v3";
 export const TERMINAL = new Set(["ready", "failed", "insufficient_evidence", "review_required"]);
 export const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 export function failure(code, message = code) { return Object.assign(new Error(message), { code }); }
@@ -52,12 +52,18 @@ export function comparable(text) {
 const shortText = (value, max) => typeof value === "string" && value.trim().length > 0 && value.length <= max;
 
 /** Quotes must exist in the fetched page, not merely in a search snippet. */
-export function validateFacts(result, sources) {
+export function validateFacts(result, sources, { requireEditorialScope = false } = {}) {
   if (result.addressConfirmed !== true) throw failure("ADDRESS_UNCLEAR");
   if (!shortText(result.placeName, 160) || !shortText(result.resolvedAddress, 200) || !Array.isArray(result.facts)) throw failure("INVALID_MODEL_OUTPUT");
   const seen = new Set();
   const facts = result.facts.slice(0, 8).flatMap((fact) => {
     if (!/^f[1-8]$/.test(fact?.id) || seen.has(fact.id) || !shortText(fact.claim, 600) || !Array.isArray(fact.evidence)) return [];
+    // Legacy editorial checkpoints remain editable. New research must classify
+    // every fact; excluded or unlocated material cannot fill the five-fact quota.
+    const scoped = requireEditorialScope || ["topic", "scope", "location", "distanceMeters"].some(key => Object.hasOwn(fact, key));
+    if (scoped && (!["architecture", "place_history"].includes(fact.topic) ||
+        !["building", "site", "nearby"].includes(fact.scope) || !shortText(fact.location, 240) ||
+        (fact.scope === "nearby" && (!Number.isFinite(fact.distanceMeters) || fact.distanceMeters <= 0 || fact.distanceMeters > 300)))) return [];
     const evidence = fact.evidence.slice(0, 3).filter((proof) => {
       const source = sources.find((item) => item.id === proof?.sourceId);
       return source && shortText(proof.quote, 500) && proof.quote.trim().length >= 18 &&
@@ -66,6 +72,7 @@ export function validateFacts(result, sources) {
     if (!evidence.length) return [];
     seen.add(fact.id);
     return [{ id: fact.id, claim: fact.claim, interesting: fact.interesting === true,
+      ...(scoped ? {topic:fact.topic,scope:fact.scope,location:fact.location.trim(),distanceMeters:fact.scope === "nearby" ? fact.distanceMeters : null} : {}),
       evidence: evidence.map(({sourceId, quote}) => ({sourceId, quote})) }];
   });
   const used = new Set(facts.flatMap((fact) => fact.evidence.map((proof) => proof.sourceId)));
