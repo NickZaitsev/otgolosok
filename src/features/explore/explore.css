@@ -11,7 +11,9 @@
 .around-topline{display:flex;align-items:center;gap:12px;min-height:44px;font-size:10px;font-weight:650;letter-spacing:.02em}
 .around-brand{font-weight:850;font-size:19px;letter-spacing:-.8px;white-space:nowrap}
 .around-brand span{color:var(--around-orange)}
-.around-topline>span{margin-left:auto;color:#58675e}
+.around-city{margin-left:auto;min-height:44px;padding:4px 0;border:0;border-radius:6px;background:transparent;color:#58675e;text-align:center}
+.around-city span{color:var(--around-green);text-decoration:underline;text-underline-offset:3px}
+.around-city:hover,.around-city:active{background:#203e380d;color:var(--around-green)}
 .around-icon{display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;width:44px;min-width:44px;height:44px;border-radius:50%}
 .around-header h1{margin:12px 0 22px;font:800 clamp(2.1rem,8vw,3.1rem)/1.04 var(--font-body),sans-serif;letter-spacing:-1.8px;color:var(--around-green);max-width:100%}
 .around-header h1 span{color:var(--around-orange)}
