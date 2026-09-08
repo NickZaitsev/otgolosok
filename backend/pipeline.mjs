@@ -30,7 +30,7 @@ export const errorMessages = {
   RETRY_LIMIT: "Попытки подготовки закончились. Готовый текст остаётся доступным.",
   CONFLICT: "Задание уже изменилось. Обновите его состояние.",
   ADDRESS_UNCLEAR: "Источники не позволяют однозначно определить дом. Уточните адрес и строение.",
-  INSUFFICIENT_EVIDENCE: "Не хватило подтверждённых фактов из разных источников. Попробуйте другой дом.",
+  INSUFFICIENT_EVIDENCE: "Не хватило подтверждённых фактов об архитектуре или истории места и его ближайших окрестностей. Попробуйте другой адрес.",
   REVIEW_REQUIRED: "В рассказе остались неподтверждённые детали. Он требует редакторской проверки.",
   TTS_FAILED: "Текст готов, но озвучка не получилась. Можно повторить только запись звука.",
   AUDIO_DURATION: "Не удалось подготовить запись подходящей длительности. Текст доступен.",
@@ -111,7 +111,7 @@ export async function runJob(initial, {store,provider,audioDirectory,fetchPage=f
       update("verifying");
       const facts = await call("facts",factsPrompt(job.address,job.data.sources),{timeoutMs:150000,maxTokens:5500});
       update("verifying",{factReview:facts.value});
-      update("writing",{evidence:validateFacts(facts.value,job.data.sources)});
+      update("writing",{evidence:validateFacts(facts.value,job.data.sources,{requireEditorialScope:true})});
     }
     if (!job.data.story) {
       update("writing");
