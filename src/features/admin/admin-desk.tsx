@@ -28,6 +28,9 @@ function voiceLabel(item: Summary) {
 export function AdminDesk() {
   const token = useRef("");
   const request = useRef<AbortController | null>(null);
+  const editorHeading = useRef<HTMLHeadingElement>(null);
+  const queueHeading = useRef<HTMLHeadingElement>(null);
+  const pendingNavigation = useRef<"editor" | "queue" | null>(null);
   const [tokenInput, setTokenInput] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [section, setSection] = useState<AdminSection>("addresses");
@@ -52,6 +55,15 @@ export function AdminDesk() {
   const dirty = draft !== null && JSON.stringify(draft) !== baseline;
   const hasUnsavedWork = dirty || walkDirty;
 
+  useEffect(() => {
+    if (!authenticated || busy || section !== "addresses" || !pendingNavigation.current) return;
+    const heading = pendingNavigation.current === "editor" ? editorHeading.current : queueHeading.current;
+    if (!heading) return;
+    pendingNavigation.current = null;
+    heading.focus({ preventScroll: true });
+    heading.scrollIntoView({ block: "start", behavior: "instant" });
+  }, [authenticated, busy, job, section]);
+
   useEffect(() => () => { request.current?.abort(); request.current = null; token.current = ""; }, []);
   useEffect(() => {
     if (!hasUnsavedWork && !busy) return;
@@ -62,6 +74,7 @@ export function AdminDesk() {
 
   function clearAccess() {
     token.current = "";
+    pendingNavigation.current = null;
     setTokenInput(""); setAuthenticated(false); setSection("addresses"); setWalkDirty(false);
     setJobs([]); setOffset(0); setHasMore(false); setJob(null); setDraft(null); setBaseline("");
     setConfirmed(false); setConflict(false); setNotice(""); setTtsProvider("openai"); setTtsVoice("");
@@ -155,12 +168,14 @@ export function AdminDesk() {
     if (reload && conflict && !dirty && !window.confirm("Загрузить текущую версию задания с сервера?")) return;
     void run("Загрузка задания…", async signal => {
       accept((await api<{ job: Job }>(`/${id}`, signal)).job);
+      if (!reload) pendingNavigation.current = "editor";
       setSection("addresses"); setWalkDirty(false);
     });
   }
 
   function closeJob() {
     if (request.current || !consent()) return;
+    pendingNavigation.current = "queue";
     setJob(null); setDraft(null); setBaseline(""); setConfirmed(false); setConflict(false); setError("");
     window.history.replaceState(window.history.state, "", "/admin");
   }
@@ -237,7 +252,10 @@ export function AdminDesk() {
             await loadQueue(0, signal); setAuthenticated(true);
             const params = new URLSearchParams(window.location.search);
             const id = params.get("job");
-            if (id && UUID.test(id)) accept((await api<{ job: Job }>(`/${id}`, signal)).job);
+            if (id && UUID.test(id)) {
+              accept((await api<{ job: Job }>(`/${id}`, signal)).job);
+              pendingNavigation.current = "editor";
+            }
             else if (id) setError("В ссылке указан неверный идентификатор задания. Выберите задание из списка.");
             else if (params.get("section") === "walks") setSection("walks");
           });
@@ -260,7 +278,7 @@ export function AdminDesk() {
           ) : (
             <section className="admin-addresses" aria-labelledby="admin-addresses-title">
               <div className="admin-section-head">
-                <div><h2 id="admin-addresses-title">Адресные истории</h2><p className="admin-meta">{jobs.length ? `${offset + 1}–${offset + jobs.length}` : "По этим условиям ничего не найдено"}</p></div>
+                <div><h2 id="admin-addresses-title" ref={queueHeading} tabIndex={-1}>Адресные истории</h2><p className="admin-meta">{jobs.length ? `${offset + 1}–${offset + jobs.length}` : "По этим условиям ничего не найдено"}</p></div>
                 <button disabled={Boolean(busy)} onClick={() => void run("Обновление списка…", signal => loadQueue(offset, signal))}>Обновить</button>
               </div>
               <form className="admin-filters" role="search" onSubmit={event => {
@@ -298,8 +316,8 @@ export function AdminDesk() {
               {!job || !draft ? <section className="admin-empty"><h2>Выберите адрес</h2><p>Откройте строку, чтобы проверить текст, источники и озвучивание.</p></section> : (
                 <article className="admin-document">
                   <header className="admin-document-head">
-                    <div><p className="admin-context">{stages[job.stage] ?? job.stage} · версия {job.revision}</p><h2>{job.address}</h2><p className="admin-meta">{job.id} · обновлено {formattedDate(job.updatedAt)}</p></div>
-                    <div className="admin-actions"><a className="admin-jump-link" href="#admin-narration-title">К озвучиванию</a><button disabled={Boolean(busy)} onClick={() => openJob(job.id, true)}>{conflict ? "Загрузить новую версию" : "Обновить"}</button><button disabled={Boolean(busy) || conflict} onClick={() => toggleRelevance(job)}>{job.irrelevant ? "Вернуть в очередь" : "Отметить нерелевантным"}</button><button disabled={Boolean(busy)} onClick={closeJob}>Закрыть</button></div>
+                    <div><p className="admin-context">{stages[job.stage] ?? job.stage} · версия {job.revision}</p><h2 id="admin-document-title" ref={editorHeading} tabIndex={-1}>{job.address}</h2><p className="admin-meta">{job.id} · обновлено {formattedDate(job.updatedAt)}</p></div>
+                    <div className="admin-actions"><a className="admin-jump-link" href="#admin-narration-title">К озвучиванию</a><button disabled={Boolean(busy)} onClick={() => openJob(job.id, true)}>{conflict ? "Загрузить новую версию" : "Обновить"}</button><button disabled={Boolean(busy) || conflict} onClick={() => toggleRelevance(job)}>{job.irrelevant ? "Вернуть в очередь" : "Отметить нерелевантным"}</button><button disabled={Boolean(busy)} onClick={closeJob}>К списку адресов</button></div>
                   </header>
                   {job.irrelevant && <p className="admin-callout">Адрес скрыт из активной очереди. Верните его, чтобы продолжить редактуру или озвучивание.</p>}
                   {job.error && <p className="admin-callout">{job.error.message}</p>}
