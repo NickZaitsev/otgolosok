@@ -27,6 +27,12 @@ It uses one build/server thread, 0.75 CPU, 768 MiB RAM and a 1280 MiB combined
 RAM/swap ceiling. Port 8002 is internal only. Readiness probes `/status`;
 the generator uses `WALK_ROUTER_URL=http://valhalla:8002/route`.
 
+Production explicitly sets
+`WALK_OVERPASS_URL=https://maps.mail.ru/osm/tools/overpass/api/interpreter`
+in the infrastructure Compose template. Discovery retains its existing POST
+method, application headers, query, 12-second deadline and concurrency limit.
+No automatic multi-provider retries or fabricated route fallbacks are used.
+
 The generator deployment builds/waits for Valhalla before replacing the backend,
 waits at most ten minutes for existing jobs to become idle, stops the single
 generator, archives its data/configuration, then recreates it. Never use
@@ -44,12 +50,26 @@ generator, archives its data/configuration, then recreates it. Never use
 - Cross-origin POST `/api/walk-plan`: HTTP 403.
 - Same-origin manual loop: HTTP 200, 970 m, 12 minutes, 71 geometry points.
 - Same-origin manual open route: HTTP 200, 485 m, 6 minutes, 36 geometry points.
-- Automatic discovery: HTTP 503 `WALK_UNAVAILABLE`; a direct Overpass request
-  returned HTTP 406. Manual Valhalla routing is operational.
+- Automatic discovery after the endpoint update: both public same-origin
+  requests returned HTTP 200 from an Arbat start, with four discovered stops.
+  Loop: 2123 m, 28 minutes, 192 geometry points, 2.1-second response.
+  Open: 1212 m, 16 minutes, 112 geometry points, 0.7-second response.
 - Valhalla and generator healthy; Valhalla had no OOM or restarts.
 - SQLite quick check passed; six jobs unchanged (one ready, one failed, four
   requiring review). No generation jobs or paid AI calls were initiated.
 - Backup: `backups/generator-20260908T072153Z/generator.tar.gz`, mode 0600.
+- Endpoint-update backup: `backups/generator-20260908T072816Z/generator.tar.gz`,
+  mode 0600. Generator redeployed while idle; Valhalla was not restarted.
+- Walk planner and server regression tests: all 18 passed for the endpoint update.
+
+The initial HTTP 406 diagnosis was from a diagnostic request without the
+application's headers, not evidence of invalid Overpass QL. Repeating that
+headerless request reproduced 406, while the exact application POST succeeded
+against `overpass-api.de` but also exceeded the planner deadline on a public
+loop request. Private Coffee and Kumi failed the bounded planner probes.
+The Mail.ru endpoint passed both loop/open probes from the backend container,
+then both public API checks after deployment. Public Overpass availability is
+still an external dependency; failures remain bounded and return honest errors.
 
 After the graph build, the VPS had approximately 12 GiB disk free and 1.3 GiB
 available RAM, but only 291 MiB swap free. Monitor memory pressure before
