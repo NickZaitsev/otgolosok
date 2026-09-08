@@ -74,3 +74,22 @@ still an external dependency; failures remain bounded and return honest errors.
 After the graph build, the VPS had approximately 12 GiB disk free and 1.3 GiB
 available RAM, but only 291 MiB swap free. Monitor memory pressure before
 increasing graph coverage or concurrency.
+
+## Yandex TTS deployment — 2026-09-08, 13:43 UTC
+
+- Deployed application revision `31cfef7` using both standard Make targets.
+- Added `YANDEX_TTS_API_KEY` from the local environment to `.generator.env`,
+  preserving existing production credentials. The default Yandex voice is `marina`.
+- Prior environment backup: `backups/env-yandex-20260908T134219Z/.generator.env`;
+  generator/data backup: `backups/generator-20260908T134250Z/generator.tar.gz`.
+  Both credential-bearing files are private (0600).
+- Lint, TypeScript, 143 frontend tests, 89 backend tests and static build passed.
+- `/`, `/admin`, `/create`, `/walk` and `/api/story-service` returned HTTP 200;
+  generation is enabled. Unauthenticated admin access returned HTTP 401.
+- Authenticated production admin API exposes 18 Yandex and 13 OpenAI voices.
+  Browser checks passed for login, provider/voice selection, mobile layout and
+  logout without changing or approving any existing job.
+- Live SpeechKit request from the production container with voice `kirill`
+  returned HTTP 200 and a valid 3.96-second MP3. The temporary sample was removed.
+- All nine job records remained byte-for-byte unchanged; SQLite quick check passed.
+  Generator and Valhalla are healthy; Valhalla was not restarted.
