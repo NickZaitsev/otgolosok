@@ -93,3 +93,22 @@ increasing graph coverage or concurrency.
   returned HTTP 200 and a valid 3.96-second MP3. The temporary sample was removed.
 - All nine job records remained byte-for-byte unchanged; SQLite quick check passed.
   Generator and Valhalla are healthy; Valhalla was not restarted.
+
+## Editorial tables and revoicing deployment — 2026-09-08, 14:37 UTC
+
+- Deployed application revision `0defcd8`: generator first, then frontend using
+  the standard Make targets. Lint, TypeScript, 152 frontend tests, 110 backend
+  tests and the static build passed.
+- Backup: `backups/generator-20260908T143614Z/generator.tar.gz`, mode 0600.
+  The generator was idle before replacement; Valhalla was not restarted.
+- All nine existing job records remained byte-for-byte unchanged. SQLite quick
+  check passed; the migration initialized four walk chapters.
+- `/`, `/admin`, `/create`, `/walk` and `/api/story-service` returned HTTP 200.
+  Production `/admin` HTML matches the local build byte-for-byte.
+- Authenticated admin endpoints expose address relevance flags, the built-in
+  walk and its four chapters, 13 OpenAI voices and 18 Yandex voices. Public
+  `/api/story-walks/msk-kozhevniki-zindel-short` returns the published route.
+  Unauthenticated walk-admin access returns HTTP 401.
+- The reported job `5a242404-42b6-431b-95c6-d395b7656ee5` remains failed with
+  `canRetry: true`; deployment did not resume it or initiate paid synthesis.
+- Generator and Valhalla are healthy with zero restarts.
