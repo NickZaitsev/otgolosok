@@ -1,3 +1,5 @@
+import discoveryCatalog from './walk-discovery-catalog.mjs';
+
 const fail = (code) => Object.assign(new Error(code), {code});
 const inBox = (p) => p && typeof p.lat === 'number' && typeof p.lon === 'number' && Number.isFinite(p.lat) && Number.isFinite(p.lon) && p.lat >= 55.48 && p.lat <= 55.98 && p.lon >= 37.30 && p.lon <= 37.95;
 const keys = (v, allowed) => v && typeof v === 'object' && !Array.isArray(v) && Object.keys(v).every(k => allowed.includes(k));
@@ -39,6 +41,7 @@ function decode(shape) {
 export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
   routerUrl=process.env.WALK_ROUTER_URL,
   overpassUrl=process.env.WALK_OVERPASS_URL ?? 'https://overpass-api.de/api/interpreter',
+  discoveryElements=process.env.WALK_DISCOVERY_SOURCE==='overpass'?null:discoveryCatalog.elements,
   timeoutMs=12000, minIntervalMs=2000}={}) {
   let active=false,lastStart=-Infinity;
   return async function planWalk(input) {
@@ -51,8 +54,9 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
     if(!routerUrl)throw fail('WALK_UNAVAILABLE');
     if(active||now()-lastStart<minIntervalMs)throw fail('WALK_BUSY');
     active=true;lastStart=now();
-    const controller=new AbortController();let timer;
-    const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(fail('WALK_UNAVAILABLE'));},timeoutMs);});
+    const controller=new AbortController();let timer,discovering=false;
+    const unavailable=()=>fail(discovering?'WALK_DISCOVERY_UNAVAILABLE':'WALK_UNAVAILABLE');
+    const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(unavailable());},timeoutMs);});
     async function request(url,body,contentType) {
       const response=await fetchImpl(url,{method:'POST',body,redirect:'error',signal:controller.signal,headers:{'Content-Type':contentType,Accept:'application/json','User-Agent':'Otgolosok/0.1 (+https://otgolosok.softmg.tech)'}});
       if(!response?.ok||!response.body?.getReader){await response?.body?.cancel();throw fail('WALK_UNAVAILABLE');}
@@ -70,13 +74,18 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
     }
     async function run() {
       if(!manual) {
+        discovering=true;
         // Discovery is bounded; straight-line distances only rank candidates, never form a route.
         const radius=Math.min(1800,input.minutes*20),around=`around:${radius},${start.location.lat},${start.location.lon}`;
-        const query=`[out:json][timeout:8];(nwr(${around})[building][name]["addr:street"]["addr:housenumber"][historic];nwr(${around})[building][name]["addr:street"]["addr:housenumber"][heritage];nwr(${around})[building][name]["addr:street"]["addr:housenumber"][tourism=museum];);out center tags 160;`;
-        const data=await request(overpassUrl,new URLSearchParams({data:query}).toString(),'application/x-www-form-urlencoded');
-        if(!Array.isArray(data?.elements)||data.elements.length>500||data.remark)throw fail('WALK_UNAVAILABLE');
+        let elements=discoveryElements;
+        if(elements===null) {
+          const query=`[out:json][timeout:8];(nwr(${around})[building][name]["addr:street"]["addr:housenumber"][historic];nwr(${around})[building][name]["addr:street"]["addr:housenumber"][heritage];nwr(${around})[building][name]["addr:street"]["addr:housenumber"][tourism=museum];);out center tags 160;`;
+          const data=await request(overpassUrl,new URLSearchParams({data:query}).toString(),'application/x-www-form-urlencoded');
+          if(!Array.isArray(data?.elements)||data.elements.length>500||data.remark)throw unavailable();
+          elements=data.elements;
+        }
         const candidates=[];
-        for(const e of data.elements) {
+        for(const e of elements) {
           const t=e?.tags,p=e?.center??e;
           if(!t||!inBox(p)||!clean(t.name,180)||!clean(t.building,80)||t.building==='no'||!(t.historic&&t.historic!=='no'||t.heritage&&t.heritage!=='no'||t.tourism==='museum'))continue;
           const street=clean(t['addr:street'],160),house=clean(t['addr:housenumber'],40);
@@ -91,6 +100,7 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           current=candidates.shift();stops.push(current);
         }
         if(stops.length<2)throw fail('WALK_NOT_FOUND');
+        discovering=false;
       }
       while(true) {
         controller.signal.throwIfAborted();
@@ -121,7 +131,7 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
       }
     }
     try {return await Promise.race([run(),deadline]);}
-    catch(error) {if(['WALK_NOT_FOUND','WALK_UNAVAILABLE'].includes(error?.code))throw error;throw fail('WALK_UNAVAILABLE');}
+    catch(error) {if(['WALK_NOT_FOUND','WALK_DISCOVERY_UNAVAILABLE'].includes(error?.code))throw error;throw unavailable();}
     finally {clearTimeout(timer);controller.abort();active=false;}
   };
 }
