@@ -6,14 +6,16 @@ import type { Coordinates } from "../tour/types";
 import "leaflet/dist/leaflet.css";
 
 export type MapItem = {id:string; title:string; location:Coordinates; number?:number; pending?:boolean};
-export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometry,mapLabel}: {
+export type MapViewState = {current: {center:Coordinates; zoom:number; focus:Coordinates|null}|null};
+export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometry,mapLabel,viewState}: {
   items: MapItem[]; selectedId?:string; focus:Coordinates|null; user:(Coordinates&{accuracyM:number})|null;
   onSelect:(id:string)=>void; onPoint:(point:Coordinates)=>void;
-  geometry?: Coordinates[]; mapLabel?: string;
+  geometry?: Coordinates[]; mapLabel?: string; viewState?: MapViewState;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const runtime = useRef<{L:typeof Leaflet; map:Leaflet.Map; markers:Leaflet.LayerGroup; position:Leaflet.LayerGroup; route:Leaflet.LayerGroup}|null>(null);
   const handlers = useRef({onSelect,onPoint});
+  const appliedFocus = useRef<Coordinates|null>(null);
   const [ready,setReady] = useState(false);
   const [tileError,setTileError] = useState(false);
   const [mapError,setMapError] = useState(false);
@@ -22,10 +24,17 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
   useEffect(()=>{
     let disposed=false;
     let observer:ResizeObserver|undefined;
+    let saveView:(()=>void)|undefined;
     void import("leaflet").then((L)=>{
       if(disposed||!container.current)return;
       const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const map=L.map(container.current,{zoomControl:false,attributionControl:false,zoomAnimation:!reduced,fadeAnimation:!reduced,markerZoomAnimation:!reduced,minZoom:3,maxZoom:19}).setView([55.7249,37.6507],16);
+      const saved=viewState?.current;
+      appliedFocus.current=saved?.focus??null;
+      const map=L.map(container.current,{zoomControl:false,attributionControl:false,zoomAnimation:!reduced,fadeAnimation:!reduced,markerZoomAnimation:!reduced,minZoom:3,maxZoom:19}).setView(saved?[saved.center.lat,saved.center.lon]:[55.7249,37.6507],saved?.zoom??16);
+      if(viewState){
+        saveView=()=>{const center=map.getCenter();viewState.current={center:{lat:center.lat,lon:center.lng},zoom:map.getZoom(),focus:appliedFocus.current};};
+        map.on("moveend zoomend",saveView);
+      }
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,updateWhenIdle:true,keepBuffer:1}).on("tileerror",()=>setTileError(true)).on("tileload",()=>setTileError(false)).addTo(map);
       L.control.zoom({position:"bottomright",zoomInTitle:"Приблизить",zoomOutTitle:"Отдалить"}).addTo(map);
       L.control.scale({position:"bottomleft",imperial:false}).addTo(map);
@@ -34,8 +43,8 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
       observer=new ResizeObserver(()=>map.invalidateSize());observer.observe(container.current);
       setReady(true);
     }).catch(()=>{if(!disposed)setMapError(true);});
-    return ()=>{disposed=true;observer?.disconnect();runtime.current?.map.remove();runtime.current=null;};
-  },[]);
+    return ()=>{disposed=true;observer?.disconnect();saveView?.();runtime.current?.map.remove();runtime.current=null;};
+  },[viewState]);
 
   useEffect(()=>{
     const rt=runtime.current;if(!rt||!ready)return;
@@ -53,6 +62,9 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
 
   useEffect(()=>{
     const rt=runtime.current;if(!rt||!ready||!focus)return;
+    // A remount must not replay the old selection over a manually moved view.
+    if(focus===appliedFocus.current)return;
+    appliedFocus.current=focus;
     rt.map.setView([focus.lat,focus.lon],Math.max(rt.map.getZoom(),16),{animate:false});
     rt.map.panBy([0,80],{animate:false});
   },[focus,ready]);

@@ -6,7 +6,7 @@ import type { Coordinates, Route } from "../tour/types";
 import { getWalkChapters } from "../tour/walk-plan";
 import { savedStories, jobUrl } from "../generator/offline";
 import { stageLabels, terminalStages, type GenerationJob } from "../generator/types";
-import { ExploreMap, type MapItem } from "./explore-map";
+import { ExploreMap, type MapItem, type MapViewState } from "./explore-map";
 import { ExploreIcon } from "./icons";
 import { isMoscowPoint, readMapJobs, type MapJob } from "./map-jobs";
 import "./explore.css";
@@ -14,6 +14,8 @@ import "./explore.css";
 type Place = {label:string; address:string|null; location:Coordinates};
 type StoryPin = MapItem & {address:string; duration?:number; chapter?:number; jobId?:string; status?:string};
 type Tab = "nearby" | "walk" | "saved";
+// Keep the nearby viewport across client-side navigation, independently of walk maps.
+const nearbyMapView: MapViewState = {current:null};
 const MELNIKOV: StoryPin = {id:"4c76cc5f-0fcd-41db-a36e-e63cce9b3f09",jobId:"4c76cc5f-0fcd-41db-a36e-e63cce9b3f09",title:"Воздушные телефоны Дома Мельникова",address:"Кривоарбатский переулок, 10",location:{lat:55.74805556,lon:37.58944444},duration:56};
 function distance(a:Coordinates,b:Coordinates){
   const rad=Math.PI/180,dlat=(b.lat-a.lat)*rad,dlon=(b.lon-a.lon)*rad;
@@ -127,7 +129,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
   const walkHref=walkStart?.address?`/walk?${new URLSearchParams({address:walkStart.address,lat:String(walkStart.location.lat),lon:String(walkStart.location.lon)})}`:"/walk";
 
   return <>
-    {tab==="nearby"&&view==="map"?<ExploreMap items={mapItems} selectedId={selected??(place?"picked-place":undefined)} focus={focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin)select(pin);}} onPoint={point=>void findPlace(point)} />:null}
+    {tab==="nearby"&&view==="map"?<ExploreMap viewState={nearbyMapView} items={mapItems} selectedId={selected??(place?"picked-place":undefined)} focus={focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin)select(pin);}} onPoint={point=>void findPlace(point)} />:null}
     <div className={`around-content ${tab!=="nearby"||view==="list"?"scroll-view":""}${search?" searching":""}`}>
       <header className="around-header">
         <div className="around-topline"><Link href="/" prefetch={false} className="around-brand">отголосок<span>.</span></Link><span>Москва · {readyCount} аудиоисторий</span><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>
