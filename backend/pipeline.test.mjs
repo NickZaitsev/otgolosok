@@ -55,6 +55,63 @@ test("does not publish or voice an unsupported draft",async(t)=>{
   assert.equal(job.stage,"review_required");assert.equal(publicJob(job).story,null);assert.equal(voiced,false);
 });
 
+test("narrative rejection repairs paragraph order before publishing and voicing",async(t)=>{
+  const f=fixture(t);
+  const revised={...f.responses[2],paragraphs:[...f.responses[2].paragraphs].reverse()};
+  f.responses[3]={approved:false,issues:["Абзац 1 начинает с 1915 года, абзац 2 без перехода возвращается к основанию. Представьте основателя при первом упоминании."]};
+  f.responses.push(revised,{approved:true,issues:[]});
+  const voiced=[];
+  f.options.narrate=async(story)=>{
+    voiced.push(story);
+    assert.equal(f.calls(),6);
+    return {url:"audio",durationSec:100};
+  };
+  const job=await runJob(f.store.claimNext(),f.options);
+  assert.equal(job.stage,"ready");
+  assert.equal(job.data.repaired,true);
+  assert.equal(job.data.review.approved,true);
+  assert.deepEqual(job.data.story.paragraphs,revised.paragraphs);
+  assert.deepEqual(voiced,[job.data.story]);
+});
+
+test("unresolved narrative issues stop after one repair without publishing or voicing",async(t)=>{
+  const f=fixture(t);
+  const rejection={approved:false,issues:["Абзацы по-прежнему скачут между эпохами без переходов."]};
+  f.responses[3]=rejection;
+  f.responses.push(f.responses[2],rejection);
+  let voiced=false;
+  f.options.narrate=async()=>{voiced=true;return {};};
+  const job=await runJob(f.store.claimNext(),f.options);
+  assert.equal(job.stage,"review_required");
+  assert.equal(f.calls(),6);
+  assert.equal(job.data.repaired,true);
+  assert.equal(publicJob(job).story,null);
+  assert.equal(voiced,false);
+  assert.match(job.error.message,/последовательности/);
+});
+
+test("person identity and action retain separate exact excerpts through validation",t=>{
+  const f=fixture(t);
+  const identity="Николай Гордианович Куманин торговал чаем.";
+  const action="Он пожертвовал дом с участком для устройства богадельни.";
+  const sources=f.sources.map(source=>({...source,text:source.text+identity+" Другие сведения. "+action}));
+  const result={...f.responses[1],facts:f.facts.map((fact,i)=>i===4?{
+    ...fact,claim:"Николай Гордианович Куманин пожертвовал дом с участком для богадельни.",
+    evidence:[{sourceId:"s1",quote:identity},{sourceId:"s1",quote:action}],
+  }:fact)};
+  const evidence=validateFacts(result,sources,{requireEditorialScope:true});
+  assert.deepEqual(evidence.facts[4].evidence,result.facts[4].evidence);
+  // Joining excerpts would invent a contiguous quote and must still fail.
+  result.facts[4].evidence=[{sourceId:"s1",quote:identity+" "+action}];
+  assert.throws(()=>validateFacts(result,sources,{requireEditorialScope:true}),{code:"INSUFFICIENT_EVIDENCE"});
+});
+
+test("new narrative generation does not reuse the previous pipeline address key",()=>{
+  const address=normalizeAddress("2-й Кожевнический переулок, 10/11");
+  const normalized=address.toLocaleLowerCase("ru").replace(/ё/g,"е").replace(/[.,]/g," ").replace(/\s+/g," ").trim();
+  assert.notEqual(addressKey(address),sha256(`place-history-v3|ru|${normalized}`));
+});
+
 test("speech retry preserves the checked text and never repeats research",async(t)=>{
   const f=fixture(t);f.options.narrate=async()=>{throw new Error("provider detail must not escape");};
   const failed=await runJob(f.store.claimNext(),f.options);
