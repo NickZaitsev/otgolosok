@@ -30,7 +30,9 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
       const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
       const saved=viewState?.current;
       appliedFocus.current=saved?.focus??null;
-      const map=L.map(container.current,{zoomControl:false,attributionControl:false,zoomAnimation:!reduced,fadeAnimation:!reduced,markerZoomAnimation:!reduced,minZoom:3,maxZoom:19}).setView(saved?[saved.center.lat,saved.center.lon]:[55.7249,37.6507],saved?.zoom??16);
+      // Leaflet 1.9 leaves its zoom transition timer alive after remove().
+      // Zoom immediately so switching tabs mid-zoom cannot touch a removed map.
+      const map=L.map(container.current,{zoomControl:false,attributionControl:false,zoomAnimation:false,fadeAnimation:!reduced,markerZoomAnimation:false,minZoom:3,maxZoom:19}).setView(saved?[saved.center.lat,saved.center.lon]:[55.7249,37.6507],saved?.zoom??16);
       if(viewState){
         saveView=()=>{const center=map.getCenter();viewState.current={center:{lat:center.lat,lon:center.lng},zoom:map.getZoom(),focus:appliedFocus.current};};
         map.on("moveend zoomend",saveView);
@@ -40,10 +42,21 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
       L.control.scale({position:"bottomleft",imperial:false}).addTo(map);
       map.on("click",(event:Leaflet.LeafletMouseEvent)=>handlers.current.onPoint({lat:event.latlng.lat,lon:event.latlng.lng}));
       runtime.current={L,map,markers:L.layerGroup().addTo(map),position:L.layerGroup().addTo(map),route:L.layerGroup().addTo(map)};
-      observer=new ResizeObserver(()=>map.invalidateSize());observer.observe(container.current);
+      observer=new ResizeObserver(()=>{if(!disposed)map.invalidateSize();});observer.observe(container.current);
       setReady(true);
     }).catch(()=>{if(!disposed)setMapError(true);});
-    return ()=>{disposed=true;observer?.disconnect();saveView?.();runtime.current?.map.remove();runtime.current=null;};
+    return ()=>{
+      disposed=true;
+      observer?.disconnect();
+      const map=runtime.current?.map;
+      if(map){
+        saveView?.();
+        // Leaflet may emit a delayed resize event after remove().
+        if(saveView)map.off("moveend zoomend",saveView);
+        map.remove();
+      }
+      runtime.current=null;
+    };
   },[viewState]);
 
   useEffect(()=>{
