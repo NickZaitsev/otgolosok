@@ -1,17 +1,25 @@
 export type Draft = { title: string; paragraphs: { text: string; factIds: string[] }[] };
+export type AdminApi = <T>(path: string, signal: AbortSignal, body?: unknown) => Promise<T>;
+export type AdminRun = (label: string, action: (signal: AbortSignal) => Promise<void>) => Promise<void>;
+export type OpenAdminJob = (id: string, reload?: boolean) => void;
 export type Fact = { id: string; claim: string; interesting: boolean; evidence: { sourceId: string; quote: string }[] };
+export type Audio = {
+  url: string; durationSec: number; voice: string | null; provider: TtsProvider; model: string;
+};
 export type Summary = {
-  id: string; address: string; stage: string; revision: number; updatedAt: string;
+  id: string; address: string; stage: string; revision: number; updatedAt: string; irrelevant: boolean;
+  ttsProvider?: TtsProvider; ttsVoice?: string | null; audio?: Audio | null;
   error: { code?: string; message: string } | null;
 };
 export type TtsProvider = "openai" | "yandex";
 export type Job = Summary & {
-  canApprove: boolean;
+  canApprove: boolean; canRevoice: boolean; canRetry: boolean;
   ttsProviders: { id: TtsProvider; label: string; available: boolean; defaultVoice: string; voices: { id: string; label: string }[] }[];
   data: {
     ttsProvider: TtsProvider;
     ttsVoice: string | null;
-    editorDraft: Draft | null; draft: Draft | null; draftCandidate: Draft | null;
+    editorDraft: Draft | null; draft: Draft | null; draftCandidate: Draft | null; story: Draft | null;
+    audio: Audio | null; revoice: { requestedAt: string } | null;
     evidence: {
       placeName: string; resolvedAddress: string; facts: Fact[];
       sources: { id: string; url: string | null; title: string; publisher: string }[];
@@ -22,7 +30,7 @@ export type Job = Summary & {
 };
 
 export function initialDraft(job: Job): Draft {
-  return job.data.editorDraft ?? job.data.draft ?? job.data.draftCandidate ?? {
+  return job.data.editorDraft ?? job.data.story ?? job.data.draft ?? job.data.draftCandidate ?? {
     title: "", paragraphs: [{ text: "", factIds: [] }, { text: "", factIds: [] }],
   };
 }

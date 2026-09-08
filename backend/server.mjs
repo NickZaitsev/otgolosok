@@ -50,8 +50,8 @@ export async function sendFile(req,res,path,type,immutable=false) {
 export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),adminToken=process.env.ADMIN_TOKEN}) {
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
-    {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(provider&&yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
-  const worker=provider&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory}):null;
+    {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
+  const worker=(provider||yandexTts)&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory}):null;
   const authorizeAdmin=adminAuth(adminToken);
   const server=httpServer(async(req,res)=>{
     try {
@@ -63,23 +63,60 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           if(status===401)res.setHeader("WWW-Authenticate","Bearer");
           json(res,status,{error:{code:status===429?"ADMIN_THROTTLED":"UNAUTHORIZED",message:"Admin authentication required."}});return;
         }
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/walks") {
+          if(url.search)throw failure("BAD_REQUEST");
+          json(res,200,store.listWalksAdmin());return;
+        }
+        const walkMatch=/^\/api\/story-admin\/walks\/([a-z0-9][a-z0-9-]{0,127})(?:\/chapters\/([a-z0-9][a-z0-9-]{0,127})\/(edit|revoice))?$/.exec(url.pathname);
+        if(walkMatch&&((req.method==="GET"&&!walkMatch[2])||(req.method==="POST"&&walkMatch[2]))) {
+          if(url.search)throw failure("BAD_REQUEST");
+          let walk=store.getWalkAdmin(walkMatch[1]);
+          if(req.method==="POST") {
+            if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {
+              json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;
+            }
+            const input=await body(req,walkMatch[3]==="edit"?65536:2048);
+            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!["revision",...(walkMatch[3]==="edit"?["draft"]:["ttsProvider","ttsVoice"])].includes(key)))throw failure("BAD_REQUEST");
+            if(!walk||!walk.chapters.some(chapter=>chapter.id===walkMatch[2])) {
+              json(res,404,{error:{code:"NOT_FOUND",message:"Walk chapter not found."}});return;
+            }
+            if(walkMatch[3]==="edit") store.saveWalkChapterAdmin(walkMatch[1],walkMatch[2],input.revision,input.draft);
+            else {
+              const selected=input.ttsProvider===undefined?"openai":input.ttsProvider;
+              const options=ttsProviders.find(option=>option.id===selected);
+              if(!options)throw failure("BAD_REQUEST");
+              const voice=input.ttsVoice===undefined?options.defaultVoice:input.ttsVoice;
+              if(!options.voices.some(option=>option.id===voice))throw failure("BAD_REQUEST");
+              if(!speechProviders[selected]) {
+                json(res,503,{error:{code:"TTS_UNAVAILABLE",message:"Selected speech provider unavailable."}});return;
+              }
+              store.revoiceWalkChapterAdmin(walkMatch[1],walkMatch[2],input.revision,selected,voice);
+            }
+            walk=store.getWalkAdmin(walkMatch[1]);
+          }
+          json(res,walk?200:404,walk?{walk:{...walk,ttsProviders}}:{error:{code:"NOT_FOUND",message:"Walk not found."}});
+          if(req.method==="POST"&&walkMatch[3]==="revoice")worker?.wake();
+          return;
+        }
         if(req.method==="GET"&&url.pathname==="/api/story-admin/jobs") {
           const entries=[...url.searchParams];
-          if(entries.some(([key,value])=>!["limit","offset"].includes(key)||!/^\d+$/.test(value))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
-          const result=store.listAdmin({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0)});
+          if(entries.some(([key,value])=>!["limit","offset","q","stage","relevance"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
+          const result=store.listAdmin({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",stage:url.searchParams.get("stage")??"",relevance:url.searchParams.get("relevance")??"active"});
           json(res,200,{jobs:result.jobs.map(job=>adminSummary(job,safeError)),hasMore:result.hasMore});return;
         }
-        const match=new RegExp(`^/api/story-admin/jobs/(${UUID})(?:/(edit|approve))?$`).exec(url.pathname);
+        const match=new RegExp(`^/api/story-admin/jobs/(${UUID})(?:/(edit|approve|relevance|revoice|retry))?$`).exec(url.pathname);
         if(match&&((req.method==="GET"&&!match[2])||(req.method==="POST"&&match[2]))) {
           let job;
-          if(req.method==="GET") job=store.get(match[1]);
+          if(req.method==="GET") {job=store.get(match[1]);if(job?.kind==="walk_chapter")job=null;}
           else {
             if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {
               json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;
             }
             const input=await body(req,match[2]==="edit"?32768:2048);
-            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!["revision",...(match[2]==="edit"?["draft"]:["ttsProvider","ttsVoice"])].includes(key)))throw failure("BAD_REQUEST");
-            if(match[2]==="edit") {
+            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!["revision",...(match[2]==="edit"?["draft"]:match[2]==="relevance"?["irrelevant"]:["ttsProvider","ttsVoice"])].includes(key)))throw failure("BAD_REQUEST");
+            if(match[2]==="relevance") {
+              job=store.setRelevanceAdmin(match[1],input.revision,input.irrelevant);
+            } else if(match[2]==="edit") {
               const draft=input.draft;
               if(!draft||typeof draft!=="object"||Array.isArray(draft)||Object.keys(draft).some(key=>!["title","paragraphs"].includes(key))||!Array.isArray(draft.paragraphs)||draft.paragraphs.some(p=>!p||typeof p!=="object"||Array.isArray(p)||Object.keys(p).some(key=>!["text","factIds"].includes(key))))throw failure("BAD_REQUEST");
               job=store.editAdmin(match[1],input.revision,draft);
@@ -89,18 +126,23 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
               const options=ttsProviders.find(option=>option.id===selected);
               const voice=input.ttsVoice===undefined?options.defaultVoice:input.ttsVoice;
               if(!options.voices.some(option=>option.id===voice))throw failure("BAD_REQUEST");
-              if(!provider){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
+              if(match[2]==="retry"&&!provider&&!store.get(match[1])?.data.story){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
               if(!speechProviders[selected]){json(res,503,{error:{code:"TTS_UNAVAILABLE",message:"Selected speech provider unavailable."}});return;}
-              job=store.approveAdmin(match[1],input.revision,selected,voice);
+              job=match[2]==="revoice"?store.revoiceAdmin(match[1],input.revision,selected,voice):match[2]==="retry"?store.retryAdmin(match[1],input.revision,selected,voice):store.approveAdmin(match[1],input.revision,selected,voice);
             }
           }
-          json(res,job?200:404,job?{job:adminDetail(job,Boolean(provider),safeError,ttsProviders)}:{error:{code:"NOT_FOUND",message:"Job not found."}});
-          if(req.method==="POST"&&match[2]==="approve")worker?.wake();
+          json(res,job?200:404,job?{job:adminDetail(job,Boolean(provider||yandexTts),safeError,ttsProviders)}:{error:{code:"NOT_FOUND",message:"Job not found."}});
+          if(req.method==="POST"&&["approve","revoice","retry"].includes(match[2]))worker?.wake();
           return;
         }
         json(res,404,{error:{code:"NOT_FOUND",message:"Admin endpoint not found."}});return;
       }
       if(req.method==="GET"&&url.pathname==="/api/story-service") {json(res,200,{enabled:Boolean(provider),version:1});return;}
+      const publishedWalk=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})$/.exec(url.pathname);
+      if(req.method==="GET"&&publishedWalk) {
+        const route=store.getPublishedWalk(publishedWalk[1]);
+        json(res,route?200:404,route??{error:{code:"NOT_FOUND",message:"Walk not found."}});return;
+      }
       if(req.method==="GET"&&url.pathname==="/api/story-place") {
         try {
           const entries=[...url.searchParams.entries()];
@@ -145,7 +187,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
       }
       const match=new RegExp(`^/api/story-jobs/(${UUID})$`).exec(url.pathname);
       if(req.method==="GET"&&match) {
-        const job=store.get(match[1]);
+        const storedJob=store.get(match[1]);
+        const job=storedJob?.kind==="walk_chapter"?null:storedJob;
         json(res,job?200:404,job?publicJob(job):{error:{message:"Задание не найдено."}});return;
       }
       const audio=/^\/api\/story-audio\/([a-f0-9]{64}\.mp3)$/.exec(url.pathname);

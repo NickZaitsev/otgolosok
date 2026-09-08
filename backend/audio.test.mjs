@@ -52,3 +52,19 @@ test("narration passes the selected voice to synthesis and never reuses another 
   assert.deepEqual(await createNarration(story, { ...provider, voice: "marina" }, directory), metadata);
   assert.equal(calls, 1);
 });
+
+test("walk chapters accept shorter recordings without relaxing address narration limits", async t => {
+  const directory = await mkdtemp(join(tmpdir(), "otgolosok-walk-audio-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const story = { paragraphs: [{ text: "Короткая глава прогулки." }] };
+  const bytes = Buffer.from("validated short chapter audio");
+  const hash = sha256(bytes);
+  const metadata = { sha256: hash, durationSec: 30, url: `/api/story-audio/${hash}.mp3` };
+  const provider = { voice: "marin", ttsModel: "test", speech: async () => { throw new Error("Outside address duration limits"); } };
+  const key = sha256(JSON.stringify({ script: story.paragraphs[0].text, model: provider.ttsModel, voice: provider.voice, version: 1 }));
+  await writeFile(join(directory, `${hash}.mp3`), bytes);
+  await writeFile(join(directory, `${key}.json`), JSON.stringify(metadata));
+  assert.deepEqual(await createNarration(story, provider, directory, undefined, { minDurationSec: 10, maxDurationSec: 300 }), metadata);
+  await assert.rejects(createNarration(story, provider, directory), /Outside address duration limits/);
+  await assert.rejects(createNarration(story, provider, directory, undefined, { minDurationSec: 300, maxDurationSec: 10 }), { code: "AUDIO_DURATION" });
+});

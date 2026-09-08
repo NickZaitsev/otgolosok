@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createStore } from "./store.mjs";
 import { createApp } from "./server.mjs";
-import { adminAuth } from "./admin.mjs";
+import { adminAuth, adminDetail } from "./admin.mjs";
 import { validateDraft, validateFacts, sha256 } from "./domain.mjs";
 import { runJob } from "./pipeline.mjs";
 
@@ -57,8 +57,8 @@ test("admin routes authenticate before lookup, never cache, and project only saf
   }
   const res = await f.request(`/${job.id}`); const value = await res.json();
   assert.deepEqual(Object.keys(value), ["job"]);
-  assert.deepEqual(Object.keys(value.job).sort(), ["id", "address", "stage", "revision", "updatedAt", "error", "data", "canApprove", "ttsProviders"].sort());
-  assert.deepEqual(Object.keys(value.job.data), ["ttsProvider", "ttsVoice", "editorDraft", "draft", "draftCandidate", "evidence", "review", "factReview"]);
+  assert.deepEqual(Object.keys(value.job).sort(), ["id", "address", "stage", "revision", "updatedAt", "irrelevant", "ttsProvider", "ttsVoice", "error", "data", "canApprove", "canRetry", "canRevoice", "ttsProviders"].sort());
+  assert.deepEqual(Object.keys(value.job.data), ["ttsProvider", "ttsVoice", "story", "audio", "revoice", "editorDraft", "draft", "draftCandidate", "evidence", "review", "factReview"]);
   assert.equal(value.job.canApprove, false);
   assert.equal(JSON.stringify(value).includes("PRIVATE_"), false);
   assert.equal(JSON.stringify(value).includes("<"), false);
@@ -327,4 +327,114 @@ test("legacy completed jobs show their recorded audio voice and malformed values
   const detail = (await (await f.request(`/${job.id}`)).json()).job;
   assert.equal(detail.data.ttsVoice, null);
   assert.equal(JSON.stringify(detail).includes("PRIVATE_VALUE"), false);
+});
+
+test("store list filters are composable, case-insensitive for Russian and validate inputs", t => {
+  const store = createStore(":memory:", { maxDaily: 20, maxActive: 20 });
+  t.after(() => store.close());
+  const pushkin = store.createOrGet({ key: "pushkin", address: "Москва, улица Пушкина, 10" });
+  const pushkinReady = store.update(pushkin.id, { stage: "ready" }, pushkin.revision);
+  const other = store.createOrGet({ key: "other", address: "Москва, Тверская улица, 2" });
+  store.update(other.id, { stage: "ready" }, other.revision);
+  const hidden = store.createOrGet({ key: "hidden", address: "Москва, УЛИЦА ПУШКИНА, 12" });
+  store.setRelevanceAdmin(hidden.id, hidden.revision, true);
+
+  assert.deepEqual(store.listAdmin({ q: "пУшКиНа", stage: "ready" }).jobs.map(job => job.id), [pushkinReady.id]);
+  assert.deepEqual(store.listAdmin({ q: "улица пушкина", relevance: "irrelevant" }).jobs.map(job => job.id), [hidden.id]);
+  assert.equal(store.listAdmin({ relevance: "all", limit: 2 }).hasMore, true);
+  for (const options of [{ q: 1 }, { q: "x".repeat(201) }, { stage: "unknown" }, { relevance: "hidden" }]) {
+    assert.throws(() => store.listAdmin(options), { code: "BAD_REQUEST" });
+  }
+});
+
+test("revoice queues only the existing story, preserves published audio and consumes quota atomically", t => {
+  let clock = Date.parse("2026-09-08T10:00:00.000Z");
+  const store = createStore(":memory:", { now: () => clock, maxDaily: 2, maxActive: 2 });
+  t.after(() => store.close());
+  let job = store.createOrGet({ key: "ready", address: "Address 1" });
+  const story = { title: "House", paragraphs: [
+    { text: "word ".repeat(55).trim(), factIds: ["f1"] },
+    { text: "word ".repeat(55).trim(), factIds: ["f2"] },
+  ], verification: "automatic" };
+  const audio = { url: `/api/story-audio/${"a".repeat(64)}.mp3`, durationSec: 90, voice: "alloy" };
+  job = store.update(job.id, { stage: "ready", data: { story, audio, privateCheckpoint: "kept" } }, job.revision);
+  const staleRevision = job.revision - 1;
+  assert.throws(() => store.revoiceAdmin(job.id, staleRevision, "yandex", "marina"), { code: "CONFLICT" });
+  assert.deepEqual(store.get(job.id), job);
+
+  clock += 1000;
+  const queued = store.revoiceAdmin(job.id, job.revision, "yandex", "marina");
+  assert.equal(queued.stage, "queued");
+  assert.equal(queued.revision, job.revision + 1);
+  assert.equal(queued.error, null);
+  assert.deepEqual(queued.data.story, story);
+  assert.equal(queued.data.audio, null);
+  assert.deepEqual(queued.data.revoice, { requestedAt: queued.updatedAt, previousAudio: audio });
+  assert.equal(queued.data.ttsProvider, "yandex");
+  assert.equal(queued.data.ttsVoice, "marina");
+  assert.equal(queued.data.privateCheckpoint, "kept");
+  assert.throws(() => store.createOrGet({ key: "quota", address: "Address 2" }), { code: "DAILY_LIMIT" });
+});
+
+test("revoice and selected retry failures roll back state and reject invalid jobs", t => {
+  const store = createStore(":memory:", { maxDaily: 1, maxActive: 1 });
+  t.after(() => store.close());
+  const created = store.createOrGet({ key: "failed", address: "Address 1" });
+  let failed = store.update(created.id, { stage: "failed", attempts: 1, data: { story: null, checkpoint: "kept" } }, created.revision);
+  assert.throws(() => store.revoiceAdmin(failed.id, failed.revision, "openai", "alloy"), { code: "BAD_REQUEST" });
+  failed = store.update(failed.id, { data: { ...failed.data, story: { title: "House", paragraphs: [
+    { text: "word ".repeat(55).trim() }, { text: "word ".repeat(55).trim() },
+  ] } } }, failed.revision);
+  assert.throws(() => store.revoiceAdmin(failed.id, failed.revision, "openai", "alloy"), { code: "DAILY_LIMIT" });
+  assert.throws(() => store.retryAdmin(failed.id, failed.revision, "yandex", "kirill"), { code: "DAILY_LIMIT" });
+  assert.deepEqual(store.get(failed.id), failed);
+});
+
+test("selected admin retry persists speech choice and detail exposes safe retry and revoice state", t => {
+  const store = createStore(":memory:", { maxDaily: 3, maxActive: 2 });
+  t.after(() => store.close());
+  let job = store.createOrGet({ key: "failed", address: "Address 1" });
+  job = store.update(job.id, { stage: "failed", attempts: 1, data: { story: null, checkpoint: "kept" } }, job.revision);
+  const failedDetail = adminDetail(job, true, error => error, []);
+  assert.equal(failedDetail.canRetry, true);
+  assert.equal(failedDetail.canRevoice, false);
+  const queued = store.retryAdmin(job.id, job.revision, "yandex", "kirill");
+  assert.equal(queued.stage, "queued");
+  assert.equal(queued.data.ttsProvider, "yandex");
+  assert.equal(queued.data.ttsVoice, "kirill");
+  assert.equal(queued.data.checkpoint, "kept");
+  assert.throws(() => store.retryAdmin(job.id, job.revision, "yandex", "kirill"), { code: "CONFLICT" });
+
+  let ready = store.createOrGet({ key: "ready", address: "Address 2" });
+  const story = { title: "House", paragraphs: [
+    { text: "word ".repeat(55).trim(), factIds: ["f1"] },
+    { text: "word ".repeat(55).trim(), factIds: ["f2"] },
+  ] };
+  const audio = { url: `/api/story-audio/${"b".repeat(64)}.mp3`, durationSec: 91, voice: "cedar", secret: "PRIVATE_AUDIO" };
+  ready = store.update(ready.id, { stage: "ready", data: { story, audio } }, ready.revision);
+  const detail = adminDetail(ready, true, error => error, []);
+  assert.equal(detail.canRevoice, true);
+  assert.equal(detail.canRetry, false);
+  assert.deepEqual(detail.data.story, story);
+  assert.deepEqual(detail.data.audio, { url: audio.url, durationSec: 91, voice: "cedar", provider: "openai", model: "" });
+  assert.equal(detail.ttsVoice, "cedar");
+  assert.equal(JSON.stringify(detail).includes("PRIVATE_AUDIO"), false);
+});
+
+test("address admin mutations cannot operate on queued walk chapters", t => {
+  const store = createStore(":memory:", { maxDaily: 10, maxActive: 2 });
+  t.after(() => store.close());
+  const walk = store.getWalkAdmin(store.listWalksAdmin().walks[0].id);
+  const chapter = walk.chapters[0];
+  const job = store.revoiceWalkChapterAdmin(walk.id, chapter.id, chapter.revision, "openai", "alloy");
+  const calls = [
+    () => store.setRelevanceAdmin(job.id, job.revision, true),
+    () => store.editAdmin(job.id, job.revision, {}),
+    () => store.approveAdmin(job.id, job.revision),
+    () => store.revoiceAdmin(job.id, job.revision),
+    () => store.retryAdmin(job.id, job.revision),
+    () => store.retry(job.id, job.revision),
+  ];
+  for (const call of calls) assert.throws(call, { code: "CONFLICT" });
+  assert.deepEqual(store.listAdmin({ relevance: "all" }).jobs, []);
 });

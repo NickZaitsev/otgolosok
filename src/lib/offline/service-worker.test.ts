@@ -17,8 +17,10 @@ function setup() {
   const previousCache = { match: vi.fn(async (path: string) => previousEntries.get(path)?.clone()) };
   const storyEntries = new Map<string, Response>();
   const storyCache = {match: vi.fn(async (path: string)=>storyEntries.get(path)?.clone())};
+  const walkEntries = new Map<string, Response>();
+  const walkCache = {match: vi.fn(async (path: string)=>walkEntries.get(path)?.clone())};
   const caches = {
-    open: vi.fn(async (key: string) => key === "otgolosok-test" ? cache : key === "story-packs-v1" ? storyCache : previousCache),
+    open: vi.fn(async (key: string) => key === "otgolosok-test" ? cache : key === "story-packs-v1" ? storyCache : key === "walk-packs-v1" ? walkCache : previousCache),
     keys: vi.fn(async () => ["otgolosok-v1", "otgolosok-test", "story-packs-v1", "another-app"]),
     delete: vi.fn().mockResolvedValue(true),
   };
@@ -57,10 +59,19 @@ function setup() {
     handlers.message({ data: { type }, source: { url }, waitUntil: (value: Promise<void>) => { completion = value; } });
     return completion;
   }
-  return { cache, caches, clients, entries, previousEntries, storyEntries, fetch, lifecycle, request, message, skipWaiting };
+  return { cache, caches, clients, entries, previousEntries, storyEntries, walkEntries, fetch, lifecycle, request, message, skipWaiting };
 }
 
 describe("offline service worker", () => {
+  it("plays a newly published walk recording offline with byte ranges independently of saved addresses", async () => {
+    const { walkEntries, request, fetch } = setup();
+    const path = `/api/story-audio/${"a".repeat(64)}.mp3`;
+    walkEntries.set(path, new Response("recording", { headers: { "Content-Type": "audio/mpeg" } }));
+    const response = await request(path, { headers: { Range: "bytes=2-5" } });
+    expect(response?.status).toBe(206);
+    expect(await response?.text()).toBe("cord");
+    expect(fetch).not.toHaveBeenCalled();
+  });
   it("installs scripts, styles and fonts before becoming ready", async () => {
     const { cache, lifecycle, skipWaiting } = setup();
     await lifecycle("install");

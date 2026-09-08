@@ -4,6 +4,7 @@ const CACHE_PREFIX = "otgolosok-";
 const CACHE_VERSION = `${CACHE_PREFIX}${version}`;
 const APP_SHELL = new Set(assets);
 const STORY_CACHE = "story-packs-v1";
+const WALK_CACHE = "walk-packs-v1";
 
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
@@ -81,7 +82,7 @@ async function audioRange(request, cached, isAudio) {
 async function savedStoryResponse(request, path, audio) {
   const cache = await caches.open(STORY_CACHE);
   if (audio) {
-    const cached = await cache.match(path);
+    const cached = await cache.match(path) ?? await (await caches.open(WALK_CACHE)).match(path);
     return cached ? audioRange(request,cached,true) : fetch(request);
   }
   // Jobs always use live status online; only a complete explicitly saved story

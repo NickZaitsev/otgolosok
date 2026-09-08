@@ -2,6 +2,7 @@ import { failure, pageText, validateFacts, validateDraft } from "./domain.mjs";
 import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
 import { researchPrompt, factsPrompt, draftPrompt, reviewPrompt } from "./prompts.mjs";
 import { createNarration } from "./audio.mjs";
+import { runWalkNarrationJob } from "./walk-admin.mjs";
 
 function canonicalUrl(raw) {
   const url = validateSourceUrl(raw);
@@ -44,7 +45,9 @@ export function safeError(error, hasStory = false) {
     message: errorMessages[code] ?? (hasStory ? errorMessages.TTS_FAILED : "Не удалось подготовить историю. Можно повторить попытку.")};
 }
 
-export async function runJob(initial, {store,provider,speechProviders={openai:provider},audioDirectory,fetchPage=fetchSource,narrate=createNarration,signal,timeoutMs=600000}) {
+export async function runJob(initial, options) {
+  if (initial.kind === "walk_chapter") return runWalkNarrationJob(initial, options);
+  const {store,provider,speechProviders={openai:provider},audioDirectory,fetchPage=fetchSource,narrate=createNarration,signal,timeoutMs=600000} = options;
   let job = initial;
   const started = Date.now();
   const deadline = AbortSignal.any([AbortSignal.timeout(timeoutMs), ...(signal ? [signal] : [])]);
@@ -144,7 +147,7 @@ export async function runJob(initial, {store,provider,speechProviders={openai:pr
       if (!speechProvider) throw failure("TTS_FAILED");
       const narrationProvider = job.data.ttsVoice ? {...speechProvider,voice:job.data.ttsVoice} : speechProvider;
       const audio = await narrate(job.data.story,narrationProvider,audioDirectory,deadline);
-      update("voicing",{audio});
+      update("voicing",{audio,revoice:null});
     }
     update("ready",{elapsedSec:Math.round((Date.now()-Date.parse(job.createdAt))/1000),attemptElapsedSec:Math.round((Date.now()-started)/1000),completedAt:new Date().toISOString()});
   } catch (error) {
@@ -163,7 +166,7 @@ export function startWorker(options) {
   const controller = new AbortController();
   const wake = () => {
     if (stopped || running) return;
-    const job = options.store.claimNext();
+    const job = options.store.claimNext({ audioOnly: !options.provider });
     if (!job) return;
     running = runJob(job,{...options,signal:controller.signal}).catch(() => {
       // Only infrastructure/store failure escapes runJob; startup recovery handles it.

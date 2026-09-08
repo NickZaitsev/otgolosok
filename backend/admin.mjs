@@ -49,21 +49,52 @@ const factsView = (value) => array(value, 8).map((f) => {
     evidence: array(fact.evidence, 3).map((p) => ({ sourceId: text(object(p).sourceId, 16), quote: text(object(p).quote, 500) })) };
 });
 
+export function hasValidStoryText(value) {
+  const story = object(value);
+  if (typeof story.title !== "string" || !story.title.trim() || story.title.length > 140
+    || !Array.isArray(story.paragraphs) || story.paragraphs.length < 2 || story.paragraphs.length > 6) return false;
+  const paragraphs = story.paragraphs.map((paragraph) => object(paragraph).text);
+  if (paragraphs.some((paragraph) => typeof paragraph !== "string" || !paragraph.trim() || paragraph.length > 2000)) return false;
+  const wordCount = paragraphs.join(" ").trim().split(/\s+/u).length;
+  return wordCount >= 100 && wordCount <= 250;
+}
+
+const selectedVoice = (data) => validVoiceId(data.ttsVoice) ? data.ttsVoice
+  : validVoiceId(data.audio?.voice) ? data.audio.voice
+    : validVoiceId(data.revoice?.previousAudio?.voice) ? data.revoice.previousAudio.voice : null;
+
+const audioView = (value) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const url = typeof value.url === "string" && /^\/api\/story-audio\/[a-f0-9]{64}\.mp3$/.test(value.url) ? value.url : null;
+  if (!url) return null;
+  const durationSec = Number.isFinite(value.durationSec) && value.durationSec >= 0 && value.durationSec <= 3600 ? value.durationSec : 0;
+  const voice = validVoiceId(value.voice) ? value.voice : null;
+  return { url, durationSec, voice, provider: value.provider === "yandex" ? "yandex" : "openai", model: text(value.model, 100) };
+};
+
 export function adminSummary(job, safeError) {
+  const data = object(job.data);
   return { id: job.id, address: text(job.address, 200), stage: job.stage, revision: job.revision,
-    updatedAt: job.updatedAt, error: job.error ? safeError(job.error) : null };
+    updatedAt: job.updatedAt, irrelevant: job.irrelevant === true,
+    ttsProvider: data.ttsProvider === "yandex" ? "yandex" : "openai", ttsVoice: selectedVoice(data),
+    error: job.error ? safeError(job.error) : null };
 }
 
 export function adminDetail(job, providerAvailable, safeError, ttsProviders = []) {
   const data = job.data ?? {};
   let canApprove = false;
-  if (providerAvailable && job.stage === "review_required") {
+  if (providerAvailable && job.stage === "review_required" && !job.irrelevant) {
     try { editorialDraft(data); canApprove = true; } catch { /* Invalid checkpoints remain readable. */ }
   }
+  const canRetry = job.stage === "failed" && job.attempts < 3 && !job.irrelevant;
+  const canRevoice = Boolean(providerAvailable) && ["ready", "failed"].includes(job.stage)
+    && !job.irrelevant && hasValidStoryText(data.story);
+  const currentAudio = data.audio ?? data.revoice?.previousAudio ?? null;
   const evidence = object(data.evidence), review = object(data.review), factReview = object(data.factReview);
   return { ...adminSummary(job, safeError), ttsProviders, data: {
     ttsProvider: data.ttsProvider === "yandex" ? "yandex" : "openai",
-    ttsVoice: validVoiceId(data.ttsVoice) ? data.ttsVoice : validVoiceId(data.audio?.voice) ? data.audio.voice : null,
+    ttsVoice: selectedVoice(data), story: draftView(data.story), audio: audioView(currentAudio),
+    revoice: data.revoice == null ? null : { requestedAt: text(object(data.revoice).requestedAt, 40) },
     editorDraft: draftView(data.editorDraft), draft: draftView(data.draft), draftCandidate: draftView(data.draftCandidate),
     evidence: data.evidence == null ? null : {
       placeName: text(evidence.placeName, 160), resolvedAddress: text(evidence.resolvedAddress, 200), facts: factsView(evidence.facts),
@@ -77,5 +108,5 @@ export function adminDetail(job, providerAvailable, safeError, ttsProviders = []
     factReview: data.factReview == null ? null : { addressConfirmed: factReview.addressConfirmed === true,
       identityNote: text(factReview.identityNote), placeName: text(factReview.placeName, 160),
       resolvedAddress: text(factReview.resolvedAddress, 200), facts: factsView(factReview.facts) },
-  }, canApprove };
+  }, canApprove, canRetry, canRevoice };
 }
