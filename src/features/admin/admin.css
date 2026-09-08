@@ -18,9 +18,9 @@
 .admin-desk button:disabled { opacity: .45; cursor: not-allowed; }
 .admin-desk button.admin-primary { background: var(--accent); border-color: var(--accent); color: var(--raised); }
 .admin-desk button.admin-primary:hover:not(:disabled) { background: #812511; }
-.admin-desk input:not([type=checkbox]), .admin-desk textarea { width: 100%; min-width: 0; padding: .8rem; border: 1px solid var(--line); border-bottom-color: var(--ink); border-radius: 0; background: var(--raised); color: var(--ink); font: inherit; }
+.admin-desk input:not([type=checkbox]), .admin-desk textarea, .admin-desk select { width: 100%; min-width: 0; padding: .8rem; border: 1px solid var(--line); border-bottom-color: var(--ink); border-radius: 0; background: var(--raised); color: var(--ink); font: inherit; }
 .admin-desk textarea { resize: vertical; font-family: var(--font-display), serif; font-size: 1.15rem; line-height: 1.7; }
-.admin-desk input:focus-visible, .admin-desk textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.admin-desk input:focus-visible, .admin-desk textarea:focus-visible, .admin-desk select:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .admin-desk input[type=checkbox] { width: 1.15rem; height: 1.15rem; flex: 0 0 auto; margin-top: .25rem; accent-color: var(--accent); }
 .admin-desk fieldset { border: 0; min-width: 0; }
 .admin-desk label { display: block; font-weight: 600; margin-bottom: .5rem; }
@@ -59,6 +59,8 @@
 .admin-evidence a, .admin-result a { color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
 .admin-publish { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 2px solid var(--ink); }
 .admin-publish > button { margin-top: 1rem; }
+.admin-tts { max-width: 32rem; margin-top: 1.5rem; }
+.admin-tts .admin-meta { margin-top: .6rem; }
 .admin-desk .admin-confirm { max-width: 42rem; margin-top: 1.5rem; font-size: .95rem; }
 .admin-result { margin-top: 1.5rem; }
 .admin-empty { padding: 3rem; }

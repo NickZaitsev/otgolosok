@@ -53,14 +53,15 @@ export function adminSummary(job, safeError) {
     updatedAt: job.updatedAt, error: job.error ? safeError(job.error) : null };
 }
 
-export function adminDetail(job, providerAvailable, safeError) {
+export function adminDetail(job, providerAvailable, safeError, ttsProviders = []) {
   const data = job.data ?? {};
   let canApprove = false;
   if (providerAvailable && job.stage === "review_required") {
     try { editorialDraft(data); canApprove = true; } catch { /* Invalid checkpoints remain readable. */ }
   }
   const evidence = object(data.evidence), review = object(data.review), factReview = object(data.factReview);
-  return { ...adminSummary(job, safeError), data: {
+  return { ...adminSummary(job, safeError), ttsProviders, data: {
+    ttsProvider: data.ttsProvider === "yandex" ? "yandex" : "openai",
     editorDraft: draftView(data.editorDraft), draft: draftView(data.draft), draftCandidate: draftView(data.draftCandidate),
     evidence: data.evidence == null ? null : {
       placeName: text(evidence.placeName, 160), resolvedAddress: text(evidence.resolvedAddress, 200), facts: factsView(evidence.facts),

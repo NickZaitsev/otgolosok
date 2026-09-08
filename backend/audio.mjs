@@ -7,7 +7,9 @@ import { failure, sha256 } from "./domain.mjs";
 const exec = promisify(execFile);
 export async function createNarration(story, provider, directory, signal) {
   const script = story.paragraphs.map((paragraph) => paragraph.text).join("\n\n");
-  const key = sha256(JSON.stringify({script,model:provider.ttsModel,voice:provider.voice,version:1}));
+  const ttsProvider = provider.ttsProvider ?? "openai";
+  const key = sha256(JSON.stringify({script,model:provider.ttsModel,voice:provider.voice,version:1,
+    ...(ttsProvider === "openai" ? {} : {provider:ttsProvider})}));
   await mkdir(directory, { recursive: true });
   const metadataPath = join(directory, `${key}.json`);
   try {
@@ -28,7 +30,7 @@ export async function createNarration(story, provider, directory, signal) {
     const hash = sha256(encoded);
     await rename(outputPath, join(directory, `${hash}.mp3`));
     const metadata = {url:`/api/story-audio/${hash}.mp3`,sha256:hash,bytes:(await stat(join(directory,`${hash}.mp3`))).size,
-      durationSec,model:provider.ttsModel,voice:provider.voice,synthetic:true};
+      durationSec,model:provider.ttsModel,voice:provider.voice,provider:ttsProvider,synthetic:true};
     await writeFile(`${metadataPath}.tmp`, JSON.stringify(metadata), {mode:0o600});
     await rename(`${metadataPath}.tmp`, metadataPath);
     return metadata;

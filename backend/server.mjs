@@ -5,6 +5,7 @@ import { resolve, join, extname, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { createStore } from "./store.mjs";
 import { createProvider } from "./provider.mjs";
+import { createYandexTts } from "./yandex-tts.mjs";
 import { normalizeAddress, addressKey, publicJob, failure } from "./domain.mjs";
 import { safeError, startWorker } from "./pipeline.mjs";
 import { createPlaceResolver } from "./places.mjs";
@@ -45,8 +46,11 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),adminToken=process.env.ADMIN_TOKEN}) {
-  const worker=provider&&workerEnabled?startWorker({store,provider,audioDirectory}):null;
+export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),adminToken=process.env.ADMIN_TOKEN}) {
+  const speechProviders={openai:provider,yandex:yandexTts};
+  const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider)},
+    {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(provider&&yandexTts)}];
+  const worker=provider&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory}):null;
   const authorizeAdmin=adminAuth(adminToken);
   const server=httpServer(async(req,res)=>{
     try {
@@ -73,17 +77,20 @@ export function createApp({store,provider,origin,audioDirectory,staticDirectory,
               json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;
             }
             const input=await body(req,match[2]==="edit"?32768:2048);
-            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!["revision",...(match[2]==="edit"?["draft"]:[])].includes(key)))throw failure("BAD_REQUEST");
+            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!["revision",...(match[2]==="edit"?["draft"]:["ttsProvider"])].includes(key)))throw failure("BAD_REQUEST");
             if(match[2]==="edit") {
               const draft=input.draft;
               if(!draft||typeof draft!=="object"||Array.isArray(draft)||Object.keys(draft).some(key=>!["title","paragraphs"].includes(key))||!Array.isArray(draft.paragraphs)||draft.paragraphs.some(p=>!p||typeof p!=="object"||Array.isArray(p)||Object.keys(p).some(key=>!["text","factIds"].includes(key))))throw failure("BAD_REQUEST");
               job=store.editAdmin(match[1],input.revision,draft);
             } else {
+              const selected=input.ttsProvider===undefined?"openai":input.ttsProvider;
+              if(!["openai","yandex"].includes(selected))throw failure("BAD_REQUEST");
               if(!provider){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
-              job=store.approveAdmin(match[1],input.revision);
+              if(!speechProviders[selected]){json(res,503,{error:{code:"TTS_UNAVAILABLE",message:"Selected speech provider unavailable."}});return;}
+              job=store.approveAdmin(match[1],input.revision,selected);
             }
           }
-          json(res,job?200:404,job?{job:adminDetail(job,Boolean(provider),safeError)}:{error:{code:"NOT_FOUND",message:"Job not found."}});
+          json(res,job?200:404,job?{job:adminDetail(job,Boolean(provider),safeError,ttsProviders)}:{error:{code:"NOT_FOUND",message:"Job not found."}});
           if(req.method==="POST"&&match[2]==="approve")worker?.wake();
           return;
         }
@@ -164,8 +171,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2});
   store.recoverInterrupted();
   const provider=process.env.OPENAI_API_KEY&&process.env.OPENAI_BASE_URL?createProvider({apiKey:process.env.OPENAI_API_KEY,baseUrl:process.env.OPENAI_BASE_URL,model:process.env.STORY_MODEL,writerModel:process.env.WRITER_MODEL}):null;
+  const yandexTts=process.env.YANDEX_TTS_API_KEY?createYandexTts({apiKey:process.env.YANDEX_TTS_API_KEY,voice:process.env.YANDEX_TTS_VOICE||"marina"}):null;
   const port=Number(process.env.PORT??4175);
-  const app=createApp({store,provider,origin:process.env.APP_ORIGIN??`http://127.0.0.1:${port}`,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR});
+  const app=createApp({store,provider,yandexTts,origin:process.env.APP_ORIGIN??`http://127.0.0.1:${port}`,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();store.close();});

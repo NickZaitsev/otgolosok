@@ -231,7 +231,8 @@ export function createStore(
       });
     },
 
-    approveAdmin(id, expectedRevision) {
+    approveAdmin(id, expectedRevision, ttsProvider = "openai") {
+      if (!["openai", "yandex"].includes(ttsProvider)) throw codedError("BAD_REQUEST");
       return transaction(() => {
         const job = decode(findById.get(id));
         if (!job) return null;
@@ -241,8 +242,8 @@ export function createStore(
         const timestamp = isoNow(now);
         db.prepare("INSERT INTO retries (created_at) VALUES (?)").run(timestamp);
         return save({ ...job, stage: "queued", error: null, revision: job.revision + 1, updatedAt: timestamp,
-          data: { ...job.data, story, audio: null, textReadyAt: timestamp,
-            editorialApproval: { approvedAt: timestamp, revision: job.revision, draftHash: sha256(JSON.stringify(job.data.editorDraft)), storyHash: sha256(JSON.stringify(story)) } } });
+          data: { ...job.data, story, audio: null, ttsProvider, textReadyAt: timestamp,
+            editorialApproval: { approvedAt: timestamp, revision: job.revision, ttsProvider, draftHash: sha256(JSON.stringify(job.data.editorDraft)), storyHash: sha256(JSON.stringify(story)) } } });
       });
     },
 

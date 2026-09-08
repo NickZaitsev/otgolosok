@@ -4,9 +4,12 @@ export type Summary = {
   id: string; address: string; stage: string; revision: number; updatedAt: string;
   error: { code?: string; message: string } | null;
 };
+export type TtsProvider = "openai" | "yandex";
 export type Job = Summary & {
   canApprove: boolean;
+  ttsProviders: { id: TtsProvider; label: string; available: boolean }[];
   data: {
+    ttsProvider: TtsProvider;
     editorDraft: Draft | null; draft: Draft | null; draftCandidate: Draft | null;
     evidence: {
       placeName: string; resolvedAddress: string; facts: Fact[];
