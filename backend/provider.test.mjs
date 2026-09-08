@@ -17,3 +17,15 @@ test("uses the requested writer model and records the actual model used",async()
   assert.equal(requests[1].url,"https://provider.example/v1/responses");
   assert.deepEqual(draft.value,{valid:true});
 });
+
+test("OpenAI uses each job's selected voice without changing the shared default", async () => {
+  const voices = [];
+  const provider = createProvider({ baseUrl: "https://provider.example/v1", apiKey: "key", fetchImpl: async (_url, options) => {
+    voices.push(JSON.parse(options.body).voice);
+    return new Response("mp3", { headers: { "Content-Type": "audio/mpeg" } });
+  } });
+  await Promise.all([provider.speech("Первый рассказ", { voice: "cedar" }), provider.speech("Второй рассказ", { voice: "nova" })]);
+  await provider.speech("Рассказ с голосом по умолчанию");
+  assert.deepEqual(voices, ["cedar", "nova", "marin"]);
+  assert.equal(provider.voice, "marin");
+});

@@ -58,10 +58,10 @@ export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-med
     if (search && !(payload.output ?? []).some((item) => item.type === "web_search_call")) throw failure("NO_SEARCH_EVIDENCE");
     return { value: parseModelJson(output), citedUrls: [...citedUrls], usage: payload.usage ?? null, model: selectedModel };
   }
-  async function speech(script, { signal } = {}) {
+  async function speech(script, { signal, voice: selectedVoice = voice } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(150000), ...(signal ? [signal] : [])]);
     const res = await fetchImpl(`${endpoint}/audio/speech`, { method: "POST", headers, signal: deadline,
-      body: JSON.stringify({model: ttsModel, voice, input: script, response_format:"mp3", speed:1,
+      body: JSON.stringify({model: ttsModel, voice:selectedVoice, input: script, response_format:"mp3", speed:1,
         instructions:"Read the supplied Russian text exactly, with no additions. Warm clear conversational Russian walking-tour narration, about 140 words per minute, brief pauses between paragraphs. No music or sound effects. Read dates and addresses naturally."}) });
     if (!res.ok || !res.headers.get("content-type")?.startsWith("audio/")) { await res.body?.cancel(); throw failure("TTS_FAILED"); }
     return boundedBody(res, 10000000, deadline);

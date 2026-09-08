@@ -74,3 +74,15 @@ test("invalid config and empty text never issue requests", async () => {
   const provider = createYandexTts({ apiKey: "key", fetchImpl: async () => { assert.fail("Unexpected request"); } });
   await assert.rejects(provider.speech("  "), { code: "TTS_FAILED" });
 });
+
+test("Yandex uses each job's selected voice without changing the shared default", async () => {
+  const voices = [];
+  const provider = createYandexTts({ apiKey: "key", voice: "ermil", fetchImpl: async (_url, options) => {
+    voices.push(JSON.parse(options.body).hints[0].voice);
+    return new Response(frame("audio"));
+  } });
+  await Promise.all([provider.speech("Первый рассказ", { voice: "kirill" }), provider.speech("Второй рассказ", { voice: "dasha" })]);
+  await provider.speech("Рассказ с голосом по умолчанию");
+  assert.deepEqual(voices, ["kirill", "dasha", "ermil"]);
+  assert.equal(provider.voice, "ermil");
+});

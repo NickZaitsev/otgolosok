@@ -7,9 +7,10 @@ export type Summary = {
 export type TtsProvider = "openai" | "yandex";
 export type Job = Summary & {
   canApprove: boolean;
-  ttsProviders: { id: TtsProvider; label: string; available: boolean }[];
+  ttsProviders: { id: TtsProvider; label: string; available: boolean; defaultVoice: string; voices: { id: string; label: string }[] }[];
   data: {
     ttsProvider: TtsProvider;
+    ttsVoice: string | null;
     editorDraft: Draft | null; draft: Draft | null; draftCandidate: Draft | null;
     evidence: {
       placeName: string; resolvedAddress: string; facts: Fact[];

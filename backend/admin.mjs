@@ -1,6 +1,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { failure, validateDraft, validateFacts } from "./domain.mjs";
 import { validateSourceUrl } from "./safe-fetch.mjs";
+import { validVoiceId } from "./tts-voices.mjs";
 
 // A single fixed-size bucket bounds memory and ignores spoofable proxy headers.
 export function adminAuth(token, now = Date.now) {
@@ -62,6 +63,7 @@ export function adminDetail(job, providerAvailable, safeError, ttsProviders = []
   const evidence = object(data.evidence), review = object(data.review), factReview = object(data.factReview);
   return { ...adminSummary(job, safeError), ttsProviders, data: {
     ttsProvider: data.ttsProvider === "yandex" ? "yandex" : "openai",
+    ttsVoice: validVoiceId(data.ttsVoice) ? data.ttsVoice : validVoiceId(data.audio?.voice) ? data.audio.voice : null,
     editorDraft: draftView(data.editorDraft), draft: draftView(data.draft), draftCandidate: draftView(data.draftCandidate),
     evidence: data.evidence == null ? null : {
       placeName: text(evidence.placeName, 160), resolvedAddress: text(evidence.resolvedAddress, 200), facts: factsView(evidence.facts),

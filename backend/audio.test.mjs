@@ -28,3 +28,27 @@ test("audio cache preserves legacy OpenAI hits and isolates Yandex even with mat
   assert.deepEqual(await createNarration(story, yandex, directory), yandexMetadata);
   assert.equal(calls, 1);
 });
+
+test("narration passes the selected voice to synthesis and never reuses another voice's cache", async t => {
+  const directory = await mkdtemp(join(tmpdir(), "otgolosok-voice-cache-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const story = { paragraphs: [{ text: "Рассказ для выбранного голоса." }] };
+  const bytes = Buffer.from("validated marina audio");
+  const hash = sha256(bytes);
+  const key = sha256(JSON.stringify({ script: story.paragraphs[0].text, model: "speechkit-v3", voice: "marina", version: 1, provider: "yandex" }));
+  const metadata = { sha256: hash, voice: "marina" };
+  await writeFile(join(directory, `${hash}.mp3`), bytes);
+  await writeFile(join(directory, `${key}.json`), JSON.stringify(metadata));
+  let calls = 0;
+  const provider = { ttsProvider: "yandex", ttsModel: "speechkit-v3", voice: "kirill", speech: async (script, { voice, signal }) => {
+    calls++;
+    assert.equal(script, story.paragraphs[0].text);
+    assert.equal(voice, "kirill");
+    assert.ok(signal instanceof AbortSignal);
+    throw new Error("Selected voice reached synthesis");
+  } };
+  await assert.rejects(createNarration(story, provider, directory, new AbortController().signal), /Selected voice reached synthesis/);
+  assert.equal(calls, 1);
+  assert.deepEqual(await createNarration(story, { ...provider, voice: "marina" }, directory), metadata);
+  assert.equal(calls, 1);
+});
