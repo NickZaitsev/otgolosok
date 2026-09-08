@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-export const PIPELINE_VERSION = "place-history-v3";
+export const PIPELINE_VERSION = "place-history-v4";
 export const TERMINAL = new Set(["ready", "failed", "insufficient_evidence", "review_required"]);
 export const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 export function failure(code, message = code) { return Object.assign(new Error(message), { code }); }

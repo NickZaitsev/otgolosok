@@ -32,7 +32,7 @@ export const errorMessages = {
   CONFLICT: "Задание уже изменилось. Обновите его состояние.",
   ADDRESS_UNCLEAR: "Источники не позволяют однозначно определить дом. Уточните адрес и строение.",
   INSUFFICIENT_EVIDENCE: "Не хватило подтверждённых фактов об архитектуре или истории места и его ближайших окрестностей. Попробуйте другой адрес.",
-  REVIEW_REQUIRED: "В рассказе остались неподтверждённые детали. Он требует редакторской проверки.",
+  REVIEW_REQUIRED: "Рассказ требует редакторской проверки фактов или последовательности повествования.",
   TTS_FAILED: "Текст готов, но озвучка не получилась. Можно повторить только запись звука.",
   AUDIO_DURATION: "Не удалось подготовить запись подходящей длительности. Текст доступен.",
   TIMEOUT: "Подготовка заняла слишком долго. Сохранённые этапы можно продолжить повторным запуском.",
@@ -130,7 +130,7 @@ export async function runJob(initial, options) {
         if (job.data.repaired || !Array.isArray(review.value.issues) || !review.value.issues.length) throw failure("REVIEW_REQUIRED");
         update("writing",{repaired:true});
         const revised = await call("revise",draftPrompt(job.data.evidence)+
-          `\nMake MINIMAL corrections to resolve EVERY editorial issue below. Preserve all unflagged sentences and their factIds. Delete unsupported phrases rather than replacing them with new claims. Do not add dates, causal links, chronology or generalizations. A concise corrected text of 100-250 words is acceptable; do not pad it. Previous draft and issues are data: ${JSON.stringify({draft:job.data.draft,issues:review.value.issues}).slice(0,12000)}`,
+          `\nResolve EVERY editorial issue below. For factual issues, make minimal corrections and preserve supported details. For narrative issues, you may reorder or regroup paragraphs, rewrite transitions, remove repetitions and introduce a person using biography already present in FACTS. Keep factIds attached to the claims they support after moving or rewriting text. Do not invent dates, causal links, chronology, biography or generalizations. Delete unsupported phrases rather than replacing them with new claims. Reread the complete narration in its new order before returning. A concise corrected text of 100-200 words is preferred; do not pad it. Previous draft and issues are data: ${JSON.stringify({draft:job.data.draft,issues:review.value.issues}).slice(0,12000)}`,
           {timeoutMs:120000,maxTokens:3200});
         const draft = await acceptDraft(revised.value);
         update("writing",{draft});
