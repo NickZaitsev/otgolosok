@@ -17,6 +17,7 @@ services:
       DATA_DIR: /data
       APP_ORIGIN: ${APP_ORIGIN:-http://localhost:8080}
       WALK_ROUTER_URL: http://valhalla:8002/route
+      WALK_OVERPASS_URL: ${WALK_OVERPASS_URL:-https://overpass-api.de/api/interpreter}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
       ADMIN_TOKEN: ${ADMIN_TOKEN:-}

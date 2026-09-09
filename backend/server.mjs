@@ -12,6 +12,7 @@ import { safeError, startWorker } from "./pipeline.mjs";
 import { createPlaceResolver } from "./places.mjs";
 import { createWalkPlanner } from "./walks.mjs";
 import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
+import { validateWalkResearch, publicWalkResearch } from "./walk-research.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 function json(res,status,value) {
@@ -47,15 +48,51 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),adminToken=process.env.ADMIN_TOKEN}) {
+export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN}) {
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
-  const worker=(provider||yandexTts)&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory}):null;
+  const worker=(provider||yandexTts)&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory,discoverResearch,planResearchWalk}):null;
   const authorizeAdmin=adminAuth(adminToken);
   const server=httpServer(async(req,res)=>{
     try {
       const url=new URL(req.url,"http://localhost");
+      const researchMatch=new RegExp(`^/api/walk-research-jobs(?:/(${UUID})(/retry)?)?$`).exec(url.pathname);
+      if(researchMatch) {
+        let job;
+        if(req.method==="GET"&&!researchMatch[2]) {
+          if(researchMatch[1]) {
+            if(url.search)throw failure("BAD_REQUEST");
+            job=store.get(researchMatch[1]);
+            if(job?.kind!=="walk_research")job=null;
+          } else {
+            const entries=[...url.searchParams];
+            if(entries.length!==5||new Set(entries.map(([k])=>k)).size!==5||entries.some(([k,v])=>!["lat","lon","mode","minutes","recoveryToken"].includes(k)||!v.trim()))throw failure("BAD_REQUEST");
+            const q=Object.fromEntries(entries);
+            if(!/^(30|60|90)$/.test(q.minutes)||![q.lat,q.lon].every(v=>/^-?\d+(?:\.\d+)?$/.test(v)))throw failure("BAD_REQUEST");
+            const request=validateWalkResearch({start:{location:{lat:Number(q.lat),lon:Number(q.lon)}},mode:q.mode,minutes:Number(q.minutes)},true);
+            job=store.lookupWalkResearch(request,q.recoveryToken);
+          }
+        } else if(req.method==="POST"&&(!researchMatch[1]||researchMatch[2])) {
+          if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          if(url.search)throw failure("BAD_REQUEST");
+          const input=await body(req);
+          if(researchMatch[2]) {
+            if(Object.keys(input).length!==1||!Number.isSafeInteger(input.revision)||input.revision<0)throw failure("BAD_REQUEST");
+            if(!provider){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
+            job=store.retryWalkResearch(researchMatch[1],input.revision);
+          } else {
+            try {job=store.createWalkResearch(input,{allowCreate:Boolean(provider)});}
+            catch(error) {
+              if(error.code!=="PROVIDER_UNAVAILABLE")throw error;
+              json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;
+            }
+          }
+        } else {json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;}
+        json(res,job?200:404,job?publicWalkResearch(job):{error:{code:"NOT_FOUND",message:"Walk research job not found."}});
+        if(req.method==="POST")worker?.wake();
+        return;
+      }
       if(url.pathname==="/api/story-admin"||url.pathname.startsWith("/api/story-admin/")) {
         const status=authorizeAdmin(req.headers.authorization);
         if(status!==200) {
@@ -107,7 +144,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         const match=new RegExp(`^/api/story-admin/jobs/(${UUID})(?:/(edit|approve|relevance|revoice|retry))?$`).exec(url.pathname);
         if(match&&((req.method==="GET"&&!match[2])||(req.method==="POST"&&match[2]))) {
           let job;
-          if(req.method==="GET") {job=store.get(match[1]);if(job?.kind==="walk_chapter")job=null;}
+          if(req.method==="GET") {job=store.get(match[1]);if(job&&(job.kind??"address")!=="address")job=null;}
           else {
             if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {
               json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;
@@ -188,7 +225,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
       const match=new RegExp(`^/api/story-jobs/(${UUID})$`).exec(url.pathname);
       if(req.method==="GET"&&match) {
         const storedJob=store.get(match[1]);
-        const job=storedJob?.kind==="walk_chapter"?null:storedJob;
+        const job=storedJob&&(storedJob.kind??"address")!=="address"?null:storedJob;
         json(res,job?200:404,job?publicJob(job):{error:{message:"Задание не найдено."}});return;
       }
       const audio=/^\/api\/story-audio\/([a-f0-9]{64}\.mp3)$/.exec(url.pathname);
