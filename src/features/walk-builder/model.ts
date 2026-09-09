@@ -6,10 +6,19 @@ export const DRAFT_KEY = "otgolosok:walk:v1";
 export type Place = { address: string; location: Coordinates };
 export type Plan = { stops: Place[]; geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string };
 export type StoryRef = { place: Place; id: string; stage: GenerationStage };
+export type ResearchRequest = { start: Place; mode: "loop" | "open"; minutes: 30 | 60 | 90 };
+export type ResearchRef = { request: ResearchRequest; id: string | null; stops: Place[]; recoveryToken: string };
+export type ResearchJob = {
+  id: string; stage: GenerationStage; revision: number; request: ResearchRequest;
+  phase: "discovery" | "research" | "routing" | "narration" | "complete";
+  progress: { checked: number; total: number; accepted: number };
+  route: Plan | null; stories: StoryRef[]; error: { code: string; message: string } | null; canRetry: boolean;
+};
 export type Draft = {
   version: 1; title: string; start: Place | null; mode: "loop" | "open";
   minutes: 30 | 60 | 90; stops: Place[]; route: Plan | null;
   jobs: StoryRef[]; submitting: Place | null;
+  research?: ResearchRef; researchApplied?: boolean;
 };
 export const emptyDraft = (): Draft => ({ version: 1, title: "Моя прогулка", start: null, mode: "loop", minutes: 30, stops: [], route: null, jobs: [], submitting: null });
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
@@ -43,16 +52,40 @@ export function isPlan(v: unknown): v is Plan {
 }
 export const isJobId = (id: unknown): id is string => typeof id === "string" && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(id);
 export const isStage = (stage: unknown): stage is GenerationStage => typeof stage === "string" && Object.hasOwn(stageLabels, stage);
+export function isResearchRequest(v: unknown): v is ResearchRequest {
+  return record(v) && isPlace(v.start) && (v.mode === "loop" || v.mode === "open") && (v.minutes === 30 || v.minutes === 60 || v.minutes === 90);
+}
+// The server key deliberately excludes the address label.
+export function researchKey(r: ResearchRequest) {
+  return JSON.stringify([Number(r.start.location.lat.toFixed(6)), Number(r.start.location.lon.toFixed(6)), r.mode, r.minutes]);
+}
+export function researchLookup(r: ResearchRequest, recoveryToken: string) {
+  return `/api/walk-research-jobs?${new URLSearchParams({ lat: String(Number(r.start.location.lat.toFixed(6))), lon: String(Number(r.start.location.lon.toFixed(6))), mode: r.mode, minutes: String(r.minutes), recoveryToken })}`;
+}
+export function readResearchJob(v: unknown, expected?: ResearchRef): ResearchJob {
+  if (!record(v) || !isJobId(v.id) || !isStage(v.stage) || !Number.isSafeInteger(v.revision) || Number(v.revision) < 0 || !isResearchRequest(v.request) || !["discovery", "research", "routing", "narration", "complete"].includes(String(v.phase)) || !record(v.progress) || ![v.progress.checked, v.progress.total, v.progress.accepted].every(n => Number.isInteger(n) && Number(n) >= 0 && Number(n) <= 3) || Number(v.progress.checked) > Number(v.progress.total) || Number(v.progress.accepted) > Number(v.progress.checked) || (v.route !== null && (!isPlan(v.route) || !validStops(v.request.start, v.route.stops) || v.route.walkingMinutes > v.request.minutes)) || !Array.isArray(v.stories) || v.stories.length > 3 || !v.stories.every(s => record(s) && isPlace(s.place) && isJobId(s.id) && isStage(s.stage)) || (v.error !== null && (!record(v.error) || typeof v.error.code !== "string" || typeof v.error.message !== "string")) || typeof v.canRetry !== "boolean") throw new Error("Не удалось прочитать состояние исследования.");
+  const job = v as ResearchJob;
+  if (expected && (researchKey(job.request) !== researchKey(expected.request) || (expected.id && job.id !== expected.id))) throw new Error("Сервис вернул другое исследование.");
+  return job;
+}
+export function researchMatches(draft: Draft, ref: ResearchRef) {
+  return !!draft.start && researchKey({ start: draft.start, mode: draft.mode, minutes: draft.minutes }) === researchKey(ref.request) && JSON.stringify(draft.stops) === JSON.stringify(ref.stops);
+}
+export function applyResearch(draft: Draft, job: ResearchJob): Draft {
+  if (!draft.research || draft.research.id !== job.id || !researchMatches(draft, draft.research) || researchKey(job.request) !== researchKey(draft.research.request) || job.stage !== "ready" || job.phase !== "complete" || !job.route || !job.route.stops.every(p => job.stories.some(s => placeKey(s.place) === placeKey(p) && s.stage === "ready"))) throw new Error("Исследование не соответствует текущей прогулке или ещё не завершено.");
+  return { ...draft, stops: job.route.stops, route: job.route, jobs: job.stories.reduce(rememberStory, draft.jobs), researchApplied: true };
+}
 export function parseDraft(raw: string | null): Draft {
   if (raw === null) return emptyDraft();
   const v: unknown = JSON.parse(raw);
   if (!record(v) || v.version !== 1 || typeof v.title !== "string" || v.title.length > 120 || (v.start !== null && !isPlace(v.start)) || !["loop","open"].includes(String(v.mode)) || ![30,60,90].includes(Number(v.minutes)) || typeof v.minutes !== "number" || !Array.isArray(v.stops) || v.stops.length > 5 || !v.stops.every(isPlace) || !Array.isArray(v.jobs) || v.jobs.length > 100 || !v.jobs.every(j => record(j) && isPlace(j.place) && isJobId(j.id) && isStage(j.stage)) || (v.submitting !== null && !isPlace(v.submitting))) throw new Error("Черновик не удалось прочитать. Исходная копия не изменена.");
   if (v.route !== null && (!isPlan(v.route) || !validStops(v.start as Place | null, v.stops) || JSON.stringify(v.route.stops) !== JSON.stringify(v.stops) || v.route.walkingMinutes > v.minutes)) throw new Error("Сохранённый маршрут повреждён. Исходная копия не изменена.");
+  if ((v.research !== undefined && (!record(v.research) || !isJobId(v.research.recoveryToken) || !isResearchRequest(v.research.request) || (v.research.id !== null && !isJobId(v.research.id)) || !Array.isArray(v.research.stops) || v.research.stops.length > 5 || !v.research.stops.every(isPlace))) || (v.researchApplied !== undefined && typeof v.researchApplied !== "boolean")) throw new Error("Сохранённое исследование повреждено. Исходная копия не изменена.");
   // Older drafts could contain the same backend job for multiple map points.
   return { ...v, jobs: (v.jobs as StoryRef[]).reduce(rememberStory, []) } as Draft;
 }
 export function editDraft(draft: Draft, change: Partial<Pick<Draft,"start"|"mode"|"minutes"|"stops">>): Draft {
-  return { ...draft, ...change, route: null };
+  return { ...draft, ...change, route: null, ...(draft.researchApplied ? { researchApplied: false } : {}) };
 }
 export function moveStop(stops: Place[], index: number, delta: -1 | 1): Place[] {
   const next = [...stops], target = index + delta;

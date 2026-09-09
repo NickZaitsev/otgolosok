@@ -3,6 +3,7 @@ import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
 import { researchPrompt, factsPrompt, draftPrompt, reviewPrompt } from "./prompts.mjs";
 import { createNarration } from "./audio.mjs";
 import { runWalkNarrationJob } from "./walk-admin.mjs";
+import { runWalkResearchJob } from "./walk-research.mjs";
 
 function canonicalUrl(raw) {
   const url = validateSourceUrl(raw);
@@ -46,6 +47,7 @@ export function safeError(error, hasStory = false) {
 }
 
 export async function runJob(initial, options) {
+  if (initial.kind === "walk_research") return runWalkResearchJob(initial, options, runJob);
   if (initial.kind === "walk_chapter") return runWalkNarrationJob(initial, options);
   const {store,provider,speechProviders={openai:provider},audioDirectory,fetchPage=fetchSource,narrate=createNarration,signal,timeoutMs=600000} = options;
   let job = initial;
@@ -79,13 +81,13 @@ export async function runJob(initial, options) {
   };
   try {
     // An approved story is a complete text checkpoint; continuation is audio-only.
-    if (!job.data.story && !job.data.research) {
+    if (!job.data.story && !job.data.evidence && !job.data.research) {
       const research = await call("research",researchPrompt(job.address),{search:true,timeoutMs:180000,maxTokens:3000});
       const sources = researchSources(research);
       if (sources.length < 2) throw failure("INSUFFICIENT_EVIDENCE");
       update("researching",{research:{sources}});
     }
-    if (!job.data.story && !job.data.sources) {
+    if (!job.data.story && !job.data.evidence && !job.data.sources) {
       const loadPages = async (candidates, offset=0) => {
       const results = await Promise.allSettled(candidates.map(async (source,index) => {
         const page = await fetchPage(source.url,{signal:deadline});
@@ -116,6 +118,7 @@ export async function runJob(initial, options) {
       update("verifying",{factReview:facts.value});
       update("writing",{evidence:validateFacts(facts.value,job.data.sources,{requireEditorialScope:true})});
     }
+    if (options.researchOnly) return job;
     if (!job.data.story) {
       update("writing");
       if (!job.data.draft) {

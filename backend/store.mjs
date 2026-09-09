@@ -6,6 +6,7 @@ import { editorialDraft, hasValidStoryText } from "./admin.mjs";
 import { sha256 } from "./domain.mjs";
 import { validVoiceId } from "./tts-voices.mjs";
 import { createWalkAdminStore } from "./walk-admin.mjs";
+import { createWalkResearchStore } from "./walk-research-store.mjs";
 
 const STAGES = new Set([
   "queued",
@@ -169,19 +170,20 @@ export function createStore(
     });
   }
 
-  function checkCapacity() {
+  function checkCapacity(units = 1) {
     const active = db.prepare(`SELECT count(*) AS count FROM jobs WHERE stage NOT IN (${TERMINAL_STAGES.map(() => "?").join(",")})`).get(...TERMINAL_STAGES).count;
     if (Number(active) >= maxActive) throw codedError("QUEUE_FULL");
     const [start, end] = utcDayBounds(now);
-    const created = db.prepare("SELECT count(*) AS count FROM jobs WHERE created_at >= ? AND created_at < ?").get(start, end).count;
+    const created = db.prepare("SELECT count(*) AS count FROM jobs WHERE created_at >= ? AND created_at < ? AND COALESCE(json_extract(record_json, '$.quotaExempt'), 0) != 1").get(start, end).count;
     const retries = db.prepare("SELECT count(*) AS count FROM retries WHERE created_at >= ? AND created_at < ?").get(start, end).count;
-    if (Number(created) + Number(retries) >= maxDaily) throw codedError("DAILY_LIMIT");
+    if (Number(created) + Number(retries) + units > maxDaily) throw codedError("DAILY_LIMIT");
   }
 
   const walkAdminStore = createWalkAdminStore({ db, now, transaction, checkCapacity });
 
   return {
     ...walkAdminStore,
+    ...createWalkResearchStore({ db, now, transaction, checkCapacity }),
     createOrGet({ key, address }) {
       if (typeof key !== "string" || key.length === 0) {
         throw new TypeError("key must be a non-empty string");
@@ -193,6 +195,7 @@ export function createStore(
       return transaction(() => {
         const existing = decode(findByKey.get(key));
         if (existing) {
+          if (!isAddressJob(existing)) throw codedError("CONFLICT");
           return existing;
         }
 
@@ -391,7 +394,7 @@ export function createStore(
           SELECT record_json
           FROM jobs
           WHERE stage = 'queued'
-            ${audioOnly ? "AND (json_extract(record_json, '$.kind') = 'walk_chapter' OR json_type(record_json, '$.data.story') = 'object')" : ""}
+            ${audioOnly ? "AND (json_extract(record_json, '$.kind') = 'walk_chapter' OR (COALESCE(json_extract(record_json, '$.kind'), 'address') = 'address' AND json_type(record_json, '$.data.story') = 'object'))" : ""}
           ORDER BY created_at ASC, id ASC
           LIMIT 1
         `).get();
