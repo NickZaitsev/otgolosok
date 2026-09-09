@@ -76,7 +76,8 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
       if(!manual) {
         discovering=true;
         // Discovery is bounded; straight-line distances only rank candidates, never form a route.
-        const radius=Math.min(1800,input.minutes*20),around=`around:${radius},${start.location.lat},${start.location.lon}`;
+        // A loop must also cover the return leg; routing below enforces the actual budget.
+        const radius=Math.min(4050,input.minutes*90/(input.mode==='loop'?2:1)),around=`around:${radius},${start.location.lat},${start.location.lon}`;
         let elements=discoveryElements;
         if(elements===null) {
           const query=`[out:json][timeout:8];(nwr(${around})[building][name]["addr:street"]["addr:housenumber"][historic];nwr(${around})[building][name]["addr:street"]["addr:housenumber"][heritage];nwr(${around})[building][name]["addr:street"]["addr:housenumber"][tourism=museum];);out center tags 160;`;
@@ -99,7 +100,7 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           candidates.sort((a,b)=>distance(current.location,a.location)-distance(current.location,b.location));
           current=candidates.shift();stops.push(current);
         }
-        if(stops.length<2)throw fail('WALK_NOT_FOUND');
+        if(stops.length<2)throw fail('WALK_STOPS_NOT_FOUND');
         discovering=false;
       }
       while(true) {
@@ -131,7 +132,7 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
       }
     }
     try {return await Promise.race([run(),deadline]);}
-    catch(error) {if(['WALK_NOT_FOUND','WALK_DISCOVERY_UNAVAILABLE'].includes(error?.code))throw error;throw unavailable();}
+    catch(error) {if(['WALK_NOT_FOUND','WALK_STOPS_NOT_FOUND','WALK_DISCOVERY_UNAVAILABLE'].includes(error?.code))throw error;throw unavailable();}
     finally {clearTimeout(timer);controller.abort();active=false;}
   };
 }

@@ -66,7 +66,7 @@ for(const mode of ['loop','open'])test(`automatic ${mode} selects 2-4 ordered ad
   const result=await plan({start,mode,minutes:30});
   assert.deepEqual(result.stops,[1,2,3,4].map(stop));
   const query=new URLSearchParams(calls[0].options.body).get('data');
-  assert.match(query,/around:600,55.75,37.6/);assert.match(query,/\[building\]\[name\]/);
+  assert.ok(query.includes(`around:${mode==='loop'?1350:2700},55.75,37.6`));assert.match(query,/\[building\]\[name\]/);
   assert.deepEqual(result.geometry.at(-1),mode==='loop'?start.location:stop(4).location);
 });
 
@@ -82,7 +82,29 @@ test('automatic over-budget routes shorten, never return a fabricated fallback',
 
 test('too few automatic candidates fail honestly',async()=>{
   const {plan}=fixture(()=>({elements:candidates().elements.slice(0,1)}));
-  await assert.rejects(plan({start,mode:'open',minutes:90}),{code:'WALK_NOT_FOUND'});
+  await assert.rejects(plan({start,mode:'open',minutes:90}),{code:'WALK_STOPS_NOT_FOUND'});
+});
+
+for(const mode of ['loop','open'])test(`automatic ${mode} routes reachable stops beyond the former discovery radius`,async()=>{
+  const elements=[7,8].map(n=>({...candidates().elements[0],center:stop(n).location,tags:{...candidates().elements[0].tags,'addr:housenumber':String(n+2)}}));
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:elements,fetchImpl:async(url,o)=>Response.json(route(JSON.parse(o.body),400))});
+  const result=await plan({start,mode,minutes:30});
+  assert.deepEqual(result.stops,[stop(7),stop(8)]);
+  assert.ok(result.walkingMinutes<=30);
+  assert.ok(result.distanceM<=2700);
+});
+
+test('expanded discovery still rejects routes exceeding the actual walking budget',async()=>{
+  const elements=[7,8].map(n=>({...candidates().elements[0],center:stop(n).location,tags:{...candidates().elements[0].tags,'addr:housenumber':String(n+2)}}));
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:elements,fetchImpl:async(url,o)=>Response.json(route(JSON.parse(o.body),1000))});
+  await assert.rejects(plan({start,mode:'loop',minutes:30}),{code:'WALK_NOT_FOUND'});
+});
+
+test('bundled catalog finds stops near Gorky Park for a 30-minute walk',async()=>{
+  let calls=0;
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',fetchImpl:async()=>{calls++;throw new Error('router unavailable');}});
+  await assert.rejects(plan({start:{address:'Москва, Парк Горького',location:{lat:55.731,lon:37.601}},mode:'loop',minutes:30}),{code:'WALK_UNAVAILABLE'});
+  assert.equal(calls,1);
 });
 
 test('a routed but enormous detour is rejected even when reported time fits',async()=>{
@@ -164,7 +186,7 @@ test('offline discovery applies the radius and building filters without external
   elements[2]={...elements[2],tags:{...elements[2].tags,'addr:housenumber':'<bad>'}};
   elements[3]={...elements[3],tags:{...elements[3].tags,historic:'no'}};
   const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:elements,fetchImpl:async()=>assert.fail('must not fetch')});
-  await assert.rejects(plan({start,mode:'loop',minutes:30}),{code:'WALK_NOT_FOUND'});
+  await assert.rejects(plan({start,mode:'loop',minutes:30}),{code:'WALK_STOPS_NOT_FOUND'});
 });
 
 test('bundled Moscow catalog supports automatic discovery by default',async()=>{
