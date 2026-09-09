@@ -51,6 +51,16 @@
 .around-geo-message{position:absolute;z-index:3;left:18px;right:72px;top:220px;display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fffaf2;border:1px solid #b6c0ae;border-radius:14px;font-size:12px;line-height:1.4;box-shadow:0 4px 15px #203e3810}
 .around-geo-message button{display:flex;border:0;background:none;padding:8px}
 .around-geo-message svg{width:18px;height:18px}
+.around-geo-message>div{min-width:0;flex:1;max-height:35svh;overflow:auto;overscroll-behavior:contain}
+.around-geo-message>div>p{margin:0}
+.around-geo-message>button{align-self:flex-start;min-width:44px;min-height:44px;justify-content:center;align-items:center}
+.around-geo-help summary{cursor:pointer;padding:12px 0;text-decoration:underline;text-underline-offset:3px}
+.around-geo-help summary:focus-visible{outline:3px solid #246b90;outline-offset:3px}
+.around-geo-help p{margin:8px 0}
+.around-geo-help ol{padding-left:20px;margin:8px 0}
+.around-geo-help li+li{margin-top:10px}
+.around-geo-help a{display:inline-block;padding:12px 0;text-decoration:underline;text-underline-offset:3px}
+.around-geo-help .around-text-button{min-height:44px;margin:0;padding:10px 0}
 .around-bottom{position:absolute;z-index:3;left:18px;right:18px;bottom:calc(108px + env(safe-area-inset-bottom));pointer-events:none}
 .around-bottom>section,.around-bottom>div,.around-bottom>a{pointer-events:auto}
 .around-bottom .around-geo-message{position:static;width:auto;margin:0 0 8px;pointer-events:auto}
