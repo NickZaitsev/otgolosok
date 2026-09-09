@@ -10,7 +10,9 @@ The generator target uses `deploy-scripts/otgolosok-generator-compose.yml`.
 Do not deploy the root development Compose file over production. Nginx remains
 in its existing project; the single generator and Valhalla share the
 `otgolosok-generator` project and external `otgolosoksoftmgtech-net` network.
-Traefik routes `/api/story-*` and exactly `/api/walk-plan` to the generator.
+Traefik routes `/api/story-*`, exactly `/api/walk-plan`, exactly
+`/api/walk-research-jobs`, and `/api/walk-research-jobs/` descendants (including
+`/:id/retry`) to the generator with priority 100.
 Admin API authentication remains in the backend.
 
 The site directory is `/srv/sites/otgolosok.softmg.tech`:
@@ -27,9 +29,13 @@ It uses one build/server thread, 0.75 CPU, 768 MiB RAM and a 1280 MiB combined
 RAM/swap ceiling. Port 8002 is internal only. Readiness probes `/status`;
 the generator uses `WALK_ROUTER_URL=http://valhalla:8002/route`.
 
-Automatic stop discovery uses the bundled Moscow OSM catalog. The infrastructure
+Ordinary `/api/walk-plan` automatic stop discovery uses the bundled Moscow OSM catalog. The infrastructure
 template retains `WALK_OVERPASS_URL=https://maps.mail.ru/osm/tools/overpass/api/interpreter`,
-but this URL is only used if `WALK_DISCOVERY_SOURCE=overpass` is explicitly set.
+but the ordinary planner only uses this URL if `WALK_DISCOVERY_SOURCE=overpass`
+is explicitly set. Opt-in walk research independently uses `WALK_OVERPASS_URL`
+for addressed-building discovery, not the offline catalog. It allows one bounded
+OSM request per discovery attempt (12-second client deadline, 1 MiB response,
+160 elements, at most three candidates); see `backend/WALK_RESEARCH.md`.
 The planner retains its 12-second deadline and concurrency limit. No automatic
 multi-provider retries or fabricated route fallbacks are used. Refresh the
 catalog alongside the Valhalla extract; see `content/walk-builder.md`.
@@ -143,3 +149,58 @@ increasing graph coverage or concurrency.
 - Browser interaction verification was unavailable: the in-app execution tool
   was absent and the separate browser connector reported an occupied profile.
   Public endpoint checks and automated frontend tests passed as described above.
+
+## Opt-in walk research deployment, 2026-09-09, 11:17 UTC
+
+- Deployed revision `ca6d386aa5222ed77f093f9adc666e926dccd0bc`, generator first,
+  then frontend, using both standard infrastructure Make targets with
+  `VPS=services@93.189.230.19`. No root development Compose deployment was used.
+- Lint, TypeScript, 162 frontend tests, 140 backend tests and static build passed,
+  including a repeat through the standard frontend deployment target.
+- Production generator image:
+  `sha256:8626551e1db2517858d2d92940397e2ffab4731828b7852c3bf88f6cb07e8eda`.
+  Backend source checksum comparison found no differences; container server and
+  research module hashes match the local revision. `/walk`, `/create`, `/admin`
+  returned 200 and matched the deployed local HTML byte-for-byte.
+- `/api/story-service` returned 200 with `enabled:true`. Random-ID research GET,
+  unregistered recovery-token lookup, and random-ID retry POST returned JSON 404.
+  Research POST without consent returned 400, foreign-origin POST returned 403,
+  and unauthenticated `/api/story-admin/jobs` returned 401. No valid-consent
+  research POST or retry of an existing job was made.
+- Public automatic Gorky Park loop (`55.731,37.601`, 30 minutes) returned 200:
+  2373 metres, 30 walking minutes, two stops and 136 geometry points.
+- Direct read-only `createResearchDiscovery` probes from the running container
+  used the existing Mail.ru Overpass URL only. The first failed boundedly with
+  `WALK_DISCOVERY_UNAVAILABLE` after 12.1 seconds; the second returned three OSM
+  candidates in 2.156 seconds. External discovery remains intermittent; this is
+  not evidence that the full paid research/narration pipeline succeeds live.
+- All nine job rows, three retry rows and four walk-chapter rows retained their
+  pre-deployment SHA-256 hashes. SQLite `quick_check` returned `ok`; new tables
+  `walk_research_cache` and `walk_research_grants` are empty. Job states remain
+  two ready, one failed, one insufficient-evidence and five review-required.
+  No jobs, quota reservations, research-provider calls or TTS were initiated by
+  deployment verification.
+- The generator was idle before replacement. Generator and Valhalla are healthy,
+  with zero restarts; Valhalla retained its container ID and September 8 start
+  time. Existing credentials and persistent data were preserved.
+- Private generator backup (0600):
+  `backups/generator-20260909T111619Z/generator.tar.gz`. Separate ingress config
+  backup: `backups/ingress-20260909T111541Z/{traefik.yml,nginx.conf}` (0600 files).
+- Recovery-token privacy is configured at both ingress layers. Traefik v2.11.56
+  includes query strings in `RequestPath`, so its enabled JSON access log now
+  drops that field globally (host/router/status remain available). This required
+  one shared Traefik restart before deploying the research API. Eleven subsequent
+  site requests across both routers had no `RequestPath` or recovery-token query
+  content in access logs. Path-level traffic reporting is consequently unavailable.
+- Production Nginx differs from `docker/nginx.conf`: it serves static files and
+  does not proxy the API. The infrastructure static deployment now installs a
+  site-specific `api_private` log format using `$uri`, without queries or Referer,
+  and applies it at server scope. Candidate and live `nginx -t` checks passed.
+  The development Nginx config was not copied over production.
+- Infrastructure edits: `deploy-scripts/otgolosok-generator-compose.yml` (routes),
+  `deploy-scripts/deploy-static.sh` (site log privacy),
+  `deploy-scripts/beget-init.sh` and `deploy-panel/app.js` (Traefik config templates).
+  Live `/srv/traefik/traefik.yml` has the matching access-log field exclusion.
+  Shell syntax and panel JavaScript syntax checks passed.
+- Verification did not exercise a paid research/narration job or browser UI.
+  No commits or pushes were made during this deployment.
