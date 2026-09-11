@@ -167,6 +167,8 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
   const selectedProvider = walk?.ttsProviders.find((option) => option.id === ttsProvider);
   const selectedVoice = selectedProvider?.voices.find((voice) => voice.id === ttsVoice);
   const chapterBusy = Boolean(chapter && workingStages.has(chapter.status));
+  const walkBusy = Boolean(walk?.chapters.some((item) => workingStages.has(item.status)));
+  const walkBlocked = Boolean(walk?.chapters.some((item) => item.status === "conflict"));
   const draftValid = Boolean(draft?.title.trim() && draft.paragraphs.length
     && draft.paragraphs.every((paragraph) => paragraph.text.trim()));
 
@@ -293,6 +295,22 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
           <div><p className="walk-admin__state" data-state={walk.status}>{stageLabel(walk.status)}</p><h3>{walk.title}</h3><p>{walk.subtitle}</p></div>
           <button type="button" disabled={Boolean(busy)} onClick={() => openWalk(walk.id, true)}>{conflict ? "Загрузить актуальную версию" : "Обновить прогулку"}</button>
         </header>
+
+        <section className="walk-admin__regenerate" aria-labelledby="walk-regenerate-title">
+          <div><h4 id="walk-regenerate-title">Перегенерировать прогулку</h4><p>Все главы будут заново озвучены выбранным голосом. Опубликованные записи останутся доступны, пока каждая новая запись не будет готова.</p></div>
+          <button type="button" className="admin-primary" disabled={Boolean(busy) || dirty || walkBusy || walkBlocked || !selectedProvider?.available || !selectedVoice} onClick={() => {
+            if (!window.confirm(`Перегенерировать озвучку всех глав прогулки «${walk.title}» голосом «${selectedVoice?.label}»?`)) return;
+            void run("Перегенерация прогулки…", async (signal) => {
+              const result = await api<{ walk: WalkDetail }>(`/walks/${walk.id}/regenerate`, signal, { ttsProvider, ttsVoice });
+              acceptWalk(result.walk, chapterId);
+              await updateWalks(signal);
+              setNotice("Все главы прогулки поставлены в очередь на перегенерацию озвучки.");
+            });
+          }}>Перегенерировать прогулку</button>
+          {dirty && <p>Сначала сохраните или отбросьте правки выбранной главы.</p>}
+          {walkBusy && <p>Дождитесь завершения текущей подготовки главы.</p>}
+          {walkBlocked && <p>Сначала устраните конфликт структуры главы с каталогом.</p>}
+        </section>
 
         <div className="walk-admin__chapters-wrap">
           <table className="walk-admin__chapters">

@@ -104,6 +104,27 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           if(url.search)throw failure("BAD_REQUEST");
           json(res,200,store.listWalksAdmin());return;
         }
+        const walkRegenerateMatch=/^\/api\/story-admin\/walks\/([a-z0-9][a-z0-9-]{0,127})\/regenerate$/.exec(url.pathname);
+        if(walkRegenerateMatch&&req.method==="POST") {
+          if(url.search)throw failure("BAD_REQUEST");
+          if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {
+            json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;
+          }
+          const input=await body(req,2048);
+          if(Object.keys(input).some(key=>!["ttsProvider","ttsVoice"].includes(key)))throw failure("BAD_REQUEST");
+          const selected=input.ttsProvider===undefined?"openai":input.ttsProvider;
+          const options=ttsProviders.find(option=>option.id===selected);
+          if(!options)throw failure("BAD_REQUEST");
+          const voice=input.ttsVoice===undefined?options.defaultVoice:input.ttsVoice;
+          if(!options.voices.some(option=>option.id===voice))throw failure("BAD_REQUEST");
+          if(!speechProviders[selected]) {
+            json(res,503,{error:{code:"TTS_UNAVAILABLE",message:"Selected speech provider unavailable."}});return;
+          }
+          const walk=store.regenerateWalkAdmin(walkRegenerateMatch[1],selected,voice);
+          json(res,walk?200:404,walk?{walk:{...walk,ttsProviders}}:{error:{code:"NOT_FOUND",message:"Walk not found."}});
+          if(walk)worker?.wake();
+          return;
+        }
         const walkMatch=/^\/api\/story-admin\/walks\/([a-z0-9][a-z0-9-]{0,127})(?:\/chapters\/([a-z0-9][a-z0-9-]{0,127})\/(edit|revoice))?$/.exec(url.pathname);
         if(walkMatch&&((req.method==="GET"&&!walkMatch[2])||(req.method==="POST"&&walkMatch[2]))) {
           if(url.search)throw failure("BAD_REQUEST");

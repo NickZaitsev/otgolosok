@@ -160,6 +160,21 @@ test("walk narration publishes text and step audio atomically in public route sh
   assert.notEqual(next.id, done.id);
 });
 
+test("walk regeneration queues every chapter atomically and preserves the current publication", (t) => {
+  const { store } = fixture(t);
+  const detail = store.getWalkAdmin(routeId);
+  const before = store.getPublishedWalk(routeId);
+  const regenerated = store.regenerateWalkAdmin(routeId, "openai", "marin");
+
+  assert.equal(regenerated.chapters.length, detail.chapters.length);
+  assert.ok(regenerated.chapters.every((chapter) => chapter.status === "queued"));
+  assert.ok(regenerated.chapters.every((chapter) => chapter.revision === 1));
+  assert.deepEqual(store.getPublishedWalk(routeId), before);
+  assert.ok(regenerated.chapters.every((chapter) => store.get(chapter.latestJob.id)?.kind === "walk_chapter"));
+
+  assert.throws(() => store.regenerateWalkAdmin(routeId, "openai", "marin"), { code: "CONFLICT" });
+});
+
 test("failed and stale narration leave the last successful publication intact", async (t) => {
   const { store } = fixture(t);
   const chapter = store.getWalkAdmin(routeId).chapters[0];
