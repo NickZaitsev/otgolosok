@@ -80,13 +80,15 @@ export function adminSummary(job, safeError) {
     error: job.error ? safeError(job.error) : null };
 }
 
-export function adminDetail(job, providerAvailable, safeError, ttsProviders = []) {
+export function adminDetail(job, providerAvailable, safeError, ttsProviders = [], researchProviderAvailable = providerAvailable) {
   const data = job.data ?? {};
   let canApprove = false;
   if (providerAvailable && job.stage === "review_required" && !job.irrelevant) {
     try { editorialDraft(data); canApprove = true; } catch { /* Invalid checkpoints remain readable. */ }
   }
   const canRetry = job.stage === "failed" && job.attempts < 3 && !job.irrelevant;
+  const canRegenerate = Boolean(researchProviderAvailable) && job.stage === "review_required"
+    && job.attempts < 3 && !job.irrelevant;
   const canRevoice = Boolean(providerAvailable) && ["ready", "failed"].includes(job.stage)
     && !job.irrelevant && hasValidStoryText(data.story);
   const currentAudio = data.audio ?? data.revoice?.previousAudio ?? null;
@@ -108,5 +110,5 @@ export function adminDetail(job, providerAvailable, safeError, ttsProviders = []
     factReview: data.factReview == null ? null : { addressConfirmed: factReview.addressConfirmed === true,
       identityNote: text(factReview.identityNote), placeName: text(factReview.placeName, 160),
       resolvedAddress: text(factReview.resolvedAddress, 200), facts: factsView(factReview.facts) },
-  }, canApprove, canRetry, canRevoice };
+  }, canApprove, canRetry, canRegenerate, canRevoice };
 }

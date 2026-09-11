@@ -323,6 +323,22 @@ export function createStore(
       });
     },
 
+    regenerateAdmin(id, expectedRevision, ttsProvider = "openai", ttsVoice = null) {
+      if (!["openai", "yandex"].includes(ttsProvider)) throw codedError("BAD_REQUEST");
+      if (ttsVoice !== null && !validVoiceId(ttsVoice)) throw codedError("BAD_REQUEST");
+      return transaction(() => {
+        const job = decode(findById.get(id));
+        if (!job) return null;
+        if (!isAddressJob(job) || job.revision !== expectedRevision || job.irrelevant) throw codedError("CONFLICT");
+        if (job.stage !== "review_required" || job.attempts >= 3) throw codedError("RETRY_LIMIT");
+        checkCapacity();
+        const timestamp = isoNow(now);
+        db.prepare("INSERT INTO retries (created_at) VALUES (?)").run(timestamp);
+        return save({ ...job, stage: "queued", error: null, updatedAt: timestamp, revision: job.revision + 1,
+          data: { ttsProvider, ttsVoice } });
+      });
+    },
+
     retry(id, expectedRevision) {
       return transaction(() => {
         const job = decode(findById.get(id));

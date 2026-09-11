@@ -13,7 +13,7 @@ export type Summary = {
 };
 export type TtsProvider = "openai" | "yandex";
 export type Job = Summary & {
-  canApprove: boolean; canRevoice: boolean; canRetry: boolean;
+  canApprove: boolean; canRegenerate: boolean; canRevoice: boolean; canRetry: boolean;
   ttsProviders: { id: TtsProvider; label: string; available: boolean; defaultVoice: string; voices: { id: string; label: string }[] }[];
   data: {
     ttsProvider: TtsProvider;

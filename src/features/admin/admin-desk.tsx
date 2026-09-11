@@ -206,25 +206,27 @@ export function AdminDesk() {
   const savedUnchanged = Boolean(job?.data.editorDraft && draft && JSON.stringify(draft) === JSON.stringify(job.data.editorDraft));
   const selectedTts = job?.ttsProviders.find(option => option.id === ttsProvider);
   const selectedVoice = selectedTts?.voices.find(voice => voice.id === ttsVoice);
-  const narrationEligible = Boolean(job && !job.irrelevant && (job.canApprove || job.canRevoice || job.canRetry));
+  const narrationEligible = Boolean(job && !job.irrelevant && (job.canApprove || job.canRegenerate || job.canRevoice || job.canRetry));
   const voiceReady = Boolean(narrationEligible && selectedTts?.available && selectedVoice && !conflict);
   const approvalAllowed = Boolean(job?.canApprove && voiceReady && savedUnchanged && !dirty && confirmed);
   const currentAudio = job?.data.audio ?? null;
-  const narrationMode = job?.canApprove ? "approve" : job?.canRevoice ? "revoice" : job?.canRetry ? "retry" : null;
+  const narrationMode = job?.canApprove ? "approve" : job?.canRegenerate ? "regenerate" : job?.canRevoice ? "revoice" : job?.canRetry ? "retry" : null;
 
   function submitNarration() {
     if (!job || !narrationMode || request.current) return;
     if (narrationMode === "approve" && !approvalAllowed) return;
     if (narrationMode !== "approve" && !voiceReady) return;
     const action = narrationMode === "approve" ? "Утвердить текст и запустить озвучивание"
-      : narrationMode === "revoice" ? "Переозвучить историю" : "Продолжить подготовку истории";
+      : narrationMode === "regenerate" ? "Перегенерировать историю по текущим правилам"
+        : narrationMode === "revoice" ? "Переозвучить историю" : "Продолжить подготовку истории";
     if (!window.confirm(`${action} через ${selectedTts?.label}, голос «${selectedVoice?.label}»?`)) return;
-    const endpoint = narrationMode === "approve" ? "approve" : narrationMode === "revoice" ? "revoice" : "retry";
-    const label = narrationMode === "retry" ? "Возобновление подготовки…" : "Отправка на озвучивание…";
+    const endpoint = narrationMode === "approve" ? "approve" : narrationMode === "regenerate" ? "regenerate" : narrationMode === "revoice" ? "revoice" : "retry";
+    const label = narrationMode === "regenerate" ? "Перегенерация истории…" : narrationMode === "retry" ? "Возобновление подготовки…" : "Отправка на озвучивание…";
     void run(label, async signal => {
       accept((await api<{ job: Job }>(`/${job.id}/${endpoint}`, signal, { revision: job.revision, ttsProvider, ttsVoice })).job);
-      setNotice(narrationMode === "retry"
-        ? "Подготовка истории продолжена с выбранным голосом."
+      setNotice(narrationMode === "regenerate"
+        ? "История поставлена в очередь на полную перегенерацию по текущим правилам."
+        : narrationMode === "retry" ? "Подготовка истории продолжена с выбранным голосом."
         : "Озвучивание поставлено в очередь. Обновите задание, чтобы проверить готовность.");
     });
   }
@@ -365,8 +367,9 @@ export function AdminDesk() {
                       <p id="admin-tts-note" className="admin-meta">{narrationEligible ? "Новый файл заменит текущую озвучку после успешной генерации." : "Для текущего состояния запуск озвучивания недоступен."}</p>
                     </div>
                     {job.canApprove && <label className="admin-confirm"><input type="checkbox" checked={confirmed} disabled={Boolean(busy) || !savedUnchanged || dirty || conflict} onChange={event => setConfirmed(event.target.checked)} /><span>Я сверил сохранённый текст с цитатами, проверил адрес и подтверждаю версию для публикации.</span></label>}
+                    {job.canRegenerate && <p className="admin-callout">Перегенерация удалит текущие исследовательские материалы и начнёт подготовку заново по актуальным правилам.</p>}
                     {job.stage === "failed" && !job.data.story && <p className="admin-callout">У задания ещё нет утверждённого текста, поэтому переозвучить его нельзя. Продолжите подготовку: сервис вернётся к незавершённому этапу и использует выбранный голос.</p>}
-                    <button className="admin-primary" disabled={Boolean(busy) || (narrationMode === "approve" ? !approvalAllowed : !voiceReady)} onClick={submitNarration}>{narrationMode === "approve" ? "Утвердить и озвучить" : narrationMode === "revoice" ? "Переозвучить" : narrationMode === "retry" ? "Продолжить подготовку" : "Озвучивание недоступно"}</button>
+                    <button className="admin-primary" disabled={Boolean(busy) || (narrationMode === "approve" ? !approvalAllowed : !voiceReady)} onClick={submitNarration}>{narrationMode === "approve" ? "Утвердить и озвучить" : narrationMode === "regenerate" ? "Перегенерировать историю" : narrationMode === "revoice" ? "Переозвучить" : narrationMode === "retry" ? "Продолжить подготовку" : "Озвучивание недоступно"}</button>
                     {!job.canApprove && editable && <p className="admin-meta">Сохраните корректный текст, чтобы сервер разрешил утверждение.</p>}
                     {(job.stage === "ready" || (job.data.editorDraft && job.stage !== "review_required")) && <p className="admin-result"><a href={`/create?job=${job.id}`} target="_blank" rel="noopener noreferrer">{job.stage === "ready" ? "Открыть готовую историю" : "Открыть публичную страницу задания"} (новая вкладка)</a></p>}
                   </section>

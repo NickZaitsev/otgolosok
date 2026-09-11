@@ -57,7 +57,7 @@ test("admin routes authenticate before lookup, never cache, and project only saf
   }
   const res = await f.request(`/${job.id}`); const value = await res.json();
   assert.deepEqual(Object.keys(value), ["job"]);
-  assert.deepEqual(Object.keys(value.job).sort(), ["id", "address", "stage", "revision", "updatedAt", "irrelevant", "ttsProvider", "ttsVoice", "error", "data", "canApprove", "canRetry", "canRevoice", "ttsProviders"].sort());
+  assert.deepEqual(Object.keys(value.job).sort(), ["id", "address", "stage", "revision", "updatedAt", "irrelevant", "ttsProvider", "ttsVoice", "error", "data", "canApprove", "canRegenerate", "canRetry", "canRevoice", "ttsProviders"].sort());
   assert.deepEqual(Object.keys(value.job.data), ["ttsProvider", "ttsVoice", "story", "audio", "revoice", "editorDraft", "draft", "draftCandidate", "evidence", "review", "factReview"]);
   assert.equal(value.job.canApprove, false);
   assert.equal(JSON.stringify(value).includes("PRIVATE_"), false);

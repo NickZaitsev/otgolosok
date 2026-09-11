@@ -141,7 +141,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const result=store.listAdmin({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",stage:url.searchParams.get("stage")??"",relevance:url.searchParams.get("relevance")??"active"});
           json(res,200,{jobs:result.jobs.map(job=>adminSummary(job,safeError)),hasMore:result.hasMore});return;
         }
-        const match=new RegExp(`^/api/story-admin/jobs/(${UUID})(?:/(edit|approve|relevance|revoice|retry))?$`).exec(url.pathname);
+        const match=new RegExp(`^/api/story-admin/jobs/(${UUID})(?:/(edit|approve|relevance|revoice|retry|regenerate))?$`).exec(url.pathname);
         if(match&&((req.method==="GET"&&!match[2])||(req.method==="POST"&&match[2]))) {
           let job;
           if(req.method==="GET") {job=store.get(match[1]);if(job&&(job.kind??"address")!=="address")job=null;}
@@ -163,13 +163,13 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
               const options=ttsProviders.find(option=>option.id===selected);
               const voice=input.ttsVoice===undefined?options.defaultVoice:input.ttsVoice;
               if(!options.voices.some(option=>option.id===voice))throw failure("BAD_REQUEST");
-              if(match[2]==="retry"&&!provider&&!store.get(match[1])?.data.story){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
+              if((match[2]==="regenerate"&&!provider)||(match[2]==="retry"&&!provider&&!store.get(match[1])?.data.story)){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
               if(!speechProviders[selected]){json(res,503,{error:{code:"TTS_UNAVAILABLE",message:"Selected speech provider unavailable."}});return;}
-              job=match[2]==="revoice"?store.revoiceAdmin(match[1],input.revision,selected,voice):match[2]==="retry"?store.retryAdmin(match[1],input.revision,selected,voice):store.approveAdmin(match[1],input.revision,selected,voice);
+              job=match[2]==="revoice"?store.revoiceAdmin(match[1],input.revision,selected,voice):match[2]==="retry"?store.retryAdmin(match[1],input.revision,selected,voice):match[2]==="regenerate"?store.regenerateAdmin(match[1],input.revision,selected,voice):store.approveAdmin(match[1],input.revision,selected,voice);
             }
           }
-          json(res,job?200:404,job?{job:adminDetail(job,Boolean(provider||yandexTts),safeError,ttsProviders)}:{error:{code:"NOT_FOUND",message:"Job not found."}});
-          if(req.method==="POST"&&["approve","revoice","retry"].includes(match[2]))worker?.wake();
+          json(res,job?200:404,job?{job:adminDetail(job,Boolean(provider||yandexTts),safeError,ttsProviders,Boolean(provider))}:{error:{code:"NOT_FOUND",message:"Job not found."}});
+          if(req.method==="POST"&&["approve","revoice","retry","regenerate"].includes(match[2]))worker?.wake();
           return;
         }
         json(res,404,{error:{code:"NOT_FOUND",message:"Admin endpoint not found."}});return;
