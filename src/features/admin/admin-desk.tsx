@@ -6,6 +6,7 @@ import { draftCheck, initialDraft, safeSourceLink, stages, type AdminApi, type D
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const PAGE_SIZE = 50;
+const ADMIN_SESSION_TOKEN = "otgolosok.admin.token";
 type AdminSection = "addresses" | "walks";
 type RelevanceFilter = "active" | "irrelevant" | "all";
 
@@ -31,6 +32,7 @@ export function AdminDesk() {
   const editorHeading = useRef<HTMLHeadingElement>(null);
   const queueHeading = useRef<HTMLHeadingElement>(null);
   const pendingNavigation = useRef<"editor" | "queue" | null>(null);
+  const sessionRestored = useRef(false);
   const [tokenInput, setTokenInput] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [section, setSection] = useState<AdminSection>("addresses");
@@ -74,6 +76,7 @@ export function AdminDesk() {
 
   function clearAccess() {
     token.current = "";
+    sessionStorage.removeItem(ADMIN_SESSION_TOKEN);
     pendingNavigation.current = null;
     setTokenInput(""); setAuthenticated(false); setSection("addresses"); setWalkDirty(false);
     setJobs([]); setOffset(0); setHasMore(false); setJob(null); setDraft(null); setBaseline("");
@@ -163,6 +166,27 @@ export function AdminDesk() {
     setJobs(result.jobs); setHasMore(result.hasMore); setOffset(nextOffset);
   }
 
+  useEffect(() => {
+    if (sessionRestored.current) return;
+    sessionRestored.current = true;
+    const savedToken = sessionStorage.getItem(ADMIN_SESSION_TOKEN)?.trim();
+    if (!savedToken) return;
+    token.current = savedToken;
+    void run("Восстановление сессии…", async signal => {
+      await loadQueue(0, signal);
+      setAuthenticated(true);
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("job");
+      if (id && UUID.test(id)) {
+        accept((await api<{ job: Job }>(`/${id}`, signal)).job);
+        pendingNavigation.current = "editor";
+      } else if (id) setError("В ссылке указан неверный идентификатор задания. Выберите задание из списка.");
+      else if (params.get("section") === "walks") setSection("walks");
+    });
+  // `sessionRestored` makes this effect a one-time client-side restore.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accept, api, loadQueue]);
+
   function openJob(id: string, reload = false) {
     if (request.current || !consent()) return;
     if (reload && conflict && !dirty && !window.confirm("Загрузить текущую версию задания с сервера?")) return;
@@ -249,7 +273,7 @@ export function AdminDesk() {
         <form className="admin-login" onSubmit={event => {
           event.preventDefault();
           if (request.current || !tokenInput.trim()) return;
-          token.current = tokenInput.trim(); setTokenInput("");
+          token.current = tokenInput.trim(); sessionStorage.setItem(ADMIN_SESSION_TOKEN, token.current); setTokenInput("");
           void run("Проверка доступа…", async signal => {
             await loadQueue(0, signal); setAuthenticated(true);
             const params = new URLSearchParams(window.location.search);
@@ -265,7 +289,7 @@ export function AdminDesk() {
           <p className="admin-context">Доступ для редактора</p><h2>Войти в редакцию</h2>
           <label htmlFor="admin-token">ADMIN_TOKEN</label>
           <input id="admin-token" type="password" autoComplete="off" spellCheck={false} autoCapitalize="none" value={tokenInput} onChange={event => setTokenInput(event.target.value)} disabled={Boolean(busy)} required />
-          <p id="admin-token-note">Токен хранится только в памяти этой вкладки. После выхода или перезагрузки потребуется новый вход.</p>
+          <p id="admin-token-note">Сессия сохраняется до закрытия вкладки. При выходе или закрытии вкладки потребуется новый вход.</p>
           <button className="admin-primary" type="submit" disabled={Boolean(busy) || !tokenInput.trim()} aria-describedby="admin-token-note">Открыть кабинет</button>
         </form>
       ) : (
