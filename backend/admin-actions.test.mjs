@@ -77,6 +77,33 @@ test("failed research can be resumed from admin with a new narration service and
   assert.equal((await request(`/${failed.id}/retry`, { revision: failed.revision })).status, 409);
 });
 
+test("review-required research can be fully regenerated from admin", async t => {
+  const { store, request } = await fixture(t);
+  const queued = store.createOrGet({ key: "regenerate", address: "Москва, Арбат, 1" });
+  const reviewRequired = store.update(queued.id, { stage: "review_required", attempts: 1, error: { code: "REVIEW_REQUIRED" }, data: {
+    research: { sources: [{ url: "https://example.test" }] }, evidence: { facts: [] }, draft: { title: "Старый текст", paragraphs: [] },
+  } }, queued.revision);
+  const detail = (await (await request(`/${reviewRequired.id}`)).json()).job;
+  assert.equal(detail.canRegenerate, true);
+  const response = await request(`/${reviewRequired.id}/regenerate`, { revision: reviewRequired.revision, ttsProvider: "yandex", ttsVoice: "kirill" });
+  assert.equal(response.status, 200);
+  const updated = store.get(reviewRequired.id);
+  assert.equal(updated.stage, "queued");
+  assert.equal(updated.error, null);
+  assert.deepEqual(updated.data, { ttsProvider: "yandex", ttsVoice: "kirill" });
+  assert.equal((await request(`/${reviewRequired.id}/regenerate`, { revision: reviewRequired.revision })).status, 409);
+});
+
+test("review-required research cannot be regenerated without a research provider", async t => {
+  const { store, request } = await fixture(t, { provider: null });
+  const queued = store.createOrGet({ key: "regenerate-unavailable", address: "Москва, Арбат, 1" });
+  const reviewRequired = store.update(queued.id, { stage: "review_required", attempts: 1 }, queued.revision);
+  const detail = (await (await request(`/${reviewRequired.id}`)).json()).job;
+  assert.equal(detail.canRegenerate, false);
+  assert.equal((await request(`/${reviewRequired.id}/regenerate`, { revision: reviewRequired.revision, ttsProvider: "yandex", ttsVoice: "kirill" })).status, 503);
+  assert.equal(store.get(reviewRequired.id).stage, "review_required");
+});
+
 test("revoicing preserves public audio on failure and publishes the selected new recording", async t => {
   const { store, request, base } = await fixture(t);
   const queued = store.createOrGet({ key: "one", address: "Москва, Арбат, 1" });
