@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 import urllib.error
 import urllib.request
+from ru_normalizr import NormalizeOptions, Normalizer
 
 ROOT = Path(__file__).resolve().parents[1]
 ROUTE = ROOT / "public/data/routes/paveletskaya.json"
@@ -26,6 +27,7 @@ INSTRUCTIONS = (
     "Pronounce Дербеневская with stress on the second syllable: Дербе́невская, never Дербенёвская. "
     "Pronounce Кожевнический with stress on the second syllable: Коже́внический."
 )
+NORMALIZER = Normalizer(NormalizeOptions.tts())
 
 
 def sha256(value):
@@ -48,8 +50,8 @@ def generate(step, content, limit):
         *[paragraph["text"] for paragraph in content["story"]["paragraphs"]],
         step["next_hint"],
     ] if part)
-    spoken = (script.replace("12с10", "номер двенадцать, строение десять")
-              .replace("Moscowwalks", "Москоу уокс")
+    spoken = (NORMALIZER.normalize(script.replace("12с10", "номер двенадцать, строение десять")
+              .replace("Moscowwalks", "Москоу уокс"))
               .replace("Дербеневск", "Дербе́невск")
               .replace("Цинделя", "Ци́нделя"))
     request_body = {

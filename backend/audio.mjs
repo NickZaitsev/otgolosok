@@ -3,13 +3,15 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 import { execFile } from "node:child_process";
 import { failure, sha256 } from "./domain.mjs";
+import { normalizeForSpeech } from "./text-normalizer.mjs";
 
 const exec = promisify(execFile);
-export async function createNarration(story, provider, directory, signal, { minDurationSec = 45, maxDurationSec = 150 } = {}) {
+export async function createNarration(story, provider, directory, signal, { minDurationSec = 45, maxDurationSec = 150, normalize = normalizeForSpeech } = {}) {
   if (!Number.isFinite(minDurationSec) || !Number.isFinite(maxDurationSec) || minDurationSec <= 0 || maxDurationSec < minDurationSec || maxDurationSec > 600) throw failure("AUDIO_DURATION");
   const script = story.paragraphs.map((paragraph) => paragraph.text).join("\n\n");
+  const spokenScript = await normalize(script, { signal });
   const ttsProvider = provider.ttsProvider ?? "openai";
-  const key = sha256(JSON.stringify({script,model:provider.ttsModel,voice:provider.voice,version:1,
+  const key = sha256(JSON.stringify({script:spokenScript,model:provider.ttsModel,voice:provider.voice,version:2,normalizer:normalize.version ?? "custom",
     ...(ttsProvider === "openai" ? {} : {provider:ttsProvider})}));
   await mkdir(directory, { recursive: true });
   const metadataPath = join(directory, `${key}.json`);
@@ -18,7 +20,7 @@ export async function createNarration(story, provider, directory, signal, { minD
     const bytes = await readFile(join(directory, `${metadata.sha256}.mp3`));
     if (sha256(bytes) === metadata.sha256 && (metadata.durationSec === undefined || (metadata.durationSec >= minDurationSec && metadata.durationSec <= maxDurationSec))) return metadata;
   } catch { /* No complete previously validated asset. */ }
-  const bytes = await provider.speech(script, {signal,voice:provider.voice});
+  const bytes = await provider.speech(spokenScript, {signal,voice:provider.voice});
   const sourcePath = join(directory, `${key}.source.tmp`);
   const outputPath = join(directory, `${key}.encoded.tmp.mp3`);
   try {

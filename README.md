@@ -283,7 +283,7 @@ Backend содержит автоматически созданный ката�
 ## Проверки
 
 Озвучка уже включена в репозиторий и обычную сборку. Для её регенерации нужны
-Python 3, `ffmpeg`, `ffprobe` и переменные окружения `OPENAI_API_KEY`,
+Python 3 с `ru-normalizr==0.3.0` (`python3 -m pip install ru-normalizr==0.3.0`), `ffmpeg`, `ffprobe` и переменные окружения `OPENAI_API_KEY`,
 `OPENAI_BASE_URL` (совместимый endpoint с `/audio/speech`). Ключи не попадают
 в клиент. Запуск: `python3 scripts/generate-walk-audio.py`.
 Это отдельный платный API-вызов, `pnpm build` синтез речи не запускает.
