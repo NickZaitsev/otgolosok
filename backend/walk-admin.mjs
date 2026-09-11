@@ -407,6 +407,52 @@ export function createWalkAdminStore({ db, now = Date.now, transaction, checkCap
       });
     },
 
+    regenerateWalkAdmin(routeId, ttsProvider = "openai", ttsVoice = null) {
+      if (!["openai", "yandex"].includes(ttsProvider) || (ttsVoice !== null && !validVoiceId(ttsVoice))) {
+        throw codedError("BAD_REQUEST");
+      }
+      const definition = routeDefinition(routeId);
+      if (!definition) return null;
+      return transaction(() => {
+        const chapters = definition.chapters.map(({ step }) => {
+          const chapter = chapterDefinition(routeId, step.id);
+          const row = findChapter.get(routeId, step.id);
+          if (!chapter || !row) throw codedError("CONFLICT");
+          requireCompatibleRow(chapter, row);
+          const previous = row.latest_job_id ? decode(findJob.get(row.latest_job_id)?.record_json) : null;
+          if (previous && WORKING_STAGES.has(previous.stage)) throw codedError("CONFLICT");
+          return { chapter, row, draft: decode(row.draft_json) };
+        });
+        checkCapacity(chapters.length);
+        const timestamp = isoNow(now);
+        for (const { chapter, row, draft } of chapters) {
+          const id = randomUUID();
+          const key = randomUUID();
+          const revision = row.revision + 1;
+          const job = {
+            id,
+            key,
+            kind: "walk_chapter",
+            stage: "queued",
+            revision: 0,
+            createdAt: timestamp,
+            updatedAt: timestamp,
+            data: {
+              walkChapter: { routeId, chapterId: chapter.step.id, revision, draft },
+              story: { title: draft.title, paragraphs: narrationParagraphs(draft) },
+              ttsProvider,
+              ttsVoice,
+            },
+            error: null,
+            attempts: 0,
+          };
+          insertJob.run(id, key, job.stage, timestamp, encode(job));
+          updateLatestJob.run(revision, id, baseHash(chapter), timestamp, routeId, chapter.step.id);
+        }
+        return routeDetail(routeId);
+      });
+    },
+
     publishWalkChapter(jobId, expectedRevision, audio) {
       return transaction(() => {
         const job = decode(findJob.get(jobId)?.record_json);

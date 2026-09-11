@@ -131,6 +131,21 @@
 .walk-admin__route-head h3 { margin: 0.4rem 0; }
 .walk-admin__route-head p:last-child { max-width: 75ch; }
 
+.walk-admin__regenerate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--sunken);
+}
+
+.walk-admin__regenerate h4 { margin: 0; }
+.walk-admin__regenerate p { max-width: 68ch; margin: 0.35rem 0 0; color: var(--muted); font-size: 0.875rem; }
+.walk-admin__regenerate > button { flex: 0 0 auto; }
+
 .walk-admin__state {
   display: inline-flex;
   align-items: center;
@@ -256,6 +271,7 @@
 @media (max-width: 44rem) {
   .walk-admin__head,
   .walk-admin__route-head,
+  .walk-admin__regenerate,
   .walk-admin__section-head,
   .walk-admin__save-row { align-items: stretch; flex-direction: column; }
   .walk-admin__head button,

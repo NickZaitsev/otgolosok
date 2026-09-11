@@ -193,3 +193,29 @@ test("Yandex can revoice ready text without an OpenAI provider and leaves queued
   assert.equal(claimed.id, ready.id);
   assert.deepEqual(store.get(research.id), research);
 });
+
+test("walk admin regenerates every chapter atomically with the selected voice", async t => {
+  const { store, base } = await fixture(t, { provider: null });
+  const call = (path, input, extraHeaders = {}) => fetch(`${base}/api/story-admin/walks${path}`, {
+    method: "POST",
+    headers: { Authorization: "Bearer test-only", Origin: "https://site.test", "Content-Type": "application/json", ...extraHeaders },
+    body: JSON.stringify(input),
+  });
+  const list = await (await fetch(`${base}/api/story-admin/walks`, {
+    headers: { Authorization: "Bearer test-only" },
+  })).json();
+  const routeId = list.walks[0].id;
+  const before = (await (await fetch(`${base}/api/story-admin/walks/${routeId}`, {
+    headers: { Authorization: "Bearer test-only" },
+  })).json()).walk;
+
+  assert.equal((await call(`/${routeId}/regenerate`, { ttsProvider: "yandex", ttsVoice: "kirill" }, { Origin: "https://other.test" })).status, 403);
+  const response = await call(`/${routeId}/regenerate`, { ttsProvider: "yandex", ttsVoice: "kirill" });
+  assert.equal(response.status, 200);
+  const updated = (await response.json()).walk;
+  assert.ok(updated.chapters.every(chapter => chapter.status === "queued"));
+  assert.ok(updated.chapters.every(chapter => chapter.revision === 1));
+  assert.equal(store.claimNext().kind, "walk_chapter");
+  assert.equal((await call(`/${routeId}/regenerate`, { ttsProvider: "yandex", ttsVoice: "kirill" })).status, 409);
+  assert.equal(before.chapters.length, updated.chapters.length);
+});
