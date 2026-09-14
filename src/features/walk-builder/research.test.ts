@@ -71,11 +71,14 @@ describe("research persistence and application", () => {
   });
 });
 describe("walk requests", () => {
-  it("offers research only for the automatic ready-stop shortage", () => {
+  it("offers research for automatic stop shortages and unroutable automatic candidates", () => {
     const shortage = new RejectedRequest("Insufficient ready stops", "WALK_STOPS_NOT_FOUND", 422);
+    const unroutable = new RejectedRequest("No route through automatic candidates", "WALK_NOT_FOUND", 404);
     expect(shouldOfferResearch("auto", shortage)).toBe(true);
+    expect(shouldOfferResearch("auto", unroutable)).toBe(true);
     expect(shouldOfferResearch("manual", shortage)).toBe(false);
-    for (const error of [new Error("WALK_STOPS_NOT_FOUND"), new RequestError("No route", "WALK_NOT_FOUND", 422), new RequestError("Unavailable", "SERVICE_UNAVAILABLE", 503)]) expect(shouldOfferResearch("auto", error)).toBe(false);
+    expect(shouldOfferResearch("manual", unroutable)).toBe(false);
+    for (const error of [new Error("WALK_STOPS_NOT_FOUND"), new RequestError("Unavailable", "SERVICE_UNAVAILABLE", 503)]) expect(shouldOfferResearch("auto", error)).toBe(false);
   });
   it("preserves error codes for CTA gating, missing recovery and unavailable providers", async () => {
     for (const [status, code] of [[422, "WALK_STOPS_NOT_FOUND"], [404, "NOT_FOUND"], [503, "RESEARCH_UNAVAILABLE"]] as const) {

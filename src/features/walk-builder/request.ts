@@ -2,7 +2,7 @@ export class RequestError extends Error {
   constructor(message: string, public code: string, public status: number) { super(message); }
 }
 export class RejectedRequest extends RequestError {}
-export const shouldOfferResearch = (selection: "auto" | "manual", error: unknown) => selection === "auto" && error instanceof RequestError && error.code === "WALK_STOPS_NOT_FOUND";
+export const shouldOfferResearch = (selection: "auto" | "manual", error: unknown) => selection === "auto" && error instanceof RequestError && ["WALK_STOPS_NOT_FOUND", "WALK_NOT_FOUND"].includes(error.code);
 
 export async function request(path: string, signal: AbortSignal, body?: object): Promise<unknown> {
   const controller = new AbortController();
