@@ -4,6 +4,12 @@ const fail = (code) => Object.assign(new Error(code), {code});
 const inBox = (p) => p && typeof p.lat === 'number' && typeof p.lon === 'number' && Number.isFinite(p.lat) && Number.isFinite(p.lon) && p.lat >= 55.48 && p.lat <= 55.98 && p.lon >= 37.30 && p.lon <= 37.95;
 const keys = (v, allowed) => v && typeof v === 'object' && !Array.isArray(v) && Object.keys(v).every(k => allowed.includes(k));
 const clean = (v, max) => typeof v === 'string' && v.length <= max && !/[\p{Cc}\p{Cf}<>]/u.test(v) ? v.trim().replace(/\s+/g, ' ') : '';
+// Signals that a building may carry researchable history. A name alone qualifies
+// every shop and office tower; most Moscow landmarks carry their title in the
+// linked Wikidata item rather than in an OSM name tag.
+const DISCOVERY_TAGS = ['[historic]', '[heritage]', '[tourism=museum]', '[wikidata]', '[wikipedia]', '[architect]'];
+const notable = (t) => Boolean(t.historic && t.historic !== 'no' || t.heritage && t.heritage !== 'no' || t.tourism === 'museum'
+  || /^Q[1-9]\d{0,15}$/.test(t.wikidata ?? '') || clean(t.wikipedia, 300) || clean(t.architect, 300));
 const distance = (a,b) => {
   const rad = Math.PI / 180;
   const h = Math.sin((b.lat-a.lat)*rad/2)**2 + Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin((b.lon-a.lon)*rad/2)**2;
@@ -80,7 +86,8 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
         const radius=Math.min(4050,input.minutes*90/(input.mode==='loop'?2:1)),around=`around:${radius},${start.location.lat},${start.location.lon}`;
         let elements=discoveryElements;
         if(elements===null) {
-          const query=`[out:json][timeout:8];(nwr(${around})[building][name]["addr:street"]["addr:housenumber"][historic];nwr(${around})[building][name]["addr:street"]["addr:housenumber"][heritage];nwr(${around})[building][name]["addr:street"]["addr:housenumber"][tourism=museum];);out center tags 160;`;
+          // An address is the only handle the story pipeline has on a building.
+          const query=`[out:json][timeout:8];(${DISCOVERY_TAGS.map(tag=>`nwr(${around})[building]["addr:street"]["addr:housenumber"]${tag};`).join('')});out center tags 160;`;
           const data=await request(overpassUrl,new URLSearchParams({data:query}).toString(),'application/x-www-form-urlencoded');
           if(!Array.isArray(data?.elements)||data.elements.length>500||data.remark)throw unavailable();
           elements=data.elements;
@@ -88,7 +95,7 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
         const candidates=[];
         for(const e of elements) {
           const t=e?.tags,p=e?.center??e;
-          if(!t||!inBox(p)||!clean(t.name,180)||!clean(t.building,80)||t.building==='no'||!(t.historic&&t.historic!=='no'||t.heritage&&t.heritage!=='no'||t.tourism==='museum'))continue;
+          if(!t||!inBox(p)||!clean(t.building,80)||t.building==='no'||!notable(t))continue;
           const street=clean(t['addr:street'],160),house=clean(t['addr:housenumber'],40);
           if(!street||!house||!/^\d[\p{L}\p{N}\s/.,-]*$/u.test(house)||distance(start.location,p)>radius||distance(start.location,p)<60)continue;
           const item={address:`Москва, ${street}, ${house}`,location:{lat:p.lat,lon:p.lon}};

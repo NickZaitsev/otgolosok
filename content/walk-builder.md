@@ -37,7 +37,7 @@
 
 The example is schematic, not an actual route. `geometry` in real responses is decoded exclusively from routed Valhalla pedestrian legs, in travel order. `stops` excludes start and the automatic return point. Distance is summed from leg lengths and rounded to meters; walking time is summed from leg times and rounded up to minutes. Routing can snap to the walking network within 150 m of each requested point. No straight-line or driving fallback is used.
 
-Automatic discovery uses the bundled Moscow OSM building catalog, without an external lookup. Eligible buildings are named, tagged historic, heritage, or museum, with both street and house number. Search radius is `min(4050, minutes * 90 / (mode === 'loop' ? 2 : 1))` meters, based on the distance budget with a return allowance for loops. This is a candidate search bound, not a guarantee of walking reachability. Invalid names, addresses, coordinates, duplicate buildings, and out-of-radius results are discarded. Up to four stops are ordered by nearest neighbor from start. The actual walking route must fit the requested duration, a 90 m/min distance ceiling, and a detour ceiling of `max(1200 m, 4 * direct waypoint distance)`. Over-budget automatic routes drop the final stop and retry, down to two stops, with at most three routing calls. Manual routes never reorder or silently remove stops. Discovery is heuristic, not a globally optimal tour search.
+Automatic discovery uses the bundled Moscow OSM building catalog, without an external lookup. A building is eligible when it carries a street and a house number plus at least one notability signal: `historic`, `heritage`, `tourism=museum`, a `wikidata` item, a `wikipedia` link, or an `architect`. A `name` tag is not required and is not a signal on its own, because it also marks every shop and office tower, while many Moscow landmarks carry their title only in the linked Wikidata item. Search radius is `min(4050, minutes * 90 / (mode === 'loop' ? 2 : 1))` meters, based on the distance budget with a return allowance for loops. This is a candidate search bound, not a guarantee of walking reachability. Invalid names, addresses, coordinates, duplicate buildings, and out-of-radius results are discarded. Up to four stops are ordered by nearest neighbor from start. The actual walking route must fit the requested duration, a 90 m/min distance ceiling, and a detour ceiling of `max(1200 m, 4 * direct waypoint distance)`. Over-budget automatic routes drop the final stop and retry, down to two stops, with at most three routing calls. Manual routes never reorder or silently remove stops. Discovery is heuristic, not a globally optimal tour search.
 
 OSM labels and tags are map information, not verified historical facts. Historical claims remain the responsibility of the story research pipeline.
 
@@ -59,6 +59,18 @@ extracts nodes, ways and multipolygon buildings, uses bounding-box centers as
 Overpass does, and retains the OSM IDs, relevant tags, source SHA-256 and ODbL
 attribution. It excludes buildings outside the application's Moscow rectangle.
 The catalog is a snapshot and will not pick up later OSM edits until refreshed.
+
+The builder also reports how many notable buildings it dropped for lack of an
+address. An address is the only handle the story pipeline has on a building, so
+these are excluded rather than guessed at. Filling them from a nearby OSM address
+node was measured and rejected: of 211 such buildings in the September 2026
+extract, exactly one had an address node inside its outline, because the rest are
+campus blocks, monastery corpuses, gates and other objects OSM never addressed.
+
+Build the catalog from the same extract Valhalla used. A catalog newer than the
+routing graph can offer a stop the graph does not know; routing then snaps within
+100 m or the planner drops the final stop and retries, so the mismatch is bounded
+but it wastes routing attempts.
 
 ```sh
 python3 -m venv /tmp/otgolosok-osmium
