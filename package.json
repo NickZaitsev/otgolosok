@@ -17,6 +17,7 @@
     "generator:dev": "STATIC_DIR=out node backend/server.mjs"
   },
   "dependencies": {
+    "@softmg/airouter-logs": "file:vendor/softmg-airouter-logs-0.1.0.tgz",
     "leaflet": "1.9.4",
     "next": "16.3.4",
     "react": "19.2.8",

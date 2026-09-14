@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@softmg/airouter-logs':
+        specifier: file:vendor/softmg-airouter-logs-0.1.0.tgz
+        version: file:vendor/softmg-airouter-logs-0.1.0.tgz
       leaflet:
         specifier: 1.9.4
         version: 1.9.4
@@ -528,6 +531,11 @@ packages:
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
+
+  '@softmg/airouter-logs@file:vendor/softmg-airouter-logs-0.1.0.tgz':
+    resolution: {integrity: sha512-m7tWquzOgxZing1aYJYHc7VzBMigci0xkNJ8RuMeO6Ymxrdx+KhJiZUvJgo0fCag0m+2ffH3grZnGS7dQUT8mg==, tarball: file:vendor/softmg-airouter-logs-0.1.0.tgz}
+    version: 0.1.0
+    engines: {node: '>=18'}
 
   '@swc/helpers@0.5.23':
     resolution: {integrity: sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==}
@@ -2546,6 +2554,8 @@ snapshots:
   '@rolldown/pluginutils@1.0.1': {}
 
   '@rtsao/scc@1.1.0': {}
+
+  '@softmg/airouter-logs@file:vendor/softmg-airouter-logs-0.1.0.tgz': {}
 
   '@swc/helpers@0.5.23':
     dependencies:
