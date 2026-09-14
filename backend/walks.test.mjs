@@ -23,7 +23,10 @@ function route(request,time=100) {
   const points=request.locations;
   return {trip:{status:0,units:'kilometers',legs:points.slice(1).map((p,i)=>({summary:{time,length:Math.abs(p.lat-points[i].lat)*111.195},shape:encode([points[i],{lat:(p.lat+points[i].lat)/2,lon:p.lon},p])}))}};
 }
-const candidates=()=>({elements:[1,2,3,4].map(n=>({type:'way',center:stop(n).location,tags:{name:`House ${n}`,building:'yes',historic:'building','addr:street':'Арбат','addr:housenumber':String(n+2)}}))});
+// One qualifying signal each: a name is never required, and most Moscow landmarks
+// carry their title in the linked Wikidata item instead of an OSM name tag.
+const signals=[{historic:'building'},{heritage:'2'},{wikidata:'Q1676676'},{architect:'Фёдор Шехтель'}];
+const candidates=()=>({elements:[1,2,3,4].map(n=>({type:'way',center:stop(n).location,tags:{building:'yes','addr:street':'Арбат','addr:housenumber':String(n+2),...signals[n-1]}}))});
 function fixture(handler) {
   const calls=[];
   const plan=createWalkPlanner({routerUrl:'https://router.test/route',overpassUrl:'https://osm.test/',discoveryElements:null,minIntervalMs:0,fetchImpl:async(url,options)=>{
@@ -57,16 +60,19 @@ test('strict input validation makes no upstream calls',async()=>{
 for(const mode of ['loop','open'])test(`automatic ${mode} selects 2-4 ordered addressed buildings`,async()=>{
   const data=candidates();
   data.elements.reverse();data.elements.push(...[
-    {...data.elements[0],tags:{...data.elements[0].tags,name:'<bad>'}},
     {...data.elements[0],tags:{...data.elements[0].tags,'addr:housenumber':'<123>'}},
-    {...data.elements[0],tags:{name:'no address',building:'yes',historic:'building'}},
+    {...data.elements[0],tags:{building:'yes','addr:street':'Арбат','addr:housenumber':'99',name:'Бизнес-центр'}},
+    {...data.elements[0],tags:{building:'yes',historic:'building'}},
     {...data.elements[0],center:{lat:55.9,lon:37.6}},
   ]);
   const {plan,calls}=fixture((url,o)=>url.includes('osm')?data:route(JSON.parse(o.body)));
   const result=await plan({start,mode,minutes:30});
   assert.deepEqual(result.stops,[1,2,3,4].map(stop));
   const query=new URLSearchParams(calls[0].options.body).get('data');
-  assert.ok(query.includes(`around:${mode==='loop'?1350:2700},55.75,37.6`));assert.match(query,/\[building\]\[name\]/);
+  assert.ok(query.includes(`around:${mode==='loop'?1350:2700},55.75,37.6`));
+  assert.doesNotMatch(query,/\[name\]/);
+  for(const tag of ['[historic]','[heritage]','[tourism=museum]','[wikidata]','[wikipedia]','[architect]'])
+    assert.ok(query.includes(`[building]["addr:street"]["addr:housenumber"]${tag}`),tag);
   assert.deepEqual(result.geometry.at(-1),mode==='loop'?start.location:stop(4).location);
 });
 
@@ -179,12 +185,13 @@ test('offline discovery routes both modes without contacting Overpass',async()=>
   assert.deepEqual(elements,original);
 });
 
-test('offline discovery applies the radius and building filters without external fallback',async()=>{
+test('offline discovery applies the radius, building and notability filters without external fallback',async()=>{
   const elements=candidates().elements;
   elements.push({...elements[0],center:{lat:55.9,lon:37.6}});
   elements[1]={...elements[1],tags:{...elements[1].tags,building:'no'}};
   elements[2]={...elements[2],tags:{...elements[2].tags,'addr:housenumber':'<bad>'}};
-  elements[3]={...elements[3],tags:{...elements[3].tags,historic:'no'}};
+  // A named, addressed building with no notability signal is not a stop.
+  elements[3]={...elements[3],tags:{...elements[3].tags,architect:'',name:'Бизнес-центр'}};
   const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:elements,fetchImpl:async()=>assert.fail('must not fetch')});
   await assert.rejects(plan({start,mode:'loop',minutes:30}),{code:'WALK_STOPS_NOT_FOUND'});
 });
@@ -192,7 +199,10 @@ test('offline discovery applies the radius and building filters without external
 test('bundled Moscow catalog supports automatic discovery by default',async()=>{
   assert.equal(discoveryCatalog.license,'ODbL-1.0');
   assert.match(discoveryCatalog.sourceSha256,/^[a-f0-9]{64}$/);
-  assert.ok(discoveryCatalog.elements.length>100);
+  assert.ok(discoveryCatalog.elements.length>1500);
+  // Wikidata and Wikipedia links carry most of the catalog; a name tag is optional.
+  assert.ok(discoveryCatalog.elements.filter(e=>!e.tags.name).length>500);
+  assert.ok(discoveryCatalog.elements.every(e=>e.tags.building&&e.tags['addr:street']&&e.tags['addr:housenumber']));
   const calls=[];
   const plan=createWalkPlanner({routerUrl:'https://router.test/route',fetchImpl:async(url,options)=>{
     assert.equal(url,'https://router.test/route');
