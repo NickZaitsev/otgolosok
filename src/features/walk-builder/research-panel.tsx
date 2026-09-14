@@ -7,9 +7,9 @@ import { request, RequestError } from "./request";
 
 const phases = { discovery: "Ищем адреса поблизости", research: "Проверяем источники об адресах", routing: "Соединяем подтверждённые остановки", narration: "Готовим тексты и аудио", complete: "Прогулка готова" };
 
-export function ResearchPanel({ draft, current, persist, offered, disabled, action: actionRef, setBusy, onApply, onChooseStart }: {
+export function ResearchPanel({ draft, current, persist, offered, disabled, chooseStartDisabled, action: actionRef, setBusy, onApply, onChooseStart }: {
   draft: Draft; current: RefObject<Draft>; persist: (draft: Draft) => boolean;
-  offered: boolean; disabled: boolean; action: RefObject<AbortController | null>;
+  offered: boolean; disabled: boolean; chooseStartDisabled: boolean; action: RefObject<AbortController | null>;
   setBusy: (value: string) => void; onApply: () => void; onChooseStart: () => void;
 }) {
   const [job, setJob] = useState<ResearchJob | null>(null);
@@ -123,6 +123,6 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, acti
       catch (caught) { setError(caught instanceof Error ? caught.message : "Не удалось применить прогулку."); }
     }}>Использовать прогулку</button></> : null}
     {draft.researchApplied ? <p role="status">Исследованная прогулка применена. Готовые истории находятся ниже; дополнительных заказов нет.</p> : null}
-    <button disabled={disabled} onClick={onChooseStart}>Выбрать другое начало</button>
+    <button disabled={chooseStartDisabled} onClick={onChooseStart}>Выбрать другое начало</button>
   </section>;
 }
