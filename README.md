@@ -68,6 +68,10 @@ Nginx обслуживает `/create`, `/admin`, `/walk` без расшире�
 - `ADMIN_TOKEN` включает редакторский доступ; используйте случайный ключ минимум
   32 байта, например результат `openssl rand -hex 32`. Без ключа доступ закрыт.
 - `MAX_DAILY_JOBS`, `STORY_MODEL`, `WRITER_MODEL` настраивают генератор.
+- `AIROUTER_LOGS_TOKEN` включает отправку ошибок backend в Airouter; `AIROUTER_LOGS_ENDPOINT`
+  по умолчанию `https://airouter.softmg.tech`. Оба параметра передаются только backend
+  при запуске Compose. После изменения `.env` пересоздайте контейнер backend командой
+  `docker compose up -d --build backend`. Без токена отправка логов отключена.
 - `YANDEX_TTS_API_KEY` включает Яндекс SpeechKit в выборе сервиса озвучивания
   в `/admin`. Нужен API-ключ сервисного аккаунта с ролью `ai.speechkit-tts.user`
   и разрешением ключа на синтез речи. Ключ передаётся только backend;

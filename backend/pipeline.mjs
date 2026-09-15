@@ -171,9 +171,12 @@ export function startWorker(options) {
     if (stopped || running) return;
     const job = options.store.claimNext({ audioOnly: !options.provider });
     if (!job) return;
-    running = runJob(job,{...options,signal:controller.signal}).catch(() => {
+    running = runJob(job,{...options,signal:controller.signal}).then(result => {
+      if(result.stage==="failed") options.logs?.captureMessage(result.error?.code??"Job failed","error",{operation:"runJob",context:{jobId:result.id,kind:result.kind,code:result.error?.code}});
+    }).catch(error => {
       // Only infrastructure/store failure escapes runJob; startup recovery handles it.
       console.error("Story worker stopped unexpectedly");
+      options.logs?.captureException(error,{operation:"runJob",context:{jobId:job.id,kind:job.kind}});
     }).finally(() => {running=null;if (!stopped)queueMicrotask(wake);});
   };
   const timer = setInterval(wake,2000);
