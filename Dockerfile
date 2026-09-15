@@ -3,6 +3,7 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm install --global pnpm@10.24.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY vendor/softmg-airouter-logs-0.1.0.tgz ./vendor/
 RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build
