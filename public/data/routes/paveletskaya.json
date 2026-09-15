@@ -753,6 +753,10 @@
           "lon": 37.64955,
           "lat": 55.72387
         },
+        "trigger_location": {
+          "lat": 55.723339,
+          "lon": 37.649203
+        },
         "transition": "",
         "next_hint": "Дальше бывший фабричный квартал.",
         "duration_sec": 60,

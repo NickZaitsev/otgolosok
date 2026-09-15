@@ -7,6 +7,13 @@ export {
   CLEAN_REPLAY_TRACK,
   cleanReplayFixes,
 } from "./fixtures/clean";
+export {
+  createWalkReplayTrack,
+  WALK_REPLAY_ACCURACY_M,
+  WALK_REPLAY_INTERVAL_MS,
+  WALK_REPLAY_STEP_M,
+} from "./fixtures/walk";
+export type { WalkReplayOptions } from "./fixtures/walk";
 export type {
   PositionSource,
   PositionSourceError,
