@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import routeData from "../../../public/data/routes/paveletskaya.json";
 import mapData from "../../../public/data/maps/paveletskaya.json";
 import { createProjection, renderMap } from "../../../scripts/build-map.mjs";
-import { getWalkChapters } from "./walk-plan";
+import { chapterTriggerConfig, getWalkChapters, nextChapterTarget } from "./walk-plan";
 import type { Route } from "./types";
 
 const route = routeData as Route;
@@ -115,5 +115,39 @@ describe("Geographic map", () => {
       expect(svg).toContain(`data-step="${step.id}" data-lat="${step.location.lat}" data-lon="${step.location.lon}"`);
     }
     expect(svg).not.toMatch(/NaN|Infinity|stroke-dasharray|route-drift/);
+  });
+});
+
+describe("Chapter triggers", () => {
+  const chapters = getWalkChapters(route);
+  const fallback = { enterM: 35, exitM: 60, minFixes: 3, windowSize: 5, maxAccuracyM: 50 };
+  const finish = walk.finish.location;
+
+  it("listens for the stop of the chapter that plays next", () => {
+    for (let index = 0; index < chapters.length - 1; index += 1) {
+      const next = chapters[index + 1];
+      expect(nextChapterTarget(chapters, index, finish)).toEqual(next.trigger_location ?? next.location);
+    }
+  });
+
+  it("listens from the street for a stop set back from the route", () => {
+    const housing = chapters.findIndex((chapter) => chapter.id === "housing");
+    expect(chapters[housing].trigger_location).toBeDefined();
+    expect(nextChapterTarget(chapters, housing - 1, finish)).toEqual(chapters[housing].trigger_location);
+    expect(nextChapterTarget(chapters, housing - 1, finish)).not.toEqual(chapters[housing].location);
+  });
+
+  it("falls back to the finish on the last chapter and outside the walk", () => {
+    expect(nextChapterTarget(chapters, chapters.length - 1, finish)).toEqual(finish);
+    expect(nextChapterTarget([], 0, finish)).toEqual(finish);
+  });
+
+  it("uses the shared trigger until a stop is checked on the ground", () => {
+    expect(chapterTriggerConfig(chapters, 0, fallback)).toBe(fallback);
+  });
+
+  it("prefers a field-checked trigger declared on the next stop", () => {
+    const checked = [chapters[0], { ...chapters[1], trigger: { enter_m: 20, exit_m: 45, min_fixes: 4, max_accuracy_m: 25 } }];
+    expect(chapterTriggerConfig(checked, 0, fallback)).toEqual({ enterM: 20, exitM: 45, minFixes: 4, windowSize: 5, maxAccuracyM: 25 });
   });
 });

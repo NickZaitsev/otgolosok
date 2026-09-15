@@ -1008,6 +1008,146 @@ summary:focus-visible {
 }
 
 .audio-skip span { font-size: 1.25rem; }
+
+.audio-rate {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+.audio-rate button {
+  flex: 1;
+  min-height: 2.75rem;
+  border: 1px solid var(--walk-faint);
+  color: var(--walk-muted);
+  background: transparent;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.audio-rate button[aria-pressed="true"] {
+  border-color: var(--walk-accent);
+  color: var(--walk-accent);
+  background: var(--walk-surface);
+  font-weight: 700;
+}
+
+/* Where am I, and how far to the next stop. */
+.walk-map {
+  margin-block: var(--space-lg) var(--space-xl);
+}
+
+.walk-map-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.walk-map-head h2 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.walk-map-head button {
+  min-height: 2.75rem;
+  padding: 0 var(--space-sm);
+  border: 0;
+  color: var(--walk-accent);
+  background: transparent;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  cursor: pointer;
+}
+
+.walk-map-canvas {
+  position: relative;
+  height: 14rem;
+  border: 1px solid rgb(242 237 228 / 20%);
+  overflow: hidden;
+}
+
+/* The explore map positions its controls for a full-screen sheet; this is an inset. */
+.walk-map-canvas .explore-map .leaflet-bottom.leaflet-right {
+  top: auto;
+  bottom: 4px;
+  right: 4px;
+}
+
+.walk-map-canvas .explore-map .leaflet-control-scale {
+  margin-bottom: 6px;
+  margin-left: 6px;
+}
+
+.walk-map-canvas .map-attribution {
+  bottom: 4px;
+  right: 56px;
+}
+
+.walk-map-canvas .map-loading,
+.walk-map-canvas .map-network-note {
+  top: var(--space-md);
+  left: var(--space-md);
+  right: var(--space-md);
+}
+
+.walk-map-next {
+  margin-top: var(--space-sm);
+  color: var(--walk-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.walk-advance {
+  margin-bottom: var(--space-xl);
+  padding: var(--space-md);
+  background: var(--walk-surface);
+}
+
+.walk-advance h2 {
+  color: var(--walk-muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.walk-advance-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-xs);
+  margin-block: var(--space-sm);
+}
+
+.walk-advance-options button {
+  min-height: 3rem;
+  padding: var(--space-xs);
+  border: 1px solid var(--walk-faint);
+  color: var(--walk-ink);
+  background: transparent;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.walk-advance-options button[aria-pressed="true"] {
+  border-color: var(--walk-accent);
+  color: var(--walk-bg);
+  background: var(--walk-accent);
+  font-weight: 700;
+}
+
+.walk-advance p {
+  color: var(--walk-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.walk-advance p.walk-advance-warning {
+  margin-top: var(--space-sm);
+  color: var(--walk-ochre);
+}
 .audio-skip:disabled { opacity: 0.4; cursor: default; }
 .audio-timeline:disabled { opacity: 0.4; cursor: default; }
 .audio-skip:hover:enabled { border-color: var(--walk-accent); color: var(--walk-accent); }

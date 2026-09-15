@@ -1,4 +1,5 @@
 import { formatPlaybackTime } from "@/lib/audio/playback-progress";
+import { playbackRates, type PlaybackRate } from "./walk-settings";
 
 type Props = {
   position: number;
@@ -6,11 +7,15 @@ type Props = {
   canSeek: boolean;
   playing: boolean;
   label: string;
+  rate: PlaybackRate;
   onToggle: () => void;
   onSeek: (seconds: number) => void;
+  onRate: (rate: PlaybackRate) => void;
 };
 
-export function AudioPlayerControls({ position, duration, canSeek, playing, label, onToggle, onSeek }: Props) {
+const rateLabel = (rate: PlaybackRate) => `${String(rate).replace(".", ",")}×`;
+
+export function AudioPlayerControls({ position, duration, canSeek, playing, label, rate, onToggle, onSeek, onRate }: Props) {
   const maximum = Number.isFinite(duration) && duration > 0 ? duration : 0;
   const current = Math.min(maximum, Math.max(0, position));
   return <section className="audio-player" aria-label="Плеер истории">
@@ -29,6 +34,12 @@ export function AudioPlayerControls({ position, duration, canSeek, playing, labe
       </button>
       <button type="button" className="audio-skip" aria-label="Вперёд на 15 секунд"
         disabled={!canSeek || current >= maximum} onClick={() => onSeek(current + 15)}><span aria-hidden="true">↷</span>15 с</button>
+    </div>
+    <div className="audio-rate" role="group" aria-label="Скорость рассказа">
+      {playbackRates.map((value) => (
+        <button key={value} type="button" aria-pressed={value === rate}
+          aria-label={`Скорость ${rateLabel(value)}`} onClick={() => onRate(value)}>{rateLabel(value)}</button>
+      ))}
     </div>
   </section>;
 }

@@ -72,6 +72,18 @@ export type WalkStep = {
   transition: string;
   next_hint: string;
   duration_sec: number;
+  // Where the walker has to be for this chapter to start, when that differs from
+  // the building it describes: a house set back from the route is still reached
+  // from the street. The map pin stays on `location`.
+  trigger_location?: Coordinates;
+  // Set per stop once its approach is checked on the ground; the first POI's
+  // trigger is used until then.
+  trigger?: {
+    enter_m: number;
+    exit_m: number;
+    min_fixes: number;
+    max_accuracy_m: number;
+  };
   audio?: {
     url: string;
     duration_sec: number;

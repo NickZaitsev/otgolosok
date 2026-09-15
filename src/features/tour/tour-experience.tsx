@@ -20,6 +20,8 @@ import {
   CLEAN_REPLAY_TRACK,
   createBrowserPositionSource,
   createReplayPositionSource,
+  createWalkReplayTrack,
+  WALK_REPLAY_INTERVAL_MS,
 } from "@/lib/position";
 import type {
   PositionSourceKind,
@@ -31,12 +33,18 @@ import {
   type WakeLockController,
   type WakeLockStatus,
 } from "@/lib/wake-lock";
-import type { Route } from "./types";
+import {
+  createMediaSessionController,
+  type MediaSessionController,
+} from "@/lib/audio/media-session";
+import type { Coordinates, Route } from "./types";
 import { StorySources, StoryText } from "./story-content";
 import { RouteNotes } from "./route-notes";
 import { AroundScreen } from "../explore/around-screen";
 import { RouteMap } from "./route-map";
-import { getWalkChapters, WalkPlanPreview } from "./walk-plan";
+import { chapterTriggerConfig, getWalkChapters, nextChapterTarget, WalkPlanPreview } from "./walk-plan";
+import { WalkMap } from "./walk-map";
+import { advanceModeHints, advanceModeLabels, advanceModes, useWalkSettings, type AdvanceMode, type PlaybackRate } from "./walk-settings";
 import { AudioPlayerControls } from "./audio-player-controls";
 import { loadPublishedRoute } from "./published-route-cache";
 import { usePlaybackProgress } from "./use-playback-progress";
@@ -96,6 +104,11 @@ const audioLabels: Record<AudioStatus, string> = {
   error: "ошибка воспроизведения",
 };
 
+function applyPlaybackRate(audio: HTMLAudioElement, rate: number) {
+  try { if (audio.playbackRate !== rate) audio.playbackRate = rate; }
+  catch { /* Some engines reject a rate change while the source loads. */ }
+}
+
 export function TourExperience({ route }: { route: Route }) {
   const firstPoi = route.pois[0];
   if (!firstPoi) {
@@ -137,6 +150,25 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
   const playbackSourceRef = useRef<string | null>(null);
   const restoringOffsetRef = useRef(false);
   const lastSavedTimeRef = useRef(0);
+  const { settings, updateSettings } = useWalkSettings();
+  const mediaRef = useRef<MediaSessionController | null>(null);
+  // The position subscription outlives the render that created it, so chapter
+  // state it depends on is read through refs rather than a stale closure.
+  const liveRef = useRef({
+    advance: settings.advance as AdvanceMode,
+    rate: settings.rate as number,
+    index: 0,
+    count: 0,
+    target: firstPoi.location as Coordinates,
+    config: {
+      enterM: firstPoi.trigger.enter_m, exitM: firstPoi.trigger.exit_m,
+      minFixes: firstPoi.trigger.min_fixes, windowSize: 5, maxAccuracyM: firstPoi.trigger.max_accuracy_m,
+    } as TriggerConfig,
+  });
+  const selectChapterRef = useRef<(index: number) => void>(() => {});
+  const controlsRef = useRef<{ toggle: () => void; seekBy: (offset: number) => void; seekTo: (position: number) => void }>({
+    toggle: () => {}, seekBy: () => {}, seekTo: () => {},
+  });
   useEffect(() => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 20000);
@@ -162,14 +194,20 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
   const { savedCheckpoint, saveCheckpoint, clearCheckpoint } = usePlaybackProgress(route.id,
     chapters.flatMap((item) => item.audio ? [{ id: item.id, audioUrl: item.audio.url, durationSec: item.audio.duration_sec }] : []));
   const savedChapterIndex = savedCheckpoint ? chapters.findIndex((item) => item.id === savedCheckpoint.chapterId) : -1;
-  const target = route.walk?.finish.location ?? firstPoi.viewpoint ?? firstPoi.location;
-  const triggerConfig: TriggerConfig = {
+  const finish = route.walk?.finish.location ?? firstPoi.viewpoint ?? firstPoi.location;
+  const baseTriggerConfig: TriggerConfig = {
     enterM: firstPoi.trigger.enter_m,
     exitM: firstPoi.trigger.exit_m,
     minFixes: firstPoi.trigger.min_fixes,
     windowSize: 5,
     maxAccuracyM: firstPoi.trigger.max_accuracy_m,
   };
+  // The walk listens for the stop whose chapter plays next, not for the finish.
+  const target = chapters.length ? nextChapterTarget(chapters, chapterIndex, finish) : finish;
+  const triggerConfig = chapters.length ? chapterTriggerConfig(chapters, chapterIndex, baseTriggerConfig) : baseTriggerConfig;
+  const hasNextChapter = chapterIndex + 1 < chapters.length;
+  const chapterTitle = chapter?.title ?? null;
+  const chapterPlace = chapter?.place ?? null;
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) {
@@ -239,6 +277,8 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
       stopSourceRef.current?.();
       stopSourceRef.current = null;
       if (audioElement) stopAudioElement(audioElement);
+      mediaRef.current?.release();
+      mediaRef.current = null;
       void wakeControllerRef.current?.dispose();
       wakeControllerRef.current = null;
     };
@@ -268,6 +308,48 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
     };
   }, [saveCheckpoint]);
 
+  // Refreshed after every render so the long-lived position subscription and the
+  // lock-screen handlers always act on the chapter that is playing now.
+  useEffect(() => {
+    liveRef.current = {
+      advance: settings.advance, rate: settings.rate, index: chapterIndex, count: chapters.length,
+      target, config: triggerConfig,
+    };
+    selectChapterRef.current = selectChapter;
+    controlsRef.current = {
+      toggle: toggleAudio,
+      seekBy: (offset) => seekPlayback((audioRef.current?.currentTime ?? playbackTime) + offset),
+      seekTo: (position) => seekPlayback(position),
+    };
+  });
+
+  useEffect(() => {
+    if (audioRef.current) applyPlaybackRate(audioRef.current, settings.rate);
+  }, [settings.rate, audioStatus]);
+
+  useEffect(() => {
+    const media = mediaRef.current;
+    if (!media || phase !== "walking") return;
+    media.setActions({
+      play: () => controlsRef.current.toggle(),
+      pause: () => controlsRef.current.toggle(),
+      seekBy: (offset) => controlsRef.current.seekBy(offset),
+      seekTo: (position) => controlsRef.current.seekTo(position),
+      next: chapterIndex + 1 < chapters.length ? () => selectChapterRef.current(chapterIndex + 1) : undefined,
+      previous: chapterIndex > 0 ? () => selectChapterRef.current(chapterIndex - 1) : undefined,
+    });
+    media.setTrack({
+      title: chapterTitle ?? walkContent.story.opening,
+      artist: chapterPlace ? `Часть ${chapterIndex + 1} из ${chapters.length} · ${chapterPlace}` : route.title,
+      album: route.title,
+      artwork: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml" }],
+    });
+  }, [phase, chapterIndex, chapters.length, chapterTitle, chapterPlace, walkContent.story.opening, route.title]);
+
+  useEffect(() => {
+    mediaRef.current?.setPlaybackState(audioStatus === "playing" ? "playing" : phase === "walking" ? "paused" : "none");
+  }, [audioStatus, phase]);
+
   function syncPlaybackProgress(persist = false) {
     const audio = audioRef.current;
     if (!audio || !sessionActiveRef.current || restoringOffsetRef.current) return;
@@ -275,6 +357,7 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
     if (audio.readyState < 1 || !Number.isFinite(audio.currentTime)) return;
     setPlaybackTime(audio.currentTime);
     if (Number.isFinite(audio.duration)) setMediaDuration(audio.duration);
+    mediaRef.current?.setPosition({ durationSec: audio.duration, positionSec: audio.currentTime, playbackRate: audio.playbackRate });
     const checkpoint = activeCheckpointRef.current;
     if (!checkpoint) return;
     activeCheckpointRef.current = { ...checkpoint, positionSec: audio.currentTime };
@@ -298,8 +381,11 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
     if (!sessionActiveRef.current) return;
     audioBusyRef.current = false;
     syncPlaybackProgress(true);
-    if (audioRef.current?.ended) setAudioStatus("ended");
+    const ended = Boolean(audioRef.current?.ended);
+    if (ended) setAudioStatus("ended");
     else setAudioStatus((current) => current === "playing" ? "paused" : current);
+    const { advance, index, count } = liveRef.current;
+    if (ended && advance === "sequence" && index + 1 < count) selectChapterRef.current(index + 1);
   }
 
   async function playSignal(source: string | null = walkAudioUrl, positionSec = 0, resume = false) {
@@ -366,7 +452,9 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
     sessionRef.current = session;
     playbackRef.current += 1;
     const playback = playbackRef.current;
-    const replay = new URLSearchParams(window.location.search).get("replay") === "clean";
+    const params = new URLSearchParams(window.location.search);
+    const replayMode = params.get("replay");
+    const replay = replayMode === "clean" || replayMode === "walk";
     const initialIndex = requestedIndex !== undefined && requestedIndex >= 0 && requestedIndex < chapters.length ? requestedIndex : resumeSaved && savedChapterIndex >= 0 ? savedChapterIndex : 0;
     const initialPosition = requestedIndex === undefined && resumeSaved && savedCheckpoint ? savedCheckpoint.positionSec : 0;
     const startAudioUrl = chapters[initialIndex]?.audio?.url ?? chapters[initialIndex]?.content.story.audio_url ?? firstPoi.story.audio_url;
@@ -403,6 +491,9 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
         setAudioStatus(unlocked ? "ready" : "blocked");
       });
     }
+    // Lock-screen controls are the point of the walk: the phone stays pocketed.
+    mediaRef.current?.release();
+    mediaRef.current = createMediaSessionController();
     const wakeController = createWakeLockController({
       onChange: (snapshot) => {
         if (sessionRef.current === session) setWakeStatus(snapshot.status);
@@ -412,7 +503,15 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
     setWakeStatus(wakeController.getSnapshot().status);
     void wakeController.request();
 
-    const source = replay
+    // `replay=walk` walks the routed line at an unhurried pace, so chapter
+    // triggers can be checked at a desk; `speed` compresses that pace.
+    const walkTrack = replayMode === "walk" && route.walk
+      ? createWalkReplayTrack(route.walk.path.coordinates.map(([lon, lat]) => ({ lat, lon })))
+      : [];
+    const speed = Math.min(20, Math.max(1, Number(params.get("speed")) || 1));
+    const source = walkTrack.length
+      ? createReplayPositionSource({ fixes: walkTrack, intervalMs: Math.round(WALK_REPLAY_INTERVAL_MS / speed) })
+      : replay
       ? createReplayPositionSource({ fixes: CLEAN_REPLAY_TRACK, intervalMs: 650 })
       : createBrowserPositionSource();
 
@@ -427,12 +526,13 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
         }));
         return;
       }
+      const live = liveRef.current;
 
       const result = processFix(
         triggerStateRef.current,
         update.fix,
-        target,
-        triggerConfig,
+        live.target,
+        live.config,
         audioBusyRef.current,
       );
       triggerStateRef.current = result.state;
@@ -443,9 +543,11 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
         trigger: result.state,
       }));
 
-      // The short walk is editorially sequenced by the reader until its stops
-      // and recordings are field-checked. GPS must not interrupt a chapter.
-      if (result.event?.type === "entered" && !route.walk) void playSignal();
+      if (result.event?.type !== "entered") return;
+      // Arriving at a stop starts its chapter only when the walker asked for it.
+      // processFix already withholds the event while a recording is playing.
+      if (!route.walk) void playSignal();
+      else if (live.advance === "place" && live.index + 1 < live.count) selectChapterRef.current(live.index + 1);
     });
   }
 
@@ -463,6 +565,8 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
     audioBusyRef.current = false;
     restoringOffsetRef.current = false;
     if (audioRef.current) stopAudioElement(audioRef.current);
+    mediaRef.current?.release();
+    mediaRef.current = null;
     const wakeController = wakeControllerRef.current;
     wakeControllerRef.current = null;
     void wakeController?.dispose();
@@ -487,6 +591,16 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
     setPlaybackTime(0);
     setMediaDuration(0);
     restoringOffsetRef.current = false;
+    // The trigger now watches the stop after this one, so earlier candidate fixes
+    // no longer apply. Update the live values here as well: a position update can
+    // arrive before the render that refreshes them.
+    triggerStateRef.current = createTriggerState();
+    liveRef.current = {
+      ...liveRef.current, index,
+      target: nextChapterTarget(chapters, index, finish),
+      config: chapterTriggerConfig(chapters, index, baseTriggerConfig),
+    };
+    setDiagnostics((current) => ({ ...current, trigger: triggerStateRef.current, distanceM: null }));
     const source = chapters[index].audio?.url ?? chapters[index].content.story.audio_url;
     // Pass the destination explicitly: React state still holds the old chapter
     // during this click. Starting here also preserves mobile user activation.
@@ -547,8 +661,8 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
           </div>
 
           {!walkUsesTestAudio ? <AudioPlayerControls position={playbackTime} duration={duration}
-            canSeek={canSeek} playing={audioStatus === "playing"} label={audioButtonLabel}
-            onToggle={toggleAudio} onSeek={seekPlayback} /> : <div className="walk-controls">
+            canSeek={canSeek} playing={audioStatus === "playing"} label={audioButtonLabel} rate={settings.rate}
+            onToggle={toggleAudio} onSeek={seekPlayback} onRate={(rate: PlaybackRate) => updateSettings({ rate })} /> : <div className="walk-controls">
             <button className="audio-button" type="button" onClick={toggleAudio}>{audioButtonLabel}</button>
           </div>}
 
@@ -558,6 +672,23 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
               {chapterIndex + 1 < chapters.length ? `Дальше: ${chapters[chapterIndex + 1].title}` : "Закончить маршрут"}
             </button>
           </nav> : null}
+
+          {chapter ? <WalkMap chapters={chapters} index={chapterIndex} path={route.walk?.path}
+            user={diagnostics.lastFix} distanceToNextM={hasNextChapter ? diagnostics.distanceM : null}
+            onSelect={selectChapter} /> : null}
+
+          {chapter ? <section className="walk-advance" aria-labelledby="walk-advance-title">
+            <h2 id="walk-advance-title">Как включать следующую часть</h2>
+            <div className="walk-advance-options" role="group" aria-labelledby="walk-advance-title">
+              {advanceModes.map((mode: AdvanceMode) => <button key={mode} type="button"
+                aria-pressed={settings.advance === mode}
+                onClick={() => updateSettings({ advance: mode })}>{advanceModeLabels[mode]}</button>)}
+            </div>
+            <p>{advanceModeHints[settings.advance]}</p>
+            {settings.advance === "place" && positionFailed
+              ? <p className="walk-advance-warning" role="status">Геолокация недоступна, сама часть не включится. Пользуйтесь кнопкой «Дальше».</p>
+              : null}
+          </section> : null}
 
           {chapters.length > 1 ? <nav className="chapter-list" aria-labelledby="chapter-list-title">
             <h2 id="chapter-list-title">Части прогулки</h2>
@@ -598,9 +729,11 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
               <DebugValue label="Источник" value={diagnostics.source ?? "—"} />
               <DebugValue label="Геопозиция" value={sourceLabels[diagnostics.sourceStatus]} />
               <DebugValue label="Точность" value={diagnostics.lastFix ? `${Math.round(diagnostics.lastFix.accuracyM)} м` : "—"} />
-              <DebugValue label={route.walk ? "До финиша по прямой" : "До точки"} value={diagnostics.distanceM === null ? "—" : `${Math.round(diagnostics.distanceM)} м`} />
+              <DebugValue label={chapter ? hasNextChapter ? "До следующей части" : "До финиша" : "До точки"} value={diagnostics.distanceM === null ? "—" : `${Math.round(diagnostics.distanceM)} м`} />
+              <DebugValue label="Зона входа" value={`${triggerConfig.enterM} м`} />
               <DebugValue label="Кандидаты" value={`${candidateCount} / ${diagnostics.trigger.recentInside.length || triggerConfig.windowSize}`} />
               <DebugValue label="Триггер" value={diagnostics.trigger.phase} />
+              <DebugValue label="Переход" value={advanceModeLabels[settings.advance]} />
               <DebugValue label="Аудио" value={audioLabels[audioStatus]} />
               <DebugValue label="Экран" value={wakeLabels[wakeStatus]} />
             </dl>
@@ -659,7 +792,11 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
       <audio ref={audioRef} preload="auto" aria-label="Аудиогид"
         onTimeUpdate={() => syncPlaybackProgress()}
         onLoadedMetadata={() => {
-          if (sessionActiveRef.current && audioRef.current && Number.isFinite(audioRef.current.duration)) setMediaDuration(audioRef.current.duration);
+          const audio = audioRef.current;
+          if (!audio) return;
+          // A fresh source resets the rate in some engines; reapply on every load.
+          applyPlaybackRate(audio, liveRef.current.rate);
+          if (sessionActiveRef.current && Number.isFinite(audio.duration)) setMediaDuration(audio.duration);
         }}
         onSeeked={() => syncPlaybackProgress(true)}
         onPlaying={() => {
