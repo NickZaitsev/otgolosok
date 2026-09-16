@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { WalkAdmin } from "./walk-admin";
-import { draftCheck, initialDraft, safeSourceLink, stages, type AdminApi, type ContentBatch, type Draft, type Job, type Summary, type TtsProvider } from "./model";
+import { draftCheck, initialDraft, safeSourceLink, stages, type AdminApi, type ContentBatch, type ContentBatchItem, type ContentPlace, type ContentWorker, type Draft, type Job, type Summary, type TtsProvider } from "./model";
 import { getSession, signOut } from "../auth/client";
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -38,7 +38,14 @@ export function AdminDesk() {
   const [jobs, setJobs] = useState<Summary[]>([]);
   const [batches, setBatches] = useState<ContentBatch[]>([]);
   const [batchLimit, setBatchLimit] = useState(50);
-  const [contentStats, setContentStats] = useState<{ places: number; texts: number; audio: number } | null>(null);
+  const [selectedBatch, setSelectedBatch] = useState<(ContentBatch & { items: ContentBatchItem[] }) | null>(null);
+  const [contentPlaces, setContentPlaces] = useState<ContentPlace[]>([]);
+  const [contentQuery, setContentQuery] = useState("");
+  const [contentPlace, setContentPlace] = useState<ContentPlace | null>(null);
+  const [contentDraft, setContentDraft] = useState<Draft | null>(null);
+  const [contentWorkers, setContentWorkers] = useState<ContentWorker[]>([]);
+  const [newWorkerToken, setNewWorkerToken] = useState("");
+  const [contentStats, setContentStats] = useState<{ places: number; texts: number; audio: number; jobs?:Record<string,number>; external?:Record<string,number> } | null>(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [queryInput, setQueryInput] = useState("");
@@ -113,7 +120,7 @@ export function AdminDesk() {
   }
 
   const api: AdminApi = async <T,>(path: string, signal: AbortSignal, body?: unknown): Promise<T> => {
-    const endpoint = path.startsWith("/walks") ? `/api/story-admin${path}` : `/api/story-admin/jobs${path}`;
+    const endpoint = path.startsWith("/walks") ? `/api/story-admin${path}` : path.startsWith("/content/") ? `/api/story-admin${path}` : `/api/story-admin/jobs${path}`;
     const response = await fetch(endpoint, {
       method: body === undefined ? "GET" : "POST", cache: "no-store", credentials: "same-origin",
       redirect: "error", signal,
@@ -166,8 +173,8 @@ export function AdminDesk() {
   }
 
   async function loadBatches(signal: AbortSignal) {
-    const [result,stats]=await Promise.all([api<{ batches: ContentBatch[] }>("/content/batches", signal),api<{ places:number;texts:number;audio:number }>("/content/stats",signal)]);
-    setBatches(result.batches);setContentStats(stats);
+    const [result,stats,places,workers]=await Promise.all([api<{ batches: ContentBatch[] }>("/content/batches", signal),api<{ places:number;texts:number;audio:number;jobs:Record<string,number>;external:Record<string,number> }>("/content/stats",signal),api<{places:ContentPlace[]}>(`/content/places?limit=50&q=${encodeURIComponent(contentQuery)}`,signal),api<{workers:ContentWorker[]}>("/content/workers",signal)]);
+    setBatches(result.batches);setContentStats(stats);setContentPlaces(places.places);setContentWorkers(workers.workers);
   }
 
   useEffect(() => {
@@ -289,7 +296,7 @@ export function AdminDesk() {
             <WalkAdmin api={api} busy={busy} run={run} openJob={openJob} onDirtyChange={setWalkDirty} />
           ) : section === "content" ? (
             <section className="admin-addresses" aria-labelledby="admin-content-title">
-              <div className="admin-section-head"><div><h2 id="admin-content-title">OSM-партии</h2><p className="admin-meta">Массовая подготовка текстов и очередь локального Silero/F5-TTS.</p>{contentStats&&<p className="admin-meta">В каталоге {contentStats.places} · текстов {contentStats.texts} · аудио {contentStats.audio}</p>}</div><button disabled={Boolean(busy)} onClick={()=>void run("Обновление партий…",loadBatches)}>Обновить</button></div>
+              <div className="admin-section-head"><div><h2 id="admin-content-title">OSM-партии</h2><p className="admin-meta">Массовая подготовка текстов и очередь локального Silero/F5-TTS.</p>{contentStats&&<p className="admin-meta">В каталоге {contentStats.places} · текстов {contentStats.texts} · аудио {contentStats.audio} · текстовая очередь {contentStats.jobs?.queued??0}/{contentStats.jobs?.working??0} · аудиоочередь {contentStats.external?.queued??0}/{contentStats.external?.leased??0}</p>}</div><button disabled={Boolean(busy)} onClick={()=>void run("Обновление партий…",loadBatches)}>Обновить</button></div>
               <form className="admin-filters" onSubmit={event=>{event.preventDefault();void run("Создание партии…",async signal=>{
                 await api("/content/batches",signal,{requestKey:crypto.randomUUID(),name:`OSM · ${new Date().toLocaleString("ru")}`,limit:batchLimit,textProfile:"story-v1",mode:"text-and-audio",ttsProfile:"silero-ru-v1"});
                 await loadBatches(signal);setNotice("Партия создана и поставлена в очередь.");});}}>
@@ -298,9 +305,21 @@ export function AdminDesk() {
               </form>
               <div className="admin-table-wrap"><table className="admin-table"><caption className="admin-sr-only">Партии OSM</caption><thead><tr><th>Партия</th><th>Состояние</th><th>Прогресс</th><th>Действия</th></tr></thead><tbody>{batches.map(batch=><tr key={batch.id}>
                 <th>{batch.name}<span className="admin-row-id">{batch.id.slice(0,8)}</span></th><td>{batch.state}</td><td>{batch.counts.ready} готово · {batch.counts.working} в работе · {batch.counts.queued} ждут · {batch.counts.failed} остановлено · всего {batch.counts.total}</td><td><div className="admin-row-actions">
+                  <button disabled={Boolean(busy)} onClick={()=>void run("Загрузка партии…",async signal=>setSelectedBatch((await api<{batch:ContentBatch & {items:ContentBatchItem[]}}>(`/content/batches/${batch.id}`,signal)).batch))}>Состав</button>
                   {batch.state==="running"?<button disabled={Boolean(busy)} onClick={()=>void run("Пауза…",async signal=>{await api(`/content/batches/${batch.id}/pause`,signal,{});await loadBatches(signal);})}>Пауза</button>:batch.state==="paused"?<button disabled={Boolean(busy)} onClick={()=>void run("Продолжение…",async signal=>{await api(`/content/batches/${batch.id}/resume`,signal,{});await loadBatches(signal);})}>Продолжить</button>:null}
                   {batch.state!=="cancelled"&&<button disabled={Boolean(busy)} onClick={()=>void run("Отмена…",async signal=>{await api(`/content/batches/${batch.id}/cancel`,signal,{});await loadBatches(signal);})}>Отменить</button>}
                 </div></td></tr>)}</tbody></table></div>
+              {selectedBatch&&<section className="admin-review"><div className="admin-section-head"><h3>Состав: {selectedBatch.name}</h3><button onClick={()=>setSelectedBatch(null)}>Закрыть</button></div><div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Место</th><th>Состояние</th><th>Ошибка</th><th>Действие</th></tr></thead><tbody>{selectedBatch.items.map(item=><tr key={item.placeId}><th>{item.name}<span className="admin-row-id">{item.address??item.placeId}</span></th><td>{item.state}</td><td>{item.error?.message??"—"}</td><td>{["failed","review_required","insufficient_evidence","retry_wait"].includes(item.state)&&<button disabled={Boolean(busy)} onClick={()=>void run("Повтор задания…",async signal=>{const result=await api<{batch:ContentBatch & {items:ContentBatchItem[]}}>(`/content/batches/${selectedBatch.id}/items/${item.placeId}/retry`,signal,{});setSelectedBatch(result.batch);await loadBatches(signal);})}>Повторить</button>}</td></tr>)}</tbody></table></div></section>}
+              <section className="admin-review"><div className="admin-section-head"><div><h3>Каталог и редактура</h3><p className="admin-meta">Автоматический текст появляется публично и уходит в TTS только после утверждения.</p></div></div>
+                <form className="admin-filters" role="search" onSubmit={event=>{event.preventDefault();void run("Поиск мест…",loadBatches);}}><label className="admin-search"><span>Название или адрес</span><input value={contentQuery} onChange={event=>setContentQuery(event.target.value)}/></label><button>Найти</button></form>
+                <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Место</th><th>Текст</th><th>Аудио</th><th>Действие</th></tr></thead><tbody>{contentPlaces.map(place=><tr key={place.id}><th>{place.name}<span className="admin-row-id">{place.address??place.id}</span></th><td>{place.text?.verification??"нет"}</td><td>{place.text?.audio?"готово":"нет"}</td><td><button disabled={Boolean(busy)} onClick={()=>void run("Загрузка места…",async signal=>{const value=(await api<{place:ContentPlace}>(`/content/places/${place.id}`,signal)).place;setContentPlace(value);setContentDraft(value.text?.draft??null);})}>Открыть</button></td></tr>)}</tbody></table></div>
+                {contentPlace&&<article className="admin-document"><div className="admin-document-head"><div><p className="admin-context">{contentPlace.id}</p><h3>{contentPlace.name}</h3></div><button onClick={()=>{setContentPlace(null);setContentDraft(null);}}>Закрыть</button></div>{contentDraft?<><label htmlFor="content-title">Заголовок</label><input id="content-title" value={contentDraft.title} onChange={event=>setContentDraft({...contentDraft,title:event.target.value})}/>{contentDraft.paragraphs.map((paragraph,index)=><label key={index}>Абзац {index+1}<textarea value={paragraph.text} onChange={event=>setContentDraft({...contentDraft,paragraphs:contentDraft.paragraphs.map((value,i)=>i===index?{...value,text:event.target.value}:value)})}/></label>)}<div className="admin-actions"><button className="admin-primary" disabled={Boolean(busy)||!contentDraft.title.trim()||contentDraft.paragraphs.some(item=>!item.text.trim())} onClick={()=>void run("Утверждение текста…",async signal=>{const value=(await api<{place:ContentPlace}>(`/content/places/${contentPlace.id}/approve`,signal,{story:contentDraft})).place;setContentPlace(value);setContentDraft(value.text?.draft??null);await loadBatches(signal);setNotice("Текст утверждён; нужная озвучка поставлена в очередь.");})}>Утвердить текст</button>{contentPlace.text?.verification==="editorial"&&<button disabled={Boolean(busy)} onClick={()=>void run("Постановка аудио…",async signal=>{await api(`/content/places/${contentPlace.id}/audio`,signal,{profileId:"silero-ru-v1"});setNotice("Озвучка Silero поставлена в очередь.");})}>Озвучить Silero</button>}</div></>:<p className="admin-empty">Для этого места текст ещё не создан.</p>}</article>}
+              </section>
+              <section className="admin-review"><div className="admin-section-head"><div><h3>Локальные TTS-воркеры</h3><p className="admin-meta">Активным считается воркер, обращавшийся к API за последние две минуты.</p></div><button disabled={Boolean(busy)} onClick={()=>void run("Создание ключа…",async signal=>{const result=await api<{worker:ContentWorker & {token:string}}>("/content/workers",signal,{name:`Локальный воркер ${new Date().toLocaleDateString("ru")}`,profiles:["silero-ru-v1","f5-ru-v1"]});setNewWorkerToken(result.worker.token);await loadBatches(signal);})}>Выпустить ключ</button></div>
+                {newWorkerToken&&<div className="admin-callout"><strong>Скопируйте токен сейчас:</strong><pre>{newWorkerToken}</pre><button onClick={()=>void navigator.clipboard.writeText(newWorkerToken)}>Копировать</button></div>}
+                {!contentWorkers.some(worker=>!worker.revokedAt&&worker.lastSeenAt&&Date.now()-new Date(worker.lastSeenAt).valueOf()<120000)&&<p className="admin-callout">Сейчас нет подходящего online-воркера. Аудиозадания останутся в очереди.</p>}
+                <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Воркер</th><th>Профили</th><th>Последний heartbeat</th><th>Действие</th></tr></thead><tbody>{contentWorkers.map(worker=><tr key={worker.id}><th>{worker.name}</th><td>{worker.profiles.join(", ")}</td><td>{worker.revokedAt?"отозван":worker.lastSeenAt?formattedDate(worker.lastSeenAt):"ещё не подключался"}</td><td>{!worker.revokedAt&&<button disabled={Boolean(busy)} onClick={()=>void run("Отзыв ключа…",async signal=>{await api(`/content/workers/${worker.id}/revoke`,signal,{});await loadBatches(signal);})}>Отозвать</button>}</td></tr>)}</tbody></table></div>
+              </section>
             </section>
           ) : (
             <section className="admin-addresses" aria-labelledby="admin-addresses-title">

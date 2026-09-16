@@ -199,7 +199,7 @@ test("failed and stale narration leave the last successful publication intact", 
 test("restart keeps the draft and publication while interrupted narration becomes retryable", async (t) => {
   const directory = await mkdtemp(join(tmpdir(), "otgolosok-walk-admin-"));
   const databasePath = join(directory, "jobs.sqlite");
-  t.after(() => rm(directory, { recursive: true, force: true }));
+  t.after(async () => { try { store?.close(); } catch {} await rm(directory, { recursive: true, force: true }); });
   let store = createStore(databasePath, { maxDaily: 10 });
   const chapter = store.getWalkAdmin(routeId).chapters[0];
   const draft = structuredClone(chapter.draft);
@@ -210,7 +210,6 @@ test("restart keeps the draft and publication while interrupted narration become
   store.close();
 
   store = createStore(databasePath, { maxDaily: 10 });
-  t.after(() => store.close());
   assert.equal(store.recoverInterrupted(), 1);
   const restored = store.getWalkAdmin(routeId).chapters[0];
   assert.equal(restored.draft.title, draft.title);

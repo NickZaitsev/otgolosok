@@ -26,6 +26,7 @@
 *.pem
 __pycache__/
 *.pyc
+.worker-spool/
 
 # debug
 npm-debug.log*

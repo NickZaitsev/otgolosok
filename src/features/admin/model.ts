@@ -12,6 +12,17 @@ export type Summary = {
   error: { code?: string; message: string } | null;
 };
 export type TtsProvider = "openai" | "yandex";
+export type ContentBatch = {
+  id: string; name: string; state: string; mode: string; textProfile: string; ttsProfile: string | null;
+  createdAt: string; updatedAt: string;
+  counts: { total: number; queued: number; working: number; ready: number; failed: number };
+};
+export type ContentBatchItem = { placeId: string; name: string; address: string | null; state: string; error: { message?: string } | null };
+export type ContentPlace = {
+  id: string; name: string; address: string | null; location: { lat: number; lon: number };
+  text: null | { id: string; profile: string; story: Draft; draft: Draft; verification: string; audio: Audio | null; createdAt: string };
+};
+export type ContentWorker = { id: string; name: string; profiles: string[]; createdAt: string; lastSeenAt: string | null; revokedAt: string | null };
 export type Job = Summary & {
   canApprove: boolean; canRegenerate: boolean; canRevoice: boolean; canRetry: boolean;
   ttsProviders: { id: TtsProvider; label: string; available: boolean; defaultVoice: string; voices: { id: string; label: string }[] }[];

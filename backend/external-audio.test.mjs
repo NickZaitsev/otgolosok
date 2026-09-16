@@ -52,3 +52,10 @@ test("worker failures retry without changing the source text",t=>{
   assert.equal(f.store.get(f.source.id).data.story.title,"Дом");
   assert.deepEqual(f.store.failExternalAudio(claim.id,{workerId:"gpu",generation:claim.leaseGeneration,leaseToken:claim.leaseToken,failureId:"failure-0001",code:"SYNTHESIS_FAILED"}),failed);
 });
+
+test("worker credentials are profile-scoped and revocable",t=>{
+  const f=fixture(t);const issued=f.store.createWorkerCredential({name:"GPU",profiles:["silero-ru-v1"]});
+  assert.equal(issued.token.length,64);assert.deepEqual(f.store.authenticateWorkerToken(issued.token).profiles,["silero-ru-v1"]);
+  assert.equal(f.store.listWorkerCredentials()[0].name,"GPU");f.store.revokeWorkerCredential(issued.id);
+  assert.equal(f.store.authenticateWorkerToken(issued.token),null);
+});

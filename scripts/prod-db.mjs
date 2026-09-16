@@ -84,20 +84,23 @@ function describe(file) {
   const stages = new Map();
   for (const { stage } of jobs) stages.set(stage, (stages.get(stage) ?? 0) + 1);
   const chapters = tables.has("walk_chapters") ? db.prepare("SELECT count(*) AS n FROM walk_chapters").get().n : null;
+  const placeAudio = tables.has("place_texts") ? db.prepare("SELECT audio_json FROM place_texts WHERE audio_json IS NOT NULL").all() : [];
   db.close();
-  return { integrity, jobs, stages, chapters, bytes: statSync(file).size };
+  return { integrity, jobs, stages, chapters, placeAudio, bytes: statSync(file).size };
 }
 
 function report(file, dataDir) {
-  const { integrity, jobs, stages, chapters, bytes } = describe(file);
+  const { integrity, jobs, stages, chapters, placeAudio, bytes } = describe(file);
   const audio = jobs.flatMap((row) => {
     const record = JSON.parse(row.record_json);
     return row.stage === "ready" && record.data?.audio ? [record.data.audio.url.split("/").pop()] : [];
   });
-  const missing = dataDir ? audio.filter((name) => !existsSync(join(dataDir, "audio", name))) : [];
+  const catalogAudio=placeAudio.map(row=>JSON.parse(row.audio_json)?.url?.split("/").pop()).filter(Boolean);
+  const allAudio=[...new Set([...audio,...catalogAudio])];
+  const missing = dataDir ? allAudio.filter((name) => !existsSync(join(dataDir, "audio", name))) : [];
   process.stdout.write(`  целостность: ${integrity}, ${(bytes / 1024).toFixed(0)} КБ\n`);
   process.stdout.write(`  заданий: ${jobs.length}${jobs.length ? ` (${[...stages].map(([stage, count]) => `${stage}=${count}`).join(", ")})` : ""}\n`);
-  process.stdout.write(`  глав прогулки: ${chapters ?? "таблицы ещё нет"}, готовых историй с озвучкой: ${audio.length}\n`);
+  process.stdout.write(`  глав прогулки: ${chapters ?? "таблицы ещё нет"}, аудио адресов: ${audio.length}, аудио OSM: ${catalogAudio.length}\n`);
   if (dataDir) {
     process.stdout.write(missing.length
       ? `  ВНИМАНИЕ: не хватает записей: ${missing.join(", ")}\n`

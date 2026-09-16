@@ -7,6 +7,7 @@ import { sha256 } from "./domain.mjs";
 import { validVoiceId } from "./tts-voices.mjs";
 import { createWalkAdminStore } from "./walk-admin.mjs";
 import { createWalkResearchStore } from "./walk-research-store.mjs";
+import { createContentStore } from "./content-store.mjs";
 
 const STAGES = new Set([
   "queued",
@@ -81,7 +82,7 @@ export function createStore(
     mkdirSync(dirname(databasePath), { recursive: true });
   }
 
-  const db = new DatabaseSync(databasePath);
+  const db = new DatabaseSync(databasePath, { timeout: 5000, allowUnknownNamedParameters: false });
   let closed = false;
 
   db.function("casefold", { deterministic: true }, (value) =>
@@ -126,6 +127,17 @@ export function createStore(
     );
     CREATE INDEX IF NOT EXISTS external_audio_available_idx
       ON external_audio_jobs(state, next_attempt_at, created_at);
+    CREATE TABLE IF NOT EXISTS worker_credentials (
+      id TEXT PRIMARY KEY, name TEXT NOT NULL, token_hash TEXT NOT NULL UNIQUE, profiles_json TEXT NOT NULL,
+      revoked_at TEXT, created_at TEXT NOT NULL, last_seen_at TEXT
+    );
+    CREATE TABLE IF NOT EXISTS job_attempts (
+      job_id TEXT NOT NULL, generation INTEGER NOT NULL, worker_id TEXT NOT NULL, state TEXT NOT NULL,
+      started_at TEXT NOT NULL, finished_at TEXT, error_json TEXT, PRIMARY KEY(job_id,generation)
+    );
+    CREATE TABLE IF NOT EXISTS audio_artifacts (
+      sha256 TEXT PRIMARY KEY, job_id TEXT NOT NULL, metadata_json TEXT NOT NULL, created_at TEXT NOT NULL
+    );
   `);
 
   const findById = db.prepare(
@@ -188,6 +200,7 @@ export function createStore(
     return { id: row.id, state: row.state, profileId: row.profile_id, attempts: Number(row.attempts),
       maxAttempts: Number(row.max_attempts), leaseGeneration: Number(row.lease_generation),
       leaseExpiresAt: row.lease_expires_at, updatedAt: row.updated_at,
+      workerId: row.worker_id,
       receipt: row.receipt_json ? JSON.parse(row.receipt_json) : null,
       error: row.error_json ? JSON.parse(row.error_json) : null };
   }
@@ -234,10 +247,12 @@ export function createStore(
   }
 
   const walkAdminStore = createWalkAdminStore({ db, now, transaction, checkCapacity });
+  const contentStore = createContentStore({ db, now, transaction });
 
   return {
     ...walkAdminStore,
     ...createWalkResearchStore({ db, now, transaction, checkCapacity }),
+    ...contentStore,
     createOrGet({ key, address }) {
       if (typeof key !== "string" || key.length === 0) {
         throw new TypeError("key must be a non-empty string");
@@ -282,6 +297,10 @@ export function createStore(
 
     get(id) {
       return decode(findById.get(id));
+    },
+
+    getByKey(key) {
+      return typeof key === "string" ? decode(findByKey.get(key)) : null;
     },
 
     listAdmin({ limit = 50, offset = 0, q = "", stage = "", relevance = "active" } = {}) {
@@ -501,6 +520,20 @@ export function createStore(
       });
     },
 
+    createWorkerCredential({name,profiles}) {
+      if(typeof name!=="string"||!name.trim()||name.length>100||!Array.isArray(profiles)||!profiles.length||profiles.length>20
+        ||profiles.some(profile=>typeof profile!=="string"||!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(profile)))throw codedError("BAD_REQUEST");
+      const token=randomUUID().replaceAll("-","")+randomUUID().replaceAll("-",""),id=randomUUID(),timestamp=isoNow(now);
+      db.prepare("INSERT INTO worker_credentials VALUES (?,?,?,?,NULL,?,NULL)").run(id,name.trim(),sha256(token),encode([...new Set(profiles)]),timestamp);
+      return {id,name:name.trim(),profiles:[...new Set(profiles)],createdAt:timestamp,token};
+    },
+    listWorkerCredentials() {return db.prepare("SELECT * FROM worker_credentials ORDER BY created_at DESC").all().map(row=>{const active=db.prepare("SELECT max(updated_at) seen FROM external_audio_jobs WHERE worker_id LIKE ?").get(`${row.id}:%`);return{id:row.id,name:row.name,profiles:JSON.parse(row.profiles_json),revokedAt:row.revoked_at,createdAt:row.created_at,lastSeenAt:active.seen??row.last_seen_at};});},
+    revokeWorkerCredential(id) {const timestamp=isoNow(now),result=db.prepare("UPDATE worker_credentials SET revoked_at=? WHERE id=? AND revoked_at IS NULL").run(timestamp,id);return result.changes?{id,revokedAt:timestamp}:null;},
+    authenticateWorkerToken(token) {
+      if(typeof token!=="string"||token.length<32)return null;const row=db.prepare("SELECT * FROM worker_credentials WHERE token_hash=? AND revoked_at IS NULL").get(sha256(token));
+      if(!row)return null;db.prepare("UPDATE worker_credentials SET last_seen_at=? WHERE id=?").run(isoNow(now),row.id);return{id:row.id,name:row.name,profiles:JSON.parse(row.profiles_json)};
+    },
+
     claimExternalAudio({ workerId, requestId, profileIds, leaseMs = 300000 }) {
       if (typeof workerId !== "string" || workerId.length < 1 || workerId.length > 100
         || typeof requestId !== "string" || !/^[a-zA-Z0-9._-]{8,100}$/.test(requestId)
@@ -528,6 +561,7 @@ export function createStore(
         db.prepare(`UPDATE external_audio_jobs SET state='leased',attempts=attempts+1,lease_generation=?,lease_token_hash=?,
           lease_expires_at=?,worker_id=?,claim_request_id=?,updated_at=? WHERE id=?`)
           .run(generation,sha256(token),expiresAt,workerId,requestId,timestamp,row.id);
+        db.prepare("INSERT INTO job_attempts VALUES (?,?,?,?,?,NULL,NULL)").run(row.id,generation,workerId,"leased",timestamp);
         const claimed=externalRow(row.id), payload=JSON.parse(claimed.payload_json);
         return {...publicExternal(claimed),leaseToken:token,...payload};
       });
@@ -553,6 +587,8 @@ export function createStore(
         db.prepare(`UPDATE external_audio_jobs SET state=?,next_attempt_at=?,lease_token_hash=NULL,lease_expires_at=NULL,
           worker_id=NULL,claim_request_id=NULL,error_json=?,updated_at=? WHERE id=?`).run(terminal?"failed":"retry_wait",
             isoNow(()=>now()+delay),encode({failureId,code,message:typeof message==="string"?message.slice(0,500):code}),timestamp,id);
+        db.prepare("UPDATE job_attempts SET state=?,finished_at=?,error_json=? WHERE job_id=? AND generation=?")
+          .run(terminal?"failed":"retry_wait",timestamp,encode({failureId,code,message}),id,generation);
         return publicExternal(externalRow(id));
       });
     },
@@ -569,13 +605,17 @@ export function createStore(
           return publicExternal(row);
         }
         requireLease(row,workerId,generation,token);
-        const source=decode(findById.get(row.source_job_id));
-        if(!source||source.revision!==Number(row.source_revision)||!hasValidStoryText(source.data?.story))throw codedError("CONFLICT");
+        const textSource=row.source_job_id.startsWith("place-text:")?db.prepare("SELECT * FROM place_texts WHERE id=?").get(row.source_job_id.slice(11)):null;
+        const source=textSource?null:decode(findById.get(row.source_job_id));
+        if(textSource?!hasValidStoryText({...JSON.parse(textSource.story_json),address:"OSM place"}):(!source||source.revision!==Number(row.source_revision)||!hasValidStoryText(source.data?.story)))throw codedError("CONFLICT");
         const timestamp=isoNow(now),receipt={jobId:id,uploadId,uploadSha256,artifact,acceptedAt:timestamp};
         db.prepare(`UPDATE external_audio_jobs SET state='succeeded',upload_id=?,upload_sha256=?,receipt_json=?,
           lease_token_hash=NULL,lease_expires_at=NULL,claim_request_id=NULL,error_json=NULL,updated_at=? WHERE id=?`)
           .run(uploadId,uploadSha256,encode(receipt),timestamp,id);
-        save({...source,stage:"ready",data:{...source.data,audio:artifact,revoice:null},error:null,revision:source.revision+1,updatedAt:timestamp});
+        db.prepare("UPDATE job_attempts SET state='succeeded',finished_at=? WHERE job_id=? AND generation=?").run(timestamp,id,generation);
+        db.prepare("INSERT OR IGNORE INTO audio_artifacts VALUES (?,?,?,?)").run(artifact.sha256,id,encode(artifact),timestamp);
+        if(textSource)db.prepare("UPDATE place_texts SET audio_json=? WHERE id=?").run(encode(artifact),textSource.id);
+        else save({...source,stage:"ready",data:{...source.data,audio:artifact,revoice:null},error:null,revision:source.revision+1,updatedAt:timestamp});
         return publicExternal(externalRow(id));
       });
     },
@@ -584,6 +624,8 @@ export function createStore(
 
     close() {
       if (!closed) {
+        for (const statement of [findById,findByKey,writeJob,insertJob]) statement.finalize?.();
+        try { db.exec("PRAGMA optimize; PRAGMA wal_checkpoint(TRUNCATE)"); } catch { /* Another live connection may own WAL. */ }
         db.close();
         closed = true;
       }
