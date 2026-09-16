@@ -178,6 +178,50 @@ make -C /Users/fenix007/projects/utils/services deploy-otgolosok-prod VPS=servic
 `/srv/sites/otgolosok.softmg.tech/dist/`. Для поисковых роботов задано
 `User-agent: *` и `Disallow: /` в `src/app/robots.txt`.
 
+Backend генератора выкладывается отдельно, из проекта `services`:
+
+```bash
+make -C /Users/fenix007/projects/utils/services deploy-otgolosok-generator VPS=services@93.189.230.19
+```
+
+### База генератора на рабочей машине
+
+`jobs.sqlite` на проде пишется в режиме WAL, и журнал рядом с ним регулярно
+больше самого файла. Копировать один `jobs.sqlite` нельзя: потеряется бо́льшая
+часть свежих заданий. Все команды ниже снимают согласованный `VACUUM INTO`.
+
+```bash
+make db-dump      # снять с прода в backend/data/prod-dump, нужен доступ по SSH
+make db-import    # поставить выгрузку в backend/data, сохранив прежнюю базу
+make db-info      # что лежит в локальной базе
+make db-restore   # вернуть последнюю сохранённую копию
+```
+
+Передать коллеге без доступа к серверу:
+
+```bash
+make db-dump && make db-pack
+# получателю: tar -xzf otgolosok-prod-db-*.tar.gz -C backend/data && make db-import
+```
+
+Переменные: `VPS`, `REMOTE_DIR`, `GENERATOR_CONTAINER`, `DUMP_DIR`, `DATA_DIR`,
+`ARCHIVE`, `BACKUP`. По умолчанию выгрузка, архив и резервные копии лежат внутри
+`backend/data/`, который исключён из Git: в них production-данные, передавайте
+их по закрытому каналу.
+
+`db-import` сохраняет прежнюю базу в `backend/data/backup-local-<дата>` и
+удаляет `jobs.sqlite-wal` и `-shm`: журнал принадлежит конкретному файлу базы,
+и рядом с чужим `jobs.sqlite` он не нужен. `db-restore BACKUP=<каталог>`
+выбирает копию, если их несколько.
+
+`backend/server.mjs` не читает `.env` сам. Без `OPENAI_API_KEY` и
+`OPENAI_BASE_URL` в окружении worker не стартует, и импортированные данные
+остаются нетронутыми:
+
+```bash
+pnpm build && pnpm generator:dev   # http://127.0.0.1:4175
+```
+
 ## Структура
 
 - `src/app` — App Router, метаданные и PWA manifest.
@@ -191,6 +235,7 @@ make -C /Users/fenix007/projects/utils/services deploy-otgolosok-prod VPS=servic
 - `content` — редакторское досье первой карточки и план генерации за 5–10 минут.
 - `public/sw.js` — Service Worker для офлайн-запуска, данных и аудио.
 - `scripts/build-service-worker.mjs` — формирует список файлов и версию кэша после статического экспорта.
+- `scripts/prod-db.mjs` — выгрузка базы генератора с прода, импорт и откат на рабочей машине.
 
 После первого открытия production-сборки дождитесь сообщения «Офлайн-копия готова».
 Теперь приложение можно перезагрузить без сети: сохраняются HTML, JavaScript, CSS,
