@@ -20,6 +20,13 @@ Russian Silero model yourself and verify its license and checksum. Run:
 python workers/tts/worker.py --engine silero
 ```
 
+Verified CPU pilot configuration (Windows, Ryzen 5 5600G, 32 GB RAM): Silero
+`v4_ru.pt`, SHA-256 `896ab96347d5bd781ab97959d4fd6885620e5aab52405d3445626eb7c1414b00`,
+speaker `xenia`, PyTorch `2.14.0+cpu`, Python `3.12.7`, 48 kHz WAV. A 26.3-second
+Russian sample synthesized in 8.36 seconds after loading the model. The checkpoint
+offers `aidar`, `baya`, `kseniya`, `xenia`, `eugene`, and `random`; use `xenia` for
+the first pilot. The model stays loaded across jobs.
+
 F5-TTS is supported through a fixed local command adapter. Configure an executable
 that accepts `--text <text> --output <wav>` as `F5_TTS_COMMAND`, then run
 `python workers/tts/worker.py --engine f5`. Pin and review the chosen checkpoint,
