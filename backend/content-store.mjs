@@ -39,6 +39,8 @@ export function createContentStore({db,now,transaction}) {
       profile TEXT NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,max_attempts INTEGER NOT NULL DEFAULT 3,next_attempt_at TEXT NOT NULL,
       checkpoint_json TEXT,error_json TEXT,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
     CREATE INDEX IF NOT EXISTS content_jobs_available_idx ON content_jobs(state,next_attempt_at,created_at);
+    CREATE TABLE IF NOT EXISTS content_job_attempts (job_id TEXT NOT NULL,generation INTEGER NOT NULL,state TEXT NOT NULL,
+      started_at TEXT NOT NULL,finished_at TEXT,error_json TEXT,PRIMARY KEY(job_id,generation));
     CREATE TABLE IF NOT EXISTS batch_items (batch_id TEXT NOT NULL,place_id TEXT NOT NULL,text_job_id TEXT NOT NULL,state TEXT NOT NULL,
       error_json TEXT,updated_at TEXT NOT NULL,PRIMARY KEY(batch_id,place_id));
     CREATE TABLE IF NOT EXISTS place_texts (id TEXT PRIMARY KEY,place_id TEXT NOT NULL,input_key TEXT NOT NULL UNIQUE,profile TEXT NOT NULL,
@@ -55,6 +57,9 @@ export function createContentStore({db,now,transaction}) {
     FROM batch_items WHERE batch_id=?`).get(id);
   const syncItems=(jobId,state,error=null)=>db.prepare("UPDATE batch_items SET state=?,error_json=?,updated_at=? WHERE text_job_id=?")
     .run(state,error?encode(error):null,iso(now),jobId);
+  const latestApprovedAudio=placeId=>db.prepare(`SELECT audio_json FROM place_texts WHERE place_id=?
+    AND audio_json IS NOT NULL AND audio_json<>'null'
+    ORDER BY created_at DESC,rowid DESC LIMIT 1`).get(placeId)?.audio_json;
   const cancelAudioForPlace=(placeId,timestamp)=>db.prepare(`UPDATE external_audio_jobs SET state='cancelled',lease_token_hash=NULL,
     lease_expires_at=NULL,worker_id=NULL,claim_request_id=NULL,error_json=?,updated_at=? WHERE state IN ('queued','retry_wait','leased')
     AND source_job_id IN (SELECT 'place-text:'||id FROM place_texts WHERE place_id=?)`)
@@ -86,28 +91,32 @@ export function createContentStore({db,now,transaction}) {
         return {id,count:catalog.places.length,complete,createdAt:timestamp};
       });
     },
-    listPlaces({limit=50,offset=0,q="",status="all"}={}) {
-      if(!Number.isSafeInteger(limit)||limit<1||limit>100||!Number.isSafeInteger(offset)||offset<0||typeof q!=="string"||q.length>200||!["all","ready","missing"].includes(status))throw fail("BAD_REQUEST");
+    listPlaces({limit=50,offset=0,q="",status="all",lat=null,lon=null,radius=null}={}) {
+      if(!Number.isSafeInteger(limit)||limit<1||limit>100||!Number.isSafeInteger(offset)||offset<0||typeof q!=="string"||q.length>200||!["all","ready","missing"].includes(status)
+        ||([lat,lon,radius].some(value=>value!==null)&&(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||lat<55.05||lat>56.05||lon<36.75||lon>38.25||radius<50||radius>5000)))throw fail("BAD_REQUEST");
       const filters=["p.archived=0"],params=[];
       if(q.trim()){filters.push("(instr(casefold(p.name),casefold(?))>0 OR instr(casefold(COALESCE(p.address,'')),casefold(?))>0)");params.push(q.trim(),q.trim());}
       if(status==="ready")filters.push("EXISTS(SELECT 1 FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL)");
       if(status==="missing")filters.push("NOT EXISTS(SELECT 1 FROM place_texts t WHERE t.place_id=p.id)");
+      if(lat!==null){const latDelta=radius/111320,lonDelta=radius/(111320*Math.cos(lat*Math.PI/180));filters.push("p.lat BETWEEN ? AND ? AND p.lon BETWEEN ? AND ?");params.push(lat-latDelta,lat+latDelta,lon-lonDelta,lon+lonDelta);}
+      const distanceSql=lat===null?"NULL":`6371000*2*asin(min(1,sqrt(pow(sin(radians(p.lat-?)/2),2)+cos(radians(?))*cos(radians(p.lat))*pow(sin(radians(p.lon-?)/2),2))))`;
+      const distanceParams=lat===null?[]:[lat,lat,lon];if(lat!==null){filters.push(`${distanceSql}<=?`);params.push(...distanceParams,radius);}
       const rows=db.prepare(`SELECT p.*,(SELECT approved_story_json FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL ORDER BY t.created_at DESC,t.rowid DESC LIMIT 1) story_json,
-        (SELECT audio_json FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL AND t.audio_json IS NOT NULL ORDER BY t.created_at DESC,t.rowid DESC LIMIT 1) audio_json
-        FROM places p WHERE ${filters.join(" AND ")} ORDER BY p.name,p.id LIMIT ? OFFSET ?`).all(...params,limit+1,offset);
-      return {places:rows.slice(0,limit).map(row=>({...viewPlace(row),story:row.story_json?decode(row.story_json):null,audio:decode(row.audio_json)})),hasMore:rows.length>limit};
+        (SELECT audio_json FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL AND t.audio_json IS NOT NULL AND t.audio_json<>'null' ORDER BY t.created_at DESC,t.rowid DESC LIMIT 1) audio_json,
+        ${distanceSql} distance_m FROM places p WHERE ${filters.join(" AND ")} ORDER BY ${lat===null?"p.name,p.id":"distance_m,p.name,p.id"} LIMIT ? OFFSET ?`).all(...distanceParams,...params,limit+1,offset);
+      return {places:rows.slice(0,limit).map(row=>({...viewPlace(row),story:row.story_json?decode(row.story_json):null,audio:decode(row.audio_json),distanceM:row.distance_m==null?null:Number(row.distance_m)})),hasMore:rows.length>limit};
     },
     getPlace(id) {
       const place=viewPlace(db.prepare("SELECT * FROM places WHERE id=? AND archived=0").get(id));
       if(!place)return null;
       const text=db.prepare("SELECT * FROM place_texts WHERE place_id=? ORDER BY created_at DESC,rowid DESC LIMIT 1").get(id);
-      const audio=text?.audio_json||db.prepare("SELECT audio_json FROM place_texts WHERE place_id=? AND approved_story_json IS NOT NULL AND audio_json IS NOT NULL AND audio_json<>'null' ORDER BY created_at DESC,rowid DESC LIMIT 1").get(id)?.audio_json;
+      const audio=latestApprovedAudio(id);
       return {...place,text:text?{id:text.id,profile:text.profile,story:decode(text.approved_story_json),draft:decode(text.story_json),verification:text.verification,audio:decode(audio),createdAt:text.created_at}:null};
     },
     getPublishedPlace(id) {
       const place=viewPlace(db.prepare("SELECT * FROM places WHERE id=? AND archived=0").get(id));if(!place)return null;
       const text=db.prepare("SELECT * FROM place_texts WHERE place_id=? AND approved_story_json IS NOT NULL ORDER BY created_at DESC,rowid DESC LIMIT 1").get(id);if(!text)return null;
-      const audio=text.audio_json||db.prepare("SELECT audio_json FROM place_texts WHERE place_id=? AND approved_story_json IS NOT NULL AND audio_json IS NOT NULL AND audio_json<>'null' ORDER BY created_at DESC,rowid DESC LIMIT 1").get(id)?.audio_json;
+      const audio=latestApprovedAudio(id);
       return {...place,text:{id:text.id,profile:text.profile,story:decode(text.approved_story_json),verification:text.verification,audio:decode(audio),createdAt:text.created_at}};
     },
     createBatch({requestKey,name="OSM batch",placeIds=null,limit=50,textProfile="story-v1",mode="text-only",ttsProfile=null}) {
@@ -156,7 +165,8 @@ export function createContentStore({db,now,transaction}) {
       db.prepare("UPDATE batch_items SET state='queued',error_json=NULL,updated_at=? WHERE batch_id=? AND place_id=?").run(timestamp,batchId,placeId);return this.getBatch(batchId);});},
     claimContentJob() {return transaction(()=>{const timestamp=iso(now);const row=db.prepare(`SELECT j.* FROM content_jobs j WHERE j.state IN ('queued','retry_wait') AND j.next_attempt_at<=? AND j.attempts<j.max_attempts
         AND EXISTS(SELECT 1 FROM batch_items i JOIN content_batches b ON b.id=i.batch_id WHERE i.text_job_id=j.id AND i.state IN ('queued','retry_wait') AND b.state='running') ORDER BY j.created_at,j.id LIMIT 1`).get(timestamp);
-      if(!row)return null;db.prepare("UPDATE content_jobs SET state='working',attempts=attempts+1,updated_at=? WHERE id=?").run(timestamp,row.id);syncItems(row.id,"working");
+      if(!row)return null;const generation=Number(row.attempts)+1;db.prepare("UPDATE content_jobs SET state='working',attempts=attempts+1,updated_at=? WHERE id=?").run(timestamp,row.id);
+      db.prepare("INSERT OR REPLACE INTO content_job_attempts VALUES (?,?,?, ?,NULL,NULL)").run(row.id,generation,"working",timestamp);syncItems(row.id,"working");
       const place=viewPlace(db.prepare("SELECT * FROM places WHERE id=?").get(row.place_id));return {id:row.id,place,profile:row.profile,checkpoint:decode(row.checkpoint_json),attempts:Number(row.attempts)+1};});},
     updateContentCheckpoint(id,checkpoint) {db.prepare("UPDATE content_jobs SET checkpoint_json=?,updated_at=? WHERE id=?").run(encode(checkpoint),iso(now),id);},
     completeContentJob(id,{story,evidence,verification="automatic"}) {return transaction(()=>{const row=db.prepare("SELECT * FROM content_jobs WHERE id=?").get(id);if(!row||row.state!=="working")throw fail("CONFLICT");
@@ -165,18 +175,21 @@ export function createContentStore({db,now,transaction}) {
         (id,place_id,input_key,profile,content_hash,story_json,evidence_json,verification,audio_json,approved_story_json,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)
         `)
         .run(textId,row.place_id,row.input_key,row.profile,sha256(encode(story)),encode(story),encode(evidence),verification,null,verification==="editorial"?encode(story):null,timestamp);
-      db.prepare("UPDATE content_jobs SET state='ready',error_json=NULL,updated_at=? WHERE id=?").run(timestamp,id);syncItems(id,"ready");
+      db.prepare("UPDATE content_jobs SET state='ready',error_json=NULL,updated_at=? WHERE id=?").run(timestamp,id);db.prepare("UPDATE content_job_attempts SET state='ready',finished_at=? WHERE job_id=? AND generation=?").run(timestamp,id,row.attempts);syncItems(id,"ready");
       return {id:textId,placeId:row.place_id,story,sourceRevision:0,audioProfiles:[]};});},
     failContentJob(id,error,state="failed") {if(!["failed","review_required","insufficient_evidence"].includes(state))throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_jobs WHERE id=?").get(id);if(!row)return null;
       const timestamp=iso(now),retry=state==="failed"&&Number(row.attempts)<Number(row.max_attempts),next=retry?"retry_wait":state;
-      db.prepare("UPDATE content_jobs SET state=?,next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(next,new Date(now()+(row.attempts<=1?30000:120000)).toISOString(),encode(error),timestamp,id);syncItems(id,next,error);return {id,state:next,error};});},
-    recoverContentJobs() {const timestamp=iso(now),error={code:"INTERRUPTED",message:"Content worker interrupted."};const rows=db.prepare("SELECT id FROM content_jobs WHERE state='working'").all();for(const row of rows){db.prepare("UPDATE content_jobs SET state='retry_wait',next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(timestamp,encode(error),timestamp,row.id);syncItems(row.id,"retry_wait",error);}return rows.length;},
-    approvePlaceText(placeId,story=null) {return transaction(()=>{let row=db.prepare("SELECT * FROM place_texts WHERE place_id=? ORDER BY created_at DESC,rowid DESC LIMIT 1").get(placeId);if(!row)return null;
+      db.prepare("UPDATE content_jobs SET state=?,next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(next,new Date(now()+(row.attempts<=1?30000:120000)).toISOString(),encode(error),timestamp,id);db.prepare("UPDATE content_job_attempts SET state=?,finished_at=?,error_json=? WHERE job_id=? AND generation=?").run(next,timestamp,encode(error),id,row.attempts);syncItems(id,next,error);return {id,state:next,error};});},
+    recoverContentJobs() {const timestamp=iso(now),error={code:"INTERRUPTED",message:"Content worker interrupted."};const rows=db.prepare("SELECT id,attempts FROM content_jobs WHERE state='working'").all();for(const row of rows){db.prepare("UPDATE content_jobs SET state='retry_wait',next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(timestamp,encode(error),timestamp,row.id);db.prepare("UPDATE content_job_attempts SET state='retry_wait',finished_at=?,error_json=? WHERE job_id=? AND generation=?").run(timestamp,encode(error),row.id,row.attempts);syncItems(row.id,"retry_wait",error);}return rows.length;},
+    approvePlaceText(placeId,story=null) {return transaction(()=>{let row=db.prepare(`SELECT * FROM place_texts WHERE place_id=? ORDER BY
+        CASE WHEN approved_story_json IS NOT NULL THEN 1 ELSE 0 END DESC,created_at DESC,rowid DESC LIMIT 1`).get(placeId);if(!row)return null;
       const selected=story??decode(row.story_json);if(!selected||typeof selected.title!=="string"||!Array.isArray(selected.paragraphs)||!selected.paragraphs.length)throw fail("BAD_REQUEST");
-      const timestamp=iso(now),selectedJson=encode(selected);if(row.approved_story_json&&row.approved_story_json!==selectedJson){
+      const timestamp=iso(now),selectedJson=encode(selected),approvedStory=decode(row.approved_story_json),sameApproved=approvedStory
+        &&approvedStory.title===selected.title&&approvedStory.paragraphs?.map(paragraph=>paragraph.text).join("\n\n")===selected.paragraphs.map(paragraph=>paragraph.text).join("\n\n");if(approvedStory&&!sameApproved){
+        cancelAudioForPlace(placeId,timestamp);
         const id=randomUUID(),inputKey=sha256(encode({editorialParent:row.id,story:selected}));db.prepare(`INSERT INTO place_texts
           (id,place_id,input_key,profile,content_hash,story_json,evidence_json,verification,audio_json,approved_story_json,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
-          .run(id,placeId,inputKey,row.profile,sha256(selectedJson),selectedJson,row.evidence_json,"editorial",null,selectedJson,timestamp);row=db.prepare("SELECT * FROM place_texts WHERE id=?").get(id);cancelAudioForPlace(placeId,timestamp);
+          .run(id,placeId,inputKey,row.profile,sha256(selectedJson),selectedJson,row.evidence_json,"editorial",null,selectedJson,timestamp);row=db.prepare("SELECT * FROM place_texts WHERE id=?").get(id);
       } else if(!row.approved_story_json){db.prepare("UPDATE place_texts SET approved_story_json=?,verification='editorial' WHERE id=?").run(selectedJson,row.id);row=db.prepare("SELECT * FROM place_texts WHERE id=?").get(row.id);}
       const profiles=db.prepare(`SELECT DISTINCT b.tts_profile FROM batch_items i JOIN content_batches b ON b.id=i.batch_id JOIN content_jobs j ON j.id=i.text_job_id
         WHERE j.place_id=? AND b.mode='text-and-audio' AND b.tts_profile IS NOT NULL`).all(placeId).map(item=>item.tts_profile);
