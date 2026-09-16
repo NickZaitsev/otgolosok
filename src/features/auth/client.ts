@@ -14,6 +14,7 @@ export async function getSession(): Promise<AuthUser | null> {
 }
 export const sendLoginCode = (email: string) => api("/api/auth/email-otp/send-verification-otp", { method:"POST", body:JSON.stringify({email,type:"sign-in"}) });
 export const verifyLoginCode = (email: string, otp: string) => api("/api/auth/sign-in/email-otp", { method:"POST", body:JSON.stringify({email,otp}) });
-export const signOut = () => api("/api/auth/sign-out", { method:"POST", body:"{}" });
-export const signOutEverywhere = () => api("/api/auth/revoke-sessions", { method:"POST", body:"{}" });
+function announceSignOut(){try{new BroadcastChannel("otgolosok:auth").postMessage("signed-out");}catch{/* Optional cross-tab signal. */}localStorage.setItem("otgolosok:auth:event",String(Date.now()));}
+export const signOut = async () => {const result=await api("/api/auth/sign-out", { method:"POST", body:"{}" });announceSignOut();return result;};
+export const signOutEverywhere = async () => {const result=await api("/api/auth/revoke-sessions", { method:"POST", body:"{}" });announceSignOut();return result;};
 export { api as accountApi };
