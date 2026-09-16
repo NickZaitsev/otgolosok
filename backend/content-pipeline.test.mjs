@@ -36,3 +36,13 @@ test("place pipeline repairs one invalid writer response",async t=>{
   const result=await runContentJob(store.claimContentJob(),{store,provider,fetchPage:async url=>({url,html:"Памятник установлен в Москве. ".repeat(30)})});
   assert.equal(result.story.title,"Исправлено");assert.equal(call,5);
 });
+
+test("addressless place identity is preserved in the facts prompt",async t=>{
+  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);store.createBatch({requestKey:"pipeline-identity",limit:1});
+  const sources=[{url:"https://one.example/place",title:"One"},{url:"https://two.example/place",title:"Two"}],facts=Array.from({length:5},(_,index)=>({id:`f${index+1}`,claim:`Факт ${index+1}`,topic:"place_history",scope:"building",location:"Памятник без адреса",distanceMeters:null,interesting:index===0,evidence:[{sourceId:index%2?"s2":"s1",quote:"Памятник установлен в Москве."}]}));
+  const paragraph=("Памятник связан с историей Москвы и подтверждён опубликованными источниками. ").repeat(10).trim();let factsPromptText="";
+  const responses=[{sources},{addressConfirmed:true,placeName:"Памятник без адреса",resolvedAddress:"Памятник без адреса, Москва",facts},{title:"История памятника",paragraphs:[{text:paragraph,factIds:["f1","f2","f3","f4","f5"]}]},{approved:true,issues:[]}];let call=0;
+  const provider={writerModel:"writer",response:async(prompt,options)=>{if(options.maxTokens===5500)factsPromptText=prompt;return{value:responses[call++],citedUrls:options.search?sources.map(source=>source.url):[],usage:{}};}};
+  await runContentJob(store.claimContentJob(),{store,provider,fetchPage:async url=>({url,html:"Памятник установлен в Москве. ".repeat(30)})});
+  assert.match(factsPromptText,/"name":"Памятник без адреса"/);assert.match(factsPromptText,/null street address is valid/);assert.match(factsPromptText,/"wikidata":"Q1"/);
+});
