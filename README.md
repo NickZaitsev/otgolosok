@@ -351,6 +351,47 @@ Backend содержит автоматически созданный ката�
 
 ## Проверки
 
+## Локальный TTS-воркер
+
+Backend может выдавать готовые тексты внешнему компьютеру и принимать завершённое
+аудио. Домашний компьютер делает только исходящие HTTPS-запросы; открывать на нём
+порт не требуется. На сервере задайте два независимых случайных секрета:
+
+```text
+WORKER_API_TOKEN=<случайный токен не короче 32 байт>
+WORKER_LEASE_SECRET=<другой случайный секрет не короче 32 байт>
+```
+
+После перезапуска backend поставьте утверждённый адресный рассказ на локальную
+озвучку через редакторский API:
+
+```text
+POST /api/story-admin/jobs/:id/external-audio
+Authorization: Bearer <ADMIN_TOKEN>
+Origin: <APP_ORIGIN>
+Content-Type: application/json
+
+{"revision":12,"profileId":"silero-ru-v1"}
+```
+
+Настройка и запуск компьютера с Silero описаны в
+[`workers/tts/README.md`](workers/tts/README.md). Воркер забирает одно задание,
+продлевает lease во время синтеза и загружает WAV. Сервер проверяет checksum и
+длительность, нормализует громкость, сохраняет MP3 в постоянный `/data/audio` и
+только после этого публикует запись. Для проверки протокола без модели есть
+`python workers/tts/worker.py --engine mock --once`.
+
+Каталог кандидатов из OSM PBF собирается командой:
+
+```text
+python scripts/import-osm-attractions.py Moscow.osm.pbf --output backend/data/osm-attractions.json
+```
+
+Для скрипта импорта нужен `osmium==4.3.1` в отдельном build-окружении. Выходной
+каталог содержит provenance, checksum снимка и ODbL attribution. Текущая первая
+версия использует защитный московский bounding box; перед заявлением о полном
+административном покрытии нужно выбрать полный extract и проверенную границу Москвы.
+
 Озвучка уже включена в репозиторий и обычную сборку. Для её регенерации нужны
 Python 3 с `ru-normalizr==0.3.0` (`python3 -m pip install ru-normalizr==0.3.0`), `ffmpeg`, `ffprobe` и переменные окружения `OPENAI_API_KEY`,
 `OPENAI_BASE_URL` (совместимый endpoint с `/audio/speech`). Ключи не попадают
