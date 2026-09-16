@@ -37,6 +37,12 @@ test("paused batches are not claimed and interrupted jobs recover",t=>{
   assert.ok(store.retryBatchItem(batch.id,"osm:node:1"));
 });
 
+test("batch priority changes claim order without touching active jobs",t=>{
+  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const low=store.createBatch({requestKey:"priority-low",placeIds:["osm:node:1"],limit:1}),high=store.createBatch({requestKey:"priority-high",placeIds:["osm:way:2"],limit:1});
+  assert.ok(store.setBatchPriority(high.id,100));assert.equal(store.claimContentJob().place.id,"osm:way:2");assert.equal(store.setBatchPriority("missing",1),null);assert.throws(()=>store.setBatchPriority(low.id,-1),{code:"BAD_REQUEST"});
+});
+
 test("a complete import archives absent places while partial imports preserve them",t=>{
   const store=createStore(":memory:");t.after(()=>store.close());store.importPlaces(catalog,{complete:true});
   store.importPlaces({...catalog,sourceSha256:"b".repeat(64),places:[catalog.places[0]]});assert.equal(store.listPlaces().places.length,2);

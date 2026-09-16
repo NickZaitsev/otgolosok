@@ -158,6 +158,9 @@ export function createContentStore({db,now,transaction}) {
       const usage=db.prepare("SELECT checkpoint_json FROM content_jobs WHERE checkpoint_json IS NOT NULL").all().reduce((sum,row)=>{const checkpoint=decode(row.checkpoint_json);return sum+Number(checkpoint?.usageTokens??0);},0);
       return {places,texts,audio,jobs,external,oldestTextQueuedAt:oldest,textUsageTokens:usage};
     },
+    setBatchPriority(id,priority) {if(!Number.isSafeInteger(priority)||priority<0||priority>1000)throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
+      const timestamp=iso(now);db.prepare(`UPDATE content_jobs SET priority=?,updated_at=? WHERE id IN
+        (SELECT text_job_id FROM batch_items WHERE batch_id=?) AND state IN ('queued','retry_wait')`).run(priority,timestamp,id);return this.getBatch(id);});},
     setBatchState(id,state) {if(!["running","paused","cancelled"].includes(state))throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
       const timestamp=iso(now);db.prepare("UPDATE content_batches SET state=?,updated_at=? WHERE id=?").run(state,timestamp,id);
       if(state==="cancelled"){const pending=db.prepare("SELECT text_job_id FROM batch_items WHERE batch_id=? AND state IN ('queued','retry_wait')").all(id);
