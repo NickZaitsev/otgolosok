@@ -4,9 +4,11 @@ SHELL := /bin/sh
 
 PNPM ?= pnpm
 DOCKER_COMPOSE ?= docker compose
+NODE ?= node
 
 .PHONY: help install dev dev-https replay build serve lint typecheck test check clean
 .PHONY: docker-up docker-down docker-logs docker-ps docker-config
+.PHONY: db-dump db-pack db-import db-restore db-info
 
 help: ## Показать доступные команды
 	@awk 'BEGIN {FS = ":.*## "; printf "Отголосок\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -58,3 +60,18 @@ docker-ps: ## Show Docker stack status and health
 
 docker-config: ## Validate Compose without printing credentials
 	$(DOCKER_COMPOSE) config --quiet
+
+db-dump: ## Снять базу генератора с прода в backend/data/prod-dump (нужен доступ по SSH)
+	$(NODE) scripts/prod-db.mjs dump
+
+db-pack: ## Упаковать выгрузку в архив для передачи другому разработчику
+	$(NODE) scripts/prod-db.mjs pack
+
+db-import: ## Импортировать выгрузку в backend/data, сохранив прежнюю базу
+	$(NODE) scripts/prod-db.mjs import
+
+db-restore: ## Вернуть последнюю сохранённую локальную базу
+	$(NODE) scripts/prod-db.mjs restore
+
+db-info: ## Показать состав локальной базы генератора
+	$(NODE) scripts/prod-db.mjs info
