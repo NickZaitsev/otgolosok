@@ -90,7 +90,7 @@ test("external audio stores the immutable normalized script and profile contract
   const source=store.createOrGet({key:"normalized-source",address:story.address});const ready=store.update(source.id,{stage:"failed",data:{story}},source.revision);
   await store.enqueueExternalAudio({sourceJobId:ready.id,sourceRevision:ready.revision,story,profileId:"silero-ru-v1"});
   const claim=store.claimExternalAudio({workerId:"gpu",requestId:"normalized-0001",profileIds:["silero-ru-v1"]});
-  assert.match(claim.spokenText,/^НОРМАЛИЗОВАНО:/);assert.equal(claim.normalizerVersion,"test-normalizer");assert.equal(claim.profile.chunking,"sentence-v1");assert.equal(claim.profile.maximumBytes,64*1024*1024);
+  assert.match(claim.spokenText,/^НОРМАЛИЗОВАНО:/);assert.equal(claim.normalizerVersion,"test-normalizer");assert.equal(claim.profile.chunking,"sentence-v1");assert.equal(claim.profile.maximumBytes,64*1024*1024);assert.equal(claim.profile.minimumPublicationDurationSec,30);
 });
 
 test("editing approved place text invalidates a leased older audio version",async t=>{

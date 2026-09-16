@@ -2,7 +2,7 @@
 import unittest
 import wave
 from pathlib import Path
-from worker import WorkerApiError, chunks, concatenate_wav, upload_with_recovery, validate_claim_profile, synthesize_silero
+from worker import WorkerApiError, chunks, concatenate_wav, upload_with_recovery, validate_claim_profile, synthesize_silero, silero_compatible
 class WorkerTest(unittest.TestCase):
     def test_chunks_preserve_text_and_bound_size(self):
         text='Первое предложение. '+'очень '*180+'длинное. Конец!';result=chunks(text,100)
@@ -30,6 +30,8 @@ class WorkerTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             heartbeat=Heartbeat();synthesize_silero('Фраза. '*200,Path(directory)/'result.wav','unused','xenia','cpu',heartbeat,Model())
             self.assertGreater(len(heartbeat.values),1);self.assertTrue(all(stage=='synthesis' for stage,_ in heartbeat.values))
+    def test_silero_compatibility_replaces_unsupported_typography(self):
+        self.assertEqual(silero_compatible('1535–1538 — «слухи»'),'1535-1538 - "слухи"')
     def test_invalid_upload_discards_completed_spool_without_resynthesis(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);output=root/'ready.wav';output.write_bytes(b'wav');manifest=root/'job.json';manifest.write_text('{}')

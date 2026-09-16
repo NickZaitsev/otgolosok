@@ -92,6 +92,11 @@ def synthesize_silero(text,output,model_path,speaker,device,heartbeat=None,model
     finally:
         for path in parts:path.unlink(missing_ok=True)
 
+def silero_compatible(text):
+    """Replace punctuation unsupported by older Silero text frontends."""
+    return (text.replace('\u2013','-').replace('\u2014','-').replace('\u00ab','"').replace('\u00bb','"')
+        .replace('\u201c','"').replace('\u201d','"').replace('\u201e','"').replace('\u202f',' ').replace('\u00a0',' '))
+
 def synthesize_f5(text,output,command,heartbeat=None):
     if not command:raise RuntimeError('F5_TTS_COMMAND is required')
     monitored_process([command,'--text',text,'--output',str(output)],heartbeat)
@@ -179,7 +184,7 @@ def main():
             with Heartbeat(api,job) as heartbeat:
                 heartbeat.update('synthesis',0)
                 if args.engine=='mock':synthesize_mock(job['spokenText'],output,heartbeat)
-                elif args.engine=='silero':synthesize_silero(job['spokenText'],output,args.model_path,args.speaker,args.device,heartbeat,model)
+                elif args.engine=='silero':synthesize_silero(silero_compatible(job['spokenText']),output,args.model_path,args.speaker,args.device,heartbeat,model)
                 else:synthesize_f5(job['spokenText'],output,args.f5_command,heartbeat)
                 heartbeat.check()
                 heartbeat.update('upload',100)
