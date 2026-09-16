@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { createWriteStream } from "node:fs";
-import { mkdir, readFile, rename, rm, stat } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, stat, statfs } from "node:fs/promises";
 import { join } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { promisify } from "node:util";
@@ -10,7 +10,7 @@ import { failure, sha256 } from "./domain.mjs";
 const exec=promisify(execFile);
 let activeUploads=0;
 
-export async function ingestAudio(req,directory,{maximumBytes=64*1024*1024,timeoutMs=300000,signal,maximumConcurrent=2,execImpl=exec}={}) {
+export async function ingestAudio(req,directory,{maximumBytes=64*1024*1024,timeoutMs=300000,signal,maximumConcurrent=2,minimumFreeBytes=128*1024*1024,execImpl=exec,statfsImpl=statfs}={}) {
   if(activeUploads>=maximumConcurrent)throw failure("UPLOAD_BUSY");activeUploads++;
   const nonce=`${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const source=join(directory,`.upload-${nonce}`),output=join(directory,`.encoded-${nonce}.mp3`);
@@ -20,6 +20,7 @@ export async function ingestAudio(req,directory,{maximumBytes=64*1024*1024,timeo
     const announced=Number(req.headers["content-length"]??0);
     if(announced&&(!Number.isSafeInteger(announced)||announced<1||announced>maximumBytes))throw failure("AUDIO_TOO_LARGE");
     await mkdir(directory,{recursive:true});
+    const filesystem=await statfsImpl(directory);if(Number(filesystem.bavail)*Number(filesystem.bsize)<minimumFreeBytes+Math.max(announced,maximumBytes))throw failure("AUDIO_STORAGE_FULL");
     const deadline=AbortSignal.any([AbortSignal.timeout(timeoutMs),...(signal?[signal]:[])]);
     let size=0;const hash=createHash("sha256");
     req.on("data",chunk=>{size+=chunk.length;if(size>maximumBytes)req.destroy(failure("AUDIO_TOO_LARGE"));else hash.update(chunk);});

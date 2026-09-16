@@ -13,7 +13,8 @@ import { nearbyRadii, nearbyStoryCatalog, recommendNearbyStories, type NearbyRad
 import "./explore.css";
 
 type Place = {label:string; address:string|null; location:Coordinates};
-type StoryPin = MapItem & {address:string; duration?:number; chapter?:number; jobId?:string; status?:string};
+type StoryPin = MapItem & {address:string; duration?:number; chapter?:number; jobId?:string; placeId?:string; audioUrl?:string; status?:string};
+type CatalogPlace = {id:string;name:string;address:string|null;location:Coordinates;story:{title:string}|null;audio:{url:string;durationSec:number}|null;distanceM:number|null};
 type Tab = "nearby" | "walk" | "saved";
 // Keep the nearby viewport across client-side navigation, independently of walk maps.
 const nearbyMapView: MapViewState = {current:null};
@@ -38,6 +39,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
   const [prompt,setPrompt]=useState(true);
   const [tracked,setTracked]=useState<MapJob[]>([]),[jobs,setJobs]=useState<Record<string,GenerationJob>>({});
   const [library,setLibrary]=useState<GenerationJob[]>([]);
+  const [catalog,setCatalog]=useState<CatalogPlace[]>([]);
   const lookup=useRef<AbortController|null>(null),geoVersion=useRef(0),geoTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const input=useRef<HTMLInputElement>(null);
 
@@ -48,6 +50,12 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
     return ()=>{disposed=true;lookup.current?.abort();cancelLocation();};
   },[]);
   useEffect(()=>{if(search)input.current?.focus();},[search]);
+  useEffect(()=>{
+    const controller=new AbortController(),params=new URLSearchParams({limit:"100",status:"ready"});
+    if(nearbyCenter){params.set("lat",String(nearbyCenter.lat));params.set("lon",String(nearbyCenter.lon));params.set("radius","5000");}
+    fetch(`/api/content/places?${params}`,{signal:controller.signal,cache:"no-store"}).then(response=>response.ok?response.json():Promise.reject()).then(value=>setCatalog(Array.isArray(value.places)?value.places:[])).catch(()=>{});
+    return()=>controller.abort();
+  },[nearbyCenter]);
   useEffect(()=>{
     if(!tracked.length)return;
     let disposed=false,running=false;
@@ -81,8 +89,9 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
     const own=tracked.filter(item=>item.id!==MELNIKOV.id).map(item=>{
       const job=jobs[item.id];return {...item,jobId:item.id,title:job?.story?.title??item.address,duration:job?.audio?.durationSec,pending:job?!terminalStages.has(job.stage):false,status:job?stageLabels[job.stage]:"Открыть подготовку"};
     });
-    return [...chapters,MELNIKOV,...own];
-  },[route,tracked,jobs]);
+    const places=catalog.map(place=>({id:place.id,placeId:place.id,title:place.story?.title??place.name,address:place.address??place.name,location:place.location,duration:place.audio?.durationSec,audioUrl:place.audio?.url,status:place.audio?"Готово к прослушиванию":"Текст готов"}));
+    return [...chapters,MELNIKOV,...own,...places.filter(place=>![...chapters,MELNIKOV,...own].some(existing=>existing.id===place.id))];
+  },[route,tracked,jobs,catalog]);
   const recommendations=useMemo(()=>nearbyCenter?recommendNearbyStories(nearbyCenter,nearbyRadius,nearbyStoryCatalog(route)):[],[nearbyCenter,nearbyRadius,route]);
   const visible=useMemo(()=>pins.filter(pin=>filter!=="walk"||pin.chapter!==undefined).sort((a,b)=>user?distance(user,a.location)-distance(user,b.location):0),[pins,filter,user]);
   const active=pins.find(pin=>pin.id===selected);
@@ -180,7 +189,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
         </details>:null}</div><button type="button" aria-label="Скрыть сообщение" onClick={()=>setGeoMessage("")}><ExploreIcon name="close"/></button></div>:null}
         {prompt&&!active&&!place&&!placeBusy&&!placeError&&!search?<section className="around-location-card" aria-labelledby="location-title"><span className="around-location-symbol"><ExploreIcon name="locate"/></span><h2 id="location-title">Истории совсем рядом</h2><p>Разрешите геолокацию, чтобы увидеть, что можно послушать вокруг вас.</p><button type="button" className="around-primary" onClick={locate} disabled={geo==="loading"}>{geo==="loading"?"Определяем положение…":geo==="denied"||geo==="error"?"Проверить снова":"Включить геолокацию"}<ExploreIcon name="locate"/></button><button className="around-text-button" type="button" onClick={()=>setPrompt(false)}>Выбрать место на карте</button></section>
         :nearbyCenter&&!active&&!placeBusy&&!placeError&&!search?<section className="around-place-card nearby-recommendations" aria-labelledby="nearby-title"><div className="around-card-label"><span>Готовые истории рядом</span></div><h2 id="nearby-title">В радиусе {nearbyRadius} м</h2><div className="nearby-radius" aria-label="Радиус поиска">{nearbyRadii.map(radius=><button key={radius} type="button" aria-pressed={nearbyRadius===radius} onClick={()=>setNearbyRadius(radius)}>{radius} м</button>)}</div>{recommendations.length?<ol className="nearby-story-list">{recommendations.map((story,index)=><li key={story.id}><div><strong>{story.title}</strong><span>{story.address} · {Math.round(story.distanceM)} м по прямой</span>{index===0?<small>{story.reason}</small>:null}</div><button type="button" className={index===0?"around-primary":"around-secondary"} onClick={()=>selectRecommendation(story.id)}>{index===0?"Слушать":"Альтернатива"}<ExploreIcon name={index===0?"headphones":"arrow"}/></button></li>)}</ol>:<div className="nearby-empty"><p>В этом радиусе пока нет готовой проверенной истории.</p>{nearbyRadius<300?<button type="button" className="around-secondary" onClick={()=>setNearbyRadius(nearbyRadii[nearbyRadii.indexOf(nearbyRadius)+1])}>Искать в большем радиусе <ExploreIcon name="arrow"/></button>:<button type="button" className="around-secondary" onClick={()=>{setNearbyCenter(null);setPlace(null);setPrompt(false);}}>Выбрать другую точку <ExploreIcon name="map"/></button>}</div>}</section>
-        :active?<section className="around-place-card" aria-labelledby="selected-place-title"><div className="around-card-label"><span>{active.pending?"Готовим для вас":active.chapter!==undefined?`По дороге · часть ${active.chapter+1}`:"История дома"}</span><button type="button" className="around-icon" aria-label="Закрыть карточку" onClick={()=>setSelected(undefined)}><ExploreIcon name="close"/></button></div><h2 id="selected-place-title">{active.title}</h2>{active.title!==active.address?<p>{active.address}</p>:null}<small>{metadata(active)}</small>{active.chapter!==undefined?<button type="button" className="around-primary" onClick={()=>onStart(active.chapter)}>Слушать эту часть <ExploreIcon name="headphones"/></button>:<Link className="around-primary" href={`/create?job=${active.jobId}`} prefetch={false}>{active.duration?"Открыть и слушать":"Открыть подготовку"}<ExploreIcon name={active.duration?"headphones":"arrow"}/></Link>}</section>
+        :active?<section className="around-place-card" aria-labelledby="selected-place-title"><div className="around-card-label"><span>{active.pending?"Готовим для вас":active.chapter!==undefined?`По дороге · часть ${active.chapter+1}`:"История места"}</span><button type="button" className="around-icon" aria-label="Закрыть карточку" onClick={()=>setSelected(undefined)}><ExploreIcon name="close"/></button></div><h2 id="selected-place-title">{active.title}</h2>{active.title!==active.address?<p>{active.address}</p>:null}<small>{metadata(active)}</small>{active.audioUrl?<audio controls preload="metadata" src={active.audioUrl}>Ваш браузер не поддерживает аудио.</audio>:null}{active.chapter!==undefined?<button type="button" className="around-primary" onClick={()=>onStart(active.chapter)}>Слушать эту часть <ExploreIcon name="headphones"/></button>:active.jobId?<Link className="around-primary" href={`/create?job=${active.jobId}`} prefetch={false}>{active.duration?"Открыть и слушать":"Открыть подготовку"}<ExploreIcon name={active.duration?"headphones":"arrow"}/></Link>:active.placeId?<p>Проверенный текст доступен в карточке места{active.audioUrl?"; запись можно слушать здесь.":"; озвучивание ещё не готово."}</p>:null}</section>
         :place||placeBusy||placeError?<section className="around-place-card" aria-labelledby="new-place-title"><div className="around-card-label"><span>История по запросу</span><button type="button" className="around-icon" aria-label="Закрыть выбранное место" onClick={()=>{lookup.current?.abort();setPlace(null);setPlaceBusy(false);setPlaceError("");}}><ExploreIcon name="close"/></button></div><h2 id="new-place-title">{placeBusy?"Определяем адрес…":place?.address??"О чём расскажет этот дом?"}</h2>{placeError?<p role="status">{placeError}</p>:placeBusy?<p role="status">Смотрим, какой дом находится рядом с выбранной точкой.</p>:<p>{place?.address?"Проверьте номер и строение: ищем историю именно этого дома. Текст и озвучка обычно готовы за 5–10 минут.":"У этой точки нет точного номера дома. Введите адрес, чтобы мы искали историю нужного здания."}</p>}{!placeBusy?<Link className="around-primary" href={createHref} prefetch={false}>{place?.address?"Выбрать этот дом":"Ввести адрес вручную"}<ExploreIcon name="plus"/></Link>:null}<small>Готовая запись появится после проверки фактов и озвучки.</small></section>
         :!search?<div className="around-map-hint"><span><strong>Какой дом вам интересен?</strong>Нажмите на карту — найдём его историю.</span><button className="around-icon" type="button" aria-label="Найти дом по адресу" onClick={openSearch}><ExploreIcon name="search"/></button></div>:null}
         {walkStart?.address&&!placeBusy?<Link className="around-primary" href={walkHref} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk"/></Link>:null}
