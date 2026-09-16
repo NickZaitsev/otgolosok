@@ -2,7 +2,7 @@
 import unittest
 import wave
 from pathlib import Path
-from worker import WorkerApiError, chunks, concatenate_wav, upload_with_recovery, validate_claim_profile
+from worker import WorkerApiError, chunks, concatenate_wav, upload_with_recovery, validate_claim_profile, synthesize_silero
 class WorkerTest(unittest.TestCase):
     def test_chunks_preserve_text_and_bound_size(self):
         text='Первое предложение. '+'очень '*180+'длинное. Конец!';result=chunks(text,100)
@@ -19,6 +19,17 @@ class WorkerTest(unittest.TestCase):
         class Args:engine='silero';speaker='xenia';model_path='missing'
         validate_claim_profile({'profile':{'id':'silero-ru-v1','engine':'silero','speaker':'xenia'}},Args(),'silero-ru-v1')
         with self.assertRaises(RuntimeError):validate_claim_profile({'profile':{'id':'f5-ru-v1','engine':'f5'}},Args(),'silero-ru-v1')
+    def test_silero_reports_progress_after_each_chunk(self):
+        class Model:
+            def save_wav(self,**kwargs):
+                with wave.open(kwargs['audio_path'],'wb') as target:target.setparams((1,2,48000,0,'NONE','not compressed'));target.writeframes(b'\0\0'*8)
+        class Heartbeat:
+            def __init__(self):self.values=[]
+            def check(self):pass
+            def update(self,stage,percent=None):self.values.append((stage,percent))
+        with tempfile.TemporaryDirectory() as directory:
+            heartbeat=Heartbeat();synthesize_silero('Фраза. '*200,Path(directory)/'result.wav','unused','xenia','cpu',heartbeat,Model())
+            self.assertGreater(len(heartbeat.values),1);self.assertTrue(all(stage=='synthesis' for stage,_ in heartbeat.values))
     def test_invalid_upload_discards_completed_spool_without_resynthesis(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);output=root/'ready.wav';output.write_bytes(b'wav');manifest=root/'job.json';manifest.write_text('{}')

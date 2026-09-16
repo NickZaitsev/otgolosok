@@ -82,11 +82,12 @@ def load_silero(model_path,device):
     model=torch.package.PackageImporter(model_path).load_pickle('tts_models','model');model.to(device);return model
 
 def synthesize_silero(text,output,model_path,speaker,device,heartbeat=None,model=None):
-    model=model or load_silero(model_path,device);parts=[]
+    model=model or load_silero(model_path,device);parts=[];text_parts=chunks(text)
     try:
-        for index,part in enumerate(chunks(text)):
+        for index,part in enumerate(text_parts):
             if heartbeat:heartbeat.check()
             path=output.with_name(f'chunk-{index:04d}.wav');parts.append(path);model.save_wav(text=part,speaker=speaker,sample_rate=48000,audio_path=str(path))
+            if heartbeat:heartbeat.update('synthesis',min(95,round((index+1)*100/max(1,len(text_parts)))))
         concatenate_wav(parts,output)
     finally:
         for path in parts:path.unlink(missing_ok=True)
@@ -157,7 +158,13 @@ def validate_claim_profile(job,args,configured_profile):
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--engine',choices=['mock','silero','f5'],default=os.getenv('TTS_ENGINE','mock'));parser.add_argument('--model-path',default=os.getenv('SILERO_MODEL_PATH',''));parser.add_argument('--model-sha256',default=os.getenv('SILERO_MODEL_SHA256',''));parser.add_argument('--speaker',default=os.getenv('SILERO_SPEAKER','xenia'));parser.add_argument('--device',default=os.getenv('WORKER_DEVICE','cpu'));parser.add_argument('--f5-command',default=os.getenv('F5_TTS_COMMAND',''));parser.add_argument('--spool',type=Path,default=Path(os.getenv('WORKER_SPOOL_DIR','.worker-spool')));parser.add_argument('--once',action='store_true');args=parser.parse_args()
-    validate_startup(args);model=load_silero(args.model_path,args.device) if args.engine=='silero' else None;args.spool.mkdir(parents=True,exist_ok=True);api=Api(os.environ['WORKER_API_URL'],os.environ['WORKER_TOKEN'],os.getenv('WORKER_ID',socket.gethostname()));profile=os.getenv('WORKER_PROFILE_ID','silero-ru-v1');idle=2.
+    validate_startup(args);model=load_silero(args.model_path,args.device) if args.engine=='silero' else None
+    if model is not None:
+        try:
+            import torch
+            torch.set_num_threads(max(1,int(os.getenv('SILERO_CPU_THREADS',str(os.cpu_count() or 1)))))
+        except (ValueError,RuntimeError):pass
+    args.spool.mkdir(parents=True,exist_ok=True);api=Api(os.environ['WORKER_API_URL'],os.environ['WORKER_TOKEN'],os.getenv('WORKER_ID',socket.gethostname()));profile=os.getenv('WORKER_PROFILE_ID','silero-ru-v1');idle=2.
     while True:
         reconcile_spool(api,args.spool)
         try:response=api.request('POST','/claim',{'requestId':uuid.uuid4().hex,'profileIds':[profile],'version':'tts-worker-2'})
