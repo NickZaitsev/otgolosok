@@ -37,5 +37,12 @@ class ImporterTest(unittest.TestCase):
         self.assertEqual(len(geometry["coordinates"][0]),2)
         boundary={"type":"Polygon","coordinates":[[[-1,-1],[30,-1],[30,30],[-1,30],[-1,-1]]]}
         self.assertTrue(MODULE.geometry_covered(geometry,boundary))
+    def test_verified_boundary_relation_version_is_recorded(self):
+        handler=MODULE.Attractions(102269)
+        class Timestamp:
+            @staticmethod
+            def isoformat(): return "2026-09-16T00:00:00+00:00"
+        relation=type("Relation",(),{"id":102269,"version":42,"timestamp":Timestamp()})()
+        handler.relation(relation);self.assertEqual(handler.boundary_version["version"],42)
 
 if __name__=="__main__":unittest.main()
