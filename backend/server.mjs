@@ -337,8 +337,11 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
       }
       if(req.method==="GET"&&url.pathname==="/api/story-service") {json(res,200,{enabled:Boolean(provider),version:1});return;}
       if(req.method==="GET"&&url.pathname==="/api/content/places") {
-        const entries=[...url.searchParams];if(entries.some(([key,value])=>!["limit","offset","q","status"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value))))throw failure("BAD_REQUEST");
-        json(res,200,store.listPlaces({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",status:url.searchParams.get("status")??"ready"}));return;
+        const entries=[...url.searchParams],allowed=["limit","offset","q","status","lat","lon","radius"];
+        if(entries.some(([key,value])=>!allowed.includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
+        const nearby=url.searchParams.has("lat")||url.searchParams.has("lon")||url.searchParams.has("radius");
+        json(res,200,store.listPlaces({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",status:url.searchParams.get("status")??"ready",
+          lat:nearby?Number(url.searchParams.get("lat")):null,lon:nearby?Number(url.searchParams.get("lon")):null,radius:nearby?Number(url.searchParams.get("radius")):null}));return;
       }
       const publicPlace=/^\/api\/content\/places\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
       if(req.method==="GET"&&publicPlace){const place=store.getPublishedPlace(publicPlace[1]);json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
@@ -414,7 +417,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
       json(res,404,{error:{message:"Страница не найдена."}});
     } catch(error) {
       if(res.headersSent||res.destroyed)return;
-      const status=["QUEUE_FULL","DAILY_LIMIT","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY"].includes(error.code)?409:
+      const status=["QUEUE_FULL","DAILY_LIMIT","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:error.code==="AUDIO_STORAGE_FULL"?507:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY"].includes(error.code)?409:
         error.code==="AUDIO_TOO_LARGE"?413:["BAD_AUDIO_TYPE","BAD_AUDIO","AUDIO_CHECKSUM","AUDIO_DURATION"].includes(error.code)?422:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?400:500;
       if(status===500) logs?.captureException(error,{operation:"API request",context:{method:req.method,status}});
       json(res,status,{error:["BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?{code:error.code,message:"Invalid request or draft."}:safeError(error)});

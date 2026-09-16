@@ -153,6 +153,7 @@ function importDump() {
   for (const name of JOURNAL) {
     if (existsSync(join(DATA_DIR, name))) cpSync(join(DATA_DIR, name), join(backup, name));
   }
+  if(existsSync(join(DATA_DIR,"audio")))cpSync(join(DATA_DIR,"audio"),join(backup,"audio"),{recursive:true});
   process.stdout.write(`Прежняя база сохранена: ${backup}\n`);
 
   // The journal belongs to the database it was written for. Leaving it next to a
@@ -182,10 +183,12 @@ function restore() {
   }
   const backup = join(DATA_DIR, chosen);
   if (!existsSync(join(backup, "jobs.sqlite"))) fail(`В ${backup} нет jobs.sqlite.`);
+  const currentAudio=join(DATA_DIR,"audio"),backupAudio=join(backup,"audio");
   for (const name of JOURNAL) rmSync(join(DATA_DIR, name), { force: true });
   for (const name of JOURNAL) {
     if (existsSync(join(backup, name))) cpSync(join(backup, name), join(DATA_DIR, name));
   }
+  if(existsSync(backupAudio)){rmSync(currentAudio,{recursive:true,force:true});cpSync(backupAudio,currentAudio,{recursive:true});}
   process.stdout.write(`Восстановлено из ${backup}\n`);
   report(join(DATA_DIR, "jobs.sqlite"), DATA_DIR);
   process.stdout.write("Лишние записи в audio/ ничему не мешают и остаются на месте.\n");

@@ -35,6 +35,11 @@ test("audio ingestion bounds concurrent uploads",async t=>{
   await assert.rejects(ingestAudio(request(Buffer.from("two")),directory,{execImpl,maximumConcurrent:1}),{code:"UPLOAD_BUSY"});release();await first;
 });
 
+test("audio ingestion refuses uploads when the volume has no safe free-space margin",async t=>{
+  const directory=await mkdtemp(join(tmpdir(),"audio-ingest-space-"));t.after(()=>rm(directory,{recursive:true,force:true}));
+  await assert.rejects(ingestAudio(request(Buffer.from("wav")),directory,{statfsImpl:async()=>({bavail:1,bsize:1})}),{code:"AUDIO_STORAGE_FULL"});
+});
+
 test("real FFmpeg converts a valid WAV to a probeable MP3",async t=>{
   try {await exec("ffmpeg",["-version"],{timeout:5000});} catch {t.skip("ffmpeg is not installed");return;}
   const directory=await mkdtemp(join(tmpdir(),"audio-ingest-real-"));t.after(()=>rm(directory,{recursive:true,force:true}));const wav=join(directory,"fixture.wav");

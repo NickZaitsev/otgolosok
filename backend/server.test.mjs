@@ -98,6 +98,13 @@ test("OSM text stays private until approval and approved audio attaches to the p
   assert.equal(upload.status,200);assert.equal(f.store.getPlace("osm:node:7").text.audio.sha256,artifact.sha256);
 });
 
+test("public OSM catalog validates and serves nearby approved places",async t=>{
+  const f=await fixture(t);f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:8",osmType:"node",osmId:8,name:"Сад",location:{lat:55.75,lon:37.61},tags:{leisure:"garden"}}]});
+  f.store.createBatch({requestKey:"nearby-http",limit:1});const job=f.store.claimContentJob(),story={title:"История сада",paragraphs:[{text:"Проверенный текст сада",factIds:["f1"]}]};f.store.completeContentJob(job.id,{story,evidence:{}});f.store.approvePlaceText("osm:node:8");
+  const response=await fetch(`${f.base}/api/content/places?status=ready&lat=55.75&lon=37.61&radius=500`);assert.equal(response.status,200);const result=await response.json();assert.equal(result.places[0].id,"osm:node:8");assert.ok(result.places[0].distanceM<1);
+  assert.equal((await fetch(`${f.base}/api/content/places?lat=55.75&lon=37.61`)).status,400);
+});
+
 test("admin manages content batches and revocable worker credentials",async t=>{
   const f=await fixture(t);f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),rulesVersion:"v1",coverage:"fixture",places:[{placeId:"osm:node:8",osmType:"node",osmId:8,name:"Музей",location:{lat:55.75,lon:37.61},tags:{tourism:"museum"}}]});
   const created=await f.post("/api/story-admin/content/batches",{requestKey:"content-api-2",name:"API",limit:1,textProfile:"story-v1",mode:"text-only"});assert.equal(created.status,200);
