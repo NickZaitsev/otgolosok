@@ -59,7 +59,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
   const worker=(provider||yandexTts)&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory,discoverResearch,planResearchWalk,logs}):null;
-  const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,logs}):null;
+  const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,logs,concurrency:Number(process.env.CONTENT_WORKER_CONCURRENCY??1)}):null;
   const authorizeAdmin=adminAuth(adminToken);
   const legacyAdminEnabled=allowLegacyAdminToken??(!auth||process.env.ALLOW_LEGACY_ADMIN_TOKEN==="true");
   const server=httpServer(async(req,res)=>{

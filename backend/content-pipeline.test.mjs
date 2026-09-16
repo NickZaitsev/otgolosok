@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createStore } from "./store.mjs";
-import { runContentJob } from "./content-pipeline.mjs";
+import { runContentJob, startContentWorker } from "./content-pipeline.mjs";
 
 const catalog={source:"fixture",sourceSha256:"a".repeat(64),rulesVersion:"v1",coverage:"fixture",places:[
   {placeId:"osm:node:1",osmType:"node",osmId:1,name:"Памятник без адреса",location:{lat:55.75,lon:37.61},tags:{historic:"memorial",wikidata:"Q1"}},
@@ -65,4 +65,11 @@ test("place pipeline allows a second editor-directed revision",async t=>{
   const provider={writerModel:"writer",response:async(_prompt,options)=>({value:responses[call++],citedUrls:options.search?sources.map(source=>source.url):[],usage:{}})};
   const result=await runContentJob(store.claimContentJob(),{store,provider,fetchPage:async url=>({url,html:"Памятник установлен в Москве. ".repeat(30)})});
   assert.equal(result.story?.title,"Готово",JSON.stringify(result));assert.equal(call,8);
+});
+
+test("content worker honors configured concurrency",async t=>{
+  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces({...catalog,places:[catalog.places[0],{...catalog.places[0],placeId:"osm:node:2",osmId:2,name:"Второй памятник"}]});store.createBatch({requestKey:"pipeline-concurrency",limit:2});
+  let active=0,peak=0,release;const gate=new Promise(resolve=>{release=resolve;});
+  const provider={writerModel:"writer",response:async()=>{active++;peak=Math.max(peak,active);await gate;active--;throw Object.assign(new Error("stop"),{code:"INSUFFICIENT_EVIDENCE"});}};
+  const worker=startContentWorker({store,provider,concurrency:2});await new Promise(resolve=>setTimeout(resolve,20));assert.equal(peak,2);release();await worker.stop();
 });
