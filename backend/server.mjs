@@ -220,6 +220,9 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(contentBatch&&req.method==="GET"&&!contentBatch[2]){const batch=store.getBatch(contentBatch[1]);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});return;}
         if(contentBatch&&req.method==="POST"&&contentBatch[2]){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const state=contentBatch[2]==="pause"?"paused":contentBatch[2]==="resume"?"running":"cancelled";const batch=store.setBatchState(contentBatch[1],state);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});if(state==="running")contentWorker?.wake();return;}
+        const prioritizeBatch=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/priority$/.exec(url.pathname);
+        if(prioritizeBatch&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const input=await body(req,4096),batch=store.setBatchPriority(prioritizeBatch[1],input?.priority);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});contentWorker?.wake();return;}
         const retryContent=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/items\/(osm:(?:node|way|relation):\d+)\/retry$/.exec(url.pathname);
         if(retryContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const batch=store.retryBatchItem(retryContent[1],retryContent[2]);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch item not found."}});contentWorker?.wake();return;}
