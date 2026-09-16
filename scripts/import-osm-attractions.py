@@ -97,8 +97,8 @@ def selected(tags):
 
 
 class Attractions(osmium.SimpleHandler if osmium else object):
-    def __init__(self):
-        super().__init__(); self.items = []; self.latest = ""; self.skipped = 0
+    def __init__(self, boundary_relation_id=None):
+        super().__init__(); self.items = []; self.latest = ""; self.skipped = 0; self.boundary_relation_id = boundary_relation_id; self.boundary_version = None
 
     def add(self, kind, osm_id, tags, points, timestamp, geometry=None):
         if not points:
@@ -125,6 +125,11 @@ class Attractions(osmium.SimpleHandler if osmium else object):
         tags = selected(way.tags)
         if tags: self.add("way", way.id, tags, [(n.lat, n.lon) for n in way.nodes if n.location.valid()], way.timestamp)
 
+    def relation(self, relation):
+        if self.boundary_relation_id is not None and relation.id == self.boundary_relation_id:
+            self.boundary_version = {"osmType": "relation", "osmId": relation.id, "version": relation.version,
+                                     "timestamp": relation.timestamp.isoformat()}
+
     def area(self, area):
         if area.from_way(): return
         tags = selected(area.tags)
@@ -145,11 +150,15 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("backend/data/osm-attractions.json"))
     parser.add_argument("--coverage", choices=("bounding-box", "moscow-admin"), default="bounding-box")
     parser.add_argument("--boundary-file", type=Path, help="GeoJSON Polygon/MultiPolygon for verified Moscow boundary")
-    args = parser.parse_args(); handler = Attractions()
+    parser.add_argument("--source-url", help="Stable download URL recorded as snapshot provenance")
+    parser.add_argument("--boundary-relation-id", type=int, default=102269, help="Verified Moscow administrative relation")
+    args = parser.parse_args(); handler = Attractions(args.boundary_relation_id if args.coverage == "moscow-admin" else None)
     if args.coverage == "moscow-admin" and not args.boundary_file:
         raise SystemExit("--coverage moscow-admin requires --boundary-file")
     handler.apply_file(str(args.pbf), locations=True, idx="flex_mem")
     if not handler.items: raise SystemExit("No attractions found; refusing to replace catalog")
+    if args.coverage == "moscow-admin" and handler.boundary_version is None:
+        raise SystemExit("PBF does not contain the verified Moscow boundary relation; refusing complete coverage")
     with args.pbf.open("rb") as source:
         checksum = hashlib.file_digest(source, "sha256").hexdigest()
     items = sorted(handler.items, key=lambda item: item["placeId"])
@@ -163,16 +172,17 @@ def main():
     for item in items:
         category = next((f"{key}={item['tags'][key]}" for key in ("tourism", "historic", "heritage", "leisure", "building") if item["tags"].get(key)), "other")
         categories[category] = categories.get(category, 0) + 1
-    result = {"schemaVersion": 1, "rulesVersion": "moscow-attractions-v1", "source": str(args.pbf),
+    result = {"schemaVersion": 1, "rulesVersion": "moscow-attractions-v1", "source": args.source_url or str(args.pbf),
               "sourceSha256": checksum, "latestEdit": handler.latest,
               "license": "ODbL-1.0", "attribution": "© OpenStreetMap contributors",
               "coverage": "moscow-admin" if args.coverage == "moscow-admin" else "moscow-bounding-box; administrative clipping pending verified boundary",
-              "boundary": {"file": str(args.boundary_file), "sha256": boundary_checksum} if args.boundary_file else None,
+              "boundary": {"file": str(args.boundary_file), "sha256": boundary_checksum,
+                           **(handler.boundary_version or {})} if args.boundary_file else None,
               "report": {"categories": categories, "skippedGeometry": handler.skipped,
                          "duplicateCandidates": duplicate_candidates(items)}, "places": items}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    print(f"Wrote {len(handler.items)} attractions; skipped {handler.skipped} incomplete geometries: {args.output}")
+    print(f"Wrote {len(items)} attractions from {len(handler.items)} candidates; skipped {handler.skipped} incomplete geometries: {args.output}")
 
 
 if __name__ == "__main__": main()

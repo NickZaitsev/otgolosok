@@ -411,7 +411,9 @@ lease отменяется, а новая версия текста и ново�
 Каталог кандидатов из OSM PBF собирается командой:
 
 ```text
-python scripts/import-osm-attractions.py Moscow.osm.pbf --output backend/data/osm-attractions.json
+python scripts/import-osm-attractions.py Moscow.osm.pbf --output backend/data/osm-attractions.json \
+  --source-url https://download.geofabrik.de/russia/central-fed-district-latest.osm.pbf \
+  --coverage moscow-admin --boundary-file moscow-boundary.geojson --boundary-relation-id 102269
 node scripts/load-osm-catalog.mjs backend/data/osm-attractions.json
 ```
 

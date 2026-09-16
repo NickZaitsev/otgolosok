@@ -80,7 +80,7 @@ db-prune-audio: ## Удалить старые аудиофайлы без сс�
 	$(NODE) scripts/prune-audio.mjs
 
 osm-import: ## Собрать каталог достопримечательностей; PBF=path/to/Moscow.osm.pbf
-	python scripts/import-osm-attractions.py $(PBF) --output backend/data/osm-attractions.json
+	python scripts/import-osm-attractions.py $(PBF) --output backend/data/osm-attractions.json $(OSM_IMPORT_ARGS)
 
 osm-load: ## Загрузить собранный каталог в SQLite
 	$(NODE) scripts/load-osm-catalog.mjs backend/data/osm-attractions.json
