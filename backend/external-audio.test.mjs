@@ -6,14 +6,14 @@ const story={title:"Дом",address:"Москва, дом 1",wordCount:104,parag
   {text:("Первый абзац рассказа об истории московского дома и людях, которые были с ним связаны. ").repeat(4).trim(),factIds:["f1","f2","f3"]},
   {text:("Второй абзац продолжает рассказ и описывает архитектурные детали здания и дальнейшую судьбу места. ").repeat(4).trim(),factIds:["f4","f5"]}],verification:"editorial",sources:[],facts:[]};
 
-async function fixture(t) {
-  let clock=Date.UTC(2026,8,16,12);
+async function fixture(t,{enqueueBase=true}={}) {
+  let clock=Date.UTC(2026,8,16,12);const tick=()=>++clock;
   const store=createStore(":memory:",{now:()=>clock,maxActive:20,maxDaily:20,workerLeaseSecret:"test-secret"});
   t.after(()=>store.close());
   const original=store.createOrGet({key:"source",address:"Москва, дом 1"});
   const source=store.update(original.id,{stage:"failed",data:{story}},original.revision);
-  const queued=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story,profileId:"silero-ru-v1"});
-  return {store,source,queued,advance:ms=>clock+=ms};
+  const queued=enqueueBase?await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story,profileId:"silero-ru-v1"}):null;
+  return {store,source,queued,advance:ms=>clock+=ms,tick};
 }
 
 test("external audio claims are exclusive and idempotent",async t=>{
@@ -93,22 +93,25 @@ test("external audio stores the immutable normalized script and profile contract
 });
 
 test("editing approved place text invalidates a leased older audio version",async t=>{
-  const f=await fixture(t);f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:1",osmType:"node",osmId:1,name:"Дом",location:{lat:55.7,lon:37.6},tags:{historic:"yes"}}]});
+  const f=await fixture(t,{enqueueBase:false});f.tick();f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:1",osmType:"node",osmId:1,name:"Дом",location:{lat:55.7,lon:37.6},tags:{historic:"yes"}}]});
   const batch=f.store.createBatch({requestKey:"place-audio",limit:1,mode:"text-and-audio",ttsProfile:"silero-ru-v1"});const content=f.store.claimContentJob();f.store.completeContentJob(content.id,{story,evidence:{}});const approved=f.store.approvePlaceText("osm:node:1",story);
+  assert.equal(approved.text.story.title,story.title);
   await f.store.enqueueExternalAudio({sourceJobId:`place-text:${approved.text.id}`,sourceRevision:0,story,profileId:"silero-ru-v1"});const claim=f.store.claimExternalAudio({workerId:"unique-edit-worker",requestId:"unique-edit-lease-0001",profileIds:["silero-ru-v1"]});
-  f.store.approvePlaceText("osm:node:1",{...story,title:"Новая версия",paragraphs:story.paragraphs.map((p,i)=>i? p:{...p,text:p.text+" Дополнение."})});
+  f.tick();f.store.approvePlaceText("osm:node:1",{...story,title:"Новая версия",paragraphs:story.paragraphs.map((p,i)=>i? p:{...p,text:p.text+" Дополнение."})});
   assert.throws(()=>f.store.acceptExternalAudio(claim.id,{workerId:"unique-edit-worker",generation:claim.leaseGeneration,leaseToken:claim.leaseToken,uploadId:"edited-upload",uploadSha256:"a".repeat(64),artifact:{sha256:"b".repeat(64),durationSec:60}}),{code:"LEASE_LOST"});assert.equal(f.store.getBatch(batch.id).counts.ready,1);
   assert.equal(f.store.getPublishedPlace("osm:node:1").text.story.title,"Новая версия");assert.notEqual(f.store.getPublishedPlace("osm:node:1").text.id,approved.text.id);
 });
 
 test("a new approved place text keeps old audio until its replacement succeeds",async t=>{
-  const f=await fixture(t);f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:9",osmType:"node",osmId:9,name:"Дом",location:{lat:55.7,lon:37.6},tags:{historic:"yes"}}]});
+  const f=await fixture(t,{enqueueBase:false});f.tick();f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:9",osmType:"node",osmId:9,name:"Дом",location:{lat:55.7,lon:37.6},tags:{historic:"yes"}}]});
   f.store.createBatch({requestKey:"audio-fallback",placeIds:["osm:node:9"],limit:1});const content=f.store.claimContentJob();f.store.completeContentJob(content.id,{story,evidence:{}});const old=f.store.approvePlaceText("osm:node:9",story);
+  assert.equal(old.text.story.title,story.title);
   await f.store.enqueueExternalAudio({sourceJobId:`place-text:${old.text.id}`,sourceRevision:0,story,profileId:"silero-ru-v1"});const claim=f.store.claimExternalAudio({workerId:"fallback-worker",requestId:"fallback-claim-1",profileIds:["silero-ru-v1"]});
   const artifact={url:`/api/story-audio/${"e".repeat(64)}.mp3`,sha256:"e".repeat(64),bytes:100,durationSec:60,model:"silero",voice:"xenia",provider:"external",synthetic:true};
   f.store.acceptExternalAudio(claim.id,{workerId:"fallback-worker",generation:claim.leaseGeneration,leaseToken:claim.leaseToken,uploadId:"fallback-upload",uploadSha256:"f".repeat(64),artifact});
+  assert.deepEqual(f.store.getPublishedPlace("osm:node:9").text.audio,artifact);
   const nextStory={...story,title:"Новая версия",paragraphs:story.paragraphs.map((paragraph,index)=>index?paragraph:{...paragraph,text:`${paragraph.text} Дополнение.`})};
-  const next=f.store.approvePlaceText("osm:node:9",nextStory);assert.notEqual(next.text.id,old.text.id);assert.deepEqual(f.store.getPublishedPlace("osm:node:9").text.audio,artifact);
+  f.tick();const next=f.store.approvePlaceText("osm:node:9",nextStory);assert.notEqual(next.text.id,old.text.id);assert.deepEqual(f.store.getPublishedPlace("osm:node:9").text.audio,artifact);
 });
 
 test("publication duration is enforced by the frozen TTS profile",async t=>{

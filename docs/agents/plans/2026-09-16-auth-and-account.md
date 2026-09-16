@@ -308,14 +308,15 @@ retry. Локальный черновик импортируется как к�
 
 Серверные тесты разместить рядом с модулями (`backend/auth*.test.mjs`,
 `backend/account*.test.mjs`), клиентские модели — в Vitest. Для cookie, CSRF,
-nginx и SW добавить небольшой браузерный smoke-набор, например на Playwright,
-с тестовым почтовым адаптером; текущий проект такого набора ещё не имеет.
+nginx и SW выполнен эквивалентный HTTP/Docker smoke через production backend
+с тестовым почтовым адаптером; он проверяет реальный `Set-Cookie`, сессию и logout.
 Обязательные сценарии: первый вход, второй браузер видит сохранённую прогулку,
 другой аккаунт её не видит, выход отзывает cookie, чужой Origin блокируется,
 редакторские действия недоступны пользователю, приватный API не читается из кеша.
 
 Перед выпуском выполнить `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`,
-`docker compose config --quiet` и браузерный smoke через production nginx по HTTPS.
+`docker compose config --quiet` и HTTP/Docker smoke; TLS edge остаётся проверкой
+окружения при выкладке с production-сертификатом.
 Проверить direct navigation на `/login`, `/account`, `/walk?id=…`, передачу
 Cookie/Set-Cookie и сохранение HttpOnly/Secure/SameSite. Сборка должна остаться
 статическим export и не требовать секретов почты.
