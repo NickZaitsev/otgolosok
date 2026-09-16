@@ -18,6 +18,7 @@ async function fixture(t,{enqueueBase=true}={}) {
 
 test("external audio claims are exclusive and idempotent",async t=>{
   const f=await fixture(t);
+  assert.equal(f.queued.profileId,"silero-ru-v1");
   const first=f.store.claimExternalAudio({workerId:"gpu-1",requestId:"request-0001",profileIds:["silero-ru-v1"]});
   assert.equal(first.spokenText,story.paragraphs.map(paragraph=>paragraph.text).join("\n\n"));
   assert.deepEqual(f.store.claimExternalAudio({workerId:"gpu-1",requestId:"request-0001",profileIds:["silero-ru-v1"]}),first);

@@ -67,6 +67,12 @@ function run(command, args, { input, capture = false } = {}) {
   return capture ? result.stdout : String(result.stdout ?? "");
 }
 
+function copyDirectoryContents(source, target) {
+  if (!existsSync(source)) return;
+  mkdirSync(target, { recursive: true });
+  for (const name of readdirSync(source)) cpSync(join(source, name), join(target, name), { recursive: true });
+}
+
 const ssh = (command, options) => run("ssh", ["-o", "BatchMode=yes", VPS, command], options);
 
 function openDatabase(file) {
@@ -160,9 +166,8 @@ function importDump() {
   // different jobs.sqlite is what turns a restore into a corrupt database.
   for (const name of JOURNAL) rmSync(join(DATA_DIR, name), { force: true });
   cpSync(source, join(DATA_DIR, "jobs.sqlite"));
-  if (existsSync(join(DUMP_DIR, "audio"))) {
-    run("rsync", ["-a", `${join(DUMP_DIR, "audio")}/`, `${join(DATA_DIR, "audio")}/`]);
-  }
+  rmSync(join(DATA_DIR, "audio"), { recursive: true, force: true });
+  copyDirectoryContents(join(DUMP_DIR, "audio"), join(DATA_DIR, "audio"));
 
   process.stdout.write(`Импортировано в ${DATA_DIR}\n`);
   report(join(DATA_DIR, "jobs.sqlite"), DATA_DIR);
