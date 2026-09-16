@@ -77,9 +77,12 @@ def synthesize_mock(text,output,heartbeat=None):
     duration=max(1,min(150,round(len(text.split())/2.3)))
     monitored_process(['ffmpeg','-v','error','-y','-f','lavfi','-i',f'sine=frequency=440:duration={duration}',str(output)],heartbeat)
 
-def synthesize_silero(text,output,model_path,speaker,device,heartbeat=None):
+def load_silero(model_path,device):
     import torch
-    model=torch.package.PackageImporter(model_path).load_pickle('tts_models','model');model.to(device);parts=[]
+    model=torch.package.PackageImporter(model_path).load_pickle('tts_models','model');model.to(device);return model
+
+def synthesize_silero(text,output,model_path,speaker,device,heartbeat=None,model=None):
+    model=model or load_silero(model_path,device);parts=[]
     try:
         for index,part in enumerate(chunks(text)):
             if heartbeat:heartbeat.check()
@@ -154,7 +157,7 @@ def validate_claim_profile(job,args,configured_profile):
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--engine',choices=['mock','silero','f5'],default=os.getenv('TTS_ENGINE','mock'));parser.add_argument('--model-path',default=os.getenv('SILERO_MODEL_PATH',''));parser.add_argument('--model-sha256',default=os.getenv('SILERO_MODEL_SHA256',''));parser.add_argument('--speaker',default=os.getenv('SILERO_SPEAKER','xenia'));parser.add_argument('--device',default=os.getenv('WORKER_DEVICE','cpu'));parser.add_argument('--f5-command',default=os.getenv('F5_TTS_COMMAND',''));parser.add_argument('--spool',type=Path,default=Path(os.getenv('WORKER_SPOOL_DIR','.worker-spool')));parser.add_argument('--once',action='store_true');args=parser.parse_args()
-    validate_startup(args);args.spool.mkdir(parents=True,exist_ok=True);api=Api(os.environ['WORKER_API_URL'],os.environ['WORKER_TOKEN'],os.getenv('WORKER_ID',socket.gethostname()));profile=os.getenv('WORKER_PROFILE_ID','silero-ru-v1');idle=2.
+    validate_startup(args);model=load_silero(args.model_path,args.device) if args.engine=='silero' else None;args.spool.mkdir(parents=True,exist_ok=True);api=Api(os.environ['WORKER_API_URL'],os.environ['WORKER_TOKEN'],os.getenv('WORKER_ID',socket.gethostname()));profile=os.getenv('WORKER_PROFILE_ID','silero-ru-v1');idle=2.
     while True:
         reconcile_spool(api,args.spool)
         try:response=api.request('POST','/claim',{'requestId':uuid.uuid4().hex,'profileIds':[profile],'version':'tts-worker-2'})
@@ -169,7 +172,7 @@ def main():
             with Heartbeat(api,job) as heartbeat:
                 heartbeat.update('synthesis',0)
                 if args.engine=='mock':synthesize_mock(job['spokenText'],output,heartbeat)
-                elif args.engine=='silero':synthesize_silero(job['spokenText'],output,args.model_path,args.speaker,args.device,heartbeat)
+                elif args.engine=='silero':synthesize_silero(job['spokenText'],output,args.model_path,args.speaker,args.device,heartbeat,model)
                 else:synthesize_f5(job['spokenText'],output,args.f5_command,heartbeat)
                 heartbeat.check()
                 heartbeat.update('upload',100)
