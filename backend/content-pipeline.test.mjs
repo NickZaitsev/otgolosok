@@ -46,3 +46,13 @@ test("addressless place identity is preserved in the facts prompt",async t=>{
   await runContentJob(store.claimContentJob(),{store,provider,fetchPage:async url=>({url,html:"Памятник установлен в Москве. ".repeat(30)})});
   assert.match(factsPromptText,/"name":"Памятник без адреса"/);assert.match(factsPromptText,/null street address is valid/);assert.match(factsPromptText,/"wikidata":"Q1"/);
 });
+
+test("place pipeline revises a draft rejected by the model editor",async t=>{
+  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);store.createBatch({requestKey:"pipeline-review-repair",limit:1});
+  const sources=[{url:"https://one.example/place",title:"One"},{url:"https://two.example/place",title:"Two"}],facts=Array.from({length:5},(_,index)=>({id:`f${index+1}`,claim:`Факт ${index+1}`,topic:"place_history",scope:"building",location:"Памятник",distanceMeters:null,interesting:index===0,evidence:[{sourceId:index%2?"s2":"s1",quote:"Памятник установлен в Москве."}]}));
+  const bad=("Памятник повторяет одну и ту же неподходящую мысль для рассказа. ").repeat(6).trim(),good=("Памятник связан с городской историей, а источники точно описывают его создание. ").repeat(6).trim();
+  const responses=[{sources},{addressConfirmed:true,placeName:"Памятник",resolvedAddress:"Памятник, Москва",facts},{title:"Черновик",paragraphs:[{text:bad,factIds:["f1","f2","f3"]},{text:bad,factIds:["f4","f5"]}]},{approved:false,issues:["Повтор"]},{title:"Исправлено",paragraphs:[{text:good,factIds:["f1","f2","f3"]},{text:good,factIds:["f4","f5"]}]},{approved:true,issues:[]}];let call=0;
+  const provider={writerModel:"writer",response:async(_prompt,options)=>{const value=responses[call++];return{value,citedUrls:options.search?sources.map(source=>source.url):[],usage:{}};}};
+  const result=await runContentJob(store.claimContentJob(),{store,provider,fetchPage:async url=>({url,html:"Памятник установлен в Москве. ".repeat(30)})});
+  assert.equal(result.story?.title,"Исправлено",JSON.stringify(result));assert.equal(call,6);
+});
