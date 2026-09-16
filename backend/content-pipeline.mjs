@@ -55,14 +55,16 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,si
       save({evidence:validateFacts(raw,checkpoint.sources,{requireEditorialScope:true})});}
     if(!checkpoint.draft){let draft=await call(writingPrompt(checkpoint.evidence,job.profile),{model:provider.writerModel,timeoutMs:180000,maxTokens:3200});
       try{save({draft:validateContentDraft(draft.value,checkpoint.evidence,job.profile)});}catch(error){if(error?.code!=="INVALID_DRAFT")throw error;draft=await call(repairPrompt(checkpoint.evidence,job.profile,error),{model:provider.writerModel,timeoutMs:180000,maxTokens:3200});save({draft:validateContentDraft(draft.value,checkpoint.evidence,job.profile)});}}
-    const anchor=job.place.address??`${job.place.name}, Москва`;let review=await call(reviewPrompt(anchor,checkpoint.draft,checkpoint.evidence),{timeoutMs:120000,maxTokens:1800});save({review:review.value});
-    if(review.value.approved!==true||!Array.isArray(review.value.issues)||review.value.issues.length){
-      if(!Array.isArray(review.value.issues)||!review.value.issues.length)throw failure("REVIEW_REQUIRED");
-      const revised=await call(reviewRepairPrompt(checkpoint.evidence,job.profile,checkpoint.draft,review.value.issues),{model:provider.writerModel,timeoutMs:180000,maxTokens:3200});
-      save({draft:validateContentDraft(revised.value,checkpoint.evidence,job.profile),reviewRepair:{issues:review.value.issues}});
+    const anchor=job.place.address??`${job.place.name}, Москва`;let review;
+    for(let revision=0;revision<=2;revision++){
       review=await call(reviewPrompt(anchor,checkpoint.draft,checkpoint.evidence),{timeoutMs:120000,maxTokens:1800});save({review:review.value});
-      if(review.value.approved!==true||!Array.isArray(review.value.issues)||review.value.issues.length)throw failure("REVIEW_REQUIRED");
+      if(review.value.approved===true&&Array.isArray(review.value.issues)&&!review.value.issues.length)break;
+      if(!Array.isArray(review.value.issues)||!review.value.issues.length)throw failure("REVIEW_REQUIRED");
+      if(revision===2)break;
+      const revised=await call(reviewRepairPrompt(checkpoint.evidence,job.profile,checkpoint.draft,review.value.issues),{model:provider.writerModel,timeoutMs:180000,maxTokens:3200});
+      save({draft:validateContentDraft(revised.value,checkpoint.evidence,job.profile),reviewRepair:{revision:revision+1,issues:review.value.issues}});
     }
+    if(review.value.approved!==true||!Array.isArray(review.value.issues)||review.value.issues.length)throw failure("REVIEW_REQUIRED");
     const completed=store.completeContentJob(job.id,{story:checkpoint.draft,evidence:checkpoint.evidence,verification:"automatic"});
     return completed;
   } catch(error) {

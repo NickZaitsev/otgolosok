@@ -56,3 +56,13 @@ test("place pipeline revises a draft rejected by the model editor",async t=>{
   const result=await runContentJob(store.claimContentJob(),{store,provider,fetchPage:async url=>({url,html:"Памятник установлен в Москве. ".repeat(30)})});
   assert.equal(result.story?.title,"Исправлено",JSON.stringify(result));assert.equal(call,6);
 });
+
+test("place pipeline allows a second editor-directed revision",async t=>{
+  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);store.createBatch({requestKey:"pipeline-review-repair-2",limit:1});
+  const sources=[{url:"https://one.example/place",title:"One"},{url:"https://two.example/place",title:"Two"}],facts=Array.from({length:5},(_,index)=>({id:`f${index+1}`,claim:`Факт ${index+1}`,topic:"place_history",scope:"building",location:"Памятник",distanceMeters:null,interesting:index===0,evidence:[{sourceId:index%2?"s2":"s1",quote:"Памятник установлен в Москве."}]}));
+  const paragraph=("Памятник связан с городской историей, а источники точно описывают его создание. ").repeat(6).trim(),draft=title=>({title,paragraphs:[{text:paragraph,factIds:["f1","f2","f3"]},{text:paragraph,factIds:["f4","f5"]}]});
+  const responses=[{sources},{addressConfirmed:true,placeName:"Памятник",resolvedAddress:"Памятник, Москва",facts},draft("Первый"),{approved:false,issues:["Первая правка"]},draft("Второй"),{approved:false,issues:["Вторая правка"]},draft("Готово"),{approved:true,issues:[]}];let call=0;
+  const provider={writerModel:"writer",response:async(_prompt,options)=>({value:responses[call++],citedUrls:options.search?sources.map(source=>source.url):[],usage:{}})};
+  const result=await runContentJob(store.claimContentJob(),{store,provider,fetchPage:async url=>({url,html:"Памятник установлен в Москве. ".repeat(30)})});
+  assert.equal(result.story?.title,"Готово",JSON.stringify(result));assert.equal(call,8);
+});
