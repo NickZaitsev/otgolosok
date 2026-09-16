@@ -51,6 +51,9 @@ export function createContentStore({db,now,transaction}) {
   if(!columns.has("provenance_json"))db.exec("ALTER TABLE places ADD COLUMN provenance_json TEXT");
   if(!db.prepare("PRAGMA table_info(place_texts)").all().some(column=>column.name==="audio_json"))db.exec("ALTER TABLE place_texts ADD COLUMN audio_json TEXT");
   if(!db.prepare("PRAGMA table_info(place_texts)").all().some(column=>column.name==="approved_story_json"))db.exec("ALTER TABLE place_texts ADD COLUMN approved_story_json TEXT");
+  const contentJobColumns=new Set(db.prepare("PRAGMA table_info(content_jobs)").all().map(column=>column.name));
+  if(!contentJobColumns.has("profile_version"))db.exec("ALTER TABLE content_jobs ADD COLUMN profile_version TEXT NOT NULL DEFAULT '1'");
+  if(!contentJobColumns.has("priority"))db.exec("ALTER TABLE content_jobs ADD COLUMN priority INTEGER NOT NULL DEFAULT 0");
 
   const batchCounts=id=>db.prepare(`SELECT count(*) total,sum(state IN ('queued','retry_wait')) queued,
     sum(state='working') working,sum(state='ready') ready,sum(state IN ('failed','review_required','insufficient_evidence','cancelled')) failed
@@ -134,7 +137,9 @@ export function createContentStore({db,now,transaction}) {
         db.prepare("INSERT INTO content_batches VALUES (?,?,?,?,?,?,?,?,?)").run(id,requestKey,name.trim(),"running",mode,textProfile,ttsProfile,timestamp,timestamp);
         for(const place of places){const inputKey=sha256(encode({placeId:place.id,contentHash:place.content_hash,profile:textProfile}));
           let job=db.prepare("SELECT * FROM content_jobs WHERE input_key=?").get(inputKey);
-          if(!job){const jobId=randomUUID();db.prepare("INSERT INTO content_jobs VALUES (?,?,?,?,?,?,?,?,?,?,?,?)").run(jobId,inputKey,place.id,"queued",textProfile,0,3,timestamp,null,null,timestamp,timestamp);job={id:jobId,state:"queued"};}
+          if(!job){const jobId=randomUUID();db.prepare(`INSERT INTO content_jobs
+            (id,input_key,place_id,state,profile,profile_version,priority,attempts,max_attempts,next_attempt_at,checkpoint_json,error_json,created_at,updated_at)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(jobId,inputKey,place.id,"queued",textProfile,"1",0,0,3,timestamp,null,null,timestamp,timestamp);job={id:jobId,state:"queued"};}
           db.prepare("INSERT INTO batch_items VALUES (?,?,?,?,?,?)").run(id,place.id,job.id,job.state,null,timestamp);}
         return viewBatch(db.prepare("SELECT * FROM content_batches WHERE id=?").get(id),batchCounts(id));
       });
@@ -164,7 +169,7 @@ export function createContentStore({db,now,transaction}) {
       const timestamp=iso(now);db.prepare("UPDATE content_jobs SET state='queued',attempts=0,next_attempt_at=?,error_json=NULL,updated_at=? WHERE id=?").run(timestamp,timestamp,item.text_job_id);
       db.prepare("UPDATE batch_items SET state='queued',error_json=NULL,updated_at=? WHERE batch_id=? AND place_id=?").run(timestamp,batchId,placeId);return this.getBatch(batchId);});},
     claimContentJob() {return transaction(()=>{const timestamp=iso(now);const row=db.prepare(`SELECT j.* FROM content_jobs j WHERE j.state IN ('queued','retry_wait') AND j.next_attempt_at<=? AND j.attempts<j.max_attempts
-        AND EXISTS(SELECT 1 FROM batch_items i JOIN content_batches b ON b.id=i.batch_id WHERE i.text_job_id=j.id AND i.state IN ('queued','retry_wait') AND b.state='running') ORDER BY j.created_at,j.id LIMIT 1`).get(timestamp);
+        AND EXISTS(SELECT 1 FROM batch_items i JOIN content_batches b ON b.id=i.batch_id WHERE i.text_job_id=j.id AND i.state IN ('queued','retry_wait') AND b.state='running') ORDER BY j.priority DESC,j.created_at,j.id LIMIT 1`).get(timestamp);
       if(!row)return null;const generation=Number(row.attempts)+1;db.prepare("UPDATE content_jobs SET state='working',attempts=attempts+1,updated_at=? WHERE id=?").run(timestamp,row.id);
       db.prepare("INSERT OR REPLACE INTO content_job_attempts VALUES (?,?,?, ?,NULL,NULL)").run(row.id,generation,"working",timestamp);syncItems(row.id,"working");
       const place=viewPlace(db.prepare("SELECT * FROM places WHERE id=?").get(row.place_id));return {id:row.id,place,profile:row.profile,checkpoint:decode(row.checkpoint_json),attempts:Number(row.attempts)+1};});},

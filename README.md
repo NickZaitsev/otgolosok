@@ -414,14 +414,13 @@ lease отменяется, а новая версия текста и ново�
 python scripts/import-osm-attractions.py Moscow.osm.pbf --output backend/data/osm-attractions.json \
   --source-url https://download.geofabrik.de/russia/central-fed-district-latest.osm.pbf \
   --coverage moscow-admin --boundary-file moscow-boundary.geojson --boundary-relation-id 102269
-node scripts/load-osm-catalog.mjs backend/data/osm-attractions.json
+node scripts/load-osm-catalog.mjs backend/data/osm-attractions.json --complete
 ```
 
 Для скрипта импорта нужен `osmium==4.3.1` в отдельном build-окружении. Выходной
-каталог содержит provenance, checksum снимка и ODbL attribution. Текущая первая
-версия использует защитный московский bounding box; перед заявлением о полном
-административном покрытии нужно выбрать полный extract и проверенную границу Москвы.
-Для такого запуска передайте проверенный GeoJSON и зафиксируйте его checksum:
+каталог содержит provenance, checksum снимка и ODbL attribution. Полный импорт
+требует extract, содержащий relation Москвы `102269`, и проверенную границу Москвы.
+Передайте проверенный GeoJSON и зафиксируйте его checksum:
 `--coverage moscow-admin --boundary-file moscow-boundary.geojson`; импорт обрежет
 каталог по Polygon/MultiPolygon и отметит покрытие как административное. Флаг
 `node scripts/load-osm-catalog.mjs ... --complete` принимается только для такого
@@ -432,6 +431,30 @@ node scripts/load-osm-catalog.mjs backend/data/osm-attractions.json
 `text-and-audio` ставит текст в очередь TTS после редакторского утверждения.
 В том же экране доступны состав партии, повтор отдельной ошибки, редактура текста,
 повторная озвучка, одноразовая выдача токена, отзыв ключа и последний heartbeat.
+
+Для эксплуатационного запуска сначала создайте разнообразный пилот. Скрипт выбирает
+разные OSM-категории и не менее четверти объектов без почтового адреса, если они есть:
+
+```bash
+node scripts/create-osm-batch.mjs --pilot --limit 50
+```
+
+Новая партия по умолчанию создаётся на паузе. После проверки настроек провайдера
+возобновите её в админке; `--start` запускает обработку сразу.
+
+После проверки фактов редактором и прослушивания Silero создавайте следующие партии.
+`--next` пропускает места, для которых текущее содержимое уже поставлено в очередь,
+поэтому последовательные вызовы охватывают весь снимок без повторов:
+
+```bash
+node scripts/create-osm-batch.mjs --next --limit 5000
+```
+
+Перед массовым запуском зафиксируйте checksum и лицензию модели, голос, CPU/GPU и
+память целевой машины. Для пилота запишите расход токенов из админской метрики,
+время синтеза и память процесса; вручную проверьте факты, имена, даты, адреса,
+ударения и отсутствие обрывов в каждом из 50 результатов. Не создавайте следующие
+партии, пока пилот не прошёл эту проверку.
 
 Озвучка уже включена в репозиторий и обычную сборку. Для её регенерации нужны
 Python 3 с `ru-normalizr==0.3.0` (`python3 -m pip install ru-normalizr==0.3.0`), `ffmpeg`, `ffprobe` и переменные окружения `OPENAI_API_KEY`,

@@ -145,6 +145,9 @@ export function createStore(
     );
   `);
   if(!db.prepare("PRAGMA table_info(job_attempts)").all().some(column=>column.name==="lease_key_version"))db.exec("ALTER TABLE job_attempts ADD COLUMN lease_key_version INTEGER NOT NULL DEFAULT 1");
+  const audioJobColumns=new Set(db.prepare("PRAGMA table_info(external_audio_jobs)").all().map(column=>column.name));
+  if(!audioJobColumns.has("profile_version"))db.exec("ALTER TABLE external_audio_jobs ADD COLUMN profile_version TEXT NOT NULL DEFAULT '1'");
+  if(!audioJobColumns.has("priority"))db.exec("ALTER TABLE external_audio_jobs ADD COLUMN priority INTEGER NOT NULL DEFAULT 0");
 
   const findById = db.prepare(
     "SELECT record_json FROM jobs WHERE id = ?",
@@ -203,7 +206,7 @@ export function createStore(
 
   function publicExternal(row) {
     if (!row) return null;
-    return { id: row.id, state: row.state, profileId: row.profile_id, attempts: Number(row.attempts),
+    return { id: row.id, state: row.state, profileId: row.profile_id, profileVersion: row.profile_version??"1", priority:Number(row.priority??0), attempts: Number(row.attempts),
       maxAttempts: Number(row.max_attempts), leaseGeneration: Number(row.lease_generation),
       leaseExpiresAt: row.lease_expires_at, updatedAt: row.updated_at,
       workerId: row.worker_id,
@@ -527,8 +530,8 @@ export function createStore(
         if (existing) return publicExternal(existing);
         const timestamp = isoNow(now), id = randomUUID();
         db.prepare(`INSERT INTO external_audio_jobs
-          (id,input_key,source_job_id,source_revision,state,profile_id,payload_json,next_attempt_at,created_at,updated_at)
-          VALUES (?,?,?,?,?,?,?,?,?,?)`).run(id,inputKey,sourceJobId,sourceRevision,"queued",profileId,
+          (id,input_key,source_job_id,source_revision,state,profile_id,profile_version,priority,payload_json,next_attempt_at,created_at,updated_at)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).run(id,inputKey,sourceJobId,sourceRevision,"queued",profileId,profile.configVersion,0,
             encode({textVersion:`${sourceJobId}:${sourceRevision}`,sourceTextHash:sha256(script),spokenText,spokenTextHash,normalizerVersion,
               profile}),timestamp,timestamp,timestamp);
         return publicExternal(externalRow(id));
@@ -598,7 +601,7 @@ export function createStore(
         const placeholders=profileIds.map(()=>"?").join(",");
         const row=db.prepare(`SELECT * FROM external_audio_jobs WHERE state IN ('queued','retry_wait')
           AND next_attempt_at <= ? AND attempts < max_attempts AND profile_id IN (${placeholders})
-          ORDER BY created_at,id LIMIT 1`).get(timestamp,...profileIds);
+          ORDER BY priority DESC,created_at,id LIMIT 1`).get(timestamp,...profileIds);
         if (!row) return null;
         const generation=Number(row.lease_generation)+1, expiresAt=isoNow(()=>now()+leaseMs);
         const token=leaseToken(row.id,generation,workerId);
