@@ -35,7 +35,7 @@ function sourcesFrom(result) {
 export async function runContentJob(job,{store,provider,fetchPage=fetchSource,signal,timeoutMs=600000}) {
   const deadline=AbortSignal.any([AbortSignal.timeout(timeoutMs),...(signal?[signal]:[])]);let checkpoint=job.checkpoint??{};
   const save=patch=>{checkpoint={...checkpoint,...patch};store.updateContentCheckpoint(job.id,checkpoint);};
-  const call=async(prompt,options={})=>provider.response(prompt,{...options,signal:deadline});
+  const call=async(prompt,options={})=>{const result=await provider.response(prompt,{...options,signal:deadline});const tokens=Object.values(result.usage??{}).reduce((sum,value)=>sum+(Number(value)||0),0);if(tokens)save({usageTokens:Number(checkpoint.usageTokens??0)+tokens});return result;};
   try {
     if(!checkpoint.research){const research=await call(placePrompt(job.place),{search:true,timeoutMs:180000,maxTokens:3000});const sources=sourcesFrom(research);if(sources.length<2)throw failure("INSUFFICIENT_EVIDENCE");save({research:{sources}});}
     if(!checkpoint.sources){const results=await Promise.allSettled(checkpoint.research.sources.map(async(source,index)=>{const page=await fetchPage(source.url,{signal:deadline});const text=pageText(page.html).slice(0,14000);if(text.length<300)throw failure("SOURCE_EMPTY");return{id:`s${index+1}`,url:page.url,title:source.title,publisher:new URL(page.url).hostname.split(".").slice(-2).join("."),text};}));
@@ -47,7 +47,6 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,si
     const anchor=job.place.address??`${job.place.name}, Москва`;const review=await call(reviewPrompt(anchor,checkpoint.draft,checkpoint.evidence),{timeoutMs:120000,maxTokens:1800});save({review:review.value});
     if(review.value.approved!==true||!Array.isArray(review.value.issues)||review.value.issues.length)throw failure("REVIEW_REQUIRED");
     const completed=store.completeContentJob(job.id,{story:checkpoint.draft,evidence:checkpoint.evidence,verification:"automatic"});
-    for(const profileId of completed.audioProfiles??[])store.enqueueExternalAudio({sourceJobId:`place-text:${completed.id}`,sourceRevision:0,story:checkpoint.draft,profileId});
     return completed;
   } catch(error) {
     const code=["TimeoutError","AbortError"].includes(error?.name)?"TIMEOUT":error?.code??"PREPARATION_FAILED";

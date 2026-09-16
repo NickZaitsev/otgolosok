@@ -4,8 +4,8 @@ import { betterAuth } from "better-auth";
 import { getMigrations } from "better-auth/db/migration";
 import { emailOTP } from "better-auth/plugins";
 
-const noopDelivery = async ({ email, otp }) => {
-  if (process.env.NODE_ENV !== "test") console.info(`Login code for ${email}: ${otp}`);
+const noopDelivery = async () => {
+  if (process.env.NODE_ENV !== "test") console.info("Authentication email delivery is not configured.");
 };
 
 export async function createAuth({ databasePath, baseURL, secret, sendOTP = noopDelivery, production = process.env.NODE_ENV === "production" }) {
@@ -13,6 +13,16 @@ export async function createAuth({ databasePath, baseURL, secret, sendOTP = noop
   if (production && (!secret || secret.length < 32)) throw new Error("BETTER_AUTH_SECRET must contain at least 32 characters");
   const database = new DatabaseSync(databasePath, { timeout: 5000 });
   database.exec("PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000; PRAGMA foreign_keys = ON");
+  database.exec(`CREATE TABLE IF NOT EXISTS auth_email_limits(
+    dimension TEXT NOT NULL, value_hash TEXT NOT NULL, sent_at INTEGER NOT NULL
+  ); CREATE INDEX IF NOT EXISTS auth_email_limits_lookup ON auth_email_limits(dimension,value_hash,sent_at);`);
+  const protectedDelivery=async (value,ctx)=>{
+    const cutoff=Date.now()-3600000,hmac=input=>createHmac("sha256",secret||"development-only-better-auth-secret-32").update(input).digest("hex"),emailHash=hmac(String(value.email).trim().toLowerCase()),ip=ctx?.request?.headers?.get?.("x-real-ip")??"unknown",ipHash=hmac(ip);
+    database.prepare("DELETE FROM auth_email_limits WHERE sent_at<?").run(cutoff);
+    const count=(dimension,valueHash)=>database.prepare("SELECT count(*) AS n FROM auth_email_limits WHERE dimension=? AND value_hash=? AND sent_at>=?").get(dimension,valueHash,cutoff).n;
+    if(count("email",emailHash)>=5||count("ip",ipHash)>=20||count("global","all")>=Number(process.env.AUTH_EMAIL_HOURLY_CAP??1000))throw Object.assign(new Error("Too many email requests"),{status:429});
+    await sendOTP(value);const sent=Date.now(),insert=database.prepare("INSERT INTO auth_email_limits VALUES(?,?,?)");insert.run("email",emailHash,sent);insert.run("ip",ipHash,sent);insert.run("global","all",sent);
+  };
   const options = {
     appName: "Отголосок", baseURL, basePath: "/api/auth", database,
     secret: secret || "development-only-better-auth-secret-32",
@@ -36,7 +46,7 @@ export async function createAuth({ databasePath, baseURL, secret, sendOTP = noop
     },
     plugins: [emailOTP({
       expiresIn: 600, allowedAttempts: 5, storeOTP: "hashed", resendStrategy: "rotate",
-      rateLimit: { window: 60, max: 1 }, sendVerificationOTP: sendOTP,
+      rateLimit: { window: 3600, max: 20 }, sendVerificationOTP: protectedDelivery,
     })],
   };
   const { runMigrations } = await getMigrations(options);

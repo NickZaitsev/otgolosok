@@ -18,6 +18,7 @@ import { ingestAudio } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf } from "./auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
+import { normalizeForSpeech } from "./text-normalizer.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 function json(res,status,value) {
@@ -53,7 +54,7 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
+export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,sendAccountCode=async()=>{},auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
@@ -74,7 +75,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Обновите страницу и повторите действие."}});return;}
         if(url.pathname==="/api/me"&&req.method==="GET"){json(res,200,{user:{id:session.user.id,email:session.user.email,name:session.user.name}});return;}
         if(url.pathname==="/api/me"&&req.method==="PATCH"){const input=await body(req);if(Object.keys(input).some(k=>k!=="name"))throw failure("BAD_REQUEST");const name=accountStore.updateProfile(session.user.id,input.name);json(res,200,{user:{id:session.user.id,email:session.user.email,name}});return;}
-        if(url.pathname==="/api/me"&&req.method==="DELETE"){const created=new Date(session.session.createdAt).getTime();if(!Number.isFinite(created)||Date.now()-created>600000){json(res,403,{error:{code:"FRESH_LOGIN_REQUIRED",message:"Для удаления снова войдите в аккаунт и повторите в течение 10 минут."}});return;}accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
+        if(url.pathname==="/api/me/delete-code"&&req.method==="POST"){const code=accountStore.issueDeleteCode(session.user.id);await sendAccountCode({email:session.user.email,otp:code,purpose:"delete-account"});json(res,200,{success:true});return;}
+        if(url.pathname==="/api/me"&&req.method==="DELETE"){const input=await body(req);if(Object.keys(input).some(key=>key!=="code")||!accountStore.verifyDeleteCode(session.user.id,input.code)){json(res,403,{error:{code:"DELETE_CODE_INVALID",message:"Неверный или просроченный код удаления."}});return;}store.revokeWalkResearchAccess?.(accountStore.researchJobIds(session.user.id));accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
         const accountQuery=()=>{const entries=[...url.searchParams];if(entries.some(([key,value])=>!['limit','cursor'].includes(key)||(key==='limit'&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure('BAD_REQUEST');return {limit:Number(url.searchParams.get('limit')??20),after:url.searchParams.get('cursor')};};
         if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,...Object.values(accountQuery())));return;}
         if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
@@ -102,6 +104,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           if(Object.keys(input).some(key=>!["requestId","profileIds","version"].includes(key)))throw failure("BAD_REQUEST");
           const profileIds=credential?input.profileIds.filter(profile=>credential.profiles.includes(profile)):input.profileIds;
           if(!profileIds.length){json(res,403,{error:{code:"FORBIDDEN",message:"Worker profile not permitted."}});return;}
+          store.recordWorkerHeartbeat({credentialId:credential?.id??"static",workerName:workerId,version:input.version,profileIds});
           const job=store.claimExternalAudio({workerId:credential?`${credential.id}:${workerId}`:workerId,requestId:input.requestId,profileIds});
           if(!job){res.writeHead(204,{"Cache-Control":"no-store","Retry-After":"10"});res.end();return;}
           json(res,200,{job});return;
@@ -115,8 +118,9 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         const generation=Number(req.headers["x-lease-generation"]),leaseToken=String(req.headers["x-lease-token"]??"");
         if(!Number.isSafeInteger(generation)||generation<1||!leaseToken)throw failure("BAD_REQUEST");
         if(req.method==="POST"&&workerMatch[2]==="heartbeat") {
-          if(req.headers["content-length"]!=="0"&&req.headers["content-length"]!==undefined)await body(req,1024);
-          json(res,200,{job:store.heartbeatExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken})});return;
+          const progress=req.headers["content-length"]!=="0"&&req.headers["content-length"]!==undefined?await body(req,1024):null;
+          if(progress&&(Object.keys(progress).some(key=>!["stage","percent"].includes(key))||(progress.stage!==undefined&&(typeof progress.stage!=="string"||progress.stage.length>40))||(progress.percent!==undefined&&(!Number.isFinite(progress.percent)||progress.percent<0||progress.percent>100))))throw failure("BAD_REQUEST");
+          json(res,200,{job:store.heartbeatExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,progress})});return;
         }
         if(req.method==="POST"&&workerMatch[2]==="fail") {
           const input=await body(req,2048);
@@ -126,6 +130,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const uploadId=String(req.headers["x-upload-id"]??""),expected=String(req.headers["x-content-sha256"]??"");
           const accepted=store.getExternalAudio(workerMatch[1]);
           if(accepted?.receipt?.uploadId===uploadId){if(accepted.receipt.uploadSha256!==expected)throw failure("CONFLICT");json(res,200,{job:accepted});return;}
+          store.validateExternalAudioLease(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken});
           const uploaded=await audioIngest(req,audioDirectory);
           if(uploaded.uploadSha256!==expected){await rm(join(audioDirectory,`${uploaded.artifact.sha256}.mp3`),{force:true});throw failure("AUDIO_CHECKSUM");}
           const artifact={...uploaded.artifact,model:String(req.headers["x-tts-model"]??"external").slice(0,100),voice:String(req.headers["x-tts-voice"]??"external").slice(0,64)};
@@ -152,7 +157,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
             if(!/^(30|60|90)$/.test(q.minutes)||![q.lat,q.lon].every(v=>/^-?\d+(?:\.\d+)?$/.test(v)))throw failure("BAD_REQUEST");
             const request=validateWalkResearch({start:{location:{lat:Number(q.lat),lon:Number(q.lon)}},mode:q.mode,minutes:Number(q.minutes)},true);
             job=store.lookupWalkResearch(request,q.recoveryToken);
-            if(auth&&job&&!accountStore.ownsRequest(session.user.id,job.id))job=null;
+            if(auth&&job&&!accountStore.ownsRequest(session.user.id,job.id))accountStore.attachRequest(session.user.id,job.id,"walk_research",q.recoveryToken);
           }
         } else if(req.method==="POST"&&(!researchMatch[1]||researchMatch[2])) {
           if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
@@ -186,6 +191,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           if(status===401)res.setHeader("WWW-Authenticate","Bearer");
           json(res,status,{error:{code:status===429?"ADMIN_THROTTLED":"UNAUTHORIZED",message:"Admin authentication required."}});return;
         }
+        if(roleAuthorized&&!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Refresh the editor and retry."}});return;}
         if(req.method==="GET"&&url.pathname==="/api/story-admin/walks") {
           if(url.search)throw failure("BAD_REQUEST");
           json(res,200,store.listWalksAdmin());return;
@@ -195,8 +201,12 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           json(res,200,store.listPlaces({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",status:url.searchParams.get("status")??"all"}));return;
         }
         if(req.method==="GET"&&url.pathname==="/api/story-admin/content/batches") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{batches:store.listBatches()});return;}
-        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/stats") {if(url.search)throw failure("BAD_REQUEST");json(res,200,store.getContentStats());return;}
-        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/workers") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{workers:store.listWorkerCredentials()});return;}
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/stats") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{...store.getContentStats(),audioQueue:store.getExternalAudioStats()});return;}
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/audio") {
+          const entries=[...url.searchParams];if(entries.some(([key,value])=>key!=="state"||!value)||entries.length>1)throw failure("BAD_REQUEST");
+          const states=(url.searchParams.get("state")??"failed,cancelled").split(",");json(res,200,{audioJobs:store.listExternalAudio({states})});return;
+        }
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/workers") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{workers:store.listWorkerCredentials(),heartbeats:store.listWorkerHeartbeats()});return;}
         if(req.method==="POST"&&url.pathname==="/api/story-admin/content/workers") {if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           json(res,201,{worker:store.createWorkerCredential(await body(req,4096))});return;}
         const revokeWorker=new RegExp(`^/api/story-admin/content/workers/(${UUID})/revoke$`).exec(url.pathname);
@@ -218,14 +228,17 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         const approveContent=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)\/approve$/.exec(url.pathname);
         if(approveContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const input=await body(req,32768),place=store.approvePlaceText(approveContent[1],input?.story??null);
-          if(place)for(const profileId of place.audioProfiles??[])store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId});
+          if(place)for(const profileId of place.audioProfiles??[])await store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId});
           json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
         const revoiceContent=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)\/audio$/.exec(url.pathname);
         if(revoiceContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const input=await body(req,4096),place=store.getPlace(revoiceContent[1]);
           if(!place?.text||place.text.verification!=="editorial"){json(res,404,{error:{code:"NOT_FOUND",message:"Approved place text not found."}});return;}
-          const audioJob=store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId:input.profileId??"silero-ru-v1"});
+          const audioJob=await store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId:input.profileId??"silero-ru-v1"});
           json(res,200,{place,audioJob});return;}
+        const retryAudio=/^\/api\/story-admin\/content\/audio\/(${UUID})\/retry$/.exec(url.pathname);
+        if(retryAudio&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const audioJob=store.retryExternalAudio(retryAudio[1]);json(res,audioJob?200:404,audioJob?{audioJob}:{error:{code:"NOT_FOUND",message:"Failed audio job not found."}});return;}
         const walkRegenerateMatch=/^\/api\/story-admin\/walks\/([a-z0-9][a-z0-9-]{0,127})\/regenerate$/.exec(url.pathname);
         if(walkRegenerateMatch&&req.method==="POST") {
           if(url.search)throw failure("BAD_REQUEST");
@@ -304,7 +317,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
             } else if(match[2]==="external-audio") {
               const source=store.get(match[1]);
               if(!source||source.revision!==input.revision){job=null;}
-              else {const audioJob=store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story:source.data?.story,profileId:input.profileId??"silero-ru-v1"});json(res,200,{job:adminDetail(source,Boolean(provider||yandexTts),safeError,ttsProviders,Boolean(provider)),audioJob});return;}
+              else {const audioJob=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story:source.data?.story,profileId:input.profileId??"silero-ru-v1"});json(res,200,{job:adminDetail(source,Boolean(provider||yandexTts),safeError,ttsProviders,Boolean(provider)),audioJob});return;}
             } else {
               const selected=input.ttsProvider===undefined?"openai":input.ttsProvider;
               if(!["openai","yandex"].includes(selected))throw failure("BAD_REQUEST");
@@ -328,7 +341,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         json(res,200,store.listPlaces({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",status:url.searchParams.get("status")??"ready"}));return;
       }
       const publicPlace=/^\/api\/content\/places\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
-      if(req.method==="GET"&&publicPlace){const place=store.getPlace(publicPlace[1]);if(place&&(!place.text?.story||place.text.verification!=="editorial")) {json(res,404,{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place not found."}});return;}
+      if(req.method==="GET"&&publicPlace){const place=store.getPublishedPlace(publicPlace[1]);json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
       const publishedWalk=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})$/.exec(url.pathname);
       if(req.method==="GET"&&publishedWalk) {
         const route=store.getPublishedWalk(publishedWalk[1]);
@@ -401,8 +414,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
       json(res,404,{error:{message:"Страница не найдена."}});
     } catch(error) {
       if(res.headersSent||res.destroyed)return;
-      const status=["QUEUE_FULL","DAILY_LIMIT"].includes(error.code)?429:["CONFLICT","RETRY_LIMIT","LEASE_LOST"].includes(error.code)?409:
-        error.code==="AUDIO_TOO_LARGE"?413:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT","BAD_AUDIO_TYPE","BAD_AUDIO","AUDIO_CHECKSUM","AUDIO_DURATION"].includes(error.code)?400:500;
+      const status=["QUEUE_FULL","DAILY_LIMIT","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY"].includes(error.code)?409:
+        error.code==="AUDIO_TOO_LARGE"?413:["BAD_AUDIO_TYPE","BAD_AUDIO","AUDIO_CHECKSUM","AUDIO_DURATION"].includes(error.code)?422:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?400:500;
       if(status===500) logs?.captureException(error,{operation:"API request",context:{method:req.method,status}});
       json(res,status,{error:["BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?{code:error.code,message:"Invalid request or draft."}:safeError(error)});
     }
@@ -414,7 +427,9 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const directory=resolve(process.env.DATA_DIR??"backend/data");
   if(process.env.WORKER_API_TOKEN&&!process.env.WORKER_LEASE_SECRET)throw new Error("WORKER_LEASE_SECRET is required when WORKER_API_TOKEN is configured");
-  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:process.env.WORKER_LEASE_SECRET});
+  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:process.env.WORKER_LEASE_SECRET,normalizeExternalText:normalizeForSpeech,externalTtsProfiles:{
+    "silero-ru-v1":{engine:"silero",language:"ru",modelSha256:process.env.SILERO_MODEL_SHA256||null,speaker:process.env.SILERO_SPEAKER||"xenia",configVersion:"1",chunking:"sentence-v1"},
+    "f5-ru-v1":{engine:"f5",language:"ru",modelSha256:process.env.F5_MODEL_SHA256||null,speaker:process.env.F5_REFERENCE_ID||null,configVersion:"1",chunking:"sentence-v1"}}});
   store.recoverInterrupted();
   store.recoverContentJobs();
   const provider=process.env.OPENAI_API_KEY&&process.env.OPENAI_BASE_URL?createProvider({apiKey:process.env.OPENAI_API_KEY,baseUrl:process.env.OPENAI_BASE_URL,model:process.env.STORY_MODEL,writerModel:process.env.WRITER_MODEL}):null;
@@ -422,13 +437,14 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const logs=createBackendLogger();
   const port=Number(process.env.PORT??4175);
   const appOrigin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
-  const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production",sendOTP:async({email,otp})=>{
+  const sendAccountCode=async({email,otp,purpose="sign-in"})=>{
     if(!process.env.RESEND_API_KEY)throw new Error("Email delivery is not configured");
-    const response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({from:process.env.AUTH_EMAIL_FROM,to:[email],subject:"Код входа в Отголосок",text:`Ваш код входа: ${otp}. Он действует 10 минут.`})});
+    const deleting=purpose==="delete-account",response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({from:process.env.AUTH_EMAIL_FROM,to:[email],subject:deleting?"Код удаления аккаунта Отголосок":"Код входа в Отголосок",text:`Ваш код ${deleting?"удаления аккаунта":"входа"}: ${otp}. Он действует 10 минут.`})});
     if(!response.ok)throw new Error(`Email delivery failed: ${response.status}`);
-  }});
-  const accountStore=createAccountStore(authRuntime.database);
-  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close});
+  };
+  const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production",sendOTP:sendAccountCode});
+  const accountStore=createAccountStore(authRuntime.database,Date.now,process.env.BETTER_AUTH_SECRET);
+  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,sendAccountCode,closeAuth:authRuntime.close});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});

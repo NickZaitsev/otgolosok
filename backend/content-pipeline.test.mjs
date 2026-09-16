@@ -22,7 +22,7 @@ test("place pipeline researches an addressless OSM place and waits for editorial
   assert.equal(store.claimExternalAudio({workerId:"gpu",requestId:"audio-0000",profileIds:["silero-ru-v1"]}),null);
   const approved=store.approvePlaceText("osm:node:1");
   assert.equal(store.listPlaces({status:"ready"}).places.length,1);
-  for(const profileId of approved.audioProfiles)store.enqueueExternalAudio({sourceJobId:`place-text:${approved.text.id}`,sourceRevision:0,story:approved.text.story,profileId});
+  for(const profileId of approved.audioProfiles)await store.enqueueExternalAudio({sourceJobId:`place-text:${approved.text.id}`,sourceRevision:0,story:approved.text.story,profileId});
   const audio=store.claimExternalAudio({workerId:"gpu",requestId:"audio-0001",profileIds:["silero-ru-v1"]});
   assert.equal(audio.spokenText,result.story.paragraphs.map(p=>p.text).join("\n\n"));
 });
