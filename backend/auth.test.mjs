@@ -14,10 +14,17 @@ test("Better Auth email OTP creates, reads and revokes a Node HTTP session",asyn
   const base=`http://127.0.0.1:${server.address().port}/api/auth`,headers={Origin:"http://127.0.0.1","Content-Type":"application/json"};
   t.after(async()=>{await new Promise(done=>server.close(done));runtime.close();await rm(directory,{recursive:true,force:true});});
   const send=await fetch(base+"/email-otp/send-verification-otp",{method:"POST",headers,body:JSON.stringify({email:"User@Example.com",type:"sign-in"})});assert.equal(send.status,200);assert.match(delivered.otp,/^\d{6}$/);
-  const verify=await fetch(base+"/sign-in/email-otp",{method:"POST",headers,body:JSON.stringify({email:"user@example.com",otp:delivered.otp})});assert.equal(verify.status,200);const cookie=verify.headers.getSetCookie().map(v=>v.split(";",1)[0]).join("; ");assert.match(cookie,/otgolosok\.session_token=/);
+  const verify=await fetch(base+"/sign-in/email-otp",{method:"POST",headers,body:JSON.stringify({email:"user@example.com",otp:delivered.otp})});assert.equal(verify.status,200);const rawCookie=verify.headers.getSetCookie().find(v=>v.startsWith("otgolosok.session="));assert.match(rawCookie,/HttpOnly/i);assert.match(rawCookie,/SameSite=Lax/i);assert.match(rawCookie,/Path=\//i);assert.doesNotMatch(rawCookie,/; Secure/i);const cookie=verify.headers.getSetCookie().map(v=>v.split(";",1)[0]).join("; ");assert.match(cookie,/otgolosok\.session=/);
   const session=await fetch(base+"/get-session",{headers:{Cookie:cookie}});assert.equal((await session.json()).user.email,"user@example.com");
   assert.equal((await fetch(base+"/sign-out",{method:"POST",headers:{...headers,Cookie:cookie},body:"{}"})).status,200);
   assert.equal(await (await fetch(base+"/get-session",{headers:{Cookie:cookie}})).text(),"null");
+});
+
+test("production sessions use a __Host cookie",async t=>{
+  const directory=await mkdtemp(join(tmpdir(),"otg-auth-production-"));const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"https://example.test",secret:"production-test-secret-with-more-than-32-characters",production:true,sendOTP:async value=>{runtime.delivered=value;}});t.after(async()=>{runtime.close();await rm(directory,{recursive:true,force:true});});
+  const send=await runtime.auth.handler(new Request("https://example.test/api/auth/email-otp/send-verification-otp",{method:"POST",headers:{Origin:"https://example.test","Content-Type":"application/json"},body:JSON.stringify({email:"cookie@example.test",type:"sign-in"})}));assert.equal(send.status,200);
+  const handler=authRequestHandler(runtime.auth,true),response=await new Promise(resolve=>{const req={url:"/api/auth/sign-in/email-otp",method:"POST",headers:{host:"example.test",origin:"https://example.test","content-type":"application/json"},[Symbol.asyncIterator]:async function*(){yield Buffer.from(JSON.stringify({email:"cookie@example.test",otp:runtime.delivered.otp}));}};const res={headers:null,status:null,writeHead(status,headers){this.status=status;this.headers=headers;},end(){resolve(this);}};handler(req,res);});
+  const cookie=response.headers["set-cookie"].find(value=>value.startsWith("__Host-otgolosok-session="));assert.ok(cookie);assert.match(cookie,/; Secure/i);assert.match(cookie,/; HttpOnly/i);assert.match(cookie,/; SameSite=Lax/i);assert.match(cookie,/; Path=\//i);assert.doesNotMatch(cookie,/; Domain=/i);
 });
 
 test("account data is isolated per Better Auth user and updates use revisions",async t=>{
@@ -27,6 +34,7 @@ test("account data is isolated per Better Auth user and updates use revisions",a
   db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("u2","Два","two@example.com",1,time,time);
   const walk=store.createWalk("u1",{title:"Арбат",snapshot:{version:1,stops:[]},idempotencyKey:"walk-0001"});assert.equal(store.createWalk("u1",{title:"Арбат",snapshot:{},idempotencyKey:"walk-0001"}).id,walk.id);assert.equal(store.getWalk("u2",walk.id),null);
   const updated=store.updateWalk("u1",walk.id,{title:"Новый Арбат",snapshot:{version:1},revision:0});assert.equal(updated.revision,1);assert.throws(()=>store.updateWalk("u1",walk.id,{title:"Старое",snapshot:{},revision:0}),/./);
-  store.setFavorite("u1","walk","paveletskaya");assert.equal(store.listFavorites("u1").length,1);assert.equal(store.listFavorites("u2").length,0);
+  store.setFavorite("u1","walk","paveletskaya");assert.equal(store.listFavorites("u1").favorites.length,1);assert.equal(store.listFavorites("u2").favorites.length,0);
   const imported=store.importLocal("u1",{importId:"import-0001",walk:{title:"С устройства",snapshot:{version:1}}});assert.equal(store.importLocal("u1",{importId:"import-0001"}).walk.id,imported.walk.id);
+  assert.equal(store.reserveGeneration("u1","request-0001",3,6),true);assert.equal(store.reserveGeneration("u1","request-0001",3,6),false);assert.throws(()=>store.reserveGeneration("u1","request-0002",4,6),error=>error.code==="QUOTA_EXCEEDED");assert.equal(store.reserveGeneration("u2","request-0002",4,6),true);
 });

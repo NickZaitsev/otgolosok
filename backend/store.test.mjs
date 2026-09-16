@@ -10,29 +10,29 @@ function fixture(t, options = {}) {
   const directory = mkdtempSync(join(tmpdir(), "story-store-"));
   const databasePath = join(directory, "queue.sqlite");
   const store = createStore(databasePath, options);
+  const connections = [store];
 
   t.after(() => {
     try {
-      store.close();
+      for (const connection of connections) connection.close();
     } catch {
       // It may already have been closed for a reopening test.
     }
     rmSync(directory, { recursive: true, force: true });
-  });
+  }, { order: "after" });
 
-  return { databasePath, store };
+  return { databasePath, store, track: connection => (connections.push(connection), connection) };
 }
 
 test("deduplicates by key across reopening", (t) => {
-  const { databasePath, store } = fixture(t);
+  const { databasePath, store, track } = fixture(t);
   const first = store.createOrGet({
     key: "normalized-address",
     address: "Москва, Тверская 1",
   });
 
   store.close();
-  const reopened = createStore(databasePath);
-  t.after(() => reopened.close());
+  const reopened = track(createStore(databasePath));
 
   const second = reopened.createOrGet({
     key: "normalized-address",
@@ -126,7 +126,7 @@ test("resets daily quota at the UTC date boundary", (t) => {
 });
 
 test("recovers interrupted work while preserving data", (t) => {
-  const { databasePath, store } = fixture(t);
+  const { databasePath, store, track } = fixture(t);
   const job = store.createOrGet({ key: "recovery", address: "Адрес" });
   const working = store.update(
     job.id,
@@ -141,8 +141,7 @@ test("recovers interrupted work while preserving data", (t) => {
   assert.equal(working.stage, "writing");
   store.close();
 
-  const reopened = createStore(databasePath);
-  t.after(() => reopened.close());
+  const reopened = track(createStore(databasePath));
 
   reopened.recoverInterrupted();
   const recovered = reopened.get(job.id);
@@ -169,11 +168,10 @@ test("returns recovery count for currently interrupted jobs", (t) => {
 });
 
 test("a second connection does not interrupt a live worker", (t) => {
-  const { databasePath, store } = fixture(t);
+  const { databasePath, store, track } = fixture(t);
   const job = store.createOrGet({key:"live",address:"Адрес"});
   store.claimNext();
-  const other = createStore(databasePath);
-  t.after(() => other.close());
+  const other = track(createStore(databasePath));
   assert.equal(other.get(job.id).stage, "researching");
   assert.equal(other.claimNext(), null);
 });

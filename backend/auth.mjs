@@ -1,4 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { betterAuth } from "better-auth";
 import { getMigrations } from "better-auth/db/migration";
 import { emailOTP } from "better-auth/plugins";
@@ -17,12 +18,20 @@ export async function createAuth({ databasePath, baseURL, secret, sendOTP = noop
     secret: secret || "development-only-better-auth-secret-32",
     trustedOrigins: [baseURL], emailAndPassword: { enabled: false },
     user: { additionalFields: { role: { type: "string", required: false, defaultValue: "user", input: false } } },
-    session: { expiresIn: 60 * 60 * 24 * 30, updateAge: 60 * 60 * 24 },
+    // Better Auth refreshes expiresAt at most once a day. Seven days is the
+    // inactivity window; authSession separately enforces the 30 day absolute
+    // lifetime from the immutable createdAt value.
+    session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
     rateLimit: { enabled: true, window: 60, max: 20, storage: "database" },
     advanced: {
-      useSecureCookies: production,
+      // The session cookie has an explicit __Host name below. Disabling the
+      // automatic __Secure prefix prevents Better Auth from double-prefixing
+      // it, while defaultCookieAttributes still makes every production cookie
+      // Secure.
+      useSecureCookies: false,
       defaultCookieAttributes: { httpOnly: true, secure: production, sameSite: "lax", path: "/" },
       cookiePrefix: "otgolosok",
+      cookies: { session_token: { name: production ? "__Host-otgolosok-session" : "otgolosok.session" } },
       ipAddress: { ipAddressHeaders: ["x-real-ip"] },
     },
     plugins: [emailOTP({
@@ -43,7 +52,22 @@ export async function authSession(auth, req) {
     if (Array.isArray(value)) value.forEach(item => headers.append(name, item));
     else if (value !== undefined) headers.set(name, value);
   }
-  return auth.api.getSession({ headers });
+  const value = await auth.api.getSession({ headers });
+  if (!value) return null;
+  const created = new Date(value.session.createdAt).getTime();
+  if (!Number.isFinite(created) || Date.now() - created > 30 * 24 * 60 * 60 * 1000) return null;
+  return value;
+}
+
+export function sessionCsrfToken(secret, sessionId) {
+  return createHmac("sha256", secret).update(`account-csrf:${sessionId}`).digest("base64url");
+}
+
+export function validSessionCsrf(secret, sessionId, candidate) {
+  if (typeof candidate !== "string") return false;
+  const expected = Buffer.from(sessionCsrfToken(secret, sessionId));
+  const actual = Buffer.from(candidate);
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
 export function authRequestHandler(auth) {

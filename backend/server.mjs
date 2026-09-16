@@ -16,7 +16,7 @@ import { validateWalkResearch, publicWalkResearch } from "./walk-research.mjs";
 import { createBackendLogger } from "./logs.mjs";
 import { ingestAudio } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
-import { createAuth, authRequestHandler, authSession } from "./auth.mjs";
+import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf } from "./auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -53,33 +53,37 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,accountStore=null,closeAuth=async()=>{}}) {
+export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
   const worker=(provider||yandexTts)&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory,discoverResearch,planResearchWalk,logs}):null;
   const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,logs}):null;
   const authorizeAdmin=adminAuth(adminToken);
+  const legacyAdminEnabled=allowLegacyAdminToken??(!auth||process.env.ALLOW_LEGACY_ADMIN_TOKEN==="true");
   const server=httpServer(async(req,res)=>{
     try {
       const url=new URL(req.url,"http://localhost");
+      const session=auth?await authSession(auth,req):null;
+      if(auth&&url.pathname==="/api/auth/session") {json(res,200,{user:session?{id:session.user.id,email:session.user.email,name:session.user.name,role:session.user.role}:null,csrfToken:session?sessionCsrfToken(authSecret,session.session.id):null});return;}
       if(auth&&url.pathname.startsWith("/api/auth/")){await authRequestHandler(auth)(req,res);return;}
       if(url.pathname==="/api/auth/session"&&!auth){json(res,200,{user:null});return;}
-      const session=auth?await authSession(auth,req):null;
       if(url.pathname==="/api/me"||url.pathname.startsWith("/api/me/")) {
         if(!session||!accountStore){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите в аккаунт."}});return;}
         if(!origin||req.headers.origin&&req.headers.origin!==origin||req.headers["sec-fetch-site"]==="cross-site") {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+        if(!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Обновите страницу и повторите действие."}});return;}
         if(url.pathname==="/api/me"&&req.method==="GET"){json(res,200,{user:{id:session.user.id,email:session.user.email,name:session.user.name}});return;}
         if(url.pathname==="/api/me"&&req.method==="PATCH"){const input=await body(req);if(Object.keys(input).some(k=>k!=="name"))throw failure("BAD_REQUEST");const name=accountStore.updateProfile(session.user.id,input.name);json(res,200,{user:{id:session.user.id,email:session.user.email,name}});return;}
         if(url.pathname==="/api/me"&&req.method==="DELETE"){const created=new Date(session.session.createdAt).getTime();if(!Number.isFinite(created)||Date.now()-created>600000){json(res,403,{error:{code:"FRESH_LOGIN_REQUIRED",message:"Для удаления снова войдите в аккаунт и повторите в течение 10 минут."}});return;}accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
-        if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id));return;}
+        const accountQuery=()=>{const entries=[...url.searchParams];if(entries.some(([key,value])=>!['limit','cursor'].includes(key)||(key==='limit'&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure('BAD_REQUEST');return {limit:Number(url.searchParams.get('limit')??20),after:url.searchParams.get('cursor')};};
+        if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,...Object.values(accountQuery())));return;}
         if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
         const ownWalk=new RegExp(`^/api/me/walks/(${UUID})$`).exec(url.pathname);
         if(ownWalk&&req.method==="GET"){const walk=accountStore.getWalk(session.user.id,ownWalk[1]);json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="PATCH"){const walk=accountStore.updateWalk(session.user.id,ownWalk[1],await body(req,100000));json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="DELETE"){json(res,accountStore.deleteWalk(session.user.id,ownWalk[1])?200:404,{success:true});return;}
-        if(url.pathname==="/api/me/requests"&&req.method==="GET"){json(res,200,{requests:accountStore.listRequests(session.user.id)});return;}
-        if(url.pathname==="/api/me/favorites"&&req.method==="GET"){json(res,200,{favorites:accountStore.listFavorites(session.user.id)});return;}
+        if(url.pathname==="/api/me/requests"&&req.method==="GET"){json(res,200,accountStore.listRequests(session.user.id,...Object.values(accountQuery())));return;}
+        if(url.pathname==="/api/me/favorites"&&req.method==="GET"){json(res,200,accountStore.listFavorites(session.user.id,...Object.values(accountQuery())));return;}
         if(url.pathname==="/api/me/import"&&req.method==="POST"){json(res,200,{result:accountStore.importLocal(session.user.id,await body(req,110000))});return;}
         const favorite=/^\/api\/me\/favorites\/(story|walk)\/([a-zA-Z0-9-]{1,128})$/.exec(url.pathname);
         if(favorite&&req.method==="PUT"){accountStore.setFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}
@@ -158,10 +162,13 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
             if(auth&&!accountStore.ownsRequest(session.user.id,researchMatch[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Walk research job not found."}});return;}
             if(Object.keys(input).length!==1||!Number.isSafeInteger(input.revision)||input.revision<0)throw failure("BAD_REQUEST");
             if(!provider){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
-            job=store.retryWalkResearch(researchMatch[1],input.revision);
+            const quotaKey=`walk-retry-${researchMatch[1]}-${input.revision}`;if(auth)accountStore.reserveGeneration(session.user.id,quotaKey,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+            try{job=store.retryWalkResearch(researchMatch[1],input.revision);}catch(error){if(auth)accountStore.releaseGeneration(session.user.id,quotaKey);throw error;}
           } else {
+            const existing=store.lookupWalkResearch(validateWalkResearch(input),input.recoveryToken);if(auth&&!existing)accountStore.reserveGeneration(session.user.id,input.recoveryToken,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
             try {job=store.createWalkResearch(input,{allowCreate:Boolean(provider)});if(auth&&job)accountStore.attachRequest(session.user.id,job.id,"walk_research",input.recoveryToken);}
             catch(error) {
+              if(auth&&!existing)accountStore.releaseGeneration(session.user.id,input.recoveryToken);
               if(error.code!=="PROVIDER_UNAVAILABLE")throw error;
               json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;
             }
@@ -173,7 +180,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
       }
       if(url.pathname==="/api/story-admin"||url.pathname.startsWith("/api/story-admin/")) {
         const roleAuthorized=session?.user?.role==="editor";
-        const status=roleAuthorized?200:authorizeAdmin(req.headers.authorization);
+        const status=roleAuthorized?200:legacyAdminEnabled?authorizeAdmin(req.headers.authorization):401;
         if(status!==200) {
           if(status===429)res.setHeader("Retry-After","60");
           if(status===401)res.setHeader("WWW-Authenticate","Bearer");
@@ -210,14 +217,14 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(contentPlace&&req.method==="GET"){const place=store.getPlace(contentPlace[1]);json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place not found."}});return;}
         const approveContent=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)\/approve$/.exec(url.pathname);
         if(approveContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
-          const input=await body(req,32768),place=store.approvePlaceText(approveContent[1],input.story??null);
-          if(place)for(const profileId of place.audioProfiles??[])store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:place.text.story,profileId});
+          const input=await body(req,32768),place=store.approvePlaceText(approveContent[1],input?.story??null);
+          if(place)for(const profileId of place.audioProfiles??[])store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId});
           json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
         const revoiceContent=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)\/audio$/.exec(url.pathname);
         if(revoiceContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const input=await body(req,4096),place=store.getPlace(revoiceContent[1]);
           if(!place?.text||place.text.verification!=="editorial"){json(res,404,{error:{code:"NOT_FOUND",message:"Approved place text not found."}});return;}
-          const audioJob=store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:place.text.story,profileId:input.profileId??"silero-ru-v1"});
+          const audioJob=store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId:input.profileId??"silero-ru-v1"});
           json(res,200,{place,audioJob});return;}
         const walkRegenerateMatch=/^\/api\/story-admin\/walks\/([a-z0-9][a-z0-9-]{0,127})\/regenerate$/.exec(url.pathname);
         if(walkRegenerateMatch&&req.method==="POST") {
@@ -321,7 +328,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         json(res,200,store.listPlaces({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",status:url.searchParams.get("status")??"ready"}));return;
       }
       const publicPlace=/^\/api\/content\/places\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
-      if(req.method==="GET"&&publicPlace){const place=store.getPlace(publicPlace[1]);if(place&&!place.text) {json(res,404,{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place not found."}});return;}
+      if(req.method==="GET"&&publicPlace){const place=store.getPlace(publicPlace[1]);if(place&&(!place.text?.story||place.text.verification!=="editorial")) {json(res,404,{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place not found."}});return;}
       const publishedWalk=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})$/.exec(url.pathname);
       if(req.method==="GET"&&publishedWalk) {
         const route=store.getPublishedWalk(publishedWalk[1]);
@@ -358,8 +365,9 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(url.pathname==="/api/story-jobs") {
           if(!session||!accountStore){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите, чтобы подготовить историю."}});return;}
           if(Object.keys(input).some((key)=>!["address","idempotencyKey"].includes(key))||typeof input.idempotencyKey!=="string")throw failure("BAD_REQUEST");
-          const address=normalizeAddress(input.address);
-          const job=store.createOrGet({key:addressKey(address),address});
+          const address=normalizeAddress(input.address),key=addressKey(address),existing=store.getByKey?.(key)??null;
+          if(!existing)accountStore.reserveGeneration?.(session.user.id,input.idempotencyKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+          let job;try{job=store.createOrGet({key,address});}catch(error){if(!existing)accountStore.releaseGeneration?.(session.user.id,input.idempotencyKey);throw error;}
           accountStore.attachRequest(session.user.id,job.id,"create",input.idempotencyKey);
           json(res,200,publicJob(job));worker?.wake();return;
         }
@@ -367,7 +375,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(retry) {
           if(!session||!accountStore||!accountStore.ownsRequest(session.user.id,retry[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Задание не найдено."}});return;}
           if(!Number.isInteger(input.revision)||Object.keys(input).some((key)=>key!=="revision"))throw failure("BAD_REQUEST");
-          const job=store.retry(retry[1],input.revision);
+          const quotaKey=`retry-${retry[1]}-${input.revision}`;accountStore.reserveGeneration?.(session.user.id,quotaKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+          let job;try{job=store.retry(retry[1],input.revision);}catch(error){accountStore.releaseGeneration?.(session.user.id,quotaKey);throw error;}
           if(!job){json(res,404,{error:{message:"Задание не найдено."}});return;}
           json(res,200,publicJob(job));worker?.wake();return;
         }
@@ -419,7 +428,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
     if(!response.ok)throw new Error(`Email delivery failed: ${response.status}`);
   }});
   const accountStore=createAccountStore(authRuntime.database);
-  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,logs,auth:authRuntime.auth,accountStore,closeAuth:authRuntime.close});
+  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});
