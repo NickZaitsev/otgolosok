@@ -1,0 +1,32 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { mkdtemp,rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { createServer } from "node:http";
+import { createAuth,authRequestHandler } from "./auth.mjs";
+import { createAccountStore } from "./account-store.mjs";
+
+test("Better Auth email OTP creates, reads and revokes a Node HTTP session",async t=>{
+  const directory=await mkdtemp(join(tmpdir(),"otg-auth-"));let delivered;
+  const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"http://127.0.0.1",secret:"auth-test-secret-with-more-than-32-characters",production:false,sendOTP:async value=>{delivered=value;}});
+  const handler=authRequestHandler(runtime.auth),server=createServer(handler);await new Promise(done=>server.listen(0,"127.0.0.1",done));
+  const base=`http://127.0.0.1:${server.address().port}/api/auth`,headers={Origin:"http://127.0.0.1","Content-Type":"application/json"};
+  t.after(async()=>{await new Promise(done=>server.close(done));runtime.close();await rm(directory,{recursive:true,force:true});});
+  const send=await fetch(base+"/email-otp/send-verification-otp",{method:"POST",headers,body:JSON.stringify({email:"User@Example.com",type:"sign-in"})});assert.equal(send.status,200);assert.match(delivered.otp,/^\d{6}$/);
+  const verify=await fetch(base+"/sign-in/email-otp",{method:"POST",headers,body:JSON.stringify({email:"user@example.com",otp:delivered.otp})});assert.equal(verify.status,200);const cookie=verify.headers.getSetCookie().map(v=>v.split(";",1)[0]).join("; ");assert.match(cookie,/otgolosok\.session_token=/);
+  const session=await fetch(base+"/get-session",{headers:{Cookie:cookie}});assert.equal((await session.json()).user.email,"user@example.com");
+  assert.equal((await fetch(base+"/sign-out",{method:"POST",headers:{...headers,Cookie:cookie},body:"{}"})).status,200);
+  assert.equal(await (await fetch(base+"/get-session",{headers:{Cookie:cookie}})).text(),"null");
+});
+
+test("account data is isolated per Better Auth user and updates use revisions",async t=>{
+  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"account-test-secret-with-more-than-32-characters",production:false,sendOTP:async()=>{}});t.after(()=>runtime.close());
+  const db=runtime.database,store=createAccountStore(db),time=new Date().toISOString();
+  db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("u1","Один","one@example.com",1,time,time);
+  db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("u2","Два","two@example.com",1,time,time);
+  const walk=store.createWalk("u1",{title:"Арбат",snapshot:{version:1,stops:[]},idempotencyKey:"walk-0001"});assert.equal(store.createWalk("u1",{title:"Арбат",snapshot:{},idempotencyKey:"walk-0001"}).id,walk.id);assert.equal(store.getWalk("u2",walk.id),null);
+  const updated=store.updateWalk("u1",walk.id,{title:"Новый Арбат",snapshot:{version:1},revision:0});assert.equal(updated.revision,1);assert.throws(()=>store.updateWalk("u1",walk.id,{title:"Старое",snapshot:{},revision:0}),/./);
+  store.setFavorite("u1","walk","paveletskaya");assert.equal(store.listFavorites("u1").length,1);assert.equal(store.listFavorites("u2").length,0);
+  const imported=store.importLocal("u1",{importId:"import-0001",walk:{title:"С устройства",snapshot:{version:1}}});assert.equal(store.importLocal("u1",{importId:"import-0001"}).walk.id,imported.walk.id);
+});

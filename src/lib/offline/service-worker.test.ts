@@ -144,6 +144,8 @@ describe("offline service worker", () => {
     expect(request("/missing")).toBeUndefined();
     expect(request("https://other.test/")).toBeUndefined();
     expect(request("/", { method: "POST" })).toBeUndefined();
+    expect(request("/api/auth/get-session")).toBeUndefined();
+    expect(request("/api/me/walks")).toBeUndefined();
   });
 
   it("serves the static index URL offline after a version update", async () => {

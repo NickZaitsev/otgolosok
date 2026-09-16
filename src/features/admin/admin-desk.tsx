@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { WalkAdmin } from "./walk-admin";
-import { draftCheck, initialDraft, safeSourceLink, stages, type AdminApi, type Draft, type Job, type Summary, type TtsProvider } from "./model";
+import { draftCheck, initialDraft, safeSourceLink, stages, type AdminApi, type ContentBatch, type Draft, type Job, type Summary, type TtsProvider } from "./model";
+import { getSession, signOut } from "../auth/client";
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const PAGE_SIZE = 50;
-const ADMIN_SESSION_TOKEN = "otgolosok.admin.token";
-type AdminSection = "addresses" | "walks";
+type AdminSection = "addresses" | "walks" | "content";
 type RelevanceFilter = "active" | "irrelevant" | "all";
 
 class ApiError extends Error {
@@ -27,17 +27,18 @@ function voiceLabel(item: Summary) {
 }
 
 export function AdminDesk() {
-  const token = useRef("");
   const request = useRef<AbortController | null>(null);
   const editorHeading = useRef<HTMLHeadingElement>(null);
   const queueHeading = useRef<HTMLHeadingElement>(null);
   const pendingNavigation = useRef<"editor" | "queue" | null>(null);
   const sessionRestored = useRef(false);
-  const [tokenInput, setTokenInput] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [section, setSection] = useState<AdminSection>("addresses");
   const [walkDirty, setWalkDirty] = useState(false);
   const [jobs, setJobs] = useState<Summary[]>([]);
+  const [batches, setBatches] = useState<ContentBatch[]>([]);
+  const [batchLimit, setBatchLimit] = useState(50);
+  const [contentStats, setContentStats] = useState<{ places: number; texts: number; audio: number } | null>(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [queryInput, setQueryInput] = useState("");
@@ -66,7 +67,7 @@ export function AdminDesk() {
     heading.scrollIntoView({ block: "start", behavior: "instant" });
   }, [authenticated, busy, job, section]);
 
-  useEffect(() => () => { request.current?.abort(); request.current = null; token.current = ""; }, []);
+  useEffect(() => () => { request.current?.abort(); request.current = null; }, []);
   useEffect(() => {
     if (!hasUnsavedWork && !busy) return;
     const guard = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ""; };
@@ -75,11 +76,9 @@ export function AdminDesk() {
   }, [hasUnsavedWork, busy]);
 
   function clearAccess() {
-    token.current = "";
-    sessionStorage.removeItem(ADMIN_SESSION_TOKEN);
     pendingNavigation.current = null;
-    setTokenInput(""); setAuthenticated(false); setSection("addresses"); setWalkDirty(false);
-    setJobs([]); setOffset(0); setHasMore(false); setJob(null); setDraft(null); setBaseline("");
+    setAuthenticated(false); setSection("addresses"); setWalkDirty(false);
+    setJobs([]); setBatches([]); setContentStats(null); setOffset(0); setHasMore(false); setJob(null); setDraft(null); setBaseline("");
     setConfirmed(false); setConflict(false); setNotice(""); setTtsProvider("openai"); setTtsVoice("");
   }
 
@@ -95,7 +94,7 @@ export function AdminDesk() {
       if (request.current !== controller) return;
       if (cause instanceof ApiError && [401, 403].includes(cause.status)) {
         clearAccess();
-        setError("Доступ закрыт. Данные и токен очищены. Проверьте ADMIN_TOKEN и адрес сайта, затем войдите снова.");
+        setError("Доступ закрыт. Войдите аккаунтом редактора.");
       } else if (cause instanceof ApiError && cause.status === 409) {
         if (section === "addresses") { setConflict(true); setConfirmed(false); }
         setError(section === "walks"
@@ -116,9 +115,9 @@ export function AdminDesk() {
   const api: AdminApi = async <T,>(path: string, signal: AbortSignal, body?: unknown): Promise<T> => {
     const endpoint = path.startsWith("/walks") ? `/api/story-admin${path}` : `/api/story-admin/jobs${path}`;
     const response = await fetch(endpoint, {
-      method: body === undefined ? "GET" : "POST", cache: "no-store", credentials: "omit",
+      method: body === undefined ? "GET" : "POST", cache: "no-store", credentials: "same-origin",
       redirect: "error", signal,
-      headers: { Authorization: `Bearer ${token.current}`, ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
+      headers: { ...(body === undefined ? {} : { "Content-Type": "application/json" }) },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
     if (!response.ok) {
@@ -166,14 +165,17 @@ export function AdminDesk() {
     setJobs(result.jobs); setHasMore(result.hasMore); setOffset(nextOffset);
   }
 
+  async function loadBatches(signal: AbortSignal) {
+    const [result,stats]=await Promise.all([api<{ batches: ContentBatch[] }>("/content/batches", signal),api<{ places:number;texts:number;audio:number }>("/content/stats",signal)]);
+    setBatches(result.batches);setContentStats(stats);
+  }
+
   useEffect(() => {
     if (sessionRestored.current) return;
     sessionRestored.current = true;
-    const savedToken = sessionStorage.getItem(ADMIN_SESSION_TOKEN)?.trim();
-    if (!savedToken) return;
-    token.current = savedToken;
     void run("Восстановление сессии…", async signal => {
-      await loadQueue(0, signal);
+      const user=await getSession();if(!user)throw new ApiError(401,"Войдите в аккаунт редактора.");
+      await Promise.all([loadQueue(0, signal), loadBatches(signal)]);
       setAuthenticated(true);
       const params = new URLSearchParams(window.location.search);
       const id = params.get("job");
@@ -181,7 +183,7 @@ export function AdminDesk() {
         accept((await api<{ job: Job }>(`/${id}`, signal)).job);
         pendingNavigation.current = "editor";
       } else if (id) setError("В ссылке указан неверный идентификатор задания. Выберите задание из списка.");
-      else if (params.get("section") === "walks") setSection("walks");
+      else if (["walks","content"].includes(params.get("section") ?? "")) setSection(params.get("section") as AdminSection);
     });
   // `sessionRestored` makes this effect a one-time client-side restore.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -206,9 +208,9 @@ export function AdminDesk() {
 
   function changeSection(next: AdminSection) {
     if (next === section || request.current) return;
-    if (section === "walks" && walkDirty && !window.confirm("Есть несохранённые правки главы. Отбросить их и открыть адреса?")) return;
+    if (section === "walks" && walkDirty && !window.confirm("Есть несохранённые правки главы. Отбросить их и открыть другой раздел?")) return;
     setSection(next); setWalkDirty(false); setError(""); setNotice("");
-    window.history.replaceState(window.history.state, "", next === "walks" ? "/admin?section=walks" : job ? `/admin?job=${job.id}` : "/admin");
+    window.history.replaceState(window.history.state, "", next === "addresses" ? (job ? `/admin?job=${job.id}` : "/admin") : `/admin?section=${next}`);
   }
 
   function toggleRelevance(item: Summary) {
@@ -263,44 +265,43 @@ export function AdminDesk() {
         <a className="admin-wordmark" href="/" aria-disabled={Boolean(busy)} onClick={event => { if (request.current) event.preventDefault(); }}>отголосок<span>.</span></a>
         <span className="admin-context">Редакционный кабинет</span>
         {authenticated && <button disabled={Boolean(busy)} onClick={() => {
-          if (!request.current && consent()) { clearAccess(); setError(""); window.history.replaceState(window.history.state, "", "/admin"); }
+          if (!request.current && consent()) { void signOut().finally(()=>{clearAccess();setError("");window.history.replaceState(window.history.state,"","/admin");}); }
         }}>Выйти</button>}
       </header>
       <div className="admin-heading"><h1>Редакция</h1><p>Проверяйте адресные истории и управляйте озвучкой готовых прогулок.</p></div>
       <div role="status" aria-live="polite" className="admin-status">{busy || notice}</div>
       {error && <div role="alert" className="admin-error">{error}</div>}
       {!authenticated ? (
-        <form className="admin-login" onSubmit={event => {
-          event.preventDefault();
-          if (request.current || !tokenInput.trim()) return;
-          token.current = tokenInput.trim(); sessionStorage.setItem(ADMIN_SESSION_TOKEN, token.current); setTokenInput("");
-          void run("Проверка доступа…", async signal => {
-            await loadQueue(0, signal); setAuthenticated(true);
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get("job");
-            if (id && UUID.test(id)) {
-              accept((await api<{ job: Job }>(`/${id}`, signal)).job);
-              pendingNavigation.current = "editor";
-            }
-            else if (id) setError("В ссылке указан неверный идентификатор задания. Выберите задание из списка.");
-            else if (params.get("section") === "walks") setSection("walks");
-          });
-        }}>
+        <div className="admin-login">
           <p className="admin-context">Доступ для редактора</p><h2>Войти в редакцию</h2>
-          <label htmlFor="admin-token">ADMIN_TOKEN</label>
-          <input id="admin-token" type="password" autoComplete="off" spellCheck={false} autoCapitalize="none" value={tokenInput} onChange={event => setTokenInput(event.target.value)} disabled={Boolean(busy)} required />
-          <p id="admin-token-note">Сессия сохраняется до закрытия вкладки. При выходе или закрытии вкладки потребуется новый вход.</p>
-          <button className="admin-primary" type="submit" disabled={Boolean(busy) || !tokenInput.trim()} aria-describedby="admin-token-note">Открыть кабинет</button>
-        </form>
+          <p id="admin-token-note">Войдите по email аккаунтом с ролью редактора.</p>
+          <a className="admin-primary" href="/login?returnTo=/admin" aria-describedby="admin-token-note">Войти</a>
+        </div>
       ) : (
         <div className="admin-workspace" aria-busy={Boolean(busy)}>
           <nav className="admin-tabs" aria-label="Разделы кабинета">
             <button disabled={Boolean(busy)} aria-current={section === "addresses" ? "page" : undefined} onClick={() => changeSection("addresses")}>Адреса</button>
             <button disabled={Boolean(busy)} aria-current={section === "walks" ? "page" : undefined} onClick={() => changeSection("walks")}>Прогулки</button>
+            <button disabled={Boolean(busy)} aria-current={section === "content" ? "page" : undefined} onClick={() => changeSection("content")}>OSM-партии</button>
           </nav>
 
           {section === "walks" ? (
             <WalkAdmin api={api} busy={busy} run={run} openJob={openJob} onDirtyChange={setWalkDirty} />
+          ) : section === "content" ? (
+            <section className="admin-addresses" aria-labelledby="admin-content-title">
+              <div className="admin-section-head"><div><h2 id="admin-content-title">OSM-партии</h2><p className="admin-meta">Массовая подготовка текстов и очередь локального Silero/F5-TTS.</p>{contentStats&&<p className="admin-meta">В каталоге {contentStats.places} · текстов {contentStats.texts} · аудио {contentStats.audio}</p>}</div><button disabled={Boolean(busy)} onClick={()=>void run("Обновление партий…",loadBatches)}>Обновить</button></div>
+              <form className="admin-filters" onSubmit={event=>{event.preventDefault();void run("Создание партии…",async signal=>{
+                await api("/content/batches",signal,{requestKey:crypto.randomUUID(),name:`OSM · ${new Date().toLocaleString("ru")}`,limit:batchLimit,textProfile:"story-v1",mode:"text-and-audio",ttsProfile:"silero-ru-v1"});
+                await loadBatches(signal);setNotice("Партия создана и поставлена в очередь.");});}}>
+                <label><span>Количество объектов</span><input type="number" min={1} max={5000} value={batchLimit} disabled={Boolean(busy)} onChange={event=>setBatchLimit(Math.max(1,Math.min(5000,Number(event.target.value)||1)))} /></label>
+                <button className="admin-primary" disabled={Boolean(busy)}>Создать партию</button>
+              </form>
+              <div className="admin-table-wrap"><table className="admin-table"><caption className="admin-sr-only">Партии OSM</caption><thead><tr><th>Партия</th><th>Состояние</th><th>Прогресс</th><th>Действия</th></tr></thead><tbody>{batches.map(batch=><tr key={batch.id}>
+                <th>{batch.name}<span className="admin-row-id">{batch.id.slice(0,8)}</span></th><td>{batch.state}</td><td>{batch.counts.ready} готово · {batch.counts.working} в работе · {batch.counts.queued} ждут · {batch.counts.failed} остановлено · всего {batch.counts.total}</td><td><div className="admin-row-actions">
+                  {batch.state==="running"?<button disabled={Boolean(busy)} onClick={()=>void run("Пауза…",async signal=>{await api(`/content/batches/${batch.id}/pause`,signal,{});await loadBatches(signal);})}>Пауза</button>:batch.state==="paused"?<button disabled={Boolean(busy)} onClick={()=>void run("Продолжение…",async signal=>{await api(`/content/batches/${batch.id}/resume`,signal,{});await loadBatches(signal);})}>Продолжить</button>:null}
+                  {batch.state!=="cancelled"&&<button disabled={Boolean(busy)} onClick={()=>void run("Отмена…",async signal=>{await api(`/content/batches/${batch.id}/cancel`,signal,{});await loadBatches(signal);})}>Отменить</button>}
+                </div></td></tr>)}</tbody></table></div>
+            </section>
           ) : (
             <section className="admin-addresses" aria-labelledby="admin-addresses-title">
               <div className="admin-section-head">

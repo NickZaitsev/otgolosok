@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatPlaybackTime } from "@/lib/audio/playback-progress";
 import { jobUrl, isStorySaved, saveStoryOffline, removeSavedStory, savedStories } from "./offline";
 import { placeFromQuery, rememberMapJob } from "../explore/map-jobs";
@@ -28,6 +29,7 @@ async function requestJob(path: string, body?: object, signal?: AbortSignal): Pr
 }
 
 export function StoryGenerator() {
+  const router = useRouter();
   const [address,setAddress] = useState("");
   const [job,setJob] = useState<GenerationJob|null>(null);
   const [busy,setBusy] = useState(false);
@@ -97,8 +99,8 @@ export function StoryGenerator() {
     requestVersion.current+=1;const version=requestVersion.current;
     activeRequest.current?.abort();const controller=new AbortController();activeRequest.current=controller;
     audioRef.current?.pause();setBusy(true);setError("");setSaveMessage("");setSaved(false);setJob(null);
-    try {const value=await requestJob("/api/story-jobs",{address},controller.signal);if(version===requestVersion.current){setJob(value);remember(value);}}
-    catch(caught){if(version===requestVersion.current&&!controller.signal.aborted)setError(caught instanceof Error?caught.message:"Не удалось создать историю.");}
+    try {const value=await requestJob("/api/story-jobs",{address,idempotencyKey:crypto.randomUUID()},controller.signal);if(version===requestVersion.current){setJob(value);remember(value);}}
+    catch(caught){if(version===requestVersion.current&&!controller.signal.aborted){const message=caught instanceof Error?caught.message:"Не удалось создать историю.";setError(message);if(message.includes("Войдите"))setTimeout(()=>router.push(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`),700);}}
     finally {if(version===requestVersion.current)setBusy(false);}
   }
 
@@ -135,7 +137,7 @@ export function StoryGenerator() {
 
   const activeIndex=job?stages.indexOf(job.stage as typeof stages[number]):-1;
   return <main className="shell generator-shell">
-    <header className="masthead"><Link className="wordmark" href="/" prefetch={false}>Отголосок<span aria-hidden="true">.</span></Link><Link className="generator-home" href="/" prefetch={false}>На карту</Link></header>
+    <header className="masthead"><Link className="wordmark" href="/" prefetch={false}>Отголосок<span aria-hidden="true">.</span></Link><span><Link className="generator-home" href="/account" prefetch={false}>Кабинет</Link> · <Link className="generator-home" href="/" prefetch={false}>На карту</Link></span></header>
     <section className="generator-intro" aria-labelledby="generator-title">
       <h1 id="generator-title">История одного дома</h1>
       <p>Укажите адрес в Москве. Найдём источники, подготовим короткий рассказ и озвучим его. Ориентир — 5–10 минут, если материалов достаточно.</p>
