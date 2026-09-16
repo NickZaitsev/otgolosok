@@ -1,6 +1,6 @@
 import { createServer as httpServer } from "node:http";
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { rm, stat } from "node:fs/promises";
 import { resolve, join, extname, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { createStore } from "./store.mjs";
@@ -14,6 +14,7 @@ import { createWalkPlanner } from "./walks.mjs";
 import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
 import { validateWalkResearch, publicWalkResearch } from "./walk-research.mjs";
 import { createBackendLogger } from "./logs.mjs";
+import { ingestAudio } from "./audio-ingest.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 function json(res,status,value) {
@@ -49,7 +50,7 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,logs=null}) {
+export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio}) {
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
@@ -58,6 +59,44 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
   const server=httpServer(async(req,res)=>{
     try {
       const url=new URL(req.url,"http://localhost");
+      if(url.pathname==="/api/worker/v1/claim"||url.pathname.startsWith("/api/worker/v1/jobs/")) {
+        if(!workerToken||req.headers.authorization!==`Bearer ${workerToken}`){res.setHeader("WWW-Authenticate","Bearer");json(res,401,{error:{code:"UNAUTHORIZED",message:"Worker authentication required."}});return;}
+        if(url.search)throw failure("BAD_REQUEST");
+        const workerId=String(req.headers["x-worker-id"]??"");
+        if(!workerId||workerId.length>100)throw failure("BAD_REQUEST");
+        if(req.method==="POST"&&url.pathname==="/api/worker/v1/claim") {
+          const input=await body(req,4096);
+          if(Object.keys(input).some(key=>!["requestId","profileIds","version"].includes(key)))throw failure("BAD_REQUEST");
+          const job=store.claimExternalAudio({workerId,requestId:input.requestId,profileIds:input.profileIds});
+          if(!job){res.writeHead(204,{"Cache-Control":"no-store","Retry-After":"10"});res.end();return;}
+          json(res,200,{job});return;
+        }
+        const workerMatch=new RegExp(`^/api/worker/v1/jobs/(${UUID})(?:/(heartbeat|fail|result))?$`).exec(url.pathname);
+        if(!workerMatch){json(res,404,{error:{code:"NOT_FOUND",message:"Worker endpoint not found."}});return;}
+        if(req.method==="GET"&&!workerMatch[2]){const job=store.getExternalAudio(workerMatch[1]);json(res,job?200:404,job?{job}:{error:{code:"NOT_FOUND",message:"Job not found."}});return;}
+        const generation=Number(req.headers["x-lease-generation"]),leaseToken=String(req.headers["x-lease-token"]??"");
+        if(!Number.isSafeInteger(generation)||generation<1||!leaseToken)throw failure("BAD_REQUEST");
+        if(req.method==="POST"&&workerMatch[2]==="heartbeat") {
+          if(req.headers["content-length"]!=="0"&&req.headers["content-length"]!==undefined)await body(req,1024);
+          json(res,200,{job:store.heartbeatExternalAudio(workerMatch[1],{workerId,generation,leaseToken})});return;
+        }
+        if(req.method==="POST"&&workerMatch[2]==="fail") {
+          const input=await body(req,2048);
+          json(res,200,{job:store.failExternalAudio(workerMatch[1],{workerId,generation,leaseToken,...input})});return;
+        }
+        if(req.method==="PUT"&&workerMatch[2]==="result") {
+          const uploadId=String(req.headers["x-upload-id"]??""),expected=String(req.headers["x-content-sha256"]??"");
+          const accepted=store.getExternalAudio(workerMatch[1]);
+          if(accepted?.receipt?.uploadId===uploadId){if(accepted.receipt.uploadSha256!==expected)throw failure("CONFLICT");json(res,200,{job:accepted});return;}
+          const uploaded=await audioIngest(req,audioDirectory);
+          if(uploaded.uploadSha256!==expected){await rm(join(audioDirectory,`${uploaded.artifact.sha256}.mp3`),{force:true});throw failure("AUDIO_CHECKSUM");}
+          const artifact={...uploaded.artifact,model:String(req.headers["x-tts-model"]??"external").slice(0,100),voice:String(req.headers["x-tts-voice"]??"external").slice(0,64)};
+          try {json(res,200,{job:store.acceptExternalAudio(workerMatch[1],{workerId,generation,leaseToken,uploadId,uploadSha256:expected,artifact})});}
+          catch(error){if(!store.getExternalAudio(workerMatch[1])?.receipt)await rm(join(audioDirectory,`${artifact.sha256}.mp3`),{force:true});throw error;}
+          return;
+        }
+        json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;
+      }
       const researchMatch=new RegExp(`^/api/walk-research-jobs(?:/(${UUID})(/retry)?)?$`).exec(url.pathname);
       if(researchMatch) {
         let job;
@@ -163,7 +202,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const result=store.listAdmin({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",stage:url.searchParams.get("stage")??"",relevance:url.searchParams.get("relevance")??"active"});
           json(res,200,{jobs:result.jobs.map(job=>adminSummary(job,safeError)),hasMore:result.hasMore});return;
         }
-        const match=new RegExp(`^/api/story-admin/jobs/(${UUID})(?:/(edit|approve|relevance|revoice|retry|regenerate))?$`).exec(url.pathname);
+        const match=new RegExp(`^/api/story-admin/jobs/(${UUID})(?:/(edit|approve|relevance|revoice|retry|regenerate|external-audio))?$`).exec(url.pathname);
         if(match&&((req.method==="GET"&&!match[2])||(req.method==="POST"&&match[2]))) {
           let job;
           if(req.method==="GET") {job=store.get(match[1]);if(job&&(job.kind??"address")!=="address")job=null;}
@@ -172,13 +211,18 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
               json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;
             }
             const input=await body(req,match[2]==="edit"?32768:2048);
-            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!["revision",...(match[2]==="edit"?["draft"]:match[2]==="relevance"?["irrelevant"]:["ttsProvider","ttsVoice"])].includes(key)))throw failure("BAD_REQUEST");
+            const allowed=match[2]==="edit"?["revision","draft"]:match[2]==="relevance"?["revision","irrelevant"]:match[2]==="external-audio"?["revision","profileId"]:["revision","ttsProvider","ttsVoice"];
+            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!allowed.includes(key)))throw failure("BAD_REQUEST");
             if(match[2]==="relevance") {
               job=store.setRelevanceAdmin(match[1],input.revision,input.irrelevant);
             } else if(match[2]==="edit") {
               const draft=input.draft;
               if(!draft||typeof draft!=="object"||Array.isArray(draft)||Object.keys(draft).some(key=>!["title","paragraphs"].includes(key))||!Array.isArray(draft.paragraphs)||draft.paragraphs.some(p=>!p||typeof p!=="object"||Array.isArray(p)||Object.keys(p).some(key=>!["text","factIds"].includes(key))))throw failure("BAD_REQUEST");
               job=store.editAdmin(match[1],input.revision,draft);
+            } else if(match[2]==="external-audio") {
+              const source=store.get(match[1]);
+              if(!source||source.revision!==input.revision){job=null;}
+              else {const audioJob=store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story:source.data?.story,profileId:input.profileId??"silero-ru-v1"});json(res,200,{job:adminDetail(source,Boolean(provider||yandexTts),safeError,ttsProviders,Boolean(provider)),audioJob});return;}
             } else {
               const selected=input.ttsProvider===undefined?"openai":input.ttsProvider;
               if(!["openai","yandex"].includes(selected))throw failure("BAD_REQUEST");
@@ -264,7 +308,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
       json(res,404,{error:{message:"Страница не найдена."}});
     } catch(error) {
       if(res.headersSent||res.destroyed)return;
-      const status=["QUEUE_FULL","DAILY_LIMIT"].includes(error.code)?429:["CONFLICT","RETRY_LIMIT"].includes(error.code)?409:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?400:500;
+      const status=["QUEUE_FULL","DAILY_LIMIT"].includes(error.code)?429:["CONFLICT","RETRY_LIMIT","LEASE_LOST"].includes(error.code)?409:
+        error.code==="AUDIO_TOO_LARGE"?413:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT","BAD_AUDIO_TYPE","BAD_AUDIO","AUDIO_CHECKSUM","AUDIO_DURATION"].includes(error.code)?400:500;
       if(status===500) logs?.captureException(error,{operation:"API request",context:{method:req.method,status}});
       json(res,status,{error:["BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?{code:error.code,message:"Invalid request or draft."}:safeError(error)});
     }
@@ -275,7 +320,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const directory=resolve(process.env.DATA_DIR??"backend/data");
-  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2});
+  if(process.env.WORKER_API_TOKEN&&!process.env.WORKER_LEASE_SECRET)throw new Error("WORKER_LEASE_SECRET is required when WORKER_API_TOKEN is configured");
+  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:process.env.WORKER_LEASE_SECRET});
   store.recoverInterrupted();
   const provider=process.env.OPENAI_API_KEY&&process.env.OPENAI_BASE_URL?createProvider({apiKey:process.env.OPENAI_API_KEY,baseUrl:process.env.OPENAI_BASE_URL,model:process.env.STORY_MODEL,writerModel:process.env.WRITER_MODEL}):null;
   const yandexTts=process.env.YANDEX_TTS_API_KEY?createYandexTts({apiKey:process.env.YANDEX_TTS_API_KEY,voice:process.env.YANDEX_TTS_VOICE||"marina"}):null;
