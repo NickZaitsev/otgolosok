@@ -522,7 +522,7 @@ export function createStore(
       const profile={id:profileId,engine:configured.engine??(profileId.startsWith("f5")?"f5":"silero"),language:configured.language??"ru",
         modelSha256:configured.modelSha256??null,speaker:configured.speaker??null,configVersion:configured.configVersion??"1",
         chunking:configured.chunking??"sentence-v1",maximumBytes:64*1024*1024,maximumDurationSec:600,
-        minimumPublicationDurationSec:configured.minimumPublicationDurationSec??45,
+        minimumPublicationDurationSec:configured.minimumPublicationDurationSec??30,
         maximumPublicationDurationSec:configured.maximumPublicationDurationSec??150};
       const inputKey = sha256(JSON.stringify({ sourceJobId, sourceRevision, spokenTextHash, profileId, normalizer:normalizerVersion }));
       return transaction(() => {
