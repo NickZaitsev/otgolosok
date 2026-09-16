@@ -71,7 +71,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(!origin||req.headers.origin&&req.headers.origin!==origin||req.headers["sec-fetch-site"]==="cross-site") {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
         if(url.pathname==="/api/me"&&req.method==="GET"){json(res,200,{user:{id:session.user.id,email:session.user.email,name:session.user.name}});return;}
         if(url.pathname==="/api/me"&&req.method==="PATCH"){const input=await body(req);if(Object.keys(input).some(k=>k!=="name"))throw failure("BAD_REQUEST");const name=accountStore.updateProfile(session.user.id,input.name);json(res,200,{user:{id:session.user.id,email:session.user.email,name}});return;}
-        if(url.pathname==="/api/me"&&req.method==="DELETE"){accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
+        if(url.pathname==="/api/me"&&req.method==="DELETE"){const created=new Date(session.session.createdAt).getTime();if(!Number.isFinite(created)||Date.now()-created>600000){json(res,403,{error:{code:"FRESH_LOGIN_REQUIRED",message:"Для удаления снова войдите в аккаунт и повторите в течение 10 минут."}});return;}accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
         if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id));return;}
         if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
         const ownWalk=new RegExp(`^/api/me/walks/(${UUID})$`).exec(url.pathname);
@@ -104,7 +104,9 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         }
         const workerMatch=new RegExp(`^/api/worker/v1/jobs/(${UUID})(?:/(heartbeat|fail|result))?$`).exec(url.pathname);
         if(!workerMatch){json(res,404,{error:{code:"NOT_FOUND",message:"Worker endpoint not found."}});return;}
-        if(req.method==="GET"&&!workerMatch[2]){const job=store.getExternalAudio(workerMatch[1]);json(res,job?200:404,job?{job}:{error:{code:"NOT_FOUND",message:"Job not found."}});return;}
+        if(req.method==="GET"&&!workerMatch[2]){const job=store.getExternalAudio(workerMatch[1]);
+          const visible=job&&(!credential||job.workerId===`${credential.id}:${workerId}`);
+          json(res,visible?200:404,visible?{job}:{error:{code:"NOT_FOUND",message:"Job not found."}});return;}
         const effectiveWorkerId=credential?`${credential.id}:${workerId}`:workerId;
         const generation=Number(req.headers["x-lease-generation"]),leaseToken=String(req.headers["x-lease-token"]??"");
         if(!Number.isSafeInteger(generation)||generation<1||!leaseToken)throw failure("BAD_REQUEST");
@@ -211,6 +213,12 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const input=await body(req,32768),place=store.approvePlaceText(approveContent[1],input.story??null);
           if(place)for(const profileId of place.audioProfiles??[])store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:place.text.story,profileId});
           json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
+        const revoiceContent=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)\/audio$/.exec(url.pathname);
+        if(revoiceContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const input=await body(req,4096),place=store.getPlace(revoiceContent[1]);
+          if(!place?.text||place.text.verification!=="editorial"){json(res,404,{error:{code:"NOT_FOUND",message:"Approved place text not found."}});return;}
+          const audioJob=store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:place.text.story,profileId:input.profileId??"silero-ru-v1"});
+          json(res,200,{place,audioJob});return;}
         const walkRegenerateMatch=/^\/api\/story-admin\/walks\/([a-z0-9][a-z0-9-]{0,127})\/regenerate$/.exec(url.pathname);
         if(walkRegenerateMatch&&req.method==="POST") {
           if(url.search)throw failure("BAD_REQUEST");
