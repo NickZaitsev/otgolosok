@@ -73,3 +73,10 @@ test("content worker honors configured concurrency",async t=>{
   const provider={writerModel:"writer",response:async()=>{active++;peak=Math.max(peak,active);await gate;active--;throw Object.assign(new Error("stop"),{code:"INSUFFICIENT_EVIDENCE"});}};
   const worker=startContentWorker({store,provider,concurrency:2});await new Promise(resolve=>setTimeout(resolve,20));assert.equal(peak,2);release();await worker.stop();
 });
+
+test("content worker permits bounded production concurrency",async t=>{
+  const places=Array.from({length:32},(_,index)=>({placeId:`osm:node:${index+1}`,osmType:"node",osmId:index+1,name:`Место ${index+1}`,location:{lat:55.7+index/10000,lon:37.6},tags:{historic:"yes"}}));
+  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces({...catalog,places});store.createBatch({requestKey:"pipeline-concurrency-32",limit:32});
+  let active=0,peak=0,release;const gate=new Promise(resolve=>{release=resolve;});const provider={writerModel:"writer",response:async()=>{active++;peak=Math.max(peak,active);await gate;active--;throw Object.assign(new Error("stop"),{code:"INSUFFICIENT_EVIDENCE"});}};
+  const worker=startContentWorker({store,provider,concurrency:100});await new Promise(resolve=>setTimeout(resolve,30));assert.equal(peak,32);release();await worker.stop();
+});

@@ -75,7 +75,7 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,si
 }
 
 export function startContentWorker(options) {
-  let stopped=false;const running=new Set(),controller=new AbortController(),concurrency=Math.max(1,Math.min(8,Number(options.concurrency??1)||1));
+  let stopped=false;const running=new Set(),controller=new AbortController(),concurrency=Math.max(1,Math.min(32,Number(options.concurrency??1)||1));
   const wake=()=>{if(stopped||!options.provider)return;while(running.size<concurrency){const job=options.store.claimContentJob();if(!job)break;
     const task=runContentJob(job,{...options,signal:controller.signal}).catch(error=>options.logs?.captureException(error,{operation:"contentJob",context:{jobId:job.id}})).finally(()=>{running.delete(task);if(!stopped)queueMicrotask(wake);});running.add(task);}};
   const timer=setInterval(wake,2000);wake();return{wake,stop:async()=>{stopped=true;clearInterval(timer);controller.abort();await Promise.allSettled(running);}};
