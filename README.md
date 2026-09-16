@@ -74,6 +74,15 @@ Nginx обслуживает `/create`, `/admin`, `/walk` без расшире�
   включают платную генерацию. Без них сайт запускается, но генерация отключена.
 - `ADMIN_TOKEN` включает редакторский доступ; используйте случайный ключ минимум
   32 байта, например результат `openssl rand -hex 32`. Без ключа доступ закрыт.
+- `BETTER_AUTH_SECRET` — случайный секрет Better Auth минимум 32 символа. Он
+  обязателен в production. `RESEND_API_KEY` и `AUTH_EMAIL_FROM` включают доставку
+  одноразовых кодов входа через Resend. Без доставки публичное чтение работает,
+  но новые пользователи войти не смогут.
+
+После первого входа назначьте редакторскую роль серверной командой:
+`pnpm auth:set-editor -- editor@example.com`. Команда меняет локальную
+`backend/data/auth.sqlite`; для production передайте путь к скопированной базе
+или выполните её внутри backend-контейнера с `/data/auth.sqlite`.
 - `MAX_DAILY_JOBS`, `STORY_MODEL`, `WRITER_MODEL` настраивают генератор.
 - `AIROUTER_LOGS_TOKEN` включает отправку ошибок backend в Airouter; `AIROUTER_LOGS_ENDPOINT`
   по умолчанию `https://airouter.softmg.tech`. Оба параметра передаются только backend
@@ -385,12 +394,20 @@ Content-Type: application/json
 
 ```text
 python scripts/import-osm-attractions.py Moscow.osm.pbf --output backend/data/osm-attractions.json
+node scripts/load-osm-catalog.mjs backend/data/osm-attractions.json
 ```
 
 Для скрипта импорта нужен `osmium==4.3.1` в отдельном build-окружении. Выходной
 каталог содержит provenance, checksum снимка и ODbL attribution. Текущая первая
 версия использует защитный московский bounding box; перед заявлением о полном
 административном покрытии нужно выбрать полный extract и проверенную границу Москвы.
+Для такого запуска передайте проверенный GeoJSON и зафиксируйте его checksum:
+`--coverage moscow-admin --boundary-file moscow-boundary.geojson`; импорт обрежет
+каталог по Polygon/MultiPolygon и отметит покрытие как административное.
+После загрузки каталог виден в разделе `/admin?section=content`: там можно создать
+партию до 5 000 объектов, поставить её на паузу, продолжить или отменить. Серверный
+воркер готовит тексты последовательно и сохраняет промежуточные стадии. Режим
+`text-and-audio` автоматически ставит успешные тексты в очередь внешнего TTS.
 
 Озвучка уже включена в репозиторий и обычную сборку. Для её регенерации нужны
 Python 3 с `ru-normalizr==0.3.0` (`python3 -m pip install ru-normalizr==0.3.0`), `ffmpeg`, `ffprobe` и переменные окружения `OPENAI_API_KEY`,

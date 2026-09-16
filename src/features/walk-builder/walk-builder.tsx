@@ -181,7 +181,7 @@ export function WalkBuilder() {
       }
       // Record the intent only after revalidating every known job, before POST.
       if (!persist({ ...current.current, submitting: nextPlace })) return;
-      const job = readJob(await request("/api/story-jobs", controller.signal, { address: nextPlace.address }));
+      const job = readJob(await request("/api/story-jobs", controller.signal, { address: nextPlace.address, idempotencyKey: crypto.randomUUID() }));
       if (controller.signal.aborted) return;
       const saved = persist({ ...current.current, submitting: null, jobs: rememberStory(current.current.jobs, { place: nextPlace, id: job.id, stage: job.stage }) });
       rememberMapJob(job, nextPlace);

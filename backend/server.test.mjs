@@ -9,11 +9,13 @@ import { createApp } from "./server.mjs";
 async function fixture(t,options={}) {
   const directory=await mkdtemp(join(tmpdir(),"story-api-"));
   const store=createStore(":memory:",{maxDaily:1});
-  const app=createApp({store,provider:{},origin:"https://otgolosok.test",audioDirectory:directory,workerEnabled:false,...options});
+  const accountStore=options.accountStore??{attachRequest(){},ownsRequest(){return true;}};
+  const auth=options.auth??{api:{getSession:async()=>({user:{id:"test-user",email:"test@example.test",name:"Test"}})}};
+  const app=createApp({store,provider:{},origin:"https://otgolosok.test",audioDirectory:directory,workerEnabled:false,auth,accountStore,...options});
   await new Promise(done=>app.server.listen(0,"127.0.0.1",done));
   const base=`http://127.0.0.1:${app.server.address().port}`;
   t.after(async()=>{await app.close();store.close();await rm(directory,{recursive:true,force:true});});
-  const post=(path,value,origin="https://otgolosok.test")=>fetch(base+path,{method:"POST",headers:{Origin:origin,"Content-Type":"application/json"},body:JSON.stringify(value)});
+  const post=(path,value,origin="https://otgolosok.test")=>fetch(base+path,{method:"POST",headers:{Origin:origin,"Content-Type":"application/json"},body:JSON.stringify(path==="/api/story-jobs"?{...value,idempotencyKey:crypto.randomUUID()}:value)});
   return {base,post,directory,store};
 }
 
