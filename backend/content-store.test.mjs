@@ -11,6 +11,7 @@ test("catalog imports idempotently and batches deduplicate text jobs",t=>{
   const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());
   assert.equal(store.importPlaces(catalog).count,2);store.importPlaces(catalog);
   assert.equal(store.listPlaces().places.length,2);assert.equal(store.getPlace("osm:node:1").address,null);
+  assert.deepEqual(store.getPlace("osm:node:1").geometry,{type:"Point",coordinates:[37.61,55.75]});
   const first=store.createBatch({requestKey:"request-0001",name:"Pilot",limit:2});
   const repeated=store.createBatch({requestKey:"request-0001",name:"Ignored",limit:2});
   assert.equal(repeated.id,first.id);assert.equal(first.counts.total,2);

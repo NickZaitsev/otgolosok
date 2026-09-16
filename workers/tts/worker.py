@@ -3,6 +3,9 @@
 import argparse, hashlib, json, os, random, re, socket, subprocess, threading, time, urllib.error, urllib.request, uuid, wave
 from pathlib import Path
 
+class WorkerApiError(RuntimeError):
+    def __init__(self,status,detail):super().__init__(f'worker API {status}: {detail}');self.status=status
+
 class Api:
     def __init__(self, base_url, token, worker_id, attempts=5):
         self.base=base_url.rstrip('/')+'/api/worker/v1';self.token=token;self.worker_id=worker_id;self.attempts=attempts
@@ -12,7 +15,7 @@ class Api:
             try:return urllib.request.urlopen(request,timeout=timeout)
             except urllib.error.HTTPError as error:
                 if error.code<500 and error.code not in (408,429):
-                    detail=error.read().decode(errors='replace')[:1000];raise RuntimeError(f'worker API {error.code}: {detail}') from error
+                    detail=error.read().decode(errors='replace')[:1000];raise WorkerApiError(error.code,detail) from error
                 failure=error
             except (urllib.error.URLError,TimeoutError,ConnectionError) as error:failure=error
             if attempt+1<self.attempts:time.sleep(min(20,.5*2**attempt)*random.uniform(.8,1.2))
@@ -26,13 +29,14 @@ class Api:
 
 class Heartbeat:
     def __init__(self,api,job,interval=30):
-        self.api,self.job,self.interval=api,job,interval;self.stop=threading.Event();self.failed=None;self.thread=threading.Thread(target=self.run,daemon=True)
+        self.api,self.job,self.interval=api,job,interval;self.stop=threading.Event();self.failed=None;self.progress={'stage':'synthesis'};self.thread=threading.Thread(target=self.run,daemon=True)
     def run(self):
         while not self.stop.wait(self.interval):
-            try:self.api.request('POST',f'/jobs/{self.job["id"]}/heartbeat',headers={**self.api.lease_headers(self.job),'Content-Length':'0'})
+            try:self.api.request('POST',f'/jobs/{self.job["id"]}/heartbeat',body=self.progress,headers=self.api.lease_headers(self.job))
             except Exception as error:self.failed=error;self.stop.set()
     def check(self):
         if self.failed:raise RuntimeError(f'heartbeat lost: {self.failed}')
+    def update(self,stage,percent=None):self.progress={'stage':stage,**({'percent':percent} if percent is not None else {})}
     def __enter__(self):self.thread.start();return self
     def __exit__(self,*_):self.stop.set();self.thread.join(timeout=2)
 
@@ -104,13 +108,30 @@ def upload(api,manifest,value):
     with api.raw('PUT',f'/jobs/{job["id"]}/result',output.read_bytes(),headers) as response:json.load(response)
     output.unlink(missing_ok=True);manifest.unlink(missing_ok=True);return True
 
+def discard(manifest,value):
+    Path(value.get('output','')).unlink(missing_ok=True);manifest.unlink(missing_ok=True)
+
+def upload_with_recovery(api,manifest,value,attempts=5):
+    """Retry the completed local file; client errors abandon this lease without re-synthesis."""
+    for attempt in range(attempts):
+        try:return upload(api,manifest,value)
+        except WorkerApiError as error:
+            if error.status in (401,403):raise
+            if error.status in (409,413,422):discard(manifest,value);return False
+            raise
+        except Exception:
+            if attempt+1==attempts:raise
+            time.sleep(min(60,2**attempt)*random.uniform(.8,1.2))
+
 def reconcile_spool(api,spool):
     for manifest in spool.glob('*.json'):
         try:
             value=json.loads(manifest.read_text(encoding='utf-8'));job=value['job'];status=api.request('GET',f'/jobs/{job["id"]}')['job']
             if status['state']=='succeeded':Path(value['output']).unlink(missing_ok=True);manifest.unlink(missing_ok=True)
-            elif status['state']=='leased' and status['leaseGeneration']==job['leaseGeneration']:upload(api,manifest,value)
-            elif status['state']!='leased':Path(value['output']).unlink(missing_ok=True);manifest.unlink(missing_ok=True)
+            elif status['state']=='leased' and status['leaseGeneration']==job['leaseGeneration']:upload_with_recovery(api,manifest,value)
+            elif status['state']!='leased':discard(manifest,value)
+        except WorkerApiError as error:
+            if error.status in (401,403):raise
         except Exception:continue
 
 def validate_startup(args):
@@ -121,6 +142,15 @@ def validate_startup(args):
         if args.model_sha256 and actual.lower()!=args.model_sha256.lower():raise RuntimeError('Silero model checksum mismatch')
     if args.engine=='f5' and (not args.f5_command or not Path(args.f5_command).is_file()):raise RuntimeError('F5_TTS_COMMAND must point to an executable')
     subprocess.run(['ffmpeg','-version'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+
+def validate_claim_profile(job,args,configured_profile):
+    profile=job.get('profile') or {}
+    if profile.get('id')!=configured_profile:raise RuntimeError('server returned a different TTS profile')
+    if profile.get('engine') and profile['engine']!=args.engine:raise RuntimeError('worker engine does not match claimed profile')
+    expected=profile.get('modelSha256')
+    if expected:
+        if args.engine!='silero' or file_sha256(Path(args.model_path)).lower()!=expected.lower():raise RuntimeError('claimed model checksum does not match local model')
+    if profile.get('speaker') and profile['speaker']!=args.speaker:raise RuntimeError('claimed speaker does not match local speaker')
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--engine',choices=['mock','silero','f5'],default=os.getenv('TTS_ENGINE','mock'));parser.add_argument('--model-path',default=os.getenv('SILERO_MODEL_PATH',''));parser.add_argument('--model-sha256',default=os.getenv('SILERO_MODEL_SHA256',''));parser.add_argument('--speaker',default=os.getenv('SILERO_SPEAKER','xenia'));parser.add_argument('--device',default=os.getenv('WORKER_DEVICE','cpu'));parser.add_argument('--f5-command',default=os.getenv('F5_TTS_COMMAND',''));parser.add_argument('--spool',type=Path,default=Path(os.getenv('WORKER_SPOOL_DIR','.worker-spool')));parser.add_argument('--once',action='store_true');args=parser.parse_args()
@@ -134,14 +164,23 @@ def main():
         if not response:
             if args.once:return
             time.sleep(10*random.uniform(.8,1.2));continue
-        idle=2.;job=response['job'];output=args.spool/f'{job["id"]}-{job["leaseGeneration"]}.wav';manifest=args.spool/f'{job["id"]}.json';value=save_manifest(manifest,job,output,args.engine,args.speaker)
+        idle=2.;job=response['job'];validate_claim_profile(job,args,profile);output=args.spool/f'{job["id"]}-{job["leaseGeneration"]}.wav';manifest=args.spool/f'{job["id"]}.json';value=save_manifest(manifest,job,output,args.engine,args.speaker)
         try:
             with Heartbeat(api,job) as heartbeat:
+                heartbeat.update('synthesis',0)
                 if args.engine=='mock':synthesize_mock(job['spokenText'],output,heartbeat)
                 elif args.engine=='silero':synthesize_silero(job['spokenText'],output,args.model_path,args.speaker,args.device,heartbeat)
                 else:synthesize_f5(job['spokenText'],output,args.f5_command,heartbeat)
                 heartbeat.check()
-            upload(api,manifest,value)
+                heartbeat.update('upload',100)
+            upload_with_recovery(api,manifest,value)
+        except WorkerApiError as error:
+            if error.status in (401,403):raise
+            if error.status in (409,413,422):
+                discard(manifest,value)
+                if args.once:raise
+                continue
+            raise
         except Exception as error:
             if output.is_file():
                 if args.once:raise

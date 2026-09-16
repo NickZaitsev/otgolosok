@@ -59,6 +59,33 @@ def point_in_geometry(point, geometry):
     return any(inside(polygon[0]) and not any(inside(hole) for hole in polygon[1:]) for polygon in polygons)
 
 
+def representative_point(points):
+    """Return a stable point on the geometry, never an unverified entrance."""
+    if len(points) == 1: return {"lat": round(points[0][0], 7), "lon": round(points[0][1], 7)}
+    # The midpoint of a real segment is guaranteed to remain on the geometry.
+    index = (len(points) - 1) // 2
+    left, right = points[index], points[min(index + 1, len(points) - 1)]
+    return {"lat": round((left[0] + right[0]) / 2, 7), "lon": round((left[1] + right[1]) / 2, 7)}
+
+
+def polygon_geometry(polygons):
+    """Build GeoJSON from outer/inner rings while retaining relation topology."""
+    converted = [[[[round(lon, 7), round(lat, 7)] for lat, lon in ring] for ring in polygon]
+                 for polygon in polygons if polygon and polygon[0]]
+    if not converted: return None
+    return {"type": "Polygon", "coordinates": converted[0]} if len(converted) == 1 else {"type": "MultiPolygon", "coordinates": converted}
+
+
+def geometry_covered(geometry, boundary):
+    """Require the complete object geometry to remain inside the verified boundary."""
+    if geometry["type"] == "Point": coordinates = [geometry["coordinates"]]
+    elif geometry["type"] == "LineString": coordinates = geometry["coordinates"]
+    elif geometry["type"] == "Polygon": coordinates = [point for ring in geometry["coordinates"] for point in ring]
+    elif geometry["type"] == "MultiPolygon": coordinates = [point for polygon in geometry["coordinates"] for ring in polygon for point in ring]
+    else: raise ValueError("Unsupported imported geometry")
+    return bool(coordinates) and all(point_in_geometry({"lon": point[0], "lat": point[1]}, boundary) for point in coordinates)
+
+
 def selected(tags):
     values = {key: tags[key] for key in FIELDS if tags.get(key)}
     named = bool(values.get("name") or values.get("name:ru"))
@@ -73,16 +100,21 @@ class Attractions(osmium.SimpleHandler if osmium else object):
     def __init__(self):
         super().__init__(); self.items = []; self.latest = ""; self.skipped = 0
 
-    def add(self, kind, osm_id, tags, points, timestamp):
+    def add(self, kind, osm_id, tags, points, timestamp, geometry=None):
         if not points:
             self.skipped += 1; return
-        lat = round((min(p[0] for p in points) + max(p[0] for p in points)) / 2, 7)
-        lon = round((min(p[1] for p in points) + max(p[1] for p in points)) / 2, 7)
-        # Guard rail only. Administrative boundary clipping can be added once a
-        # verified relation and full-coverage extract are selected for production.
+        point = representative_point(points); lat, lon = point["lat"], point["lon"]
         if 55.05 <= lat <= 56.05 and 36.75 <= lon <= 38.25:
+            coordinates = [[round(p[1], 7), round(p[0], 7)] for p in points]
+            if geometry is None:
+                if kind == "node": geometry = {"type": "Point", "coordinates": coordinates[0]}
+                elif len(coordinates) >= 4 and coordinates[0] == coordinates[-1]: geometry = {"type": "Polygon", "coordinates": [coordinates]}
+                else: geometry = {"type": "LineString", "coordinates": coordinates}
             self.items.append({"placeId": f"osm:{kind}:{osm_id}", "osmType": kind, "osmId": osm_id,
-                               "name": tags.get("name:ru", tags.get("name")), "location": {"lat": lat, "lon": lon}, "tags": tags})
+                               "name": tags.get("name:ru", tags.get("name")), "location": point, "geometry": geometry,
+                               "tags": tags, "timestamp": timestamp.isoformat(),
+                               "provenance": {"source": "OpenStreetMap", "osmType": kind, "osmId": osm_id,
+                                              "timestamp": timestamp.isoformat()}})
             self.latest = max(self.latest, timestamp.isoformat())
 
     def node(self, node):
@@ -96,7 +128,14 @@ class Attractions(osmium.SimpleHandler if osmium else object):
     def area(self, area):
         if area.from_way(): return
         tags = selected(area.tags)
-        if tags: self.add("relation", area.orig_id(), tags, [(n.lat, n.lon) for ring in area.outer_rings() for n in ring], area.timestamp)
+        if tags:
+            polygons=[]
+            for outer in area.outer_rings():
+                outer_points=[(node.lat,node.lon) for node in outer if node.location.valid()]
+                holes=[[(node.lat,node.lon) for node in inner if node.location.valid()] for inner in area.inner_rings(outer)]
+                polygons.append([outer_points,*[hole for hole in holes if hole]])
+            geometry=polygon_geometry(polygons);points=[point for polygon in polygons for ring in polygon for point in ring]
+            self.add("relation",area.orig_id(),tags,points,area.timestamp,geometry)
 
 
 def main():
@@ -118,7 +157,7 @@ def main():
     if args.boundary_file:
         boundary_bytes = args.boundary_file.read_bytes(); boundary_checksum = hashlib.sha256(boundary_bytes).hexdigest(); boundary = json.loads(boundary_bytes)
         geometry = boundary["features"][0]["geometry"] if boundary.get("type") == "FeatureCollection" else boundary.get("geometry", boundary)
-        items = [item for item in items if point_in_geometry(item["location"], geometry)]
+        items = [item for item in items if geometry_covered(item["geometry"], geometry)]
         if not items: raise SystemExit("Verified boundary removed every attraction; refusing output")
     categories = {}
     for item in items:

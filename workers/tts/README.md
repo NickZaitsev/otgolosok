@@ -8,6 +8,7 @@ WORKER_TOKEN=<same value as server WORKER_API_TOKEN>
 WORKER_ID=my-gpu-pc
 WORKER_PROFILE_ID=silero-ru-v1
 SILERO_MODEL_PATH=/absolute/path/to/model.pt
+SILERO_MODEL_SHA256=<sha256 выбранного файла модели>
 SILERO_SPEAKER=xenia
 WORKER_DEVICE=cpu
 ```
@@ -36,3 +37,7 @@ running synthesis attempt.
 Long Silero input is split at sentence boundaries and compatible WAV chunks are
 joined before upload. Set `SILERO_MODEL_SHA256` to pin the selected model file;
 startup fails if it differs. Startup also validates FFmpeg and the F5 executable.
+
+The worker reports its version, profiles, current job and bounded progress through
+claim/heartbeat. The admin screen uses this to show whether a compatible worker is
+online. A completed WAV remains in the spool until the server confirms its receipt.

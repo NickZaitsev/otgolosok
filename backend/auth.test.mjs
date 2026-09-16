@@ -27,6 +27,13 @@ test("production sessions use a __Host cookie",async t=>{
   const cookie=response.headers["set-cookie"].find(value=>value.startsWith("__Host-otgolosok-session="));assert.ok(cookie);assert.match(cookie,/; Secure/i);assert.match(cookie,/; HttpOnly/i);assert.match(cookie,/; SameSite=Lax/i);assert.match(cookie,/; Path=\//i);assert.doesNotMatch(cookie,/; Domain=/i);
 });
 
+test("OTP delivery is limited per normalized email across restarts",async()=>{
+  const directory=await mkdtemp(join(tmpdir(),"otg-auth-limit-")),path=join(directory,"auth.sqlite");let sent=0;
+  const send=async()=>{sent++;};
+  for(let run=0;run<2;run++){const runtime=await createAuth({databasePath:path,baseURL:"http://localhost",secret:"rate-limit-test-secret-with-more-than-32-characters",production:false,sendOTP:send});for(let index=0;index<(run?1:5);index++){const response=await runtime.auth.handler(new Request("http://localhost/api/auth/email-otp/send-verification-otp",{method:"POST",headers:{Origin:"http://localhost","Content-Type":"application/json","X-Real-IP":`192.0.2.${index+1}`},body:JSON.stringify({email:index%2?"LIMIT@example.com":"limit@example.com",type:"sign-in"})}));assert.equal(response.status,200);}runtime.close();}
+  assert.equal(sent,5);await rm(directory,{recursive:true,force:true});
+});
+
 test("account data is isolated per Better Auth user and updates use revisions",async t=>{
   const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"account-test-secret-with-more-than-32-characters",production:false,sendOTP:async()=>{}});t.after(()=>runtime.close());
   const db=runtime.database,store=createAccountStore(db),time=new Date().toISOString();
@@ -37,4 +44,5 @@ test("account data is isolated per Better Auth user and updates use revisions",a
   store.setFavorite("u1","walk","paveletskaya");assert.equal(store.listFavorites("u1").favorites.length,1);assert.equal(store.listFavorites("u2").favorites.length,0);
   const imported=store.importLocal("u1",{importId:"import-0001",walk:{title:"С устройства",snapshot:{version:1}}});assert.equal(store.importLocal("u1",{importId:"import-0001"}).walk.id,imported.walk.id);
   assert.equal(store.reserveGeneration("u1","request-0001",3,6),true);assert.equal(store.reserveGeneration("u1","request-0001",3,6),false);assert.throws(()=>store.reserveGeneration("u1","request-0002",4,6),error=>error.code==="QUOTA_EXCEEDED");assert.equal(store.reserveGeneration("u2","request-0002",4,6),true);
+  const deleteCode=store.issueDeleteCode("u1");assert.match(deleteCode,/^\d{6}$/);assert.equal(store.verifyDeleteCode("u1","000000"),false);assert.equal(store.verifyDeleteCode("u1",deleteCode),true);assert.equal(store.verifyDeleteCode("u1",deleteCode),false);
 });

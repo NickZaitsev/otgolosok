@@ -22,4 +22,5 @@ async function revokePending(){if(!localStorage.getItem("otgolosok:auth:offline-
 if(typeof window!=="undefined"){addEventListener("online",()=>void revokePending().catch(()=>{}));void revokePending().catch(()=>{});}
 export const signOut = async () => {announceSignOut();sessionStorage.removeItem(CSRF_KEY);try{const result=await api("/api/auth/sign-out", { method:"POST", body:"{}" });localStorage.removeItem("otgolosok:auth:offline-logout");return result;}catch(error){localStorage.setItem("otgolosok:auth:offline-logout",String(Date.now()));throw new Error("Локальный выход выполнен. Сервер отзовёт сессию после восстановления сети.",{cause:error});}};
 export const signOutEverywhere = async () => {const result=await api("/api/auth/revoke-sessions", { method:"POST", body:"{}" });announceSignOut();return result;};
+export const csrfHeaders = (): Record<string,string> => {const token=typeof sessionStorage==="undefined"?null:sessionStorage.getItem(CSRF_KEY);return token?{"X-CSRF-Token":token}:{};};
 export { api as accountApi };
