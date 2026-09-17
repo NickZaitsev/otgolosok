@@ -3,6 +3,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { resolve, join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { createStore } from "../backend/store.mjs";
+import { loadLocalTtsConfig } from "../backend/local-tts.mjs";
 
 const args=new Set(process.argv.slice(2)),pilot=args.has("--pilot"),full=args.has("--next");
 if(pilot===full)throw new Error("Usage: node scripts/create-osm-batch.mjs <--pilot|--next> [--limit N] [--text-only] [--start]");
@@ -11,6 +12,7 @@ const limit=Number(valueAfter("--limit")??(pilot?50:5000));
 if(!Number.isSafeInteger(limit)||limit<1||limit>5000)throw new Error("--limit must be an integer from 1 to 5000");
 const dataDirectory=resolve(process.env.DATA_DIR??"backend/data"),database=join(dataDirectory,"jobs.sqlite"),profile="story-v1";
 const requestedState=args.has("--start")?"running":"paused";
+const localTts=loadLocalTtsConfig(process.env);
 const sha256=value=>createHash("sha256").update(value).digest("hex");
 const inputKey=row=>sha256(JSON.stringify({placeId:row.id,contentHash:row.content_hash,profile}));
 const db=new DatabaseSync(database,{readOnly:true});
@@ -35,7 +37,7 @@ else {
 }
 const store=createStore(database);
 try {
-  const batch=store.createBatch({requestKey:`${pilot?"pilot":"snapshot"}-${new Date().toISOString()}-${randomUUID()}`,name:`OSM ${pilot?"пилот":"снимок"} · ${new Date().toLocaleString("ru-RU")}`,placeIds:selected.map(row=>row.id),limit:selected.length,textProfile:profile,mode:args.has("--text-only")?"text-only":"text-and-audio",ttsProfile:args.has("--text-only")?null:"silero-ru-v1"});
+  const batch=store.createBatch({requestKey:`${pilot?"pilot":"snapshot"}-${new Date().toISOString()}-${randomUUID()}`,name:`OSM ${pilot?"пилот":"снимок"} · ${new Date().toLocaleString("ru-RU")}`,placeIds:selected.map(row=>row.id),limit:selected.length,textProfile:profile,mode:args.has("--text-only")?"text-only":"text-and-audio",ttsProfile:args.has("--text-only")?null:localTts.defaultProfile});
   const result=requestedState==="paused"?store.setBatchState(batch.id,"paused"):batch;
   console.log(JSON.stringify({...result,addressless:selected.filter(row=>!row.address).length,remaining:available.length-selected.length},null,2));
 } finally {store.close();}

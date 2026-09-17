@@ -51,6 +51,7 @@ export function createContentStore({db,now,transaction}) {
   if(!columns.has("provenance_json"))db.exec("ALTER TABLE places ADD COLUMN provenance_json TEXT");
   if(!db.prepare("PRAGMA table_info(place_texts)").all().some(column=>column.name==="audio_json"))db.exec("ALTER TABLE place_texts ADD COLUMN audio_json TEXT");
   if(!db.prepare("PRAGMA table_info(place_texts)").all().some(column=>column.name==="approved_story_json"))db.exec("ALTER TABLE place_texts ADD COLUMN approved_story_json TEXT");
+  if(!db.prepare("PRAGMA table_info(place_texts)").all().some(column=>column.name==="audio_target_profile"))db.exec("ALTER TABLE place_texts ADD COLUMN audio_target_profile TEXT");
   const contentJobColumns=new Set(db.prepare("PRAGMA table_info(content_jobs)").all().map(column=>column.name));
   if(!contentJobColumns.has("profile_version"))db.exec("ALTER TABLE content_jobs ADD COLUMN profile_version TEXT NOT NULL DEFAULT '1'");
   if(!contentJobColumns.has("priority"))db.exec("ALTER TABLE content_jobs ADD COLUMN priority INTEGER NOT NULL DEFAULT 0");
@@ -199,8 +200,8 @@ export function createContentStore({db,now,transaction}) {
           (id,place_id,input_key,profile,content_hash,story_json,evidence_json,verification,audio_json,approved_story_json,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
           .run(id,placeId,inputKey,row.profile,sha256(selectedJson),selectedJson,row.evidence_json,"editorial",null,selectedJson,timestamp);row=db.prepare("SELECT * FROM place_texts WHERE id=?").get(id);
       } else if(!row.approved_story_json){db.prepare("UPDATE place_texts SET approved_story_json=?,verification='editorial' WHERE id=?").run(selectedJson,row.id);row=db.prepare("SELECT * FROM place_texts WHERE id=?").get(row.id);}
-      const profiles=db.prepare(`SELECT DISTINCT b.tts_profile FROM batch_items i JOIN content_batches b ON b.id=i.batch_id JOIN content_jobs j ON j.id=i.text_job_id
-        WHERE j.place_id=? AND b.mode='text-and-audio' AND b.tts_profile IS NOT NULL`).all(placeId).map(item=>item.tts_profile);
+      const profiles=db.prepare(`SELECT b.tts_profile,max(b.created_at) created_at FROM batch_items i JOIN content_batches b ON b.id=i.batch_id JOIN content_jobs j ON j.id=i.text_job_id
+        WHERE j.place_id=? AND b.mode='text-and-audio' AND b.tts_profile IS NOT NULL GROUP BY b.tts_profile ORDER BY created_at,b.tts_profile`).all(placeId).map(item=>item.tts_profile);
       const approved=this.getPlace(placeId);return {...approved,text:{...approved.text,story:selected},audioProfiles:profiles};});},
   };
 }

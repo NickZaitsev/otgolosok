@@ -15,6 +15,17 @@ Traefik routes `/api/story-*`, exactly `/api/walk-plan`, exactly
 `/:id/retry`) to the generator with priority 100.
 Admin API authentication remains in the backend.
 
+## Локальный TTS
+
+`LOCAL_TTS_ENGINE=silero` (по умолчанию) или `f5` выбирает профиль новых партий
+и ручной озвучки. После изменения нужен перезапуск backend. Созданные задания
+сохраняют профиль и ждут подходящий воркер; автоматического fallback нет.
+
+Для F5 обязательны `F5_MODEL_SHA256`, `F5_REFERENCE_ID` и `F5_CONFIG_SHA256`;
+при необходимости задаётся `F5_REFERENCE_SHA256`. Значения должны совпадать с
+профилем just-tts. Серверный переключатель не запускает локальный воркер: ему
+отдельно задаются `TTS_ENGINE=f5`, `WORKER_PROFILE_ID=f5-ru-v1` и пути к Portable.
+
 The site directory is `/srv/sites/otgolosok.softmg.tech`:
 
 - `generator-compose.yml`: production backend and routing services.
