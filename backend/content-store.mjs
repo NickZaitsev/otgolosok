@@ -178,14 +178,18 @@ export function createContentStore({db,now,transaction}) {
       db.prepare("INSERT OR REPLACE INTO content_job_attempts VALUES (?,?,?, ?,NULL,NULL)").run(row.id,generation,"working",timestamp);syncItems(row.id,"working");
       const place=viewPlace(db.prepare("SELECT * FROM places WHERE id=?").get(row.place_id));return {id:row.id,place,profile:row.profile,checkpoint:decode(row.checkpoint_json),attempts:Number(row.attempts)+1};});},
     updateContentCheckpoint(id,checkpoint) {db.prepare("UPDATE content_jobs SET checkpoint_json=?,updated_at=? WHERE id=?").run(encode(checkpoint),iso(now),id);},
-    completeContentJob(id,{story,evidence,verification="automatic"}) {return transaction(()=>{const row=db.prepare("SELECT * FROM content_jobs WHERE id=?").get(id);if(!row||row.state!=="working")throw fail("CONFLICT");
-      const existing=db.prepare("SELECT * FROM place_texts WHERE input_key=?").get(row.input_key);if(existing){db.prepare("UPDATE content_jobs SET state='ready',updated_at=? WHERE id=?").run(iso(now),id);syncItems(id,"ready");return{id:existing.id,placeId:existing.place_id,story:decode(existing.story_json),audioProfiles:[]};}
+    completeContentJob(id,{story,evidence,verification="automatic",autoApprove=false}) {return transaction(()=>{const row=db.prepare("SELECT * FROM content_jobs WHERE id=?").get(id);if(!row||row.state!=="working")throw fail("CONFLICT");
+      const audioProfiles=()=>autoApprove?db.prepare(`SELECT b.tts_profile,max(b.created_at) created_at FROM batch_items i JOIN content_batches b ON b.id=i.batch_id
+        WHERE i.text_job_id=? AND b.mode='text-and-audio' AND b.tts_profile IS NOT NULL GROUP BY b.tts_profile ORDER BY created_at,b.tts_profile`).all(id).map(item=>item.tts_profile):[];
+      const existing=db.prepare("SELECT * FROM place_texts WHERE input_key=?").get(row.input_key);if(existing){const timestamp=iso(now),selected=decode(existing.story_json);
+        if(autoApprove&&!existing.approved_story_json)db.prepare("UPDATE place_texts SET approved_story_json=? WHERE id=?").run(encode(selected),existing.id);
+        db.prepare("UPDATE content_jobs SET state='ready',updated_at=? WHERE id=?").run(timestamp,id);syncItems(id,"ready");return{id:existing.id,placeId:existing.place_id,story:selected,audioProfiles:audioProfiles()};}
       const timestamp=iso(now),textId=randomUUID();db.prepare(`INSERT INTO place_texts
         (id,place_id,input_key,profile,content_hash,story_json,evidence_json,verification,audio_json,approved_story_json,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)
         `)
-        .run(textId,row.place_id,row.input_key,row.profile,sha256(encode(story)),encode(story),encode(evidence),verification,null,verification==="editorial"?encode(story):null,timestamp);
+        .run(textId,row.place_id,row.input_key,row.profile,sha256(encode(story)),encode(story),encode(evidence),verification,null,autoApprove||verification==="editorial"?encode(story):null,timestamp);
       db.prepare("UPDATE content_jobs SET state='ready',error_json=NULL,updated_at=? WHERE id=?").run(timestamp,id);db.prepare("UPDATE content_job_attempts SET state='ready',finished_at=? WHERE job_id=? AND generation=?").run(timestamp,id,row.attempts);syncItems(id,"ready");
-      return {id:textId,placeId:row.place_id,story,sourceRevision:0,audioProfiles:[]};});},
+      return {id:textId,placeId:row.place_id,story,sourceRevision:0,audioProfiles:audioProfiles()};});},
     failContentJob(id,error,state="failed") {if(!["failed","review_required","insufficient_evidence"].includes(state))throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_jobs WHERE id=?").get(id);if(!row)return null;
       const timestamp=iso(now),retry=state==="failed"&&Number(row.attempts)<Number(row.max_attempts),next=retry?"retry_wait":state;
       db.prepare("UPDATE content_jobs SET state=?,next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(next,new Date(now()+(row.attempts<=1?30000:120000)).toISOString(),encode(error),timestamp,id);db.prepare("UPDATE content_job_attempts SET state=?,finished_at=?,error_json=? WHERE job_id=? AND generation=?").run(next,timestamp,encode(error),id,row.attempts);syncItems(id,next,error);return {id,state:next,error};});},

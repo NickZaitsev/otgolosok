@@ -42,7 +42,7 @@ function sourcesFrom(result) {
     try{const url=validateSourceUrl(source.url).href;if(!cited.has(url)||seen.has(url)||typeof source.title!=="string")return[];seen.add(url);return[{url,title:source.title.slice(0,250)}];}catch{return[];}});
 }
 
-export async function runContentJob(job,{store,provider,fetchPage=fetchSource,signal,timeoutMs=600000}) {
+export async function runContentJob(job,{store,provider,fetchPage=fetchSource,signal,timeoutMs=600000,autoApprove=false}) {
   const deadline=AbortSignal.any([AbortSignal.timeout(timeoutMs),...(signal?[signal]:[])]);let checkpoint=job.checkpoint??{};
   const save=patch=>{checkpoint={...checkpoint,...patch};store.updateContentCheckpoint(job.id,checkpoint);};
   const call=async(prompt,options={})=>{const result=await provider.response(prompt,{...options,signal:deadline});const tokens=Object.values(result.usage??{}).reduce((sum,value)=>sum+(Number(value)||0),0);if(tokens)save({usageTokens:Number(checkpoint.usageTokens??0)+tokens});return result;};
@@ -65,7 +65,9 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,si
       save({draft:validateContentDraft(revised.value,checkpoint.evidence,job.profile),reviewRepair:{revision:revision+1,issues:review.value.issues}});
     }
     if(review.value.approved!==true||!Array.isArray(review.value.issues)||review.value.issues.length)throw failure("REVIEW_REQUIRED");
-    const completed=store.completeContentJob(job.id,{story:checkpoint.draft,evidence:checkpoint.evidence,verification:"automatic"});
+    const completed=store.completeContentJob(job.id,{story:checkpoint.draft,evidence:checkpoint.evidence,verification:"automatic",autoApprove});
+    if(autoApprove)for(const profileId of completed.audioProfiles)await store.enqueueExternalAudio({sourceJobId:`place-text:${completed.id}`,sourceRevision:0,
+      story:{...completed.story,address:job.place.address??job.place.name},profileId,signal:deadline});
     return completed;
   } catch(error) {
     const code=["TimeoutError","AbortError"].includes(error?.name)?"TIMEOUT":error?.code??"PREPARATION_FAILED";
