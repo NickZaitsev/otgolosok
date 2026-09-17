@@ -30,6 +30,14 @@ Generate a standalone WAV sample with the same text pipeline and the default
 python workers/tts/generate_sample.py
 ```
 
+Generate the same standard test passage with every Russian `v5_5_ru` voice and
+normalize each output with FFmpeg:
+
+```bash
+python workers/tts/generate_sample.py --all-speakers --loudnorm \
+  --output artifacts/tts-v5_5-standard.wav
+```
+
 Use a real paragraph from a bundled map route and normalize it to `-16 LUFS`
 with FFmpeg:
 

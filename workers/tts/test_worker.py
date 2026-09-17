@@ -4,12 +4,13 @@ import wave
 from pathlib import Path
 from unittest.mock import patch
 from types import SimpleNamespace
-from generate_sample import loudnorm_measure
+from generate_sample import SAMPLE_SPEAKERS, loudnorm_measure
 from worker import DEFAULT_SILERO_MODEL_PATH, DEFAULT_SILERO_SPEAKER, WorkerApiError, chunks, concatenate_wav, prepare_silero_text, upload_with_recovery, validate_claim_profile, synthesize_silero, silero_compatible
 class WorkerTest(unittest.TestCase):
     def test_baya_is_default_silero_speaker(self):
         self.assertEqual(DEFAULT_SILERO_SPEAKER,'baya')
         self.assertEqual(DEFAULT_SILERO_MODEL_PATH.name,'silero-v5_5-ru.pt')
+        self.assertEqual(SAMPLE_SPEAKERS,('aidar','baya','kseniya','xenia','eugene'))
     def test_chunks_preserve_text_and_bound_size(self):
         text='Первое предложение. '+'очень '*180+'длинное. Конец!';result=chunks(text,100)
         self.assertTrue(all(len(item)<=100 for item in result));self.assertEqual(' '.join(result).split(),text.split())
