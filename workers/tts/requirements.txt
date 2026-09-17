@@ -1,2 +1,0 @@
-ru-normalizr==0.3.0
-silero-stress==1.5
