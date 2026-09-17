@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { ingestAudio } from "./audio-ingest.mjs";
+import { ingestAudio, ingestPreparedMp3 } from "./audio-ingest.mjs";
 
 const exec=promisify(execFile);
 
@@ -46,4 +46,13 @@ test("real FFmpeg converts a valid WAV to a probeable MP3",async t=>{
   await exec("ffmpeg",["-v","error","-nostdin","-y","-f","lavfi","-i","sine=frequency=440:duration=1","-ac","1","-ar","24000",wav],{timeout:15000});
   const bytes=await readFile(wav),result=await ingestAudio(request(bytes),directory);assert.ok(result.artifact.bytes>0);assert.ok(result.artifact.durationSec>.9&&result.artifact.durationSec<1.1);
   const probe=await exec("ffprobe",["-v","error","-show_entries","format=format_name","-of","default=nw=1:nk=1",join(directory,`${result.artifact.sha256}.mp3`)],{timeout:5000});assert.match(probe.stdout,/mp3/);
+});
+
+test("prepared MP3 is verified and published without re-encoding",async t=>{
+  const directory=await mkdtemp(join(tmpdir(),"prepared-mp3-"));t.after(()=>rm(directory,{recursive:true,force:true}));
+  const bytes=Buffer.from("prepared-mp3"),calls=[];
+  const execImpl=async(command)=>{calls.push(command);return command==="ffprobe"?{stdout:JSON.stringify({streams:[{codec_name:"mp3",channels:1,sample_rate:"24000"}],format:{duration:"42"}})}:{stdout:""};};
+  const result=await ingestPreparedMp3(bytes,directory,{expectedSha256:(await import("./domain.mjs")).sha256(bytes),execImpl});
+  assert.equal(result.artifact.durationSec,42);assert.deepEqual(calls,["ffprobe","ffmpeg"]);
+  assert.deepEqual(await readFile(join(directory,`${result.artifact.sha256}.mp3`)),bytes);
 });

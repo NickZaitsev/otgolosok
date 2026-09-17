@@ -43,3 +43,31 @@ export async function ingestAudio(req,directory,{maximumBytes=64*1024*1024,timeo
     throw failure("BAD_AUDIO");
   } finally {activeUploads--;await Promise.all([source,output].map(path=>rm(path,{force:true})));}
 }
+
+export async function ingestPreparedMp3(bytes,directory,{expectedSha256,maximumBytes=64*1024*1024,timeoutMs=120000,
+  signal,minimumFreeBytes=128*1024*1024,execImpl=exec,statfsImpl=statfs}={}) {
+  if(!Buffer.isBuffer(bytes)||!bytes.length||bytes.length>maximumBytes)throw failure("AUDIO_TOO_LARGE");
+  if(expectedSha256&&sha256(bytes)!==expectedSha256)throw failure("AUDIO_CHECKSUM");
+  await mkdir(directory,{recursive:true});
+  const filesystem=await statfsImpl(directory);
+  if(Number(filesystem.bavail)*Number(filesystem.bsize)<minimumFreeBytes+bytes.length)throw failure("AUDIO_STORAGE_FULL");
+  const nonce=`${Date.now()}-${Math.random().toString(16).slice(2)}`,source=join(directory,`.prepared-${nonce}.mp3`);
+  const deadline=AbortSignal.any([AbortSignal.timeout(timeoutMs),...(signal?[signal]:[])]);
+  try {
+    await (await import("node:fs/promises")).writeFile(source,bytes,{mode:0o600,signal:deadline});
+    const probe=await execImpl("ffprobe",["-v","error","-show_entries","stream=codec_name,channels,sample_rate:format=duration","-of","json",source],
+      {timeout:15000,signal:deadline,maxBuffer:16000});
+    const value=JSON.parse(probe.stdout),streams=value.streams??[],durationSec=Number(value.format?.duration);
+    if(streams.length!==1||streams[0].codec_name!=="mp3"||Number(streams[0].channels)!==1||Number(streams[0].sample_rate)!==24000)throw failure("BAD_AUDIO");
+    if(!Number.isFinite(durationSec)||durationSec<=0||durationSec>600)throw failure("AUDIO_DURATION");
+    await execImpl("ffmpeg",["-v","error","-nostdin","-i",source,"-f","null","-"],{timeout:timeoutMs,signal:deadline,maxBuffer:16000});
+    const audioSha256=sha256(bytes),finalPath=join(directory,`${audioSha256}.mp3`);
+    try {await rename(source,finalPath);} catch(error) {if(!["EEXIST","EPERM"].includes(error.code)||(await stat(finalPath).catch(()=>null))===null)throw error;}
+    return {uploadSha256:audioSha256,artifact:{url:`/api/story-audio/${audioSha256}.mp3`,sha256:audioSha256,bytes:bytes.length,
+      durationSec,model:"external",voice:"external",provider:"external",synthetic:true}};
+  } catch(error) {
+    if(["TimeoutError","AbortError"].includes(error?.name))throw failure("TIMEOUT");
+    if(error?.code&&(String(error.code).startsWith("AUDIO_")||String(error.code).startsWith("BAD_AUDIO")))throw error;
+    throw failure("BAD_AUDIO");
+  } finally {await rm(source,{force:true});}
+}

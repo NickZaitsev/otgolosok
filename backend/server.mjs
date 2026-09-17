@@ -20,6 +20,8 @@ import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSes
 import { createAccountStore } from "./account-store.mjs";
 import { normalizeForSpeech } from "./text-normalizer.mjs";
 import { loadLocalTtsConfig } from "./local-tts.mjs";
+import { createTtsApiClient } from "./tts-api-client.mjs";
+import { startTtsApiWorker } from "./tts-api-worker.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 function json(res,status,value) {
@@ -55,12 +57,13 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,sendAccountCode=async()=>{},auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
+export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,sendAccountCode=async()=>{},auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
   const worker=(provider||yandexTts)&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory,discoverResearch,planResearchWalk,logs}):null;
   const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,logs,concurrency:Number(process.env.CONTENT_WORKER_CONCURRENCY??1)}):null;
+  const ttsApiWorker=workerEnabled&&localTts.transport==="http"&&ttsApiClient?startTtsApiWorker({store,client:ttsApiClient,audioDirectory,profileId:localTts.defaultProfile,logs}):null;
   const authorizeAdmin=adminAuth(adminToken);
   const legacyAdminEnabled=allowLegacyAdminToken??(!auth||process.env.ALLOW_LEGACY_ADMIN_TOKEN==="true");
   const server=httpServer(async(req,res)=>{
@@ -94,6 +97,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         json(res,404,{error:{code:"NOT_FOUND",message:"Account endpoint not found."}});return;
       }
       if(url.pathname==="/api/worker/v1/claim"||url.pathname.startsWith("/api/worker/v1/jobs/")) {
+        if(localTts.transport==="http"){json(res,503,{error:{code:"WORKER_DISABLED",message:"HTTP TTS transport is active."}});return;}
         const rawToken=typeof req.headers.authorization==="string"&&req.headers.authorization.startsWith("Bearer ")?req.headers.authorization.slice(7):"";
         const credential=store.authenticateWorkerToken(rawToken);
         if((!workerToken||req.headers.authorization!==`Bearer ${workerToken}`)&&!credential){res.setHeader("WWW-Authenticate","Bearer");json(res,401,{error:{code:"UNAUTHORIZED",message:"Worker authentication required."}});return;}
@@ -436,13 +440,14 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
     }
   });
   server.requestTimeout=310000;server.headersTimeout=10000;server.keepAliveTimeout=5000;
-  return {server,close:async()=>{await Promise.all([worker?.stop(),contentWorker?.stop()]);await new Promise((done)=>server.close(done));server.closeAllConnections();await closeAuth();}};
+  return {server,close:async()=>{await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop()]);await new Promise((done)=>server.close(done));server.closeAllConnections();await closeAuth();}};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const directory=resolve(process.env.DATA_DIR??"backend/data");
   if(process.env.WORKER_API_TOKEN&&!process.env.WORKER_LEASE_SECRET)throw new Error("WORKER_LEASE_SECRET is required when WORKER_API_TOKEN is configured");
   const localTts=loadLocalTtsConfig(process.env);
+  const ttsApiClient=localTts.transport==="http"?createTtsApiClient({baseUrl:process.env.TTS_API_URL,token:process.env.TTS_API_TOKEN}):null;
   const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:process.env.WORKER_LEASE_SECRET,normalizeExternalText:normalizeForSpeech,externalTtsProfiles:localTts.profiles});
   store.recoverInterrupted();
   store.recoverContentJobs();
@@ -458,7 +463,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   };
   const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production",sendOTP:sendAccountCode});
   const accountStore=createAccountStore(authRuntime.database,Date.now,process.env.BETTER_AUTH_SECRET);
-  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,sendAccountCode,closeAuth:authRuntime.close});
+  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,sendAccountCode,closeAuth:authRuntime.close});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});
