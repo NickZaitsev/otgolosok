@@ -396,12 +396,13 @@ Content-Type: application/json
 {"revision":12,"profileId":"silero-ru-v1"}
 ```
 
-Настройка и запуск компьютера с Silero описаны в
+Настройка и запуск компьютера с Silero описаны в отдельном соседнем репозитории
+`C:\00_projects\easy_tts`; краткая ссылка оставлена в
 [`workers/tts/README.md`](workers/tts/README.md). Воркер забирает одно задание,
 продлевает lease во время синтеза и загружает WAV. Сервер проверяет checksum и
 длительность, нормализует громкость, сохраняет MP3 в постоянный `/data/audio` и
 только после этого публикует запись. Для проверки протокола без модели есть
-`python workers/tts/worker.py --engine mock --once`.
+`python -m easy_tts --env-file .env worker --once`.
 
 Сервер до постановки задания фиксирует нормализованный `spokenText`, его checksum,
 версию нормализатора и контракт TTS-профиля. При правке утверждённого текста старый
