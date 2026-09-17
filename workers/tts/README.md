@@ -22,6 +22,13 @@ python -m pip install -r workers/tts/requirements.txt
 python workers/tts/worker.py --engine silero
 ```
 
+Generate a standalone WAV sample with the same text pipeline and the default
+`baya` voice:
+
+```bash
+python workers/tts/generate_sample.py --model-path /absolute/path/to/model.pt
+```
+
 For every Silero job, the worker first applies `ru-normalizr` in TTS mode and then
 Silero Stress 1.5. Both processors are loaded once at startup and reused across
 jobs. This expands numbers and abbreviations and adds stress marks plus homograph
