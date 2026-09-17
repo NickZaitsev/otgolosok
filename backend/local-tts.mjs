@@ -6,9 +6,10 @@ export function loadLocalTtsConfig(env=process.env) {
   if(!["silero","f5"].includes(engine))throw new Error("LOCAL_TTS_ENGINE must be silero or f5");
   const profiles={
     "silero-ru-v1":{engine:"silero",language:"ru",modelSha256:env.SILERO_MODEL_SHA256||SILERO_SHA,speaker:env.SILERO_SPEAKER||"baya",configVersion:"4",chunking:"sentence-v1",textPreparation:{input:"raw",version:PREPARATION_VERSION}},
-    "f5-ru-v1":{engine:"f5",language:"ru",modelSha256:env.F5_MODEL_SHA256||null,speaker:env.F5_REFERENCE_ID||null,configSha256:env.F5_CONFIG_SHA256||null,referenceSha256:env.F5_REFERENCE_SHA256||null,configVersion:"2",chunking:"f5-native-v1",textPreparation:{input:"raw",version:PREPARATION_VERSION}},
+    "f5-ru-v1":{engine:"f5",language:"ru",modelSha256:env.F5_MODEL_SHA256||null,speaker:env.F5_REFERENCE_ID||null,configSha256:env.F5_CONFIG_SHA256||null,referenceSha256:env.F5_REFERENCE_SHA256||null,configVersion:"2",chunking:"f5-native-v1",minimumPublicationDurationSec:env.F5_MINIMUM_PUBLICATION_DURATION_SEC==null?30:Number(env.F5_MINIMUM_PUBLICATION_DURATION_SEC),textPreparation:{input:"raw",version:PREPARATION_VERSION}},
   };
   const defaultProfile=engine==="f5"?"f5-ru-v1":"silero-ru-v1";
+  if(!Number.isFinite(profiles["f5-ru-v1"].minimumPublicationDurationSec)||profiles["f5-ru-v1"].minimumPublicationDurationSec<0)throw new Error("F5_MINIMUM_PUBLICATION_DURATION_SEC must be a non-negative number");
   if(engine==="f5"&&![profiles[defaultProfile].modelSha256,profiles[defaultProfile].speaker,profiles[defaultProfile].configSha256].every(Boolean))throw new Error("F5_MODEL_SHA256, F5_REFERENCE_ID and F5_CONFIG_SHA256 are required when LOCAL_TTS_ENGINE=f5");
   return {engine,defaultProfile,profiles,preparationVersion:PREPARATION_VERSION};
 }
