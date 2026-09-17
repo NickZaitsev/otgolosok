@@ -7,6 +7,7 @@ class WorkerApiError(RuntimeError):
     def __init__(self,status,detail):super().__init__(f'worker API {status}: {detail}');self.status=status
 
 DEFAULT_SILERO_SPEAKER='baya'
+DEFAULT_SILERO_MODEL_PATH=Path(__file__).resolve().parents[2]/'backend'/'data'/'models'/'silero-v5_5-ru.pt'
 
 class Api:
     def __init__(self, base_url, token, worker_id, attempts=5):
@@ -179,7 +180,7 @@ def validate_claim_profile(job,args,configured_profile):
     if profile.get('speaker') and profile['speaker']!=args.speaker:raise RuntimeError('claimed speaker does not match local speaker')
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--engine',choices=['mock','silero','f5'],default=os.getenv('TTS_ENGINE','mock'));parser.add_argument('--model-path',default=os.getenv('SILERO_MODEL_PATH',''));parser.add_argument('--model-sha256',default=os.getenv('SILERO_MODEL_SHA256',''));parser.add_argument('--speaker',default=os.getenv('SILERO_SPEAKER',DEFAULT_SILERO_SPEAKER));parser.add_argument('--device',default=os.getenv('WORKER_DEVICE','cpu'));parser.add_argument('--f5-command',default=os.getenv('F5_TTS_COMMAND',''));parser.add_argument('--spool',type=Path,default=Path(os.getenv('WORKER_SPOOL_DIR','.worker-spool')));parser.add_argument('--once',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--engine',choices=['mock','silero','f5'],default=os.getenv('TTS_ENGINE','mock'));parser.add_argument('--model-path',default=os.getenv('SILERO_MODEL_PATH',str(DEFAULT_SILERO_MODEL_PATH)));parser.add_argument('--model-sha256',default=os.getenv('SILERO_MODEL_SHA256',''));parser.add_argument('--speaker',default=os.getenv('SILERO_SPEAKER',DEFAULT_SILERO_SPEAKER));parser.add_argument('--device',default=os.getenv('WORKER_DEVICE','cpu'));parser.add_argument('--f5-command',default=os.getenv('F5_TTS_COMMAND',''));parser.add_argument('--spool',type=Path,default=Path(os.getenv('WORKER_SPOOL_DIR','.worker-spool')));parser.add_argument('--once',action='store_true');args=parser.parse_args()
     validate_startup(args);model=load_silero(args.model_path,args.device) if args.engine=='silero' else None;normalizer=accentor=None
     if model is not None:
         try:

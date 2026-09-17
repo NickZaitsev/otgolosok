@@ -434,7 +434,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const directory=resolve(process.env.DATA_DIR??"backend/data");
   if(process.env.WORKER_API_TOKEN&&!process.env.WORKER_LEASE_SECRET)throw new Error("WORKER_LEASE_SECRET is required when WORKER_API_TOKEN is configured");
   const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:process.env.WORKER_LEASE_SECRET,normalizeExternalText:normalizeForSpeech,externalTtsProfiles:{
-    "silero-ru-v1":{engine:"silero",language:"ru",modelSha256:process.env.SILERO_MODEL_SHA256||null,speaker:process.env.SILERO_SPEAKER||"baya",configVersion:"2",chunking:"sentence-v1"},
+    "silero-ru-v1":{engine:"silero",language:"ru",modelSha256:process.env.SILERO_MODEL_SHA256||"50081637b602126ee06cb3bc8a744d25651d2da149ee8864b9a379bfdd934437",speaker:process.env.SILERO_SPEAKER||"baya",configVersion:"3",chunking:"sentence-v1"},
     "f5-ru-v1":{engine:"f5",language:"ru",modelSha256:process.env.F5_MODEL_SHA256||null,speaker:process.env.F5_REFERENCE_ID||null,configVersion:"1",chunking:"sentence-v1"}}});
   store.recoverInterrupted();
   store.recoverContentJobs();
