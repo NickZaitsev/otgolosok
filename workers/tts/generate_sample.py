@@ -11,9 +11,12 @@ from worker import DEFAULT_SILERO_MODEL_PATH, load_silero, load_text_pipeline, p
 
 
 SAMPLE_TEXT = (
-    "Москва умеет хранить голоса прошлого. В 2024 году старинный дом снова "
-    "открыл двери, и теперь его история звучит по-новому."
+    "Москва умеет хранить голоса прошлого. В 1874 году на берегу Москвы-реки "
+    "работала знаменитая фабрика. Здесь создавали ткани, которые отправляли "
+    "покупателям за тысячи километров. Сегодня старинные здания напоминают, "
+    "как промышленная история города стала частью его культурной памяти."
 )
+SAMPLE_SPEAKERS = ("aidar", "baya", "kseniya", "xenia", "eugene")
 
 
 def loudnorm_measure(path: Path) -> dict[str, str]:
@@ -38,6 +41,7 @@ def main() -> None:
     parser.add_argument("--poi", type=int, default=0)
     parser.add_argument("--paragraph", type=int, default=0)
     parser.add_argument("--loudnorm", action="store_true")
+    parser.add_argument("--all-speakers", action="store_true")
     args = parser.parse_args()
 
     text = args.text
@@ -50,28 +54,24 @@ def main() -> None:
     model = load_silero(args.model_path, args.device)
     normalizer, accentor = load_text_pipeline(args.device)
     prepared = prepare_silero_text(text, normalizer, accentor)
-    synthesis_output = args.output.with_name(f"{args.output.stem}.raw.wav") if args.loudnorm else args.output
-    synthesize_silero(
-        prepared,
-        synthesis_output,
-        args.model_path,
-        args.speaker,
-        args.device,
-        model=model,
-    )
-    if args.loudnorm:
-        measured = loudnorm_measure(synthesis_output)
-        subprocess.run([
-            "ffmpeg", "-v", "error", "-y", "-i", str(synthesis_output),
-            "-af", (
-                "loudnorm=I=-16:TP=-1.5:LRA=11:linear=true:"
-                f"measured_I={measured['input_i']}:measured_TP={measured['input_tp']}:"
-                f"measured_LRA={measured['input_lra']}:measured_thresh={measured['input_thresh']}:"
-                f"offset={measured['target_offset']}"
-            ), "-ar", "48000", str(args.output),
-        ], check=True)
-        synthesis_output.unlink()
-    print(args.output.resolve())
+    speakers = SAMPLE_SPEAKERS if args.all_speakers else (args.speaker,)
+    for speaker in speakers:
+        output = args.output.with_name(f"{args.output.stem}-{speaker}{args.output.suffix}") if args.all_speakers else args.output
+        synthesis_output = output.with_name(f"{output.stem}.raw.wav") if args.loudnorm else output
+        synthesize_silero(prepared,synthesis_output,args.model_path,speaker,args.device,model=model)
+        if args.loudnorm:
+            measured = loudnorm_measure(synthesis_output)
+            subprocess.run([
+                "ffmpeg", "-v", "error", "-y", "-i", str(synthesis_output),
+                "-af", (
+                    "loudnorm=I=-16:TP=-1.5:LRA=11:linear=true:"
+                    f"measured_I={measured['input_i']}:measured_TP={measured['input_tp']}:"
+                    f"measured_LRA={measured['input_lra']}:measured_thresh={measured['input_thresh']}:"
+                    f"offset={measured['target_offset']}"
+                ), "-ar", "48000", str(output),
+            ], check=True)
+            synthesis_output.unlink()
+        print(output.resolve())
     print(prepared)
 
 
