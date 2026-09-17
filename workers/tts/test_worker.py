@@ -2,8 +2,10 @@
 import unittest
 import wave
 from pathlib import Path
-from worker import WorkerApiError, chunks, concatenate_wav, upload_with_recovery, validate_claim_profile, synthesize_silero, silero_compatible
+from worker import DEFAULT_SILERO_SPEAKER, WorkerApiError, chunks, concatenate_wav, prepare_silero_text, upload_with_recovery, validate_claim_profile, synthesize_silero, silero_compatible
 class WorkerTest(unittest.TestCase):
+    def test_baya_is_default_silero_speaker(self):
+        self.assertEqual(DEFAULT_SILERO_SPEAKER,'baya')
     def test_chunks_preserve_text_and_bound_size(self):
         text='Первое предложение. '+'очень '*180+'длинное. Конец!';result=chunks(text,100)
         self.assertTrue(all(len(item)<=100 for item in result));self.assertEqual(' '.join(result).split(),text.split())
@@ -32,6 +34,17 @@ class WorkerTest(unittest.TestCase):
             self.assertGreater(len(heartbeat.values),1);self.assertTrue(all(stage=='synthesis' for stage,_ in heartbeat.values))
     def test_silero_compatibility_replaces_unsupported_typography(self):
         self.assertEqual(silero_compatible('1535–1538 — «слухи»'),'1535-1538 - "слухи"')
+    def test_prepare_silero_text_normalizes_before_adding_stress(self):
+        calls=[]
+        class Normalizer:
+            def normalize(self,text):calls.append(('normalize',text));return 'Двадцать пять рублей — «итог».'
+        def accentor(text):calls.append(('stress',text));return 'Дв+адцать пять рубл+ей — «ит+ог».'
+        self.assertEqual(prepare_silero_text('25 руб.',Normalizer(),accentor),'Дв+адцать пять рубл+ей - "ит+ог".')
+        self.assertEqual(calls,[('normalize','25 руб.'),('stress','Двадцать пять рублей — «итог».')])
+    def test_prepare_silero_text_rejects_empty_stage_output(self):
+        class EmptyNormalizer:
+            def normalize(self,_text):return ''
+        with self.assertRaises(RuntimeError):prepare_silero_text('текст',EmptyNormalizer(),lambda text:text)
     def test_invalid_upload_discards_completed_spool_without_resynthesis(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);output=root/'ready.wav';output.write_bytes(b'wav');manifest=root/'job.json';manifest.write_text('{}')
