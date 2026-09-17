@@ -22,6 +22,11 @@ export function createWalkResearchStore({ db, now, transaction, checkCapacity })
       const job = byKey(walkResearchKey(request));
       return job?.kind === 'walk_research' && db.prepare('SELECT 1 FROM walk_research_grants WHERE token_hash = ? AND job_id = ?').get(tokenHash, job.id) ? job : null;
     },
+    revokeWalkResearchAccess(jobIds) {
+      if(!Array.isArray(jobIds)||!jobIds.length)return 0;
+      let changed=0;
+      for(const id of jobIds){const job=get(id);if(!job||job.kind!=="walk_research")continue;db.prepare("DELETE FROM walk_research_grants WHERE job_id=?").run(id);if(!["ready","failed","insufficient_evidence"].includes(job.stage)){const next={...job,stage:"failed",revision:job.revision+1,updatedAt:new Date(now()).toISOString(),error:{code:"ACCOUNT_DELETED"},data:{phase:"cancelled",candidates:null,route:null,stories:[]}};db.prepare("UPDATE jobs SET stage=?,record_json=? WHERE id=?").run(next.stage,JSON.stringify(next),id);}changed++;}return changed;
+    },
     createWalkResearch(input, { allowCreate = true } = {}) {
       const request = validateWalkResearch(input);
       const tokenHash = sha256(validateRecoveryToken(input.recoveryToken));

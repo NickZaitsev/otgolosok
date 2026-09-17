@@ -67,6 +67,12 @@ function run(command, args, { input, capture = false } = {}) {
   return capture ? result.stdout : String(result.stdout ?? "");
 }
 
+function copyDirectoryContents(source, target) {
+  if (!existsSync(source)) return;
+  mkdirSync(target, { recursive: true });
+  for (const name of readdirSync(source)) cpSync(join(source, name), join(target, name), { recursive: true });
+}
+
 const ssh = (command, options) => run("ssh", ["-o", "BatchMode=yes", VPS, command], options);
 
 function openDatabase(file) {
@@ -84,20 +90,23 @@ function describe(file) {
   const stages = new Map();
   for (const { stage } of jobs) stages.set(stage, (stages.get(stage) ?? 0) + 1);
   const chapters = tables.has("walk_chapters") ? db.prepare("SELECT count(*) AS n FROM walk_chapters").get().n : null;
+  const placeAudio = tables.has("place_texts") ? db.prepare("SELECT audio_json FROM place_texts WHERE audio_json IS NOT NULL").all() : [];
   db.close();
-  return { integrity, jobs, stages, chapters, bytes: statSync(file).size };
+  return { integrity, jobs, stages, chapters, placeAudio, bytes: statSync(file).size };
 }
 
 function report(file, dataDir) {
-  const { integrity, jobs, stages, chapters, bytes } = describe(file);
+  const { integrity, jobs, stages, chapters, placeAudio, bytes } = describe(file);
   const audio = jobs.flatMap((row) => {
     const record = JSON.parse(row.record_json);
     return row.stage === "ready" && record.data?.audio ? [record.data.audio.url.split("/").pop()] : [];
   });
-  const missing = dataDir ? audio.filter((name) => !existsSync(join(dataDir, "audio", name))) : [];
+  const catalogAudio=placeAudio.map(row=>JSON.parse(row.audio_json)?.url?.split("/").pop()).filter(Boolean);
+  const allAudio=[...new Set([...audio,...catalogAudio])];
+  const missing = dataDir ? allAudio.filter((name) => !existsSync(join(dataDir, "audio", name))) : [];
   process.stdout.write(`  целостность: ${integrity}, ${(bytes / 1024).toFixed(0)} КБ\n`);
   process.stdout.write(`  заданий: ${jobs.length}${jobs.length ? ` (${[...stages].map(([stage, count]) => `${stage}=${count}`).join(", ")})` : ""}\n`);
-  process.stdout.write(`  глав прогулки: ${chapters ?? "таблицы ещё нет"}, готовых историй с озвучкой: ${audio.length}\n`);
+  process.stdout.write(`  глав прогулки: ${chapters ?? "таблицы ещё нет"}, аудио адресов: ${audio.length}, аудио OSM: ${catalogAudio.length}\n`);
   if (dataDir) {
     process.stdout.write(missing.length
       ? `  ВНИМАНИЕ: не хватает записей: ${missing.join(", ")}\n`
@@ -150,15 +159,15 @@ function importDump() {
   for (const name of JOURNAL) {
     if (existsSync(join(DATA_DIR, name))) cpSync(join(DATA_DIR, name), join(backup, name));
   }
+  if(existsSync(join(DATA_DIR,"audio")))cpSync(join(DATA_DIR,"audio"),join(backup,"audio"),{recursive:true});
   process.stdout.write(`Прежняя база сохранена: ${backup}\n`);
 
   // The journal belongs to the database it was written for. Leaving it next to a
   // different jobs.sqlite is what turns a restore into a corrupt database.
   for (const name of JOURNAL) rmSync(join(DATA_DIR, name), { force: true });
   cpSync(source, join(DATA_DIR, "jobs.sqlite"));
-  if (existsSync(join(DUMP_DIR, "audio"))) {
-    run("rsync", ["-a", `${join(DUMP_DIR, "audio")}/`, `${join(DATA_DIR, "audio")}/`]);
-  }
+  rmSync(join(DATA_DIR, "audio"), { recursive: true, force: true });
+  copyDirectoryContents(join(DUMP_DIR, "audio"), join(DATA_DIR, "audio"));
 
   process.stdout.write(`Импортировано в ${DATA_DIR}\n`);
   report(join(DATA_DIR, "jobs.sqlite"), DATA_DIR);
@@ -179,10 +188,12 @@ function restore() {
   }
   const backup = join(DATA_DIR, chosen);
   if (!existsSync(join(backup, "jobs.sqlite"))) fail(`В ${backup} нет jobs.sqlite.`);
+  const currentAudio=join(DATA_DIR,"audio"),backupAudio=join(backup,"audio");
   for (const name of JOURNAL) rmSync(join(DATA_DIR, name), { force: true });
   for (const name of JOURNAL) {
     if (existsSync(join(backup, name))) cpSync(join(backup, name), join(DATA_DIR, name));
   }
+  if(existsSync(backupAudio)){rmSync(currentAudio,{recursive:true,force:true});cpSync(backupAudio,currentAudio,{recursive:true});}
   process.stdout.write(`Восстановлено из ${backup}\n`);
   report(join(DATA_DIR, "jobs.sqlite"), DATA_DIR);
   process.stdout.write("Лишние записи в audio/ ничему не мешают и остаются на месте.\n");

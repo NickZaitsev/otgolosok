@@ -3,7 +3,7 @@ import { readdir, readFile, writeFile } from "node:fs/promises";
 
 const output = new URL("../out/", import.meta.url);
 const files = (await readdir(output, { recursive: true })).filter((file) =>
-  ["index.html", "create.html", "icon.svg", "favicon.ico", "manifest.webmanifest"].includes(file) ||
+  ["index.html", "create.html", "login.html", "account.html", "icon.svg", "favicon.ico", "manifest.webmanifest"].includes(file) ||
   /^(?:_next\/static|data|audio)\/.+\.[^/]+$/.test(file),
 ).sort();
 const template = await readFile(new URL("../public/sw.js", import.meta.url), "utf8");
@@ -15,7 +15,7 @@ for (const file of files) {
 
 const manifest = {
   version: hash.digest("hex").slice(0, 16),
-  assets: files.map((file) => file === "index.html" ? "/" : file === "create.html" ? "/create" : `/${file}`),
+  assets: files.map((file) => file === "index.html" ? "/" : ["create.html","login.html","account.html"].includes(file) ? `/${file.slice(0,-5)}` : `/${file}`),
 };
 
 await writeFile(

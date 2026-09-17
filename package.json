@@ -14,10 +14,12 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run && node --test backend/*.test.mjs",
-    "generator:dev": "STATIC_DIR=out node backend/server.mjs"
+    "generator:dev": "STATIC_DIR=out node backend/server.mjs",
+    "auth:set-editor": "node scripts/set-editor.mjs"
   },
   "dependencies": {
     "@softmg/airouter-logs": "file:vendor/softmg-airouter-logs-0.1.0.tgz",
+    "better-auth": "1.7.5",
     "leaflet": "1.9.4",
     "next": "16.3.4",
     "react": "19.2.8",

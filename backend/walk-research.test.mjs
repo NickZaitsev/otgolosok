@@ -195,12 +195,12 @@ test('existing user job is not overwritten; irrelevant address excluded', async 
 
 test('restart recovery requires explicit retry and preserves durable candidate checkpoints', async t => {
   const directory = mkdtempSync(join(tmpdir(), 'walk-research-'));
-  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  t.after(() => { try { store?.close(); } catch {} rmSync(directory, { recursive: true, force: true }); });
   const path = join(directory, 'jobs.sqlite');
   let store = createStore(path, { maxDaily: 6 });
   const created = store.createWalkResearch(input); let job = store.claimNext();
   job = store.update(job.id, { data: { ...job.data, phase: 'research', candidates: [{ ...candidates[0], checked: true, accepted: false, checkpoint: { stage: 'insufficient_evidence', data: {} } }] } }, job.revision);
-  store.close(); store = createStore(path, { maxDaily: 6 }); t.after(() => store.close());
+  store.close(); store = createStore(path, { maxDaily: 6 });
   assert.equal(store.recoverInterrupted(), 1);
   job = store.get(created.id);
   assert.equal(job.error.code, 'INTERRUPTED'); assert.equal(store.claimNext(), null);

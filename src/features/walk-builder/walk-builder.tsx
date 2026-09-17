@@ -2,6 +2,7 @@
 
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ExploreMap } from "../explore/explore-map";
 import { placeFromQuery, rememberMapJob } from "../explore/map-jobs";
 import { jobUrl } from "../generator/offline";
@@ -12,6 +13,7 @@ import "../explore/explore.css";
 import "./walk-builder.css";
 import { request, RejectedRequest, shouldOfferResearch } from "./request";
 import { ResearchPanel } from "./research-panel";
+import { accountApi, getSession } from "../auth/client";
 
 function readJob(value: unknown): GenerationJob {
   if (!value || typeof value !== "object" || !("id" in value) || !("stage" in value) || !isJobId(value.id) || !isStage(value.stage)) throw new Error("Не удалось прочитать состояние истории.");
@@ -19,6 +21,7 @@ function readJob(value: unknown): GenerationJob {
 }
 
 export function WalkBuilder() {
+  const router=useRouter();
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const current = useRef(draft);
   const stored = useRef<string | null>(null);
@@ -38,12 +41,16 @@ export function WalkBuilder() {
   const [researchOffered, setResearchOffered] = useState(false);
   const [pollId, setPollId] = useState<string | null>(null);
   const [recoveryId, setRecoveryId] = useState("");
+  const [accountUser,setAccountUser]=useState<{id:string}|null>(null);
+  const [serverWalk,setServerWalk]=useState<{id:string;revision:number}|null>(null);
   const statusRequest = useRef<{ controller: AbortController; promise: Promise<void> } | null>(null);
 
   useEffect(() => {
     try {
       stored.current = localStorage.getItem(DRAFT_KEY);
-      const restored = parseDraft(stored.current);
+      let restored = parseDraft(stored.current);
+      const walkId=new URLSearchParams(location.search).get("id");
+      void getSession().then(async user=>{setAccountUser(user);if(user&&walkId){try{const data=await accountApi(`/api/me/walks/${encodeURIComponent(walkId)}`);restored=parseDraft(JSON.stringify(data.walk.snapshot));current.current=restored;setDraft(restored);setServerWalk({id:data.walk.id,revision:data.walk.revision});setSelection(restored.stops.length?"manual":"auto");setFocus(restored.start?.location??null);}catch(caught){setError(caught instanceof Error?caught.message:"Не удалось открыть прогулку.");}}}).catch(()=>{});
       current.current = restored; setDraft(restored); writable.current = true;
       setSelection(restored.stops.length ? "manual" : "auto");
       setFocus(restored.start?.location ?? null);
@@ -181,7 +188,7 @@ export function WalkBuilder() {
       }
       // Record the intent only after revalidating every known job, before POST.
       if (!persist({ ...current.current, submitting: nextPlace })) return;
-      const job = readJob(await request("/api/story-jobs", controller.signal, { address: nextPlace.address }));
+      const job = readJob(await request("/api/story-jobs", controller.signal, { address: nextPlace.address, idempotencyKey: crypto.randomUUID() }));
       if (controller.signal.aborted) return;
       const saved = persist({ ...current.current, submitting: null, jobs: rememberStory(current.current.jobs, { place: nextPlace, id: job.id, stage: job.stage }) });
       rememberMapJob(job, nextPlace);
@@ -214,10 +221,11 @@ export function WalkBuilder() {
     const url = URL.createObjectURL(new Blob([JSON.stringify(current.current, null, 2)], { type: "application/json" }));
     const a = document.createElement("a"); a.href = url; a.download = "otgolosok-walk.json"; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+  async function saveToAccount(){if(!accountUser){router.push(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`);return;}setBusy("Сохраняем прогулку…");setError("");try{const payload={title:current.current.title||"Моя прогулка",snapshot:current.current};const data=serverWalk?await accountApi(`/api/me/walks/${serverWalk.id}`,{method:"PATCH",body:JSON.stringify({...payload,revision:serverWalk.revision})}):await accountApi("/api/me/walks",{method:"POST",body:JSON.stringify({...payload,idempotencyKey:`walk-${crypto.randomUUID()}`})});setServerWalk({id:data.walk.id,revision:data.walk.revision});setMessage("Прогулка сохранена в личном кабинете.");if(!new URLSearchParams(location.search).get("id"))history.replaceState(null,"",`/walk?id=${data.walk.id}`);}catch(caught){setError(caught instanceof Error?caught.message:"Не удалось сохранить прогулку.");}finally{setBusy("");}}
   if (!loaded) return <main className="walk-builder"><p role="status">Открываем вашу прогулку…</p></main>;
   const locked = !!busy;
   return <main className="walk-builder">
-    <header><Link href="/" prefetch={false}>отголосок<span>.</span></Link><Link href="/" prefetch={false}>На карту</Link></header>
+    <header><Link href="/" prefetch={false}>отголосок<span>.</span></Link><span><Link href="/account" prefetch={false}>Личный кабинет</Link> · <Link href="/" prefetch={false}>На карту</Link></span></header>
     <h1>Ваша прогулка</h1>
     <p>Выберите начало, соберите маршрут и только потом подготовьте истории. Пока доступны адреса Москвы.</p>
     <Link href="/create?new=1" prefetch={false}>Нужна только история одного дома?</Link>
@@ -246,6 +254,6 @@ export function WalkBuilder() {
     {draft.route ? <section aria-labelledby="walk-review"><h2 id="walk-review">Проверьте маршрут</h2><p className="walk-summary">{(draft.route.distanceM / 1000).toLocaleString("ru", { maximumFractionDigits: 1 })} км · {draft.route.walkingMinutes} мин пешком</p><p>{draft.mode === "loop" ? "Возвращаемся к началу." : `Финиш: ${draft.stops.at(-1)?.address}.`} Прослушивание добавит время к прогулке.</p><p className="walk-warning">Маршрут рассчитан по карте, но не проверен на местности. Проходы могут быть закрыты. Соблюдайте знаки, проверяйте переходы и не заходите на частную территорию.</p><p className="walk-muted">{draft.route.attribution}</p><label className="walk-check"><input type="checkbox" checked={reviewed} disabled={locked || !!candidate} onChange={e => setReviewed(e.target.checked)} /> Я проверил начало, остановки, финиш и линию на карте</label>{draft.researchApplied ? <p>Истории остановок уже готовы. Начало служит точкой отправления; отдельную историю для него не заказываем.</p> : <><p>Истории для начала и каждой остановки, без повторения при возвращении. Готовим по одной: обычно 5–10 минут на дом. Общий лимит сервиса: 2 активные задачи и 6 новых в сутки, включая отдельные истории.</p><button className="walk-primary" disabled={locked || !reviewed || !!candidate || !nextPlace || !!activeJob || !!draft.submitting || !!storageError || draft.jobs.length >= 100} onClick={() => void prepareNext()}>{nextPlace ? "Подтвердить и подготовить следующую историю" : "Для всех точек уже есть истории"}</button>{nextPlace ? <p>Следующая: {nextPlace.address}</p> : null}</>}</section> : null}
     {draft.submitting ? <section className="walk-warning"><h2>Проверьте последнюю отправку</h2><p>Адрес: {draft.submitting.address}. Ответ мог потеряться, даже если сервер принял задачу. Новая отправка заблокирована, чтобы не создать дубликат.</p><label className="walk-field">ID созданной истории<input value={recoveryId} onChange={e => setRecoveryId(e.target.value.trim())} placeholder="ID из ссылки /create?job=…" /></label><button disabled={locked || !isJobId(recoveryId)} onClick={() => void recoverJob()}>Привязать найденную историю</button><button disabled={locked || !!storageError} onClick={() => { if (window.confirm("Сбрасывайте только если убедились, что сервер не создал задачу. Иначе повторная отправка создаст дубликат и потратит лимит. Продолжить?")) persist({ ...current.current, submitting: null }); }}>Задача точно не создана: разрешить новую отправку</button></section> : null}
     {draft.jobs.length ? <section aria-labelledby="walk-stories"><h2 id="walk-stories">Истории этой прогулки</h2><p>Ссылки сохраняются и после изменения маршрута. Ошибки и истории без подтверждений не перезапускаем автоматически.</p><ol className="walk-stops">{draft.jobs.map(j => <li key={j.id}><strong>{j.place.address}</strong><p role="status">{stageLabels[j.stage]}{!places.some(p => storyAddressKey(p.address) === storyAddressKey(j.place.address)) ? " · вне текущего маршрута" : ""}</p><Link href={`/create?job=${j.id}`} target="_blank" rel="noopener" prefetch={false}>Открыть историю в новой вкладке</Link><p className="walk-muted">Прогулка останется в этой вкладке. После прослушивания вернитесь сюда.</p><button disabled={!!pollId || locked || !!storageError} onClick={() => { setError(""); setPollId(j.id); }}>Обновить статус</button></li>)}</ol>{pollId ? <button onClick={() => setPollId(null)}>Приостановить проверку статуса</button> : null}</section> : null}
-    <footer><Link href="/" prefetch={false}>На карту историй</Link><Link href="/walk?resume=1" prefetch={false}>Моя прогулка</Link><button onClick={download}>Скачать черновик</button></footer>
+    <footer><Link href="/" prefetch={false}>На карту историй</Link><Link href="/walk?resume=1" prefetch={false}>Моя прогулка</Link><button disabled={locked} onClick={()=>void saveToAccount()}>{serverWalk?"Обновить в кабинете":"Сохранить в кабинете"}</button><button onClick={download}>Скачать черновик</button></footer>
   </main>;
 }
