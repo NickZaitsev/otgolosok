@@ -2,6 +2,9 @@
 import unittest
 import wave
 from pathlib import Path
+from unittest.mock import patch
+from types import SimpleNamespace
+from generate_sample import loudnorm_measure
 from worker import DEFAULT_SILERO_MODEL_PATH, DEFAULT_SILERO_SPEAKER, WorkerApiError, chunks, concatenate_wav, prepare_silero_text, upload_with_recovery, validate_claim_profile, synthesize_silero, silero_compatible
 class WorkerTest(unittest.TestCase):
     def test_baya_is_default_silero_speaker(self):
@@ -46,6 +49,10 @@ class WorkerTest(unittest.TestCase):
         class EmptyNormalizer:
             def normalize(self,_text):return ''
         with self.assertRaises(RuntimeError):prepare_silero_text('текст',EmptyNormalizer(),lambda text:text)
+    def test_loudnorm_measure_reads_ffmpeg_json(self):
+        report='''noise\n{"input_i":"-19.0","input_tp":"-2.0","input_lra":"2.0","input_thresh":"-29.0","target_offset":"0.1"}\nnoise'''
+        with patch('generate_sample.subprocess.run',return_value=SimpleNamespace(stderr=report)):
+            self.assertEqual(loudnorm_measure(Path('input.wav'))['input_i'],'-19.0')
     def test_invalid_upload_discards_completed_spool_without_resynthesis(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);output=root/'ready.wav';output.write_bytes(b'wav');manifest=root/'job.json';manifest.write_text('{}')
