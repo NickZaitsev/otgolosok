@@ -30,6 +30,14 @@ Generate a standalone WAV sample with the same text pipeline and the default
 python workers/tts/generate_sample.py
 ```
 
+Use a real paragraph from a bundled map route and normalize it to `-16 LUFS`
+with FFmpeg:
+
+```bash
+python workers/tts/generate_sample.py --route public/data/routes/paveletskaya.json \
+  --paragraph 0 --loudnorm --output artifacts/tts-v5_5-baya-map-loudnorm.wav
+```
+
 For every Silero job, the worker first applies `ru-normalizr` in TTS mode and then
 Silero Stress 1.5. Both processors are loaded once at startup and reused across
 jobs. This expands numbers and abbreviations and adds stress marks plus homograph
