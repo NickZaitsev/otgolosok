@@ -1,4 +1,4 @@
-const PREPARATION_VERSION="ru-normalizr-0.3.0_silero-stress-1.5_typography-v1";
+const PREPARATION_VERSION="html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1";
 const SILERO_SHA="50081637b602126ee06cb3bc8a744d25651d2da149ee8864b9a379bfdd934437";
 
 export function loadLocalTtsConfig(env=process.env) {

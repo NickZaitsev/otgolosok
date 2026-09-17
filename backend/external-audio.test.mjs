@@ -94,7 +94,7 @@ test("external audio stores the immutable normalized script and profile contract
 });
 
 test("raw profile bypasses server normalization and requires a capable worker",async t=>{
-  const version="ru-normalizr-0.3.0_silero-stress-1.5_typography-v1";
+  const version="html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1";
   const store=createStore(":memory:",{workerLeaseSecret:"test",normalizeExternalText:async()=>{throw new Error("must not normalize");},
     externalTtsProfiles:{"f5-ru-v1":{engine:"f5",modelSha256:"a",speaker:"voice",configSha256:"b",textPreparation:{input:"raw",version}}}});t.after(()=>store.close());
   const source=store.createOrGet({key:"raw-source",address:story.address}),ready=store.update(source.id,{stage:"failed",data:{story}},source.revision);
