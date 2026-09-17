@@ -4,7 +4,7 @@
 import argparse
 from pathlib import Path
 
-from worker import load_silero, load_text_pipeline, prepare_silero_text, synthesize_silero
+from worker import DEFAULT_SILERO_MODEL_PATH, load_silero, load_text_pipeline, prepare_silero_text, synthesize_silero
 
 
 SAMPLE_TEXT = (
@@ -15,8 +15,8 @@ SAMPLE_TEXT = (
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model-path", type=Path, required=True)
-    parser.add_argument("--output", type=Path, default=Path("artifacts/tts-baya-sample.wav"))
+    parser.add_argument("--model-path", type=Path, default=DEFAULT_SILERO_MODEL_PATH)
+    parser.add_argument("--output", type=Path, default=Path("artifacts/tts-v5_5-baya-sample.wav"))
     parser.add_argument("--speaker", default="baya")
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--text", default=SAMPLE_TEXT)
