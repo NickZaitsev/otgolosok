@@ -515,17 +515,20 @@ export function createStore(
         || typeof profileId !== "string" || !/^[a-z0-9][a-z0-9._-]{0,63}$/.test(profileId)
         || !hasValidStoryText(story)) throw codedError("BAD_REQUEST");
       const script = story.paragraphs.map(paragraph => paragraph.text).join("\n\n");
-      const spokenText = await normalizeExternalText(script,{signal});
-      const spokenTextHash = sha256(spokenText);
-      const normalizerVersion=normalizeExternalText.version??"custom";
       const configured=externalTtsProfiles[profileId]??{};
+      const rawContract=configured.textPreparation?.input==="raw";
+      const spokenText = rawContract?script:await normalizeExternalText(script,{signal});
+      const spokenTextHash = sha256(spokenText);
+      const normalizerVersion=rawContract?null:(normalizeExternalText.version??"custom");
       const profile={id:profileId,engine:configured.engine??(profileId.startsWith("f5")?"f5":"silero"),language:configured.language??"ru",
         modelSha256:configured.modelSha256??null,speaker:configured.speaker??null,configVersion:configured.configVersion??"1",
+        configSha256:configured.configSha256??null,referenceSha256:configured.referenceSha256??null,textPreparation:configured.textPreparation??null,
         chunking:configured.chunking??"sentence-v1",maximumBytes:64*1024*1024,maximumDurationSec:600,
         minimumPublicationDurationSec:configured.minimumPublicationDurationSec??30,
         maximumPublicationDurationSec:configured.maximumPublicationDurationSec??150};
-      const inputKey = sha256(JSON.stringify({ sourceJobId, sourceRevision, spokenTextHash, profileId, normalizer:normalizerVersion }));
+      const inputKey = sha256(JSON.stringify({version:rawContract?"external-audio-v2":"external-audio-v1",sourceJobId,sourceRevision,spokenTextHash,profileId,normalizer:normalizerVersion,profile}));
       return transaction(() => {
+        if(sourceJobId.startsWith("place-text:"))db.prepare("UPDATE place_texts SET audio_target_profile=? WHERE id=?").run(profileId,sourceJobId.slice(11));
         const existing = db.prepare("SELECT * FROM external_audio_jobs WHERE input_key = ?").get(inputKey);
         if (existing) return publicExternal(existing);
         const timestamp = isoNow(now), id = randomUUID();
@@ -579,11 +582,13 @@ export function createStore(
         .map(row=>({...publicExternal(row),sourceJobId:row.source_job_id,placeId:row.place_id??null,placeName:row.place_name??null,createdAt:row.created_at}));
     },
 
-    claimExternalAudio({ workerId, requestId, profileIds, leaseMs = 300000 }) {
+    claimExternalAudio({ workerId, requestId, profileIds, textPreparationVersions=[], leaseMs = 300000 }) {
       if (typeof workerId !== "string" || workerId.length < 1 || workerId.length > 100
         || typeof requestId !== "string" || !/^[a-zA-Z0-9._-]{8,100}$/.test(requestId)
         || !Array.isArray(profileIds) || !profileIds.length || profileIds.length > 20
-        || profileIds.some(id => typeof id !== "string" || !/^[a-z0-9][a-z0-9._-]{0,63}$/.test(id))) throw codedError("BAD_REQUEST");
+        || profileIds.some(id => typeof id !== "string" || !/^[a-z0-9][a-z0-9._-]{0,63}$/.test(id))
+        || !Array.isArray(textPreparationVersions)||textPreparationVersions.length>10
+        || textPreparationVersions.some(value=>typeof value!=="string"||value.length>100)) throw codedError("BAD_REQUEST");
       return transaction(() => {
         const timestamp = isoNow(now);
         const repeated = db.prepare("SELECT * FROM external_audio_jobs WHERE worker_id = ? AND claim_request_id = ? ORDER BY updated_at DESC LIMIT 1").get(workerId,requestId);
@@ -599,9 +604,10 @@ export function createStore(
           error_json = ?, updated_at = ? WHERE state = 'leased' AND lease_expires_at <= ?`)
           .run(timestamp,encode({code:"LEASE_EXPIRED",message:"Worker lease expired."}),timestamp,timestamp);
         const placeholders=profileIds.map(()=>"?").join(",");
-        const row=db.prepare(`SELECT * FROM external_audio_jobs WHERE state IN ('queued','retry_wait')
+        const candidates=db.prepare(`SELECT * FROM external_audio_jobs WHERE state IN ('queued','retry_wait')
           AND next_attempt_at <= ? AND attempts < max_attempts AND profile_id IN (${placeholders})
-          ORDER BY priority DESC,created_at,id LIMIT 1`).get(timestamp,...profileIds);
+          ORDER BY priority DESC,created_at,id`).all(timestamp,...profileIds);
+        const row=candidates.find(candidate=>{const preparation=JSON.parse(candidate.payload_json).profile?.textPreparation;return !preparation||textPreparationVersions.includes(preparation.version);});
         if (!row) return null;
         const generation=Number(row.lease_generation)+1, expiresAt=isoNow(()=>now()+leaseMs);
         const token=leaseToken(row.id,generation,workerId);
@@ -649,7 +655,7 @@ export function createStore(
       db.prepare(`UPDATE external_audio_jobs SET state='queued',attempts=0,next_attempt_at=?,lease_token_hash=NULL,lease_expires_at=NULL,
         worker_id=NULL,claim_request_id=NULL,error_json=NULL,updated_at=? WHERE id=?`).run(timestamp,timestamp,id);return publicExternal(externalRow(id));});},
 
-    getExternalAudio(id) { return publicExternal(externalRow(id)); },
+    getExternalAudio(id) {const row=externalRow(id);if(!row)return null;const payload=JSON.parse(row.payload_json);return {...publicExternal(row),profile:payload.profile};},
     validateExternalAudioLease(id,{workerId,generation,leaseToken:token}) {requireLease(externalRow(id),workerId,generation,token);return true;},
 
     acceptExternalAudio(id,{workerId,generation,leaseToken:token,uploadId,uploadSha256,artifact}) {
@@ -676,7 +682,7 @@ export function createStore(
           .run(uploadId,uploadSha256,encode(receipt),timestamp,id);
         db.prepare("UPDATE job_attempts SET state='succeeded',finished_at=? WHERE job_id=? AND generation=?").run(timestamp,id,generation);
         db.prepare("INSERT OR IGNORE INTO audio_artifacts VALUES (?,?,?,?)").run(artifact.sha256,id,encode(artifact),timestamp);
-        if(textSource)db.prepare("UPDATE place_texts SET audio_json=? WHERE id=?").run(encode(artifact),textSource.id);
+        if(textSource){if(!textSource.audio_target_profile||textSource.audio_target_profile===row.profile_id)db.prepare("UPDATE place_texts SET audio_json=? WHERE id=?").run(encode(artifact),textSource.id);}
         else save({...source,stage:"ready",data:{...source.data,audio:artifact,revoice:null},error:null,revision:source.revision+1,updatedAt:timestamp});
         return publicExternal(externalRow(id));
       });

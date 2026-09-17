@@ -93,6 +93,17 @@ test("external audio stores the immutable normalized script and profile contract
   assert.match(claim.spokenText,/^НОРМАЛИЗОВАНО:/);assert.equal(claim.normalizerVersion,"test-normalizer");assert.equal(claim.profile.chunking,"sentence-v1");assert.equal(claim.profile.maximumBytes,64*1024*1024);assert.equal(claim.profile.minimumPublicationDurationSec,30);
 });
 
+test("raw profile bypasses server normalization and requires a capable worker",async t=>{
+  const version="ru-normalizr-0.3.0_silero-stress-1.5_typography-v1";
+  const store=createStore(":memory:",{workerLeaseSecret:"test",normalizeExternalText:async()=>{throw new Error("must not normalize");},
+    externalTtsProfiles:{"f5-ru-v1":{engine:"f5",modelSha256:"a",speaker:"voice",configSha256:"b",textPreparation:{input:"raw",version}}}});t.after(()=>store.close());
+  const source=store.createOrGet({key:"raw-source",address:story.address}),ready=store.update(source.id,{stage:"failed",data:{story}},source.revision);
+  await store.enqueueExternalAudio({sourceJobId:ready.id,sourceRevision:ready.revision,story,profileId:"f5-ru-v1"});
+  assert.equal(store.claimExternalAudio({workerId:"old",requestId:"raw-old-0001",profileIds:["f5-ru-v1"]}),null);
+  const claim=store.claimExternalAudio({workerId:"new",requestId:"raw-new-0001",profileIds:["f5-ru-v1"],textPreparationVersions:[version]});
+  assert.equal(claim.spokenText,story.paragraphs.map(value=>value.text).join("\n\n"));assert.equal(claim.profile.configSha256,"b");
+});
+
 test("editing approved place text invalidates a leased older audio version",async t=>{
   const f=await fixture(t,{enqueueBase:false});f.tick();f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:1",osmType:"node",osmId:1,name:"Дом",location:{lat:55.7,lon:37.6},tags:{historic:"yes"}}]});
   const batch=f.store.createBatch({requestKey:"place-audio",limit:1,mode:"text-and-audio",ttsProfile:"silero-ru-v1"});const content=f.store.claimContentJob();f.store.completeContentJob(content.id,{story,evidence:{}});const approved=f.store.approvePlaceText("osm:node:1",story);
@@ -113,6 +124,16 @@ test("a new approved place text keeps old audio until its replacement succeeds",
   assert.deepEqual(f.store.getPublishedPlace("osm:node:9").text.audio,artifact);
   const nextStory={...story,title:"Новая версия",paragraphs:story.paragraphs.map((paragraph,index)=>index?paragraph:{...paragraph,text:`${paragraph.text} Дополнение.`})};
   f.tick();const next=f.store.approvePlaceText("osm:node:9",nextStory);assert.notEqual(next.text.id,old.text.id);assert.deepEqual(f.store.getPublishedPlace("osm:node:9").text.audio,artifact);
+});
+
+test("only the latest requested profile publishes when engines finish out of order",async t=>{
+  const f=await fixture(t,{enqueueBase:false});f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:12",osmType:"node",osmId:12,name:"Дом",location:{lat:55.7,lon:37.6},tags:{historic:"yes"}}]});
+  f.store.createBatch({requestKey:"target-profile",limit:1});const content=f.store.claimContentJob();f.store.completeContentJob(content.id,{story,evidence:{}});const approved=f.store.approvePlaceText("osm:node:12",story);
+  const sourceJobId=`place-text:${approved.text.id}`;await f.store.enqueueExternalAudio({sourceJobId,sourceRevision:0,story,profileId:"silero-ru-v1"});await f.store.enqueueExternalAudio({sourceJobId,sourceRevision:0,story,profileId:"f5-ru-v1"});
+  const silero=f.store.claimExternalAudio({workerId:"silero",requestId:"target-silero-1",profileIds:["silero-ru-v1"]});const f5=f.store.claimExternalAudio({workerId:"f5",requestId:"target-f5-0001",profileIds:["f5-ru-v1"]});
+  const artifact=(engine,char)=>({url:`/api/story-audio/${char.repeat(64)}.mp3`,sha256:char.repeat(64),bytes:100,durationSec:60,model:engine,voice:"voice",provider:"external",synthetic:true});
+  f.store.acceptExternalAudio(silero.id,{workerId:"silero",generation:silero.leaseGeneration,leaseToken:silero.leaseToken,uploadId:"silero-upload",uploadSha256:"c".repeat(64),artifact:artifact("silero","c")});assert.equal(f.store.getPlace("osm:node:12").text.audio,null);
+  f.store.acceptExternalAudio(f5.id,{workerId:"f5",generation:f5.leaseGeneration,leaseToken:f5.leaseToken,uploadId:"f5-upload-01",uploadSha256:"d".repeat(64),artifact:artifact("f5","d")});assert.equal(f.store.getPlace("osm:node:12").text.audio.model,"f5");
 });
 
 test("publication duration is enforced by the frozen TTS profile",async t=>{

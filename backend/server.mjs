@@ -19,6 +19,7 @@ import { startContentWorker } from "./content-pipeline.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf } from "./auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
 import { normalizeForSpeech } from "./text-normalizer.mjs";
+import { loadLocalTtsConfig } from "./local-tts.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 function json(res,status,value) {
@@ -54,7 +55,7 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,sendAccountCode=async()=>{},auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
+export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,sendAccountCode=async()=>{},auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
@@ -101,11 +102,11 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(!workerId||workerId.length>100)throw failure("BAD_REQUEST");
         if(req.method==="POST"&&url.pathname==="/api/worker/v1/claim") {
           const input=await body(req,4096);
-          if(Object.keys(input).some(key=>!["requestId","profileIds","version"].includes(key)))throw failure("BAD_REQUEST");
+          if(Object.keys(input).some(key=>!["requestId","profileIds","textPreparationVersions","version"].includes(key)))throw failure("BAD_REQUEST");
           const profileIds=credential?input.profileIds.filter(profile=>credential.profiles.includes(profile)):input.profileIds;
           if(!profileIds.length){json(res,403,{error:{code:"FORBIDDEN",message:"Worker profile not permitted."}});return;}
           store.recordWorkerHeartbeat({credentialId:credential?.id??"static",workerName:workerId,version:input.version,profileIds});
-          const job=store.claimExternalAudio({workerId:credential?`${credential.id}:${workerId}`:workerId,requestId:input.requestId,profileIds});
+          const job=store.claimExternalAudio({workerId:credential?`${credential.id}:${workerId}`:workerId,requestId:input.requestId,profileIds,textPreparationVersions:input.textPreparationVersions??[]});
           if(!job){res.writeHead(204,{"Cache-Control":"no-store","Retry-After":"10"});res.end();return;}
           json(res,200,{job});return;
         }
@@ -131,9 +132,16 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const accepted=store.getExternalAudio(workerMatch[1]);
           if(accepted?.receipt?.uploadId===uploadId){if(accepted.receipt.uploadSha256!==expected)throw failure("CONFLICT");json(res,200,{job:accepted});return;}
           store.validateExternalAudioLease(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken});
+          const expectedProfile=store.getExternalAudio(workerMatch[1])?.profile;
+          const preparationVersion=String(req.headers["x-tts-preparation-version"]??""),configSha256=String(req.headers["x-tts-config-sha256"]??"");
+          if(expectedProfile?.textPreparation?.version&&preparationVersion!==expectedProfile.textPreparation.version)throw failure("BAD_REQUEST");
+          if(expectedProfile?.configSha256&&configSha256!==expectedProfile.configSha256)throw failure("BAD_REQUEST");
+          if(expectedProfile?.modelSha256&&String(req.headers["x-tts-model-sha256"]??"")!==expectedProfile.modelSha256)throw failure("BAD_REQUEST");
+          if(expectedProfile?.speaker&&String(req.headers["x-tts-voice"]??"")!==expectedProfile.speaker)throw failure("BAD_REQUEST");
           const uploaded=await audioIngest(req,audioDirectory);
           if(uploaded.uploadSha256!==expected){await rm(join(audioDirectory,`${uploaded.artifact.sha256}.mp3`),{force:true});throw failure("AUDIO_CHECKSUM");}
-          const artifact={...uploaded.artifact,model:String(req.headers["x-tts-model"]??"external").slice(0,100),voice:String(req.headers["x-tts-voice"]??"external").slice(0,64)};
+          const artifact={...uploaded.artifact,model:String(req.headers["x-tts-model"]??"external").slice(0,100),voice:String(req.headers["x-tts-voice"]??"external").slice(0,64),
+            ...(preparationVersion?{preparationVersion,preparedTextSha256:String(req.headers["x-tts-prepared-text-sha256"]??"")||null}:{}),...(configSha256?{configSha256}:{})};
           try {json(res,200,{job:store.acceptExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,uploadId,uploadSha256:expected,artifact})});}
           catch(error){if(!store.getExternalAudio(workerMatch[1])?.receipt)await rm(join(audioDirectory,`${artifact.sha256}.mp3`),{force:true});throw error;}
           return;
@@ -214,7 +222,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const revoked=store.revokeWorkerCredential(revokeWorker[1]);json(res,revoked?200:404,revoked?{worker:revoked}:{error:{code:"NOT_FOUND",message:"Worker not found."}});return;}
         if(req.method==="POST"&&url.pathname==="/api/story-admin/content/batches") {
           if(!origin||req.headers.origin!==origin) {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
-          const batch=store.createBatch(await body(req,65536));json(res,200,{batch});contentWorker?.wake();return;
+          const input=await body(req,65536);if(input.mode==="text-and-audio"&&!input.ttsProfile)input.ttsProfile=localTts.defaultProfile;
+          const batch=store.createBatch(input);json(res,200,{batch});contentWorker?.wake();return;
         }
         const contentBatch=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)(?:\/(pause|resume|cancel))?$/.exec(url.pathname);
         if(contentBatch&&req.method==="GET"&&!contentBatch[2]){const batch=store.getBatch(contentBatch[1]);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});return;}
@@ -237,7 +246,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(revoiceContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const input=await body(req,4096),place=store.getPlace(revoiceContent[1]);
           if(!place?.text||place.text.verification!=="editorial"){json(res,404,{error:{code:"NOT_FOUND",message:"Approved place text not found."}});return;}
-          const audioJob=await store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId:input.profileId??"silero-ru-v1"});
+          const audioJob=await store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId:input.profileId??localTts.defaultProfile});
           json(res,200,{place,audioJob});return;}
         const retryAudio=/^\/api\/story-admin\/content\/audio\/(${UUID})\/retry$/.exec(url.pathname);
         if(retryAudio&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
@@ -320,7 +329,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
             } else if(match[2]==="external-audio") {
               const source=store.get(match[1]);
               if(!source||source.revision!==input.revision){job=null;}
-              else {const audioJob=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story:source.data?.story,profileId:input.profileId??"silero-ru-v1"});json(res,200,{job:adminDetail(source,Boolean(provider||yandexTts),safeError,ttsProviders,Boolean(provider)),audioJob});return;}
+              else {const audioJob=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story:source.data?.story,profileId:input.profileId??localTts.defaultProfile});json(res,200,{job:adminDetail(source,Boolean(provider||yandexTts),safeError,ttsProviders,Boolean(provider)),audioJob});return;}
             } else {
               const selected=input.ttsProvider===undefined?"openai":input.ttsProvider;
               if(!["openai","yandex"].includes(selected))throw failure("BAD_REQUEST");
@@ -433,9 +442,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const directory=resolve(process.env.DATA_DIR??"backend/data");
   if(process.env.WORKER_API_TOKEN&&!process.env.WORKER_LEASE_SECRET)throw new Error("WORKER_LEASE_SECRET is required when WORKER_API_TOKEN is configured");
-  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:process.env.WORKER_LEASE_SECRET,normalizeExternalText:normalizeForSpeech,externalTtsProfiles:{
-    "silero-ru-v1":{engine:"silero",language:"ru",modelSha256:process.env.SILERO_MODEL_SHA256||"50081637b602126ee06cb3bc8a744d25651d2da149ee8864b9a379bfdd934437",speaker:process.env.SILERO_SPEAKER||"baya",configVersion:"3",chunking:"sentence-v1"},
-    "f5-ru-v1":{engine:"f5",language:"ru",modelSha256:process.env.F5_MODEL_SHA256||null,speaker:process.env.F5_REFERENCE_ID||null,configVersion:"1",chunking:"sentence-v1"}}});
+  const localTts=loadLocalTtsConfig(process.env);
+  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:process.env.WORKER_LEASE_SECRET,normalizeExternalText:normalizeForSpeech,externalTtsProfiles:localTts.profiles});
   store.recoverInterrupted();
   store.recoverContentJobs();
   const provider=process.env.OPENAI_API_KEY&&process.env.OPENAI_BASE_URL?createProvider({apiKey:process.env.OPENAI_API_KEY,baseUrl:process.env.OPENAI_BASE_URL,model:process.env.STORY_MODEL,writerModel:process.env.WRITER_MODEL}):null;
@@ -450,7 +458,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   };
   const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production",sendOTP:sendAccountCode});
   const accountStore=createAccountStore(authRuntime.database,Date.now,process.env.BETTER_AUTH_SECRET);
-  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,sendAccountCode,closeAuth:authRuntime.close});
+  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,sendAccountCode,closeAuth:authRuntime.close});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});
