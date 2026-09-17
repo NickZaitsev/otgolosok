@@ -6,6 +6,8 @@ from pathlib import Path
 class WorkerApiError(RuntimeError):
     def __init__(self,status,detail):super().__init__(f'worker API {status}: {detail}');self.status=status
 
+DEFAULT_SILERO_SPEAKER='baya'
+
 class Api:
     def __init__(self, base_url, token, worker_id, attempts=5):
         self.base=base_url.rstrip('/')+'/api/worker/v1';self.token=token;self.worker_id=worker_id;self.attempts=attempts
@@ -81,7 +83,19 @@ def load_silero(model_path,device):
     import torch
     model=torch.package.PackageImporter(model_path).load_pickle('tts_models','model');model.to(device);return model
 
-def synthesize_silero(text,output,model_path,speaker,device,heartbeat=None,model=None):
+def load_text_pipeline(device):
+    from ru_normalizr import NormalizeOptions, Normalizer
+    from silero_stress import load_accentor
+    normalizer=Normalizer(NormalizeOptions.tts());accentor=load_accentor();accentor.to(device=device);return normalizer,accentor
+
+def prepare_silero_text(text,normalizer,accentor):
+    normalized=normalizer.normalize(text)
+    if not normalized.strip():raise RuntimeError('ru-normalizr produced empty text')
+    stressed=accentor(normalized)
+    if not stressed.strip():raise RuntimeError('Silero Stress produced empty text')
+    return silero_compatible(stressed)
+
+def synthesize_silero(text,output,model_path,speaker,device,heartbeat=None,model=None,normalizer=None,accentor=None):
     model=model or load_silero(model_path,device);parts=[];text_parts=chunks(text)
     try:
         for index,part in enumerate(text_parts):
@@ -149,6 +163,9 @@ def validate_startup(args):
         if not path.is_file():raise RuntimeError('SILERO_MODEL_PATH must point to a model file')
         actual=file_sha256(path)
         if args.model_sha256 and actual.lower()!=args.model_sha256.lower():raise RuntimeError('Silero model checksum mismatch')
+        try:
+            import ru_normalizr, silero_stress
+        except ImportError as error:raise RuntimeError('ru-normalizr and silero-stress are required for Silero') from error
     if args.engine=='f5' and (not args.f5_command or not Path(args.f5_command).is_file()):raise RuntimeError('F5_TTS_COMMAND must point to an executable')
     subprocess.run(['ffmpeg','-version'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 
@@ -162,17 +179,18 @@ def validate_claim_profile(job,args,configured_profile):
     if profile.get('speaker') and profile['speaker']!=args.speaker:raise RuntimeError('claimed speaker does not match local speaker')
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--engine',choices=['mock','silero','f5'],default=os.getenv('TTS_ENGINE','mock'));parser.add_argument('--model-path',default=os.getenv('SILERO_MODEL_PATH',''));parser.add_argument('--model-sha256',default=os.getenv('SILERO_MODEL_SHA256',''));parser.add_argument('--speaker',default=os.getenv('SILERO_SPEAKER','xenia'));parser.add_argument('--device',default=os.getenv('WORKER_DEVICE','cpu'));parser.add_argument('--f5-command',default=os.getenv('F5_TTS_COMMAND',''));parser.add_argument('--spool',type=Path,default=Path(os.getenv('WORKER_SPOOL_DIR','.worker-spool')));parser.add_argument('--once',action='store_true');args=parser.parse_args()
-    validate_startup(args);model=load_silero(args.model_path,args.device) if args.engine=='silero' else None
+    parser=argparse.ArgumentParser();parser.add_argument('--engine',choices=['mock','silero','f5'],default=os.getenv('TTS_ENGINE','mock'));parser.add_argument('--model-path',default=os.getenv('SILERO_MODEL_PATH',''));parser.add_argument('--model-sha256',default=os.getenv('SILERO_MODEL_SHA256',''));parser.add_argument('--speaker',default=os.getenv('SILERO_SPEAKER',DEFAULT_SILERO_SPEAKER));parser.add_argument('--device',default=os.getenv('WORKER_DEVICE','cpu'));parser.add_argument('--f5-command',default=os.getenv('F5_TTS_COMMAND',''));parser.add_argument('--spool',type=Path,default=Path(os.getenv('WORKER_SPOOL_DIR','.worker-spool')));parser.add_argument('--once',action='store_true');args=parser.parse_args()
+    validate_startup(args);model=load_silero(args.model_path,args.device) if args.engine=='silero' else None;normalizer=accentor=None
     if model is not None:
         try:
             import torch
             torch.set_num_threads(max(1,int(os.getenv('SILERO_CPU_THREADS',str(os.cpu_count() or 1)))))
         except (ValueError,RuntimeError):pass
+        normalizer,accentor=load_text_pipeline(args.device)
     args.spool.mkdir(parents=True,exist_ok=True);api=Api(os.environ['WORKER_API_URL'],os.environ['WORKER_TOKEN'],os.getenv('WORKER_ID',socket.gethostname()));profile=os.getenv('WORKER_PROFILE_ID','silero-ru-v1');idle=2.
     while True:
         reconcile_spool(api,args.spool)
-        try:response=api.request('POST','/claim',{'requestId':uuid.uuid4().hex,'profileIds':[profile],'version':'tts-worker-2'})
+        try:response=api.request('POST','/claim',{'requestId':uuid.uuid4().hex,'profileIds':[profile],'version':'tts-worker-3'})
         except Exception:
             if args.once:raise
             time.sleep(idle*random.uniform(.8,1.2));idle=min(30,idle*2);continue
@@ -184,7 +202,9 @@ def main():
             with Heartbeat(api,job) as heartbeat:
                 heartbeat.update('synthesis',0)
                 if args.engine=='mock':synthesize_mock(job['spokenText'],output,heartbeat)
-                elif args.engine=='silero':synthesize_silero(silero_compatible(job['spokenText']),output,args.model_path,args.speaker,args.device,heartbeat,model)
+                elif args.engine=='silero':
+                    heartbeat.update('text-preparation',0);prepared=prepare_silero_text(job['spokenText'],normalizer,accentor);heartbeat.update('synthesis',0)
+                    synthesize_silero(prepared,output,args.model_path,args.speaker,args.device,heartbeat,model)
                 else:synthesize_f5(job['spokenText'],output,args.f5_command,heartbeat)
                 heartbeat.check()
                 heartbeat.update('upload',100)
