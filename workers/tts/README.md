@@ -1,7 +1,7 @@
-# TTS worker moved to easy_tts
+# TTS worker moved to just-tts
 
 The standalone worker now lives in the sibling repository
-`C:\00_projects\easy_tts`. It can be installed on another machine without this
+`C:\00_projects\just-tts`. It can be installed on another machine without this
 site checkout. See its `README.md` for installation, local synthesis and worker
 commands.
 
