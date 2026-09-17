@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
@@ -7,6 +7,7 @@ import { sha256 } from "./domain.mjs";
 import { validVoiceId } from "./tts-voices.mjs";
 import { createWalkAdminStore } from "./walk-admin.mjs";
 import { createWalkResearchStore } from "./walk-research-store.mjs";
+import { createContentStore } from "./content-store.mjs";
 
 const STAGES = new Set([
   "queued",
@@ -68,7 +69,7 @@ function isAddressJob(job) {
 
 export function createStore(
   databasePath,
-  { now = Date.now, maxActive = 2, maxDaily = 6 } = {},
+  { now = Date.now, random = Math.random, maxActive = 2, maxDaily = 6, workerLeaseSecret = "development-worker-lease-secret", normalizeExternalText = Object.assign(async text=>text,{version:"plain-v1"}), externalTtsProfiles = {} } = {},
 ) {
   if (!Number.isInteger(maxActive) || maxActive < 0) {
     throw new TypeError("maxActive must be a non-negative integer");
@@ -81,7 +82,7 @@ export function createStore(
     mkdirSync(dirname(databasePath), { recursive: true });
   }
 
-  const db = new DatabaseSync(databasePath);
+  const db = new DatabaseSync(databasePath, { timeout: 5000, allowUnknownNamedParameters: false });
   let closed = false;
 
   db.function("casefold", { deterministic: true }, (value) =>
@@ -101,7 +102,52 @@ export function createStore(
     CREATE INDEX IF NOT EXISTS jobs_stage_idx ON jobs(stage);
     CREATE INDEX IF NOT EXISTS jobs_created_at_idx ON jobs(created_at);
     CREATE TABLE IF NOT EXISTS retries (created_at TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS external_audio_jobs (
+      id TEXT PRIMARY KEY,
+      input_key TEXT NOT NULL UNIQUE,
+      source_job_id TEXT NOT NULL,
+      source_revision INTEGER NOT NULL,
+      state TEXT NOT NULL,
+      profile_id TEXT NOT NULL,
+      payload_json TEXT NOT NULL,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      max_attempts INTEGER NOT NULL DEFAULT 3,
+      next_attempt_at TEXT NOT NULL,
+      lease_generation INTEGER NOT NULL DEFAULT 0,
+      lease_token_hash TEXT,
+      lease_expires_at TEXT,
+      worker_id TEXT,
+      claim_request_id TEXT,
+      upload_id TEXT UNIQUE,
+      upload_sha256 TEXT,
+      receipt_json TEXT,
+      error_json TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS external_audio_available_idx
+      ON external_audio_jobs(state, next_attempt_at, created_at);
+    CREATE TABLE IF NOT EXISTS worker_credentials (
+      id TEXT PRIMARY KEY, name TEXT NOT NULL, token_hash TEXT NOT NULL UNIQUE, profiles_json TEXT NOT NULL,
+      revoked_at TEXT, created_at TEXT NOT NULL, last_seen_at TEXT
+    );
+    CREATE TABLE IF NOT EXISTS job_attempts (
+      job_id TEXT NOT NULL, generation INTEGER NOT NULL, worker_id TEXT NOT NULL, state TEXT NOT NULL,
+      started_at TEXT NOT NULL, finished_at TEXT, error_json TEXT, lease_key_version INTEGER NOT NULL DEFAULT 1,
+      PRIMARY KEY(job_id,generation)
+    );
+    CREATE TABLE IF NOT EXISTS audio_artifacts (
+      sha256 TEXT PRIMARY KEY, job_id TEXT NOT NULL, metadata_json TEXT NOT NULL, created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS worker_heartbeats (
+      credential_id TEXT NOT NULL, worker_name TEXT NOT NULL, version TEXT, profile_ids_json TEXT NOT NULL,
+      current_job_id TEXT, progress_json TEXT, seen_at TEXT NOT NULL, PRIMARY KEY(credential_id,worker_name)
+    );
   `);
+  if(!db.prepare("PRAGMA table_info(job_attempts)").all().some(column=>column.name==="lease_key_version"))db.exec("ALTER TABLE job_attempts ADD COLUMN lease_key_version INTEGER NOT NULL DEFAULT 1");
+  const audioJobColumns=new Set(db.prepare("PRAGMA table_info(external_audio_jobs)").all().map(column=>column.name));
+  if(!audioJobColumns.has("profile_version"))db.exec("ALTER TABLE external_audio_jobs ADD COLUMN profile_version TEXT NOT NULL DEFAULT '1'");
+  if(!audioJobColumns.has("priority"))db.exec("ALTER TABLE external_audio_jobs ADD COLUMN priority INTEGER NOT NULL DEFAULT 0");
 
   const findById = db.prepare(
     "SELECT record_json FROM jobs WHERE id = ?",
@@ -145,6 +191,36 @@ export function createStore(
     return record;
   }
 
+  function leaseToken(id, generation, workerId) {
+    return createHmac("sha256", workerLeaseSecret).update(`${id}|${generation}|${workerId}`).digest("hex");
+  }
+
+  function secureEqual(left, right) {
+    if (typeof left !== "string" || typeof right !== "string" || left.length !== right.length) return false;
+    return timingSafeEqual(Buffer.from(left), Buffer.from(right));
+  }
+
+  function externalRow(id) {
+    return db.prepare("SELECT * FROM external_audio_jobs WHERE id = ?").get(id) ?? null;
+  }
+
+  function publicExternal(row) {
+    if (!row) return null;
+    return { id: row.id, state: row.state, profileId: row.profile_id, profileVersion: row.profile_version??"1", priority:Number(row.priority??0), attempts: Number(row.attempts),
+      maxAttempts: Number(row.max_attempts), leaseGeneration: Number(row.lease_generation),
+      leaseExpiresAt: row.lease_expires_at, updatedAt: row.updated_at,
+      workerId: row.worker_id,
+      receipt: row.receipt_json ? JSON.parse(row.receipt_json) : null,
+      error: row.error_json ? JSON.parse(row.error_json) : null };
+  }
+
+  function requireLease(row, workerId, generation, token) {
+    const timestamp = isoNow(now);
+    if (!row || row.state !== "leased" || row.worker_id !== workerId || Number(row.lease_generation) !== generation
+      || !row.lease_expires_at || row.lease_expires_at <= timestamp
+      || !secureEqual(row.lease_token_hash, sha256(token))) throw codedError("LEASE_LOST");
+  }
+
   function recoverInterrupted() {
     return transaction(() => {
       const placeholders = WORKING_STAGES.map(() => "?").join(", ");
@@ -180,10 +256,12 @@ export function createStore(
   }
 
   const walkAdminStore = createWalkAdminStore({ db, now, transaction, checkCapacity });
+  const contentStore = createContentStore({ db, now, transaction });
 
   return {
     ...walkAdminStore,
     ...createWalkResearchStore({ db, now, transaction, checkCapacity }),
+    ...contentStore,
     createOrGet({ key, address }) {
       if (typeof key !== "string" || key.length === 0) {
         throw new TypeError("key must be a non-empty string");
@@ -228,6 +306,10 @@ export function createStore(
 
     get(id) {
       return decode(findById.get(id));
+    },
+
+    getByKey(key) {
+      return typeof key === "string" ? decode(findByKey.get(key)) : null;
     },
 
     listAdmin({ limit = 50, offset = 0, q = "", stage = "", relevance = "active" } = {}) {
@@ -428,10 +510,190 @@ export function createStore(
       });
     },
 
+    async enqueueExternalAudio({ sourceJobId, sourceRevision, story, profileId = "silero-ru-v1", signal }) {
+      if (typeof sourceJobId !== "string" || !Number.isSafeInteger(sourceRevision) || sourceRevision < 0
+        || typeof profileId !== "string" || !/^[a-z0-9][a-z0-9._-]{0,63}$/.test(profileId)
+        || !hasValidStoryText(story)) throw codedError("BAD_REQUEST");
+      const script = story.paragraphs.map(paragraph => paragraph.text).join("\n\n");
+      const configured=externalTtsProfiles[profileId]??{};
+      const rawContract=configured.textPreparation?.input==="raw";
+      const spokenText = rawContract?script:await normalizeExternalText(script,{signal});
+      const spokenTextHash = sha256(spokenText);
+      const normalizerVersion=rawContract?null:(normalizeExternalText.version??"custom");
+      const profile={id:profileId,engine:configured.engine??(profileId.startsWith("f5")?"f5":"silero"),language:configured.language??"ru",
+        modelSha256:configured.modelSha256??null,speaker:configured.speaker??null,configVersion:configured.configVersion??"1",
+        configSha256:configured.configSha256??null,referenceSha256:configured.referenceSha256??null,textPreparation:configured.textPreparation??null,
+        chunking:configured.chunking??"sentence-v1",maximumBytes:64*1024*1024,maximumDurationSec:600,
+        minimumPublicationDurationSec:configured.minimumPublicationDurationSec??30,
+        maximumPublicationDurationSec:configured.maximumPublicationDurationSec??150};
+      const inputKey = sha256(JSON.stringify({version:rawContract?"external-audio-v2":"external-audio-v1",sourceJobId,sourceRevision,spokenTextHash,profileId,normalizer:normalizerVersion,profile}));
+      return transaction(() => {
+        if(sourceJobId.startsWith("place-text:"))db.prepare("UPDATE place_texts SET audio_target_profile=? WHERE id=?").run(profileId,sourceJobId.slice(11));
+        const existing = db.prepare("SELECT * FROM external_audio_jobs WHERE input_key = ?").get(inputKey);
+        if (existing) return publicExternal(existing);
+        const timestamp = isoNow(now), id = randomUUID();
+        db.prepare(`INSERT INTO external_audio_jobs
+          (id,input_key,source_job_id,source_revision,state,profile_id,profile_version,priority,payload_json,next_attempt_at,created_at,updated_at)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).run(id,inputKey,sourceJobId,sourceRevision,"queued",profileId,profile.configVersion,0,
+            encode({textVersion:`${sourceJobId}:${sourceRevision}`,sourceTextHash:sha256(script),spokenText,spokenTextHash,normalizerVersion,
+              profile}),timestamp,timestamp,timestamp);
+        return publicExternal(externalRow(id));
+      });
+    },
+
+    createWorkerCredential({name,profiles}) {
+      if(typeof name!=="string"||!name.trim()||name.length>100||!Array.isArray(profiles)||!profiles.length||profiles.length>20
+        ||profiles.some(profile=>typeof profile!=="string"||!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(profile)))throw codedError("BAD_REQUEST");
+      const token=randomUUID().replaceAll("-","")+randomUUID().replaceAll("-",""),id=randomUUID(),timestamp=isoNow(now);
+      db.prepare("INSERT INTO worker_credentials VALUES (?,?,?,?,NULL,?,NULL)").run(id,name.trim(),sha256(token),encode([...new Set(profiles)]),timestamp);
+      return {id,name:name.trim(),profiles:[...new Set(profiles)],createdAt:timestamp,token};
+    },
+    listWorkerCredentials() {return db.prepare("SELECT * FROM worker_credentials ORDER BY created_at DESC").all().map(row=>{const active=db.prepare("SELECT max(updated_at) seen FROM external_audio_jobs WHERE worker_id LIKE ?").get(`${row.id}:%`);return{id:row.id,name:row.name,profiles:JSON.parse(row.profiles_json),revokedAt:row.revoked_at,createdAt:row.created_at,lastSeenAt:active.seen??row.last_seen_at};});},
+    revokeWorkerCredential(id) {const timestamp=isoNow(now),result=db.prepare("UPDATE worker_credentials SET revoked_at=? WHERE id=? AND revoked_at IS NULL").run(timestamp,id);return result.changes?{id,revokedAt:timestamp}:null;},
+    authenticateWorkerToken(token) {
+      if(typeof token!=="string"||token.length<32)return null;const row=db.prepare("SELECT * FROM worker_credentials WHERE token_hash=? AND revoked_at IS NULL").get(sha256(token));
+      if(!row)return null;db.prepare("UPDATE worker_credentials SET last_seen_at=? WHERE id=?").run(isoNow(now),row.id);return{id:row.id,name:row.name,profiles:JSON.parse(row.profiles_json)};
+    },
+    recordWorkerHeartbeat({credentialId="static",workerName,version=null,profileIds=[],currentJobId=null,progress=null}) {
+      if(typeof workerName!=="string"||!workerName||workerName.length>100)return;
+      const timestamp=isoNow(now);db.prepare(`INSERT INTO worker_heartbeats VALUES (?,?,?,?,?,?,?)
+        ON CONFLICT(credential_id,worker_name) DO UPDATE SET version=excluded.version,profile_ids_json=excluded.profile_ids_json,
+        current_job_id=excluded.current_job_id,progress_json=excluded.progress_json,seen_at=excluded.seen_at`)
+        .run(credentialId,workerName,typeof version==="string"?version.slice(0,100):null,encode(profileIds.slice(0,20)),currentJobId,progress?encode(progress):null,timestamp);
+      if(credentialId!=="static")db.prepare("UPDATE worker_credentials SET last_seen_at=? WHERE id=?").run(timestamp,credentialId);
+    },
+    listWorkerHeartbeats() {return db.prepare("SELECT * FROM worker_heartbeats ORDER BY seen_at DESC").all().map(row=>({credentialId:row.credential_id,workerName:row.worker_name,version:row.version,profileIds:JSON.parse(row.profile_ids_json),currentJobId:row.current_job_id,progress:row.progress_json?JSON.parse(row.progress_json):null,seenAt:row.seen_at}));},
+    getExternalAudioStats() {
+      const states=Object.fromEntries(db.prepare("SELECT state,count(*) n FROM external_audio_jobs GROUP BY state").all().map(row=>[row.state,Number(row.n)]));
+      const oldest=db.prepare("SELECT min(created_at) value FROM external_audio_jobs WHERE state IN ('queued','retry_wait')").get().value;
+      const attempts=db.prepare("SELECT started_at,finished_at,state FROM job_attempts WHERE finished_at IS NOT NULL").all();
+      const durations=attempts.map(row=>(new Date(row.finished_at)-new Date(row.started_at))/1000).filter(Number.isFinite);
+      const artifacts=db.prepare("SELECT metadata_json FROM audio_artifacts").all().map(row=>JSON.parse(row.metadata_json));
+      return{states,oldestQueuedAt:oldest,averageAttemptSec:durations.length?durations.reduce((sum,value)=>sum+value,0)/durations.length:null,
+        artifactBytes:artifacts.reduce((sum,item)=>sum+Number(item.bytes??0),0),artifacts:artifacts.length};
+    },
+    listExternalAudio({states=["failed"],limit=50}={}) {
+      if(!Array.isArray(states)||!states.length||states.length>10||states.some(state=>!["queued","retry_wait","leased","failed","cancelled","succeeded"].includes(state))
+        ||!Number.isSafeInteger(limit)||limit<1||limit>100)throw codedError("BAD_REQUEST");
+      const placeholders=states.map(()=>"?").join(",");
+      return db.prepare(`SELECT a.*,t.place_id,p.name place_name FROM external_audio_jobs a
+        LEFT JOIN place_texts t ON a.source_job_id='place-text:'||t.id LEFT JOIN places p ON p.id=t.place_id
+        WHERE a.state IN (${placeholders}) ORDER BY a.updated_at DESC LIMIT ?`).all(...states,limit)
+        .map(row=>({...publicExternal(row),sourceJobId:row.source_job_id,placeId:row.place_id??null,placeName:row.place_name??null,createdAt:row.created_at}));
+    },
+
+    claimExternalAudio({ workerId, requestId, profileIds, textPreparationVersions=[], leaseMs = 300000 }) {
+      if (typeof workerId !== "string" || workerId.length < 1 || workerId.length > 100
+        || typeof requestId !== "string" || !/^[a-zA-Z0-9._-]{8,100}$/.test(requestId)
+        || !Array.isArray(profileIds) || !profileIds.length || profileIds.length > 20
+        || profileIds.some(id => typeof id !== "string" || !/^[a-z0-9][a-z0-9._-]{0,63}$/.test(id))
+        || !Array.isArray(textPreparationVersions)||textPreparationVersions.length>10
+        || textPreparationVersions.some(value=>typeof value!=="string"||value.length>100)) throw codedError("BAD_REQUEST");
+      return transaction(() => {
+        const timestamp = isoNow(now);
+        const repeated = db.prepare("SELECT * FROM external_audio_jobs WHERE worker_id = ? AND claim_request_id = ? ORDER BY updated_at DESC LIMIT 1").get(workerId,requestId);
+        if (repeated?.state==="leased"&&repeated.lease_expires_at>timestamp) {
+          const payload=JSON.parse(repeated.payload_json);
+          return {...publicExternal(repeated),leaseToken:leaseToken(repeated.id,repeated.lease_generation,workerId),...payload};
+        }
+        if(repeated)throw codedError("CLAIM_EXPIRED");
+        const active=db.prepare("SELECT id FROM external_audio_jobs WHERE worker_id=? AND state='leased' AND lease_expires_at>?").get(workerId,timestamp);
+        if(active)throw codedError("WORKER_BUSY");
+        db.prepare(`UPDATE external_audio_jobs SET state = CASE WHEN attempts >= max_attempts THEN 'failed' ELSE 'retry_wait' END,
+          next_attempt_at = ?, lease_token_hash = NULL, lease_expires_at = NULL, worker_id = NULL, claim_request_id = NULL,
+          error_json = ?, updated_at = ? WHERE state = 'leased' AND lease_expires_at <= ?`)
+          .run(timestamp,encode({code:"LEASE_EXPIRED",message:"Worker lease expired."}),timestamp,timestamp);
+        const placeholders=profileIds.map(()=>"?").join(",");
+        const candidates=db.prepare(`SELECT * FROM external_audio_jobs WHERE state IN ('queued','retry_wait')
+          AND next_attempt_at <= ? AND attempts < max_attempts AND profile_id IN (${placeholders})
+          ORDER BY priority DESC,created_at,id`).all(timestamp,...profileIds);
+        const row=candidates.find(candidate=>{const preparation=JSON.parse(candidate.payload_json).profile?.textPreparation;return !preparation||textPreparationVersions.includes(preparation.version);});
+        if (!row) return null;
+        const generation=Number(row.lease_generation)+1, expiresAt=isoNow(()=>now()+leaseMs);
+        const token=leaseToken(row.id,generation,workerId);
+        db.prepare(`UPDATE external_audio_jobs SET state='leased',attempts=attempts+1,lease_generation=?,lease_token_hash=?,
+          lease_expires_at=?,worker_id=?,claim_request_id=?,updated_at=? WHERE id=?`)
+          .run(generation,sha256(token),expiresAt,workerId,requestId,timestamp,row.id);
+        db.prepare("INSERT INTO job_attempts (job_id,generation,worker_id,state,started_at,finished_at,error_json,lease_key_version) VALUES (?,?,?,?,?,NULL,NULL,1)").run(row.id,generation,workerId,"leased",timestamp);
+        const claimed=externalRow(row.id), payload=JSON.parse(claimed.payload_json);
+        return {...publicExternal(claimed),leaseToken:token,...payload};
+      });
+    },
+
+    heartbeatExternalAudio(id,{workerId,generation,leaseToken:token,leaseMs=300000,progress=null}) {
+      return transaction(() => {
+        const row=externalRow(id);requireLease(row,workerId,generation,token);
+        const timestamp=isoNow(now),expiresAt=isoNow(()=>now()+leaseMs);
+        db.prepare("UPDATE external_audio_jobs SET lease_expires_at=?,updated_at=? WHERE id=?").run(expiresAt,timestamp,id);
+        const separator=workerId.indexOf(":"),credentialId=separator<0?"static":workerId.slice(0,separator),workerName=separator<0?workerId:workerId.slice(separator+1);
+        db.prepare(`INSERT INTO worker_heartbeats VALUES (?,?,?,?,?,?,?) ON CONFLICT(credential_id,worker_name) DO UPDATE SET
+          current_job_id=excluded.current_job_id,progress_json=excluded.progress_json,seen_at=excluded.seen_at`)
+          .run(credentialId,workerName,null,"[]",id,progress?encode(progress):null,timestamp);
+        if(credentialId!=="static")db.prepare("UPDATE worker_credentials SET last_seen_at=? WHERE id=?").run(timestamp,credentialId);
+        return publicExternal(externalRow(id));
+      });
+    },
+
+    failExternalAudio(id,{workerId,generation,leaseToken:token,failureId,code,message}) {
+      if (typeof failureId!=="string"||failureId.length<8||failureId.length>100||typeof code!=="string"||!/^[A-Z_]{1,60}$/.test(code)) throw codedError("BAD_REQUEST");
+      return transaction(() => {
+        const row=externalRow(id);
+        if(row?.error_json) {const previous=JSON.parse(row.error_json);if(previous.failureId===failureId)return publicExternal(row);}
+        requireLease(row,workerId,generation,token);
+        const terminal=Number(row.attempts)>=Number(row.max_attempts),timestamp=isoNow(now);
+        const baseDelay=Number(row.attempts)<=1?30000:120000,delay=Math.round(baseDelay*(.8+random()*.4));
+        db.prepare(`UPDATE external_audio_jobs SET state=?,next_attempt_at=?,lease_token_hash=NULL,lease_expires_at=NULL,
+          worker_id=NULL,claim_request_id=NULL,error_json=?,updated_at=? WHERE id=?`).run(terminal?"failed":"retry_wait",
+            isoNow(()=>now()+delay),encode({failureId,code,message:typeof message==="string"?message.slice(0,500):code}),timestamp,id);
+        db.prepare("UPDATE job_attempts SET state=?,finished_at=?,error_json=? WHERE job_id=? AND generation=?")
+          .run(terminal?"failed":"retry_wait",timestamp,encode({failureId,code,message}),id,generation);
+        return publicExternal(externalRow(id));
+      });
+    },
+
+    retryExternalAudio(id) {return transaction(()=>{const row=externalRow(id);if(!row||!["failed","cancelled"].includes(row.state))return null;const timestamp=isoNow(now);
+      db.prepare(`UPDATE external_audio_jobs SET state='queued',attempts=0,next_attempt_at=?,lease_token_hash=NULL,lease_expires_at=NULL,
+        worker_id=NULL,claim_request_id=NULL,error_json=NULL,updated_at=? WHERE id=?`).run(timestamp,timestamp,id);return publicExternal(externalRow(id));});},
+
+    getExternalAudio(id) {const row=externalRow(id);if(!row)return null;const payload=JSON.parse(row.payload_json);return {...publicExternal(row),profile:payload.profile};},
+    validateExternalAudioLease(id,{workerId,generation,leaseToken:token}) {requireLease(externalRow(id),workerId,generation,token);return true;},
+
+    acceptExternalAudio(id,{workerId,generation,leaseToken:token,uploadId,uploadSha256,artifact}) {
+      if(typeof uploadId!=="string"||uploadId.length<8||uploadId.length>100||!/^[a-f0-9]{64}$/.test(uploadSha256)
+        ||!artifact||typeof artifact!=="object")throw codedError("BAD_REQUEST");
+      return transaction(() => {
+        const row=externalRow(id);
+        if(row?.upload_id===uploadId) {
+          if(row.upload_sha256!==uploadSha256)throw codedError("CONFLICT");
+          return publicExternal(row);
+        }
+        requireLease(row,workerId,generation,token);
+        const textSource=row.source_job_id.startsWith("place-text:")?db.prepare("SELECT * FROM place_texts WHERE id=?").get(row.source_job_id.slice(11)):null;
+        const source=textSource?null:decode(findById.get(row.source_job_id));
+        const payload=JSON.parse(row.payload_json);
+        if(textSource?(!textSource.approved_story_json||!hasValidStoryText({...JSON.parse(textSource.approved_story_json),address:"OSM place"})
+          ||sha256(JSON.parse(textSource.approved_story_json).paragraphs.map(paragraph=>paragraph.text).join("\n\n"))!==payload.sourceTextHash)
+          :(!source||source.revision!==Number(row.source_revision)||!hasValidStoryText(source.data?.story)))throw codedError("CONFLICT");
+        const duration=Number(artifact.durationSec),minimum=Number(payload.profile?.minimumPublicationDurationSec??0),maximum=Number(payload.profile?.maximumPublicationDurationSec??600);
+        if(!Number.isFinite(duration)||duration<minimum||duration>maximum)throw codedError("AUDIO_DURATION");
+        const timestamp=isoNow(now),receipt={jobId:id,uploadId,uploadSha256,artifact,acceptedAt:timestamp};
+        db.prepare(`UPDATE external_audio_jobs SET state='succeeded',upload_id=?,upload_sha256=?,receipt_json=?,
+          lease_token_hash=NULL,lease_expires_at=NULL,claim_request_id=NULL,error_json=NULL,updated_at=? WHERE id=?`)
+          .run(uploadId,uploadSha256,encode(receipt),timestamp,id);
+        db.prepare("UPDATE job_attempts SET state='succeeded',finished_at=? WHERE job_id=? AND generation=?").run(timestamp,id,generation);
+        db.prepare("INSERT OR IGNORE INTO audio_artifacts VALUES (?,?,?,?)").run(artifact.sha256,id,encode(artifact),timestamp);
+        if(textSource){if(!textSource.audio_target_profile||textSource.audio_target_profile===row.profile_id)db.prepare("UPDATE place_texts SET audio_json=? WHERE id=?").run(encode(artifact),textSource.id);}
+        else save({...source,stage:"ready",data:{...source.data,audio:artifact,revoice:null},error:null,revision:source.revision+1,updatedAt:timestamp});
+        return publicExternal(externalRow(id));
+      });
+    },
+
     recoverInterrupted,
 
     close() {
       if (!closed) {
+        for (const statement of [findById,findByKey,writeJob,insertJob]) statement.finalize?.();
+        try { db.exec("PRAGMA optimize; PRAGMA wal_checkpoint(TRUNCATE)"); } catch { /* Another live connection may own WAL. */ }
         db.close();
         closed = true;
       }

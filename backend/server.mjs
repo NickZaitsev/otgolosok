@@ -1,6 +1,6 @@
 import { createServer as httpServer } from "node:http";
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { rm, stat } from "node:fs/promises";
 import { resolve, join, extname, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { createStore } from "./store.mjs";
@@ -14,6 +14,14 @@ import { createWalkPlanner } from "./walks.mjs";
 import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
 import { validateWalkResearch, publicWalkResearch } from "./walk-research.mjs";
 import { createBackendLogger } from "./logs.mjs";
+import { ingestAudio } from "./audio-ingest.mjs";
+import { startContentWorker } from "./content-pipeline.mjs";
+import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf } from "./auth.mjs";
+import { createAccountStore } from "./account-store.mjs";
+import { normalizeForSpeech } from "./text-normalizer.mjs";
+import { loadLocalTtsConfig } from "./local-tts.mjs";
+import { createTtsApiClient } from "./tts-api-client.mjs";
+import { startTtsApiWorker } from "./tts-api-worker.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 function json(res,status,value) {
@@ -49,20 +57,108 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,logs=null}) {
+export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,sendAccountCode=async()=>{},auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
   const worker=(provider||yandexTts)&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory,discoverResearch,planResearchWalk,logs}):null;
+  const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,logs,concurrency:Number(process.env.CONTENT_WORKER_CONCURRENCY??1)}):null;
+  const ttsApiWorker=workerEnabled&&localTts.transport==="http"&&ttsApiClient?startTtsApiWorker({store,client:ttsApiClient,audioDirectory,profileId:localTts.defaultProfile,logs}):null;
   const authorizeAdmin=adminAuth(adminToken);
+  const legacyAdminEnabled=allowLegacyAdminToken??(!auth||process.env.ALLOW_LEGACY_ADMIN_TOKEN==="true");
   const server=httpServer(async(req,res)=>{
     try {
       const url=new URL(req.url,"http://localhost");
+      const session=auth?await authSession(auth,req):null;
+      if(auth&&url.pathname==="/api/auth/session") {json(res,200,{user:session?{id:session.user.id,email:session.user.email,name:session.user.name,role:session.user.role}:null,csrfToken:session?sessionCsrfToken(authSecret,session.session.id):null});return;}
+      if(auth&&url.pathname.startsWith("/api/auth/")){await authRequestHandler(auth)(req,res);return;}
+      if(url.pathname==="/api/auth/session"&&!auth){json(res,200,{user:null});return;}
+      if(url.pathname==="/api/me"||url.pathname.startsWith("/api/me/")) {
+        if(!session||!accountStore){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите в аккаунт."}});return;}
+        if(!origin||req.headers.origin&&req.headers.origin!==origin||req.headers["sec-fetch-site"]==="cross-site") {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+        if(!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Обновите страницу и повторите действие."}});return;}
+        if(url.pathname==="/api/me"&&req.method==="GET"){json(res,200,{user:{id:session.user.id,email:session.user.email,name:session.user.name}});return;}
+        if(url.pathname==="/api/me"&&req.method==="PATCH"){const input=await body(req);if(Object.keys(input).some(k=>k!=="name"))throw failure("BAD_REQUEST");const name=accountStore.updateProfile(session.user.id,input.name);json(res,200,{user:{id:session.user.id,email:session.user.email,name}});return;}
+        if(url.pathname==="/api/me/delete-code"&&req.method==="POST"){const code=accountStore.issueDeleteCode(session.user.id);await sendAccountCode({email:session.user.email,otp:code,purpose:"delete-account"});json(res,200,{success:true});return;}
+        if(url.pathname==="/api/me"&&req.method==="DELETE"){const input=await body(req);if(Object.keys(input).some(key=>key!=="code")||!accountStore.verifyDeleteCode(session.user.id,input.code)){json(res,403,{error:{code:"DELETE_CODE_INVALID",message:"Неверный или просроченный код удаления."}});return;}store.revokeWalkResearchAccess?.(accountStore.researchJobIds(session.user.id));accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
+        const accountQuery=()=>{const entries=[...url.searchParams];if(entries.some(([key,value])=>!['limit','cursor'].includes(key)||(key==='limit'&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure('BAD_REQUEST');return {limit:Number(url.searchParams.get('limit')??20),after:url.searchParams.get('cursor')};};
+        if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,...Object.values(accountQuery())));return;}
+        if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
+        const ownWalk=new RegExp(`^/api/me/walks/(${UUID})$`).exec(url.pathname);
+        if(ownWalk&&req.method==="GET"){const walk=accountStore.getWalk(session.user.id,ownWalk[1]);json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
+        if(ownWalk&&req.method==="PATCH"){const walk=accountStore.updateWalk(session.user.id,ownWalk[1],await body(req,100000));json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
+        if(ownWalk&&req.method==="DELETE"){json(res,accountStore.deleteWalk(session.user.id,ownWalk[1])?200:404,{success:true});return;}
+        if(url.pathname==="/api/me/requests"&&req.method==="GET"){json(res,200,accountStore.listRequests(session.user.id,...Object.values(accountQuery())));return;}
+        if(url.pathname==="/api/me/favorites"&&req.method==="GET"){json(res,200,accountStore.listFavorites(session.user.id,...Object.values(accountQuery())));return;}
+        if(url.pathname==="/api/me/import"&&req.method==="POST"){json(res,200,{result:accountStore.importLocal(session.user.id,await body(req,110000))});return;}
+        const favorite=/^\/api\/me\/favorites\/(story|walk)\/([a-zA-Z0-9-]{1,128})$/.exec(url.pathname);
+        if(favorite&&req.method==="PUT"){accountStore.setFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}
+        if(favorite&&req.method==="DELETE"){accountStore.deleteFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}
+        json(res,404,{error:{code:"NOT_FOUND",message:"Account endpoint not found."}});return;
+      }
+      if(url.pathname==="/api/worker/v1/claim"||url.pathname.startsWith("/api/worker/v1/jobs/")) {
+        if(localTts.transport==="http"){json(res,503,{error:{code:"WORKER_DISABLED",message:"HTTP TTS transport is active."}});return;}
+        const rawToken=typeof req.headers.authorization==="string"&&req.headers.authorization.startsWith("Bearer ")?req.headers.authorization.slice(7):"";
+        const credential=store.authenticateWorkerToken(rawToken);
+        if((!workerToken||req.headers.authorization!==`Bearer ${workerToken}`)&&!credential){res.setHeader("WWW-Authenticate","Bearer");json(res,401,{error:{code:"UNAUTHORIZED",message:"Worker authentication required."}});return;}
+        if(url.search)throw failure("BAD_REQUEST");
+        const workerId=String(req.headers["x-worker-id"]??"");
+        if(!workerId||workerId.length>100)throw failure("BAD_REQUEST");
+        if(req.method==="POST"&&url.pathname==="/api/worker/v1/claim") {
+          const input=await body(req,4096);
+          if(Object.keys(input).some(key=>!["requestId","profileIds","textPreparationVersions","version"].includes(key)))throw failure("BAD_REQUEST");
+          const profileIds=credential?input.profileIds.filter(profile=>credential.profiles.includes(profile)):input.profileIds;
+          if(!profileIds.length){json(res,403,{error:{code:"FORBIDDEN",message:"Worker profile not permitted."}});return;}
+          store.recordWorkerHeartbeat({credentialId:credential?.id??"static",workerName:workerId,version:input.version,profileIds});
+          const job=store.claimExternalAudio({workerId:credential?`${credential.id}:${workerId}`:workerId,requestId:input.requestId,profileIds,textPreparationVersions:input.textPreparationVersions??[]});
+          if(!job){res.writeHead(204,{"Cache-Control":"no-store","Retry-After":"10"});res.end();return;}
+          json(res,200,{job});return;
+        }
+        const workerMatch=new RegExp(`^/api/worker/v1/jobs/(${UUID})(?:/(heartbeat|fail|result))?$`).exec(url.pathname);
+        if(!workerMatch){json(res,404,{error:{code:"NOT_FOUND",message:"Worker endpoint not found."}});return;}
+        if(req.method==="GET"&&!workerMatch[2]){const job=store.getExternalAudio(workerMatch[1]);
+          const visible=job&&(!credential||job.workerId===`${credential.id}:${workerId}`);
+          json(res,visible?200:404,visible?{job}:{error:{code:"NOT_FOUND",message:"Job not found."}});return;}
+        const effectiveWorkerId=credential?`${credential.id}:${workerId}`:workerId;
+        const generation=Number(req.headers["x-lease-generation"]),leaseToken=String(req.headers["x-lease-token"]??"");
+        if(!Number.isSafeInteger(generation)||generation<1||!leaseToken)throw failure("BAD_REQUEST");
+        if(req.method==="POST"&&workerMatch[2]==="heartbeat") {
+          const progress=req.headers["content-length"]!=="0"&&req.headers["content-length"]!==undefined?await body(req,1024):null;
+          if(progress&&(Object.keys(progress).some(key=>!["stage","percent"].includes(key))||(progress.stage!==undefined&&(typeof progress.stage!=="string"||progress.stage.length>40))||(progress.percent!==undefined&&(!Number.isFinite(progress.percent)||progress.percent<0||progress.percent>100))))throw failure("BAD_REQUEST");
+          json(res,200,{job:store.heartbeatExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,progress})});return;
+        }
+        if(req.method==="POST"&&workerMatch[2]==="fail") {
+          const input=await body(req,2048);
+          json(res,200,{job:store.failExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,...input})});return;
+        }
+        if(req.method==="PUT"&&workerMatch[2]==="result") {
+          const uploadId=String(req.headers["x-upload-id"]??""),expected=String(req.headers["x-content-sha256"]??"");
+          const accepted=store.getExternalAudio(workerMatch[1]);
+          if(accepted?.receipt?.uploadId===uploadId){if(accepted.receipt.uploadSha256!==expected)throw failure("CONFLICT");json(res,200,{job:accepted});return;}
+          store.validateExternalAudioLease(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken});
+          const expectedProfile=store.getExternalAudio(workerMatch[1])?.profile;
+          const preparationVersion=String(req.headers["x-tts-preparation-version"]??""),configSha256=String(req.headers["x-tts-config-sha256"]??"");
+          if(expectedProfile?.textPreparation?.version&&preparationVersion!==expectedProfile.textPreparation.version)throw failure("BAD_REQUEST");
+          if(expectedProfile?.configSha256&&configSha256!==expectedProfile.configSha256)throw failure("BAD_REQUEST");
+          if(expectedProfile?.modelSha256&&String(req.headers["x-tts-model-sha256"]??"")!==expectedProfile.modelSha256)throw failure("BAD_REQUEST");
+          if(expectedProfile?.speaker&&String(req.headers["x-tts-voice"]??"")!==expectedProfile.speaker)throw failure("BAD_REQUEST");
+          const uploaded=await audioIngest(req,audioDirectory);
+          if(uploaded.uploadSha256!==expected){await rm(join(audioDirectory,`${uploaded.artifact.sha256}.mp3`),{force:true});throw failure("AUDIO_CHECKSUM");}
+          const artifact={...uploaded.artifact,model:String(req.headers["x-tts-model"]??"external").slice(0,100),voice:String(req.headers["x-tts-voice"]??"external").slice(0,64),
+            ...(preparationVersion?{preparationVersion,preparedTextSha256:String(req.headers["x-tts-prepared-text-sha256"]??"")||null}:{}),...(configSha256?{configSha256}:{})};
+          try {json(res,200,{job:store.acceptExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,uploadId,uploadSha256:expected,artifact})});}
+          catch(error){if(!store.getExternalAudio(workerMatch[1])?.receipt)await rm(join(audioDirectory,`${artifact.sha256}.mp3`),{force:true});throw error;}
+          return;
+        }
+        json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;
+      }
       const researchMatch=new RegExp(`^/api/walk-research-jobs(?:/(${UUID})(/retry)?)?$`).exec(url.pathname);
       if(researchMatch) {
+        if(auth&&(!session||!accountStore)){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите, чтобы исследовать прогулку."}});return;}
         let job;
         if(req.method==="GET"&&!researchMatch[2]) {
           if(researchMatch[1]) {
+            if(auth&&!accountStore.ownsRequest(session.user.id,researchMatch[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Walk research job not found."}});return;}
             if(url.search)throw failure("BAD_REQUEST");
             job=store.get(researchMatch[1]);
             if(job?.kind!=="walk_research")job=null;
@@ -73,18 +169,23 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
             if(!/^(30|60|90)$/.test(q.minutes)||![q.lat,q.lon].every(v=>/^-?\d+(?:\.\d+)?$/.test(v)))throw failure("BAD_REQUEST");
             const request=validateWalkResearch({start:{location:{lat:Number(q.lat),lon:Number(q.lon)}},mode:q.mode,minutes:Number(q.minutes)},true);
             job=store.lookupWalkResearch(request,q.recoveryToken);
+            if(auth&&job&&!accountStore.ownsRequest(session.user.id,job.id))accountStore.attachRequest(session.user.id,job.id,"walk_research",q.recoveryToken);
           }
         } else if(req.method==="POST"&&(!researchMatch[1]||researchMatch[2])) {
           if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           if(url.search)throw failure("BAD_REQUEST");
           const input=await body(req);
           if(researchMatch[2]) {
+            if(auth&&!accountStore.ownsRequest(session.user.id,researchMatch[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Walk research job not found."}});return;}
             if(Object.keys(input).length!==1||!Number.isSafeInteger(input.revision)||input.revision<0)throw failure("BAD_REQUEST");
             if(!provider){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
-            job=store.retryWalkResearch(researchMatch[1],input.revision);
+            const quotaKey=`walk-retry-${researchMatch[1]}-${input.revision}`;if(auth)accountStore.reserveGeneration(session.user.id,quotaKey,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+            try{job=store.retryWalkResearch(researchMatch[1],input.revision);}catch(error){if(auth)accountStore.releaseGeneration(session.user.id,quotaKey);throw error;}
           } else {
-            try {job=store.createWalkResearch(input,{allowCreate:Boolean(provider)});}
+            const existing=store.lookupWalkResearch(validateWalkResearch(input),input.recoveryToken);if(auth&&!existing)accountStore.reserveGeneration(session.user.id,input.recoveryToken,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+            try {job=store.createWalkResearch(input,{allowCreate:Boolean(provider)});if(auth&&job)accountStore.attachRequest(session.user.id,job.id,"walk_research",input.recoveryToken);}
             catch(error) {
+              if(auth&&!existing)accountStore.releaseGeneration(session.user.id,input.recoveryToken);
               if(error.code!=="PROVIDER_UNAVAILABLE")throw error;
               json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;
             }
@@ -95,16 +196,65 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         return;
       }
       if(url.pathname==="/api/story-admin"||url.pathname.startsWith("/api/story-admin/")) {
-        const status=authorizeAdmin(req.headers.authorization);
+        const roleAuthorized=session?.user?.role==="editor";
+        const status=roleAuthorized?200:legacyAdminEnabled?authorizeAdmin(req.headers.authorization):401;
         if(status!==200) {
           if(status===429)res.setHeader("Retry-After","60");
           if(status===401)res.setHeader("WWW-Authenticate","Bearer");
           json(res,status,{error:{code:status===429?"ADMIN_THROTTLED":"UNAUTHORIZED",message:"Admin authentication required."}});return;
         }
+        if(roleAuthorized&&!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Refresh the editor and retry."}});return;}
         if(req.method==="GET"&&url.pathname==="/api/story-admin/walks") {
           if(url.search)throw failure("BAD_REQUEST");
           json(res,200,store.listWalksAdmin());return;
         }
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/places") {
+          const entries=[...url.searchParams];if(entries.some(([key,value])=>!["limit","offset","q","status"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value))))throw failure("BAD_REQUEST");
+          json(res,200,store.listPlaces({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",status:url.searchParams.get("status")??"all"}));return;
+        }
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/batches") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{batches:store.listBatches()});return;}
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/stats") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{...store.getContentStats(),audioQueue:store.getExternalAudioStats()});return;}
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/audio") {
+          const entries=[...url.searchParams];if(entries.some(([key,value])=>key!=="state"||!value)||entries.length>1)throw failure("BAD_REQUEST");
+          const states=(url.searchParams.get("state")??"failed,cancelled").split(",");json(res,200,{audioJobs:store.listExternalAudio({states})});return;
+        }
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/workers") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{workers:store.listWorkerCredentials(),heartbeats:store.listWorkerHeartbeats()});return;}
+        if(req.method==="POST"&&url.pathname==="/api/story-admin/content/workers") {if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          json(res,201,{worker:store.createWorkerCredential(await body(req,4096))});return;}
+        const revokeWorker=new RegExp(`^/api/story-admin/content/workers/(${UUID})/revoke$`).exec(url.pathname);
+        if(revokeWorker&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const revoked=store.revokeWorkerCredential(revokeWorker[1]);json(res,revoked?200:404,revoked?{worker:revoked}:{error:{code:"NOT_FOUND",message:"Worker not found."}});return;}
+        if(req.method==="POST"&&url.pathname==="/api/story-admin/content/batches") {
+          if(!origin||req.headers.origin!==origin) {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const input=await body(req,65536);if(input.mode==="text-and-audio"&&!input.ttsProfile)input.ttsProfile=localTts.defaultProfile;
+          const batch=store.createBatch(input);json(res,200,{batch});contentWorker?.wake();return;
+        }
+        const contentBatch=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)(?:\/(pause|resume|cancel))?$/.exec(url.pathname);
+        if(contentBatch&&req.method==="GET"&&!contentBatch[2]){const batch=store.getBatch(contentBatch[1]);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});return;}
+        if(contentBatch&&req.method==="POST"&&contentBatch[2]){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const state=contentBatch[2]==="pause"?"paused":contentBatch[2]==="resume"?"running":"cancelled";const batch=store.setBatchState(contentBatch[1],state);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});if(state==="running")contentWorker?.wake();return;}
+        const prioritizeBatch=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/priority$/.exec(url.pathname);
+        if(prioritizeBatch&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const input=await body(req,4096),batch=store.setBatchPriority(prioritizeBatch[1],input?.priority);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});contentWorker?.wake();return;}
+        const retryContent=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/items\/(osm:(?:node|way|relation):\d+)\/retry$/.exec(url.pathname);
+        if(retryContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const batch=store.retryBatchItem(retryContent[1],retryContent[2]);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch item not found."}});contentWorker?.wake();return;}
+        const contentPlace=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
+        if(contentPlace&&req.method==="GET"){const place=store.getPlace(contentPlace[1]);json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place not found."}});return;}
+        const approveContent=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)\/approve$/.exec(url.pathname);
+        if(approveContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const input=await body(req,32768),place=store.approvePlaceText(approveContent[1],input?.story??null);
+          if(place)for(const profileId of place.audioProfiles??[])await store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId});
+          json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
+        const revoiceContent=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)\/audio$/.exec(url.pathname);
+        if(revoiceContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const input=await body(req,4096),place=store.getPlace(revoiceContent[1]);
+          if(!place?.text||place.text.verification!=="editorial"){json(res,404,{error:{code:"NOT_FOUND",message:"Approved place text not found."}});return;}
+          const audioJob=await store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId:input.profileId??localTts.defaultProfile});
+          json(res,200,{place,audioJob});return;}
+        const retryAudio=/^\/api\/story-admin\/content\/audio\/(${UUID})\/retry$/.exec(url.pathname);
+        if(retryAudio&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const audioJob=store.retryExternalAudio(retryAudio[1]);json(res,audioJob?200:404,audioJob?{audioJob}:{error:{code:"NOT_FOUND",message:"Failed audio job not found."}});return;}
         const walkRegenerateMatch=/^\/api\/story-admin\/walks\/([a-z0-9][a-z0-9-]{0,127})\/regenerate$/.exec(url.pathname);
         if(walkRegenerateMatch&&req.method==="POST") {
           if(url.search)throw failure("BAD_REQUEST");
@@ -163,7 +313,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const result=store.listAdmin({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",stage:url.searchParams.get("stage")??"",relevance:url.searchParams.get("relevance")??"active"});
           json(res,200,{jobs:result.jobs.map(job=>adminSummary(job,safeError)),hasMore:result.hasMore});return;
         }
-        const match=new RegExp(`^/api/story-admin/jobs/(${UUID})(?:/(edit|approve|relevance|revoice|retry|regenerate))?$`).exec(url.pathname);
+        const match=new RegExp(`^/api/story-admin/jobs/(${UUID})(?:/(edit|approve|relevance|revoice|retry|regenerate|external-audio))?$`).exec(url.pathname);
         if(match&&((req.method==="GET"&&!match[2])||(req.method==="POST"&&match[2]))) {
           let job;
           if(req.method==="GET") {job=store.get(match[1]);if(job&&(job.kind??"address")!=="address")job=null;}
@@ -172,13 +322,18 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
               json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;
             }
             const input=await body(req,match[2]==="edit"?32768:2048);
-            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!["revision",...(match[2]==="edit"?["draft"]:match[2]==="relevance"?["irrelevant"]:["ttsProvider","ttsVoice"])].includes(key)))throw failure("BAD_REQUEST");
+            const allowed=match[2]==="edit"?["revision","draft"]:match[2]==="relevance"?["revision","irrelevant"]:match[2]==="external-audio"?["revision","profileId"]:["revision","ttsProvider","ttsVoice"];
+            if(!Number.isSafeInteger(input.revision)||input.revision<0||Object.keys(input).some(key=>!allowed.includes(key)))throw failure("BAD_REQUEST");
             if(match[2]==="relevance") {
               job=store.setRelevanceAdmin(match[1],input.revision,input.irrelevant);
             } else if(match[2]==="edit") {
               const draft=input.draft;
               if(!draft||typeof draft!=="object"||Array.isArray(draft)||Object.keys(draft).some(key=>!["title","paragraphs"].includes(key))||!Array.isArray(draft.paragraphs)||draft.paragraphs.some(p=>!p||typeof p!=="object"||Array.isArray(p)||Object.keys(p).some(key=>!["text","factIds"].includes(key))))throw failure("BAD_REQUEST");
               job=store.editAdmin(match[1],input.revision,draft);
+            } else if(match[2]==="external-audio") {
+              const source=store.get(match[1]);
+              if(!source||source.revision!==input.revision){job=null;}
+              else {const audioJob=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story:source.data?.story,profileId:input.profileId??localTts.defaultProfile});json(res,200,{job:adminDetail(source,Boolean(provider||yandexTts),safeError,ttsProviders,Boolean(provider)),audioJob});return;}
             } else {
               const selected=input.ttsProvider===undefined?"openai":input.ttsProvider;
               if(!["openai","yandex"].includes(selected))throw failure("BAD_REQUEST");
@@ -197,6 +352,15 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         json(res,404,{error:{code:"NOT_FOUND",message:"Admin endpoint not found."}});return;
       }
       if(req.method==="GET"&&url.pathname==="/api/story-service") {json(res,200,{enabled:Boolean(provider),version:1});return;}
+      if(req.method==="GET"&&url.pathname==="/api/content/places") {
+        const entries=[...url.searchParams],allowed=["limit","offset","q","status","lat","lon","radius"];
+        if(entries.some(([key,value])=>!allowed.includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
+        const nearby=url.searchParams.has("lat")||url.searchParams.has("lon")||url.searchParams.has("radius");
+        json(res,200,store.listPlaces({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",status:url.searchParams.get("status")??"ready",
+          lat:nearby?Number(url.searchParams.get("lat")):null,lon:nearby?Number(url.searchParams.get("lon")):null,radius:nearby?Number(url.searchParams.get("radius")):null}));return;
+      }
+      const publicPlace=/^\/api\/content\/places\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
+      if(req.method==="GET"&&publicPlace){const place=store.getPublishedPlace(publicPlace[1]);json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
       const publishedWalk=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})$/.exec(url.pathname);
       if(req.method==="GET"&&publishedWalk) {
         const route=store.getPublishedWalk(publishedWalk[1]);
@@ -231,15 +395,20 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(!provider) {json(res,503,{error:{message:"Подготовка историй пока недоступна."}});return;}
         const input=await body(req);
         if(url.pathname==="/api/story-jobs") {
-          if(Object.keys(input).some((key)=>key!=="address"))throw failure("BAD_REQUEST");
-          const address=normalizeAddress(input.address);
-          const job=store.createOrGet({key:addressKey(address),address});
+          if(!session||!accountStore){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите, чтобы подготовить историю."}});return;}
+          if(Object.keys(input).some((key)=>!["address","idempotencyKey"].includes(key))||typeof input.idempotencyKey!=="string")throw failure("BAD_REQUEST");
+          const address=normalizeAddress(input.address),key=addressKey(address),existing=store.getByKey?.(key)??null;
+          if(!existing)accountStore.reserveGeneration?.(session.user.id,input.idempotencyKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+          let job;try{job=store.createOrGet({key,address});}catch(error){if(!existing)accountStore.releaseGeneration?.(session.user.id,input.idempotencyKey);throw error;}
+          accountStore.attachRequest(session.user.id,job.id,"create",input.idempotencyKey);
           json(res,200,publicJob(job));worker?.wake();return;
         }
         const retry=new RegExp(`^/api/story-jobs/(${UUID})/retry$`).exec(url.pathname);
         if(retry) {
+          if(!session||!accountStore||!accountStore.ownsRequest(session.user.id,retry[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Задание не найдено."}});return;}
           if(!Number.isInteger(input.revision)||Object.keys(input).some((key)=>key!=="revision"))throw failure("BAD_REQUEST");
-          const job=store.retry(retry[1],input.revision);
+          const quotaKey=`retry-${retry[1]}-${input.revision}`;accountStore.reserveGeneration?.(session.user.id,quotaKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+          let job;try{job=store.retry(retry[1],input.revision);}catch(error){accountStore.releaseGeneration?.(session.user.id,quotaKey);throw error;}
           if(!job){json(res,404,{error:{message:"Задание не найдено."}});return;}
           json(res,200,publicJob(job));worker?.wake();return;
         }
@@ -264,24 +433,37 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
       json(res,404,{error:{message:"Страница не найдена."}});
     } catch(error) {
       if(res.headersSent||res.destroyed)return;
-      const status=["QUEUE_FULL","DAILY_LIMIT"].includes(error.code)?429:["CONFLICT","RETRY_LIMIT"].includes(error.code)?409:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?400:500;
+      const status=["QUEUE_FULL","DAILY_LIMIT","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:error.code==="AUDIO_STORAGE_FULL"?507:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY"].includes(error.code)?409:
+        error.code==="AUDIO_TOO_LARGE"?413:["BAD_AUDIO_TYPE","BAD_AUDIO","AUDIO_CHECKSUM","AUDIO_DURATION"].includes(error.code)?422:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?400:500;
       if(status===500) logs?.captureException(error,{operation:"API request",context:{method:req.method,status}});
       json(res,status,{error:["BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?{code:error.code,message:"Invalid request or draft."}:safeError(error)});
     }
   });
-  server.requestTimeout=15000;server.headersTimeout=10000;server.keepAliveTimeout=5000;
-  return {server,close:async()=>{await worker?.stop();await new Promise((done)=>server.close(done));server.closeAllConnections();}};
+  server.requestTimeout=310000;server.headersTimeout=10000;server.keepAliveTimeout=5000;
+  return {server,close:async()=>{await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop()]);await new Promise((done)=>server.close(done));server.closeAllConnections();await closeAuth();}};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const directory=resolve(process.env.DATA_DIR??"backend/data");
-  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2});
+  if(process.env.WORKER_API_TOKEN&&!process.env.WORKER_LEASE_SECRET)throw new Error("WORKER_LEASE_SECRET is required when WORKER_API_TOKEN is configured");
+  const localTts=loadLocalTtsConfig(process.env);
+  const ttsApiClient=localTts.transport==="http"?createTtsApiClient({baseUrl:process.env.TTS_API_URL,token:process.env.TTS_API_TOKEN}):null;
+  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:process.env.WORKER_LEASE_SECRET,normalizeExternalText:normalizeForSpeech,externalTtsProfiles:localTts.profiles});
   store.recoverInterrupted();
+  store.recoverContentJobs();
   const provider=process.env.OPENAI_API_KEY&&process.env.OPENAI_BASE_URL?createProvider({apiKey:process.env.OPENAI_API_KEY,baseUrl:process.env.OPENAI_BASE_URL,model:process.env.STORY_MODEL,writerModel:process.env.WRITER_MODEL}):null;
   const yandexTts=process.env.YANDEX_TTS_API_KEY?createYandexTts({apiKey:process.env.YANDEX_TTS_API_KEY,voice:process.env.YANDEX_TTS_VOICE||"marina"}):null;
   const logs=createBackendLogger();
   const port=Number(process.env.PORT??4175);
-  const app=createApp({store,provider,yandexTts,origin:process.env.APP_ORIGIN??`http://127.0.0.1:${port}`,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,logs});
+  const appOrigin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
+  const sendAccountCode=async({email,otp,purpose="sign-in"})=>{
+    if(!process.env.RESEND_API_KEY)throw new Error("Email delivery is not configured");
+    const deleting=purpose==="delete-account",response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({from:process.env.AUTH_EMAIL_FROM,to:[email],subject:deleting?"Код удаления аккаунта Отголосок":"Код входа в Отголосок",text:`Ваш код ${deleting?"удаления аккаунта":"входа"}: ${otp}. Он действует 10 минут.`})});
+    if(!response.ok)throw new Error(`Email delivery failed: ${response.status}`);
+  };
+  const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production",sendOTP:sendAccountCode});
+  const accountStore=createAccountStore(authRuntime.database,Date.now,process.env.BETTER_AUTH_SECRET);
+  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,sendAccountCode,closeAuth:authRuntime.close});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});

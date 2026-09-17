@@ -8,7 +8,7 @@ NODE ?= node
 
 .PHONY: help install dev dev-https replay build serve lint typecheck test check clean
 .PHONY: docker-up docker-down docker-logs docker-ps docker-config
-.PHONY: db-dump db-pack db-import db-restore db-info
+.PHONY: db-dump db-pack db-import db-restore db-info db-prune-audio osm-import osm-load
 
 help: ## Показать доступные команды
 	@awk 'BEGIN {FS = ":.*## "; printf "Отголосок\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -75,3 +75,12 @@ db-restore: ## Вернуть последнюю сохранённую лока
 
 db-info: ## Показать состав локальной базы генератора
 	$(NODE) scripts/prod-db.mjs info
+
+db-prune-audio: ## Удалить старые аудиофайлы без ссылок в базе
+	$(NODE) scripts/prune-audio.mjs
+
+osm-import: ## Собрать каталог достопримечательностей; PBF=path/to/Moscow.osm.pbf
+	python scripts/import-osm-attractions.py $(PBF) --output backend/data/osm-attractions.json $(OSM_IMPORT_ARGS)
+
+osm-load: ## Загрузить собранный каталог в SQLite
+	$(NODE) scripts/load-osm-catalog.mjs backend/data/osm-attractions.json
