@@ -17,10 +17,7 @@
 .around-icon{display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;width:44px;min-width:44px;height:44px;border-radius:50%}
 .around-header h1{margin:12px 0 22px;font:800 clamp(2.1rem,8vw,3.1rem)/1.04 var(--font-body),sans-serif;letter-spacing:-1.8px;color:var(--around-green);max-width:100%}
 .around-header h1 span{color:var(--around-orange)}
-.around-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.around-filters,.around-view-toggle{display:flex;gap:6px}
-.around-filters button{min-height:44px;border:1px solid #203e3826;border-radius:24px;background:#fcfaf4;font-size:12px;font-weight:700;padding:0 15px;white-space:nowrap}
-.around-filters button[aria-pressed=true]{background:var(--around-green);border-color:var(--around-green);color:#fff9ed}
+.around-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:8px}
 .around-view-toggle{gap:0;padding:3px;background:#eae9df;border-radius:25px}
 .around-view-toggle button{display:flex;justify-content:center;align-items:center;min-width:44px;height:44px;border:0;border-radius:50%;background:transparent}
 .around-view-toggle svg{width:20px;height:20px}
@@ -123,7 +120,7 @@
 .around-route .story-preview{display:block}
 .around-route .story-number{margin-bottom:20px}
 @media(min-width:700px){.around-header{width:520px;padding:26px 28px 30px;border-radius:0 0 30px 0}.around-header h1{font-size:44px}.around-bottom{left:28px;right:auto;width:430px}.around-locate{top:28px;right:28px}.explore-map .leaflet-bottom.leaflet-right{top:88px;right:18px}.around-nav{left:28px;right:auto;bottom:18px;width:430px;border:1px solid #203e3818;border-radius:24px;box-shadow:0 5px 25px #203e3812}.around-bottom{bottom:116px}.map-attribution{bottom:8px}.explore-map .leaflet-control-scale{margin-bottom:12px;margin-left:auto}.around-content.scroll-view{height:100%;padding-bottom:120px}.scroll-view .around-header{margin:auto;width:760px;max-width:100%}.around-list{padding-top:12px}.around-geo-message{top:230px;left:28px;right:auto;width:430px}}
-@media(max-width:360px){.around-header{padding-left:14px;padding-right:14px}.around-topline{gap:7px;font-size:9px}.around-brand{font-size:17px}.around-header h1{font-size:33px;letter-spacing:-1.5px}.around-filters button{padding:0 11px;font-size:11px}.around-bottom{left:12px;right:12px}.around-location-card,.around-place-card{padding:18px}.around-location-card h2,.around-place-card h2{font-size:20px}.around-view-toggle button{min-width:44px}}
+@media(max-width:360px){.around-header{padding-left:14px;padding-right:14px}.around-topline{gap:7px;font-size:9px}.around-brand{font-size:17px}.around-header h1{font-size:33px;letter-spacing:-1.5px}.around-bottom{left:12px;right:12px}.around-location-card,.around-place-card{padding:18px}.around-location-card h2,.around-place-card h2{font-size:20px}.around-view-toggle button{min-width:44px}}
 @media(max-height:700px){.around-header h1{margin:6px 0 13px}.around-location-card,.around-place-card{padding:16px}.around-location-card p,.around-place-card p{margin-bottom:10px}.around-bottom{bottom:calc(99px + env(safe-area-inset-bottom))}.around-locate{top:205px}.explore-map .leaflet-bottom.leaflet-right{top:260px}}
 @media(prefers-reduced-motion:reduce){.around-shell *{scroll-behavior:auto!important}}
 
@@ -145,8 +142,6 @@
   .around-brand{font-size:17px}
   .around-header h1{font-size:26px;letter-spacing:-1px;margin:6px 0 10px}
   .around-toolbar{gap:4px}
-  .around-filters{gap:4px}
-  .around-filters button{padding:0 7px;font-size:11px}
   .around-bottom{left:auto;right:max(12px,env(safe-area-inset-right));width:calc(50% - 24px);bottom:calc(98px + env(safe-area-inset-bottom));max-height:calc(100% - 110px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain;pointer-events:auto;border-radius:26px}
   .around-bottom .around-location-card,.around-bottom .around-place-card{max-height:none}
   .around-locate{top:auto;right:auto;left:max(18px,env(safe-area-inset-left));bottom:calc(98px + env(safe-area-inset-bottom))}
