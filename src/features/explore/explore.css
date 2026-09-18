@@ -17,7 +17,6 @@
 .around-icon{display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;width:44px;min-width:44px;height:44px;border-radius:50%}
 .around-header h1{margin:12px 0 22px;font:800 clamp(2.1rem,8vw,3.1rem)/1.04 var(--font-body),sans-serif;letter-spacing:-1.8px;color:var(--around-green);max-width:100%}
 .around-header h1 span{color:var(--around-orange)}
-.around-title-break{display:none}
 .around-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .around-filters,.around-view-toggle{display:flex;gap:6px}
 .around-filters button{min-height:44px;border:1px solid #203e3826;border-radius:24px;background:#fcfaf4;font-size:12px;font-weight:700;padding:0 15px;white-space:nowrap}
