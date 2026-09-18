@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
-export const PIPELINE_VERSION = "place-history-v5";
+export const PIPELINE_VERSION = "place-history-v6";
+export const EDITORIAL_EVIDENCE_VERSION = 2;
 export const TERMINAL = new Set(["ready", "failed", "insufficient_evidence", "review_required"]);
 export const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 export function failure(code, message = code) { return Object.assign(new Error(message), { code }); }
@@ -55,7 +56,7 @@ const shortText = (value, max) => typeof value === "string" && value.trim().leng
 export function validateFacts(result, sources, { requireEditorialScope = false } = {}) {
   if (result.addressConfirmed !== true) throw failure("ADDRESS_UNCLEAR");
   if (!shortText(result.placeName, 160) || !shortText(result.resolvedAddress, 200) || !Array.isArray(result.facts)) throw failure("INVALID_MODEL_OUTPUT");
-  const seen = new Set();let nextId=1;
+  const seen = new Set(),seenClaims=new Set();let nextId=1;
   const facts = result.facts.slice(0, 8).flatMap((fact) => {
     const id = `f${nextId}`;
     if (!fact || seen.has(fact.id) || !shortText(fact.claim, 600) || !Array.isArray(fact.evidence)) return [];
@@ -65,20 +66,30 @@ export function validateFacts(result, sources, { requireEditorialScope = false }
     if (scoped && (!["architecture", "place_history"].includes(fact.topic) ||
         !["building", "site", "nearby"].includes(fact.scope) || !shortText(fact.location, 240) ||
         (fact.scope === "nearby" && (!Number.isFinite(fact.distanceMeters) || fact.distanceMeters <= 0 || fact.distanceMeters > 300)))) return [];
+    if (requireEditorialScope && (!["identity", "address", "content"].includes(fact.kind) ||
+        !["object", "site_context", "nearby"].includes(fact.subjectRelation) ||
+        (fact.kind === "content" && !shortText(fact.contentReason, 300)) ||
+        (fact.kind === "address" && fact.subjectRelation !== "object"))) return [];
+    const claimKey=comparable(fact.claim);
+    if(requireEditorialScope&&seenClaims.has(claimKey))return [];
     const evidence = fact.evidence.slice(0, 3).filter((proof) => {
       const source = sources.find((item) => item.id === proof?.sourceId);
       return source && shortText(proof.quote, 500) && proof.quote.trim().length >= 18 &&
         comparable(source.text).includes(comparable(proof.quote));
     });
     if (!evidence.length) return [];
-    seen.add(fact.id ?? id);nextId++;
+    seen.add(fact.id ?? id);if(requireEditorialScope)seenClaims.add(claimKey);nextId++;
     return [{ id, claim: fact.claim, interesting: fact.interesting === true,
       ...(scoped ? {topic:fact.topic,scope:fact.scope,location:fact.location.trim(),distanceMeters:fact.scope === "nearby" ? fact.distanceMeters : null} : {}),
+      ...(requireEditorialScope ? {kind:fact.kind,subjectRelation:fact.subjectRelation,
+        ...(fact.kind === "content" ? {contentReason:fact.contentReason.trim()} : {})} : {}),
       evidence: evidence.map(({sourceId, quote}) => ({sourceId, quote})) }];
   });
   const used = new Set(facts.flatMap((fact) => fact.evidence.map((proof) => proof.sourceId)));
-  if (!facts.length) throw failure("INSUFFICIENT_EVIDENCE");
-  return { placeName: result.placeName.trim(), resolvedAddress: result.resolvedAddress.trim(), facts,
+  if (!facts.length || (requireEditorialScope && !facts.some(fact=>fact.kind === "content"))) throw failure("INSUFFICIENT_EVIDENCE");
+  return { ...(requireEditorialScope?{version:EDITORIAL_EVIDENCE_VERSION}:result.version===undefined?{}:{version:result.version}),
+    identityNote:shortText(result.identityNote,1000)?result.identityNote.trim():undefined,
+    placeName: result.placeName.trim(), resolvedAddress: result.resolvedAddress.trim(), facts,
     sources: sources.filter((source) => used.has(source.id)) };
 }
 
