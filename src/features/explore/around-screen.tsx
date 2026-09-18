@@ -28,7 +28,6 @@ const distanceLabel=(meters:number)=>meters<1000?`≈ ${Math.round(meters/50)*50
 export function AroundScreen({route,onStart,children,updateAvailable}: {route:Route;onStart:(chapter?:number)=>void;children:ReactNode;updateAvailable:boolean}) {
   const [tab,setTab]=useState<Tab>("nearby");
   const [view,setView]=useState<"map"|"list">("map");
-  const [filter,setFilter]=useState<"all"|"walk">("all");
   const [search,setSearch]=useState(false),[query,setQuery]=useState("");
   const [selected,setSelected]=useState<string>();
   const [place,setPlace]=useState<Place|null>(null),[placeBusy,setPlaceBusy]=useState(false),[placeError,setPlaceError]=useState("");
@@ -90,7 +89,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
     return [...chapters,MELNIKOV,...own,...places.filter(place=>![...chapters,MELNIKOV,...own].some(existing=>existing.id===place.id))];
   },[route,tracked,jobs,catalog]);
   const recommendations=useMemo(()=>nearbyCenter?recommendNearbyStories(nearbyCenter,nearbyRadius,[...nearbyStoryCatalog(route),...catalog.filter(place=>place.audio&&place.story).map(place=>({id:place.id,title:place.story!.title,address:place.address??place.name,location:place.location,durationSec:place.audio!.durationSec,sourceCount:place.story!.sources?.length??1,factCount:place.story!.facts?.length??1}))]):[],[nearbyCenter,nearbyRadius,route,catalog]);
-  const visible=useMemo(()=>pins.filter(pin=>filter!=="walk"||pin.chapter!==undefined).sort((a,b)=>user?distance(user,a.location)-distance(user,b.location):0),[pins,filter,user]);
+  const visible=useMemo(()=>[...pins].sort((a,b)=>user?distance(user,a.location)-distance(user,b.location):0),[pins,user]);
   const active=pins.find(pin=>pin.id===selected);
   const mapItems=useMemo(()=>place?[...visible,{id:"picked-place",title:place.address??"Выбранное место",location:place.location,pending:true}]:visible,[visible,place]);
   const readyCount=pins.filter(pin=>pin.duration).length;
@@ -111,7 +110,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
     if(geoTimer.current)clearTimeout(geoTimer.current);
     setGeo(user?"ready":"idle");setGeoMessage("");
     setPlaceBusy(false);setPlaceError("");setPlace(null);setSelected(undefined);
-    setPrompt(false);setSearch(false);setFilter("all");setView("map");setTab("nearby");setNearbyCenter(null);
+    setPrompt(false);setSearch(false);setView("map");setTab("nearby");setNearbyCenter(null);
     setFocus({lat:55.74,lon:37.62,zoom:12});
   }
   function openSearch(){setTab("nearby");setSearch(true);setPrompt(false);}
@@ -160,7 +159,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
       <header className="around-header">
         <div className="around-topline"><Link href="/" prefetch={false} className="around-brand">отголосок<span>.</span></Link><button className="around-city" type="button" onClick={openMoscow} title="Показать Москву на карте" aria-label={`Москва · ${readyCount} аудиоисторий. Показать на карте`}><span>Москва</span> · {readyCount} аудиоисторий</button><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>
         {tab==="walk"?<h1 id="around-title" tabIndex={-1}>Пойдём гулять.</h1>:null}
-        {tab==="nearby"?<div className="around-toolbar"><div className="around-filters" aria-label="Истории"><button type="button" aria-pressed={filter==="all"} onClick={()=>setFilter("all")}>Все истории</button><button type="button" aria-pressed={filter==="walk"} onClick={()=>setFilter("walk")}>По дороге</button></div><div className="around-view-toggle" aria-label="Вид"><button type="button" aria-label="Карта" aria-pressed={view==="map"} onClick={()=>setView("map")}><ExploreIcon name="map"/></button><button type="button" aria-label="Список историй" aria-pressed={view==="list"} onClick={()=>setView("list")}><ExploreIcon name="list"/></button></div></div>:null}
+        {tab==="nearby"?<div className="around-toolbar"><div className="around-view-toggle" aria-label="Вид"><button type="button" aria-label="Карта" aria-pressed={view==="map"} onClick={()=>setView("map")}><ExploreIcon name="map"/></button><button type="button" aria-label="Список историй" aria-pressed={view==="list"} onClick={()=>setView("list")}><ExploreIcon name="list"/></button></div></div>:null}
         {search?<form className="around-search" onSubmit={submitSearch}><label htmlFor="map-address">Какой дом вас интересует?</label><div><input id="map-address" ref={input} value={query} onChange={event=>setQuery(event.target.value)} minLength={3} maxLength={180} required placeholder="Улица и номер дома в Москве" autoComplete="off"/><button type="submit" disabled={placeBusy||query.trim().length<3} aria-label="Найти дом"><ExploreIcon name="arrow"/></button></div><Link href={`/create?${new URLSearchParams(query.trim()?{address:query.trim()}:{new:"1"})}`} prefetch={false}>Ввести адрес для истории вручную →</Link></form>:null}
       </header>
 
