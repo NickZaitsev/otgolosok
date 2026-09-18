@@ -194,6 +194,6 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
         {updateAvailable?<a className="around-update" href="/update.html">Доступна новая версия · обновить</a>:null}
       </div>
     </>:null}
-    <nav className="around-nav" aria-label="Основная навигация">{([{id:"nearby",label:"Рядом",icon:"map"},{id:"walk",label:"Прогулка",icon:"walk"}] as const).map(item=><button key={item.id} type="button" aria-current={tab===item.id?"page":undefined} onClick={()=>{setTab(item.id);setSearch(false);}}><ExploreIcon name={item.icon}/><span>{item.label}</span></button>)}<Link href="/walk" prefetch={false}><ExploreIcon name="plus"/><span>Создать</span></Link><Link href="/account" prefetch={false}><ExploreIcon name="bookmark"/><span>Кабинет</span></Link></nav>
+    <nav className="around-nav" aria-label="Основная навигация">{([{id:"nearby",label:"Рядом",icon:"map"},{id:"walk",label:"Прогулка",icon:"walk"}] as const).map(item=><button key={item.id} type="button" aria-current={tab===item.id?"page":undefined} onClick={()=>{setTab(item.id);setSearch(false);}}><ExploreIcon name={item.icon}/><span>{item.label}</span></button>)}<Link href="/walk" prefetch={false}><ExploreIcon name="plus"/><span>Создать</span></Link><Link href="/account" prefetch={false}><ExploreIcon name="user"/><span>Кабинет</span></Link></nav>
   </>;
 }
