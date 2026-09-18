@@ -1,4 +1,4 @@
-import { failure, validateFacts } from "./domain.mjs";
+import { EDITORIAL_EVIDENCE_VERSION, failure, validateFacts } from "./domain.mjs";
 import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
 import { sourceText } from "./source-text.mjs";
 import { researchPrompt, factsPrompt } from "./prompts.mjs";
@@ -24,6 +24,12 @@ function researchSources(research) {
       seen.add(url);return [{url,title:(source.title||new URL(url).hostname).slice(0,250)}];
     } catch{return [];}
   });
+}
+
+function invalidateEditorialCheckpoint(data) {
+  const retained={...data};
+  for(const key of ["evidence","draft","review","draftCandidateRaw","factReview","editorialVersion"])delete retained[key];
+  return retained;
 }
 
 export const errorMessages = {
@@ -67,8 +73,12 @@ export async function runJob(initial, options) {
     return result;
   };
   try {
+    if(!job.data.story&&job.data.evidence?.version!==EDITORIAL_EVIDENCE_VERSION){
+      const retained=invalidateEditorialCheckpoint(job.data);
+      deadline.throwIfAborted();job=store.update(job.id,{stage:job.data.sources?"verifying":"researching",data:retained},job.revision);
+    }
     // An approved story is a complete text checkpoint; continuation is audio-only.
-    if (!job.data.story && !job.data.evidence && !job.data.research) {
+    if (!job.data.story && !job.data.evidence && !job.data.research && !job.data.sources) {
       const research = await call("research",researchPrompt(job.address),{search:true,timeoutMs:180000,maxTokens:3000});
       const sources = researchSources(research);
       if (!sources.length) throw failure("INSUFFICIENT_EVIDENCE");
@@ -104,7 +114,7 @@ export async function runJob(initial, options) {
       const facts = await requestStructured(provider,factsPrompt(job.address,job.data.sources),{signal:deadline,timeoutMs:150000,maxTokens:5500});
       update(job.stage,{usage:[...(job.data.usage ?? []),{stage:"facts",model:facts.model,usage:facts.usage}]});
       update("verifying",{factReview:facts.value});
-      update("writing",{evidence:validateFacts(facts.value,job.data.sources,{requireEditorialScope:true})});
+      update("writing",{evidence:validateFacts(facts.value,job.data.sources,{requireEditorialScope:true}),editorialVersion:EDITORIAL_EVIDENCE_VERSION});
     }
     if (options.researchOnly) return job;
     if (!job.data.story) {

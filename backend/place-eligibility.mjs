@@ -1,6 +1,6 @@
 const informativeName = value => typeof value === "string" && value.trim().length >= 4 && !/^[А-ЯЁA-Z](?:\.\s*[А-ЯЁA-Z])?\.?(?:\s+[А-ЯЁа-яё-]+)?$/u.test(value.trim());
 
-export const CONTENT_PROFILE_VERSION = "2";
+export const CONTENT_PROFILE_VERSION = "3";
 export function assessPlaceEligibility(place) {
   const tags=place?.tags??{},signals=[];
   if(Number.isFinite(place?.location?.lat)&&Number.isFinite(place?.location?.lon))signals.push("coordinates");

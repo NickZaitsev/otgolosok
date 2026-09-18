@@ -18,7 +18,7 @@ function fixture(t, config = {}) {
   const events = [], calls = { research: 0, facts: 0, draft: 0, review: 0, audio: 0, discovery: 0, route: 0 };
   const text = 'Это описание здания с проверяемыми сведениями об архитектуре и истории. '.repeat(10);
   const urls = ['https://first.example/history', 'https://second.example/history'];
-  const facts = Array.from({ length: 5 }, (_, i) => ({ id: `f${i+1}`, claim: `Факт ${i+1}`, topic: 'architecture', scope: 'building', location: 'Москва, Тестовая улица, 2',
+  const facts = Array.from({ length: 5 }, (_, i) => ({ id: `f${i+1}`, claim: `Факт ${i+1}`, kind:'content', subjectRelation:'object', contentReason:'Раскрывает архитектуру здания', topic: 'architecture', scope: 'building', location: 'Москва, Тестовая улица, 2',
     evidence: [{ sourceId: i%2 ? 's2' : 's1', quote: 'Это описание здания с проверяемыми сведениями об архитектуре и истории.' }] }));
   const paragraph = 'История этого дома помогает понять архитектуру города и заметить детали его прошлого. '.repeat(8).trim();
   const options = { store, audioDirectory: 'unused',
@@ -27,9 +27,9 @@ function fixture(t, config = {}) {
     fetchPage: async url => ({ url, html: text }),
     provider: { response: async (prompt, opts) => {
       if (opts.search) { calls.research++; events.push('research'); return { text:'Источники найдены',sources:urls.map(url=>({url,title:'Источник'})),model:'mock',usage:{},citedUrls:urls }; }
-      if (opts.maxTokens === 5500) { calls.facts++; return { value:{ addressConfirmed: true, placeName: 'Дом', resolvedAddress: candidates[0].place.address, facts },model:'mock',usage:{} }; }
+      if (opts.maxTokens === 5500) { calls.facts++; return { value:{ addressConfirmed: true, identityNote:'Источник описывает этот дом', placeName: 'Дом', resolvedAddress: candidates[0].place.address, facts },model:'mock',usage:{} }; }
       if (opts.maxTokens === 3200) { calls.draft++; events.push('draft'); return { text:`${paragraph}\n\n${paragraph}`,model:'mock',usage:{} }; }
-      calls.review++; return { value:{ approved: true, issues: [], paragraphFacts:[{paragraph:1,factIds:['f1','f2','f3']},{paragraph:2,factIds:['f4','f5']}] },model:'mock',usage:{} };
+      calls.review++; return { value:{ approved: true, issues: [], checks:{substantive:true,subjectAligned:true,audioClear:true},paragraphFacts:[{paragraph:1,factIds:['f1','f2','f3']},{paragraph:2,factIds:['f4','f5']}],claims:[{paragraph:1,text:'История этого дома',factIds:['f1','f2','f3'],supported:true,address:false},{paragraph:2,text:'История этого дома',factIds:['f4','f5'],supported:true,address:false}] },model:'mock',usage:{} };
     } },
     narrate: async () => { calls.audio++; events.push('audio'); assert.ok(events.includes('route')); return { url: `/api/story-audio/${'a'.repeat(64)}.mp3`, durationSec: 100 }; },
   };

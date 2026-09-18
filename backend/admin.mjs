@@ -48,6 +48,9 @@ const draftView = (value) => value == null ? null : {
 const factsView = (value) => array(value, 8).map((f) => {
   const fact = object(f);
   return { id: text(fact.id, 16), claim: text(fact.claim, 600), interesting: fact.interesting === true,
+    ...(["identity","address","content"].includes(fact.kind) ? {kind:fact.kind} : {}),
+    ...(["object","site_context","nearby"].includes(fact.subjectRelation) ? {subjectRelation:fact.subjectRelation} : {}),
+    ...(typeof fact.contentReason === "string" ? {contentReason:text(fact.contentReason,300)} : {}),
     evidence: array(fact.evidence, 3).map((p) => ({ sourceId: text(object(p).sourceId, 16), quote: text(object(p).quote, 500) })) };
 });
 
@@ -102,14 +105,16 @@ export function adminDetail(job, providerAvailable, safeError, ttsProviders = []
     revoice: data.revoice == null ? null : { requestedAt: text(object(data.revoice).requestedAt, 40) },
     editorDraft: draftView(data.editorDraft), draft: draftView(data.draft), draftCandidate: draftView(data.draftCandidate),
     evidence: data.evidence == null ? null : {
-      placeName: text(evidence.placeName, 160), resolvedAddress: text(evidence.resolvedAddress, 200), facts: factsView(evidence.facts),
+      placeName: text(evidence.placeName, 160), resolvedAddress: text(evidence.resolvedAddress, 200),
+      identityNote:text(evidence.identityNote,1000),facts: factsView(evidence.facts),
       sources: array(evidence.sources, 10).map((s) => {
         const source = object(s); let url = null;
         try { url = validateSourceUrl(source.url).href; } catch { /* Never expose unsafe links. */ }
         return { id: text(source.id, 16), url, title: text(source.title, 250), publisher: text(source.publisher, 250) };
       }),
     },
-    review: data.review == null ? null : { approved: review.approved === true, issues: array(review.issues, 20).filter(v => typeof v === "string").map(v => text(v)) },
+    review: data.review == null ? null : { approved: review.approved === true, issues: array(review.issues, 20).filter(v => typeof v === "string").map(v => text(v)),
+      checks:{substantive:object(review.checks).substantive===true,subjectAligned:object(review.checks).subjectAligned===true,audioClear:object(review.checks).audioClear===true} },
     factReview: data.factReview == null ? null : { addressConfirmed: factReview.addressConfirmed === true,
       identityNote: text(factReview.identityNote), placeName: text(factReview.placeName, 160),
       resolvedAddress: text(factReview.resolvedAddress, 200), facts: factsView(factReview.facts) },
