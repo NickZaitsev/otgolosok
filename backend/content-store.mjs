@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { sha256 } from "./domain.mjs";
 import { CONTENT_PROFILE_VERSION } from "./place-eligibility.mjs";
+import { osmPostalAddress } from "./osm-context.mjs";
 
 const encode = JSON.stringify;
 const decode = value => value == null ? null : JSON.parse(value);
@@ -8,8 +9,7 @@ const iso = now => new Date(now()).toISOString();
 const fail = (code, message=code) => Object.assign(new Error(message),{code});
 
 function addressOf(place) {
-  const street=place.tags?.["addr:street"],number=place.tags?.["addr:housenumber"];
-  return street&&number?`Москва, ${street}, ${number}`:null;
+  return osmPostalAddress(place.tags);
 }
 
 function viewPlace(row) {

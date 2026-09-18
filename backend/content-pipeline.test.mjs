@@ -13,3 +13,36 @@ test("auto approval queues audio only for full stories",async t=>{const f=fixtur
 test("source access failure is distinct from missing evidence",async t=>{const f=fixture(t);const result=await runContentJob(f.store.claimContentJob(),{store:f.store,provider:f.provider,fetchPage:async()=>{throw Object.assign(new Error(),{code:"SOURCE_BLOCKED"});}});assert.equal(result.error.code,"SOURCE_ACCESS_FAILED");assert.equal(result.state,"retry_wait");});
 
 test("content worker honors concurrency",async t=>{const places=Array.from({length:2},(_,index)=>({...catalog.places[0],placeId:`osm:node:${index+1}`,osmId:index+1,name:`Место ${index+1}`}));const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces({...catalog,places});store.createBatch({requestKey:"pipeline-concurrency",limit:2});let active=0,peak=0,release;const gate=new Promise(resolve=>{release=resolve;});const provider={writerModel:"writer",response:async()=>{active++;peak=Math.max(peak,active);await gate;active--;throw Object.assign(new Error(),{code:"INSUFFICIENT_EVIDENCE"});}};const worker=startContentWorker({store,provider,concurrency:2});await new Promise(resolve=>setTimeout(resolve,20));assert.equal(peak,2);release();await worker.stop();});
+
+test("imported OSM identity reaches research and verification with nearby address hints", async t => {
+  const f = fixture(t);
+  const place = { ...catalog.places[0], name: "Г. Галилею", location: { lat: 55.7523087, lon: 37.6086455 }, tags: { historic: "memorial" } };
+  f.store.importPlaces({ ...catalog, places: [place] });
+  const prompts = [];
+  const response = f.provider.response;
+  f.provider.response = async (prompt, options) => { prompts.push(prompt); return response(prompt, options); };
+  const result = await runContentJob(f.store.claimContentJob(), { store: f.store, provider: f.provider,
+    fetchPage: async url => ({ url, contentType: "text/html", html: f.page }) });
+  assert.equal(result.story.facts.length, 3);
+  for (const prompt of prompts.slice(0, 2)) {
+    const context = JSON.parse(prompt.match(/^OSM PLACE CONTEXT[^:]*: (.+)$/m)[1]);
+    assert.equal(context.name, "Г. Галилею");
+    assert.equal(context.postalAddress, null);
+    assert.ok(context.searchQueries.some(query => query.startsWith("Памятник Г. Галилею ") && query.includes("рядом с")));
+    assert.ok(context.nearbyLandmarks.length > 0);
+  }
+  assert.equal(f.store.getPlace(place.placeId).name, "Г. Галилею");
+  assert.equal(f.store.getPlace(place.placeId).address, null);
+});
+
+test("enriched search does not bypass failed identity verification", async t => {
+  const f = fixture(t);
+  f.queue[1].value.addressConfirmed = false;
+  f.queue[1].value.identityNote = "В источнике описан другой памятник";
+  const result = await runContentJob(f.store.claimContentJob(), { store: f.store, provider: f.provider,
+    fetchPage: async url => ({ url, contentType: "text/html", html: f.page }) });
+  assert.equal(result.state, "review_required");
+  assert.equal(result.error.code, "ADDRESS_UNCLEAR");
+  assert.equal(f.queue.length, 2);
+  assert.equal(f.store.getPlace(catalog.places[0].placeId).text, null);
+});
