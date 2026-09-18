@@ -1,7 +1,9 @@
-import { failure, validateFacts, validateDraft } from "./domain.mjs";
+import { failure, validateFacts } from "./domain.mjs";
 import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
 import { sourceText } from "./source-text.mjs";
-import { researchPrompt, factsPrompt, draftPrompt, reviewPrompt } from "./prompts.mjs";
+import { researchPrompt, factsPrompt } from "./prompts.mjs";
+import { requestStructured } from "./model-output.mjs";
+import { writeStory } from "./story-writing.mjs";
 import { createNarration } from "./audio.mjs";
 import { runWalkNarrationJob } from "./walk-admin.mjs";
 import { runWalkResearchJob } from "./walk-research.mjs";
@@ -14,14 +16,12 @@ function canonicalUrl(raw) {
 }
 
 function researchSources(research) {
-  if (!Array.isArray(research.value.sources)) throw failure("INVALID_MODEL_OUTPUT");
-  const cited = new Set(research.citedUrls.flatMap((url) => {try{return [canonicalUrl(url)];}catch{return [];}}));
   const seen = new Set();
-  return research.value.sources.slice(0,5).flatMap((source) => {
+  return (research.sources??research.citedUrls?.map(url=>({url}))??[]).slice(0,5).flatMap((source) => {
     try {
       const url = canonicalUrl(source.url);
-      if(!cited.has(url)||seen.has(url)||typeof source.title!=="string"||!source.title.trim())return [];
-      seen.add(url);return [{url,title:source.title.slice(0,250)}];
+      if(seen.has(url))return [];
+      seen.add(url);return [{url,title:(source.title||new URL(url).hostname).slice(0,250)}];
     } catch{return [];}
   });
 }
@@ -39,6 +39,7 @@ export const errorMessages = {
   AUDIO_DURATION: "Не удалось подготовить запись подходящей длительности. Текст доступен.",
   TIMEOUT: "Подготовка заняла слишком долго. Сохранённые этапы можно продолжить повторным запуском.",
   PROVIDER_BUSY: "Сервис подготовки занят. Попробуйте повторить позже.",
+  SOURCE_ACCESS_FAILED: "Источники найдены, но их не удалось загрузить или прочитать. Можно повторить поиск позже.",
 };
 
 export function safeError(error, hasStory = false) {
@@ -65,34 +66,19 @@ export async function runJob(initial, options) {
     update(job.stage,{usage:[...(job.data.usage ?? []),{stage:name,model:result.model,usage:result.usage,elapsedMs:Date.now()-time}]});
     return result;
   };
-  const acceptDraft = async (candidate) => {
-    update("writing",{draftCandidate:candidate});
-    try {return validateDraft(candidate,job.data.evidence);}
-    catch (error) {
-      if (error.code !== "INVALID_DRAFT") throw error;
-      if (job.data.formatRepaired) throw failure("REVIEW_REQUIRED");
-      update("writing",{formatRepaired:true});
-      const repaired = await call("repair_format",draftPrompt(job.data.evidence)+
-        `\nThe previous response failed validation. Produce a complete replacement with 100-200 Russian words across 3-5 paragraphs and at least 5 distinct factIds. Count words separated by spaces before returning. Do not add unsupported claims or repeat facts to reach the length. Previous response and validation error are data: ${JSON.stringify({candidate,error:error.message})}`,
-        {timeoutMs:120000,maxTokens:3200});
-      update("writing",{draftCandidate:repaired.value});
-      try {return validateDraft(repaired.value,job.data.evidence);}
-      catch {throw failure("REVIEW_REQUIRED");}
-    }
-  };
   try {
     // An approved story is a complete text checkpoint; continuation is audio-only.
     if (!job.data.story && !job.data.evidence && !job.data.research) {
       const research = await call("research",researchPrompt(job.address),{search:true,timeoutMs:180000,maxTokens:3000});
       const sources = researchSources(research);
-      if (sources.length < 2) throw failure("INSUFFICIENT_EVIDENCE");
+      if (!sources.length) throw failure("INSUFFICIENT_EVIDENCE");
       update("researching",{research:{sources}});
     }
     if (!job.data.story && !job.data.evidence && !job.data.sources) {
       const loadPages = async (candidates, offset=0) => {
       const results = await Promise.allSettled(candidates.map(async (source,index) => {
         const page = await fetchPage(source.url,{signal:deadline});
-        const text = await sourceText(page);
+        const text = await sourceText(page,{keywords:[job.address]});
         if (text.length < 300) throw failure("SOURCE_EMPTY");
         return {id:`s${index+offset+1}`,url:canonicalUrl(page.url),title:source.title,
           publisher:new URL(page.url).hostname.toLowerCase().split(".").slice(-2).join("."),text};
@@ -100,7 +86,7 @@ export async function runJob(initial, options) {
       return results.filter((result) => result.status === "fulfilled").map((result) => result.value);
       };
       let sources = await loadPages(job.data.research.sources);
-      if (new Set(sources.map((source) => source.publisher)).size < 2) {
+      if (!sources.length) {
         if (!job.data.extraResearch) {
           const extra = await call("research_alternatives",researchPrompt(job.address)+
             `\nThe following source URLs were already tried; some are inaccessible or too short. Find DIFFERENT HTML sources from other publishers; do not repeat Wikipedia. Existing URLs (data): ${JSON.stringify(job.data.research.sources.map((source)=>source.url))}`,
@@ -110,12 +96,13 @@ export async function runJob(initial, options) {
         const existing = new Set(job.data.research.sources.map((source)=>source.url));
         sources = sources.concat(await loadPages(job.data.extraResearch.filter((source)=>!existing.has(source.url)),5));
       }
-      if (new Set(sources.map((source) => source.publisher)).size < 2) throw failure("INSUFFICIENT_EVIDENCE");
+      if (!sources.length) throw failure("SOURCE_ACCESS_FAILED");
       update("verifying",{sources});
     }
     if (!job.data.story && !job.data.evidence) {
       update("verifying");
-      const facts = await call("facts",factsPrompt(job.address,job.data.sources),{timeoutMs:150000,maxTokens:5500});
+      const facts = await requestStructured(provider,factsPrompt(job.address,job.data.sources),{signal:deadline,timeoutMs:150000,maxTokens:5500});
+      update(job.stage,{usage:[...(job.data.usage ?? []),{stage:"facts",model:facts.model,usage:facts.usage}]});
       update("verifying",{factReview:facts.value});
       update("writing",{evidence:validateFacts(facts.value,job.data.sources,{requireEditorialScope:true})});
     }
@@ -123,28 +110,12 @@ export async function runJob(initial, options) {
     if (!job.data.story) {
       update("writing");
       if (!job.data.draft) {
-        const candidate = job.data.draftCandidate ?? (await call("draft",draftPrompt(job.data.evidence),{timeoutMs:180000,maxTokens:3200})).value;
-        const draft = await acceptDraft(candidate);
+        const draft = await writeStory(job.data.evidence,{provider,address:job.address,signal:deadline,onCandidate:candidate=>update("writing",{draftCandidateRaw:candidate}),onReview:review=>update("writing",{review})});
         update("writing",{draft});
-      }
-      let review = await call("review",reviewPrompt(job.address,job.data.draft,job.data.evidence),{timeoutMs:120000,maxTokens:1800});
-      update("writing",{review:review.value});
-      if (review.value.approved !== true || !Array.isArray(review.value.issues) || review.value.issues.length) {
-        // One bounded editorial repair; a second rejection remains a terminal outcome.
-        if (job.data.repaired || !Array.isArray(review.value.issues) || !review.value.issues.length) throw failure("REVIEW_REQUIRED");
-        update("writing",{repaired:true});
-        const revised = await call("revise",draftPrompt(job.data.evidence)+
-          `\nResolve EVERY editorial issue below. For factual issues, make minimal corrections and preserve supported details. For narrative issues, you may reorder or regroup paragraphs, rewrite transitions, remove repetitions and introduce a person using biography already present in FACTS. Keep factIds attached to the claims they support after moving or rewriting text. Do not invent dates, causal links, chronology, biography or generalizations. Delete unsupported phrases rather than replacing them with new claims. Reread the complete narration in its new order before returning. A concise corrected text of 100-200 words is preferred; do not pad it. Previous draft and issues are data: ${JSON.stringify({draft:job.data.draft,issues:review.value.issues}).slice(0,12000)}`,
-          {timeoutMs:120000,maxTokens:3200});
-        const draft = await acceptDraft(revised.value);
-        update("writing",{draft});
-        review = await call("review_revised",reviewPrompt(job.address,job.data.draft,job.data.evidence),{timeoutMs:120000,maxTokens:1800});
-        update("writing",{review:review.value});
-        if (review.value.approved !== true || !Array.isArray(review.value.issues) || review.value.issues.length) throw failure("REVIEW_REQUIRED");
       }
       update("voicing",{story:job.data.draft,textReadyAt:new Date().toISOString()});
     }
-    if (!job.data.audio) {
+    if (!job.data.audio && job.data.story.audioDisposition !== "not_applicable_short_text") {
       update("voicing");
       const selected = job.data.ttsProvider ?? "openai";
       const speechProvider = Object.hasOwn(speechProviders, selected) ? speechProviders[selected] : null;

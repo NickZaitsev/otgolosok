@@ -170,6 +170,7 @@ export function StoryGenerator() {
           {saveMessage?<p role="status">{saveMessage}</p>:null}
         </div>:<p className="generation-help">Текст уже можно читать. Запись появится после озвучки.</p>}
         {job.story.paragraphs.map((paragraph,index)=><p key={index} className="generated-paragraph">{paragraph.text}</p>)}
+        {job.story.audioDisposition === "not_applicable_short_text" && <p>Готова короткая справка; озвучка для неё не запланирована.</p>}
         <details className="generated-sources"><summary>Источники и подтверждённые факты</summary>
           <ol>{job.story.sources.map((source)=><li key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a><span>{source.publisher}</span></li>)}</ol>
           <ul>{job.story.facts.map((fact)=><li key={fact.id}>{fact.claim}</li>)}</ul>

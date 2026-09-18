@@ -1,4 +1,4 @@
-import { failure, parseModelJson } from "./domain.mjs";
+import { failure } from "./domain.mjs";
 
 export async function boundedBody(response, maximum, signal) {
   if (Number(response.headers.get("content-length")) > maximum) {
@@ -22,6 +22,20 @@ export async function boundedBody(response, maximum, signal) {
   return Buffer.concat(chunks);
 }
 
+const transient = status => status === 429 || status >= 500;
+async function fetchWithRetry(fetchImpl,url,options,signal) {
+  let response;
+  for(let attempt=0;attempt<3;attempt++){
+    try{response=await fetchImpl(url,options);}catch(error){if(attempt===2||signal?.aborted)throw error;response=null;}
+    if(response&&!transient(response.status))return response;
+    if(response&&attempt===2)return response;
+    if(response?.body)await response.body.cancel().catch(()=>{});
+    const delay=Math.min(10000,1000*(2**attempt));
+    await new Promise((resolve,reject)=>{const timer=setTimeout(resolve,delay);const abort=()=>{clearTimeout(timer);reject(signal.reason);};if(signal?.aborted)return abort();signal?.addEventListener('abort',abort,{once:true});});
+  }
+  return response;
+}
+
 export function unpackResponse(bytes, contentType) {
   const text = bytes.toString("utf8");
   if (!contentType.includes("text/event-stream")) return JSON.parse(text);
@@ -41,22 +55,25 @@ export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-med
   const headers = { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" };
   async function response(prompt, { search = false, signal, timeoutMs = 90000, maxTokens = 4500, model: selectedModel = model } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(timeoutMs), ...(signal ? [signal] : [])]);
-    const res = await fetchImpl(`${endpoint}/responses`, { method: "POST", headers, signal: deadline,
+    const res = await fetchWithRetry(fetchImpl,`${endpoint}/responses`, { method: "POST", headers, signal: deadline,
       body: JSON.stringify({ model: selectedModel, store: false, stream: false, input: prompt, max_output_tokens: maxTokens,
-        ...(search ? { tools: [{type:"web_search"}], include:["web_search_call.action.sources"] } : {}) }) });
+        ...(search ? { tools: [{type:"web_search"}], include:["web_search_call.action.sources"] } : {}) }) },deadline);
     if (!res.ok) { await res.body?.cancel(); throw failure(res.status === 429 ? "PROVIDER_BUSY" : "PROVIDER_FAILED"); }
     const payload = unpackResponse(await boundedBody(res, 2000000, deadline), res.headers.get("content-type") ?? "");
     if (payload.status !== "completed") throw failure("PROVIDER_INCOMPLETE");
     const parts = (payload.output ?? []).filter((item) => item.type === "message").flatMap((item) => item.content ?? []);
     const output = parts.filter((part) => part.type === "output_text").map((part) => part.text).join("\n");
-    const citedUrls = new Set(parts.flatMap((part) => part.annotations ?? []).map((item) => item.url).filter(Boolean));
+    if (!output.trim()) throw failure("EMPTY_RESPONSE");
+    const sources = new Map();
+    const addSource = (url, title = "") => { if (typeof url === "string" && !sources.has(url)) sources.set(url,{url,title:typeof title === "string" ? title.slice(0,250) : ""}); };
+    for (const item of parts.flatMap((part) => part.annotations ?? [])) addSource(item.url,item.title);
     for (const item of payload.output ?? []) {
       if (item.type !== "web_search_call") continue;
-      if (item.action?.url) citedUrls.add(item.action.url);
-      for (const source of item.action?.sources ?? []) if (source.url) citedUrls.add(source.url);
+      addSource(item.action?.url,item.action?.title);
+      for (const source of item.action?.sources ?? []) addSource(source.url,source.title);
     }
     if (search && !(payload.output ?? []).some((item) => item.type === "web_search_call")) throw failure("NO_SEARCH_EVIDENCE");
-    return { value: parseModelJson(output), citedUrls: [...citedUrls], usage: payload.usage ?? null, model: selectedModel };
+    return { text: output, sources: [...sources.values()], citedUrls: [...sources.keys()], usage: payload.usage ?? null, model: selectedModel };
   }
   async function speech(script, { signal, voice: selectedVoice = voice } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(150000), ...(signal ? [signal] : [])]);

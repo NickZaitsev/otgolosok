@@ -85,11 +85,18 @@ test('rejects declared or streamed oversized responses', async () => {
   await assert.rejects(fetchSource('http://example.com/', {
     lookup, maxBytes: 3,
     request: fakeRequest((_o, cb) => cb(response(200, { 'content-type': 'text/plain', 'content-length': '4' })), []),
-  }), { code: 'TOO_LARGE' });
+  }), { code: 'SOURCE_TOO_LARGE' });
   await assert.rejects(fetchSource('http://example.com/', {
     lookup, maxBytes: 3,
     request: fakeRequest((_o, cb) => cb(response(200, { 'content-type': 'text/plain' }, ['four'])), []),
-  }), { code: 'TOO_LARGE' });
+  }), { code: 'SOURCE_TOO_LARGE' });
+
+test('PDF has a separate 25 MiB default limit', async () => {
+  const lookup=async()=>[{address:'8.8.8.8',family:4}],bytes=Buffer.alloc(1200001,1);bytes.write('%PDF-1.7');
+  const result=await fetchSource('https://example.com/large.pdf',{lookup,request:fakeRequest((_o,cb)=>cb(response(200,{'content-type':'application/pdf'},[bytes])),[])});
+  assert.equal(result.bytes.length,bytes.length);
+  await assert.rejects(fetchSource('https://example.com/large.pdf',{lookup,maxPdfBytes:bytes.length-1,request:fakeRequest((_o,cb)=>cb(response(200,{'content-type':'application/pdf'},[bytes])),[])}),{code:'SOURCE_TOO_LARGE'});
+});
 });
 
 test('a redirect is DNS-revalidated and cannot reach a private answer', async () => {
