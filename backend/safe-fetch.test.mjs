@@ -69,6 +69,17 @@ test('pins a validated answer and returns a bounded text response', async () => 
   await new Promise((resolve, reject) => seen[0].lookup('ignored', { all: true }, (e, rows) => e ? reject(e) : (assert.deepEqual(rows, [{ address: '8.8.8.8', family: 4 }]), resolve())));
 });
 
+test('returns a bounded PDF as bytes for isolated text extraction', async () => {
+  const bytes=Buffer.from('%PDF-1.7 fixture');
+  const result=await fetchSource('https://example.com/source.pdf',{
+    lookup:async()=>[{address:'8.8.8.8',family:4}],
+    request:fakeRequest((_options,cb)=>cb(response(200,{'content-type':'application/pdf','content-length':String(bytes.length)},[bytes])),[]),
+  });
+  assert.equal(result.url,'https://example.com/source.pdf');
+  assert.equal(result.contentType,'application/pdf');
+  assert.deepEqual(result.bytes,bytes);
+});
+
 test('rejects declared or streamed oversized responses', async () => {
   const lookup = async () => [{ address: '8.8.8.8', family: 4 }];
   await assert.rejects(fetchSource('http://example.com/', {
