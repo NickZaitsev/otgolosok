@@ -39,6 +39,8 @@ const array = (value, max) => Array.isArray(value) ? value.slice(0, max) : [];
 const object = (value) => value && typeof value === "object" && !Array.isArray(value) ? value : {};
 const draftView = (value) => value == null ? null : {
   title: draftText(object(value).title, 140),
+  ...(["story-v1","description-v1"].includes(object(value).effectiveProfile) ? {effectiveProfile:object(value).effectiveProfile} : {}),
+  ...(object(value).audioDisposition === "not_applicable_short_text" ? {audioDisposition:"not_applicable_short_text"} : {}),
   paragraphs: array(object(value).paragraphs, 6).map((p) => ({
     text: draftText(object(p).text), factIds: array(object(p).factIds, 8).filter(id => typeof id === "string" && /^f[1-8]$/.test(id)),
   })),
@@ -56,7 +58,8 @@ export function hasValidStoryText(value) {
   const paragraphs = story.paragraphs.map((paragraph) => object(paragraph).text);
   if (paragraphs.some((paragraph) => typeof paragraph !== "string" || !paragraph.trim() || paragraph.length > 2000)) return false;
   const wordCount = paragraphs.join(" ").trim().split(/\s+/u).length;
-  return wordCount >= 100 && wordCount <= 250;
+  const profile=story.effectiveProfile??story.requestedProfile??"story-v1";
+  return profile==="description-v1"?wordCount>=20&&wordCount<=100:wordCount>=100&&wordCount<=250;
 }
 
 const selectedVoice = (data) => validVoiceId(data.ttsVoice) ? data.ttsVoice

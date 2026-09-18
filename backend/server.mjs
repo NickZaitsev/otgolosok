@@ -237,7 +237,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const input=await body(req,4096),batch=store.setBatchPriority(prioritizeBatch[1],input?.priority);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});contentWorker?.wake();return;}
         const retryContent=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/items\/(osm:(?:node|way|relation):\d+)\/retry$/.exec(url.pathname);
         if(retryContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
-          const batch=store.retryBatchItem(retryContent[1],retryContent[2]);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch item not found."}});contentWorker?.wake();return;}
+          const input=await body(req,1024),restartFrom=input.restartFrom??"auto";if(Object.keys(input).some(key=>key!=="restartFrom"))throw failure("BAD_REQUEST");
+          const batch=store.retryBatchItem(retryContent[1],retryContent[2],{restartFrom});json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch item not found."}});contentWorker?.wake();return;}
         const contentPlace=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
         if(contentPlace&&req.method==="GET"){const place=store.getPlace(contentPlace[1]);json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place not found."}});return;}
         const approveContent=/^\/api\/story-admin\/content\/places\/(osm:(?:node|way|relation):\d+)\/approve$/.exec(url.pathname);

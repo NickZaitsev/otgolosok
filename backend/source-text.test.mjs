@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sourceText } from './source-text.mjs';
+import { classifySourceText, sourceText } from './source-text.mjs';
 
 function pdfFixture(text) {
   const escape=value=>value.replaceAll('\\','\\\\').replaceAll('(','\\(').replaceAll(')','\\)');
@@ -33,4 +33,10 @@ test('extracts text from a real PDF fixture',async()=>{
 test('rejects empty and malformed PDF sources',async()=>{
   await assert.rejects(sourceText({contentType:'application/pdf',bytes:Buffer.alloc(0)}),{code:'SOURCE_EMPTY'});
   await assert.rejects(sourceText({contentType:'application/pdf',bytes:Buffer.from('not a pdf')}),{code:'SOURCE_INVALID'});
+});
+
+test('classifies bot challenges and JavaScript shells',()=>{
+  assert.throws(()=>classifySourceText('KillBot user verification','<html>KillBot user verification</html>'),{code:'SOURCE_BLOCKED'});
+  assert.throws(()=>classifySourceText('РУТ (МИИТ)','<script>window.__NEXT_DATA__={}</script>'),{code:'SOURCE_DYNAMIC_CONTENT'});
+  assert.equal(classifySourceText('Статья упоминает KillBot как исследовательский проект без проверки пользователя.'),'Статья упоминает KillBot как исследовательский проект без проверки пользователя.');
 });

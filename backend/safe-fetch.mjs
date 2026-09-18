@@ -23,13 +23,14 @@ for (const [address, prefix] of [
 
 const codes = new Set([
   'INVALID_URL', 'DNS_REJECTED', 'TIMEOUT', 'ABORTED', 'NETWORK_ERROR',
-  'REDIRECT_LIMIT', 'BAD_STATUS', 'BAD_CONTENT_TYPE', 'TOO_LARGE',
+  'REDIRECT_LIMIT', 'BAD_STATUS', 'BAD_CONTENT_TYPE', 'SOURCE_TOO_LARGE',
 ]);
 const acceptedTypes = new Set(['text/html', 'application/xhtml+xml', 'text/plain', 'application/pdf']);
 
-function problem(code) {
+function problem(code, details = {}) {
   const error = new Error(code);
   error.code = code;
+  Object.assign(error, details);
   return error;
 }
 
@@ -102,7 +103,7 @@ function contentType(headers) {
   return typeof type === 'string' ? type.split(';', 1)[0].trim().toLowerCase() : '';
 }
 
-function requestOnce(url, addresses, request, signal, maxBytes) {
+function requestOnce(url, addresses, request, signal, limits) {
   return new Promise((resolve, reject) => {
     if (signal.aborted) return reject(signal.reason || problem('ABORTED'));
     let done = false;
@@ -138,7 +139,7 @@ function requestOnce(url, addresses, request, signal, maxBytes) {
           return response.destroy?.();
         }
         if (status !== 200) {
-          finish(problem('BAD_STATUS'));
+          finish(problem('BAD_STATUS',{status,retryable:status===429||status>=500}));
           return response.destroy?.();
         }
         const type = contentType(response.headers);
@@ -146,17 +147,18 @@ function requestOnce(url, addresses, request, signal, maxBytes) {
           finish(problem('BAD_CONTENT_TYPE'));
           return response.destroy?.();
         }
+        const maximum = type === 'application/pdf' ? limits.maxPdfBytes : limits.maxTextBytes;
         const length = Number(response.headers?.['content-length']);
-        if (Number.isFinite(length) && length > maxBytes) {
-          finish(problem('TOO_LARGE'));
+        if (Number.isFinite(length) && length > maximum) {
+          finish(problem('SOURCE_TOO_LARGE',{contentType:type,maximumBytes:maximum,declaredBytes:length}));
           return response.destroy?.();
         }
         const chunks = [];
         let size = 0;
         response.on('data', (chunk) => {
           size += Buffer.byteLength(chunk);
-          if (size > maxBytes) {
-            finish(problem('TOO_LARGE'));
+          if (size > maximum) {
+            finish(problem('SOURCE_TOO_LARGE',{contentType:type,maximumBytes:maximum,receivedBytes:size}));
             response.destroy?.();
           } else chunks.push(Buffer.from(chunk));
         });
@@ -177,10 +179,11 @@ function requestOnce(url, addresses, request, signal, maxBytes) {
 
 /** Fetch one small, public text source, pinning each DNS resolution to a checked IP. */
 export async function fetchSource(input, {
-  signal, timeoutMs = 15000, maxBytes = 1200000,
+  signal, timeoutMs = 30000, maxBytes, maxTextBytes = 1200000, maxPdfBytes = 25 * 1024 * 1024,
   lookup = dns.promises.lookup, request,
 } = {}) {
-  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0 || !Number.isFinite(maxBytes) || maxBytes < 0) {
+  if (maxBytes !== undefined) maxTextBytes = maxPdfBytes = maxBytes;
+  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0 || !Number.isFinite(maxTextBytes) || maxTextBytes < 0 || !Number.isFinite(maxPdfBytes) || maxPdfBytes < 0) {
     throw problem('INVALID_URL');
   }
   const controller = new AbortController();
@@ -194,7 +197,7 @@ export async function fetchSource(input, {
     for (let redirects = 0; ; redirects++) {
       const addresses = await resolvePublic(url, lookup, controller.signal);
       const transport = url.protocol === 'https:' ? https : http;
-      const result = await requestOnce(url, addresses, request || transport.request.bind(transport), controller.signal, maxBytes);
+      const result = await requestOnce(url, addresses, request || transport.request.bind(transport), controller.signal, {maxTextBytes,maxPdfBytes});
       if (!('redirect' in result)) return result.type === 'application/pdf'
         ? { url: url.href, contentType: result.type, bytes: result.bytes }
         : { url: url.href, contentType: result.type, html: result.html };

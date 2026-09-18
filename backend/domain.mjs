@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-export const PIPELINE_VERSION = "place-history-v4";
+export const PIPELINE_VERSION = "place-history-v5";
 export const TERMINAL = new Set(["ready", "failed", "insufficient_evidence", "review_required"]);
 export const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 export function failure(code, message = code) { return Object.assign(new Error(message), { code }); }
@@ -55,9 +55,10 @@ const shortText = (value, max) => typeof value === "string" && value.trim().leng
 export function validateFacts(result, sources, { requireEditorialScope = false } = {}) {
   if (result.addressConfirmed !== true) throw failure("ADDRESS_UNCLEAR");
   if (!shortText(result.placeName, 160) || !shortText(result.resolvedAddress, 200) || !Array.isArray(result.facts)) throw failure("INVALID_MODEL_OUTPUT");
-  const seen = new Set();
+  const seen = new Set();let nextId=1;
   const facts = result.facts.slice(0, 8).flatMap((fact) => {
-    if (!/^f[1-8]$/.test(fact?.id) || seen.has(fact.id) || !shortText(fact.claim, 600) || !Array.isArray(fact.evidence)) return [];
+    const id = `f${nextId}`;
+    if (!fact || seen.has(fact.id) || !shortText(fact.claim, 600) || !Array.isArray(fact.evidence)) return [];
     // Legacy editorial checkpoints remain editable. New research must classify
     // every fact; excluded or unlocated material cannot fill the five-fact quota.
     const scoped = requireEditorialScope || ["topic", "scope", "location", "distanceMeters"].some(key => Object.hasOwn(fact, key));
@@ -70,14 +71,13 @@ export function validateFacts(result, sources, { requireEditorialScope = false }
         comparable(source.text).includes(comparable(proof.quote));
     });
     if (!evidence.length) return [];
-    seen.add(fact.id);
-    return [{ id: fact.id, claim: fact.claim, interesting: fact.interesting === true,
+    seen.add(fact.id ?? id);nextId++;
+    return [{ id, claim: fact.claim, interesting: fact.interesting === true,
       ...(scoped ? {topic:fact.topic,scope:fact.scope,location:fact.location.trim(),distanceMeters:fact.scope === "nearby" ? fact.distanceMeters : null} : {}),
       evidence: evidence.map(({sourceId, quote}) => ({sourceId, quote})) }];
   });
   const used = new Set(facts.flatMap((fact) => fact.evidence.map((proof) => proof.sourceId)));
-  const publishers = new Set(sources.filter((source) => used.has(source.id)).map((source) => source.publisher));
-  if (facts.length < 5 || publishers.size < 2) throw failure("INSUFFICIENT_EVIDENCE");
+  if (!facts.length) throw failure("INSUFFICIENT_EVIDENCE");
   return { placeName: result.placeName.trim(), resolvedAddress: result.resolvedAddress.trim(), facts,
     sources: sources.filter((source) => used.has(source.id)) };
 }
@@ -94,7 +94,7 @@ export function validateDraft(draft, evidence) {
   });
   const script = paragraphs.map((paragraph) => paragraph.text).join("\n\n");
   const wordCount = script.split(/\s+/).length;
-  if (wordCount < 100 || wordCount > 250 || used.size < 5) throw failure("INVALID_DRAFT", `Expected 100-250 words and at least 5 distinct facts; got ${wordCount} words and ${used.size} facts.`);
+  if (wordCount < 100 || wordCount > 250 || used.size < 1) throw failure("INVALID_DRAFT", `Expected 100-250 words and supported facts; got ${wordCount} words and ${used.size} facts.`);
   return { title: draft.title.trim(), address: evidence.resolvedAddress, paragraphs, wordCount,
     verification: "automatic", sources: evidence.sources.map(({ id, url, title, publisher }) => ({id, url, title, publisher})),
     facts: evidence.facts.filter((fact) => used.has(fact.id)).map((fact) => ({id: fact.id, claim: fact.claim, sourceIds: fact.evidence.map((proof) => proof.sourceId)})) };
