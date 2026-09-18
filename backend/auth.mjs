@@ -2,31 +2,17 @@ import { DatabaseSync } from "node:sqlite";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { betterAuth } from "better-auth";
 import { getMigrations } from "better-auth/db/migration";
-import { emailOTP } from "better-auth/plugins";
 
-const noopDelivery = async () => {
-  if (process.env.NODE_ENV !== "test") console.info("Authentication email delivery is not configured.");
-};
-
-export async function createAuth({ databasePath, baseURL, secret, sendOTP = noopDelivery, production = process.env.NODE_ENV === "production" }) {
+export async function createAuth({ databasePath, baseURL, secret, production = process.env.NODE_ENV === "production" }) {
   if (!baseURL) throw new Error("APP_ORIGIN is required for authentication");
   if (production && (!secret || secret.length < 32)) throw new Error("BETTER_AUTH_SECRET must contain at least 32 characters");
   const database = new DatabaseSync(databasePath, { timeout: 5000 });
   database.exec("PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000; PRAGMA foreign_keys = ON");
-  database.exec(`CREATE TABLE IF NOT EXISTS auth_email_limits(
-    dimension TEXT NOT NULL, value_hash TEXT NOT NULL, sent_at INTEGER NOT NULL
-  ); CREATE INDEX IF NOT EXISTS auth_email_limits_lookup ON auth_email_limits(dimension,value_hash,sent_at);`);
-  const protectedDelivery=async (value,ctx)=>{
-    const cutoff=Date.now()-3600000,hmac=input=>createHmac("sha256",secret||"development-only-better-auth-secret-32").update(input).digest("hex"),emailHash=hmac(String(value.email).trim().toLowerCase()),ip=ctx?.request?.headers?.get?.("x-real-ip")??"unknown",ipHash=hmac(ip);
-    database.prepare("DELETE FROM auth_email_limits WHERE sent_at<?").run(cutoff);
-    const count=(dimension,valueHash)=>database.prepare("SELECT count(*) AS n FROM auth_email_limits WHERE dimension=? AND value_hash=? AND sent_at>=?").get(dimension,valueHash,cutoff).n;
-    if(count("email",emailHash)>=5||count("ip",ipHash)>=20||count("global","all")>=Number(process.env.AUTH_EMAIL_HOURLY_CAP??1000))throw Object.assign(new Error("Too many email requests"),{status:429});
-    await sendOTP(value);const sent=Date.now(),insert=database.prepare("INSERT INTO auth_email_limits VALUES(?,?,?)");insert.run("email",emailHash,sent);insert.run("ip",ipHash,sent);insert.run("global","all",sent);
-  };
   const options = {
     appName: "Отголосок", baseURL, basePath: "/api/auth", database,
     secret: secret || "development-only-better-auth-secret-32",
-    trustedOrigins: [baseURL], emailAndPassword: { enabled: false },
+    trustedOrigins: [baseURL],
+    emailAndPassword: { enabled: true, minPasswordLength: 10, maxPasswordLength: 128 },
     user: { additionalFields: { role: { type: "string", required: false, defaultValue: "user", input: false } } },
     // Better Auth refreshes expiresAt at most once a day. Seven days is the
     // inactivity window; authSession separately enforces the 30 day absolute
@@ -44,10 +30,6 @@ export async function createAuth({ databasePath, baseURL, secret, sendOTP = noop
       cookies: { session_token: { name: production ? "__Host-otgolosok-session" : "otgolosok.session" } },
       ipAddress: { ipAddressHeaders: ["x-real-ip"] },
     },
-    plugins: [emailOTP({
-      expiresIn: 600, allowedAttempts: 5, storeOTP: "hashed", resendStrategy: "rotate",
-      rateLimit: { window: 3600, max: 20 }, sendVerificationOTP: protectedDelivery,
-    })],
   };
   const { runMigrations } = await getMigrations(options);
   await runMigrations();
@@ -67,6 +49,20 @@ export async function authSession(auth, req) {
   const created = new Date(value.session.createdAt).getTime();
   if (!Number.isFinite(created) || Date.now() - created > 30 * 24 * 60 * 60 * 1000) return null;
   return value;
+}
+
+export async function verifySessionPassword(auth, req, password) {
+  if (typeof password !== "string" || !password) return false;
+  const headers = new Headers();
+  for (const [name, value] of Object.entries(req.headers)) {
+    if (Array.isArray(value)) value.forEach(item => headers.append(name, item));
+    else if (value !== undefined) headers.set(name, value);
+  }
+  const requestOrigin = req.headers.origin ?? `http://${req.headers.host ?? "localhost"}`;
+  const response = await auth.handler(new Request(new URL("/api/auth/verify-password", requestOrigin), {
+    method: "POST", headers, body: JSON.stringify({ password }),
+  }));
+  return response.ok;
 }
 
 export function sessionCsrfToken(secret, sessionId) {

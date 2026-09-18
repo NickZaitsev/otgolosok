@@ -15,8 +15,9 @@ export async function getSession(): Promise<AuthUser | null> {
   if (!response.ok) return null;
   const value=await response.json();if(value.csrfToken)sessionStorage.setItem(CSRF_KEY,value.csrfToken);return value.user ?? null;
 }
-export const sendLoginCode = (email: string) => api("/api/auth/email-otp/send-verification-otp", { method:"POST", body:JSON.stringify({email,type:"sign-in"}) });
-export const verifyLoginCode = async (email: string, otp: string) => {const value=await api("/api/auth/sign-in/email-otp", { method:"POST", body:JSON.stringify({email,otp}) });localStorage.removeItem("otgolosok:auth:offline-logout");await getSession();return value;};
+async function completeAuthentication(path:string,body:Record<string,string>,message:string){try{const value=await api(path,{method:"POST",body:JSON.stringify(body)});localStorage.removeItem("otgolosok:auth:offline-logout");await getSession();return value;}catch(error){throw new Error(message,{cause:error});}}
+export const signInWithPassword = (email:string,password:string) => completeAuthentication("/api/auth/sign-in/email",{email,password},"Неверный email или пароль.");
+export const signUpWithPassword = (name:string,email:string,password:string) => completeAuthentication("/api/auth/sign-up/email",{name,email,password},"Не удалось создать аккаунт. Возможно, этот email уже используется.");
 function announceSignOut(){try{new BroadcastChannel("otgolosok:auth").postMessage("signed-out");}catch{/* Optional cross-tab signal. */}localStorage.setItem("otgolosok:auth:event",String(Date.now()));}
 async function revokePending(){if(!localStorage.getItem("otgolosok:auth:offline-logout"))return;await api("/api/auth/sign-out",{method:"POST",body:"{}"});localStorage.removeItem("otgolosok:auth:offline-logout");}
 if(typeof window!=="undefined"){addEventListener("online",()=>void revokePending().catch(()=>{}));void revokePending().catch(()=>{});}
