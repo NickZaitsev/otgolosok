@@ -25,6 +25,7 @@ const codes = new Set([
   'INVALID_URL', 'DNS_REJECTED', 'TIMEOUT', 'ABORTED', 'NETWORK_ERROR',
   'REDIRECT_LIMIT', 'BAD_STATUS', 'BAD_CONTENT_TYPE', 'TOO_LARGE',
 ]);
+const acceptedTypes = new Set(['text/html', 'application/xhtml+xml', 'text/plain', 'application/pdf']);
 
 function problem(code) {
   const error = new Error(code);
@@ -125,7 +126,7 @@ function requestOnce(url, addresses, request, signal, maxBytes) {
     const options = {
       protocol: url.protocol, hostname: addressHost, port: url.port || undefined,
       path: `${url.pathname}${url.search}`, method: 'GET', lookup,
-      headers: { Host: url.host, Accept: 'text/html,application/xhtml+xml,text/plain', 'Accept-Encoding': 'identity', 'User-Agent': 'Otgolosok/0.1 (+https://otgolosok.softmg.tech)' },
+      headers: { Host: url.host, Accept: 'text/html,application/xhtml+xml,text/plain,application/pdf', 'Accept-Encoding': 'identity', 'User-Agent': 'Otgolosok/0.1 (+https://otgolosok.softmg.tech)' },
       servername: isIP(addressHost) ? undefined : addressHost, rejectUnauthorized: true,
     };
     try {
@@ -141,7 +142,7 @@ function requestOnce(url, addresses, request, signal, maxBytes) {
           return response.destroy?.();
         }
         const type = contentType(response.headers);
-        if (!['text/html', 'application/xhtml+xml', 'text/plain'].includes(type)) {
+        if (!acceptedTypes.has(type)) {
           finish(problem('BAD_CONTENT_TYPE'));
           return response.destroy?.();
         }
@@ -160,8 +161,9 @@ function requestOnce(url, addresses, request, signal, maxBytes) {
           } else chunks.push(Buffer.from(chunk));
         });
         response.once('end', () => {
+          const bytes = Buffer.concat(chunks);
           const charset = /charset\s*=\s*["']?([\w-]+)/i.exec(response.headers?.['content-type'] ?? '')?.[1] ?? 'utf-8';
-          try { finish(null, { type, html: new TextDecoder(charset).decode(Buffer.concat(chunks)) }); }
+          try { finish(null, type === 'application/pdf' ? { type, bytes } : { type, html: new TextDecoder(charset).decode(bytes) }); }
           catch { finish(problem('BAD_CONTENT_TYPE')); }
         });
       });
@@ -193,7 +195,9 @@ export async function fetchSource(input, {
       const addresses = await resolvePublic(url, lookup, controller.signal);
       const transport = url.protocol === 'https:' ? https : http;
       const result = await requestOnce(url, addresses, request || transport.request.bind(transport), controller.signal, maxBytes);
-      if (!('redirect' in result)) return { url: url.href, contentType: result.type, html: result.html };
+      if (!('redirect' in result)) return result.type === 'application/pdf'
+        ? { url: url.href, contentType: result.type, bytes: result.bytes }
+        : { url: url.href, contentType: result.type, html: result.html };
       if (!result.redirect) throw problem('BAD_STATUS');
       if (redirects >= 3) throw problem('REDIRECT_LIMIT');
       try { url = validateSourceUrl(new URL(result.redirect, url).href); }

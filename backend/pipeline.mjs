@@ -1,5 +1,6 @@
-import { failure, pageText, validateFacts, validateDraft } from "./domain.mjs";
+import { failure, validateFacts, validateDraft } from "./domain.mjs";
 import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
+import { sourceText } from "./source-text.mjs";
 import { researchPrompt, factsPrompt, draftPrompt, reviewPrompt } from "./prompts.mjs";
 import { createNarration } from "./audio.mjs";
 import { runWalkNarrationJob } from "./walk-admin.mjs";
@@ -91,7 +92,7 @@ export async function runJob(initial, options) {
       const loadPages = async (candidates, offset=0) => {
       const results = await Promise.allSettled(candidates.map(async (source,index) => {
         const page = await fetchPage(source.url,{signal:deadline});
-        const text = pageText(page.html).slice(0,14000);
+        const text = await sourceText(page);
         if (text.length < 300) throw failure("SOURCE_EMPTY");
         return {id:`s${index+offset+1}`,url:canonicalUrl(page.url),title:source.title,
           publisher:new URL(page.url).hostname.toLowerCase().split(".").slice(-2).join("."),text};

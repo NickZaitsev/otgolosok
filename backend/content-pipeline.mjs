@@ -1,5 +1,6 @@
-import { failure, pageText, validateFacts, validateDraft } from "./domain.mjs";
+import { failure, validateFacts, validateDraft } from "./domain.mjs";
 import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
+import { sourceText } from "./source-text.mjs";
 import { factsPrompt, draftPrompt, reviewPrompt } from "./prompts.mjs";
 
 function validateContentDraft(draft,evidence,profile) {
@@ -48,7 +49,7 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,si
   const call=async(prompt,options={})=>{const result=await provider.response(prompt,{...options,signal:deadline});const tokens=Object.values(result.usage??{}).reduce((sum,value)=>sum+(Number(value)||0),0);if(tokens)save({usageTokens:Number(checkpoint.usageTokens??0)+tokens});return result;};
   try {
     if(!checkpoint.research){const research=await call(placePrompt(job.place),{search:true,timeoutMs:180000,maxTokens:3000});const sources=sourcesFrom(research);if(sources.length<2)throw failure("INSUFFICIENT_EVIDENCE");save({research:{sources}});}
-    if(!checkpoint.sources){const results=await Promise.allSettled(checkpoint.research.sources.map(async(source,index)=>{const page=await fetchPage(source.url,{signal:deadline});const text=pageText(page.html).slice(0,14000);if(text.length<300)throw failure("SOURCE_EMPTY");return{id:`s${index+1}`,url:page.url,title:source.title,publisher:new URL(page.url).hostname.split(".").slice(-2).join("."),text};}));
+    if(!checkpoint.sources){const results=await Promise.allSettled(checkpoint.research.sources.map(async(source,index)=>{const page=await fetchPage(source.url,{signal:deadline});const text=await sourceText(page);if(text.length<300)throw failure("SOURCE_EMPTY");return{id:`s${index+1}`,url:page.url,title:source.title,publisher:new URL(page.url).hostname.split(".").slice(-2).join("."),text};}));
       const sources=results.filter(result=>result.status==="fulfilled").map(result=>result.value);if(new Set(sources.map(source=>source.publisher)).size<2)throw failure("INSUFFICIENT_EVIDENCE");save({sources});}
     if(!checkpoint.evidence){const anchor=job.place.address??`${job.place.name}, Москва`;const placeContext={name:job.place.name,address:job.place.address,location:job.place.location,tags:job.place.tags};const facts=await call(factsPrompt(anchor,checkpoint.sources,placeContext),{timeoutMs:150000,maxTokens:5500});
       const raw={...facts.value,addressConfirmed:facts.value.addressConfirmed===true,resolvedAddress:facts.value.resolvedAddress||anchor,placeName:facts.value.placeName||job.place.name};
