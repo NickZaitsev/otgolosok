@@ -16,7 +16,7 @@ import { validateWalkResearch, publicWalkResearch } from "./walk-research.mjs";
 import { createBackendLogger } from "./logs.mjs";
 import { ingestAudio } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
-import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf } from "./auth.mjs";
+import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword } from "./auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
 import { normalizeForSpeech } from "./text-normalizer.mjs";
 import { loadLocalTtsConfig } from "./local-tts.mjs";
@@ -57,7 +57,7 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,sendAccountCode=async()=>{},auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
+export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=createWalkPlanner(),discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
@@ -79,8 +79,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Обновите страницу и повторите действие."}});return;}
         if(url.pathname==="/api/me"&&req.method==="GET"){json(res,200,{user:{id:session.user.id,email:session.user.email,name:session.user.name}});return;}
         if(url.pathname==="/api/me"&&req.method==="PATCH"){const input=await body(req);if(Object.keys(input).some(k=>k!=="name"))throw failure("BAD_REQUEST");const name=accountStore.updateProfile(session.user.id,input.name);json(res,200,{user:{id:session.user.id,email:session.user.email,name}});return;}
-        if(url.pathname==="/api/me/delete-code"&&req.method==="POST"){const code=accountStore.issueDeleteCode(session.user.id);await sendAccountCode({email:session.user.email,otp:code,purpose:"delete-account"});json(res,200,{success:true});return;}
-        if(url.pathname==="/api/me"&&req.method==="DELETE"){const input=await body(req);if(Object.keys(input).some(key=>key!=="code")||!accountStore.verifyDeleteCode(session.user.id,input.code)){json(res,403,{error:{code:"DELETE_CODE_INVALID",message:"Неверный или просроченный код удаления."}});return;}store.revokeWalkResearchAccess?.(accountStore.researchJobIds(session.user.id));accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
+        if(url.pathname==="/api/me"&&req.method==="DELETE"){const input=await body(req);if(Object.keys(input).some(key=>key!=="password")||!await verifySessionPassword(auth,req,input.password)){json(res,403,{error:{code:"PASSWORD_INVALID",message:"Неверный пароль."}});return;}store.revokeWalkResearchAccess?.(accountStore.researchJobIds(session.user.id));accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
         const accountQuery=()=>{const entries=[...url.searchParams];if(entries.some(([key,value])=>!['limit','cursor'].includes(key)||(key==='limit'&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure('BAD_REQUEST');return {limit:Number(url.searchParams.get('limit')??20),after:url.searchParams.get('cursor')};};
         if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,...Object.values(accountQuery())));return;}
         if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
@@ -456,14 +455,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const logs=createBackendLogger();
   const port=Number(process.env.PORT??4175);
   const appOrigin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
-  const sendAccountCode=async({email,otp,purpose="sign-in"})=>{
-    if(!process.env.RESEND_API_KEY)throw new Error("Email delivery is not configured");
-    const deleting=purpose==="delete-account",response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{Authorization:`Bearer ${process.env.RESEND_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({from:process.env.AUTH_EMAIL_FROM,to:[email],subject:deleting?"Код удаления аккаунта Отголосок":"Код входа в Отголосок",text:`Ваш код ${deleting?"удаления аккаунта":"входа"}: ${otp}. Он действует 10 минут.`})});
-    if(!response.ok)throw new Error(`Email delivery failed: ${response.status}`);
-  };
-  const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production",sendOTP:sendAccountCode});
-  const accountStore=createAccountStore(authRuntime.database,Date.now,process.env.BETTER_AUTH_SECRET);
-  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,sendAccountCode,closeAuth:authRuntime.close});
+  const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production"});
+  const accountStore=createAccountStore(authRuntime.database);
+  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});
