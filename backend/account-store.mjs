@@ -1,4 +1,4 @@
-import { createHmac, randomInt, randomUUID, timingSafeEqual } from "node:crypto";
+import { randomUUID } from "node:crypto";
 
 const encode = JSON.stringify;
 const decode = value => JSON.parse(value);
@@ -19,7 +19,7 @@ const validateSnapshot = snapshot => {
   return snapshot;
 };
 
-export function createAccountStore(db, now = Date.now, secret = "development-only-account-secret") {
+export function createAccountStore(db, now = Date.now) {
   db.exec(`PRAGMA foreign_keys = ON;
     CREATE TABLE IF NOT EXISTS user_walks (
       id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE,
@@ -50,10 +50,7 @@ export function createAccountStore(db, now = Date.now, secret = "development-onl
       units INTEGER NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(user_id,request_id)
     );
     CREATE INDEX IF NOT EXISTS user_generation_quota_owner_created ON user_generation_quota(user_id,created_at);
-    CREATE TABLE IF NOT EXISTS account_delete_codes (
-      user_id TEXT PRIMARY KEY REFERENCES user(id) ON DELETE CASCADE, code_hash TEXT NOT NULL,
-      expires_at TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0
-    );`);
+    `);
   const timestamp = () => new Date(now()).toISOString();
   const cursor = value => { if(!value)return null;try{const parsed=decode(Buffer.from(value,"base64url").toString());if(typeof parsed.time!=="string"||typeof parsed.id!=="string")throw new Error();return parsed;}catch{throw Object.assign(new Error("Invalid cursor"),{code:"BAD_REQUEST"});} };
   const page = (rows,limit,map) => ({items:rows.slice(0,limit).map(map),nextCursor:rows.length>limit?Buffer.from(encode({time:rows[limit-1].updated_at??rows[limit-1].created_at,id:rows[limit-1].id??`${rows[limit-1].object_type}:${rows[limit-1].object_id}`})).toString("base64url"):null});
@@ -75,8 +72,6 @@ export function createAccountStore(db, now = Date.now, secret = "development-onl
     listRequests(userId,limit=50,after=null) {limit=Math.min(50,Math.max(1,limit));const c=cursor(after);const rows=c?db.prepare("SELECT id,job_id,operation,created_at FROM user_generation_requests WHERE user_id=? AND (created_at<? OR (created_at=? AND id<?)) ORDER BY created_at DESC,id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT id,job_id,operation,created_at FROM user_generation_requests WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,row=>({jobId:row.job_id,operation:row.operation,createdAt:row.created_at}));return {requests:result.items,nextCursor:result.nextCursor}; },
     researchJobIds(userId) {return db.prepare("SELECT job_id FROM user_generation_requests WHERE user_id=? AND operation='walk_research'").all(userId).map(row=>row.job_id);},
     importLocal(userId,{importId,walk=null,favorites=[]}) { if(typeof importId!=="string"||!/^[\w.-]{8,100}$/.test(importId)||!Array.isArray(favorites)||favorites.length>100)throw Object.assign(new Error(),{code:"BAD_REQUEST"});const existing=db.prepare("SELECT result_json FROM account_imports WHERE user_id=? AND import_id=?").get(userId,importId);if(existing)return decode(existing.result_json);const result={walk:null,favorites:0};if(walk)result.walk=this.createWalk(userId,{...walk,idempotencyKey:`import-${importId}`});for(const item of favorites){this.setFavorite(userId,item.type,item.id);result.favorites++;}db.prepare("INSERT INTO account_imports VALUES(?,?,?,?)").run(userId,importId,encode(result),timestamp());return result; },
-    issueDeleteCode(userId) {const code=String(randomInt(0,1_000_000)).padStart(6,"0"),hash=createHmac("sha256",secret).update(`${userId}:${code}`).digest("hex"),expires=new Date(now()+600000).toISOString();db.prepare("INSERT INTO account_delete_codes(user_id,code_hash,expires_at,attempts) VALUES(?,?,?,0) ON CONFLICT(user_id) DO UPDATE SET code_hash=excluded.code_hash,expires_at=excluded.expires_at,attempts=0").run(userId,hash,expires);return code;},
-    verifyDeleteCode(userId,code) {const row=db.prepare("SELECT * FROM account_delete_codes WHERE user_id=?").get(userId);if(!row||row.attempts>=5||new Date(row.expires_at).getTime()<now())return false;db.prepare("UPDATE account_delete_codes SET attempts=attempts+1 WHERE user_id=?").run(userId);const expected=Buffer.from(row.code_hash,"hex"),actual=Buffer.from(createHmac("sha256",secret).update(`${userId}:${String(code)}`).digest("hex"),"hex");if(actual.length!==expected.length||!timingSafeEqual(actual,expected))return false;db.prepare("DELETE FROM account_delete_codes WHERE user_id=?").run(userId);return true;},
     deleteAccountData(userId) { db.exec("BEGIN IMMEDIATE");try{db.prepare("DELETE FROM user WHERE id=?").run(userId);db.exec("COMMIT");}catch(error){db.exec("ROLLBACK");throw error;} },
   };
 }

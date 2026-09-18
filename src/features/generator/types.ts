@@ -1,6 +1,8 @@
 export type GenerationStage = "queued" | "researching" | "verifying" | "writing" | "voicing" | "ready" | "insufficient_evidence" | "review_required" | "failed";
 export type GeneratedStory = {
   title: string; address: string; wordCount: number; verification: "automatic" | "editorial";
+  requestedProfile?: "story-v1" | "description-v1"; effectiveProfile?: "story-v1" | "description-v1";
+  audioDisposition?: "eligible" | "not_applicable_short_text";
   paragraphs: Array<{text: string; factIds: string[]}>;
   sources: Array<{id: string; title: string; url: string; publisher: string}>;
   facts: Array<{id: string; claim: string; sourceIds: string[]}>;

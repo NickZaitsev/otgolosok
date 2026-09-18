@@ -11,6 +11,19 @@ const catalog={source:"fixture",sourceSha256:"a".repeat(64),rulesVersion:"v1",co
   {placeId:"osm:way:2",osmType:"way",osmId:2,name:"Музей",location:{lat:55.76,lon:37.62},tags:{tourism:"museum","addr:street":"Арбат","addr:housenumber":"1"}},
 ]};
 
+test("import retains full and locality addresses without treating a street alone as postal address", t => {
+  const store = createStore(":memory:");
+  t.after(() => store.close());
+  for (const [tags, expected] of [
+    [{ "addr:full": "Москва, Арбат, 1" }, "Москва, Арбат, 1"],
+    [{ "addr:place": "территория музея", "addr:housenumber": "2" }, "Москва, территория музея, 2"],
+    [{ "addr:street": "Арбат" }, null],
+  ]) {
+    store.importPlaces({ ...catalog, places: [{ ...catalog.places[0], tags }] });
+    assert.equal(store.getPlace("osm:node:1").address, expected);
+  }
+});
+
 test("catalog imports idempotently and batches deduplicate text jobs",t=>{
   const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());
   assert.equal(store.importPlaces(catalog).count,2);store.importPlaces(catalog);

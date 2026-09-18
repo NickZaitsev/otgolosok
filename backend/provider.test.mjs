@@ -15,7 +15,7 @@ test("uses the requested writer model and records the actual model used",async()
   assert.equal(review.model,requests[0].body.model);
   assert.equal(draft.model,requests[1].body.model);
   assert.equal(requests[1].url,"https://provider.example/v1/responses");
-  assert.deepEqual(draft.value,{valid:true});
+  assert.equal(draft.text,'{"valid":true}');
 });
 
 test("OpenAI uses each job's selected voice without changing the shared default", async () => {

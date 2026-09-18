@@ -7,35 +7,29 @@ import { createServer } from "node:http";
 import { createAuth,authRequestHandler } from "./auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
 
-test("Better Auth email OTP creates, reads and revokes a Node HTTP session",async t=>{
-  const directory=await mkdtemp(join(tmpdir(),"otg-auth-"));let delivered;
-  const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"http://127.0.0.1",secret:"auth-test-secret-with-more-than-32-characters",production:false,sendOTP:async value=>{delivered=value;}});
+test("Better Auth email and password creates, reads and revokes a Node HTTP session",async t=>{
+  const directory=await mkdtemp(join(tmpdir(),"otg-auth-"));
+  const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"http://127.0.0.1",secret:"auth-test-secret-with-more-than-32-characters",production:false});
   const handler=authRequestHandler(runtime.auth),server=createServer(handler);await new Promise(done=>server.listen(0,"127.0.0.1",done));
-  const base=`http://127.0.0.1:${server.address().port}/api/auth`,headers={Origin:"http://127.0.0.1","Content-Type":"application/json"};
+  const base=`http://127.0.0.1:${server.address().port}/api/auth`,headers={Origin:"http://127.0.0.1","Content-Type":"application/json","X-Real-IP":"127.0.0.1"};
   t.after(async()=>{await new Promise(done=>server.close(done));runtime.close();await rm(directory,{recursive:true,force:true});});
-  const send=await fetch(base+"/email-otp/send-verification-otp",{method:"POST",headers,body:JSON.stringify({email:"User@Example.com",type:"sign-in"})});assert.equal(send.status,200);assert.match(delivered.otp,/^\d{6}$/);
-  const verify=await fetch(base+"/sign-in/email-otp",{method:"POST",headers,body:JSON.stringify({email:"user@example.com",otp:delivered.otp})});assert.equal(verify.status,200);const rawCookie=verify.headers.getSetCookie().find(v=>v.startsWith("otgolosok.session="));assert.match(rawCookie,/HttpOnly/i);assert.match(rawCookie,/SameSite=Lax/i);assert.match(rawCookie,/Path=\//i);assert.doesNotMatch(rawCookie,/; Secure/i);const cookie=verify.headers.getSetCookie().map(v=>v.split(";",1)[0]).join("; ");assert.match(cookie,/otgolosok\.session=/);
+  const shortPassword=await fetch(base+"/sign-up/email",{method:"POST",headers,body:JSON.stringify({name:"Пользователь",email:"short@example.com",password:"short"})});assert.equal(shortPassword.status,400);
+  const signUp=await fetch(base+"/sign-up/email",{method:"POST",headers,body:JSON.stringify({name:"Пользователь",email:"User@Example.com",password:"correct-password"})});assert.equal(signUp.status,200);const rawCookie=signUp.headers.getSetCookie().find(v=>v.startsWith("otgolosok.session="));assert.match(rawCookie,/HttpOnly/i);assert.match(rawCookie,/SameSite=Lax/i);assert.match(rawCookie,/Path=\//i);assert.doesNotMatch(rawCookie,/; Secure/i);const cookie=signUp.headers.getSetCookie().map(v=>v.split(";",1)[0]).join("; ");assert.match(cookie,/otgolosok\.session=/);
   const session=await fetch(base+"/get-session",{headers:{Cookie:cookie}});assert.equal((await session.json()).user.email,"user@example.com");
+  const invalid=await fetch(base+"/sign-in/email",{method:"POST",headers,body:JSON.stringify({email:"user@example.com",password:"wrong-password"})});assert.equal(invalid.status,401);
+  const signIn=await fetch(base+"/sign-in/email",{method:"POST",headers,body:JSON.stringify({email:"user@example.com",password:"correct-password"})});assert.equal(signIn.status,200);
   assert.equal((await fetch(base+"/sign-out",{method:"POST",headers:{...headers,Cookie:cookie},body:"{}"})).status,200);
   assert.equal(await (await fetch(base+"/get-session",{headers:{Cookie:cookie}})).text(),"null");
 });
 
 test("production sessions use a __Host cookie",async t=>{
-  const directory=await mkdtemp(join(tmpdir(),"otg-auth-production-"));const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"https://example.test",secret:"production-test-secret-with-more-than-32-characters",production:true,sendOTP:async value=>{runtime.delivered=value;}});t.after(async()=>{runtime.close();await rm(directory,{recursive:true,force:true});});
-  const send=await runtime.auth.handler(new Request("https://example.test/api/auth/email-otp/send-verification-otp",{method:"POST",headers:{Origin:"https://example.test","Content-Type":"application/json"},body:JSON.stringify({email:"cookie@example.test",type:"sign-in"})}));assert.equal(send.status,200);
-  const handler=authRequestHandler(runtime.auth,true),response=await new Promise(resolve=>{const req={url:"/api/auth/sign-in/email-otp",method:"POST",headers:{host:"example.test",origin:"https://example.test","content-type":"application/json"},[Symbol.asyncIterator]:async function*(){yield Buffer.from(JSON.stringify({email:"cookie@example.test",otp:runtime.delivered.otp}));}};const res={headers:null,status:null,writeHead(status,headers){this.status=status;this.headers=headers;},end(){resolve(this);}};handler(req,res);});
+  const directory=await mkdtemp(join(tmpdir(),"otg-auth-production-"));const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"https://example.test",secret:"production-test-secret-with-more-than-32-characters",production:true});t.after(async()=>{runtime.close();await rm(directory,{recursive:true,force:true});});
+  const handler=authRequestHandler(runtime.auth),response=await new Promise(resolve=>{const req={url:"/api/auth/sign-up/email",method:"POST",headers:{host:"example.test",origin:"https://example.test","content-type":"application/json"},[Symbol.asyncIterator]:async function*(){yield Buffer.from(JSON.stringify({name:"Cookie",email:"cookie@example.test",password:"correct-password"}));}};const res={headers:null,status:null,writeHead(status,headers){this.status=status;this.headers=headers;},end(){resolve(this);}};handler(req,res);});
   const cookie=response.headers["set-cookie"].find(value=>value.startsWith("__Host-otgolosok-session="));assert.ok(cookie);assert.match(cookie,/; Secure/i);assert.match(cookie,/; HttpOnly/i);assert.match(cookie,/; SameSite=Lax/i);assert.match(cookie,/; Path=\//i);assert.doesNotMatch(cookie,/; Domain=/i);
 });
 
-test("OTP delivery is limited per normalized email across restarts",async()=>{
-  const directory=await mkdtemp(join(tmpdir(),"otg-auth-limit-")),path=join(directory,"auth.sqlite");let sent=0;
-  const send=async()=>{sent++;};
-  for(let run=0;run<2;run++){const runtime=await createAuth({databasePath:path,baseURL:"http://localhost",secret:"rate-limit-test-secret-with-more-than-32-characters",production:false,sendOTP:send});for(let index=0;index<(run?1:5);index++){const response=await runtime.auth.handler(new Request("http://localhost/api/auth/email-otp/send-verification-otp",{method:"POST",headers:{Origin:"http://localhost","Content-Type":"application/json","X-Real-IP":`192.0.2.${index+1}`},body:JSON.stringify({email:index%2?"LIMIT@example.com":"limit@example.com",type:"sign-in"})}));assert.equal(response.status,200);}runtime.close();}
-  assert.equal(sent,5);await rm(directory,{recursive:true,force:true});
-});
-
 test("account data is isolated per Better Auth user and updates use revisions",async t=>{
-  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"account-test-secret-with-more-than-32-characters",production:false,sendOTP:async()=>{}});t.after(()=>runtime.close());
+  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"account-test-secret-with-more-than-32-characters",production:false});t.after(()=>runtime.close());
   const db=runtime.database,store=createAccountStore(db),time=new Date().toISOString();
   db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("u1","Один","one@example.com",1,time,time);
   db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("u2","Два","two@example.com",1,time,time);
@@ -44,5 +38,4 @@ test("account data is isolated per Better Auth user and updates use revisions",a
   store.setFavorite("u1","walk","paveletskaya");assert.equal(store.listFavorites("u1").favorites.length,1);assert.equal(store.listFavorites("u2").favorites.length,0);
   const imported=store.importLocal("u1",{importId:"import-0001",walk:{title:"С устройства",snapshot:{version:1}}});assert.equal(store.importLocal("u1",{importId:"import-0001"}).walk.id,imported.walk.id);
   assert.equal(store.reserveGeneration("u1","request-0001",3,6),true);assert.equal(store.reserveGeneration("u1","request-0001",3,6),false);assert.throws(()=>store.reserveGeneration("u1","request-0002",4,6),error=>error.code==="QUOTA_EXCEEDED");assert.equal(store.reserveGeneration("u2","request-0002",4,6),true);
-  const deleteCode=store.issueDeleteCode("u1");assert.match(deleteCode,/^\d{6}$/);assert.equal(store.verifyDeleteCode("u1","000000"),false);assert.equal(store.verifyDeleteCode("u1",deleteCode),true);assert.equal(store.verifyDeleteCode("u1",deleteCode),false);
 });

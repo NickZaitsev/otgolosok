@@ -39,6 +39,8 @@ const array = (value, max) => Array.isArray(value) ? value.slice(0, max) : [];
 const object = (value) => value && typeof value === "object" && !Array.isArray(value) ? value : {};
 const draftView = (value) => value == null ? null : {
   title: draftText(object(value).title, 140),
+  ...(["story-v1","description-v1"].includes(object(value).effectiveProfile) ? {effectiveProfile:object(value).effectiveProfile} : {}),
+  ...(object(value).audioDisposition === "not_applicable_short_text" ? {audioDisposition:"not_applicable_short_text"} : {}),
   paragraphs: array(object(value).paragraphs, 6).map((p) => ({
     text: draftText(object(p).text), factIds: array(object(p).factIds, 8).filter(id => typeof id === "string" && /^f[1-8]$/.test(id)),
   })),
@@ -46,6 +48,9 @@ const draftView = (value) => value == null ? null : {
 const factsView = (value) => array(value, 8).map((f) => {
   const fact = object(f);
   return { id: text(fact.id, 16), claim: text(fact.claim, 600), interesting: fact.interesting === true,
+    ...(["identity","address","content"].includes(fact.kind) ? {kind:fact.kind} : {}),
+    ...(["object","site_context","nearby"].includes(fact.subjectRelation) ? {subjectRelation:fact.subjectRelation} : {}),
+    ...(typeof fact.contentReason === "string" ? {contentReason:text(fact.contentReason,300)} : {}),
     evidence: array(fact.evidence, 3).map((p) => ({ sourceId: text(object(p).sourceId, 16), quote: text(object(p).quote, 500) })) };
 });
 
@@ -56,7 +61,8 @@ export function hasValidStoryText(value) {
   const paragraphs = story.paragraphs.map((paragraph) => object(paragraph).text);
   if (paragraphs.some((paragraph) => typeof paragraph !== "string" || !paragraph.trim() || paragraph.length > 2000)) return false;
   const wordCount = paragraphs.join(" ").trim().split(/\s+/u).length;
-  return wordCount >= 100 && wordCount <= 250;
+  const profile=story.effectiveProfile??story.requestedProfile??"story-v1";
+  return profile==="description-v1"?wordCount>=20&&wordCount<=100:wordCount>=100&&wordCount<=250;
 }
 
 const selectedVoice = (data) => validVoiceId(data.ttsVoice) ? data.ttsVoice
@@ -99,14 +105,16 @@ export function adminDetail(job, providerAvailable, safeError, ttsProviders = []
     revoice: data.revoice == null ? null : { requestedAt: text(object(data.revoice).requestedAt, 40) },
     editorDraft: draftView(data.editorDraft), draft: draftView(data.draft), draftCandidate: draftView(data.draftCandidate),
     evidence: data.evidence == null ? null : {
-      placeName: text(evidence.placeName, 160), resolvedAddress: text(evidence.resolvedAddress, 200), facts: factsView(evidence.facts),
+      placeName: text(evidence.placeName, 160), resolvedAddress: text(evidence.resolvedAddress, 200),
+      identityNote:text(evidence.identityNote,1000),facts: factsView(evidence.facts),
       sources: array(evidence.sources, 10).map((s) => {
         const source = object(s); let url = null;
         try { url = validateSourceUrl(source.url).href; } catch { /* Never expose unsafe links. */ }
         return { id: text(source.id, 16), url, title: text(source.title, 250), publisher: text(source.publisher, 250) };
       }),
     },
-    review: data.review == null ? null : { approved: review.approved === true, issues: array(review.issues, 20).filter(v => typeof v === "string").map(v => text(v)) },
+    review: data.review == null ? null : { approved: review.approved === true, issues: array(review.issues, 20).filter(v => typeof v === "string").map(v => text(v)),
+      checks:{substantive:object(review.checks).substantive===true,subjectAligned:object(review.checks).subjectAligned===true,audioClear:object(review.checks).audioClear===true} },
     factReview: data.factReview == null ? null : { addressConfirmed: factReview.addressConfirmed === true,
       identityNote: text(factReview.identityNote), placeName: text(factReview.placeName, 160),
       resolvedAddress: text(factReview.resolvedAddress, 200), facts: factsView(factReview.facts) },
