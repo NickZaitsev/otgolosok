@@ -63,6 +63,7 @@
 .around-geo-help .around-text-button{min-height:44px;margin:0;padding:10px 0}
 .around-bottom{position:absolute;z-index:3;left:18px;right:18px;bottom:calc(108px + env(safe-area-inset-bottom));pointer-events:none}
 .around-bottom>section,.around-bottom>div,.around-bottom>a{pointer-events:auto}
+.around-bottom>.around-place-card+.around-primary{margin-top:12px}
 .around-bottom .around-geo-message{position:static;width:auto;margin:0 0 8px;pointer-events:auto}
 .around-location-card,.around-place-card{padding:22px;border:1px solid #ffffffb3;border-radius:26px;background:#fffaf0;box-shadow:0 12px 40px #263d3424;max-height:calc(100svh - 260px);overflow:auto}
 .around-location-card{text-align:center}
