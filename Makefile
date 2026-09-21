@@ -5,10 +5,16 @@ SHELL := /bin/sh
 PNPM ?= pnpm
 DOCKER_COMPOSE ?= docker compose
 NODE ?= node
+VPS ?= services@93.189.230.19
+GENERATOR_CONTAINER ?= otgolosok-generator-generator-1
+
+# Quote arguments for the local shell and, for SSH, again for the remote shell.
+shell_quote = '$(subst ','"'"',$(1))'
 
 .PHONY: help install dev dev-https replay build serve lint typecheck test check clean
 .PHONY: docker-up docker-down docker-logs docker-ps docker-config
 .PHONY: db-dump db-pack db-import db-restore db-info db-prune-audio osm-import osm-load
+.PHONY: admin-create admin-create-prod
 
 help: ## Показать доступные команды
 	@awk 'BEGIN {FS = ":.*## "; printf "Отголосок\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -60,6 +66,14 @@ docker-ps: ## Show Docker stack status and health
 
 docker-config: ## Validate Compose without printing credentials
 	$(DOCKER_COMPOSE) config --quiet
+
+admin-create: ## Создать редактора локально; EMAIL=ваш@email.ru [AUTH_DB_PATH=путь]
+	@test -n $(call shell_quote,$(EMAIL)) || { printf '%s\n' 'Укажите EMAIL: make admin-create EMAIL=ваш@email.ru' >&2; exit 1; }
+	@$(NODE) scripts/set-editor.mjs $(call shell_quote,$(EMAIL)) $(if $(AUTH_DB_PATH),$(call shell_quote,$(AUTH_DB_PATH)))
+
+admin-create-prod: ## Создать редактора на проде через SSH; EMAIL=ваш@email.ru
+	@test -n $(call shell_quote,$(EMAIL)) || { printf '%s\n' 'Укажите EMAIL: make admin-create-prod EMAIL=ваш@email.ru' >&2; exit 1; }
+	@ssh -t -- $(call shell_quote,$(VPS)) $(call shell_quote,docker exec -it -- $(call shell_quote,$(GENERATOR_CONTAINER)) node /app/editor-account.mjs $(call shell_quote,$(EMAIL)) /data/auth.sqlite)
 
 db-dump: ## Снять базу генератора с прода в backend/data/prod-dump (нужен доступ по SSH)
 	$(NODE) scripts/prod-db.mjs dump

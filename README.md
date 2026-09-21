@@ -81,7 +81,8 @@ Nginx обслуживает `/create`, `/admin`, `/walk` без расшире�
   генераций; повтор того же idempotency key и готовый общий результат её не
   расходуют. `ALLOW_LEGACY_ADMIN_TOKEN` по умолчанию выключен и нужен только
   на короткое время миграции старых редакторских скриптов.
-Создайте аккаунт редактора командой `pnpm auth:set-editor editor@example.com`.
+Создайте локальный аккаунт редактора командой `make admin-create EMAIL=editor@example.com`
+(прямой вызов CLI: `pnpm auth:set-editor editor@example.com`).
 Для нового email команда дважды запросит пароль со скрытым вводом (10–128 символов)
 и создаст аккаунт с правами редактора; предварительная регистрация на сайте не нужна.
 Для существующего аккаунта введите его текущий пароль: после проверки команда
@@ -94,12 +95,17 @@ Nginx обслуживает `/create`, `/admin`, `/walk` без расшире�
 `DATA_DIR/auth.sqlite`; по умолчанию используется `backend/data/auth.sqlite`.
 Команда не создаёт пустую базу при ошибке в пути.
 
-После развёртывания обновлённого backend выполните на production-сервере:
+Для production запустите из локального checkout проекта:
 
 ```bash
-docker exec -it otgolosok-generator-generator-1 \
-  node /app/editor-account.mjs editor@example.com /data/auth.sqlite
+make admin-create-prod EMAIL=editor@example.com
 ```
+
+Команда подключается по SSH к `services@93.189.230.19` и запускает CLI внутри
+production-контейнера с базой `/data/auth.sqlite`. При необходимости задайте
+`VPS=пользователь@хост` и `GENERATOR_CONTAINER=имя-контейнера`.
+Для локальной базы можно передать `AUTH_DB_PATH=путь/к/auth.sqlite`.
+Обе Makefile-команды рассчитаны на запуск из интерактивного терминала.
 
 Замените `editor@example.com` своим email. Пароль вводите в приглашении команды;
 он не выводится и не передаётся через аргументы процесса. Для автоматизации доступен
