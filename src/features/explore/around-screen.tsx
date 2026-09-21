@@ -30,7 +30,6 @@ const distanceLabel=(meters:number)=>meters<1000?`≈ ${Math.round(meters/50)*50
 
 export function AroundScreen({route,onStart,children,updateAvailable}: {route:Route;onStart:(chapter?:number)=>void;children:ReactNode;updateAvailable:boolean}) {
   const [tab,setTab]=useState<Tab>("nearby");
-  const [view,setView]=useState<"map"|"list">("map");
   const [search,setSearch]=useState(false),[query,setQuery]=useState("");
   const [selected,setSelected]=useState<string>();
   const [place,setPlace]=useState<Place|null>(null),[placeBusy,setPlaceBusy]=useState(false),[placeError,setPlaceError]=useState("");
@@ -106,10 +105,9 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
   const active=pins.find(pin=>pin.id===selected);
   const explorePanel=selectExplorePanel({nearbyCenter:Boolean(nearbyCenter),place:Boolean(place),placeBusy,placeError:Boolean(placeError)});
   const mapItems=useMemo(()=>place?[...visible,{id:"picked-place",title:place.address??"Выбранное место",location:place.location,pending:true}]:visible,[visible,place]);
-  const readyCount=pins.filter(pin=>pin.duration).length;
 
   function select(pin:StoryPin){
-    lookup.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setSelected(pin.id);setFocus({...pin.location});setPrompt(false);setSearch(false);setView("map");setTab("nearby");
+    lookup.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setSelected(pin.id);setFocus({...pin.location});setPrompt(false);setSearch(false);setTab("nearby");
   }
   function selectRecommendation(id:string){
     const direct=pins.find(pin=>pin.id===id);
@@ -118,20 +116,11 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
     const chapter=pins.find(pin=>pin.chapter===chapterIndex);
     if(chapter)select(chapter);
   }
-  function openMoscow(){
-    lookup.current?.abort();
-    geoVersion.current++;
-    if(geoTimer.current)clearTimeout(geoTimer.current);
-    setGeo(user?"ready":"idle");setGeoMessage("");
-    setPlaceBusy(false);setPlaceError("");setPlace(null);setSelected(undefined);
-    setPrompt(false);setSearch(false);setView("map");setTab("nearby");setNearbyCenter(null);
-    setFocus({lat:55.74,lon:37.62,zoom:12});
-  }
   function openSearch(){setTab("nearby");setSearch(true);setPrompt(false);}
   function dismissGeoPrompt(){rememberGeoPromptDismissal(localStorage);setPrompt(false);}
   async function findPlace(value:Coordinates|string){
     lookup.current?.abort();const controller=new AbortController();lookup.current=controller;
-    setPrompt(false);setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);setSearch(false);setView("map");
+    setPrompt(false);setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);setSearch(false);
     if(typeof value!=="string"){
       setFocus({...value});setNearbyCenter(value);
       if(!isMoscowPoint(value)){setPlaceBusy(false);setPlaceError("Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку.");return;}
@@ -169,21 +158,19 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
   const walkHref=walkStart?.address?`/walk?${new URLSearchParams({address:walkStart.address,lat:String(walkStart.location.lat),lon:String(walkStart.location.lon)})}`:"/walk";
 
   return <>
-    {tab==="nearby"&&view==="map"?<ExploreMap viewState={nearbyMapView} items={mapItems} selectedId={selected??(place?"picked-place":undefined)} focus={focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin)select(pin);}} onPoint={point=>void findPlace(point)} />:null}
-    <div className={`around-content ${tab!=="nearby"||view==="list"?"scroll-view":""}${search?" searching":""}`}>
+    {tab==="nearby"?<ExploreMap viewState={nearbyMapView} items={mapItems} selectedId={selected??(place?"picked-place":undefined)} focus={focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin)select(pin);}} onPoint={point=>void findPlace(point)} />:null}
+    <div className={`around-content ${tab!=="nearby"?"scroll-view":""}${search?" searching":""}`}>
       <header className="around-header">
-        <div className="around-topline"><Link href="/" prefetch={false} className="around-brand">отголосок<span>.</span></Link><button className="around-city" type="button" onClick={openMoscow} title="Показать Москву на карте" aria-label={`Москва · ${readyCount} аудиоисторий. Показать на карте`}><span>Москва</span> · {readyCount} аудиоисторий</button><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>
+        <div className="around-topline"><Link href="/" prefetch={false} className="around-brand">отголосок<span>.</span></Link><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>
         {tab==="walk"?<h1 id="around-title" tabIndex={-1}>Пойдём гулять.</h1>:null}
-        {tab==="nearby"?<div className="around-toolbar"><div className="around-view-toggle" role="group" aria-label="Вид"><button type="button" aria-label="Карта" aria-pressed={view==="map"} onClick={()=>setView("map")}><ExploreIcon name="map"/></button><button type="button" aria-label="Список историй" aria-pressed={view==="list"} onClick={()=>setView("list")}><ExploreIcon name="list"/></button></div></div>:null}
         {search?<form className="around-search" onSubmit={submitSearch}><label htmlFor="map-address">Какой дом вас интересует?</label><div><input id="map-address" ref={input} value={query} onChange={event=>setQuery(event.target.value)} minLength={3} maxLength={180} required placeholder="Улица и номер дома в Москве" autoComplete="off"/><button type="submit" disabled={placeBusy||query.trim().length<3} aria-label="Найти дом"><ExploreIcon name="arrow"/></button></div><Link href={`/create?${new URLSearchParams(query.trim()?{address:query.trim()}:{new:"1"})}`} prefetch={false}>Ввести адрес для истории вручную →</Link></form>:null}
       </header>
 
-      {tab==="nearby"&&view==="list"?<section className="around-list" aria-label="Доступные истории"><p className="around-subtitle">{user?"Ближайшие сначала · расстояние по прямой":"Истории Москвы · выберите место"}</p>{visible.map(pin=><button className="around-list-item" key={pin.id} onClick={()=>select(pin)} type="button"><span className="around-list-icon"><ExploreIcon name={pin.pending?"plus":"headphones"}/></span><span><strong>{pin.title}</strong><small>{pin.address}</small><em>{metadata(pin)}</em></span><ExploreIcon name="arrow"/></button>)}<div className="around-empty"><h2>У каждого дома своя история</h2><p>Не нашли нужный? Выберите дом, и мы поищем факты и подготовим рассказ с озвучкой.</p><button type="button" className="around-primary" onClick={openSearch}>Найти другой дом <ExploreIcon name="plus"/></button></div></section>:null}
       {tab==="walk"?<div className="around-route"><section className="around-empty"><h2>Моя прогулка</h2><p>Соберите свой маршрут или продолжите сохранённый черновик на этом устройстве.</p><Link href="/walk?resume=1" className="around-primary" prefetch={false}>Открыть мою прогулку <ExploreIcon name="walk"/></Link><Link href="/create?new=1" className="around-text-button" prefetch={false}>Создать историю одного дома</Link></section>{children}</div>:null}
-      {tab!=="nearby"||view==="list"?<div className="around-about"><details><summary>О карте и геолокации</summary><p>Карту предоставляет OpenStreetMap. При её просмотре сервис получает запросы изображений выбранного района. Геолокация включается только по кнопке и используется на устройстве. Нажатая точка или введённый адрес отправляются для поиска адреса через Nominatim. Карта требует интернета; сохранённые записи работают без сети.</p></details><a href="/update.html">{updateAvailable?"Доступна новая версия · обновить":"Проверить обновление"}</a></div>:null}
+      {tab!=="nearby"?<div className="around-about"><details><summary>О карте и геолокации</summary><p>Карту предоставляет OpenStreetMap. При её просмотре сервис получает запросы изображений выбранного района. Геолокация включается только по кнопке и используется на устройстве. Нажатая точка или введённый адрес отправляются для поиска адреса через Nominatim. Карта требует интернета; сохранённые записи работают без сети.</p></details><a href="/update.html">{updateAvailable?"Доступна новая версия · обновить":"Проверить обновление"}</a></div>:null}
     </div>
 
-    {tab==="nearby"&&view==="map"?<>
+    {tab==="nearby"?<>
       {!search?<button className="around-locate around-icon" type="button" aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></button>:null}
       <div className="around-bottom">
         {geoMessage&&!search?<div className="around-geo-message"><div><p role="status">{geoMessage}</p>{geo==="denied"?<details className="around-geo-help">
