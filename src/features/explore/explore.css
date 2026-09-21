@@ -69,6 +69,7 @@
 .around-location-close{position:absolute;top:8px;right:8px;color:#617064}
 .around-location-card .around-location-close+ h2{margin-right:32px;margin-left:32px}
 .around-location-card h2,.around-place-card h2,.around-empty h2{font:750 22px/1.2 var(--font-body),sans-serif;letter-spacing:-.7px;margin:0 0 10px;color:var(--around-green)}
+.around-location-card h2{text-wrap:balance}
 .around-location-card p,.around-place-card p,.around-empty p{color:#5d685b;font-size:13px;line-height:1.6;margin:0 0 16px}
 .around-primary{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:50px;border:0;border-radius:28px;background:var(--around-orange);color:#fffaf0;font-size:13px;font-weight:750;padding:13px 18px;text-align:center}
 .around-primary svg{width:21px;height:21px}
