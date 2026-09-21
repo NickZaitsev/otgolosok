@@ -1,4 +1,6 @@
 import { randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
+import { validateWalkDocument, migrateLegacyDraft } from "./walk-document.mjs";
 
 const encode = JSON.stringify;
 const decode = value => JSON.parse(value);
@@ -18,6 +20,9 @@ const validateSnapshot = snapshot => {
   if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot) || encode(snapshot).length > 100_000) throw Object.assign(new Error("Invalid walk"), { code: "BAD_REQUEST" });
   return snapshot;
 };
+const fingerprint = value => createHash("sha256").update(encode(value)).digest("hex");
+const conflict = () => Object.assign(new Error("Walk revision or idempotency conflict"), {code:"CONFLICT"});
+const uuid = value => typeof value === "string" && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(value);
 
 export function createAccountStore(db, now = Date.now) {
   db.exec(`PRAGMA foreign_keys = ON;
@@ -56,16 +61,74 @@ export function createAccountStore(db, now = Date.now) {
       PRIMARY KEY(user_id,idempotency_key)
     );
     `);
+  const columns = db.prepare("PRAGMA table_info(user_walks)").all().map(row=>row.name);
+  if(!columns.includes("visibility"))db.exec("ALTER TABLE user_walks ADD COLUMN visibility TEXT NOT NULL DEFAULT 'private'");
+  if(!columns.includes("share_token"))db.exec("ALTER TABLE user_walks ADD COLUMN share_token TEXT");
+  db.exec("CREATE UNIQUE INDEX IF NOT EXISTS user_walks_share_token ON user_walks(share_token) WHERE share_token IS NOT NULL");
   const timestamp = () => new Date(now()).toISOString();
   const cursor = value => { if(!value)return null;try{const parsed=decode(Buffer.from(value,"base64url").toString());if(typeof parsed.time!=="string"||typeof parsed.id!=="string")throw new Error();return parsed;}catch{throw Object.assign(new Error("Invalid cursor"),{code:"BAD_REQUEST"});} };
   const page = (rows,limit,map) => ({items:rows.slice(0,limit).map(map),nextCursor:rows.length>limit?Buffer.from(encode({time:rows[limit-1].updated_at??rows[limit-1].created_at,id:rows[limit-1].id??`${rows[limit-1].object_type}:${rows[limit-1].object_id}`})).toString("base64url"):null});
-  const viewWalk = row => row && ({ id: row.id, title: row.title, snapshot: decode(row.snapshot_json), revision: Number(row.revision), createdAt: row.created_at, updatedAt: row.updated_at });
+  const normalizeWalk = (snapshot,id) => snapshot?.version===2?validateWalkDocument(snapshot):migrateLegacyDraft(validateSnapshot(snapshot),id);
+  const viewWalk = row => {
+    if (!row) return null;
+    let raw;
+    try { raw = decode(row.snapshot_json); }
+    catch { return { id: row.id, title: row.title, snapshot: null, revision: Number(row.revision), createdAt: row.created_at, updatedAt: row.updated_at,
+      visibility: row.visibility, shareToken: row.visibility === "shared" ? row.share_token : null, snapshotError: "Снимок прогулки повреждён." }; }
+    let snapshot = raw;
+    let snapshotError = null;
+    try { snapshot = normalizeWalk(raw, row.id); }
+    catch (error) { snapshotError = error.code === "BAD_REQUEST" ? "Снимок прогулки повреждён." : "Не удалось проверить снимок прогулки."; }
+    return { id: row.id, title: row.title, snapshot, revision: Number(row.revision), createdAt: row.created_at, updatedAt: row.updated_at,
+      visibility: row.visibility, shareToken: row.visibility === "shared" ? row.share_token : null, ...(snapshotError ? { snapshotError } : {}) };
+  };
+  const listItem = row => ({id:row.id,title:row.title,revision:Number(row.revision),updatedAt:row.updated_at,visibility:row.visibility,shareToken:row.visibility==='shared'?row.share_token:null});
   return {
     updateProfile(userId, name) { const value=cleanName(name),time=timestamp();db.prepare("UPDATE user SET name=?,updatedAt=? WHERE id=?").run(value,time,userId);return value; },
-    listWalks(userId, limit=20,after=null) { limit=Math.min(50,Math.max(1,limit));const c=cursor(after),rows=c?db.prepare("SELECT * FROM user_walks WHERE user_id=? AND (updated_at<? OR (updated_at=? AND id<?)) ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT * FROM user_walks WHERE user_id=? ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,viewWalk);return {walks:result.items,nextCursor:result.nextCursor,hasMore:Boolean(result.nextCursor)}; },
+    listWalks(userId, limit=20,after=null) { limit=Math.min(50,Math.max(1,limit));const c=cursor(after),rows=c?db.prepare("SELECT * FROM user_walks WHERE user_id=? AND (updated_at<? OR (updated_at=? AND id<?)) ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT * FROM user_walks WHERE user_id=? ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,listItem);return {walks:result.items,nextCursor:result.nextCursor,hasMore:Boolean(result.nextCursor)}; },
     getWalk(userId,id) { return viewWalk(db.prepare("SELECT * FROM user_walks WHERE id=? AND user_id=?").get(id,userId)) ?? null; },
-    createWalk(userId,{title,snapshot,idempotencyKey}) { if(typeof idempotencyKey!=="string"||!/^[\w.-]{8,100}$/.test(idempotencyKey))throw Object.assign(new Error(),{code:"BAD_REQUEST"});const prior=db.prepare("SELECT w.* FROM user_walk_idempotency i JOIN user_walks w ON w.id=i.walk_id WHERE i.user_id=? AND i.idempotency_key=?").get(userId,idempotencyKey);if(prior)return viewWalk(prior);const id=randomUUID(),time=timestamp();db.exec("BEGIN IMMEDIATE");try{db.prepare("INSERT INTO user_walks VALUES(?,?,?,?,0,?,?)").run(id,userId,cleanTitle(title),encode(validateSnapshot(snapshot)),time,time);db.prepare("INSERT INTO user_walk_idempotency VALUES(?,?,?)").run(userId,idempotencyKey,id);db.exec("COMMIT");}catch(error){db.exec("ROLLBACK");throw error;}return this.getWalk(userId,id); },
-    updateWalk(userId,id,{title,snapshot,revision}) { if(!Number.isSafeInteger(revision)||revision<0)throw Object.assign(new Error(),{code:"BAD_REQUEST"});const result=db.prepare("UPDATE user_walks SET title=?,snapshot_json=?,revision=revision+1,updated_at=? WHERE id=? AND user_id=? AND revision=?").run(cleanTitle(title),encode(validateSnapshot(snapshot)),timestamp(),id,userId,revision);if(!result.changes){if(!this.getWalk(userId,id))return null;throw Object.assign(new Error(),{code:"CONFLICT"});}return this.getWalk(userId,id); },
+    createWalk(userId,{title,snapshot,idempotencyKey}) {
+      if(typeof idempotencyKey!=="string"||!/^[\w.-]{8,100}$/.test(idempotencyKey))throw Object.assign(new Error(),{code:"BAD_REQUEST"});
+      const clean=cleanTitle(title);
+      const prior=db.prepare("SELECT w.* FROM user_walk_idempotency i JOIN user_walks w ON w.id=i.walk_id WHERE i.user_id=? AND i.idempotency_key=?").get(userId,idempotencyKey);
+      if(prior){
+        const normalized=normalizeWalk(snapshot,prior.id);
+        if(fingerprint({title:clean,snapshot:normalized})!==fingerprint({title:prior.title,snapshot:normalizeWalk(decode(prior.snapshot_json),prior.id)}))throw conflict();
+        return viewWalk(prior);
+      }
+      // Catalog slugs are valid document IDs for read-only views, but an
+      // account record must remain addressable by the UUID-only account API.
+      const id=snapshot?.version===2&&uuid(snapshot.id)?snapshot.id:randomUUID();
+      const time=timestamp(),normalized=normalizeWalk(snapshot,id);
+      db.exec("BEGIN IMMEDIATE");
+      try {
+        db.prepare("INSERT INTO user_walks(id,user_id,title,snapshot_json,revision,created_at,updated_at,visibility,share_token) VALUES(?,?,?,?,0,?,?,?,?)").run(id,userId,clean,encode(normalized),time,time,"private",null);
+        db.prepare("INSERT INTO user_walk_idempotency VALUES(?,?,?)").run(userId,idempotencyKey,id);
+        db.exec("COMMIT");
+      } catch(error) {
+        db.exec("ROLLBACK");
+        if(String(error?.code??"").startsWith("SQLITE_CONSTRAINT")) throw conflict();
+        throw error;
+      }
+      return this.getWalk(userId,id);
+    },
+    updateWalk(userId,id,{title,snapshot,revision}) {
+      if(!uuid(id)||!Number.isSafeInteger(revision)||revision<0)throw Object.assign(new Error("Invalid walk revision"),{code:"BAD_REQUEST"});
+      const normalized=normalizeWalk(snapshot,id);
+      if(normalized.id!==id)throw Object.assign(new Error("Walk ID does not match the account record"),{code:"BAD_REQUEST"});
+      const result=db.prepare("UPDATE user_walks SET title=?,snapshot_json=?,revision=revision+1,updated_at=? WHERE id=? AND user_id=? AND revision=?").run(cleanTitle(title),encode(normalized),timestamp(),id,userId,revision);
+      if(!result.changes){if(!this.getWalk(userId,id))return null;throw conflict();}
+      return this.getWalk(userId,id);
+    },
+    getSharedWalk(token) {if(typeof token!=="string"||!uuid(token))return null;return viewWalk(db.prepare("SELECT * FROM user_walks WHERE share_token=? AND visibility='shared'").get(token))??null;},
+    setWalkSharing(userId,id,revision,enabled) {
+      if(!uuid(id)||!Number.isSafeInteger(revision)||revision<0||typeof enabled!=="boolean")throw Object.assign(new Error("Invalid sharing request"),{code:"BAD_REQUEST"});
+      const row=db.prepare("SELECT * FROM user_walks WHERE id=? AND user_id=?").get(id,userId);if(!row)return null;
+      if(row.revision!==revision){if((row.visibility==='shared')===enabled)return viewWalk(row);throw conflict();}
+      const token=row.share_token??(enabled?randomUUID():null);
+      db.prepare("UPDATE user_walks SET visibility=?,share_token=?,revision=revision+1,updated_at=? WHERE id=? AND user_id=? AND revision=?").run(enabled?'shared':'private',token,timestamp(),id,userId,revision);
+      return this.getWalk(userId,id);
+    },
     deleteWalk(userId,id) { return db.prepare("DELETE FROM user_walks WHERE id=? AND user_id=?").run(id,userId).changes>0; },
     listFavorites(userId,limit=50,after=null) { limit=Math.min(50,Math.max(1,limit));const c=cursor(after);const rows=c?db.prepare("SELECT object_type,object_id,created_at FROM user_favorites WHERE user_id=? AND (created_at<? OR (created_at=? AND (object_type||':'||object_id)<?)) ORDER BY created_at DESC,object_type||':'||object_id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT object_type,object_id,created_at FROM user_favorites WHERE user_id=? ORDER BY created_at DESC,object_type||':'||object_id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,row=>({type:row.object_type,id:row.object_id,createdAt:row.created_at}));return {favorites:result.items,nextCursor:result.nextCursor}; },
     setFavorite(userId,type,id) { if(!["story","walk"].includes(type)||typeof id!=="string"||id.length>128)throw Object.assign(new Error(),{code:"BAD_REQUEST"});db.prepare("INSERT OR IGNORE INTO user_favorites VALUES(?,?,?,?)").run(userId,type,id,timestamp()); },

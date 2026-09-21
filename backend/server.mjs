@@ -18,6 +18,9 @@ import { ingestAudio } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword } from "./auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
+import { resolveWalkView } from "./walk-view.mjs";
+import { builtinRoutes } from "./builtin-routes.mjs";
+import { catalogWalkView } from "./walk-catalog.mjs";
 import { normalizeForSpeech } from "./text-normalizer.mjs";
 import { loadLocalTtsConfig } from "./local-tts.mjs";
 import { createTtsApiClient } from "./tts-api-client.mjs";
@@ -84,6 +87,15 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,...Object.values(accountQuery())));return;}
         if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
         const ownWalk=new RegExp(`^/api/me/walks/(${UUID})$`).exec(url.pathname);
+        const ownWalkView=new RegExp(`^/api/me/walks/(${UUID})/view$`).exec(url.pathname);
+        if(ownWalkView&&req.method==="GET"){
+          const walk=accountStore.getWalk(session.user.id,ownWalkView[1]);
+          if(!walk){json(res,404,{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
+          if(walk.snapshotError){json(res,409,{error:{code:"INVALID_WALK",message:"Снимок прогулки повреждён. Скачайте исходную копию и восстановите её."}});return;}
+          json(res,200,resolveWalkView(walk.snapshot,walk.revision,store));return;
+        }
+        const ownWalkSharing=new RegExp(`^/api/me/walks/(${UUID})/sharing$`).exec(url.pathname);
+        if(ownWalkSharing&&req.method==="PUT"){const input=await body(req);if(Object.keys(input).some(key=>!["revision","enabled"].includes(key))){throw failure("BAD_REQUEST");}const walk=accountStore.setWalkSharing(session.user.id,ownWalkSharing[1],input.revision,input.enabled);json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
         if(ownWalk&&req.method==="GET"){const walk=accountStore.getWalk(session.user.id,ownWalk[1]);json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="PATCH"){const walk=accountStore.updateWalk(session.user.id,ownWalk[1],await body(req,100000));json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="DELETE"){json(res,accountStore.deleteWalk(session.user.id,ownWalk[1])?200:404,{success:true});return;}
@@ -371,6 +383,15 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
       const publicPlace=/^\/api\/content\/places\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
       if(req.method==="GET"&&publicPlace){const place=store.getPublishedPlace(publicPlace[1]);json(res,place?200:404,place?{place}:{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
       const publishedWalk=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})$/.exec(url.pathname);
+      if(req.method==="GET"&&url.pathname==="/api/story-walks"){json(res,200,{walks:builtinRoutes.filter(route=>route.walk?.steps?.length).map(route=>({id:route.id,title:route.title,subtitle:route.subtitle,durationMin:route.duration_min}))});return;}
+      const sharedWalk=new RegExp(`^/api/story-walks/shared/(${UUID})$`).exec(url.pathname);
+      if(req.method==="GET"&&sharedWalk){
+        const walk=accountStore?.getSharedWalk(sharedWalk[1]);
+        if(!walk||walk.snapshotError){json(res,404,{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
+        json(res,200,resolveWalkView(walk.snapshot,walk.revision,store));return;
+      }
+      const catalogView=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})\/view$/.exec(url.pathname);
+      if(req.method==="GET"&&catalogView){const route=store.getPublishedWalk(catalogView[1]);json(res,route?200:404,route?catalogWalkView(route):{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
       if(req.method==="GET"&&publishedWalk) {
         const route=store.getPublishedWalk(publishedWalk[1]);
         json(res,route?200:404,route??{error:{code:"NOT_FOUND",message:"Walk not found."}});return;
