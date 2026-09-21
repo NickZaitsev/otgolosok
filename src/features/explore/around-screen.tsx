@@ -196,6 +196,6 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
         {updateAvailable?<a className="around-update" href="/update.html">Доступна новая версия · обновить</a>:null}
       </div>
     </>:null}
-    <AppNavigation embedded active={tab} onNearby={()=>{setTab("nearby");setSearch(false);}} onWalk={()=>{setTab("walk");setSearch(false);}} />
+    <AppNavigation embedded active={tab} onNearby={()=>{setTab("nearby");setSearch(false);}} />
   </>;
 }
