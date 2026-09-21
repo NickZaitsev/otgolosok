@@ -7,9 +7,18 @@ const screen = readFileSync(fileURLToPath(new URL("./around-screen.tsx", import.
 
 describe("раскладка карточки места", () => {
   it("ограничивает всю нижнюю панель областью между шапкой и навигацией", () => {
+    expect(css.charCodeAt(0)).not.toBe(0xfeff);
     expect(css).toMatch(
-      /\.around-bottom\{[^}]*max-height:calc\(100% - var\(--around-sheet-top\) - var\(--around-nav-height\) - 16px\)/,
+      /^\.around-shell\{[^}]*--around-nav-height:[^}]*position:relative[^}]*height:100dvh/,
     );
+    expect(css).toMatch(
+      /\.around-bottom\{[^}]*bottom:calc\(var\(--around-nav-height\) \+ 16px\)[^}]*max-height:calc\(100% - var\(--around-sheet-top\) - var\(--around-nav-height\) - 16px\)/,
+    );
+    expect(css).not.toMatch(
+      /\.around-bottom\{[^}]*;height:calc/,
+    );
+    expect(css).not.toContain(".around-bottom:has(> .around-map-hint)");
+    expect(css).not.toMatch(/\.around-map-hint\{[^}]*margin-top:auto/);
     expect(css).toMatch(
       /\.around-bottom>\.around-place-card\{[^}]*min-height:0/,
     );
