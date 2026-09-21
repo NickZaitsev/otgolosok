@@ -33,6 +33,7 @@ export function AdminDesk() {
   const pendingNavigation = useRef<"editor" | "queue" | null>(null);
   const sessionRestored = useRef(false);
   const [authenticated, setAuthenticated] = useState(false);
+  const [accessState, setAccessState] = useState<"checking" | "forbidden" | "editor">("checking");
   const [section, setSection] = useState<AdminSection>("addresses");
   const [walkDirty, setWalkDirty] = useState(false);
   const [jobs, setJobs] = useState<Summary[]>([]);
@@ -86,7 +87,7 @@ export function AdminDesk() {
 
   function clearAccess() {
     pendingNavigation.current = null;
-    setAuthenticated(false); setSection("addresses"); setWalkDirty(false);
+    setAuthenticated(false); setAccessState("checking"); setSection("addresses"); setWalkDirty(false);
     setJobs([]); setBatches([]); setContentStats(null); setOffset(0); setHasMore(false); setJob(null); setDraft(null); setBaseline("");
     setConfirmed(false); setConflict(false); setNotice(""); setTtsProvider("openai"); setTtsVoice("");
   }
@@ -183,9 +184,19 @@ export function AdminDesk() {
     if (sessionRestored.current) return;
     sessionRestored.current = true;
     void run("Восстановление сессии…", async signal => {
-      const user=await getSession();if(!user)throw new ApiError(401,"Войдите в аккаунт редактора.");
-      await Promise.all([loadQueue(0, signal), loadBatches(signal)]);
+      const user = await getSession();
+      if (!user) {
+        window.location.replace(`/login?returnTo=${encodeURIComponent(`${window.location.pathname}${window.location.search}`)}`);
+        return;
+      }
+      if (user.role !== "editor") {
+        setAccessState("forbidden");
+        setError("У этого аккаунта нет доступа к редакционному кабинету.");
+        return;
+      }
+      setAccessState("editor");
       setAuthenticated(true);
+      await Promise.all([loadQueue(0, signal), loadBatches(signal)]);
       const params = new URLSearchParams(window.location.search);
       const id = params.get("job");
       if (id && UUID.test(id)) {
@@ -280,7 +291,12 @@ export function AdminDesk() {
       <div className="admin-heading"><h1>Редакция</h1><p>Проверяйте адресные истории и управляйте озвучкой готовых прогулок.</p></div>
       <div role="status" aria-live="polite" className="admin-status">{busy || notice}</div>
       {error && <div role="alert" className="admin-error">{error}</div>}
-      {!authenticated ? (
+      {accessState === "forbidden" ? (
+        <div className="admin-login">
+          <p className="admin-context">Доступ для редактора</p><h2>Нет доступа к редакции</h2>
+          <p>Вы вошли в аккаунт без роли редактора. Обратитесь к администратору, чтобы получить доступ.</p>
+        </div>
+      ) : !authenticated ? (
         <div className="admin-login">
           <p className="admin-context">Доступ для редактора</p><h2>Войти в редакцию</h2>
           <p id="admin-token-note">Войдите по email аккаунтом с ролью редактора.</p>

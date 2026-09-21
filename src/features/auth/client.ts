@@ -1,4 +1,4 @@
-export type AuthUser = { id: string; email: string; name: string };
+export type AuthUser = { id: string; email: string; name: string; role?: string };
 const CSRF_KEY = "otgolosok:account:csrf";
 
 async function api(path: string, init?: RequestInit) {
