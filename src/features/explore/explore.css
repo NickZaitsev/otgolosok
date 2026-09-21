@@ -57,7 +57,7 @@
 .around-geo-help li+li{margin-top:10px}
 .around-geo-help a{display:inline-block;padding:12px 0;text-decoration:underline;text-underline-offset:3px}
 .around-geo-help .around-text-button{min-height:44px;margin:0;padding:10px 0}
-.around-bottom{position:absolute;z-index:3;left:18px;right:18px;bottom:calc(var(--around-nav-height) + 16px);display:flex;flex-direction:column;max-height:calc(100% - var(--around-sheet-top) - var(--around-nav-height) - 16px);overflow:hidden;overscroll-behavior:contain;pointer-events:none;border-radius:26px}
+.around-bottom{position:absolute;z-index:3;left:18px;right:18px;bottom:calc(var(--around-nav-height) + 16px);display:flex;flex-direction:column;height:calc(100% - var(--around-sheet-top) - var(--around-nav-height) - 16px);max-height:calc(100% - var(--around-sheet-top) - var(--around-nav-height) - 16px);justify-content:flex-end;overflow:hidden;overscroll-behavior:contain;pointer-events:none;border-radius:26px}
 .around-bottom>section,.around-bottom>div,.around-bottom>a{pointer-events:auto}
 .around-bottom>.around-place-card{flex:1 1 auto;min-height:0}
 .around-bottom>.around-location-card{flex:0 1 auto;min-height:0}
