@@ -21,6 +21,9 @@ describe("единый логотип", () => {
   it("не допускает локальных вариантов шрифта и цвета точки", () => {
     const styles = read("../../app/globals.css");
     expect(styles).toMatch(/\.brand-mark\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(styles).toMatch(/\.brand-mark\s*\{[^}]*display:\s*inline-flex/);
+    expect(styles).toMatch(/\.brand-mark\s*\{[^}]*align-self:\s*stretch/);
+    expect(styles).toMatch(/\.brand-mark\s*\{[^}]*height:\s*100%/);
     expect(styles).toContain("color: var(--brand-accent);");
     expect(styles).toMatch(/\.brand-mark\s*\{[^}]*line-height:\s*1;/);
     expect(styles).not.toContain('.shell[data-mode="walk"] .brand-mark > span');
