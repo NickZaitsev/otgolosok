@@ -29,6 +29,27 @@ process.exit(Number(process.env.TEST_EXIT??0));
   return { dir, capture, run };
 }
 
+test("deployed Makefile runs on the server without a checkout or SSH back to itself", async t => {
+  const f = await fixture(t);
+  const { copyFile } = await import("node:fs/promises");
+  await copyFile(resolve(import.meta.dirname, "../docker/production.Makefile"), join(f.dir, "Makefile"));
+  await writeFile(join(f.dir, "ssh"), "#!/bin/sh\nexit 99\n", { mode: 0o755 });
+  const run = (target, variables = [], extra = {}) => spawnSync("make", ["-s", target, ...variables], {
+    cwd: f.dir, encoding: "utf8",
+    env: { ...process.env, EMAIL: "", PATH: `${f.dir}:${process.env.PATH}`, TEST_CAPTURE: f.capture, ...extra },
+  });
+  assert.match(run("help").stdout, /admin-create-prod/);
+  assert.notEqual(run("admin-create-prod").status, 0);
+  await assert.rejects(access(f.capture), { code: "ENOENT" });
+  for (const target of ["admin-create", "admin-create-prod"]) {
+    const email = "o'brien@example.com";
+    const result = run(target, [`EMAIL=${email}`]);
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(JSON.parse(await readFile(f.capture, "utf8")), ["exec", "-it", "--", "otgolosok-generator-generator-1", "node", "/app/editor-account.mjs", email, "/data/auth.sqlite"]);
+  }
+  assert.notEqual(run("admin-create-prod", ["EMAIL=admin@example.com"], { TEST_EXIT: "17" }).status, 0);
+});
+
 test("Makefile editor commands reject missing email before opening SSH or a database", async t => {
   const f = await fixture(t);
   for (const target of ["admin-create", "admin-create-prod"]) {
