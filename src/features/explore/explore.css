@@ -1,4 +1,4 @@
-.around-shell{--around-green:#203e38;--around-orange:#b64b28;--around-nav-height:calc(78px + env(safe-area-inset-bottom));position:relative;isolation:isolate;height:100svh;height:100dvh;overflow:hidden;background:#f5f3eb;color:var(--around-green)}
+.around-shell{--around-green:#203e38;--around-orange:#b64b28;--around-nav-height:calc(78px + env(safe-area-inset-bottom));--around-sheet-top:calc(150px + env(safe-area-inset-top));position:relative;isolation:isolate;height:100svh;height:100dvh;overflow:hidden;background:#f5f3eb;color:var(--around-green)}
 .around-shell svg{width:24px;height:24px;flex-shrink:0}
 .around-shell button,.around-shell input{font:inherit}
 .around-shell button{cursor:pointer}
@@ -57,8 +57,11 @@
 .around-geo-help li+li{margin-top:10px}
 .around-geo-help a{display:inline-block;padding:12px 0;text-decoration:underline;text-underline-offset:3px}
 .around-geo-help .around-text-button{min-height:44px;margin:0;padding:10px 0}
-.around-bottom{position:absolute;z-index:3;left:18px;right:18px;bottom:calc(var(--around-nav-height) + 16px);pointer-events:none}
+.around-bottom{position:absolute;z-index:3;left:18px;right:18px;bottom:calc(var(--around-nav-height) + 16px);display:flex;flex-direction:column;max-height:calc(100% - var(--around-sheet-top) - var(--around-nav-height) - 16px);overflow:hidden;overscroll-behavior:contain;pointer-events:none;border-radius:26px}
 .around-bottom>section,.around-bottom>div,.around-bottom>a{pointer-events:auto}
+.around-bottom>.around-place-card{flex:1 1 auto;min-height:0}
+.around-bottom>.around-location-card{flex:0 1 auto;min-height:0}
+.around-bottom>.around-primary,.around-bottom>.around-update{flex:0 0 auto}
 .around-bottom>.around-place-card+.around-primary{margin-top:12px}
 .around-bottom .around-geo-message{position:static;width:auto;margin:0 0 8px;pointer-events:auto}
 .around-location-card,.around-place-card{padding:22px;border:1px solid #ffffffb3;border-radius:26px;background:#fffaf0;box-shadow:0 12px 40px #263d3424;max-height:calc(100svh - 260px);overflow:auto}
@@ -133,13 +136,6 @@
   .around-shell .explore-map .leaflet-control-zoom a:first-child{border-right:1px solid #203e381a}
   .around-bottom{max-height:calc(100% - 320px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:hidden;overscroll-behavior:contain;pointer-events:auto;border-radius:26px}
   .around-bottom .around-location-card,.around-bottom .around-place-card{max-height:none}
-}
-
-@media(max-width:699px) and (max-height:700px),(min-width:568px) and (max-height:540px){
-  .around-bottom{display:flex;flex-direction:column}
-  .around-bottom>.around-place-card{flex:1 1 auto;min-height:0}
-  .around-bottom>.around-location-card{flex:0 1 auto;min-height:0}
-  .around-bottom>.around-primary,.around-bottom>.around-update{flex:0 0 auto}
 }
 
 /* Use the width of a landscape phone, keeping both columns above navigation. */
