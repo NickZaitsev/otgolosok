@@ -6,6 +6,19 @@ const css = readFileSync(fileURLToPath(new URL("./explore.css", import.meta.url)
 const screen = readFileSync(fileURLToPath(new URL("./around-screen.tsx", import.meta.url)), "utf8");
 
 describe("раскладка карточки места", () => {
+  it("центрирует нижние карточки на широких экранах вместе с навигацией", () => {
+    const desktop = css.match(/@media\(min-width:700px\)\{([^\n]+)\}/)?.[1];
+    expect(desktop).toBeDefined();
+    expect(desktop).toMatch(/\.around-bottom\{left:50%;right:auto;width:min\(430px,calc\(100% - 56px\)\);transform:translateX\(-50%\)\}/);
+    expect(desktop).toMatch(/\.around-nav\{left:50%;[^}]*transform:translateX\(-50%\)/);
+    expect(desktop).not.toMatch(/\.around-geo-message\{[^}]*left:28px/);
+  });
+
+  it("сохраняет боковое расположение карточек только на горизонтальных телефонах", () => {
+    const landscape = css.match(/@media\(min-width:568px\) and \(max-height:540px\)\{([\s\S]*?)\n\}/)?.[1];
+    expect(landscape).toMatch(/\.around-bottom\{left:auto;right:max\(12px,env\(safe-area-inset-right\)\);width:calc\(50% - 24px\)/);
+  });
+
   it("ограничивает всю нижнюю панель областью между шапкой и навигацией", () => {
     expect(css.charCodeAt(0)).not.toBe(0xfeff);
     expect(css).toMatch(
