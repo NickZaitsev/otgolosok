@@ -28,4 +28,19 @@ describe("нижняя навигация приложения", () => {
     );
     expect(layout).toContain("<AppNavigation />");
   });
+
+  it("всегда открывает раздел прогулок по ссылке", () => {
+    const navigation = readFileSync(
+      fileURLToPath(new URL("./app-navigation.tsx", import.meta.url)),
+      "utf8",
+    );
+    const home = readFileSync(
+      fileURLToPath(new URL("../explore/around-screen.tsx", import.meta.url)),
+      "utf8",
+    );
+
+    expect(navigation).toContain('<Link href="/walk"');
+    expect(navigation).not.toContain("onWalk");
+    expect(home).not.toContain("onWalk=");
+  });
 });

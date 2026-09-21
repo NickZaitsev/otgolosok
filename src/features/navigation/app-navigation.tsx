@@ -10,10 +10,9 @@ type Props = {
   active?: NavigationSection;
   embedded?: boolean;
   onNearby?: () => void;
-  onWalk?: () => void;
 };
 
-export function AppNavigation({ active, embedded = false, onNearby, onWalk }: Props) {
+export function AppNavigation({ active, embedded = false, onNearby }: Props) {
   const pathname = usePathname();
   const current = active ?? navigationSection(pathname);
 
@@ -22,9 +21,7 @@ export function AppNavigation({ active, embedded = false, onNearby, onWalk }: Pr
   const nearby = onNearby
     ? <button type="button" aria-current={current === "nearby" ? "page" : undefined} onClick={onNearby}><ExploreIcon name="map"/><span>Рядом</span></button>
     : <Link href="/" aria-current={current === "nearby" ? "page" : undefined}><ExploreIcon name="map"/><span>Рядом</span></Link>;
-  const walk = onWalk
-    ? <button type="button" aria-current={current === "walk" ? "page" : undefined} onClick={onWalk}><ExploreIcon name="walk"/><span>Прогулка</span></button>
-    : <Link href="/walk"><ExploreIcon name="walk"/><span>Прогулка</span></Link>;
+  const walk = <Link href="/walk" aria-current={current === "walk" ? "page" : undefined}><ExploreIcon name="walk"/><span>Прогулка</span></Link>;
 
   return <nav className={`app-navigation${embedded ? " around-nav" : " app-navigation--standalone"}`} aria-label="Основная навигация">
     {nearby}
