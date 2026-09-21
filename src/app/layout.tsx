@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { AppNavigation } from "@/features/navigation/app-navigation";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru" className={`${display.variable} ${body.variable}`}>
-      <body>{children}</body>
+      <body>{children}<AppNavigation /></body>
     </html>
   );
 }

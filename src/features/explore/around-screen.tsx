@@ -8,6 +8,7 @@ import { jobUrl } from "../generator/offline";
 import { stageLabels, terminalStages, type GenerationJob } from "../generator/types";
 import { ExploreMap, type MapFocus, type MapItem, type MapViewState } from "./explore-map";
 import { ExploreIcon } from "./icons";
+import { AppNavigation } from "../navigation/app-navigation";
 import { isMoscowPoint, readMapJobs, type MapJob } from "./map-jobs";
 import { nearbyRadii, nearbyStoryCatalog, recommendNearbyStories, type NearbyRadius } from "./nearby-stories";
 import { selectExplorePanel } from "./panel-state";
@@ -48,6 +49,11 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
     return ()=>{lookup.current?.abort();cancelLocation();};
   },[]);
   useEffect(()=>{if(search)input.current?.focus();},[search]);
+  useEffect(()=>{
+    if(new URLSearchParams(location.search).get("tab")!=="walk")return;
+    const timer=setTimeout(()=>setTab("walk"),0);
+    return()=>clearTimeout(timer);
+  },[]);
   useEffect(()=>{
     const controller=new AbortController(),params=new URLSearchParams({limit:"100",status:"ready"});
     if(nearbyCenter){params.set("lat",String(nearbyCenter.lat));params.set("lon",String(nearbyCenter.lon));params.set("radius","5000");}
@@ -196,6 +202,6 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
         {updateAvailable?<a className="around-update" href="/update.html">Доступна новая версия · обновить</a>:null}
       </div>
     </>:null}
-    <nav className="around-nav" aria-label="Основная навигация">{([{id:"nearby",label:"Рядом",icon:"map"},{id:"walk",label:"Прогулка",icon:"walk"}] as const).map(item=><button key={item.id} type="button" aria-current={tab===item.id?"page":undefined} onClick={()=>{setTab(item.id);setSearch(false);}}><ExploreIcon name={item.icon}/><span>{item.label}</span></button>)}<Link href="/walk" prefetch={false}><ExploreIcon name="plus"/><span>Создать</span></Link><Link href="/account" prefetch={false}><ExploreIcon name="user"/><span>Кабинет</span></Link></nav>
+    <AppNavigation embedded active={tab} onNearby={()=>{setTab("nearby");setSearch(false);}} onWalk={()=>{setTab("walk");setSearch(false);}} />
   </>;
 }
