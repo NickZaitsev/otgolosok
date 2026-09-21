@@ -27,4 +27,9 @@ describe("раскладка карточки места", () => {
   it("балансирует перенос заголовка карточки геолокации", () => {
     expect(css).toMatch(/\.around-location-card h2\{text-wrap:balance\}/);
   });
+
+  it("не перекрывает размер текста кнопок нижней навигации", () => {
+    expect(css).toContain(".around-shell :where(button,input){font:inherit}");
+    expect(css).not.toContain(".around-shell button,.around-shell input{font:inherit}");
+  });
 });
