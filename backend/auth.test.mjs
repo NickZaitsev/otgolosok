@@ -39,3 +39,12 @@ test("account data is isolated per Better Auth user and updates use revisions",a
   const imported=store.importLocal("u1",{importId:"import-0001",walk:{title:"С устройства",snapshot:{version:1}}});assert.equal(store.importLocal("u1",{importId:"import-0001"}).walk.id,imported.walk.id);
   assert.equal(store.reserveGeneration("u1","request-0001",3,6),true);assert.equal(store.reserveGeneration("u1","request-0001",3,6),false);assert.throws(()=>store.reserveGeneration("u1","request-0002",4,6),error=>error.code==="QUOTA_EXCEEDED");assert.equal(store.reserveGeneration("u2","request-0002",4,6),true);
 });
+
+test("account lists paginate without omissions or duplicates",async t=>{
+  let clock=Date.UTC(2026,8,21,12);const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"pagination-test-secret-with-more-than-32-characters",production:false});t.after(()=>runtime.close());
+  const db=runtime.database,store=createAccountStore(db,()=>clock++),time=new Date(clock).toISOString();
+  db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("page-user","Страницы","page@example.com",1,time,time);
+  for(let index=0;index<21;index++)store.createWalk("page-user",{title:`Прогулка ${index}`,snapshot:{version:1,index},idempotencyKey:`walk-page-${index}`});
+  const first=store.listWalks("page-user",20),second=store.listWalks("page-user",20,first.nextCursor);
+  assert.equal(first.walks.length,20);assert.equal(second.walks.length,1);assert.equal(new Set([...first.walks,...second.walks].map(walk=>walk.id)).size,21);assert.equal(second.nextCursor,null);
+});
