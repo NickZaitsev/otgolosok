@@ -15,6 +15,7 @@ const body = Manrope({
 });
 
 export const metadata: Metadata = {
+  icons: { icon: "/icon.svg" },
   title: "Отголосок — город говорит рядом",
   description:
     "Аудиопрогулки по Москве, которые начинаются там, где случилась история.",

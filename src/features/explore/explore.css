@@ -9,8 +9,7 @@
 .around-content.scroll-view{pointer-events:auto;overflow:auto;overscroll-behavior:contain;background:#f8f5ec;scrollbar-gutter:stable}
 .around-header{pointer-events:auto;padding:calc(18px + env(safe-area-inset-top)) 20px 24px;background:linear-gradient(#f8f5ec 0%,#f8f5ec 70%,#f8f5eceb 85%,#f8f5ec00);}
 .around-topline{display:flex;align-items:center;gap:12px;min-height:44px;font-size:var(--text-meta);font-weight:650;letter-spacing:.02em}
-.around-brand{font-weight:850;font-size:var(--text-control);letter-spacing:-.8px;white-space:nowrap}
-.around-brand span{color:var(--around-orange)}
+.around-brand{font-size:var(--text-control)}
 .around-icon{display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;width:44px;min-width:44px;height:44px;border-radius:50%}
 .around-topline .around-icon{margin-left:auto}
 .around-header h1{margin:12px 0 22px;font:800 clamp(2.1rem,8vw,3.1rem)/1.04 var(--font-body),sans-serif;letter-spacing:-1.8px;color:var(--around-green);max-width:100%}
