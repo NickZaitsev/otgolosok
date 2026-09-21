@@ -6,9 +6,9 @@ import { navigationSection } from "./app-navigation-state";
 describe("нижняя навигация приложения", () => {
   it.each([
     ["/", "nearby"],
-    ["/walk", "create"],
-    ["/walk/", "create"],
-    ["/create", "create"],
+    ["/walk", "walk"],
+    ["/walk/", "walk"],
+    ["/create", null],
     ["/account", "account"],
   ] as const)("выделяет раздел %s", (pathname, expected) => {
     expect(navigationSection(pathname)).toBe(expected);

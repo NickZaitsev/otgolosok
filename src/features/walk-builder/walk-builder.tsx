@@ -15,6 +15,8 @@ import "./walk-builder.css";
 import { request, RejectedRequest, shouldOfferResearch } from "./request";
 import { ResearchPanel } from "./research-panel";
 import { accountApi, getSession } from "../auth/client";
+import { draftToWalkDocument, walkDocumentToDraft } from "../walks/adapters";
+import { getLocalWalk, migrateLocalWalks, saveLocalWalk } from "../walks/local-store";
 
 function readJob(value: unknown): GenerationJob {
   if (!value || typeof value !== "object" || !("id" in value) || !("stage" in value) || !isJobId(value.id) || !isStage(value.stage)) throw new Error("Не удалось прочитать состояние истории.");
@@ -44,14 +46,44 @@ export function WalkBuilder() {
   const [recoveryId, setRecoveryId] = useState("");
   const [accountUser,setAccountUser]=useState<{id:string}|null>(null);
   const [serverWalk,setServerWalk]=useState<{id:string;revision:number}|null>(null);
+  const localWalkId = useRef<string | null>(null);
+  const localRevision = useRef<number | null>(null);
+  const documentRef = useRef<ReturnType<typeof draftToWalkDocument> | null>(null);
+  const accountOperationKey = useRef<string | null>(null);
   const statusRequest = useRef<{ controller: AbortController; promise: Promise<void> } | null>(null);
 
   useEffect(() => {
     try {
       stored.current = localStorage.getItem(DRAFT_KEY);
       let restored = parseDraft(stored.current);
-      const walkId=new URLSearchParams(location.search).get("id");
-      void getSession().then(async user=>{setAccountUser(user);if(user&&walkId){try{const data=await accountApi(`/api/me/walks/${encodeURIComponent(walkId)}`);restored=parseDraft(JSON.stringify(data.walk.snapshot));current.current=restored;setDraft(restored);setServerWalk({id:data.walk.id,revision:data.walk.revision});setSelection(restored.stops.length?"manual":"auto");setFocus(restored.start?.location??null);}catch(caught){setError(caught instanceof Error?caught.message:"Не удалось открыть прогулку.");}}}).catch(()=>{});
+      const params = new URLSearchParams(location.search);
+      const walkId=params.get("id");
+      const localId=params.get("local");
+      const migratedId = migrateLocalWalks(localStorage);
+      const selectedLocalId = localId ?? (params.get("resume") === "1" ? migratedId : null);
+      const localItem = selectedLocalId ? getLocalWalk(localStorage, selectedLocalId) : null;
+      if (selectedLocalId && !localItem) throw new Error("Локальная прогулка не найдена. Исходный черновик не изменён.");
+      if (localItem) {
+        restored = walkDocumentToDraft(localItem.document);
+        localWalkId.current = localItem.document.id;
+        localRevision.current = localItem.revision;
+        documentRef.current = localItem.document;
+      } else if (!walkId) {
+        localWalkId.current = crypto.randomUUID();
+      }
+      void getSession().then(async user=>{
+        setAccountUser(user);
+        if(user&&walkId){
+          try {
+            const data=await accountApi(`/api/me/walks/${encodeURIComponent(walkId)}`);
+            if (data.walk.snapshot?.version === 2) {
+              documentRef.current = data.walk.snapshot;
+              restored = walkDocumentToDraft(data.walk.snapshot, current.current.jobs);
+            } else restored=parseDraft(JSON.stringify(data.walk.snapshot));
+            current.current=restored;setDraft(restored);setServerWalk({id:data.walk.id,revision:data.walk.revision});setSelection(restored.stops.length?"manual":"auto");setFocus(restored.start?.location??null);
+          } catch(caught){setError(caught instanceof Error?caught.message:"Не удалось открыть прогулку.");}
+        }
+      }).catch(()=>{});
       current.current = restored; setDraft(restored); writable.current = true;
       setSelection(restored.stops.length ? "manual" : "auto");
       setFocus(restored.start?.location ?? null);
@@ -67,6 +99,12 @@ export function WalkBuilder() {
     if (!writable.current) return false;
     try {
       stored.current = saveDraft(localStorage, next, stored.current);
+      if (localWalkId.current) {
+        const document = draftToWalkDocument(next, localWalkId.current, documentRef.current);
+        const item = saveLocalWalk(localStorage, document, localRevision.current);
+        documentRef.current = document;
+        localRevision.current = item.revision;
+      }
       setStorageError(""); return true;
     } catch (caught) {
       writable.current = false;
@@ -222,7 +260,30 @@ export function WalkBuilder() {
     const url = URL.createObjectURL(new Blob([JSON.stringify(current.current, null, 2)], { type: "application/json" }));
     const a = document.createElement("a"); a.href = url; a.download = "otgolosok-walk.json"; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  async function saveToAccount(){if(!accountUser){router.push(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`);return;}setBusy("Сохраняем прогулку…");setError("");try{const payload={title:current.current.title||"Моя прогулка",snapshot:current.current};const data=serverWalk?await accountApi(`/api/me/walks/${serverWalk.id}`,{method:"PATCH",body:JSON.stringify({...payload,revision:serverWalk.revision})}):await accountApi("/api/me/walks",{method:"POST",body:JSON.stringify({...payload,idempotencyKey:`walk-${crypto.randomUUID()}`})});setServerWalk({id:data.walk.id,revision:data.walk.revision});setMessage("Прогулка сохранена в личном кабинете.");if(!new URLSearchParams(location.search).get("id"))history.replaceState(null,"",`/walk?id=${data.walk.id}`);}catch(caught){setError(caught instanceof Error?caught.message:"Не удалось сохранить прогулку.");}finally{setBusy("");}}
+  async function saveToAccount(){
+    if(!accountUser){router.push(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`);return;}
+    setBusy("Сохраняем прогулку…");setError("");
+    try {
+      const id = serverWalk?.id ?? documentRef.current?.id ?? localWalkId.current ?? crypto.randomUUID();
+      const snapshot = draftToWalkDocument(current.current, id, documentRef.current);
+      documentRef.current = snapshot;
+      const title = snapshot.title;
+      if (serverWalk) {
+        const data = await accountApi(`/api/me/walks/${serverWalk.id}`,{method:"PATCH",body:JSON.stringify({title,snapshot,revision:serverWalk.revision})});
+        setServerWalk({id:data.walk.id,revision:data.walk.revision});
+      } else {
+        const keyName = `otgolosok:walk:account-operation:${id}`;
+        const key = accountOperationKey.current ?? localStorage.getItem(keyName) ?? `walk-${crypto.randomUUID()}`;
+        accountOperationKey.current = key;
+        localStorage.setItem(keyName, key);
+        const data = await accountApi("/api/me/walks",{method:"POST",body:JSON.stringify({title,snapshot,idempotencyKey:key})});
+        setServerWalk({id:data.walk.id,revision:data.walk.revision});
+        if(!new URLSearchParams(location.search).get("id"))history.replaceState(null,"",`/walk?id=${data.walk.id}`);
+      }
+      setMessage("Прогулка сохранена в личном кабинете.");
+    } catch(caught) { setError(caught instanceof Error?caught.message:"Не удалось сохранить прогулку."); }
+    finally {setBusy("");}
+  }
   if (!loaded) return <main className="walk-builder"><p role="status">Открываем вашу прогулку…</p></main>;
   const locked = !!busy;
   return <main className="walk-builder">

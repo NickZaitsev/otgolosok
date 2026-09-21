@@ -4,10 +4,10 @@ import { precacheUrl, selectPrecacheFiles } from "../../../scripts/service-worke
 describe("precache manifest", () => {
   it("normalizes Windows and POSIX output paths before selecting assets", () => {
     const files = selectPrecacheFiles([
-      "index.html", "admin.html", "_next\\static\\chunks\\app.js", "_next/static/app.css",
+      "index.html", "walk.html", "admin.html", "_next\\static\\chunks\\app.js", "_next/static/app.css",
       "audio\\walk\\chapter.mp3", "data/maps/map.json", "server.txt",
     ]);
-    expect(files).toEqual(["_next/static/app.css", "_next/static/chunks/app.js", "audio/walk/chapter.mp3", "data/maps/map.json", "index.html"]);
-    expect(files.map(precacheUrl)).toEqual(["/_next/static/app.css", "/_next/static/chunks/app.js", "/audio/walk/chapter.mp3", "/data/maps/map.json", "/"]);
+    expect(files).toEqual(["_next/static/app.css", "_next/static/chunks/app.js", "audio/walk/chapter.mp3", "data/maps/map.json", "index.html", "walk.html"]);
+    expect(files.map(precacheUrl)).toEqual(["/_next/static/app.css", "/_next/static/chunks/app.js", "/audio/walk/chapter.mp3", "/data/maps/map.json", "/", "/walk"]);
   });
 });
