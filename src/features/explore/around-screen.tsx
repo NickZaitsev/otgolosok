@@ -12,6 +12,7 @@ import { AppNavigation } from "../navigation/app-navigation";
 import { isMoscowPoint, readMapJobs, type MapJob } from "./map-jobs";
 import { nearbyRadii, nearbyStoryCatalog, recommendNearbyStories, type NearbyRadius } from "./nearby-stories";
 import { selectExplorePanel } from "./panel-state";
+import { rememberGeoPromptDismissal, shouldShowGeoPrompt } from "./geo-prompt";
 import "./explore.css";
 
 type Place = {label:string; address:string|null; location:Coordinates};
@@ -37,7 +38,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
   const [user,setUser]=useState<(Coordinates&{accuracyM:number})|null>(null);
   const [nearbyCenter,setNearbyCenter]=useState<Coordinates|null>(null),[nearbyRadius,setNearbyRadius]=useState<NearbyRadius>(200);
   const [geo,setGeo]=useState<"idle"|"loading"|"ready"|"error"|"denied">("idle"),[geoMessage,setGeoMessage]=useState("");
-  const [prompt,setPrompt]=useState(true);
+  const [prompt,setPrompt]=useState(false);
   const [mapHintVisible,setMapHintVisible]=useState(true);
   const [tracked]=useState<MapJob[]>(()=>typeof window==="undefined"?[]:readMapJobs()),[jobs,setJobs]=useState<Record<string,GenerationJob>>({});
   const [catalog,setCatalog]=useState<CatalogPlace[]>([]);
@@ -49,6 +50,10 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
     return ()=>{lookup.current?.abort();cancelLocation();};
   },[]);
   useEffect(()=>{if(search)input.current?.focus();},[search]);
+  useEffect(()=>{
+    const timer=setTimeout(()=>setPrompt(shouldShowGeoPrompt(localStorage)),0);
+    return()=>clearTimeout(timer);
+  },[]);
   useEffect(()=>{
     if(new URLSearchParams(location.search).get("tab")!=="walk")return;
     const timer=setTimeout(()=>setTab("walk"),0);
@@ -123,6 +128,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
     setFocus({lat:55.74,lon:37.62,zoom:12});
   }
   function openSearch(){setTab("nearby");setSearch(true);setPrompt(false);}
+  function dismissGeoPrompt(){rememberGeoPromptDismissal(localStorage);setPrompt(false);}
   async function findPlace(value:Coordinates|string){
     lookup.current?.abort();const controller=new AbortController();lookup.current=controller;
     setPrompt(false);setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);setSearch(false);setView("map");
@@ -193,7 +199,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
           <a href="https://support.apple.com/ru-ru/102515" target="_blank" rel="noopener noreferrer">Инструкция Apple ↗</a>
           <button className="around-text-button" type="button" onClick={locate}>Проверить снова</button>
         </details>:null}</div><button type="button" aria-label="Скрыть сообщение" onClick={()=>setGeoMessage("")}><ExploreIcon name="close"/></button></div>:null}
-        {prompt&&!active&&!place&&!placeBusy&&!placeError&&!search?<section className="around-location-card" aria-labelledby="location-title"><button type="button" className="around-icon around-location-close" aria-label="Закрыть карточку" onClick={()=>setPrompt(false)}><ExploreIcon name="close"/></button><h2 id="location-title">Смотрите истории рядом с вами</h2><button type="button" className="around-primary" onClick={locate} disabled={geo==="loading"}>{geo==="loading"?"Определяем положение…":geo==="denied"||geo==="error"?"Проверить снова":"Включить геолокацию"}<ExploreIcon name="locate"/></button></section>
+        {prompt&&!active&&!place&&!placeBusy&&!placeError&&!search?<section className="around-location-card" aria-labelledby="location-title"><button type="button" className="around-icon around-location-close" aria-label="Закрыть карточку" onClick={dismissGeoPrompt}><ExploreIcon name="close"/></button><h2 id="location-title">Смотрите истории рядом с вами</h2><button type="button" className="around-primary" onClick={locate} disabled={geo==="loading"}>{geo==="loading"?"Определяем положение…":geo==="denied"||geo==="error"?"Проверить снова":"Включить геолокацию"}<ExploreIcon name="locate"/></button></section>
         :active?<section className="around-place-card" aria-labelledby="selected-place-title"><div className="around-card-label"><span>{active.pending?"Готовим для вас":active.chapter!==undefined?`По дороге · часть ${active.chapter+1}`:"История места"}</span><button type="button" className="around-icon" aria-label="Закрыть карточку" onClick={()=>setSelected(undefined)}><ExploreIcon name="close"/></button></div><h2 id="selected-place-title">{active.title}</h2>{active.title!==active.address?<p>{active.address}</p>:null}<small>{metadata(active)}</small>{active.paragraphs?.length?<div className="around-story-text">{active.paragraphs.map((paragraph,index)=><p key={index}>{paragraph}</p>)}</div>:null}{active.audioUrl?<audio controls preload="metadata" src={active.audioUrl}>Ваш браузер не поддерживает аудио.</audio>:null}{active.chapter!==undefined?<button type="button" className="around-primary" onClick={()=>onStart(active.chapter)}>Слушать эту часть <ExploreIcon name="headphones"/></button>:active.jobId?<Link className="around-primary" href={`/create?job=${active.jobId}`} prefetch={false}>{active.duration?"Открыть и слушать":"Открыть подготовку"}<ExploreIcon name={active.duration?"headphones":"arrow"}/></Link>:active.placeId&&!active.paragraphs?.length?<p>Проверенный текст доступен в карточке места{active.audioUrl?"; запись можно слушать здесь.":"; озвучивание ещё не готово."}</p>:null}</section>
         :explorePanel==="place"?<section className="around-place-card" aria-labelledby="new-place-title"><div className="around-card-label"><span>История по запросу</span><button type="button" className="around-icon" aria-label="Закрыть выбранное место" onClick={()=>{lookup.current?.abort();setPlace(null);setPlaceBusy(false);setPlaceError("");setNearbyCenter(null);}}><ExploreIcon name="close"/></button></div><h2 id="new-place-title">{placeBusy?"Определяем адрес…":place?.address??"О чём расскажет этот дом?"}</h2>{placeError?<p role="status">{placeError}</p>:placeBusy?<p role="status">Смотрим, какой дом находится рядом с выбранной точкой.</p>:<p>{place?.address?"Найдём факты об этом строении и подготовим историю с озвучкой за 5 минут.":"У этой точки нет точного номера дома. Введите адрес, чтобы мы искали историю нужного здания."}</p>}{!placeBusy?<Link className="around-primary" href={createHref} prefetch={false}>{place?.address?"Подготовить историю этого дома":"Ввести адрес вручную"}<ExploreIcon name="plus"/></Link>:null}{place?.address?<Link className="around-secondary" href={walkHref} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk"/></Link>:null}</section>
         :explorePanel==="nearby"?<section className="around-place-card nearby-recommendations" aria-labelledby="nearby-title"><div className="around-card-label"><span>Готовые истории рядом</span></div><h2 id="nearby-title">В радиусе {nearbyRadius} м</h2><div className="nearby-radius" aria-label="Радиус поиска">{nearbyRadii.map(radius=><button key={radius} type="button" aria-pressed={nearbyRadius===radius} onClick={()=>setNearbyRadius(radius)}>{radius} м</button>)}</div>{recommendations.length?<ol className="nearby-story-list">{recommendations.map((story,index)=><li key={story.id}><div><strong>{story.title}</strong><span>{story.address} · {Math.round(story.distanceM)} м по прямой</span>{index===0?<small>{story.reason}</small>:null}</div><button type="button" className={index===0?"around-primary":"around-secondary"} onClick={()=>selectRecommendation(story.id)}>{index===0?"Слушать":"Альтернатива"}<ExploreIcon name={index===0?"headphones":"arrow"}/></button></li>)}</ol>:<div className="nearby-empty"><p>В этом радиусе пока нет готовой проверенной истории.</p>{nearbyRadius<300?<button type="button" className="around-secondary" onClick={()=>setNearbyRadius(nearbyRadii[nearbyRadii.indexOf(nearbyRadius)+1])}>Искать в большем радиусе <ExploreIcon name="arrow"/></button>:<button type="button" className="around-secondary" onClick={()=>{setNearbyCenter(null);setPlace(null);setPrompt(false);}}>Выбрать другую точку <ExploreIcon name="map"/></button>}</div>}</section>
