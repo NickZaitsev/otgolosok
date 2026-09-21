@@ -78,6 +78,7 @@
 .around-place-card>small{display:block;font-size:11px;color:#627064;line-height:1.5;margin:10px 0}
 .around-story-text{margin:14px 0}.around-story-text p{color:#33483f;font-size:13px;line-height:1.65;margin:0 0 10px}.around-story-text p:last-child{margin-bottom:0}
 .around-place-card .around-primary{margin-top:14px}
+.around-place-card .around-primary+.around-secondary{margin-top:10px}
 .nearby-radius{display:flex;gap:6px;margin:0 0 14px}
 .nearby-radius button{min-height:36px;border:1px solid #203e3826;border-radius:20px;background:#fcfaf4;padding:6px 12px;font-size:12px;font-weight:700}
 .nearby-radius button[aria-pressed=true]{background:var(--around-green);border-color:var(--around-green);color:#fffaf0}
