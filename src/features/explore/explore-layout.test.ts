@@ -23,4 +23,8 @@ describe("раскладка карточки места", () => {
       /\.around-place-card \.around-primary\+\.around-secondary\{margin-top:10px\}/,
     );
   });
+
+  it("балансирует перенос заголовка карточки геолокации", () => {
+    expect(css).toMatch(/\.around-location-card h2\{text-wrap:balance\}/);
+  });
 });
