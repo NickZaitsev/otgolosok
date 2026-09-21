@@ -180,5 +180,12 @@
 .around-list-item em { font-size: var(--text-meta); }
 .around-secondary { min-height: var(--control-min); border-radius: var(--radius-pill); }
 .around-route .dek { font-size: var(--text-body); }
+
+/* На карте без поиска в шапке остаётся только верхняя строка. Не оставляем
+   для неё вертикальные отступы, рассчитанные на заголовок и форму поиска. */
+.around-header:has(> .around-topline:only-child) {
+  padding-top: calc(6px + env(safe-area-inset-top));
+  padding-bottom: 6px;
+}
 @media(max-width:360px){.around-topline{font-size:var(--text-meta)}.around-brand{font-size:var(--text-section)}.around-header h1{font-size:clamp(2rem,10vw,2.5rem)}}
 @media(min-width:568px) and (max-width:699px) and (max-height:540px){.around-topline{font-size:var(--text-meta)}.around-brand{font-size:var(--text-section)}.around-header h1{font-size:clamp(1.75rem,5vw,2rem)}.around-bottom .around-primary{font-size:var(--text-control)}}
