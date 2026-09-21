@@ -50,6 +50,11 @@ export function createAccountStore(db, now = Date.now) {
       units INTEGER NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(user_id,request_id)
     );
     CREATE INDEX IF NOT EXISTS user_generation_quota_owner_created ON user_generation_quota(user_id,created_at);
+    CREATE TABLE IF NOT EXISTS user_generation_intents (
+      user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE, idempotency_key TEXT NOT NULL,
+      operation TEXT NOT NULL, request_fingerprint TEXT NOT NULL, job_id TEXT, created_at TEXT NOT NULL,
+      PRIMARY KEY(user_id,idempotency_key)
+    );
     `);
   const timestamp = () => new Date(now()).toISOString();
   const cursor = value => { if(!value)return null;try{const parsed=decode(Buffer.from(value,"base64url").toString());if(typeof parsed.time!=="string"||typeof parsed.id!=="string")throw new Error();return parsed;}catch{throw Object.assign(new Error("Invalid cursor"),{code:"BAD_REQUEST"});} };
@@ -67,6 +72,43 @@ export function createAccountStore(db, now = Date.now) {
     deleteFavorite(userId,type,id) { db.prepare("DELETE FROM user_favorites WHERE user_id=? AND object_type=? AND object_id=?").run(userId,type,id); },
     reserveGeneration(userId,requestId,units=1,limit=6) {if(typeof requestId!=="string"||requestId.length<8||!Number.isSafeInteger(units)||units<1)throw Object.assign(new Error(),{code:"BAD_REQUEST"});const existing=db.prepare("SELECT units FROM user_generation_quota WHERE user_id=? AND request_id=?").get(userId,requestId);if(existing)return false;const since=new Date(now()-86400000).toISOString(),used=db.prepare("SELECT COALESCE(SUM(units),0) AS value FROM user_generation_quota WHERE user_id=? AND created_at>=?").get(userId,since).value;if(used+units>limit)throw Object.assign(new Error("Personal daily quota exceeded"),{code:"QUOTA_EXCEEDED"});db.prepare("INSERT INTO user_generation_quota VALUES(?,?,?,?)").run(userId,requestId,units,timestamp());return true; },
     releaseGeneration(userId,requestId) {db.prepare("DELETE FROM user_generation_quota WHERE user_id=? AND request_id=?").run(userId,requestId);},
+    beginGeneration(userId,idempotencyKey,operation,requestFingerprint,units=1,limit=6) {
+      if(typeof idempotencyKey!=="string"||idempotencyKey.length<8||idempotencyKey.length>100||typeof operation!=="string"||!operation||typeof requestFingerprint!=="string"||!requestFingerprint||!Number.isSafeInteger(units)||units<0)throw Object.assign(new Error(),{code:"BAD_REQUEST"});
+      db.exec("BEGIN IMMEDIATE");
+      try {
+        const existing=db.prepare("SELECT operation,request_fingerprint,job_id FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey);
+        if(existing) {
+          if(existing.operation!==operation||existing.request_fingerprint!==requestFingerprint)throw Object.assign(new Error("Idempotency key belongs to another request"),{code:"CONFLICT"});
+          db.exec("COMMIT");return {created:false,jobId:existing.job_id??null};
+        }
+        // Requests created before request fingerprints were introduced cannot be
+        // safely proved equivalent, so their keys fail closed.
+        if(db.prepare("SELECT 1 FROM user_generation_requests WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey))throw Object.assign(new Error("Legacy idempotency key cannot be reused"),{code:"CONFLICT"});
+        if(units>0) {
+          const since=new Date(now()-86400000).toISOString(),used=Number(db.prepare("SELECT COALESCE(SUM(units),0) AS value FROM user_generation_quota WHERE user_id=? AND created_at>=?").get(userId,since).value);
+          if(used+units>limit)throw Object.assign(new Error("Personal daily quota exceeded"),{code:"QUOTA_EXCEEDED"});
+          db.prepare("INSERT INTO user_generation_quota VALUES(?,?,?,?)").run(userId,idempotencyKey,units,timestamp());
+        }
+        db.prepare("INSERT INTO user_generation_intents VALUES(?,?,?,?,NULL,?)").run(userId,idempotencyKey,operation,requestFingerprint,timestamp());
+        db.exec("COMMIT");return {created:true,jobId:null};
+      } catch(error) {db.exec("ROLLBACK");throw error;}
+    },
+    completeGeneration(userId,idempotencyKey,jobId) {
+      if(typeof jobId!=="string"||!jobId)throw Object.assign(new Error(),{code:"BAD_REQUEST"});
+      db.exec("BEGIN IMMEDIATE");
+      try {
+        const intent=db.prepare("SELECT operation,job_id FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey);
+        if(!intent||(intent.job_id&&intent.job_id!==jobId))throw Object.assign(new Error(),{code:"CONFLICT"});
+        db.prepare("UPDATE user_generation_intents SET job_id=? WHERE user_id=? AND idempotency_key=?").run(jobId,userId,idempotencyKey);
+        db.prepare("INSERT OR IGNORE INTO user_generation_requests VALUES(?,?,?,?,?,?)").run(randomUUID(),userId,jobId,intent.operation,idempotencyKey,timestamp());
+        db.exec("COMMIT");return jobId;
+      } catch(error) {db.exec("ROLLBACK");throw error;}
+    },
+    cancelGeneration(userId,idempotencyKey) {
+      db.exec("BEGIN IMMEDIATE");
+      try {const intent=db.prepare("SELECT job_id FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey);if(intent&&!intent.job_id){db.prepare("DELETE FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").run(userId,idempotencyKey);db.prepare("DELETE FROM user_generation_quota WHERE user_id=? AND request_id=?").run(userId,idempotencyKey);}db.exec("COMMIT");}
+      catch(error){db.exec("ROLLBACK");throw error;}
+    },
     attachRequest(userId,jobId,operation,idempotencyKey) { const existing=db.prepare("SELECT job_id FROM user_generation_requests WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey);if(existing)return existing.job_id;db.prepare("INSERT INTO user_generation_requests VALUES(?,?,?,?,?,?)").run(randomUUID(),userId,jobId,operation,idempotencyKey,timestamp());return jobId; },
     ownsRequest(userId,jobId) { return Boolean(db.prepare("SELECT 1 FROM user_generation_requests WHERE user_id=? AND job_id=?").get(userId,jobId)); },
     listRequests(userId,limit=50,after=null) {limit=Math.min(50,Math.max(1,limit));const c=cursor(after);const rows=c?db.prepare("SELECT id,job_id,operation,created_at FROM user_generation_requests WHERE user_id=? AND (created_at<? OR (created_at=? AND id<?)) ORDER BY created_at DESC,id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT id,job_id,operation,created_at FROM user_generation_requests WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,row=>({jobId:row.job_id,operation:row.operation,createdAt:row.created_at}));return {requests:result.items,nextCursor:result.nextCursor}; },
