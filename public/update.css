@@ -3,7 +3,7 @@
 body { margin: 0; }
 main { max-width: 36rem; margin: 12vh auto; padding: 1.5rem; }
 .wordmark { min-height: 2.75rem; display: inline-flex; align-items: center; margin: 0; font-size: 2rem; line-height: 1; }
-.brand-mark { display: inline-flex; align-items: center; align-self: stretch; height: 100%; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; letter-spacing: -.035em; line-height: 1; white-space: nowrap; }
+.brand-mark { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; letter-spacing: -.035em; line-height: 1; white-space: nowrap; }
 .brand-mark > span { color: var(--brand-accent); }
 h1 { font-size: 2rem; line-height: 1.2; }
 p { line-height: 1.65; }
