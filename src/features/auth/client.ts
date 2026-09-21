@@ -1,3 +1,4 @@
+import { AUTH_CHANNEL, AUTH_EVENT_KEY, SIGNED_OUT_MESSAGE } from "./session-events";
 export type AuthUser = { id: string; email: string; name: string };
 const CSRF_KEY = "otgolosok:account:csrf";
 
@@ -18,7 +19,7 @@ export async function getSession(): Promise<AuthUser | null> {
 async function completeAuthentication(path:string,body:Record<string,string>,message:string){try{const value=await api(path,{method:"POST",body:JSON.stringify(body)});localStorage.removeItem("otgolosok:auth:offline-logout");await getSession();return value;}catch(error){throw new Error(message,{cause:error});}}
 export const signInWithPassword = (email:string,password:string) => completeAuthentication("/api/auth/sign-in/email",{email,password},"Неверный email или пароль.");
 export const signUpWithPassword = (name:string,email:string,password:string) => completeAuthentication("/api/auth/sign-up/email",{name,email,password},"Не удалось создать аккаунт. Возможно, этот email уже используется.");
-function announceSignOut(){try{new BroadcastChannel("otgolosok:auth").postMessage("signed-out");}catch{/* Optional cross-tab signal. */}localStorage.setItem("otgolosok:auth:event",String(Date.now()));}
+function announceSignOut(){try{new BroadcastChannel(AUTH_CHANNEL).postMessage(SIGNED_OUT_MESSAGE);}catch{/* Storage remains the cross-tab fallback. */}localStorage.setItem(AUTH_EVENT_KEY,String(Date.now()));}
 async function revokePending(){if(!localStorage.getItem("otgolosok:auth:offline-logout"))return;await api("/api/auth/sign-out",{method:"POST",body:"{}"});localStorage.removeItem("otgolosok:auth:offline-logout");}
 if(typeof window!=="undefined"){addEventListener("online",()=>void revokePending().catch(()=>{}));void revokePending().catch(()=>{});}
 export const signOut = async () => {announceSignOut();sessionStorage.removeItem(CSRF_KEY);try{const result=await api("/api/auth/sign-out", { method:"POST", body:"{}" });localStorage.removeItem("otgolosok:auth:offline-logout");return result;}catch(error){localStorage.setItem("otgolosok:auth:offline-logout",String(Date.now()));throw new Error("Локальный выход выполнен. Сервер отзовёт сессию после восстановления сети.",{cause:error});}};
