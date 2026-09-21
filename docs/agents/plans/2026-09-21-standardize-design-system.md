@@ -1,6 +1,6 @@
 # Plan: Standardize typography and UI styles across the application
 
-Status: plan, 2026-09-21.
+Status: implemented 2026-09-21 in branch `feat/auth-account-osm-pipeline` (manual browser visual inspection was not available; map artwork remained unchanged as approved).
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
