@@ -1,6 +1,6 @@
 import { createServer as httpServer } from "node:http";
 import { createReadStream } from "node:fs";
-import { rm, stat } from "node:fs/promises";
+import { stat } from "node:fs/promises";
 import { resolve, join, extname, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { createStore } from "./store.mjs";
@@ -141,12 +141,12 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           if(expectedProfile?.configSha256&&configSha256!==expectedProfile.configSha256)throw failure("BAD_REQUEST");
           if(expectedProfile?.modelSha256&&String(req.headers["x-tts-model-sha256"]??"")!==expectedProfile.modelSha256)throw failure("BAD_REQUEST");
           if(expectedProfile?.speaker&&String(req.headers["x-tts-voice"]??"")!==expectedProfile.speaker)throw failure("BAD_REQUEST");
-          const uploaded=await audioIngest(req,audioDirectory);
-          if(uploaded.uploadSha256!==expected){await rm(join(audioDirectory,`${uploaded.artifact.sha256}.mp3`),{force:true});throw failure("AUDIO_CHECKSUM");}
+          const uploaded=await audioIngest(req,audioDirectory,{expectedUploadSha256:expected});
+          if(uploaded.uploadSha256!==expected)throw failure("AUDIO_CHECKSUM");
           const artifact={...uploaded.artifact,model:String(req.headers["x-tts-model"]??"external").slice(0,100),voice:String(req.headers["x-tts-voice"]??"external").slice(0,64),
             ...(preparationVersion?{preparationVersion,preparedTextSha256:String(req.headers["x-tts-prepared-text-sha256"]??"")||null}:{}),...(configSha256?{configSha256}:{})};
           try {json(res,200,{job:store.acceptExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,uploadId,uploadSha256:expected,artifact})});}
-          catch(error){if(!store.getExternalAudio(workerMatch[1])?.receipt)await rm(join(audioDirectory,`${artifact.sha256}.mp3`),{force:true});throw error;}
+          catch(error){throw error;}
           return;
         }
         json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;
