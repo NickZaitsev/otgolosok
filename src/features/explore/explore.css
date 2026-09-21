@@ -92,10 +92,13 @@
 .nearby-story-list .around-primary{margin-top:0}
 .nearby-story-list .around-secondary,.nearby-empty .around-secondary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;color:var(--around-green)}
 .nearby-story-list .around-secondary svg,.nearby-empty .around-secondary svg{width:18px;height:18px}
-.around-map-hint{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:15px 16px;background:#fffaf0;border-radius:22px;box-shadow:0 8px 30px #263d3420;font-size:var(--text-meta);line-height:1.5;color:#617064}
+.around-map-hint{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding:15px 16px;background:#fffaf0;border-radius:22px;box-shadow:0 8px 30px #263d3420;font-size:var(--text-meta);line-height:1.5;color:#617064}
 .around-map-hint strong{display:block;margin-bottom:4px;font-size:var(--text-body);color:var(--around-green)}
 .around-update{display:block;margin-top:8px;text-align:center;padding:8px;background:#f8f5ec;border-radius:12px;font-size:12px;text-decoration:underline}
 .around-nav{position:absolute;z-index:10;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:var(--around-nav-height);min-height:var(--around-nav-height);pointer-events:auto;background:#f8f5ec;border-top:1px solid #203e3818;color:var(--around-green)}
+.around-bottom:has(> .around-map-hint){height:calc(100% - var(--around-sheet-top) - var(--around-nav-height) - 16px);justify-content:flex-end}
+.around-nav.app-navigation{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:7px 10px calc(7px + env(safe-area-inset-bottom));background:#fffaf0;box-shadow:0 -8px 28px #203e3814}
+.around-nav.app-navigation button,.around-nav.app-navigation>a{display:flex;min-height:54px;align-items:center;justify-content:center;gap:3px;border-radius:var(--radius-md);font-size:var(--text-meta);font-weight:700;line-height:1.1}
 .around-list,.around-about{padding:0 20px 24px;max-width:760px;margin:auto}
 .around-subtitle{font-size:12px;line-height:1.6;color:#637160;margin:0 0 20px}
 .around-list-item{display:flex;align-items:center;gap:14px;width:100%;padding:20px 0;border:0;border-bottom:1px solid #203e3822;background:none;text-align:left}
