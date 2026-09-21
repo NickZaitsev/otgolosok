@@ -89,7 +89,7 @@
 .around-map-hint strong{display:block;margin-bottom:4px;font-size:var(--text-body);color:var(--around-green)}
 .around-update{display:block;margin-top:8px;text-align:center;padding:8px;background:#f8f5ec;border-radius:12px;font-size:12px;text-decoration:underline}
 .around-nav{position:absolute;z-index:10;bottom:12px;left:12px;right:12px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:var(--around-nav-height);min-height:var(--around-nav-height);pointer-events:auto;background:#f8f5ec;border:1px solid #203e3818;border-radius:24px;color:var(--around-green);box-shadow:0 8px 30px #203e3830}
-.around-nav.app-navigation{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:7px 10px calc(7px + env(safe-area-inset-bottom));background:#fffaf0;box-shadow:0 8px 30px #203e3830}
+.around-nav.app-navigation{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:7px 10px calc(7px + env(safe-area-inset-bottom));background:#fffaf0;box-shadow:0 8px 30px #203e3830}
 .around-nav.app-navigation button,.around-nav.app-navigation>a{display:flex;min-height:54px;align-items:center;justify-content:center;gap:3px;border-radius:var(--radius-md);font-size:var(--text-meta);font-weight:700;line-height:1.1}
 .around-list,.around-about{padding:0 20px 24px;max-width:760px;margin:auto}
 .around-subtitle{font-size:12px;line-height:1.6;color:#637160;margin:0 0 20px}
