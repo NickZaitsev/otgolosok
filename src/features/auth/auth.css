@@ -1,4 +1,4 @@
-.account-shell{width:min(72rem,100%);min-height:100vh;margin:auto;padding:2rem clamp(1.25rem,5vw,5rem);background:var(--paper)}
+.account-shell{width:min(72rem,100%);min-height:100vh;margin:auto;padding:2rem clamp(1.25rem,5vw,5rem) calc(7rem + env(safe-area-inset-bottom));background:var(--paper)}
 .account-shell header{padding:1rem 0 2rem;border-bottom:1px solid var(--ink)}
 .auth-card,.account-panel{max-width:42rem;margin:clamp(3rem,8vw,7rem) auto;padding:clamp(1.5rem,5vw,3.5rem);background:var(--raised);border:1px solid var(--line)}
 .auth-card h1,.account-panel h1,.account-panel h2{font-family:var(--font-display),serif;font-size:clamp(2.25rem,5vw,4rem);line-height:1;margin-bottom:1rem}
