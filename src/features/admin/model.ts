@@ -18,6 +18,21 @@ export type ContentBatch = {
   counts: { total: number; queued: number; working: number; ready: number; failed: number };
 };
 export type ContentBatchItem = { placeId: string; name: string; address: string | null; state: string; error: { message?: string } | null };
+export type ContentStatusFilter = "all" | "ready" | "waiting" | "stopped";
+
+export function filterContentBatches(batches: ContentBatch[], filter: ContentStatusFilter): ContentBatch[] {
+  if (filter === "all") return batches;
+  return batches.filter(batch => filter === "ready" ? batch.counts.ready > 0
+    : filter === "waiting" ? batch.counts.queued > 0
+      : batch.counts.failed > 0);
+}
+
+export function filterContentBatchItems(items: ContentBatchItem[], filter: ContentStatusFilter): ContentBatchItem[] {
+  if (filter === "all") return items;
+  return items.filter(item => filter === "ready" ? item.state === "ready"
+    : filter === "waiting" ? ["queued", "retry_wait"].includes(item.state)
+      : ["failed", "review_required", "insufficient_evidence", "cancelled"].includes(item.state));
+}
 export type ContentPlace = {
   id: string; name: string; address: string | null; location: { lat: number; lon: number };
   text: null | { id: string; profile: string; story: Draft; draft: Draft; verification: string; audio: Audio | null; createdAt: string };
