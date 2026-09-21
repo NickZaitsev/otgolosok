@@ -51,6 +51,9 @@
 .admin-filters label { margin: 0; color: var(--muted); font-size: .8rem; }
 .admin-filters label > span { display: block; margin-bottom: .35rem; }
 .admin-filter-submit { min-width: 6rem; }
+.admin-content-filter { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin: 1.25rem 0 .75rem; }
+.admin-content-filter label { color: var(--muted); font-size: .8rem; font-weight: 700; }
+.admin-content-filter select { min-width: 11rem; }
 .admin-table-wrap { width: 100%; overflow-x: auto; border-block: 1px solid var(--line); background: var(--raised); overscroll-behavior-inline: contain; }
 .admin-table { width: 100%; min-width: 58rem; border-collapse: collapse; font-size: .875rem; }
 .admin-table th, .admin-table td { padding: .8rem .75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
