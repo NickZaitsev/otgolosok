@@ -12,7 +12,7 @@ import { safeError, startWorker } from "./pipeline.mjs";
 import { createPlaceResolver } from "./places.mjs";
 import { createWalkPlanner } from "./walks.mjs";
 import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
-import { validateWalkResearch, publicWalkResearch } from "./walk-research.mjs";
+import { validateWalkResearch, publicWalkResearch, walkResearchKey } from "./walk-research.mjs";
 import { createBackendLogger } from "./logs.mjs";
 import { ingestAudio } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
@@ -168,7 +168,14 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
             if(!/^(30|60|90)$/.test(q.minutes)||![q.lat,q.lon].every(v=>/^-?\d+(?:\.\d+)?$/.test(v)))throw failure("BAD_REQUEST");
             const request=validateWalkResearch({start:{location:{lat:Number(q.lat),lon:Number(q.lon)}},mode:q.mode,minutes:Number(q.minutes)},true);
             job=store.lookupWalkResearch(request,q.recoveryToken);
-            if(auth&&job&&!accountStore.ownsRequest(session.user.id,job.id))accountStore.attachRequest(session.user.id,job.id,"walk_research",q.recoveryToken);
+            if(auth&&job&&!accountStore.ownsRequest(session.user.id,job.id)) {
+              if(!accountStore.beginGeneration){accountStore.attachRequest(session.user.id,job.id,"walk_research",q.recoveryToken);}
+              else {
+              const intent=accountStore.beginGeneration(session.user.id,q.recoveryToken,"walk_research",walkResearchKey(request),0,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+              if(intent.jobId&&intent.jobId!==job.id)throw failure("CONFLICT");
+              accountStore.completeGeneration(session.user.id,q.recoveryToken,job.id);
+              }
+            }
           }
         } else if(req.method==="POST"&&(!researchMatch[1]||researchMatch[2])) {
           if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
@@ -181,10 +188,12 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
             const quotaKey=`walk-retry-${researchMatch[1]}-${input.revision}`;if(auth)accountStore.reserveGeneration(session.user.id,quotaKey,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
             try{job=store.retryWalkResearch(researchMatch[1],input.revision);}catch(error){if(auth)accountStore.releaseGeneration(session.user.id,quotaKey);throw error;}
           } else {
-            const existing=store.lookupWalkResearch(validateWalkResearch(input),input.recoveryToken);if(auth&&!existing)accountStore.reserveGeneration(session.user.id,input.recoveryToken,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-            try {job=store.createWalkResearch(input,{allowCreate:Boolean(provider)});if(auth&&job)accountStore.attachRequest(session.user.id,job.id,"walk_research",input.recoveryToken);}
+            const request=validateWalkResearch(input),existing=store.lookupWalkResearch(request,input.recoveryToken);
+            const intent=auth&&accountStore.beginGeneration?accountStore.beginGeneration(session.user.id,input.recoveryToken,"walk_research",walkResearchKey(request),existing?0:3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6)):null;
+            if(auth&&!accountStore.beginGeneration&&!existing)accountStore.reserveGeneration(session.user.id,input.recoveryToken,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+            try {job=intent?.jobId?store.get(intent.jobId):store.createWalkResearch(input,{allowCreate:Boolean(provider)});if(auth&&job){if(accountStore.completeGeneration)accountStore.completeGeneration(session.user.id,input.recoveryToken,job.id);else accountStore.attachRequest(session.user.id,job.id,"walk_research",input.recoveryToken);}}
             catch(error) {
-              if(auth&&!existing)accountStore.releaseGeneration(session.user.id,input.recoveryToken);
+              if(auth&&!intent?.jobId){if(accountStore.cancelGeneration)accountStore.cancelGeneration(session.user.id,input.recoveryToken);else if(!existing)accountStore.releaseGeneration(session.user.id,input.recoveryToken);}
               if(error.code!=="PROVIDER_UNAVAILABLE")throw error;
               json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;
             }
@@ -398,9 +407,10 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           if(!session||!accountStore){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите, чтобы подготовить историю."}});return;}
           if(Object.keys(input).some((key)=>!["address","idempotencyKey"].includes(key))||typeof input.idempotencyKey!=="string")throw failure("BAD_REQUEST");
           const address=normalizeAddress(input.address),key=addressKey(address),existing=store.getByKey?.(key)??null;
-          if(!existing)accountStore.reserveGeneration?.(session.user.id,input.idempotencyKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-          let job;try{job=store.createOrGet({key,address});}catch(error){if(!existing)accountStore.releaseGeneration?.(session.user.id,input.idempotencyKey);throw error;}
-          accountStore.attachRequest(session.user.id,job.id,"create",input.idempotencyKey);
+          const intent=accountStore.beginGeneration?accountStore.beginGeneration(session.user.id,input.idempotencyKey,"create",key,existing?0:1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6)):{created:true,jobId:null};
+          if(!accountStore.beginGeneration&&!existing)accountStore.reserveGeneration?.(session.user.id,input.idempotencyKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+          let job;try{job=intent.jobId?store.get(intent.jobId):store.createOrGet({key,address});if(!job)throw failure("CONFLICT");if(accountStore.completeGeneration)accountStore.completeGeneration(session.user.id,input.idempotencyKey,job.id);else accountStore.attachRequest(session.user.id,job.id,"create",input.idempotencyKey);}
+          catch(error){if(!intent.jobId){if(accountStore.cancelGeneration)accountStore.cancelGeneration(session.user.id,input.idempotencyKey);else if(!existing)accountStore.releaseGeneration?.(session.user.id,input.idempotencyKey);}throw error;}
           json(res,200,publicJob(job));worker?.wake();return;
         }
         const retry=new RegExp(`^/api/story-jobs/(${UUID})/retry$`).exec(url.pathname);
