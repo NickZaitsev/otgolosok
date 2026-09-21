@@ -6,6 +6,7 @@
   --muted: #57504a;
   --accent: #a8301b;
   --accent-raw: #e34234;
+  --brand-accent: var(--accent-raw);
   --teal: #1f6f6b;
   --river: #a8cfca;
   --line: rgb(26 23 20 / 18%);
@@ -109,15 +110,20 @@ summary:focus-visible {
   min-height: 2.75rem;
   display: inline-flex;
   align-items: center;
-  font-family: var(--font-display), serif;
   font-size: clamp(2rem, 3.4vw, 3.125rem);
-  font-weight: 700;
-  letter-spacing: -0.035em;
   line-height: 1;
 }
 
-.wordmark span {
-  color: var(--accent-raw);
+.brand-mark {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.brand-mark > span {
+  color: var(--brand-accent);
 }
 
 .privacy-note {
@@ -831,10 +837,6 @@ summary:focus-visible {
 .shell[data-mode="walk"] .masthead {
   min-height: 5rem;
   border-color: rgb(242 237 228 / 20%);
-}
-
-.shell[data-mode="walk"] .wordmark span {
-  color: var(--walk-accent);
 }
 
 .shell[data-mode="walk"] .privacy-note {

@@ -18,8 +18,7 @@
 .admin-desk h4 { font-size: var(--text-control); }
 .admin-desk p + p { margin-top: .5rem; }
 .admin-masthead { display: flex; align-items: center; flex-wrap: wrap; gap: 1rem; min-height: 5rem; border-bottom: 1px solid var(--line); }
-.admin-wordmark { margin-right: auto; font-family: var(--font-display), serif; font-size: var(--text-page); font-weight: 700; letter-spacing: -.035em; line-height: 1; }
-.admin-wordmark span { color: var(--admin-orange); }
+.admin-wordmark { margin-right: auto; font-size: var(--text-page); line-height: 1; }
 .admin-context { color: var(--muted); font-size: var(--text-secondary); font-weight: 700; }
 .admin-heading { padding-top: 2rem; }
 .admin-heading > p { max-width: 45rem; color: var(--muted); }

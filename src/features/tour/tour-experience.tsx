@@ -42,6 +42,7 @@ import { StorySources, StoryText } from "./story-content";
 import { RouteNotes } from "./route-notes";
 import { AroundScreen } from "../explore/around-screen";
 import { RouteMap } from "./route-map";
+import { BrandMark } from "../brand/brand-mark";
 import { chapterTriggerConfig, getWalkChapters, nextChapterTarget, WalkPlanPreview } from "./walk-plan";
 import { WalkMap } from "./walk-map";
 import { advanceModeHints, advanceModeLabels, advanceModes, useWalkSettings, type AdvanceMode, type PlaybackRate } from "./walk-settings";
@@ -629,7 +630,7 @@ function AvailableTour({ route: initialRoute }: { route: Route }) {
     <main className={isWalking ? "shell" : "around-shell"} data-mode={isWalking ? "walk" : "reading"}>
       {isWalking ? <header className="masthead">
         <a className="wordmark" href="#top" aria-label="Отголосок, на главную">
-          Отголосок<span aria-hidden="true">.</span>
+          <BrandMark />
         </a>
         <p className="privacy-note"><i aria-hidden="true" /> Координаты остаются на устройстве</p>
       </header> : null}

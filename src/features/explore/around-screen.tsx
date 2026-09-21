@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
+import { BrandMark } from "../brand/brand-mark";
 import type { Coordinates, Route } from "../tour/types";
 import { getWalkChapters } from "../tour/walk-plan";
 import { jobUrl } from "../generator/offline";
@@ -161,7 +162,7 @@ export function AroundScreen({route,onStart,children,updateAvailable}: {route:Ro
     {tab==="nearby"?<ExploreMap viewState={nearbyMapView} items={mapItems} selectedId={selected??(place?"picked-place":undefined)} focus={focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin)select(pin);}} onPoint={point=>void findPlace(point)} />:null}
     <div className={`around-content ${tab!=="nearby"?"scroll-view":""}${search?" searching":""}`}>
       <header className="around-header">
-        <div className="around-topline"><Link href="/" prefetch={false} className="around-brand">отголосок<span>.</span></Link><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>
+        <div className="around-topline"><Link href="/" prefetch={false} className="around-brand"><BrandMark /></Link><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>
         {tab==="walk"?<h1 id="around-title" tabIndex={-1}>Пойдём гулять.</h1>:null}
         {search?<form className="around-search" onSubmit={submitSearch}><label htmlFor="map-address">Какой дом вас интересует?</label><div><input id="map-address" ref={input} value={query} onChange={event=>setQuery(event.target.value)} minLength={3} maxLength={180} required placeholder="Улица и номер дома в Москве" autoComplete="off"/><button type="submit" disabled={placeBusy||query.trim().length<3} aria-label="Найти дом"><ExploreIcon name="arrow"/></button></div><Link href={`/create?${new URLSearchParams(query.trim()?{address:query.trim()}:{new:"1"})}`} prefetch={false}>Ввести адрес для истории вручную →</Link></form>:null}
       </header>

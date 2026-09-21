@@ -2,6 +2,7 @@
 
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Link from "next/link";
+import { BrandMark } from "../brand/brand-mark";
 import { useRouter } from "next/navigation";
 import { ExploreMap } from "../explore/explore-map";
 import { placeFromQuery, rememberMapJob } from "../explore/map-jobs";
@@ -225,7 +226,7 @@ export function WalkBuilder() {
   if (!loaded) return <main className="walk-builder"><p role="status">Открываем вашу прогулку…</p></main>;
   const locked = !!busy;
   return <main className="walk-builder">
-    <header><Link href="/" prefetch={false}>отголосок<span>.</span></Link><span><Link href="/account" prefetch={false}>Личный кабинет</Link> · <Link href="/" prefetch={false}>На карту</Link></span></header>
+    <header><Link href="/" prefetch={false}><BrandMark /></Link><span><Link href="/account" prefetch={false}>Личный кабинет</Link> · <Link href="/" prefetch={false}>На карту</Link></span></header>
     <h1>Ваша прогулка</h1>
     <p>Выберите начало, соберите маршрут и только потом подготовьте истории. Пока доступны адреса Москвы.</p>
     <Link href="/create?new=1" prefetch={false}>Нужна только история одного дома?</Link>

@@ -1,4 +1,4 @@
-const precacheNames = new Set(["index.html", "create.html", "login.html", "account.html", "icon.svg", "favicon.ico", "manifest.webmanifest"]);
+const precacheNames = new Set(["index.html", "create.html", "login.html", "account.html", "icon.svg", "manifest.webmanifest"]);
 
 export function normalizeOutputPath(file) {
   return file.replaceAll("\\", "/");
