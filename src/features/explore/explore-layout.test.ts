@@ -17,10 +17,10 @@ describe("раскладка карточки места", () => {
 
   it("показывает создание прогулки как второстепенное действие", () => {
     expect(screen).toMatch(
-      /className="around-secondary"[^>]*>Создать прогулку отсюда/,
+      /aria-labelledby="new-place-title"[\s\S]*className="around-primary"[\s\S]*className="around-secondary"[^>]*>Создать прогулку отсюда[\s\S]*<\/section>/,
     );
     expect(css).toMatch(
-      /\.around-bottom>\.around-place-card\+\.around-secondary\{margin-top:12px\}/,
+      /\.around-place-card \.around-primary\+\.around-secondary\{margin-top:10px\}/,
     );
   });
 });
