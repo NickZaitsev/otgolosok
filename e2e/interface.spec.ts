@@ -147,6 +147,9 @@ test("профиль сохраняет имя даже при отказе из
   await page.route("**/api/me/favorites*", route => route.fulfill({ status: 503, json: { error: { message: "Избранное временно недоступно" } } }));
   await page.route("**/api/me", route => route.fulfill({ json: { user: { id: "test", name: route.request().postDataJSON().name, email: "test@example.test" } } }));
   await page.goto("/account");
+  await expect(page.getByLabel("Ваше имя")).toHaveCount(0);
+  await expect(page.getByText("Личное пространство", { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Редактировать профиль", exact: true }).click();
   await page.getByLabel("Ваше имя").fill("Анна Новая");
   await page.getByRole("button", { name: "Сохранить изменения" }).click();
   await expect(page.getByRole("heading", { name: "Анна Новая" })).toBeVisible();
