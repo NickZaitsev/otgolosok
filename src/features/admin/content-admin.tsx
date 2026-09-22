@@ -23,12 +23,25 @@ const PLACE_PAGE = 50;
 const ITEM_PAGE = 50;
 const BATCH_PAGE = 20;
 const HEARTBEAT_WINDOW_MS = 120_000;
+const SKELETON_ROWS = 5;
 const numbers = new Intl.NumberFormat("ru-RU");
 
 function moment(value: string | null | undefined) {
   if (!value) return "нет";
   const date = new Date(value);
   return Number.isNaN(date.valueOf()) ? "—" : date.toLocaleString("ru-RU");
+}
+
+/**
+ * Placeholder rows hold a table's shape while its own request is in flight, so the editor never reads
+ * stale rows as current. They are decorative: the loading label is announced by the desk-wide status line.
+ */
+function skeletonRows(columns: number, current: number) {
+  const rows = current ? Math.min(current, 8) : SKELETON_ROWS;
+  return Array.from({ length: rows }, (_, row) => <tr className="content-skeleton-row" key={`skeleton-${row}`} aria-hidden="true">
+    <th scope="row"><span className="content-skeleton-bar" /><span className="content-skeleton-bar" /></th>
+    {Array.from({ length: columns - 1 }, (_, cell) => <td key={cell}><span className="content-skeleton-bar" /></td>)}
+  </tr>);
 }
 
 /** Item states are grouped into four buckets; each count opens the job list filtered to that bucket. */
@@ -49,6 +62,8 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
   const pendingNavigation = useRef<"editor" | "catalog" | null>(null);
   const [notice, setNotice] = useState("");
   const [stats, setStats] = useState<Stats | null>(null);
+  // Each table watches its own request: `/content/batches` + workers + audio arrive together, places and items separately.
+  const [loading, setLoading] = useState({ overview: false, places: false, items: false });
 
   const [batches, setBatches] = useState<ContentBatch[]>([]);
   const [batchPage, setBatchPage] = useState(0);
@@ -75,13 +90,14 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
   const [heartbeats, setHeartbeats] = useState<ContentHeartbeat[]>([]);
   const [audioJobs, setAudioJobs] = useState<ContentAudioJob[]>([]);
   const [workerToken, setWorkerToken] = useState("");
+  // Freshness is read off the clock when the list arrives: during render `Date.now()` would be impure and the
+  // callout would silently go stale anyway, because nothing re-renders the component as the window expires.
+  const [workerOnline, setWorkerOnline] = useState(false);
 
   const dirty = Boolean(draft && JSON.stringify(draft) !== baseline);
   const disabled = Boolean(busy);
   const batchPages = pageCount(batches.length, BATCH_PAGE);
   const batchRows = batches.slice(batchPage * BATCH_PAGE, batchPage * BATCH_PAGE + BATCH_PAGE);
-  const workerOnline = workers.some(worker => !worker.revokedAt && worker.lastSeenAt
-    && Date.now() - new Date(worker.lastSeenAt).valueOf() < HEARTBEAT_WINDOW_MS);
 
   useEffect(() => { onDirtyChange(dirty); }, [dirty, onDirtyChange]);
   useEffect(() => () => onDirtyChange(false), [onDirtyChange]);
@@ -98,35 +114,54 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
     target.scrollIntoView({ block, behavior: "instant" });
   }, [busy, place]);
 
-  async function loadOverview(signal: AbortSignal) {
-    const [batchList, nextStats, workerList, audio] = await Promise.all([
-      api<{ batches: ContentBatch[] }>("/content/batches", signal),
-      api<Stats>("/content/stats", signal),
-      api<{ workers: ContentWorker[]; heartbeats: ContentHeartbeat[] }>("/content/workers", signal),
-      api<{ audioJobs: ContentAudioJob[] }>("/content/audio", signal),
-    ]);
-    setBatches(batchList.batches); setStats(nextStats);
-    setWorkers(workerList.workers); setHeartbeats(workerList.heartbeats); setAudioJobs(audio.audioJobs);
+  /** Raises the table's flag for the whole request, including the retry that walks back a page that fell off the end. */
+  async function tracked<T>(key: keyof typeof loading, action: () => Promise<T>) {
+    setLoading(state => ({ ...state, [key]: true }));
+    try { return await action(); }
+    finally { setLoading(state => ({ ...state, [key]: false })); }
   }
 
-  async function loadPlaces(offset: number, signal: AbortSignal, next?: { q?: string; status?: ContentPlaceStatusFilter }) {
+  function loadOverview(signal: AbortSignal) {
+    return tracked("overview", async () => {
+      const [batchList, nextStats, workerList, audio] = await Promise.all([
+        api<{ batches: ContentBatch[] }>("/content/batches", signal),
+        api<Stats>("/content/stats", signal),
+        api<{ workers: ContentWorker[]; heartbeats: ContentHeartbeat[] }>("/content/workers", signal),
+        api<{ audioJobs: ContentAudioJob[] }>("/content/audio", signal),
+      ]);
+      setBatches(batchList.batches); setStats(nextStats);
+      setWorkers(workerList.workers); setHeartbeats(workerList.heartbeats); setAudioJobs(audio.audioJobs);
+      setWorkerOnline(workerList.workers.some(worker => !worker.revokedAt && worker.lastSeenAt
+        && Date.now() - new Date(worker.lastSeenAt).valueOf() < HEARTBEAT_WINDOW_MS));
+    });
+  }
+
+  function loadPlaces(offset: number, signal: AbortSignal, next?: { q?: string; status?: ContentPlaceStatusFilter }) {
+    return tracked("places", () => fetchPlaces(offset, signal, next));
+  }
+
+  async function fetchPlaces(offset: number, signal: AbortSignal, next?: { q?: string; status?: ContentPlaceStatusFilter }) {
     const q = next?.q ?? placeQuery;
     const status = next?.status ?? placeStatus;
     const params = new URLSearchParams({ limit: String(PLACE_PAGE), offset: String(offset), status });
     if (q) params.set("q", q);
     const result = await api<PlacePage>(`/content/places?${params}`, signal);
     // A page can fall off the end when places are archived between requests.
-    if (!result.places.length && offset > 0) { await loadPlaces(Math.max(0, offset - PLACE_PAGE), signal, next); return; }
+    if (!result.places.length && offset > 0) { await fetchPlaces(Math.max(0, offset - PLACE_PAGE), signal, next); return; }
     setPlacePage(result); setPlaceOffset(offset);
   }
 
-  async function loadItems(id: string, offset: number, signal: AbortSignal, next?: { status?: ContentStatusFilter; error?: ContentErrorFilter }) {
+  function loadItems(id: string, offset: number, signal: AbortSignal, next?: { status?: ContentStatusFilter; error?: ContentErrorFilter }) {
+    return tracked("items", () => fetchItems(id, offset, signal, next));
+  }
+
+  async function fetchItems(id: string, offset: number, signal: AbortSignal, next?: { status?: ContentStatusFilter; error?: ContentErrorFilter }) {
     const params = new URLSearchParams({
       limit: String(ITEM_PAGE), offset: String(offset),
       status: next?.status ?? itemStatus, error: next?.error ?? itemError,
     });
     const result = await api<ContentBatchItemPage>(`/content/batches/${id}/items?${params}`, signal);
-    if (!result.items.length && offset > 0) { await loadItems(id, Math.max(0, offset - ITEM_PAGE), signal, next); return; }
+    if (!result.items.length && offset > 0) { await fetchItems(id, Math.max(0, offset - ITEM_PAGE), signal, next); return; }
     setItemPage(result); setItemOffset(offset);
   }
 
@@ -243,10 +278,10 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             <p className="admin-meta">Всего партий {batches.length}. Нажмите число в колонке «Прогресс заданий», чтобы открыть эти здания списком.</p>
           </div>
         </div>
-        <div className="admin-table-wrap"><table className="admin-table">
+        <div className="admin-table-wrap" aria-busy={loading.overview}><table className="admin-table">
           <caption className="admin-sr-only">Партии OSM</caption>
           <thead><tr><th scope="col">Партия</th><th scope="col">Состояние</th><th scope="col">Прогресс заданий</th><th scope="col">Действия</th></tr></thead>
-          <tbody>{batchRows.map(item => {
+          <tbody>{loading.overview ? skeletonRows(4, batchRows.length) : batchRows.map(item => {
             const segments = progressSegments(item.counts);
             return <tr key={item.id} data-current={batch?.id === item.id || undefined}>
               <th scope="row">{item.name}<span className="admin-row-id">{item.id.slice(0, 8)} · {item.mode === "text-only" ? "только текст" : "текст и озвучка"} · создана {moment(item.createdAt)}</span></th>
@@ -270,7 +305,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             </tr>;
           })}</tbody>
         </table></div>
-        {!batches.length && <p className="admin-empty-row" role="status">Партий пока нет.</p>}
+        {!loading.overview && !batches.length && <p className="admin-empty-row" role="status">Партий пока нет.</p>}
         {batchPages > 1 && <nav className="admin-pagination" aria-label="Страницы партий">
           <button disabled={disabled || batchPage === 0} onClick={() => setBatchPage(page => Math.max(0, page - 1))}>Назад</button>
           <span className="admin-meta">Страница {batchPage + 1} из {batchPages}</span>
@@ -297,12 +332,14 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             void run("Фильтрация заданий…", signal => loadItems(batch.id, 0, signal, { error: next }));
           }}>{contentErrorOptions(itemPage?.errors ?? [], itemError).map(option =>
             <option key={option.value} value={option.value}>{option.label}</option>)}</select>
-          <p className="admin-meta" role="status">Показано {pageRange(itemOffset, itemPage?.items.length ?? 0, itemPage?.total ?? 0)}</p>
+          <p className="admin-meta" role="status">{loading.items
+            ? "Загружаем задания…"
+            : `Показано ${pageRange(itemOffset, itemPage?.items.length ?? 0, itemPage?.total ?? 0)}`}</p>
         </div>
-        <div className="admin-table-wrap"><table className="admin-table">
+        <div className="admin-table-wrap" aria-busy={loading.items}><table className="admin-table">
           <caption className="admin-sr-only">Задания партии</caption>
           <thead><tr><th scope="col">Место</th><th scope="col">Состояние</th><th scope="col">Ошибка</th><th scope="col">Действие</th></tr></thead>
-          <tbody>{(itemPage?.items ?? []).map(item => <tr key={item.placeId}>
+          <tbody>{loading.items ? skeletonRows(4, itemPage?.items.length ?? 0) : (itemPage?.items ?? []).map(item => <tr key={item.placeId}>
             <th scope="row">{item.name}<span className="admin-row-id">{item.address ?? item.placeId}</span></th>
             <td><span className={`admin-stage admin-stage-${item.state}`}>{batchItemStates[item.state] ?? item.state}</span></td>
             {/* Older failures stored the code in `message`; then the code alone is shown instead of repeating it twice. */}
@@ -318,7 +355,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             })}>Повторить</button>}</td>
           </tr>)}</tbody>
         </table></div>
-        {!itemPage?.items.length && <p className="admin-empty-row" role="status">Заданий с выбранными фильтрами в партии нет.</p>}
+        {!loading.items && !itemPage?.items.length && <p className="admin-empty-row" role="status">Заданий с выбранными фильтрами в партии нет.</p>}
         <nav className="admin-pagination" aria-label="Страницы заданий партии">
           <button disabled={disabled || itemOffset === 0} onClick={() => void run("Загрузка заданий…", signal => loadItems(batch.id, Math.max(0, itemOffset - ITEM_PAGE), signal))}>Назад</button>
           <span className="admin-meta">Страница {Math.floor(itemOffset / ITEM_PAGE) + 1} из {pageCount(itemPage?.total ?? 0, ITEM_PAGE)}</span>
@@ -326,15 +363,16 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
         </nav>
       </section>}
 
+      {/* The block only exists while something is stuck, so its skeleton shows on refresh rather than flashing an empty section on first load. */}
       {audioJobs.length > 0 && <section className="admin-review" aria-labelledby="content-audio-title">
         <div className="admin-section-head"><div>
           <h3 id="content-audio-title">Остановленные аудиозадания</h3>
           <p className="admin-meta">Показано {audioJobs.length}. Повтор запускает новую ограниченную серию попыток с тем же утверждённым текстом.</p>
         </div></div>
-        <div className="admin-table-wrap"><table className="admin-table">
+        <div className="admin-table-wrap" aria-busy={loading.overview}><table className="admin-table">
           <caption className="admin-sr-only">Остановленные аудиозадания</caption>
           <thead><tr><th scope="col">Место</th><th scope="col">Профиль</th><th scope="col">Попытки</th><th scope="col">Ошибка</th><th scope="col">Действие</th></tr></thead>
-          <tbody>{audioJobs.map(audio => <tr key={audio.id}>
+          <tbody>{loading.overview ? skeletonRows(5, audioJobs.length) : audioJobs.map(audio => <tr key={audio.id}>
             <th scope="row">{audio.placeName ?? audio.placeId ?? audio.id}<span className="admin-row-id">{audio.id.slice(0, 8)} · {batchItemStates[audio.state] ?? audio.state}</span></th>
             <td>{audio.profileId}</td>
             <td>{audio.attempts} из {audio.maxAttempts}</td>
@@ -367,18 +405,20 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
           }}>{placeStatusOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
           <button className="admin-filter-submit" type="submit" disabled={disabled}>Найти</button>
         </form>
-        <p className="admin-meta" role="status">Показано {pageRange(placeOffset, placePage.places.length, placePage.total)} мест.</p>
-        <div className="admin-table-wrap"><table className="admin-table">
+        <p className="admin-meta" role="status">{loading.places
+          ? "Загружаем места…"
+          : `Показано ${pageRange(placeOffset, placePage.places.length, placePage.total)} мест.`}</p>
+        <div className="admin-table-wrap" aria-busy={loading.places}><table className="admin-table">
           <caption className="admin-sr-only">Каталог мест OSM</caption>
           <thead><tr><th scope="col">Место</th><th scope="col">Текст</th><th scope="col">Аудио</th><th scope="col">Действие</th></tr></thead>
-          <tbody>{placePage.places.map(item => <tr key={item.id} data-current={place?.id === item.id || undefined}>
+          <tbody>{loading.places ? skeletonRows(4, placePage.places.length) : placePage.places.map(item => <tr key={item.id} data-current={place?.id === item.id || undefined}>
             <th scope="row">{item.name}<span className="admin-row-id">{item.address ?? item.id}</span></th>
             <td><span className={`admin-stage content-text-${item.textStatus}`}>{placeTextStatuses[item.textStatus]}</span></td>
             <td>{item.audio ? "Готово" : "Нет"}</td>
             <td><button disabled={disabled} onClick={event => openPlace(item.id, event.currentTarget)}>Открыть</button></td>
           </tr>)}</tbody>
         </table></div>
-        {!placePage.places.length && <p className="admin-empty-row" role="status">По этим условиям мест не найдено.</p>}
+        {!loading.places && !placePage.places.length && <p className="admin-empty-row" role="status">По этим условиям мест не найдено.</p>}
         <nav className="admin-pagination" aria-label="Страницы каталога мест">
           <button disabled={disabled || placeOffset === 0} onClick={() => void run("Загрузка мест…", signal => loadPlaces(Math.max(0, placeOffset - PLACE_PAGE), signal))}>Назад</button>
           <span className="admin-meta">Страница {Math.floor(placeOffset / PLACE_PAGE) + 1} из {pageCount(placePage.total, PLACE_PAGE)}</span>
@@ -437,10 +477,10 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             <button onClick={() => setWorkerToken("")}>Скрыть</button>
           </div></div>}
         {!workerOnline && <p className="admin-callout">Сейчас нет подходящего online-воркера. Аудиозадания останутся в очереди.</p>}
-        <div className="admin-table-wrap"><table className="admin-table">
+        <div className="admin-table-wrap" aria-busy={loading.overview}><table className="admin-table">
           <caption className="admin-sr-only">Ключи и состояние локальных TTS-воркеров</caption>
           <thead><tr><th scope="col">Воркер</th><th scope="col">Профили</th><th scope="col">Последний heartbeat</th><th scope="col">Текущая работа</th><th scope="col">Действие</th></tr></thead>
-          <tbody>{workers.map(worker => {
+          <tbody>{loading.overview ? skeletonRows(5, workers.length) : workers.map(worker => {
             const heartbeat = heartbeats.find(item => item.credentialId === worker.id);
             return <tr key={worker.id}>
               <th scope="row">{worker.name}{heartbeat && <span className="admin-row-id">{heartbeat.workerName} · {heartbeat.version ?? "версия неизвестна"}</span>}</th>
@@ -454,7 +494,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             </tr>;
           })}</tbody>
         </table></div>
-        {!workers.length && <p className="admin-empty-row" role="status">Ключи воркеров ещё не выпускались.</p>}
+        {!loading.overview && !workers.length && <p className="admin-empty-row" role="status">Ключи воркеров ещё не выпускались.</p>}
       </section>
     </section>
   );

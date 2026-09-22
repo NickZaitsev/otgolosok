@@ -27,6 +27,8 @@ const batchItems: ContentBatchItem[] = [
 let root: Root;
 let container: HTMLDivElement;
 let failDetail: boolean;
+/** Holds every response open so a test can look at the tables mid-request. */
+let gate: { promise: Promise<void>; open: () => void } | null;
 let scrolled: Element[];
 let itemQueries: URLSearchParams[];
 let items: ContentBatchItem[];
@@ -49,6 +51,7 @@ function itemsPage(query: URLSearchParams) {
 }
 
 const api: AdminApi = async <T,>(path: string): Promise<T> => {
+  if (gate) await gate.promise;
   if (path.startsWith("/content/places/")) {
     if (failDetail) throw new Error("Не удалось загрузить место");
     return { place: structuredClone(places.find(place => path.endsWith(place.id))) } as T;
@@ -125,6 +128,7 @@ function editorHeading() {
 beforeEach(async () => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   failDetail = false;
+  gate = null;
   scrolled = [];
   itemQueries = [];
   items = structuredClone(batchItems);
@@ -262,5 +266,73 @@ describe("фильтр заданий партии по ошибке", () => {
       .toContain("Заданий с выбранными фильтрами в партии нет.");
     expect(errorOptions()).toContain("ADDRESS_UNCLEAR (0)");
     expect(container.querySelector<HTMLSelectElement>("#content-item-error")?.value).toBe("ADDRESS_UNCLEAR");
+  });
+});
+
+describe("прелоадеры таблиц", () => {
+  function closeGate() {
+    let open!: () => void;
+    const promise = new Promise<void>(resolve => { open = resolve; });
+    gate = { promise, open };
+  }
+
+  async function openGate() {
+    const held = gate!;
+    gate = null;
+    await act(async () => { held.open(); await held.promise; });
+  }
+
+  function section(title: string) {
+    return container.querySelector(`[aria-labelledby="${title}"]`)!;
+  }
+
+  function skeletons(title: string) {
+    return section(title).querySelectorAll("tr.content-skeleton-row").length;
+  }
+
+  function rows(title: string) {
+    return section(title).querySelectorAll("tbody tr:not(.content-skeleton-row)").length;
+  }
+
+  it("заменяет строки партий и воркеров скелетоном на время обновления", async () => {
+    closeGate();
+    await click(buttons("Обновить")[0]);
+    expect(skeletons("content-batches-title")).toBeGreaterThan(0);
+    expect(rows("content-batches-title")).toBe(0);
+    expect(skeletons("content-workers-title")).toBeGreaterThan(0);
+    await openGate();
+    expect(skeletons("content-batches-title")).toBe(0);
+    expect(rows("content-batches-title")).toBe(1);
+  });
+
+  it("не показывает «ключи воркеров ещё не выпускались», пока список грузится", async () => {
+    expect(section("content-workers-title").textContent).toContain("Ключи воркеров ещё не выпускались.");
+    closeGate();
+    await click(buttons("Обновить")[0]);
+    expect(section("content-workers-title").textContent).not.toContain("Ключи воркеров ещё не выпускались.");
+    await openGate();
+    expect(section("content-workers-title").textContent).toContain("Ключи воркеров ещё не выпускались.");
+  });
+
+  it("показывает скелетон каталога вместо устаревших мест во время поиска", async () => {
+    closeGate();
+    await click(buttons("Найти")[0]);
+    expect(skeletons("content-catalog-title")).toBeGreaterThan(0);
+    expect(rows("content-catalog-title")).toBe(0);
+    expect(section("content-catalog-title").textContent).toContain("Загружаем места…");
+    await openGate();
+    expect(skeletons("content-catalog-title")).toBe(0);
+    expect(rows("content-catalog-title")).toBe(places.length);
+  });
+
+  it("показывает скелетон заданий при открытии партии и убирает его вместе с ответом", async () => {
+    closeGate();
+    await click(buttons("Все задания")[0]);
+    expect(skeletons("content-items-title")).toBeGreaterThan(0);
+    expect(section("content-items-title").textContent).toContain("Загружаем задания…");
+    expect(section("content-items-title").textContent).not.toContain("Заданий с выбранными фильтрами в партии нет.");
+    await openGate();
+    expect(skeletons("content-items-title")).toBe(0);
+    expect(itemNames()).toEqual(["1 корпус", "8й корпус", "Готовое место"]);
   });
 });
