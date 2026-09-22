@@ -426,6 +426,20 @@ summary:focus-visible {
   text-underline-offset: 4px;
 }
 
+.offline-save-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.offline-save-button:disabled {
+  cursor: progress;
+  opacity: .65;
+}
+
 .update-control {
   margin-top: var(--space-sm);
   color: var(--muted);
@@ -1107,14 +1121,9 @@ summary:focus-visible {
   right: 4px;
 }
 
-.walk-map-canvas .explore-map .leaflet-control-scale {
-  margin-bottom: 6px;
-  margin-left: 6px;
-}
-
 .walk-map-canvas .map-attribution {
-  bottom: 4px;
-  right: 56px;
+  bottom: 12px;
+  right: 64px;
 }
 
 .walk-map-canvas .map-loading,

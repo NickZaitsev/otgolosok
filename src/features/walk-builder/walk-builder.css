@@ -27,8 +27,7 @@
 .walk-warning button,.walk-candidate button{margin:8px 8px 0 0}
 .walk-map{position:relative;isolation:isolate;height:380px;border-radius:12px;overflow:hidden;margin:20px 0;background:#e9e9dd}
 .walk-map .explore-map .leaflet-bottom.leaflet-right{top:auto;bottom:48px;right:8px}
-.walk-map .explore-map .leaflet-control-scale{margin-bottom:12px}
-.walk-map .map-attribution{bottom:0;min-height:44px;padding:4px 8px;font-size:var(--text-meta)}
+.walk-map .map-attribution{bottom:12px;min-height:24px}
 .walk-map .map-network-note{top:16px}
 .walk-map .leaflet-control-zoom a{width:44px;text-decoration:none}
 .walk-stops{padding-left:24px}
