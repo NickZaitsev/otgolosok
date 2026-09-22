@@ -272,3 +272,11 @@ test("карточка выбранного дома не оставляет п�
   await page.getByRole("button", { name: "Закрыть выбранное место", exact: true }).click();
   await expect(title).toHaveCount(0);
 });
+
+test("подпись карты размером 11 пикселей без подчёркивания", async ({ page }) => {
+  await page.goto("/");
+  const attribution = page.getByRole("link", { name: "© OpenStreetMap", exact: true });
+  await expect(attribution).toBeVisible();
+  expect(await attribution.evaluate(el => ({ size: getComputedStyle(el).fontSize, decoration: getComputedStyle(el).textDecorationLine }))).toEqual({ size: "11px", decoration: "none" });
+  await expect(attribution).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
+});
