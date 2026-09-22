@@ -1,5 +1,27 @@
 import { expect, test } from "@playwright/test";
 
+for (const endpoint of ["Откуда", "Куда"]) {
+  test(`точка карты сразу подставляется в ${endpoint}`, async ({ page }) => {
+    let fail = true;
+    const place = { address: "Москва, Арбат, 10", location: { lat: 55.75, lon: 37.6 } };
+    await page.route("**/api/story-place?*", route => route.fulfill(fail
+      ? { status: 404, json: { error: "Адрес не найден" } }
+      : { json: place }));
+    await page.goto("/?walk=create");
+    await page.getByRole("button", { name: new RegExp(`^${endpoint}`) }).click();
+    await page.getByRole("button", { name: "Выбрать на карте", exact: true }).click();
+    await expect(page.locator(".map-loading")).toHaveCount(0);
+    await page.locator(".explore-map").click({ position: { x: 150, y: 200 } });
+    await expect(page.locator(".creation-panel [role=alert]")).toBeVisible();
+    await expect(page.locator(".creation-panel.is-picking")).toBeVisible();
+    fail = false;
+    await page.locator(".explore-map").click({ position: { x: 160, y: 210 } });
+    await expect(page.locator(".creation-panel.is-picking")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: new RegExp(`^${endpoint}`) })).toContainText(place.address);
+    await expect(page.getByRole("button", { name: "Выбрать эту точку" })).toHaveCount(0);
+  });
+}
+
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/**", route => route.fulfill({ json: { user: null, walks: [], nextCursor: null, items: [] } }));
 });
