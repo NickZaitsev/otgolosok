@@ -1,6 +1,7 @@
 .content-admin .admin-review { margin-bottom: 1.75rem; }
 .content-admin .admin-review > .admin-section-head { margin-bottom: .75rem; }
 .content-admin .admin-review .admin-filters { margin-top: 1rem; background: var(--raised); }
+#content-place-title, #content-catalog-title { scroll-margin-top: 1.5rem; }
 
 .content-stats {
   display: grid;
