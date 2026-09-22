@@ -173,6 +173,10 @@ for (const [width, height] of [[360, 800], [390, 844], [568, 400], [844, 390], [
     const panel = await page.locator(".creation-panel").boundingBox();
     const nav = await page.getByRole("navigation", { name: "Основная навигация" }).boundingBox();
     expect(Math.abs(panel!.x + panel!.width / 2 - width / 2)).toBeLessThanOrEqual(1);
+    const surface = await page.getByRole("navigation", { name: "Основная навигация" }).evaluate(el => getComputedStyle(el).backgroundColor);
+    for (const selector of [".creation-panel", ".creation-footer"]) {
+      expect(await page.locator(selector).evaluate(el => getComputedStyle(el).backgroundColor)).toBe(surface);
+    }
     expect(panel!.y + panel!.height).toBeLessThanOrEqual(nav!.y);
     for (const item of await page.getByRole("navigation").locator("a,button").all()) {
       const box = await item.boundingBox();
