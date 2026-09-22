@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { batchItemStates, contentStatusOptions, contentStatusStates, draftCheck, initialDraft, pageCount, pageRange, safeSourceLink, type Draft, type Fact, type Job } from "./model";
+import { batchItemStates, contentErrorOptions, contentStatusOptions, contentStatusStates, draftCheck, initialDraft, pageCount, pageRange, safeSourceLink, type Draft, type Fact, type Job } from "./model";
 
 const facts: Fact[] = Array.from({ length: 5 }, (_, index) => ({
   id: `f${index + 1}`, claim: "Verified claim", interesting: true, evidence: [],
@@ -54,6 +54,27 @@ describe("группы состояний заданий", () => {
 
   it("предлагает в списке те же фильтры, что и группировка состояний", () => {
     expect(contentStatusOptions.map(option => option.value)).toEqual(["all", ...Object.keys(contentStatusStates)]);
+  });
+});
+
+describe("фильтр заданий по ошибке", () => {
+  const errors = [{ code: "ADDRESS_UNCLEAR", count: 312 }, { code: null, count: 7 }];
+
+  it("перечисляет коды с количеством и отдельный пункт для заданий без ошибки", () => {
+    expect(contentErrorOptions(errors, "all")).toEqual([
+      { value: "all", label: "Любая ошибка" },
+      { value: "ADDRESS_UNCLEAR", label: "ADDRESS_UNCLEAR (312)" },
+      { value: "none", label: "Без ошибки (7)" },
+    ]);
+  });
+
+  it("сохраняет выбранный код, когда он исчез из партии после повтора", () => {
+    expect(contentErrorOptions(errors, "TIMEOUT").at(-1)).toEqual({ value: "TIMEOUT", label: "TIMEOUT (0)" });
+    expect(contentErrorOptions([], "none").at(-1)).toEqual({ value: "none", label: "Без ошибки (0)" });
+  });
+
+  it("не дублирует пункт, если выбранный код есть в списке", () => {
+    expect(contentErrorOptions(errors, "ADDRESS_UNCLEAR")).toHaveLength(3);
   });
 });
 

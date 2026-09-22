@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  batchItemStates, batchStates, contentStatusOptions, pageCount, pageRange,
+  batchItemStates, batchStates, contentErrorOptions, contentStatusOptions, pageCount, pageRange,
   placeStatusOptions, placeTextStatuses, retryableItemStates,
   type AdminApi, type AdminRun, type ContentAudioJob, type ContentBatch, type ContentBatchItemPage,
-  type ContentHeartbeat, type ContentPlace, type ContentPlaceStatusFilter, type ContentPlaceSummary,
-  type ContentStatusFilter, type ContentWorker, type Draft,
+  type ContentErrorFilter, type ContentHeartbeat, type ContentPlace, type ContentPlaceStatusFilter,
+  type ContentPlaceSummary, type ContentStatusFilter, type ContentWorker, type Draft,
 } from "./model";
 import "./content-admin.css";
 
@@ -58,6 +58,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
   const [batch, setBatch] = useState<ContentBatch | null>(null);
   const [itemPage, setItemPage] = useState<ContentBatchItemPage | null>(null);
   const [itemStatus, setItemStatus] = useState<ContentStatusFilter>("all");
+  const [itemError, setItemError] = useState<ContentErrorFilter>("all");
   const [itemOffset, setItemOffset] = useState(0);
 
   const [placePage, setPlacePage] = useState<PlacePage>({ places: [], total: 0, hasMore: false });
@@ -119,10 +120,13 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
     setPlacePage(result); setPlaceOffset(offset);
   }
 
-  async function loadItems(id: string, offset: number, signal: AbortSignal, status?: ContentStatusFilter) {
-    const params = new URLSearchParams({ limit: String(ITEM_PAGE), offset: String(offset), status: status ?? itemStatus });
+  async function loadItems(id: string, offset: number, signal: AbortSignal, next?: { status?: ContentStatusFilter; error?: ContentErrorFilter }) {
+    const params = new URLSearchParams({
+      limit: String(ITEM_PAGE), offset: String(offset),
+      status: next?.status ?? itemStatus, error: next?.error ?? itemError,
+    });
     const result = await api<ContentBatchItemPage>(`/content/batches/${id}/items?${params}`, signal);
-    if (!result.items.length && offset > 0) { await loadItems(id, Math.max(0, offset - ITEM_PAGE), signal, status); return; }
+    if (!result.items.length && offset > 0) { await loadItems(id, Math.max(0, offset - ITEM_PAGE), signal, next); return; }
     setItemPage(result); setItemOffset(offset);
   }
 
@@ -149,8 +153,8 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
 
   function openBatch(next: ContentBatch, status: ContentStatusFilter = "all") {
     void run("Загрузка заданий партии…", async signal => {
-      setBatch(next); setItemStatus(status);
-      await loadItems(next.id, 0, signal, status);
+      setBatch(next); setItemStatus(status); setItemError("all");
+      await loadItems(next.id, 0, signal, { status, error: "all" });
     });
   }
 
@@ -277,15 +281,22 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
       {batch && <section className="admin-review" aria-labelledby="content-items-title">
         <div className="admin-section-head">
           <div><h3 id="content-items-title">Состав партии «{batch.name}»</h3>
-            <p className="admin-meta">Всего заданий {batch.counts.total}. Фильтр ниже меняет только этот список и не влияет на таблицу партий.</p></div>
-          <button disabled={disabled} onClick={() => { setBatch(null); setItemPage(null); setItemOffset(0); }}>Закрыть</button>
+            <p className="admin-meta">Всего заданий {batch.counts.total}. Фильтры ниже меняют только этот список и не влияют на таблицу партий.</p></div>
+          <button disabled={disabled} onClick={() => { setBatch(null); setItemPage(null); setItemOffset(0); setItemError("all"); }}>Закрыть</button>
         </div>
         <div className="content-toolbar">
           <label htmlFor="content-item-status">Статус задания</label>
           <select id="content-item-status" value={itemStatus} disabled={disabled} onChange={event => {
-            const next = event.target.value as ContentStatusFilter; setItemStatus(next);
-            void run("Фильтрация заданий…", signal => loadItems(batch.id, 0, signal, next));
+            // Error codes are counted per status bucket, so a status change starts over with every code in view.
+            const next = event.target.value as ContentStatusFilter; setItemStatus(next); setItemError("all");
+            void run("Фильтрация заданий…", signal => loadItems(batch.id, 0, signal, { status: next, error: "all" }));
           }}>{contentStatusOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
+          <label htmlFor="content-item-error">Ошибка</label>
+          <select id="content-item-error" value={itemError} disabled={disabled} onChange={event => {
+            const next = event.target.value; setItemError(next);
+            void run("Фильтрация заданий…", signal => loadItems(batch.id, 0, signal, { error: next }));
+          }}>{contentErrorOptions(itemPage?.errors ?? [], itemError).map(option =>
+            <option key={option.value} value={option.value}>{option.label}</option>)}</select>
           <p className="admin-meta" role="status">Показано {pageRange(itemOffset, itemPage?.items.length ?? 0, itemPage?.total ?? 0)}</p>
         </div>
         <div className="admin-table-wrap"><table className="admin-table">
@@ -303,7 +314,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             })}>Повторить</button>}</td>
           </tr>)}</tbody>
         </table></div>
-        {!itemPage?.items.length && <p className="admin-empty-row" role="status">Заданий с выбранным статусом в партии нет.</p>}
+        {!itemPage?.items.length && <p className="admin-empty-row" role="status">Заданий с выбранными фильтрами в партии нет.</p>}
         <nav className="admin-pagination" aria-label="Страницы заданий партии">
           <button disabled={disabled || itemOffset === 0} onClick={() => void run("Загрузка заданий…", signal => loadItems(batch.id, Math.max(0, itemOffset - ITEM_PAGE), signal))}>Назад</button>
           <span className="admin-meta">Страница {Math.floor(itemOffset / ITEM_PAGE) + 1} из {pageCount(itemPage?.total ?? 0, ITEM_PAGE)}</span>
