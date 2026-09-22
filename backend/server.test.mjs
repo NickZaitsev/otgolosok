@@ -115,6 +115,17 @@ test("admin manages content batches and revocable worker credentials",async t=>{
   assert.equal((await fetch(f.base+"/api/worker/v1/claim",{method:"POST",headers:{Authorization:`Bearer ${worker.token}`,"X-Worker-Id":"gpu","Content-Type":"application/json"},body:JSON.stringify({requestId:"credential-1",profileIds:["silero-ru-v1"]})})).status,401);
 });
 
+test("the audio retry route matches a job id instead of falling through to the admin 404",async t=>{
+  const f=await fixture(t);
+  // A bare regex literal with ${UUID} once made this route unreachable: the desk's retry button always 404ed.
+  const matched=await f.post("/api/story-admin/content/audio/11111111-1111-4111-8111-111111111111/retry",{});
+  assert.equal(matched.status,404);
+  assert.equal((await matched.json()).error.message,"Failed audio job not found.");
+  const unmatched=await f.post("/api/story-admin/content/audio/not-a-uuid/retry",{});
+  assert.equal(unmatched.status,404);
+  assert.equal((await unmatched.json()).error.message,"Admin endpoint not found.");
+});
+
 test("place lookup has no generation side effect and reports bounded errors",async(t)=>{
   const inputs=[];
   const f=await fixture(t,{resolvePlace:async input=>{inputs.push(input);if(input.q==='busy')throw Object.assign(new Error('private'),{code:'PLACE_BUSY'});return {address:'Москва, Арбат, 10',location:{lat:55.75,lon:37.6}};}});
