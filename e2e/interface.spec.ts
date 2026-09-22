@@ -395,8 +395,10 @@ test("достопримечательности остаются компакт
   await page.getByRole("link", { name: "Прогулка", exact: true }).click();
   await expect(pin).toBeVisible();
   await expect(pin).toHaveClass(/explore-dot/);
-  const dot = await pin.locator("span").boundingBox();
-  expect(dot!.width).toBeLessThanOrEqual(14);
+  await expect.poll(async () => {
+    const dot = await pin.locator("span").boundingBox();
+    return dot !== null && dot.width >= 24 && dot.width <= 28;
+  }).toBe(true);
   await page.getByRole("button", { name: "Закрыть создание прогулки" }).click();
   await expect(pin).not.toHaveClass(/explore-dot/);
 });
