@@ -23,9 +23,13 @@ describe("дизайн-токены интерфейса", () => {
     for (const css of uiStyles) expect(css).toMatch(/var\(--text-(?:body|control|secondary|meta)/);
   });
 
-  it("не допускает UI-размеры шрифта меньше 12px", () => {
+  it("не допускает UI-размеры меньше 12px, кроме согласованной подписи карты 11px", () => {
     for (const css of uiStyles) {
-      const sizes = [...css.matchAll(/font-size\s*:\s*(\d+(?:\.\d+)?)px/g)].map((match) => Number(match[1]));
+      const controls = css.replace(/\.map-attribution\{[^}]*font-size:[^}]*\}/g, rule => {
+        expect(rule).toMatch(/font-size:\s*11px/);
+        return "";
+      });
+      const sizes = [...controls.matchAll(/font-size\s*:\s*(\d+(?:\.\d+)?)px/g)].map((match) => Number(match[1]));
       expect(sizes.filter((size) => size < 12)).toEqual([]);
     }
   });
