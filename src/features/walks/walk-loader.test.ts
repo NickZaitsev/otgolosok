@@ -36,3 +36,14 @@ describe("загрузка прогулок", () => {
     expect(result.chapters[0].audio?.durationSec).toBe(12);
   });
 });
+
+it.each([3, 4, 6])("открывает локальную прогулку с %i остановками и сохраняет геометрию", async count => {
+  const start = { address: "Александровский сад", location: { lat: 55.752, lon: 37.613 } };
+  const stops = Array.from({ length: count }, (_, index) => ({ id: `33333333-3333-4333-8333-${String(index).padStart(12, "0")}`, place: { address: `Москва, дом ${index + 1}`, location: { lat: 55.754 + index * 0.001, lon: 37.61 } }, storyRef: null, transition: "", nextHint: "" }));
+  const document: WalkDocument = { version: 2, id: "22222222-2222-4222-8222-222222222222", title: "Из Александровского сада", description: "", city: "Москва", mode: "loop", minutes: 60, start, stops, route: { geometry: [start.location, ...stops.map(stop => stop.place.location), start.location], distanceM: 2000, walkingMinutes: 30, attribution: "OSM" }, fieldChecked: false };
+  const view = await loadLocalWalkView(document, 3, new AbortController().signal);
+  expect(view.document.route?.geometry).toEqual(document.route?.geometry);
+  expect(view.chapters).toHaveLength(count);
+  expect(view.contentVersion.length).toBeLessThanOrEqual(120);
+  expect((await loadLocalWalkView(document, 3, new AbortController().signal)).contentVersion).toBe(view.contentVersion);
+});

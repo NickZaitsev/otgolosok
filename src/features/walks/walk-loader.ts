@@ -132,7 +132,9 @@ export async function loadLocalWalkView(document: WalkDocument, revision: number
       return chapter;
     }
   }));
-  return validateWalkView({ ...base, contentVersion: `local:${revision}:${chapters.map(chapter => `${chapter.id}:${chapter.status}`).join(",")}`, chapters });
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(chapters)));
+  const contentHash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+  return validateWalkView({ ...base, contentVersion: `local:${revision}:${contentHash}`, chapters });
 }
 
 export function loadCatalogWalk(id: string, signal: AbortSignal) {
