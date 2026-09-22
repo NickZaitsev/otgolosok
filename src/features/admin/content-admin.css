@@ -29,6 +29,20 @@
 .content-progress [data-segment=waiting] { background: #8a6420; }
 .content-progress [data-segment=stopped] { background: var(--admin-orange); }
 
+/* Each count opens the job list filtered to that bucket, so it reads as a link, not a label. */
+.content-counts { display: flex; align-items: baseline; gap: .1rem .5rem; flex-wrap: wrap; }
+.content-admin .content-counts button {
+  min-height: 0; padding: .1rem .2rem; border: 0; border-radius: .2rem; color: var(--muted);
+  font-size: .78rem; font-weight: 500; text-align: left;
+}
+.content-admin .content-counts button b { color: var(--ink); font-weight: 750; font-variant-numeric: tabular-nums; }
+.content-admin .content-counts button:hover:not(:disabled) { background: transparent; color: var(--admin-orange); text-decoration: underline; text-underline-offset: .2em; }
+.content-admin .content-counts button:hover:not(:disabled) b { color: var(--admin-orange); }
+.content-admin .content-counts button:disabled { opacity: 1; color: var(--muted); }
+.content-admin .content-counts button:disabled b { color: var(--muted); font-weight: 500; }
+.content-admin .content-counts button[data-segment=stopped]:not(:disabled) b { color: var(--admin-orange); }
+.content-counts > .admin-row-id { margin-top: 0; }
+
 .content-admin .admin-stage { font-size: .78rem; }
 .content-batch-state-running::before { background: var(--admin-green); }
 .content-batch-state-paused::before { background: #8a6420; }

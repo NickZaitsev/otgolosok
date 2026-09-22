@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { batchItemStates, contentStatusOptions, contentStatusStates, draftCheck, filterContentBatches, initialDraft, pageCount, pageRange, safeSourceLink, type ContentBatch, type Draft, type Fact, type Job } from "./model";
+import { batchItemStates, contentStatusOptions, contentStatusStates, draftCheck, initialDraft, pageCount, pageRange, safeSourceLink, type Draft, type Fact, type Job } from "./model";
 
 const facts: Fact[] = Array.from({ length: 5 }, (_, index) => ({
   id: `f${index + 1}`, claim: "Verified claim", interesting: true, evidence: [],
@@ -45,28 +45,7 @@ describe("source links", () => {
   });
 });
 
-describe("фильтр состояний OSM-партий", () => {
-  const batch = (id: string, counts: { ready?: number; queued?: number; failed?: number; working?: number }): ContentBatch => ({
-    id, name: id, state: "running", mode: "text-and-audio", textProfile: "story-v1", ttsProfile: null,
-    createdAt: "", updatedAt: "",
-    counts: { total: 10, ready: 0, queued: 0, failed: 0, working: 0, ...counts },
-  });
-  const batches = [batch("готово", { ready: 2 }), batch("ждут", { queued: 2 }), batch("в работе", { working: 1 }), batch("остановлено", { failed: 2 })];
-
-  it.each([
-    ["all", ["готово", "ждут", "в работе", "остановлено"]],
-    ["ready", ["готово"]],
-    ["waiting", ["ждут"]],
-    ["working", ["в работе"]],
-    ["stopped", ["остановлено"]],
-  ] as const)("оставляет партии, где есть задание со статусом %s", (filter, names) => {
-    expect(filterContentBatches(batches, filter).map(item => item.name)).toEqual(names);
-  });
-
-  it("возвращает пустую выборку, когда подходящих партий нет", () => {
-    expect(filterContentBatches([batches[0]], "stopped")).toEqual([]);
-  });
-
+describe("группы состояний заданий", () => {
   it("покрывает каждое состояние задания ровно одним фильтром", () => {
     const covered = Object.values(contentStatusStates).flat();
     expect([...covered].sort()).toEqual(Object.keys(batchItemStates).sort());

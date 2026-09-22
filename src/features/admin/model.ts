@@ -50,16 +50,6 @@ export const contentStatusOptions: { value: ContentStatusFilter; label: string }
 
 export const retryableItemStates = ["failed", "review_required", "insufficient_evidence", "retry_wait"];
 
-const batchCountKey: Record<Exclude<ContentStatusFilter, "all">, keyof ContentBatch["counts"]> = {
-  ready: "ready", working: "working", waiting: "queued", stopped: "failed",
-};
-
-/** A batch matches when at least one of its items sits in the bucket; counts in the row stay complete. */
-export function filterContentBatches(batches: ContentBatch[], filter: ContentStatusFilter): ContentBatch[] {
-  if (filter === "all") return batches;
-  return batches.filter(batch => batch.counts[batchCountKey[filter]] > 0);
-}
-
 /** Human range for a server-paged list: "51–100 из 6107". */
 export function pageRange(offset: number, count: number, total: number) {
   if (!total || !count) return "0";

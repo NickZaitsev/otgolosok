@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  batchItemStates, batchStates, contentStatusOptions, filterContentBatches, pageCount, pageRange,
+  batchItemStates, batchStates, contentStatusOptions, pageCount, pageRange,
   placeStatusOptions, placeTextStatuses, retryableItemStates,
   type AdminApi, type AdminRun, type ContentAudioJob, type ContentBatch, type ContentBatchItemPage,
   type ContentHeartbeat, type ContentPlace, type ContentPlaceStatusFilter, type ContentPlaceSummary,
@@ -31,8 +31,8 @@ function moment(value: string | null | undefined) {
   return Number.isNaN(date.valueOf()) ? "—" : date.toLocaleString("ru-RU");
 }
 
-/** Item states are grouped into four buckets; the bar shows the same grouping as the status filter. */
-function progressSegments(counts: ContentBatch["counts"]) {
+/** Item states are grouped into four buckets; each count opens the job list filtered to that bucket. */
+function progressSegments(counts: ContentBatch["counts"]): { key: Exclude<ContentStatusFilter, "all">; label: string; value: number }[] {
   return [
     { key: "ready", label: "готово", value: counts.ready },
     { key: "working", label: "в работе", value: counts.working },
@@ -47,7 +47,6 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
   const [stats, setStats] = useState<Stats | null>(null);
 
   const [batches, setBatches] = useState<ContentBatch[]>([]);
-  const [batchStatus, setBatchStatus] = useState<ContentStatusFilter>("all");
   const [batchPage, setBatchPage] = useState(0);
   const [batchLimit, setBatchLimit] = useState(50);
   const [batchMode, setBatchMode] = useState<"text-and-audio" | "text-only">("text-and-audio");
@@ -74,9 +73,8 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
 
   const dirty = Boolean(draft && JSON.stringify(draft) !== baseline);
   const disabled = Boolean(busy);
-  const visibleBatches = filterContentBatches(batches, batchStatus);
-  const batchPages = pageCount(visibleBatches.length, BATCH_PAGE);
-  const batchRows = visibleBatches.slice(batchPage * BATCH_PAGE, batchPage * BATCH_PAGE + BATCH_PAGE);
+  const batchPages = pageCount(batches.length, BATCH_PAGE);
+  const batchRows = batches.slice(batchPage * BATCH_PAGE, batchPage * BATCH_PAGE + BATCH_PAGE);
   const workerOnline = workers.some(worker => !worker.revokedAt && worker.lastSeenAt
     && Date.now() - new Date(worker.lastSeenAt).valueOf() < HEARTBEAT_WINDOW_MS);
 
@@ -133,10 +131,10 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
     return !dirty || window.confirm("Есть несохранённые правки текста места. Отбросить их и продолжить?");
   }
 
-  function openBatch(next: ContentBatch) {
-    void run("Загрузка состава партии…", async signal => {
-      setBatch(next); setItemStatus("all");
-      await loadItems(next.id, 0, signal, "all");
+  function openBatch(next: ContentBatch, status: ContentStatusFilter = "all") {
+    void run("Загрузка заданий партии…", async signal => {
+      setBatch(next); setItemStatus(status);
+      await loadItems(next.id, 0, signal, status);
     });
   }
 
@@ -200,7 +198,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
               limit: batchLimit, textProfile: "story-v1", mode: batchMode,
             });
             await loadOverview(signal);
-            setBatchStatus("all"); setBatchPage(0);
+            setBatchPage(0);
             setNotice("Партия создана и поставлена в очередь.");
           });
         }}>
@@ -219,16 +217,8 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
         <div className="admin-section-head">
           <div>
             <h3 id="content-batches-title">Партии</h3>
-            <p className="admin-meta" id="content-batch-filter-note">Партия попадает в выборку, если хотя бы одно её задание в выбранном статусе. Счётчики в строке всегда показывают все задания партии.</p>
+            <p className="admin-meta">Всего партий {batches.length}. Нажмите число в колонке «Прогресс заданий», чтобы открыть эти здания списком.</p>
           </div>
-        </div>
-        <div className="content-toolbar">
-          <label htmlFor="content-batch-status">Есть задания со статусом</label>
-          <select id="content-batch-status" value={batchStatus} disabled={disabled} aria-describedby="content-batch-filter-note"
-            onChange={event => { setBatchStatus(event.target.value as ContentStatusFilter); setBatchPage(0); }}>
-            {contentStatusOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-          </select>
-          <p className="admin-meta" role="status">Показано {visibleBatches.length} из {batches.length} партий.</p>
         </div>
         <div className="admin-table-wrap"><table className="admin-table">
           <caption className="admin-sr-only">Партии OSM</caption>
@@ -241,10 +231,13 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
               <td>
                 <div className="content-progress" aria-hidden="true">{segments.map(segment => segment.value
                   ? <span key={segment.key} data-segment={segment.key} style={{ flexGrow: segment.value }} /> : null)}</div>
-                <span className="admin-row-id">{segments.map(segment => `${segment.value} ${segment.label}`).join(" · ")} · всего {item.counts.total}</span>
+                <div className="content-counts">{segments.map(segment => <button key={segment.key} type="button" data-segment={segment.key}
+                  disabled={disabled || !segment.value} aria-label={`Показать здания партии «${item.name}» со статусом «${segment.label}»: ${segment.value}`}
+                  onClick={() => openBatch(item, segment.key)}><b>{segment.value}</b> {segment.label}</button>)}
+                  <span className="admin-row-id">всего {item.counts.total}</span></div>
               </td>
               <td><div className="admin-row-actions">
-                <button disabled={disabled} onClick={() => openBatch(item)}>Состав</button>
+                <button disabled={disabled} onClick={() => openBatch(item)}>Все задания</button>
                 {item.state === "running" && <button disabled={disabled} onClick={() => batchAction(item.id, "pause", "Пауза…")}>Пауза</button>}
                 {item.state === "paused" && <button disabled={disabled} onClick={() => batchAction(item.id, "resume", "Продолжение…")}>Продолжить</button>}
                 {item.state !== "cancelled" && <button disabled={disabled} onClick={() => {
@@ -254,7 +247,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             </tr>;
           })}</tbody>
         </table></div>
-        {!visibleBatches.length && <p className="admin-empty-row" role="status">{batches.length ? "Партий с выбранным статусом заданий нет." : "Партий пока нет."}</p>}
+        {!batches.length && <p className="admin-empty-row" role="status">Партий пока нет.</p>}
         {batchPages > 1 && <nav className="admin-pagination" aria-label="Страницы партий">
           <button disabled={disabled || batchPage === 0} onClick={() => setBatchPage(page => Math.max(0, page - 1))}>Назад</button>
           <span className="admin-meta">Страница {batchPage + 1} из {batchPages}</span>
@@ -265,7 +258,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
       {batch && <section className="admin-review" aria-labelledby="content-items-title">
         <div className="admin-section-head">
           <div><h3 id="content-items-title">Состав партии «{batch.name}»</h3>
-            <p className="admin-meta">Всего заданий {batch.counts.total}. Фильтр ниже действует только на этот список.</p></div>
+            <p className="admin-meta">Всего заданий {batch.counts.total}. Фильтр ниже меняет только этот список и не влияет на таблицу партий.</p></div>
           <button disabled={disabled} onClick={() => { setBatch(null); setItemPage(null); setItemOffset(0); }}>Закрыть</button>
         </div>
         <div className="content-toolbar">
