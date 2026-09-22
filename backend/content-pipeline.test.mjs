@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createStore } from "./store.mjs";
-import { runContentJob, startContentWorker } from "./content-pipeline.mjs";
+import { contentFailureMessage, runContentJob, startContentWorker } from "./content-pipeline.mjs";
 import { errorMessages } from "./pipeline.mjs";
 
 const catalog={source:"fixture",sourceSha256:"a".repeat(64),rulesVersion:"v1",coverage:"fixture",places:[{placeId:"osm:node:1",osmType:"node",osmId:1,name:"Памятник без адреса",location:{lat:55.75,lon:37.61},tags:{historic:"memorial",wikidata:"Q1"}}]};
@@ -55,4 +55,14 @@ test("OSM worker invalidates legacy editorial checkpoints without refetching sav
   f.store.updateContentCheckpoint(job.id,checkpoint);job.checkpoint=checkpoint;f.queue.shift();
   let fetched=false;const result=await runContentJob(job,{store:f.store,provider:f.provider,fetchPage:async()=>{fetched=true;throw new Error("unexpected fetch");}});
   assert.equal(result.story.title,"Памятник");assert.equal(result.story.facts.length,3);assert.equal(fetched,false);assert.equal(f.queue.length,0);
+});
+
+test("every failure code an OSM job can end with explains itself to the editor",()=>{
+  for(const code of ["ADDRESS_UNCLEAR","REVIEW_REQUIRED","INSUFFICIENT_EVIDENCE","SOURCE_ACCESS_FAILED","SOURCE_EMPTY","SOURCE_FAILED",
+    "PROVIDER_FAILED","PROVIDER_BUSY","INVALID_MODEL_OUTPUT","INVALID_DRAFT","TIMEOUT","INTERRUPTED","PREPARATION_FAILED","UNKNOWN_FUTURE_CODE"]) {
+    const message=contentFailureMessage(code);
+    assert.notEqual(message,code);
+    assert.match(message,/[а-яё]/i);
+  }
+  assert.equal(contentFailureMessage("ADDRESS_UNCLEAR"),errorMessages.ADDRESS_UNCLEAR);
 });
