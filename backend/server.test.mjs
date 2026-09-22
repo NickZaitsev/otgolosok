@@ -113,6 +113,14 @@ test("admin manages content batches and revocable worker credentials",async t=>{
   const worker=(await issued.json()).worker;assert.equal(worker.token.length,64);
   assert.equal((await f.post(`/api/story-admin/content/workers/${worker.id}/revoke`,{})).status,200);
   assert.equal((await fetch(f.base+"/api/worker/v1/claim",{method:"POST",headers:{Authorization:`Bearer ${worker.token}`,"X-Worker-Id":"gpu","Content-Type":"application/json"},body:JSON.stringify({requestId:"credential-1",profileIds:["silero-ru-v1"]})})).status,401);
+  const items=await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?limit=1&offset=0&status=waiting`);
+  assert.equal(items.status,200);const page=await items.json();
+  assert.deepEqual(page,{items:[{placeId:"osm:node:8",name:"Музей",address:null,state:"queued",error:null}],total:1,hasMore:false});
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?status=unknown`)).status,400);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?page=1`)).status,400);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/11111111-1111-4111-8111-111111111111/items`)).status,404);
+  const places=await (await fetch(`${f.base}/api/story-admin/content/places?limit=1&offset=0&status=all`)).json();
+  assert.equal(places.total,1);assert.equal(places.places[0].textStatus,"none");
 });
 
 test("the audio retry route matches a job id instead of falling through to the admin 404",async t=>{
