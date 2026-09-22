@@ -52,6 +52,9 @@
 .admin-filters label { margin: 0; color: var(--muted); font-size: var(--text-secondary); }
 .admin-filters label > span { display: block; margin-bottom: .35rem; }
 .admin-filter-submit { min-width: 6rem; }
+.admin-content-filter { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin: 1.25rem 0 .75rem; }
+.admin-content-filter label { color: var(--muted); font-size: .8rem; font-weight: 700; }
+.admin-content-filter select { min-width: 11rem; }
 .admin-table-wrap { width: 100%; overflow-x: auto; border-block: 1px solid var(--line); background: var(--raised); overscroll-behavior-inline: contain; }
 .admin-table { width: 100%; min-width: 58rem; border-collapse: collapse; font-size: var(--text-secondary); }
 .admin-table th, .admin-table td { padding: .8rem .75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
@@ -108,6 +111,20 @@
 .admin-empty { margin-top: 2rem; padding: 2.5rem 0; border-top: 1px solid var(--line); }
 .admin-empty h2 { margin-bottom: .5rem; }
 .admin-empty p { color: var(--muted); }
+/* Placeholder rows while a table's own request is in flight: no hover highlight and no pointer target, because there is nothing behind them yet. */
+.admin-desk .admin-skeleton-row:hover > * { background: transparent; }
+.admin-skeleton-row > * { cursor: default; }
+.admin-skeleton-bar {
+  display: block; width: 72%; height: .7rem; border-radius: .25rem;
+  background: linear-gradient(90deg, var(--line) 30%, color-mix(in srgb, var(--line) 45%, var(--raised)) 50%, var(--line) 70%);
+  background-size: 250% 100%;
+  animation: admin-skeleton-sweep 1.4s linear infinite;
+}
+.admin-skeleton-row th .admin-skeleton-bar { width: 86%; }
+.admin-skeleton-row th .admin-skeleton-bar + .admin-skeleton-bar { width: 48%; height: .55rem; margin-top: .4rem; opacity: .65; }
+/* Every `.admin-table` ends in an action column, so its last placeholder stands in for a button. */
+.admin-table .admin-skeleton-row td:last-child .admin-skeleton-bar { width: 45%; height: 1.4rem; }
+@keyframes admin-skeleton-sweep { from { background-position: 250% 0; } to { background-position: -250% 0; } }
 .admin-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 @media (max-width: 70rem) {
@@ -145,6 +162,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .admin-desk button { transition: none; }
+  .admin-skeleton-bar { background: var(--line); animation: none; }
 }
 
 .admin-jump-link { display: inline-flex; align-items: center; min-height: 2.75rem; padding: .55rem .9rem; color: var(--admin-green); text-decoration: underline; text-underline-offset: .2em; font-weight: 650; }

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { AdminApi, AdminRun, OpenAdminJob, TtsProvider } from "./model";
 import { safeSourceLink } from "./model";
+import { skeletonRows } from "./table-skeleton";
 import "./walk-admin.css";
 
 type WalkSummary = {
@@ -159,6 +160,9 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
   const [ttsVoice, setTtsVoice] = useState("");
   const [conflict, setConflict] = useState(false);
   const [notice, setNotice] = useState("");
+  // Each table watches its own request: the catalogue list and the chapters of the opened walk reload separately.
+  const [walksLoading, setWalksLoading] = useState(false);
+  const [walkLoading, setWalkLoading] = useState(false);
 
   const chapter = walk?.chapters.find((item) => item.id === chapterId) ?? null;
   const catalogConflict = chapter?.status === "conflict";
@@ -181,8 +185,11 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
     if (busy || loaded.current) return;
     void run("Загрузка прогулок…", async (signal) => {
       loaded.current = true;
-      const result = await api<{ walks: WalkSummary[] }>("/walks", signal);
-      setWalks(result.walks);
+      setWalksLoading(true);
+      try {
+        const result = await api<{ walks: WalkSummary[] }>("/walks", signal);
+        setWalks(result.walks);
+      } finally { setWalksLoading(false); }
     });
   }, [api, busy, run]);
 
@@ -218,10 +225,10 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
   function openWalk(id: string, force = false) {
     if (busy || (!force && walk?.id === id) || !consentDiscard()) return;
     setNotice("");
-    void run("Загрузка прогулки…", async (signal) => {
+    void run("Загрузка прогулки…", (signal) => loadWalk(async () => {
       const result = await api<{ walk: WalkDetail }>(`/walks/${id}`, signal);
       acceptWalk(result.walk, force ? chapterId : undefined);
-    });
+    }));
   }
 
   function openChapter(id: string) {
@@ -238,8 +245,18 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
   }
 
   async function updateWalks(signal: AbortSignal) {
-    const result = await api<{ walks: WalkSummary[] }>("/walks", signal);
-    setWalks(result.walks);
+    setWalksLoading(true);
+    try {
+      const result = await api<{ walks: WalkSummary[] }>("/walks", signal);
+      setWalks(result.walks);
+    } finally { setWalksLoading(false); }
+  }
+
+  /** Every request that ends in `acceptWalk` replaces the chapter table, so it holds that table's flag. */
+  async function loadWalk(action: () => Promise<void>) {
+    setWalkLoading(true);
+    try { await action(); }
+    finally { setWalkLoading(false); }
   }
 
   async function withConflictGuard(action: () => Promise<void>) {
@@ -265,7 +282,9 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
           setNotice("");
           void run("Обновление прогулок…", async (signal) => {
             await updateWalks(signal);
-            if (walk) acceptWalk((await api<{ walk: WalkDetail }>(`/walks/${walk.id}`, signal)).walk, chapterId);
+            if (walk) await loadWalk(async () => {
+              acceptWalk((await api<{ walk: WalkDetail }>(`/walks/${walk.id}`, signal)).walk, chapterId);
+            });
           });
         }}>Обновить список</button>
       </div>
@@ -278,16 +297,16 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
       </div>}
       {notice && <p className="walk-admin__message" role="status">{notice}</p>}
 
-      <div className="walk-admin__table-wrap">
+      <div className="walk-admin__table-wrap" aria-busy={walksLoading}>
         <table className="walk-admin__table">
           <caption className="admin-sr-only">Прогулки и состояние их глав</caption>
           <thead><tr><th scope="col">Прогулка</th><th scope="col">Главы</th><th scope="col">Готово</th><th scope="col">В работе</th><th scope="col">Ошибки</th><th scope="col">Обновлено</th></tr></thead>
-          <tbody>{walks.map((item) => <tr key={item.id} data-selected={walk?.id === item.id || undefined}>
+          <tbody>{walksLoading ? skeletonRows(6, walks.length) : walks.map((item) => <tr key={item.id} data-selected={walk?.id === item.id || undefined}>
             <th scope="row"><button type="button" className="walk-admin__walk-link" disabled={Boolean(busy)} aria-current={walk?.id === item.id ? "true" : undefined} onClick={() => openWalk(item.id)}><strong>{item.title}</strong><span>{stageLabel(item.status)}</span></button></th>
             <td>{item.chapterCount}</td><td>{item.publishedCount}</td><td>{item.pendingCount}</td><td data-error={item.failedCount > 0 || undefined}>{item.failedCount}</td><td>{formatDate(item.updatedAt)}</td>
           </tr>)}</tbody>
         </table>
-        {!walks.length && !busy && <p className="walk-admin__empty">В каталоге пока нет прогулок с редактируемыми главами.</p>}
+        {!walks.length && !walksLoading && !busy && <p className="walk-admin__empty">В каталоге пока нет прогулок с редактируемыми главами.</p>}
       </div>
 
       {walk && <article className="walk-admin__detail">
@@ -301,8 +320,10 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
           <button type="button" className="admin-primary" disabled={Boolean(busy) || dirty || walkBusy || walkBlocked || !selectedProvider?.available || !selectedVoice} onClick={() => {
             if (!window.confirm(`Перегенерировать озвучку всех глав прогулки «${walk.title}» голосом «${selectedVoice?.label}»?`)) return;
             void run("Перегенерация прогулки…", async (signal) => {
-              const result = await api<{ walk: WalkDetail }>(`/walks/${walk.id}/regenerate`, signal, { ttsProvider, ttsVoice });
-              acceptWalk(result.walk, chapterId);
+              await loadWalk(async () => {
+                const result = await api<{ walk: WalkDetail }>(`/walks/${walk.id}/regenerate`, signal, { ttsProvider, ttsVoice });
+                acceptWalk(result.walk, chapterId);
+              });
               await updateWalks(signal);
               setNotice("Все главы прогулки поставлены в очередь на перегенерацию озвучки.");
             });
@@ -312,11 +333,12 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
           {walkBlocked && <p>Сначала устраните конфликт структуры главы с каталогом.</p>}
         </section>
 
-        <div className="walk-admin__chapters-wrap">
+        <div className="walk-admin__chapters-wrap" aria-busy={walkLoading}>
           <table className="walk-admin__chapters">
             <caption>Главы по порядку маршрута</caption>
             <thead><tr><th scope="col">№</th><th scope="col">Глава</th><th scope="col">Место</th><th scope="col">Состояние</th><th scope="col">Версия</th></tr></thead>
-            <tbody>{walk.chapters.map((item, index) => <tr key={item.id} data-selected={chapterId === item.id || undefined}>
+            {/* The chapter title is the row header, so the placeholder puts its two-line bar in the second column. */}
+            <tbody>{walkLoading ? skeletonRows(5, walk.chapters.length, 1) : walk.chapters.map((item, index) => <tr key={item.id} data-selected={chapterId === item.id || undefined}>
               <td>{index + 1}</td><th scope="row"><button type="button" className="walk-admin__chapter-link" disabled={Boolean(busy)} aria-current={chapterId === item.id ? "true" : undefined} onClick={() => openChapter(item.id)}>{item.title}</button></th><td>{item.place}</td><td><span className="walk-admin__state" data-state={item.status}>{stageLabel(item.status)}</span></td><td>{item.revision}</td>
             </tr>)}</tbody>
           </table>
@@ -345,8 +367,10 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
             <div className="walk-admin__save-row">
               <button type="button" className="admin-primary" disabled={Boolean(busy) || blocked || chapterBusy || !dirty || !draftValid} onClick={() => {
                 void run("Сохранение главы…", (signal) => withConflictGuard(async () => {
-                  const result = await api<{ walk: WalkDetail }>(`/walks/${walk.id}/chapters/${chapter.id}/edit`, signal, { revision: chapter.revision, draft });
-                  acceptWalk(result.walk, chapter.id);
+                  await loadWalk(async () => {
+                    const result = await api<{ walk: WalkDetail }>(`/walks/${walk.id}/chapters/${chapter.id}/edit`, signal, { revision: chapter.revision, draft });
+                    acceptWalk(result.walk, chapter.id);
+                  });
                   await updateWalks(signal);
                   setNotice("Текст главы сохранён. Озвучивание не запускалось.");
                 }));
@@ -382,8 +406,10 @@ export function WalkAdmin({ api, busy, run, onDirtyChange }: WalkAdminProps) {
               <button type="button" className="admin-primary" disabled={Boolean(busy) || blocked || dirty || !selectedProvider?.available || !selectedVoice || chapterBusy} onClick={() => {
                 if (!window.confirm(`Переозвучить главу «${draft.title}» голосом «${selectedVoice?.label}»?`)) return;
                 void run("Переозвучивание главы…", (signal) => withConflictGuard(async () => {
-                  const result = await api<{ walk: WalkDetail }>(`/walks/${walk.id}/chapters/${chapter.id}/revoice`, signal, { revision: chapter.revision, ttsProvider, ttsVoice });
-                  acceptWalk(result.walk, chapter.id);
+                  await loadWalk(async () => {
+                    const result = await api<{ walk: WalkDetail }>(`/walks/${walk.id}/chapters/${chapter.id}/revoice`, signal, { revision: chapter.revision, ttsProvider, ttsVoice });
+                    acceptWalk(result.walk, chapter.id);
+                  });
                   await updateWalks(signal);
                   setNotice("Глава поставлена в очередь на озвучивание. Текущая публикация остаётся доступна.");
                 }));

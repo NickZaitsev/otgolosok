@@ -17,11 +17,89 @@ export type ContentBatch = {
   createdAt: string; updatedAt: string;
   counts: { total: number; queued: number; working: number; ready: number; failed: number };
 };
-export type ContentBatchItem = { placeId: string; name: string; address: string | null; state: string; error: { message?: string } | null };
+export type ContentBatchItem = {
+  placeId: string; name: string; address: string | null; state: string; error: { code?: string; message?: string } | null;
+};
+/** `errors` counts the codes present under the status filter alone, so the error filter can list them without reloading. */
+export type ContentBatchItemPage = {
+  items: ContentBatchItem[]; total: number; hasMore: boolean; errors: { code: string | null; count: number }[];
+};
+export type ContentStatusFilter = "all" | "ready" | "working" | "waiting" | "stopped";
+/** "all" — no filter, "none" — items without an error, anything else — a concrete error code such as ADDRESS_UNCLEAR. */
+export type ContentErrorFilter = string;
+
+export const batchStates: Record<string, string> = {
+  running: "Выполняется", paused: "На паузе", cancelled: "Отменена",
+};
+
+/** Every state a batch item can hold; the four status buckets below partition this set. */
+export const batchItemStates: Record<string, string> = {
+  queued: "В очереди", retry_wait: "Ждёт повтора", working: "В работе", ready: "Готово",
+  failed: "Ошибка", review_required: "Нужна редактура", insufficient_evidence: "Недостаточно источников", cancelled: "Отменено",
+};
+
+/** Mirrors BATCH_ITEM_STATES in backend/content-store.mjs — the server filters items by the same buckets. */
+export const contentStatusStates: Record<Exclude<ContentStatusFilter, "all">, string[]> = {
+  ready: ["ready"],
+  working: ["working"],
+  waiting: ["queued", "retry_wait"],
+  stopped: ["failed", "review_required", "insufficient_evidence", "cancelled"],
+};
+
+/** Labels spell out which item states a bucket covers, so the filter needs no separate legend. */
+export const contentStatusOptions: { value: ContentStatusFilter; label: string }[] = [
+  { value: "all", label: "Любой статус" },
+  { value: "ready", label: "Готово" },
+  { value: "working", label: "В работе" },
+  { value: "waiting", label: "Ждут очереди или повтора" },
+  { value: "stopped", label: "Остановлены: ошибка, редактура, нет источников, отмена" },
+];
+
+export const retryableItemStates = ["failed", "review_required", "insufficient_evidence", "retry_wait"];
+
+/**
+ * Options for the error filter: what the current page reports, plus the selected code even when a retry
+ * has just emptied it, so the select never falls back to a blank value.
+ */
+export function contentErrorOptions(errors: ContentBatchItemPage["errors"], selected: ContentErrorFilter) {
+  const options = [{ value: "all", label: "Любая ошибка" }];
+  for (const { code, count } of errors) {
+    options.push(code === null
+      ? { value: "none", label: `Без ошибки (${count})` }
+      : { value: code, label: `${code} (${count})` });
+  }
+  if (!options.some(option => option.value === selected)) {
+    options.push({ value: selected, label: selected === "none" ? "Без ошибки (0)" : `${selected} (0)` });
+  }
+  return options;
+}
+
+/** Human range for a server-paged list: "51–100 из 6107". */
+export function pageRange(offset: number, count: number, total: number) {
+  if (!total || !count) return "0";
+  return `${offset + 1}–${offset + count} из ${total}`;
+}
+
+export function pageCount(total: number, size: number) {
+  return Math.max(1, Math.ceil(total / size));
+}
 export type ContentPlace = {
   id: string; name: string; address: string | null; location: { lat: number; lon: number };
   text: null | { id: string; profile: string; story: Draft; draft: Draft; verification: string; audio: Audio | null; createdAt: string };
 };
+/** Catalog rows come from listPlaces, which reports text presence instead of the full text record. */
+export type ContentPlaceSummary = {
+  id: string; name: string; address: string | null; textStatus: "none" | "draft" | "approved"; audio: Audio | null;
+};
+export type ContentPlaceStatusFilter = "all" | "ready" | "missing";
+export const placeTextStatuses: Record<ContentPlaceSummary["textStatus"], string> = {
+  none: "Нет текста", draft: "Черновик", approved: "Утверждён",
+};
+export const placeStatusOptions: { value: ContentPlaceStatusFilter; label: string }[] = [
+  { value: "all", label: "Все места" },
+  { value: "ready", label: "Только с утверждённым текстом" },
+  { value: "missing", label: "Только без текста" },
+];
 export type ContentWorker = { id: string; name: string; profiles: string[]; createdAt: string; lastSeenAt: string | null; revokedAt: string | null };
 export type ContentHeartbeat = { credentialId: string; workerName: string; version: string | null; profileIds: string[]; currentJobId: string | null; progress: {stage?:string;percent?:number}|null; seenAt: string };
 export type ContentAudioJob = { id:string; state:string; profileId:string; attempts:number; maxAttempts:number; updatedAt:string; placeId:string|null; placeName:string|null; error:{message?:string;code?:string}|null };

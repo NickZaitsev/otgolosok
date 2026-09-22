@@ -7,6 +7,16 @@ const encode = JSON.stringify;
 const decode = value => value == null ? null : JSON.parse(value);
 const iso = now => new Date(now()).toISOString();
 const fail = (code, message=code) => Object.assign(new Error(message),{code});
+const ERROR_CODE = /^[A-Z][A-Z0-9_]{0,63}$/;
+const ERROR_CODE_SQL = "json_extract(i.error_json,'$.code')";
+
+export const BATCH_ITEM_STATES = {
+  all: null,
+  ready: ["ready"],
+  working: ["working"],
+  waiting: ["queued", "retry_wait"],
+  stopped: ["failed", "review_required", "insufficient_evidence", "cancelled"],
+};
 
 function addressOf(place) {
   return osmPostalAddress(place.tags);
@@ -108,8 +118,11 @@ export function createContentStore({db,now,transaction}) {
       const distanceParams=lat===null?[]:[lat,lat,lon];if(lat!==null){filters.push(`${distanceSql}<=?`);params.push(...distanceParams,radius);}
       const rows=db.prepare(`SELECT p.*,(SELECT approved_story_json FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL ORDER BY t.created_at DESC,t.rowid DESC LIMIT 1) story_json,
         (SELECT audio_json FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL AND t.audio_json IS NOT NULL AND t.audio_json<>'null' ORDER BY t.created_at DESC,t.rowid DESC LIMIT 1) audio_json,
+        (SELECT count(*) FROM place_texts t WHERE t.place_id=p.id) text_count,
         ${distanceSql} distance_m FROM places p WHERE ${filters.join(" AND ")} ORDER BY ${lat===null?"p.name,p.id":"distance_m,p.name,p.id"} LIMIT ? OFFSET ?`).all(...distanceParams,...params,limit+1,offset);
-      return {places:rows.slice(0,limit).map(row=>({...viewPlace(row),story:row.story_json?decode(row.story_json):null,audio:decode(row.audio_json),distanceM:row.distance_m==null?null:Number(row.distance_m)})),hasMore:rows.length>limit};
+      const total=Number(db.prepare(`SELECT count(*) n FROM places p WHERE ${filters.join(" AND ")}`).get(...params).n);
+      return {total,places:rows.slice(0,limit).map(row=>({...viewPlace(row),story:row.story_json?decode(row.story_json):null,audio:decode(row.audio_json),
+        textStatus:row.story_json?"approved":Number(row.text_count)?"draft":"none",distanceM:row.distance_m==null?null:Number(row.distance_m)})),hasMore:rows.length>limit};
     },
     listWalkCandidates({lat,lon,radius,limit=500}={}) {
       if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||lat<55.05||lat>56.05||lon<36.75||lon>38.25||radius<50||radius>5000||!Number.isSafeInteger(limit)||limit<1||limit>500)throw fail("BAD_REQUEST");
@@ -160,6 +173,23 @@ export function createContentStore({db,now,transaction}) {
       });
     },
     listBatches() {return db.prepare("SELECT * FROM content_batches ORDER BY created_at DESC").all().map(row=>viewBatch(row,batchCounts(row.id)));},
+    listBatchItems(batchId,{limit=50,offset=0,status="all",error="all"}={}) {
+      if(!Number.isSafeInteger(limit)||limit<1||limit>200||!Number.isSafeInteger(offset)||offset<0||!Object.hasOwn(BATCH_ITEM_STATES,status)
+        ||typeof error!=="string"||!(error==="all"||error==="none"||ERROR_CODE.test(error)))throw fail("BAD_REQUEST");
+      if(!db.prepare("SELECT 1 FROM content_batches WHERE id=?").get(batchId))return null;
+      const states=BATCH_ITEM_STATES[status],byStatus=states?` AND i.state IN (${states.map(()=>"?").join(",")})`:"",statusParams=states??[];
+      // The filter reads the code out of error_json, so it stays correct whether an error-free item holds SQL NULL or the JSON literal null.
+      const byError=error==="all"?"":error==="none"?` AND ${ERROR_CODE_SQL} IS NULL`:` AND ${ERROR_CODE_SQL}=?`,
+        filter=byStatus+byError,params=[...statusParams,...(error==="all"||error==="none"?[]:[error])];
+      const total=Number(db.prepare(`SELECT count(*) n FROM batch_items i WHERE i.batch_id=?${filter}`).get(batchId,...params).n);
+      const items=db.prepare(`SELECT i.*,p.name,p.address FROM batch_items i JOIN places p ON p.id=i.place_id
+        WHERE i.batch_id=?${filter} ORDER BY p.name,p.id LIMIT ? OFFSET ?`).all(batchId,...params,limit,offset)
+        .map(item=>({placeId:item.place_id,name:item.name,address:item.address,state:item.state,error:decode(item.error_json)}));
+      // Codes are counted under the status filter only, so the editor can switch between them without losing the list of what exists.
+      const errors=db.prepare(`SELECT ${ERROR_CODE_SQL} code,count(*) n FROM batch_items i WHERE i.batch_id=?${byStatus}
+        GROUP BY code ORDER BY n DESC,code`).all(batchId,...statusParams).map(row=>({code:row.code??null,count:Number(row.n)}));
+      return {items,total,hasMore:offset+items.length<total,errors};
+    },
     getBatch(id) {const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
       const items=db.prepare(`SELECT i.*,p.name,p.address FROM batch_items i JOIN places p ON p.id=i.place_id WHERE i.batch_id=? ORDER BY p.name,p.id`).all(id)
       .map(item=>({placeId:item.place_id,name:item.name,address:item.address,state:item.state,error:decode(item.error_json)}));return {...viewBatch(row,batchCounts(id)),items};},
@@ -207,7 +237,7 @@ export function createContentStore({db,now,transaction}) {
     failContentJob(id,error,state="failed") {if(!["failed","review_required","insufficient_evidence"].includes(state))throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_jobs WHERE id=?").get(id);if(!row)return null;
       const retryable=new Set(["TIMEOUT","PROVIDER_BUSY","PROVIDER_FAILED","NETWORK_ERROR","SOURCE_ACCESS_FAILED","INTERRUPTED"]);const timestamp=iso(now),retry=state==="failed"&&retryable.has(error?.code)&&Number(row.attempts)<Number(row.max_attempts),next=retry?"retry_wait":state;
       db.prepare("UPDATE content_jobs SET state=?,next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(next,new Date(now()+(row.attempts<=1?30000:120000)).toISOString(),encode(error),timestamp,id);db.prepare("UPDATE content_job_attempts SET state=?,finished_at=?,error_json=? WHERE job_id=? AND generation=?").run(next,timestamp,encode(error),id,row.attempts);syncItems(id,next,error);return {id,state:next,error};});},
-    recoverContentJobs() {const timestamp=iso(now),error={code:"INTERRUPTED",message:"Content worker interrupted."};const rows=db.prepare("SELECT id,attempts FROM content_jobs WHERE state='working'").all();for(const row of rows){db.prepare("UPDATE content_jobs SET state='retry_wait',next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(timestamp,encode(error),timestamp,row.id);db.prepare("UPDATE content_job_attempts SET state='retry_wait',finished_at=?,error_json=? WHERE job_id=? AND generation=?").run(timestamp,encode(error),row.id,row.attempts);syncItems(row.id,"retry_wait",error);}return rows.length;},
+    recoverContentJobs() {const timestamp=iso(now),error={code:"INTERRUPTED",message:"Подготовка прервана. Задание можно повторить."};const rows=db.prepare("SELECT id,attempts FROM content_jobs WHERE state='working'").all();for(const row of rows){db.prepare("UPDATE content_jobs SET state='retry_wait',next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(timestamp,encode(error),timestamp,row.id);db.prepare("UPDATE content_job_attempts SET state='retry_wait',finished_at=?,error_json=? WHERE job_id=? AND generation=?").run(timestamp,encode(error),row.id,row.attempts);syncItems(row.id,"retry_wait",error);}return rows.length;},
     approvePlaceText(placeId,story=null) {return transaction(()=>{let row=db.prepare(`SELECT * FROM place_texts WHERE place_id=? ORDER BY
         CASE WHEN approved_story_json IS NOT NULL THEN 1 ELSE 0 END DESC,created_at DESC,rowid DESC LIMIT 1`).get(placeId);if(!row)return null;
       const selected=story??decode(row.story_json);if(!selected||typeof selected.title!=="string"||!Array.isArray(selected.paragraphs)||!selected.paragraphs.length)throw fail("BAD_REQUEST");

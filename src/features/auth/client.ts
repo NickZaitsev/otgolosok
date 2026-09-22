@@ -1,6 +1,6 @@
 import { readFetch } from "./read-fetch";
 import { AUTH_CHANNEL, AUTH_EVENT_KEY, SIGNED_OUT_MESSAGE } from "./session-events";
-export type AuthUser = { id: string; email: string; name: string };
+export type AuthUser = { id: string; email: string; name: string; role?: string };
 const CSRF_KEY = "otgolosok:account:csrf";
 const LAST_USER_KEY = "otgolosok:account:last-user";
 

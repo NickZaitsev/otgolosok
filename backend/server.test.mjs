@@ -47,6 +47,26 @@ test("serves complete and partial audio and rejects traversal or invalid range",
   assert.equal((await fetch(`${f.base}/api/story-audio/%2e%2e/server.mjs`)).status,404);
 });
 
+test("HTTP TTS reports its transport without suggesting an external worker",async(t)=>{
+  const f=await fixture(t,{localTts:{transport:"http",defaultProfile:"f5-ru-v1"}});
+  const response=await fetch(`${f.base}/api/story-admin/content/workers`);
+  assert.equal(response.status,200);
+  const value=await response.json();
+  assert.equal(value.transport,"http");
+  assert.deepEqual(value.workers,[]);
+  assert.deepEqual(value.heartbeats,[]);
+  assert.equal((await fetch(`${f.base}/api/worker/v1/claim`,{method:"POST"})).status,503);
+  const issue=await f.post("/api/story-admin/content/workers",{name:"GPU",profiles:["f5-ru-v1"]});
+  assert.equal(issue.status,503);
+});
+
+test("worker transport still exposes credentials and allows issuing keys",async(t)=>{
+  const f=await fixture(t);
+  const response=await fetch(`${f.base}/api/story-admin/content/workers`);
+  assert.equal((await response.json()).transport,"worker");
+  assert.equal((await f.post("/api/story-admin/content/workers",{name:"GPU",profiles:["silero-ru-v1"]})).status,201);
+});
+
 test("external worker API authenticates, leases and accepts an idempotent upload",async(t)=>{
   const artifact={url:`/api/story-audio/${"b".repeat(64)}.mp3`,sha256:"b".repeat(64),bytes:100,durationSec:60,model:"external",voice:"external",provider:"external",synthetic:true};
   const f=await fixture(t,{workerToken:"worker-secret",audioIngest:async req=>{
@@ -124,6 +144,29 @@ test("admin manages content batches and revocable worker credentials",async t=>{
   const worker=(await issued.json()).worker;assert.equal(worker.token.length,64);
   assert.equal((await f.post(`/api/story-admin/content/workers/${worker.id}/revoke`,{})).status,200);
   assert.equal((await fetch(f.base+"/api/worker/v1/claim",{method:"POST",headers:{Authorization:`Bearer ${worker.token}`,"X-Worker-Id":"gpu","Content-Type":"application/json"},body:JSON.stringify({requestId:"credential-1",profileIds:["silero-ru-v1"]})})).status,401);
+  const items=await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?limit=1&offset=0&status=waiting`);
+  assert.equal(items.status,200);const page=await items.json();
+  assert.deepEqual(page,{items:[{placeId:"osm:node:8",name:"Музей",address:null,state:"queued",error:null}],total:1,hasMore:false,errors:[{code:null,count:1}]});
+  const byError=await (await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?error=ADDRESS_UNCLEAR`)).json();
+  assert.equal(byError.total,0);assert.deepEqual(byError.errors,[{code:null,count:1}]);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?error=none`)).status,200);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?error=%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B0`)).status,400);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?status=unknown`)).status,400);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?page=1`)).status,400);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/11111111-1111-4111-8111-111111111111/items`)).status,404);
+  const places=await (await fetch(`${f.base}/api/story-admin/content/places?limit=1&offset=0&status=all`)).json();
+  assert.equal(places.total,1);assert.equal(places.places[0].textStatus,"none");
+});
+
+test("the audio retry route matches a job id instead of falling through to the admin 404",async t=>{
+  const f=await fixture(t);
+  // A bare regex literal with ${UUID} once made this route unreachable: the desk's retry button always 404ed.
+  const matched=await f.post("/api/story-admin/content/audio/11111111-1111-4111-8111-111111111111/retry",{});
+  assert.equal(matched.status,404);
+  assert.equal((await matched.json()).error.message,"Failed audio job not found.");
+  const unmatched=await f.post("/api/story-admin/content/audio/not-a-uuid/retry",{});
+  assert.equal(unmatched.status,404);
+  assert.equal((await unmatched.json()).error.message,"Admin endpoint not found.");
 });
 
 test("place lookup has no generation side effect and reports bounded errors",async(t)=>{
