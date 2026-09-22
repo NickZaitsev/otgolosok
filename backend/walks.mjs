@@ -115,7 +115,10 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
         const geometry=[];let seconds=0,distanceM=0;
         for(const [i,leg] of trip.legs.entries()) {
           const s=leg?.summary;
-          if(!s||!Number.isFinite(s.time)||s.time<=0||!Number.isFinite(s.length)||s.length<=0||s.time>86400||s.length>100)throw fail('WALK_UNAVAILABLE');
+          if(!s||!Number.isFinite(s.time)||s.time<0||!Number.isFinite(s.length)||s.length<0||s.time>86400||s.length>100)throw fail('WALK_UNAVAILABLE');
+          // Distinct landmarks can snap onto the same pedestrian access point.
+          // This candidate adds no walkable leg; it is not a service outage.
+          if(s.time===0||s.length===0)return null;
           const shape=decode(leg.shape);
           if(distance(shape[0],points[i].location)>150||distance(shape.at(-1),points[i+1].location)>150)throw fail('WALK_UNAVAILABLE');
           // Snapping a stop to different pedestrian edges can leave a real gap.
