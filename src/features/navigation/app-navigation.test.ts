@@ -10,6 +10,7 @@ describe("нижняя навигация приложения", () => {
     ["/walk/", "walk"],
     ["/create", null],
     ["/account", "account"],
+    ["/history", "history"],
   ] as const)("выделяет раздел %s", (pathname, expected) => {
     expect(navigationSection(pathname)).toBe(expected);
   });
@@ -29,7 +30,7 @@ describe("нижняя навигация приложения", () => {
     expect(layout).toContain("<AppNavigation />");
   });
 
-  it("всегда открывает раздел прогулок по ссылке", () => {
+  it("открывает создание на карте и отдельную историю", () => {
     const navigation = readFileSync(
       fileURLToPath(new URL("./app-navigation.tsx", import.meta.url)),
       "utf8",
@@ -39,8 +40,8 @@ describe("нижняя навигация приложения", () => {
       "utf8",
     );
 
-    expect(navigation).toContain('<Link href="/walk"');
-    expect(navigation).not.toContain("onWalk");
-    expect(home).not.toContain("onWalk=");
+    expect(navigation).toContain('<Link href="/?walk=create"');
+    expect(navigation).toContain('<Link href="/history"');
+    expect(home).toContain("<WalkCreationPanel");
   });
 });

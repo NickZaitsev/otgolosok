@@ -20,6 +20,14 @@ describe("локальная библиотека прогулок", () => {
     expect(listLocalWalks(store)).toHaveLength(1);
     expect(store.getItem("otgolosok:walk:v1")).toBe(JSON.stringify(legacy));
   });
+  it("не мигрирует повторно черновик, уже записанный новым конструктором", () => {
+    const store = storage();
+    saveLocalWalk(store, document(first), null);
+    store.setItem("otgolosok:walk:v1", JSON.stringify(legacy));
+    store.setItem("otgolosok:walk:active-local", first);
+    expect(migrateLocalWalks(store, () => second)).toBe(first);
+    expect(listLocalWalks(store)).toHaveLength(1);
+  });
   it("хранит независимые документы, проверяет ревизию и удаляет только выбранный", () => {
     const store = storage();
     expect(saveLocalWalk(store, document(first), null).revision).toBe(0);

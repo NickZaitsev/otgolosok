@@ -8,9 +8,9 @@ describe("единый логотип", () => {
     const brand = read("./brand-mark.tsx");
     expect(brand).toContain("Отголосок<span");
     for (const path of [
-      "../explore/around-screen.tsx", "../walk-builder/walk-builder.tsx",
+      "../explore/around-screen.tsx", "../navigation/app-header.tsx",
       "../generator/story-generator.tsx", "../tour/tour-experience.tsx",
-      "../auth/login.tsx", "../account/account.tsx", "../admin/admin-desk.tsx",
+      "../admin/admin-desk.tsx",
     ]) {
       const source = read(path);
       expect(source, path).toContain("<BrandMark />");

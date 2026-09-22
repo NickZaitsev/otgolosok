@@ -2,7 +2,7 @@ import { migrateLegacyDraft, validateWalkDocument, type WalkDocument } from "./m
 
 export const WALK_LIBRARY_KEY = "otgolosok:walks:v2";
 export const LEGACY_WALK_KEY = "otgolosok:walk:v1";
-export type LocalWalkItem = { document: WalkDocument; revision: number };
+export type LocalWalkItem = { document: WalkDocument; revision: number; updatedAt?: string };
 type Item = LocalWalkItem;
 type Library = { version: 2; legacyId: string | null; items: Record<string, Item> };
 type StoragePort = Pick<Storage, "getItem" | "setItem">;
@@ -34,6 +34,8 @@ function write(storage: StoragePort, previous: string | null, next: Library) {
 /** The v1 source is deliberately retained: failed migrations never destroy a draft. */
 export function migrateLocalWalks(storage: StoragePort, newId: () => string = () => crypto.randomUUID()): string | null {
   const { value, raw } = read(storage);
+  const activeId = storage.getItem("otgolosok:walk:active-local");
+  if (activeId && value.items[activeId]) return activeId;
   if (value.legacyId) return value.legacyId;
   const legacy = storage.getItem(LEGACY_WALK_KEY);
   if (legacy === null) return null;
@@ -54,7 +56,7 @@ export function saveLocalWalk(storage: StoragePort, document: WalkDocument, expe
   const { value, raw } = read(storage);
   const prior = value.items[document.id];
   if (prior ? prior.revision !== expectedRevision : expectedRevision !== null) throw conflict();
-  const item = { document, revision: prior ? prior.revision + 1 : 0 };
+  const item = { document, revision: prior ? prior.revision + 1 : 0, updatedAt: new Date().toISOString() };
   write(storage, raw, { ...value, items: { ...value.items, [document.id]: item } });
   return item;
 }

@@ -8,10 +8,10 @@ import "leaflet/dist/leaflet.css";
 export type MapItem = {id:string; title:string; location:Coordinates; number?:number; pending?:boolean};
 export type MapFocus = Coordinates & {zoom?:number};
 export type MapViewState = {current: {center:Coordinates; zoom:number; focus:MapFocus|null}|null};
-export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometry,mapLabel,viewState}: {
+export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometry,mapLabel,viewState,routePadding}: {
   items: MapItem[]; selectedId?:string; focus:MapFocus|null; user:(Coordinates&{accuracyM:number})|null;
   onSelect:(id:string)=>void; onPoint:(point:Coordinates)=>void;
-  geometry?: Coordinates[]; mapLabel?: string; viewState?: MapViewState;
+  geometry?: Coordinates[]; mapLabel?: string; viewState?: MapViewState; routePadding?: {top:number;right:number;bottom:number;left:number};
 }) {
   const container = useRef<HTMLDivElement>(null);
   const runtime = useRef<{L:typeof Leaflet; map:Leaflet.Map; markers:Leaflet.LayerGroup; position:Leaflet.LayerGroup; route:Leaflet.LayerGroup}|null>(null);
@@ -88,8 +88,8 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     rt.route.clearLayers();
     if(!geometry || geometry.length<2)return;
     const line=rt.L.polyline(geometry.map(p=>[p.lat,p.lon] as [number,number]),{color:"#203e38",weight:5,opacity:.9,interactive:false}).addTo(rt.route);
-    rt.map.fitBounds(line.getBounds(),{padding:[35,35],maxZoom:17,animate:false});
-  },[geometry,ready]);
+    rt.map.fitBounds(line.getBounds(),{paddingTopLeft:routePadding?[routePadding.left,routePadding.top]:[35,35],paddingBottomRight:routePadding?[routePadding.right,routePadding.bottom]:[35,35],maxZoom:17,animate:false});
+  },[geometry,ready,routePadding]);
 
   useEffect(()=>{
     const rt=runtime.current;if(!rt||!ready)return;
