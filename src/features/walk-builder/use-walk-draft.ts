@@ -236,7 +236,7 @@ export function useWalkDraft() {
       if (controller.signal.aborted) return;
       if (!isPlan(result) || !validStops(snapshot.start, result.stops, snapshot.destination) || result.walkingMinutes > snapshot.minutes || (selection === "manual" && JSON.stringify(result.stops) !== JSON.stringify(snapshot.stops))) throw new Error("Сервис вернул некорректный маршрут. Попробуйте построить заново.");
       persist({ ...current.current, stops: result.stops, route: result }); setSelection("manual");
-      setMessage("Маршрут построен. Проверьте линию на карте и порядок остановок.");
+      setMessage("");
     } catch (caught) { if (!controller.signal.aborted) {
       const insufficient = shouldOfferResearch(selection, caught);
       setResearchOffered(insufficient);
