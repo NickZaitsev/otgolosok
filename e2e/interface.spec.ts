@@ -62,6 +62,7 @@ test("создаёт A→Б на карте и восстанавливает е
   await page.route("**/api/walk-plan", async route => {
     const request = route.request().postDataJSON();
     expect(request.destination).toEqual(destination);
+    expect(request).not.toHaveProperty("stops");
     await route.fulfill({ json: { stops: [], geometry: [start.location, destination.location], walkingMinutes: 4, distanceM: 220, attribution: "OSM" } });
   });
   await page.goto("/");
@@ -89,6 +90,8 @@ test("создаёт A→Б на карте и восстанавливает е
   await expect(page.locator(".creation-panel")).toContainText(destination.address);
   await page.getByRole("link", { name: "Начать прогулку", exact: true }).click();
   await expect(page.locator(".creation-panel")).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Основная навигация" })).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "Открыть мою прогулку" })).toHaveCount(0);
   const frame = page.locator(".route-map-live");
   await expect(frame).toBeVisible();
   const geometry = await frame.evaluate(el => {
@@ -180,26 +183,23 @@ test("локальный выход очищает приватный кеш д�
   })).toEqual({ private: false, public: true, signedOut: true });
 });
 
-test("сохранение в аккаунт сохраняет последующие правки черновика после перезагрузки", async ({ page }) => {
+test("правки точек аккаунтной прогулки сохраняются после перезагрузки", async ({ page }) => {
   const start = { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } };
   const destination = { address: "Москва, Арбат, 20", location: { lat: 55.752, lon: 37.6 } };
-  const draft = { version: 1, title: "Маршрут в аккаунт", start, destination, mode: "open", minutes: 30, stops: [], route: { stops: [], geometry: [start.location, destination.location], walkingMinutes: 4, distanceM: 220, attribution: "OSM" }, jobs: [], submitting: null };
-  await page.addInitScript(value => { if (!localStorage.getItem("otgolosok:walk:v1")) localStorage.setItem("otgolosok:walk:v1", JSON.stringify(value)); }, draft);
+  const replacement = { address: "Москва, Арбат, 30", location: { lat: 55.754, lon: 37.6 } };
+  const draft = { version: 1, title: "Маршрут в аккаунте", start, destination, mode: "open", minutes: 30, stops: [], route: { stops: [], geometry: [start.location, destination.location], walkingMinutes: 4, distanceM: 220, attribution: "OSM" }, jobs: [], submitting: null };
   await page.route("**/api/auth/session", route => route.fulfill({ json: { user: { id: "test", name: "Анна", email: "test@example.test" } } }));
-  let walk: Record<string, unknown> = {};
-  await page.route("**/api/me/walks**", async route => {
-    if (route.request().method() === "POST") walk = { ...route.request().postDataJSON(), id: "11111111-1111-4111-8111-111111111111", revision: 1 };
-    await route.fulfill({ json: { walk } });
-  });
-  await page.goto("/?walk=create&resume=1");
-  await page.getByRole("button", { name: "Сохранить в аккаунте" }).click();
-  await expect(page.getByRole("button", { name: "Обновить в аккаунте" })).toBeVisible();
-  await page.getByText("Изменить название и маршрут", { exact: true }).click();
-  await page.getByLabel("Название", { exact: true }).fill("Несохранённая правка");
+  await page.route("**/api/me/walks/**", route => route.fulfill({ json: { walk: { id: "11111111-1111-4111-8111-111111111111", revision: 1, snapshot: draft } } }));
+  await page.route("**/api/story-place?*", route => route.fulfill({ json: replacement }));
+  await page.goto("/?walk=create&id=11111111-1111-4111-8111-111111111111&edit=1");
+  await page.getByRole("button", { name: "Изменить маршрут" }).click();
+  await page.getByRole("button", { name: "Куда", exact: true }).click();
+  await page.getByRole("button", { name: "Ввести адрес", exact: true }).click();
+  await page.getByRole("textbox", { name: "Куда", exact: true }).fill(replacement.address);
+  await page.getByRole("textbox", { name: "Куда", exact: true }).press("Enter");
+  await expect(page.getByRole("button", { name: "Куда", exact: true })).toContainText(replacement.address);
   await page.reload();
-  await page.getByText("Изменить название и маршрут", { exact: true }).click();
-  await expect(page.getByLabel("Название", { exact: true })).toHaveValue("Несохранённая правка");
-  await expect(page.getByRole("button", { name: "Обновить в аккаунте" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Куда", exact: true })).toContainText(replacement.address);
 });
 
 test("Escape закрывает панель и возвращает фокус в навигацию", async ({ page }) => {
@@ -301,7 +301,8 @@ test("время имеет мягкий акцент, а Готово подт�
 test("карточка выбранного дома не оставляет пустую строку над адресом", async ({ page }, info) => {
   await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: "Москва, 1-й Дербеневский переулок, 5", location: { lat: 55.725, lon: 37.65 } } }));
   await page.goto("/");
-  await page.locator(".explore-map").click({ position: { x: 180, y: 300 } });
+  await expect(page.locator(".map-loading")).toHaveCount(0);
+  await page.locator(".explore-map").click({ position: { x: 180, y: 200 } });
   const title = page.getByRole("heading", { name: "Москва, 1-й Дербеневский переулок, 5", exact: true });
   await expect(title).toBeVisible();
   const card = await page.locator('[aria-labelledby="new-place-title"]').boundingBox();

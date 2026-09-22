@@ -262,3 +262,15 @@ test('over-budget candidates are removed without losing destination', async () =
   assert.deepEqual(result.geometry.at(-1),stop(5).location);
   assert.deepEqual(result.stops,[]);
 });
+
+test('automatic destination tries another landmark when the nearest exceeds budget', async () => {
+  const {plan}=fixture((url,o)=>{
+    if(url.includes('osm'))return candidates();
+    const request=JSON.parse(o.body);
+    return route(request,request.locations.some(p=>p.lat===stop(1).location.lat)?2000:100);
+  });
+  const result=await plan({start,mode:'open',minutes:30,destination:stop(5)});
+  assert.ok(result.stops.length>0);
+  assert.ok(result.stops.every(p=>p.location.lat!==stop(1).location.lat));
+  assert.deepEqual(result.geometry.at(-1),stop(5).location);
+});

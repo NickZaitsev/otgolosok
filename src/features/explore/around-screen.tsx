@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import "./place-heading.css";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { WalkCreationPanel, type CreationMap } from "../walk-builder/walk-creation-panel";
 import { BrandMark } from "../brand/brand-mark";
 import type { Coordinates, Route } from "../tour/types";
@@ -41,6 +41,7 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
   const opener = useRef<HTMLElement | null>(null);
   const closeCreation = useCallback(() => { router.replace("/", {scroll:false}); setPicked(null); setTimeout(() => opener.current?.focus(), 0); }, [router]);
   const rememberOpener = () => { opener.current = document.activeElement as HTMLElement; };
+  const pathname=usePathname();
   const [tab,setTab]=useState<Tab>(initialTab ?? "nearby");
   const [search,setSearch]=useState(false),[query,setQuery]=useState("");
   const [selected,setSelected]=useState<string>();
@@ -178,7 +179,7 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
         {search?<form className="around-search" onSubmit={submitSearch}><label htmlFor="map-address">Какой дом вас интересует?</label><div><input id="map-address" ref={input} value={query} onChange={event=>setQuery(event.target.value)} minLength={3} maxLength={180} required placeholder="Улица и номер дома в Москве" autoComplete="off"/><button type="submit" disabled={placeBusy||query.trim().length<3} aria-label="Найти дом"><ExploreIcon name="arrow"/></button></div><Link href={`/create?${new URLSearchParams(query.trim()?{address:query.trim()}:{new:"1"})}`} prefetch={false}>Ввести адрес для истории вручную →</Link></form>:null}
       </header>
 
-      {tab==="walk"?<div className="around-route"><section className="around-empty"><h2>Моя прогулка</h2><p>Соберите свой маршрут или продолжите сохранённый черновик на этом устройстве.</p><Link href="/walk?resume=1" className="around-primary" prefetch={false}>Открыть мою прогулку <ExploreIcon name="walk"/></Link><Link href="/create?new=1" className="around-text-button" prefetch={false}>Создать историю одного дома</Link></section>{children}</div>:null}
+      {tab==="walk"?<div className="around-route">{children}</div>:null}
       {tab!=="nearby"?<div className="around-about"><details><summary>О карте и геолокации</summary><p>Карту предоставляет OpenStreetMap. При её просмотре сервис получает запросы изображений выбранного района. Геолокация включается только по кнопке и используется на устройстве. Нажатая точка или введённый адрес отправляются для поиска адреса через Nominatim. Карта требует интернета; сохранённые записи работают без сети.</p></details><a href="/update.html">{updateAvailable?"Доступна новая версия · обновить":"Проверить обновление"}</a></div>:null}
     </div>
 
@@ -207,6 +208,6 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
         {updateAvailable?<a className="around-update" href="/update.html">Доступна новая версия · обновить</a>:null}
       </div>
     </>:null}
-    <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : tab} onNearby={()=>{if(creating)closeCreation();setTab("nearby");setSearch(false);}} />
+    {pathname === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : tab} onNearby={()=>{if(creating)closeCreation();setTab("nearby");setSearch(false);}} />}
   </>;
 }

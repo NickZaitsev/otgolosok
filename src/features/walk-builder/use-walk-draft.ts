@@ -144,6 +144,7 @@ export function useWalkDraft() {
   function edit(change: Parameters<typeof editDraft>[1]) {
     setReviewed(false); setError(""); setMessage(""); setResearchOffered(false);
     if (change.stops) setSelection("manual");
+    else if (["start", "destination", "mode", "minutes"].some(key => Object.hasOwn(change, key))) setSelection("auto");
     persist(editDraft(current.current, change));
   }
 

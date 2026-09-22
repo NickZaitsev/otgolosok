@@ -779,7 +779,7 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
               <dl className="route-facts">
                 <div><dt>{route.status === "draft" ? "План пути" : "Путь"}</dt><dd>{route.walk ? `≈ ${Math.round(route.walk.distance_m / 50) * 50} м` : `${route.distance_km.toLocaleString("ru-RU")} км`}</dd></div>
                 <div><dt>{route.status === "draft" ? "План времени" : "Время"}</dt><dd>{route.duration_min} минут</dd></div>
-                <div><dt>Сейчас доступно</dt><dd>{chapter ? `${chapters.length} части · ${hasWalkAudio ? "аудио и текст" : "текст"}` : hasStoryText && usesTestAudio ? "История · текст" : usesTestAudio ? "Тестовая точка" : "Первая история"}</dd></div>
+                <div><dt>Сейчас доступно</dt><dd>{chapter ? `${chapters.length} части · ${hasWalkAudio ? "аудио и текст" : "текст"}` : hasStoryText && usesTestAudio ? "История · текст" : usesTestAudio ? "Тестовая точка" : universal && !hasStoryText ? "Маршрут без историй" : "Первая история"}</dd></div>
               </dl>
               <button className="start-button" type="button" ref={startButtonRef} onClick={() => void startTour()}>
                 <span>{savedCheckpoint ? "Продолжить прогулку" : "Начать прогулку"}</span><b aria-hidden="true">→</b>
@@ -788,7 +788,7 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
                 <p className="start-note">Часть {savedChapterIndex + 1} · {chapters[savedChapterIndex].title} · {formatPlaybackTime(savedCheckpoint.positionSec)}</p>
                 <button type="button" className="restart-walk" onClick={() => startTour(false)}>Начать сначала</button>
               </> : null}
-              <p className="start-note">{route.walk ? hasWalkAudio ? `Около ${route.duration_min} минут ходьбы без остановок. Первая запись включится при старте, следующие по кнопке «Дальше». Озвучка доступна.` : `Около ${route.duration_min} минут ходьбы без остановок. Рассказы переключаются вручную; озвучка готовится.` : usesTestAudio ? "Проверка геолокации и звука на одной точке. Запись аудио готовится." : "Разрешите звук и геолокацию после нажатия."}</p>
+              <p className="start-note">{route.walk ? hasWalkAudio ? `Около ${route.duration_min} минут ходьбы без остановок. Первая запись включится при старте, следующие по кнопке «Дальше». Озвучка доступна.` : universal && !hasStoryText ? `Около ${route.duration_min} минут ходьбы. Истории и аудио для этого маршрута пока не подготовлены.` : `Около ${route.duration_min} минут ходьбы без остановок. Рассказы переключаются вручную; озвучка готовится.` : usesTestAudio ? "Проверка геолокации и звука на одной точке. Запись аудио готовится." : "Разрешите звук и геолокацию после нажатия."}</p>
               {chapters.length > 0 ? <a className="read-story-link" href="#walk-plan">Как пойдём · {chapters.length} {chapterWord(chapters.length)} <span aria-hidden="true">↓</span></a> : null}
               <a className="read-story-link" href="/create">Подготовить историю другого дома <span aria-hidden="true">→</span></a>
               {hasStoryText ? <a className="read-story-link" href="#story">Читать первую историю · около {storyMinutes} мин <span aria-hidden="true">↓</span></a> : null}
