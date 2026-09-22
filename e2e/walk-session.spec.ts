@@ -93,3 +93,17 @@ test("отказ аудио не блокирует переход к следу
   await page.getByRole("button", { name: "Дальше", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Название с оврагом внутри", exact: true })).toBeVisible();
 });
+
+test("геопозиция отличается от остановок и не дублирует маркер при обновлении", async ({ page, context }) => {
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 55.7505, longitude: 37.6005, accuracy: 12 });
+  await setup(page);
+  await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+  const position = page.locator(".explore-user-position");
+  await expect(position).toBeVisible();
+  await expect(position.locator("span")).toHaveCSS("background-color", "rgb(36, 107, 144)");
+  await expect(page.locator(".leaflet-control-scale")).toHaveCount(0);
+  await context.setGeolocation({ latitude: 55.7508, longitude: 37.6008, accuracy: 18 });
+  await expect(position).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Моё местоположение", exact: true })).toBeVisible();
+});

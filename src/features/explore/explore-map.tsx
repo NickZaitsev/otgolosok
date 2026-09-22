@@ -41,7 +41,6 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
       }
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,updateWhenIdle:true,keepBuffer:1}).on("tileerror",()=>setTileError(true)).on("tileload",()=>setTileError(false)).addTo(map);
       L.control.zoom({position:"bottomright",zoomInTitle:"Приблизить",zoomOutTitle:"Отдалить"}).addTo(map);
-      L.control.scale({position:"bottomleft",imperial:false}).addTo(map);
       map.on("click",(event:Leaflet.LeafletMouseEvent)=>handlers.current.onPoint({lat:event.latlng.lat,lon:event.latlng.lng}));
       runtime.current={L,map,markers:L.layerGroup().addTo(map),position:L.layerGroup().addTo(map),route:L.layerGroup().addTo(map)};
       observer=new ResizeObserver(()=>{if(!disposed)map.invalidateSize();});observer.observe(container.current);
@@ -95,8 +94,11 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
   useEffect(()=>{
     const rt=runtime.current;if(!rt||!ready)return;
     rt.position.clearLayers();if(!user)return;
-    rt.L.circle([user.lat,user.lon],{radius:Math.min(user.accuracyM,5000),color:"#246b90",weight:1,fillOpacity:.1,interactive:false}).addTo(rt.position);
-    rt.L.circleMarker([user.lat,user.lon],{radius:7,color:"white",weight:3,fillColor:"#246b90",fillOpacity:1,interactive:false}).addTo(rt.position);
+    // Keep the user's position visually distinct from story pins.  A custom
+    // icon is more reliable than a tiny circleMarker on high-DPI/mobile maps.
+    rt.L.circle([user.lat,user.lon],{radius:Math.min(Math.max(user.accuracyM,20),5000),color:"#246b90",weight:2,fillColor:"#246b90",fillOpacity:.16,interactive:false}).addTo(rt.position);
+    const icon=rt.L.divIcon({className:"explore-user-position",html:"<span aria-hidden=\"true\"></span>",iconSize:[30,30],iconAnchor:[15,15]});
+    rt.L.marker([user.lat,user.lon],{icon,interactive:false,zIndexOffset:1000}).addTo(rt.position);
   },[user,ready]);
 
   return <div className="explore-map-layer">
