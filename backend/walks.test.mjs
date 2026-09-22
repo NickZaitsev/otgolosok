@@ -275,6 +275,15 @@ test('automatic destination tries another landmark when the nearest exceeds budg
   assert.deepEqual(result.geometry.at(-1),stop(5).location);
 });
 
+test('automatic destination also includes a fifth landmark directly along the route', async () => {
+  const data=candidates();
+  data.elements.push({...data.elements[0],center:stop(5).location,tags:{...data.elements[0].tags,'addr:housenumber':'7'}});
+  const {plan}=fixture((url,o)=>url.includes('osm')?data:route(JSON.parse(o.body)));
+  const result=await plan({start,mode:'open',minutes:30,destination:stop(8)});
+  assert.deepEqual(result.stops,[1,2,3,4,5].map(stop));
+  assert.deepEqual(result.geometry.at(-1),stop(8).location);
+});
+
 test('an optional stop with disconnected snapped legs does not discard a valid route', async () => {
   const {plan}=fixture((url,o)=>{
     if(url.includes('osm'))return candidates();
