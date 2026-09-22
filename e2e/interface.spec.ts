@@ -92,7 +92,7 @@ test("создаёт A→Б на карте и восстанавливает е
   await expect(page.locator(".creation-panel")).toHaveCount(0);
   await expect(page.getByRole("navigation", { name: "Основная навигация" })).toHaveCount(1);
   await expect(page.getByRole("link", { name: "Открыть мою прогулку" })).toHaveCount(0);
-  const frame = page.locator(".route-map-live");
+  const frame = page.locator(".walk-session-map");
   await expect(frame).toBeVisible();
   const geometry = await frame.evaluate(el => {
     const frame = el.getBoundingClientRect();
@@ -415,9 +415,9 @@ test("прогулка из Александровского сада с чет�
   await page.goto("/?walk=create&resume=1");
   await expect(page.locator(".leaflet-overlay-pane path")).toBeVisible();
   await page.getByRole("link", { name: "Начать прогулку", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Из Александровского сада", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ваш маршрут", exact: true })).toBeVisible();
   await expect(page.getByText("Некорректные данные прогулки.", { exact: true })).toHaveCount(0);
-  const map = page.locator(".route-map-live");
+  const map = page.locator(".walk-session-map");
   await map.scrollIntoViewIfNeeded();
   await expect(map.locator(".leaflet-overlay-pane path")).toBeVisible();
   const overlay = map.locator(".leaflet-overlay-pane svg");

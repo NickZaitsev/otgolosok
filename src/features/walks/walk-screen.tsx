@@ -66,7 +66,7 @@ export function WalkScreen() {
   const current = loaded.key === queryKey ? loaded : null;
   if (current?.error) return <WalkError message={current.error} />;
   if (!current?.view) return <main className="walk-screen"><p role="status">Открываем прогулку…</p></main>;
-  return <div className="walk-screen">{current.offlineNotice ? <p className="walk-offline-notice" role="status">{current.offlineNotice}</p> : null}<TourExperience walk={current.view} /></div>;
+  return <>{current.offlineNotice ? <p className="walk-offline-notice walk-offline-notice--map" role="status">{current.offlineNotice}</p> : null}<TourExperience key={queryKey} walk={current.view} /></>;
 }
 
 function WalkError({ message }: { message: string }) {
