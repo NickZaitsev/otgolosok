@@ -58,25 +58,28 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
   async function build() { await w.plan(); if (w.current.current.route) dispatch({ type: "step", step: "preview" }); }
   const preview = Boolean(w.draft.route) && !state.picking;
 
-  return <section ref={panel} className={`creation-panel${state.picking ? " is-picking" : preview ? " is-preview" : ""}`} aria-labelledby="creation-title">
-    <div className="creation-handle" aria-hidden="true" />
-    <header className={`creation-heading${preview ? "" : " is-compact"}`}><div><h1 id="creation-title" ref={title} tabIndex={-1}>{preview ? "Ваш маршрут" : "Куда пойдём?"}</h1></div><button className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки">×</button></header>
-    <div className="creation-body">
-      {!w.loaded ? <p role="status">Открываем черновик…</p> : <>
-        {!preview && !state.picking && <>
-          <div className="creation-endpoints">
-            {(["start", "destination"] as const).map(target => <button key={target} data-endpoint={target} aria-label={target === "start" ? "Откуда" : "Куда"} aria-expanded={w.target === target && picker !== null} aria-controls="creation-picker" disabled={busy} onClick={() => { w.setTarget(target); w.setCandidate(null); w.setQuery(""); setPicker(w.target === target && picker ? null : "choices"); }}><span className={`creation-letter${target === "destination" ? " finish" : ""}`}>{target === "start" ? "А" : "Б"}</span><span><small>{target === "start" ? "Откуда" : "Куда"}</small><strong>{target === "start" ? w.draft.start?.address ?? "Выберите начало" : mode === "time" ? `${w.draft.minutes} мин пешком${w.draft.mode === "loop" ? " · с возвращением" : ""}` : w.draft.destination?.address ?? "Выберите место или время"}</strong></span><span className="creation-chevron" aria-hidden="true">⌄</span></button>)}
-          </div>
-          {picker && <div id="creation-picker" className="creation-picker">
+  const addressPicker = picker && <div id="creation-picker" className="creation-picker">
             {picker === "choices" && <div className="creation-options">
-              <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker("address"); }}>Ввести адрес <span aria-hidden="true">→</span></button>
-              <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker(null); dispatch({ type: "pick" }); }}>Выбрать на карте <span aria-hidden="true">↗</span></button>
-              {w.target === "destination" ? <button onClick={() => { if (mode !== "time") changeMode("time"); setPicker("time"); }}>По времени <span aria-hidden="true">◷</span></button> : <button onClick={() => { setPicker("address"); locate(); }}>Моё местоположение <span aria-hidden="true">⌖</span></button>}
+              <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker("address"); }}>Ввести адрес</button>
+              <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker(null); dispatch({ type: "pick" }); }}>Выбрать на карте</button>
+              {w.target === "destination" ? <button onClick={() => { if (mode !== "time") changeMode("time"); setPicker("time"); }}>По времени</button> : <button onClick={() => { setPicker("address"); locate(); }}>Моё местоположение</button>}
             </div>}
             {picker === "address" && <form className="creation-search" onSubmit={e => { e.preventDefault(); void w.resolve(w.query.trim()); }}><label className="ui-field">{w.target === "destination" ? "Адрес финиша" : w.target === "stop" ? "Адрес остановки" : "Адрес начала"}<input autoFocus value={w.query} onChange={e => w.setQuery(e.target.value)} placeholder="Улица и номер дома" minLength={6} maxLength={180} required disabled={busy} /></label><button className="ui-button secondary" disabled={busy || w.query.trim().length < 6}>Найти</button></form>}
             {w.candidate && <div className="creation-candidate"><p>{w.candidate.address}</p><button className="ui-button" onClick={() => { w.confirmPlace(); setPicker(null); }}>Выбрать эту точку</button></div>}
             {picker === "time" && <><fieldset className="creation-time" disabled={busy}><legend>Время пешком</legend><div>{([30, 60, 90] as const).map(minutes => <button type="button" key={minutes} aria-pressed={w.draft.minutes === minutes} onClick={() => w.edit({ minutes })}>{minutes} мин</button>)}</div></fieldset><label className="creation-switch"><span>Вернуться к началу</span><input type="checkbox" checked={w.draft.mode === "loop"} onChange={e => w.edit({ mode: e.target.checked ? "loop" : "open" })} /></label><button className="creation-text" onClick={() => setPicker(null)}>Готово</button></>}
-          </div>}
+          </div>;
+
+  return <section ref={panel} className={`creation-panel${state.picking ? " is-picking" : preview ? " is-preview" : ""}`} aria-labelledby="creation-title">
+    <div className="creation-handle" aria-hidden="true" />
+    <header className={`creation-heading${preview ? "" : " is-compact"}`}><div><h1 id="creation-title" ref={title} tabIndex={-1}>{preview ? "Ваш маршрут" : "Прогулка"}</h1></div><button className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки">×</button></header>
+    <div className="creation-body">
+      {!w.loaded ? <p role="status">Открываем черновик…</p> : <>
+        {!preview && !state.picking && <>
+          <div className="creation-endpoints">
+            {(["start", "destination"] as const).map(target => <div className="creation-endpoint" key={target}><button data-endpoint={target} aria-label={target === "start" ? "Откуда" : "Куда"} aria-expanded={w.target === target && picker !== null} aria-controls="creation-picker" disabled={busy} onClick={() => { w.setTarget(target); w.setCandidate(null); w.setQuery(""); setPicker(w.target === target && picker ? null : "choices"); }}><span className={`creation-letter${target === "destination" ? " finish" : ""}`}>{target === "start" ? "А" : "Б"}</span><span><small>{target === "start" ? "Откуда" : "Куда"}</small><strong>{target === "start" ? w.draft.start?.address ?? "Выберите начало" : mode === "time" ? `${w.draft.minutes} мин пешком${w.draft.mode === "loop" ? " · с возвращением" : ""}` : w.draft.destination?.address ?? "Выберите место или время"}</strong></span><svg className="creation-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg></button>{w.target === target && addressPicker}</div>)}
+          </div>
+          {w.target === "stop" && addressPicker}
+
 
         </>}
         {state.picking && <div><p>Нажмите на карту в нужном месте.</p><button className="ui-button secondary" onClick={() => dispatch({ type: "return" })}>Вернуться к адресам</button></div>}
@@ -100,6 +103,6 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
       {w.message && <p className="ui-notice" role="status">{w.message}</p>}
       {busy && <p role="status" className="ui-muted">{w.busy || "Определяем местоположение…"}</p>}
     </div>
-    {w.loaded && !preview && !state.picking && w.draft.start && (mode === "time" || w.draft.destination) && <footer className="creation-footer"><button className="ui-button" disabled={busy || !w.draft.start || (mode === "destination" && !w.draft.destination) || !!w.candidate || !!w.storageError} onClick={() => void build()}>Построить прогулку <span aria-hidden="true">→</span></button></footer>}
+    {w.loaded && !preview && !state.picking && w.draft.start && (mode === "time" || w.draft.destination) && <footer className="creation-footer"><button className="ui-button" disabled={busy || !w.draft.start || (mode === "destination" && !w.draft.destination) || !!w.candidate || !!w.storageError} onClick={() => void build()}>Построить прогулку</button></footer>}
   </section>;
 }

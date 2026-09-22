@@ -168,7 +168,7 @@ test("Escape закрывает панель и возвращает фокус 
   const opener = page.getByRole("link", { name: "Прогулка", exact: true });
   await opener.focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "Куда пойдём?" })).toBeFocused();
+  await expect(page.getByRole("heading", { name: "Прогулка", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(page.locator(".creation-panel")).toHaveCount(0);
   await expect(opener).toBeFocused();
@@ -181,6 +181,7 @@ for (const [width, height] of [[360, 800], [390, 844], [568, 400], [844, 390], [
     await expect(page.getByRole("button", { name: "Откуда", exact: true })).toBeVisible();
     await expect(page.getByRole("textbox")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "По времени" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Прогулка", exact: true })).toBeVisible();
     const panel = await page.locator(".creation-panel").boundingBox();
     expect(panel!.height).toBeLessThanOrEqual(240);
     const nav = await page.getByRole("navigation", { name: "Основная навигация" }).boundingBox();
@@ -196,5 +197,27 @@ for (const [width, height] of [[360, 800], [390, 844], [568, 400], [844, 390], [
     }
     await expect(page.locator(".around-bottom")).toBeHidden();
     await page.screenshot({ path: info.outputPath("creation.png") });
+  });
+}
+
+for (const width of [390, 1440]) {
+  test(`список выбора расположен у активного поля ${width}`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/?walk=create");
+    const start = page.getByRole("button", { name: "Откуда", exact: true });
+    await start.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("heading", { name: "Прогулка", exact: true })).toBeVisible();
+    const startBox = await start.boundingBox();
+    const menuBox = await page.locator("#creation-picker").boundingBox();
+    const finishBox = await page.getByRole("button", { name: "Куда", exact: true }).boundingBox();
+    expect(menuBox!.y).toBeGreaterThanOrEqual(startBox!.y + startBox!.height - 1);
+    expect(menuBox!.y + menuBox!.height).toBeLessThanOrEqual(finishBox!.y);
+    expect((await page.locator(".creation-panel").boundingBox())!.height).toBeLessThan(430);
+    expect(await start.evaluate(el => getComputedStyle(el).outlineOffset)).toBe("-3px");
+    await page.screenshot({ path: info.outputPath("start-options.png") });
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#creation-picker")).toHaveCount(0);
+    await expect(start).toBeFocused();
   });
 }
