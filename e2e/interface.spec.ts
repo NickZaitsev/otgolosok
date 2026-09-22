@@ -256,3 +256,19 @@ test("время имеет мягкий акцент, а Готово подт�
   await expect(page.locator("#creation-picker")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Куда", exact: true })).toContainText("60 мин пешком");
 });
+
+test("карточка выбранного дома не оставляет пустую строку над адресом", async ({ page }, info) => {
+  await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: "Москва, 1-й Дербеневский переулок, 5", location: { lat: 55.725, lon: 37.65 } } }));
+  await page.goto("/");
+  await page.locator(".explore-map").click({ position: { x: 180, y: 300 } });
+  const title = page.getByRole("heading", { name: "Москва, 1-й Дербеневский переулок, 5", exact: true });
+  await expect(title).toBeVisible();
+  const card = await page.locator('[aria-labelledby="new-place-title"]').boundingBox();
+  const heading = await title.boundingBox();
+  const close = await page.getByRole("button", { name: "Закрыть выбранное место", exact: true }).boundingBox();
+  expect(heading!.y - card!.y).toBeLessThanOrEqual(24);
+  expect(close!.x).toBeGreaterThanOrEqual(heading!.x + heading!.width);
+  await page.screenshot({ path: info.outputPath("place-card.png") });
+  await page.getByRole("button", { name: "Закрыть выбранное место", exact: true }).click();
+  await expect(title).toHaveCount(0);
+});
