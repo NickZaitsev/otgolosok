@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useEffectEvent, useReducer, useRef, useState } from "react";
 import type { Coordinates } from "../tour/types";
 import type { MapItem } from "../explore/explore-map";
+import { ExploreIcon } from "../explore/icons";
 import { useWalkDraft } from "./use-walk-draft";
 import { creationReducer } from "./creation-state";
 import { AddressInput } from "./address-input";
@@ -36,11 +37,15 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     window.addEventListener("resize", measure);
     return () => { observer.disconnect(); window.removeEventListener("resize", measure); };
   }, []);
-  const resolvePoint = useEffectEvent(async (point: Coordinates) => { await w.resolve(point); setPicker("address"); dispatch({ type: "return" }); });
+  const resolvePoint = useEffectEvent(async (point: Coordinates) => {
+    const place = await w.resolve(point);
+    if (!place) return;
+    selectAddress(place);
+    dispatch({ type: "return" });
+  });
   const close = useEffectEvent(() => { if (picker) { setPicker(null); panel.current?.querySelector<HTMLButtonElement>(`[data-endpoint="${w.target}"]`)?.focus(); } else if (state.picking) dispatch({ type: "return" }); else onClose(); });
   useEffect(() => { title.current?.focus(); const escape = (e: KeyboardEvent) => { if (e.key === "Escape") close(); }; window.addEventListener("keydown", escape); return () => window.removeEventListener("keydown", escape); }, []);
-  // Synchronize a point selected by the external Leaflet map with the address picker.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+  // Apply a point selected by the external Leaflet map to the active endpoint.
   useEffect(() => { if (picked) void resolvePoint(picked); }, [picked]);
   useEffect(() => {
     const places = [w.draft.start, ...w.draft.stops, w.draft.destination].filter(p => p != null);
@@ -83,7 +88,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
 
   return <section ref={panel} className={`creation-panel${state.picking ? " is-picking" : preview ? " is-preview" : ""}`} aria-labelledby="creation-title">
     <div className="creation-handle" aria-hidden="true" />
-    <header className={`creation-heading${preview ? "" : " is-compact"}`}><div><h1 id="creation-title" ref={title} tabIndex={-1}>{state.picking ? "Куда идём?" : preview ? "Ваш маршрут" : "Прогулка"}</h1></div><button className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки">×</button></header>
+    <header className={`creation-heading${preview ? "" : " is-compact"}`}><div><h1 id="creation-title" ref={title} tabIndex={-1}>{state.picking ? "Куда идём?" : preview ? "Ваш маршрут" : "Прогулка"}</h1></div><button type="button" className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки"><ExploreIcon name="close" /></button></header>
     <div className="creation-body">
       {!w.loaded ? <p role="status">Открываем черновик…</p> : <>
         {!preview && !state.picking && <>
