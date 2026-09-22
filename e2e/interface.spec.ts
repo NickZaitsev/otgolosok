@@ -44,9 +44,13 @@ test("создаёт A→Б на карте и восстанавливает е
   });
   await page.goto("/");
   await page.getByRole("link", { name: "Прогулка", exact: true }).click();
+  await page.getByRole("button", { name: "Откуда", exact: true }).click();
+  await page.getByRole("button", { name: "Ввести адрес", exact: false }).click();
   await page.getByLabel("Адрес начала").fill(start.address);
   await page.getByRole("button", { name: "Найти", exact: true }).click();
   await page.getByRole("button", { name: "Выбрать эту точку" }).click();
+  await page.getByRole("button", { name: "Куда", exact: true }).click();
+  await page.getByRole("button", { name: "Ввести адрес", exact: false }).click();
   await page.getByLabel("Адрес финиша").fill(destination.address);
   await page.getByRole("button", { name: "Найти", exact: true }).click();
   await page.getByRole("button", { name: "Выбрать эту точку" }).click();
@@ -68,14 +72,19 @@ test("дом передаёт старт, возврат включён по у�
   await page.locator('[title="Дом для прогулки"]').click();
   await page.getByRole("link", { name: "Создать прогулку отсюда" }).click();
   await expect(page.locator(".creation-endpoints")).toContainText("Москва, Дербеневская, 1");
-  await page.getByRole("button", { name: "По времени", exact: true }).click();
+  await page.getByRole("button", { name: "Куда", exact: true }).click();
+  await page.getByRole("button", { name: "По времени" }).click();
   await expect(page.getByRole("checkbox", { name: "Вернуться к началу" })).toBeChecked();
   await page.getByRole("checkbox", { name: "Вернуться к началу" }).uncheck();
   await page.goBack();
   await expect(page.locator(".creation-panel")).toHaveCount(0);
   await page.goForward();
-  await page.getByRole("button", { name: "Продолжить", exact: true }).click();
-  await expect(page.getByRole("checkbox", { name: "Вернуться к началу" })).not.toBeChecked();
+  await expect(page.getByRole("button", { name: "Продолжить", exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Куда", exact: true }).click();
+  await page.getByRole("button", { name: "По времени" }).click();
+  await expect(page.getByRole("checkbox", { name: "Вернуться к началу" })).toBeChecked();
+  await page.getByRole("link", { name: "История", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Прогулка от Москва, Дербеневская, 1", exact: true })).toHaveCount(2);
 });
 
 test("восстанавливает исследование после перезагрузки без повторного заказа", async ({ page }) => {
@@ -169,12 +178,15 @@ for (const [width, height] of [[360, 800], [390, 844], [568, 400], [844, 390], [
   test(`панель и навигация не перекрываются ${width}×${height}`, async ({ page }, info) => {
     await page.setViewportSize({ width, height });
     await page.goto("/?walk=create");
-    await expect(page.getByLabel("Адрес начала")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Откуда", exact: true })).toBeVisible();
+    await expect(page.getByRole("textbox")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "По времени" })).toHaveCount(0);
     const panel = await page.locator(".creation-panel").boundingBox();
+    expect(panel!.height).toBeLessThanOrEqual(240);
     const nav = await page.getByRole("navigation", { name: "Основная навигация" }).boundingBox();
     expect(Math.abs(panel!.x + panel!.width / 2 - width / 2)).toBeLessThanOrEqual(1);
     const surface = await page.locator("body").evaluate(el => getComputedStyle(el).backgroundColor);
-    for (const selector of [".creation-panel", ".creation-footer"]) {
+    for (const selector of [".creation-panel"]) {
       expect(await page.locator(selector).evaluate(el => getComputedStyle(el).backgroundColor)).toBe(surface);
     }
     expect(panel!.y + panel!.height).toBeLessThanOrEqual(nav!.y);
