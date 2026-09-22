@@ -172,6 +172,7 @@ for (const [width, height] of [[360, 800], [390, 844], [568, 400], [844, 390], [
     await expect(page.getByLabel("Адрес начала")).toBeVisible();
     const panel = await page.locator(".creation-panel").boundingBox();
     const nav = await page.getByRole("navigation", { name: "Основная навигация" }).boundingBox();
+    expect(Math.abs(panel!.x + panel!.width / 2 - width / 2)).toBeLessThanOrEqual(1);
     expect(panel!.y + panel!.height).toBeLessThanOrEqual(nav!.y);
     for (const item of await page.getByRole("navigation").locator("a,button").all()) {
       const box = await item.boundingBox();
