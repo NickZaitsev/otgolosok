@@ -54,6 +54,8 @@ import { usePlaybackProgress } from "./use-playback-progress";
 import { formatPlaybackTime, type PlaybackCheckpoint } from "@/lib/audio/playback-progress";
 import { getLastUserId, getSession } from "../auth/client";
 import { saveWalkOffline } from "../walks/offline";
+import { WalkSession } from "./walk-session";
+import { playbackRates } from "./walk-settings";
 
 type SessionPhase = "reading" | "walking";
 type AudioStatus = "locked" | "unlocking" | "ready" | "loading" | "playing" | "paused" | "ended" | "blocked" | "error";
@@ -124,6 +126,7 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
   const [route, setRoute] = useState(initialRoute);
   const firstPoi = route.pois[0];
   const [phase, setPhase] = useState<SessionPhase>("reading");
+  const [completed, setCompleted] = useState(false);
   const [audioStatus, setAudioStatus] = useState<AudioStatus>("locked");
   const [wakeStatus, setWakeStatus] = useState<WakeLockStatus>("idle");
   const [diagnostics, setDiagnostics] =
@@ -457,6 +460,7 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
 
   function startTour(resumeSaved = true, requestedIndex?: number) {
     if (phase !== "reading" || sessionActiveRef.current) return;
+    setCompleted(false);
     sessionActiveRef.current = true;
 
     const audio = audioRef.current;
@@ -564,6 +568,7 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
   }
 
   function stopTour(completed = false) {
+    setCompleted(completed);
     syncPlaybackProgress(true);
     if (completed) clearCheckpoint();
     else if (activeCheckpointRef.current) saveCheckpoint(activeCheckpointRef.current);
@@ -655,15 +660,28 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
   </> : null;
 
   return (
-    <main className={isWalking ? "shell" : "around-shell"} data-mode={isWalking ? "walk" : "reading"}>
-      {isWalking ? <header className="masthead">
+    <main className={universal ? "walk-session" : isWalking ? "shell" : "around-shell"} data-mode={isWalking ? "walk" : "reading"}>
+      {!universal && isWalking ? <header className="masthead">
         <a className="wordmark" href="#top" aria-label="Отголосок, на главную">
           <BrandMark />
         </a>
         <p className="privacy-note"><i aria-hidden="true" /> Координаты остаются на устройстве</p>
       </header> : null}
 
-      {isWalking ? (
+      {universal ? <WalkSession route={route} chapters={chapters} index={chapterIndex} active={isWalking} completed={completed}
+        user={diagnostics.lastFix} positionFailed={positionFailed} resume={Boolean(savedCheckpoint)} titleRef={walkTitleRef} startRef={startButtonRef}
+        onStart={() => startTour()} onSelect={selectChapter} onStop={stopTour}
+        audioError={audioStatus === "blocked" || audioStatus === "error" ? "Не удалось включить аудио. Нажмите «Повторить запуск звука»." : ""}
+        player={walkAudioUrl ? <AudioPlayerControls compact position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
+          label={audioButtonLabel} rate={settings.rate} onToggle={toggleAudio} onSeek={seekPlayback} onRate={rate => updateSettings({ rate })} /> : null}
+        story={<><StoryText story={walkContent.story} />{walkContent.sources.length ? <StorySources content={walkContent} open={showSources} onToggle={() => setShowSources(value => !value)} /> : null}</>}
+        settings={<div className="walk-session-settings">
+          <label>Переключение остановок<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{advanceModeLabels[mode]}</option>)}</select></label>
+          <label>Скорость аудио<select value={settings.rate} onChange={event => updateSettings({ rate: Number(event.target.value) as PlaybackRate })}>{playbackRates.map(rate => <option key={rate} value={rate}>{String(rate).replace(".", ",")}×</option>)}</select></label>
+          <button type="button" disabled={offlineBusy} onClick={() => void saveOffline()}>{offlineBusy ? "Сохраняем…" : "Скачать для прогулки без сети"}</button>
+          <p className="walk-session-muted" role="status">{offlineStatus}</p>
+          {isWalking ? <button type="button" onClick={() => stopTour()}>Остановить прогулку</button> : null}
+        </div>} /> : isWalking ? (
         <section className="walk-view" id="top" aria-labelledby="walk-title">
           <div className="walk-status-row">
             <p className={`signal-status ${signalTone}`} role="status">
