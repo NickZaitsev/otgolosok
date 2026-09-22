@@ -274,3 +274,29 @@ test('automatic destination tries another landmark when the nearest exceeds budg
   assert.ok(result.stops.every(p=>p.location.lat!==stop(1).location.lat));
   assert.deepEqual(result.geometry.at(-1),stop(5).location);
 });
+
+test('an optional stop with disconnected snapped legs does not discard a valid route', async () => {
+  const {plan}=fixture((url,o)=>{
+    if(url.includes('osm'))return candidates();
+    const request=JSON.parse(o.body),data=route(request);
+    if(request.locations.length>2) {
+      const from=request.locations[1],to=request.locations[2];
+      data.trip.legs[1].shape=encode([{lat:from.lat+0.0003,lon:from.lon},to]);
+    }
+    return data;
+  });
+  const result=await plan({start,mode:'open',minutes:30,destination:stop(5)});
+  assert.deepEqual(result.stops,[]);
+  assert.deepEqual(result.geometry[0],start.location);
+  assert.deepEqual(result.geometry.at(-1),stop(5).location);
+});
+
+test('a manual route with disconnected legs is not returned as a walking track', async () => {
+  const {plan}=fixture((url,o)=>{
+    const request=JSON.parse(o.body),data=route(request);
+    const from=request.locations[1],to=request.locations[2];
+    data.trip.legs[1].shape=encode([{lat:from.lat+0.0003,lon:from.lon},to]);
+    return data;
+  });
+  await assert.rejects(plan(input()),{code:'WALK_NOT_FOUND'});
+});
