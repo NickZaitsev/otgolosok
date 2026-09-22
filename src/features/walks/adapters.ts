@@ -23,6 +23,10 @@ function jobFor(place: DraftPlace, jobs: DraftStoryRef[]) {
   return job ? { kind: "job" as const, id: job.id } : null;
 }
 
+function storyFor(place: DraftPlace, jobs: DraftStoryRef[]) {
+  return jobFor(place, jobs) ?? (place.contentId ? { kind: "osm" as const, id: place.contentId } : null);
+}
+
 function storyStopPlaces(draft: Draft) {
   const startStory = draft.start && jobFor(draft.start, draft.jobs) ? [draft.start] : [];
   return [...startStory, ...draft.stops];
@@ -35,7 +39,7 @@ export function draftToWalkDocument(draft: Draft, id: string, previous?: WalkDoc
     return {
       id: old?.id ?? stopId(id, index),
       place: { address: place.address, location: { ...place.location } },
-      storyRef: jobFor(place, draft.jobs),
+      storyRef: storyFor(place, draft.jobs),
       transition: old?.transition ?? "",
       nextHint: old?.nextHint ?? "",
       ...(old?.triggerLocation ? { triggerLocation: { ...old.triggerLocation } } : {}),
@@ -86,7 +90,7 @@ export function walkDocumentToDraft(document: WalkDocument, previousJobs: DraftS
     ...(document.destination ? { destination: document.destination } : {}),
     mode: document.mode,
     minutes: document.minutes === 15 ? 30 : document.minutes as 30 | 60 | 90,
-    stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location } })),
+    stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location }, ...(stop.storyRef?.kind === "osm" ? { contentId: stop.storyRef.id } : {}) })),
     route: document.route ? {
       stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location } })),
       geometry: document.route.geometry.map(point => ({ ...point })),

@@ -313,6 +313,39 @@ for(const [minutes,expected] of [[30,5],[60,8],[90,10]]) test(`automatic loop us
   assert.deepEqual(result.geometry.at(-1),start.location);
 });
 
+test('published audio and stories win the limited slots along a route', async () => {
+  const supplied=Array.from({length:6},(_,index)=>{
+    const n=index+1;
+    return {id:`osm:node:${n}`,address:stop(n).address,location:stop(n).location,readiness:n===6?'audio':n===5?'story':'none'};
+  });
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:[],candidateProvider:()=>supplied,minIntervalMs:0,
+    fetchImpl:async(url,o)=>Response.json(route(JSON.parse(o.body)))});
+  const result=await plan({start,mode:'open',minutes:30,destination:stop(8)});
+  assert.deepEqual(result.stops.map(item=>item.contentId),[undefined,undefined,undefined,'osm:node:5','osm:node:6']);
+  assert.deepEqual(result.stops.map(item=>item.address),[1,2,3,5,6].map(n=>stop(n).address));
+});
+
+test('map catalog candidates win equal empty slots over fallback discovery', async () => {
+  const supplied=Array.from({length:5},(_,index)=>{
+    const n=index+6;
+    return {id:`osm:node:${n}`,address:stop(n).address,location:stop(n).location,readiness:'none'};
+  });
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:candidates().elements,candidateProvider:()=>supplied,minIntervalMs:0,
+    fetchImpl:async(url,o)=>Response.json(route(JSON.parse(o.body)))});
+  const result=await plan({start,mode:'open',minutes:30,destination:stop(12)});
+  assert.deepEqual(result.stops.map(item=>item.address),[6,7,8,9,10].map(n=>stop(n).address));
+});
+
+test('distinct landmarks ten metres apart remain separate stops', async () => {
+  const close=Array.from({length:5},(_,index)=>({id:`osm:node:${index+20}`,address:`Москва, Плотная улица, ${index+1}`,
+    location:{lat:55.7501+index*0.0001,lon:37.6},readiness:'story'}));
+  const destination={address:'Москва, Плотная улица, 10',location:{lat:55.751,lon:37.6}};
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:[],candidateProvider:()=>close,minIntervalMs:0,
+    fetchImpl:async(url,o)=>Response.json(route(JSON.parse(o.body)))});
+  const result=await plan({start,mode:'open',minutes:30,destination});
+  assert.deepEqual(result.stops.map(item=>item.address),close.map(item=>item.address));
+});
+
 test('an optional stop with disconnected snapped legs does not discard a valid route', async () => {
   const {plan}=fixture((url,o)=>{
     if(url.includes('osm'))return candidates();

@@ -18,6 +18,8 @@ const distance = (a,b) => {
 const MAX_WALK_STOPS = 10;
 const AUTO_STOP_LIMITS = {30:5,60:8,90:10};
 const NEAR_ROUTE_METERS = 50;
+const contentId = value => typeof value === 'string' && /^osm:(node|way|relation):\d+$/.test(value);
+const readinessRank = {none:0,story:1,audio:2};
 
 // Approximate a point against a short Moscow walking polyline. Besides the
 // distance, progress keeps landmarks in walking order instead of creating
@@ -38,8 +40,8 @@ function routeProximity(point, geometry) {
 }
 
 function place(p) {
-  if (!keys(p,['address','location']) || !clean(p.address,240) || !keys(p.location,['lat','lon']) || !inBox(p.location)) throw fail('WALK_INVALID');
-  return {address:clean(p.address,240),location:{lat:p.location.lat,lon:p.location.lon}};
+  if (!keys(p,['address','location','contentId']) || !clean(p.address,240) || !keys(p.location,['lat','lon']) || !inBox(p.location) || (p.contentId!==undefined&&!contentId(p.contentId))) throw fail('WALK_INVALID');
+  return {address:clean(p.address,240),location:{lat:p.location.lat,lon:p.location.lon},...(p.contentId?{contentId:p.contentId}:{})};
 }
 
 // Valhalla's default shape is a latitude/longitude polyline with six decimals.
@@ -68,7 +70,7 @@ function decode(shape) {
 export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
   routerUrl=process.env.WALK_ROUTER_URL,
   overpassUrl=process.env.WALK_OVERPASS_URL ?? 'https://overpass-api.de/api/interpreter',
-  discoveryElements=process.env.WALK_DISCOVERY_SOURCE==='overpass'?null:discoveryCatalog.elements,
+  discoveryElements=process.env.WALK_DISCOVERY_SOURCE==='overpass'?null:discoveryCatalog.elements,candidateProvider=null,
   timeoutMs=12000, minIntervalMs=2000}={}) {
   let active=false,lastStart=-Infinity;
   return async function planWalk(input) {
@@ -80,7 +82,7 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
     if(manual&&(!Array.isArray(input.stops)||input.stops.length<(destination?0:1)||input.stops.length>MAX_WALK_STOPS))throw fail('WALK_INVALID');
     let stops=manual?input.stops.map(place):[];
     const distinct=[start,...stops,...(destination?[destination]:[])];
-    if(distinct.some((p,i)=>distinct.slice(0,i).some(q=>distance(p.location,q.location)<25)))throw fail('WALK_INVALID');
+    if(distinct.some((p,i)=>distinct.slice(0,i).some(q=>distance(p.location,q.location)<5)))throw fail('WALK_INVALID');
     if(!routerUrl)throw fail('WALK_UNAVAILABLE');
     if(active||now()-lastStart<minIntervalMs)throw fail('WALK_BUSY');
     active=true;lastStart=now();
@@ -126,7 +128,8 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
         }
         const direct=points.slice(1).reduce((sum,p,i)=>sum+distance(points[i].location,p.location),0);
         if(seconds<=input.minutes*60&&distanceM<=input.minutes*90&&distanceM<=Math.max(1200,direct*4)) {
-          return {stops:routeStops,geometry,distanceM:Math.round(distanceM),walkingMinutes:Math.ceil(seconds/60),attribution:'© OpenStreetMap contributors; pedestrian routing by Valhalla. Map information is not verified historical evidence.'};
+          const publicStops=routeStops.map(p=>({address:p.address,location:p.location,...(p.contentId?{contentId:p.contentId}:{})}));
+          return {stops:publicStops,geometry,distanceM:Math.round(distanceM),walkingMinutes:Math.ceil(seconds/60),attribution:'© OpenStreetMap contributors; pedestrian routing by Valhalla. Map information is not verified historical evidence.'};
         }
       return null;
     }
@@ -147,17 +150,32 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           if(!Array.isArray(data?.elements)||data.elements.length>500||data.remark)throw unavailable();
           elements=data.elements;
         }
+        let supplied=[];
+        if(candidateProvider) {
+          supplied=await candidateProvider({lat:start.location.lat,lon:start.location.lon,radius,limit:500});
+          if(!Array.isArray(supplied)||supplied.length>500||supplied.some(item=>!item||!contentId(item.id)||!clean(item.address,240)||!inBox(item.location)||!Object.hasOwn(readinessRank,item.readiness)))throw unavailable();
+        }
+        const suppliedById=new Map(supplied.map(item=>[item.id,item]));
         const candidates=[];
+        const addCandidate=item=>{
+          const p=item.location;
+          if(distance(start.location,p)>radius||distance(start.location,p)<5)return;
+          if(destination&&(distance(p,destination.location)<5||distance(start.location,p)+distance(p,destination.location)>input.minutes*90))return;
+          if(candidates.some(candidate=>(item.catalogId&&candidate.catalogId===item.catalogId)||candidate.address===item.address||distance(candidate.location,p)<5))return;
+          candidates.push(item);
+        };
         for(const e of elements) {
           const t=e?.tags,p=e?.center??e;
           if(!t||!inBox(p)||!clean(t.building,80)||t.building==='no'||!notable(t))continue;
           const street=clean(t['addr:street'],160),house=clean(t['addr:housenumber'],40);
-          if(!street||!house||!/^\d[\p{L}\p{N}\s/.,-]*$/u.test(house)||distance(start.location,p)>radius||distance(start.location,p)<60)continue;
-          if(destination&&(distance(p,destination.location)<25||distance(start.location,p)+distance(p,destination.location)>input.minutes*90))continue;
-          const item={address:`Москва, ${street}, ${house}`,location:{lat:p.lat,lon:p.lon}};
-          if(candidates.some(c=>c.address===item.address||distance(c.location,p)<40))continue;
-          candidates.push(item);
+          if(!street||!house||!/^\d[\p{L}\p{N}\s/.,-]*$/u.test(house))continue;
+          const catalogId=['node','way','relation'].includes(e.type)&&Number.isSafeInteger(e.id)?`osm:${e.type}:${e.id}`:null;
+          const published=catalogId?suppliedById.get(catalogId):null;
+          addCandidate({address:`Москва, ${street}, ${house}`,location:{lat:p.lat,lon:p.lon},catalogId,contentRank:published?readinessRank[published.readiness]:0,catalogRank:published?1:0,
+            ...(published&&published.readiness!=='none'?{contentId:published.id}:{})});
         }
+        for(const item of supplied)addCandidate({address:clean(item.address,240),location:{lat:item.location.lat,lon:item.location.lon},catalogId:item.id,
+          contentRank:readinessRank[item.readiness],catalogRank:1,...(item.readiness!=='none'?{contentId:item.id}:{})});
         if(destination) {
           discovering=false;
           let result=directRoute,current=start,attempts=0;
@@ -165,7 +183,8 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           // over detours. Keep them ordered along the line.
           const alongRoute=candidates.map(candidate=>({candidate,...routeProximity(candidate.location,directRoute.geometry)}))
             .filter(item=>item.distanceM<=NEAR_ROUTE_METERS)
-            .sort((a,b)=>a.progressM-b.progressM||a.distanceM-b.distanceM);
+            .sort((a,b)=>b.candidate.contentRank-a.candidate.contentRank||b.candidate.catalogRank-a.candidate.catalogRank||a.progressM-b.progressM||a.distanceM-b.distanceM)
+            .slice(0,stopLimit).sort((a,b)=>a.progressM-b.progressM);
           for(const item of alongRoute) {
             if(stops.length>=stopLimit||attempts>=16)break;
             candidates.splice(candidates.indexOf(item.candidate),1);attempts++;
@@ -175,7 +194,7 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           // Try alternatives instead of discarding every stop after one costly detour.
           // Bound router work independently of the size of the OSM catalog.
           for(;candidates.length&&stops.length<stopLimit&&attempts<16;attempts++) {
-            candidates.sort((a,b)=>(distance(current.location,a.location)+distance(a.location,destination.location))-(distance(current.location,b.location)+distance(b.location,destination.location)));
+            candidates.sort((a,b)=>b.contentRank-a.contentRank||b.catalogRank-a.catalogRank||(distance(current.location,a.location)+distance(a.location,destination.location))-(distance(current.location,b.location)+distance(b.location,destination.location)));
             const candidate=candidates.shift();
             const next=await routeStops([...stops,candidate]);
             if(next){stops.push(candidate);current=candidate;result=next;}

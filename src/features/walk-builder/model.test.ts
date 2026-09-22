@@ -33,6 +33,8 @@ describe("walk draft", () => {
     expect(isPlan({ ...route, distanceM: Infinity })).toBe(false);
     expect(isPlan({ ...route, walkingMinutes: -1 })).toBe(false);
     expect(() => parseDraft(JSON.stringify({ ...emptyDraft(), start, stops: [stop], route: { ...route, walkingMinutes: 60 } }))).toThrow();
+    expect(isPlace({ ...stop, contentId: "osm:way:42" })).toBe(true);
+    expect(isPlace({ ...stop, contentId: "not-osm" })).toBe(false);
   });
   it("validates manual count and distinct houses", () => {
     expect(validStops(start, [stop, last])).toBe(true);
