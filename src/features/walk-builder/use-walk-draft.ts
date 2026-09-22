@@ -24,7 +24,6 @@ export function useWalkDraft() {
   const current = useRef(draft);
   const stored = useRef<string | null>(null);
   const writable = useRef(false);
-  const [resumeChoice, setResumeChoice] = useState(false);
   const [initialMode, setInitialMode] = useState<"destination" | "time">("destination");
   const [localIdForView, setLocalIdForView] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -62,16 +61,28 @@ export function useWalkDraft() {
         const inputError = creationInputError(params);
         if (inputError) throw new Error(inputError);
         const incoming = placeFromQuery(params);
-        const hasSaved = Boolean(restored.start);
+        const fresh = !params.get("id") && !params.get("local") && !params.get("resume");
+        const hasSaved = Boolean(restored.start) && !fresh;
         const explicitWalkId = params.get("id");
         const walkId = explicitWalkId ?? (!params.get("local") && hasSaved ? localStorage.getItem("otgolosok:walk:active-account") : null);
         const migratedId = migrateLocalWalks(localStorage);
         const selectedLocalId = params.get("local") ?? (!walkId && hasSaved ? localStorage.getItem("otgolosok:walk:active-local") ?? migratedId : null);
+        if (fresh) {
+          let previousId = localStorage.getItem("otgolosok:walk:active-local") ?? migratedId;
+          if (localStorage.getItem("otgolosok:walk:active-account") && restored.start) {
+            previousId = crypto.randomUUID();
+            saveLocalWalk(localStorage, draftToWalkDocument(restored, previousId), null);
+          }
+          if (previousId && stored.current) localStorage.setItem(`otgolosok:walk:pending:${previousId}`, stored.current);
+          restored = emptyDraft();
+        }
         if (selectedLocalId) {
+          const pending = localStorage.getItem(`otgolosok:walk:pending:${selectedLocalId}`);
+          if (pending) restored = parseDraft(pending);
           const item = getLocalWalk(localStorage, selectedLocalId);
           if (!item) throw new Error("Локальная прогулка не найдена. Исходные данные сохранены.");
           const sameDraft = selectedLocalId === localStorage.getItem("otgolosok:walk:active-local") || selectedLocalId === migratedId;
-          restored = { ...walkDocumentToDraft(item.document, restored.jobs), ...(sameDraft ? {research:restored.research,researchApplied:restored.researchApplied,submitting:restored.submitting} : {}) };
+          restored = { ...walkDocumentToDraft(item.document, restored.jobs), ...(sameDraft || pending ? {research:restored.research,researchApplied:restored.researchApplied,submitting:restored.submitting} : {}) };
           localWalkId.current = item.document.id; localRevision.current = item.revision; documentRef.current = item.document;
         } else if (!walkId) localWalkId.current = crypto.randomUUID();
         // Session lookup is bounded; local editing remains available if the service is offline.
@@ -94,8 +105,6 @@ export function useWalkDraft() {
           localStorage.setItem("otgolosok:walk:active-account",data.walk.id);
           localStorage.setItem("otgolosok:walk:active-revision",String(data.walk.revision));
         }
-        const offerResume = !explicitWalkId && !params.get("local") && !params.get("resume") && hasSaved;
-        setResumeChoice(offerResume);
         if (!hasSaved && !walkId && !params.get("local") && isPlace(incoming)) restored = { ...emptyDraft(), start: incoming, title: `Прогулка от ${incoming.address}` };
         setInitialMode(restored.destination ? "destination" : hasSaved || selectedLocalId || walkId ? "time" : "destination");
         current.current = restored; setDraft(restored); writable.current = true;
@@ -122,6 +131,7 @@ export function useWalkDraft() {
         documentRef.current = document;
         localRevision.current = item.revision;
         localStorage.setItem("otgolosok:walk:active-local", item.document.id);
+        localStorage.setItem(`otgolosok:walk:pending:${item.document.id}`, JSON.stringify(next));
         localStorage.removeItem("otgolosok:walk:active-account");
       }
       setStorageError(""); return true;
@@ -309,13 +319,6 @@ export function useWalkDraft() {
     } catch(caught) { setError(caught instanceof Error?caught.message:"Не удалось сохранить прогулку."); }
     finally {setBusy("");}
   }
-  function newDraft() {
-    const incoming = placeFromQuery(new URLSearchParams(location.search));
-    localWalkId.current = crypto.randomUUID(); localRevision.current = null; documentRef.current = null;
-    setLocalIdForView(localWalkId.current); setInitialMode("destination");
-    setServerWalk(null); setResumeChoice(false); setSelection("auto"); setCandidate(null);
-    persist({ ...emptyDraft(), ...(isPlace(incoming) ? { start:incoming, title:`Прогулка от ${incoming.address}` } : {}) });
-  }
   const openHref = serverWalk ? `/walk?id=${serverWalk.id}` : localIdForView ? `/walk?local=${localIdForView}` : null;
-  return {initialMode,draft,current,persist,edit,loaded,storageError,message,error,busy,action,candidate,setCandidate,target,setTarget,query,setQuery,focus,selection,setSelection,reviewed,setReviewed,researchOffered,pollId,setPollId,recoveryId,setRecoveryId,resolve,confirmPlace,plan,prepareNext,recoverJob,download,saveToAccount,serverWalk,openHref,nextPlace,activeJob,setBusy,setError,resumeChoice,setResumeChoice,newDraft};
+  return {initialMode,draft,current,persist,edit,loaded,storageError,message,error,busy,action,candidate,setCandidate,target,setTarget,query,setQuery,focus,selection,setSelection,reviewed,setReviewed,researchOffered,pollId,setPollId,recoveryId,setRecoveryId,resolve,confirmPlace,plan,prepareNext,recoverJob,download,saveToAccount,serverWalk,openHref,nextPlace,activeJob,setBusy,setError};
 }
