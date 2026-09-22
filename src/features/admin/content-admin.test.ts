@@ -54,6 +54,11 @@ function itemsPage(query: URLSearchParams) {
 
 const api: AdminApi = async <T,>(path: string): Promise<T> => {
   if (gate) await gate.promise;
+  if (path.endsWith("/approve")) {
+    const place = structuredClone(places[0]);
+    if (place.text) place.text.verification = "editorial";
+    return { place } as T;
+  }
   if (path.startsWith("/content/places/")) {
     if (failDetail) throw new Error("Не удалось загрузить место");
     return { place: structuredClone(places.find(place => path.endsWith(place.id))) } as T;
@@ -231,6 +236,20 @@ describe("переход из каталога к редактору места"
     expect(input.value).toBe("Моя правка");
     expect(onDirtyChange).toHaveBeenLastCalledWith(true);
     expect(scrolled).toEqual([]);
+  });
+
+  it("после утверждения закрывает редактор, показывает успех и возвращает к строке места", async () => {
+    const opener = buttons("Открыть")[0];
+    await click(opener);
+    scrolled = [];
+
+    await click(buttons("Утвердить текст")[0]);
+
+    expect(container.querySelector("article")).toBeNull();
+    expect(container.querySelector('[role="status"]')?.textContent)
+      .toBe("Текст утверждён; нужная озвучка поставлена в очередь.");
+    expect(document.activeElement?.textContent).toBe("Открыть");
+    expect(scrolled.at(-1)).toBe(document.activeElement);
   });
 });
 

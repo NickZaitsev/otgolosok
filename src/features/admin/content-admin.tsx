@@ -433,9 +433,13 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             <div className="admin-actions">
               <button className="admin-primary" disabled={disabled || !draftValid} onClick={() => void run("Утверждение текста…", async signal => {
                 const value = (await api<{ place: ContentPlace }>(`/content/places/${place.id}/approve`, signal, { story: draft })).place;
-                const next = value.text?.draft ?? null;
-                setPlace(value); setDraft(next); setBaseline(JSON.stringify(next));
                 await loadOverview(signal); await loadPlaces(placeOffset, signal);
+                setPlacePage(current => ({
+                  ...current,
+                  places: current.places.map(item => item.id === value.id ? { ...item, textStatus: "approved" } : item),
+                }));
+                pendingNavigation.current = "catalog";
+                setPlace(null); setDraft(null); setBaseline("");
                 setNotice("Текст утверждён; нужная озвучка поставлена в очередь.");
               })}>Утвердить текст</button>
               {place.text?.verification === "editorial" && <button disabled={disabled || dirty} onClick={() => void run("Постановка аудио…", async signal => {
