@@ -4,7 +4,7 @@ import { stageLabels, type GenerationStage } from "../generator/types";
 
 export const DRAFT_KEY = "otgolosok:walk:v1";
 export const MAX_WALK_STOPS = 10;
-export type Place = { address: string; location: Coordinates };
+export type Place = { address: string; location: Coordinates; contentId?: string };
 export type Plan = { stops: Place[]; geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string };
 export type StoryRef = { place: Place; id: string; stage: GenerationStage };
 export type ResearchRequest = { start: Place; destination?: Place | null; mode: "loop" | "open"; minutes: 30 | 60 | 90 };
@@ -24,7 +24,7 @@ export type Draft = {
 export const emptyDraft = (): Draft => ({ version: 1, title: "Моя прогулка", start: null, mode: "loop", minutes: 30, stops: [], route: null, jobs: [], submitting: null });
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 export function isPlace(v: unknown): v is Place {
-  return record(v) && typeof v.address === "string" && v.address.trim().length >= 6 && v.address.length <= 180 && !/[\p{Cc}\p{Cf}<>]/u.test(v.address) && record(v.location) && typeof v.location.lat === "number" && typeof v.location.lon === "number" && isMoscowPoint(v.location as Coordinates);
+  return record(v) && typeof v.address === "string" && v.address.trim().length >= 6 && v.address.length <= 180 && !/[\p{Cc}\p{Cf}<>]/u.test(v.address) && record(v.location) && typeof v.location.lat === "number" && typeof v.location.lon === "number" && isMoscowPoint(v.location as Coordinates) && (v.contentId === undefined || typeof v.contentId === "string" && /^osm:(node|way|relation):\d+$/.test(v.contentId));
 }
 export const placeKey = (p: Place) => `${p.address.trim().toLocaleLowerCase("ru")}|${p.location.lat}|${p.location.lon}`;
 // Match normalizeAddress + the unhashed addressKey input in backend/domain.mjs.
@@ -43,7 +43,7 @@ export function validStops(start: Place | null, stops: Place[], destination?: Pl
   return points.every((p, i) => points.slice(0, i).every(q => {
     const rad = Math.PI / 180;
     const h = Math.sin((p.location.lat-q.location.lat)*rad/2)**2 + Math.cos(p.location.lat*rad)*Math.cos(q.location.lat*rad)*Math.sin((p.location.lon-q.location.lon)*rad/2)**2;
-    return 12742000 * Math.asin(Math.sqrt(Math.min(1,h))) >= 25;
+    return 12742000 * Math.asin(Math.sqrt(Math.min(1,h))) >= 5;
   }));
 }
 export function isPlan(v: unknown): v is Plan {

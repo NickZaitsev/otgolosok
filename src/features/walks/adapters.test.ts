@@ -56,6 +56,13 @@ describe("universal walk adapters", () => {
     expect(chapters.map(chapter => chapter.status)).toEqual(["preparing", "preparing"]);
   });
 
+  it("links a published OSM story selected by the route planner", () => {
+    const contentStop = { ...firstStop, contentId: "osm:way:42" };
+    const document = draftToWalkDocument(draft([contentStop]), "44444444-4444-4444-8444-444444444444");
+    expect(document.stops.at(-1)?.storyRef).toEqual({ kind: "osm", id: "osm:way:42" });
+    expect(walkDocumentToDraft(document).stops[0]).toEqual(contentStop);
+  });
+
   it("round-trips the bundled catalogue through the universal view", () => {
     const view = routeToWalkView(routeData as Route);
     expect(view.document.stops).toHaveLength(4);
