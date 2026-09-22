@@ -229,3 +229,36 @@ test('Overpass transport failures and deadlines identify discovery, then release
   const unavailable=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:null,fetchImpl:async()=>{throw new Error('private');}});
   await assert.rejects(unavailable({start,mode:'loop',minutes:30}),{code:'WALK_DISCOVERY_UNAVAILABLE',message:'WALK_DISCOVERY_UNAVAILABLE'});
 });
+
+for (const stops of [[], [stop(1)]]) test(`destination remains final with ${stops.length} stops`, async () => {
+  const {plan}=fixture((url,o)=>route(JSON.parse(o.body)));
+  const result=await plan(input({mode:'open',destination:stop(4),stops}));
+  assert.deepEqual(result.geometry.at(-1),stop(4).location);
+  assert.deepEqual(result.stops,stops);
+});
+test('destination rejects loop and coincident endpoints before transport', async () => {
+  const {plan,calls}=fixture(()=>{throw new Error('unexpected');});
+  for(const extra of [{destination:stop(4)},{mode:'open',destination:start},{mode:'open',destination:stop(1)}])
+    await assert.rejects(plan(input(extra)),{code:'WALK_INVALID'});
+  assert.equal(calls.length,0);
+});
+test('automatic destination survives lack of historical candidates', async () => {
+  const {plan}=fixture((url,o)=>url.includes('osm')?{elements:[]}:route(JSON.parse(o.body)));
+  const result=await plan({start,mode:'open',minutes:30,destination:stop(4)});
+  assert.deepEqual(result.geometry.at(-1),stop(4).location);
+  assert.deepEqual(result.stops,[]);
+});
+
+test('unreachable destination is rejected before historical discovery', async () => {
+  const {plan,calls}=fixture((url,o)=>route(JSON.parse(o.body),2000));
+  await assert.rejects(plan({start,mode:'open',minutes:30,destination:stop(4)}),{code:'WALK_NOT_FOUND'});
+  assert.equal(calls.length,1);
+  assert.match(calls[0].url,/router/);
+});
+
+test('over-budget candidates are removed without losing destination', async () => {
+  const {plan}=fixture((url,o)=>url.includes('osm')?candidates():route(JSON.parse(o.body),1000));
+  const result=await plan({start,mode:'open',minutes:30,destination:stop(5)});
+  assert.deepEqual(result.geometry.at(-1),stop(5).location);
+  assert.deepEqual(result.stops,[]);
+});

@@ -48,6 +48,7 @@ export function draftToWalkDocument(draft: Draft, id: string, previous?: WalkDoc
     title: draft.title || "Моя прогулка",
     description: "",
     city: "Москва",
+    ...(draft.destination ? { destination: draft.destination } : {}),
     mode: draft.mode,
     minutes: draft.minutes,
     start: draft.start ? { address: draft.start.address, location: { ...draft.start.location } } : null,
@@ -82,6 +83,7 @@ export function walkDocumentToDraft(document: WalkDocument, previousJobs: DraftS
     version: 1,
     title: document.title,
     start: document.start ? { ...document.start, location: { ...document.start.location } } : null,
+    ...(document.destination ? { destination: document.destination } : {}),
     mode: document.mode,
     minutes: document.minutes === 15 ? 30 : document.minutes as 30 | 60 | 90,
     stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location } })),
@@ -198,7 +200,7 @@ export function walkViewToRoute(input: WalkView): Route {
   const view = input;
   const chapters = view.document.stops.map((_, index) => chapterToPoi(view, index));
   const anchor = view.document.start ?? view.document.stops[0]?.place ?? { address: "Маршрут ещё не построен", location: { lat: 55.75, lon: 37.61 } };
-  const finish = view.document.mode === "loop" ? anchor : view.document.stops.at(-1)?.place ?? anchor;
+  const finish = view.document.destination ?? (view.document.mode === "loop" ? anchor : view.document.stops.at(-1)?.place ?? anchor);
   const route = view.document.route;
   const poi = chapters.length ? chapters.map(item => item.poi) : [{
     id: `${view.document.id}-start`,

@@ -24,7 +24,7 @@ const audio = value => value === null || (fields(value, ["url", "sha256", "durat
 /** @typedef {{document:WalkDocument,revision:number,contentVersion:string,chapters:Array<{id:string,status:string,story:object|null,audio:object|null}>}} WalkView */
 
 export function validateWalkDocument(value) {
-  if (!fields(value, ["version", "id", "title", "description", "city", "mode", "minutes", "start", "stops", "route", "fieldChecked"]) || value.version !== 2 || !(uuid(value.id) || /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id)) || !string(value.title, 120) || !string(value.description, 1000, true) || value.city !== "Москва" || !["open", "loop"].includes(value.mode) || ![15, 30, 60, 90].includes(value.minutes) || !(value.start === null || place(value.start)) || !Array.isArray(value.stops) || value.stops.length > 6 || !value.stops.every(stop) || (value.start === null && value.stops.length !== 0) || new Set(value.stops.map(item => item.id)).size !== value.stops.length || !route(value.route) || (value.route !== null && (value.start === null || value.stops.length === 0)) || typeof value.fieldChecked !== "boolean" || JSON.stringify(value).length > 100000) throw invalid();
+  if (!fields(value, ["version", "id", "title", "description", "city", "mode", "minutes", "start", "destination", "stops", "route", "fieldChecked"]) || value.version !== 2 || !(uuid(value.id) || /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id)) || !string(value.title, 120) || !string(value.description, 1000, true) || value.city !== "Москва" || !["open", "loop"].includes(value.mode) || ![15, 30, 60, 90].includes(value.minutes) || !(value.start === null || place(value.start)) || (value.destination != null && (value.mode !== "open" || !place(value.destination))) || !Array.isArray(value.stops) || value.stops.length > 6 || !value.stops.every(stop) || (value.start === null && value.stops.length !== 0) || new Set(value.stops.map(item => item.id)).size !== value.stops.length || !route(value.route) || (value.route !== null && (value.start === null || (value.stops.length === 0 && !value.destination))) || typeof value.fieldChecked !== "boolean" || JSON.stringify(value).length > 100000) throw invalid();
   return value;
 }
 
@@ -48,7 +48,7 @@ export function migrateLegacyDraft(value, walkId) {
   const includeStart = Boolean(value.start && link(value.start));
   const stops = (includeStart ? locations : value.stops).map((item, index) => ({ id: hash(index), place: item, storyRef: link(item), transition: "", nextHint: "" }));
   const savedRoute = value.route;
-  const converted = { version: 2, id: walkId, title: value.title || "Моя прогулка", description: "", city: "Москва", mode: value.mode, minutes: value.minutes, start: value.start, stops,
+  const converted = { version: 2, id: walkId, title: value.title || "Моя прогулка", description: "", city: "Москва", mode: value.mode, minutes: value.minutes, start: value.start, ...(value.destination ? {destination:value.destination} : {}), stops,
     route: savedRoute ? { geometry: savedRoute.geometry, distanceM: savedRoute.distanceM, walkingMinutes: savedRoute.walkingMinutes, attribution: savedRoute.attribution } : null,
     fieldChecked: false };
   return validateWalkDocument(converted);
