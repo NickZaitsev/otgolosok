@@ -305,7 +305,11 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
           <tbody>{(itemPage?.items ?? []).map(item => <tr key={item.placeId}>
             <th scope="row">{item.name}<span className="admin-row-id">{item.address ?? item.placeId}</span></th>
             <td><span className={`admin-stage admin-stage-${item.state}`}>{batchItemStates[item.state] ?? item.state}</span></td>
-            <td>{item.error?.message ?? "—"}</td>
+            {/* Older failures stored the code in `message`; then the code alone is shown instead of repeating it twice. */}
+            <td>{item.error
+              ? <>{item.error.message && item.error.message !== item.error.code ? item.error.message : null}
+                {item.error.code && <span className="admin-row-id">{item.error.code}</span>}</>
+              : "—"}</td>
             <td>{retryableItemStates.includes(item.state) && <button disabled={disabled} onClick={() => void run("Повтор задания…", async signal => {
               await api(`/content/batches/${batch.id}/items/${item.placeId}/retry`, signal, {});
               await loadItems(batch.id, itemOffset, signal);

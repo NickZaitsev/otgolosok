@@ -19,7 +19,7 @@ const batch: ContentBatch = {
   counts: { total: 3, queued: 0, working: 0, ready: 1, failed: 2 },
 };
 const batchItems: ContentBatchItem[] = [
-  { placeId: "osm:node:1", name: "1 корпус", address: null, state: "review_required", error: { code: "ADDRESS_UNCLEAR", message: "ADDRESS_UNCLEAR" } },
+  { placeId: "osm:node:1", name: "1 корпус", address: null, state: "review_required", error: { code: "ADDRESS_UNCLEAR", message: "Источники не позволяют однозначно определить дом." } },
   { placeId: "osm:node:2", name: "8й корпус", address: null, state: "review_required", error: { code: "REVIEW_REQUIRED", message: "REVIEW_REQUIRED" } },
   { placeId: "osm:node:3", name: "Готовое место", address: null, state: "ready", error: null },
 ];
@@ -107,6 +107,11 @@ async function choose(id: string, value: string) {
 function itemNames() {
   const section = container.querySelector('[aria-labelledby="content-items-title"]')!;
   return [...section.querySelectorAll("tbody th")].map(cell => cell.firstChild?.textContent);
+}
+
+function errorCells() {
+  const section = container.querySelector('[aria-labelledby="content-items-title"]')!;
+  return [...section.querySelectorAll("tbody tr")].map(row => row.children[2].textContent);
 }
 
 function errorOptions() {
@@ -212,6 +217,11 @@ describe("фильтр заданий партии по ошибке", () => {
     expect(itemQueries.at(-1)?.get("error")).toBe("all");
     expect(errorOptions()).toEqual(["Любая ошибка", "ADDRESS_UNCLEAR (1)", "REVIEW_REQUIRED (1)", "Без ошибки (1)"]);
     expect(itemNames()).toEqual(["1 корпус", "8й корпус", "Готовое место"]);
+  });
+
+  it("показывает сообщение вместе с кодом, а у старых заданий — только код", async () => {
+    await openBatch();
+    expect(errorCells()).toEqual(["Источники не позволяют однозначно определить дом.ADDRESS_UNCLEAR", "REVIEW_REQUIRED", "—"]);
   });
 
   it("оставляет в списке только задания с выбранным кодом", async () => {
