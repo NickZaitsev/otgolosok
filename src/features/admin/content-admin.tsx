@@ -8,6 +8,7 @@ import {
   type ContentErrorFilter, type ContentHeartbeat, type ContentPlace, type ContentPlaceStatusFilter,
   type ContentPlaceSummary, type ContentStatusFilter, type ContentWorker, type Draft,
 } from "./model";
+import { skeletonRows } from "./table-skeleton";
 import "./content-admin.css";
 
 type ContentAdminProps = { api: AdminApi; busy: string; run: AdminRun; onDirtyChange: (dirty: boolean) => void };
@@ -23,25 +24,12 @@ const PLACE_PAGE = 50;
 const ITEM_PAGE = 50;
 const BATCH_PAGE = 20;
 const HEARTBEAT_WINDOW_MS = 120_000;
-const SKELETON_ROWS = 5;
 const numbers = new Intl.NumberFormat("ru-RU");
 
 function moment(value: string | null | undefined) {
   if (!value) return "нет";
   const date = new Date(value);
   return Number.isNaN(date.valueOf()) ? "—" : date.toLocaleString("ru-RU");
-}
-
-/**
- * Placeholder rows hold a table's shape while its own request is in flight, so the editor never reads
- * stale rows as current. They are decorative: the loading label is announced by the desk-wide status line.
- */
-function skeletonRows(columns: number, current: number) {
-  const rows = current ? Math.min(current, 8) : SKELETON_ROWS;
-  return Array.from({ length: rows }, (_, row) => <tr className="content-skeleton-row" key={`skeleton-${row}`} aria-hidden="true">
-    <th scope="row"><span className="content-skeleton-bar" /><span className="content-skeleton-bar" /></th>
-    {Array.from({ length: columns - 1 }, (_, cell) => <td key={cell}><span className="content-skeleton-bar" /></td>)}
-  </tr>);
 }
 
 /** Item states are grouped into four buckets; each count opens the job list filtered to that bucket. */
