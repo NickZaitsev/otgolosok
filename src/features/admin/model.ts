@@ -17,9 +17,16 @@ export type ContentBatch = {
   createdAt: string; updatedAt: string;
   counts: { total: number; queued: number; working: number; ready: number; failed: number };
 };
-export type ContentBatchItem = { placeId: string; name: string; address: string | null; state: string; error: { message?: string } | null };
-export type ContentBatchItemPage = { items: ContentBatchItem[]; total: number; hasMore: boolean };
+export type ContentBatchItem = {
+  placeId: string; name: string; address: string | null; state: string; error: { code?: string; message?: string } | null;
+};
+/** `errors` counts the codes present under the status filter alone, so the error filter can list them without reloading. */
+export type ContentBatchItemPage = {
+  items: ContentBatchItem[]; total: number; hasMore: boolean; errors: { code: string | null; count: number }[];
+};
 export type ContentStatusFilter = "all" | "ready" | "working" | "waiting" | "stopped";
+/** "all" — no filter, "none" — items without an error, anything else — a concrete error code such as ADDRESS_UNCLEAR. */
+export type ContentErrorFilter = string;
 
 export const batchStates: Record<string, string> = {
   running: "Выполняется", paused: "На паузе", cancelled: "Отменена",
@@ -49,6 +56,23 @@ export const contentStatusOptions: { value: ContentStatusFilter; label: string }
 ];
 
 export const retryableItemStates = ["failed", "review_required", "insufficient_evidence", "retry_wait"];
+
+/**
+ * Options for the error filter: what the current page reports, plus the selected code even when a retry
+ * has just emptied it, so the select never falls back to a blank value.
+ */
+export function contentErrorOptions(errors: ContentBatchItemPage["errors"], selected: ContentErrorFilter) {
+  const options = [{ value: "all", label: "Любая ошибка" }];
+  for (const { code, count } of errors) {
+    options.push(code === null
+      ? { value: "none", label: `Без ошибки (${count})` }
+      : { value: code, label: `${code} (${count})` });
+  }
+  if (!options.some(option => option.value === selected)) {
+    options.push({ value: selected, label: selected === "none" ? "Без ошибки (0)" : `${selected} (0)` });
+  }
+  return options;
+}
 
 /** Human range for a server-paged list: "51–100 из 6107". */
 export function pageRange(offset: number, count: number, total: number) {
