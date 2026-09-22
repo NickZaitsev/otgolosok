@@ -89,6 +89,16 @@ test("создаёт A→Б на карте и восстанавливает е
   await expect(page.locator(".creation-panel")).toContainText(destination.address);
   await page.getByRole("link", { name: "Начать прогулку", exact: true }).click();
   await expect(page.locator(".creation-panel")).toHaveCount(0);
+  const frame = page.locator(".route-map-live");
+  await expect(frame).toBeVisible();
+  const geometry = await frame.evaluate(el => {
+    const frame = el.getBoundingClientRect();
+    const map = el.querySelector(".explore-map-layer")!.getBoundingClientRect();
+    return { height: frame.height, contained: map.top >= frame.top && map.bottom <= frame.bottom && map.left >= frame.left && map.right <= frame.right };
+  });
+  expect(geometry.height).toBeGreaterThan(200);
+  expect(geometry.contained).toBe(true);
+  await page.screenshot({ path: info.outputPath("walk-page.png") });
   expect(errors).toEqual([]);
 });
 
