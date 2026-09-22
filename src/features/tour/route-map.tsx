@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ExploreMap } from "../explore/explore-map";
 import type { Route } from "./types";
+import "./route-map.css";
 
 export function RouteMap({ route, universal = false }: { route: Route; universal?: boolean }) {
   const steps = route.walk?.steps ?? [];
