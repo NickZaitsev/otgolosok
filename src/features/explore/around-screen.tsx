@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { WalkCreationPanel, type CreationMap } from "../walk-builder/walk-creation-panel";
 import { BrandMark } from "../brand/brand-mark";
 import type { Coordinates, Route } from "../tour/types";
 import { getWalkChapters } from "../tour/walk-plan";
@@ -30,6 +32,14 @@ function distance(a:Coordinates,b:Coordinates){
 const distanceLabel=(meters:number)=>meters<1000?`≈ ${Math.round(meters/50)*50 || 50} м`:`≈ ${(meters/1000).toFixed(1).replace(".",",")} км`;
 
 export function AroundScreen({route,onStart,children,updateAvailable,initialTab}: {route:Route;onStart:(chapter?:number)=>void;children:ReactNode;updateAvailable:boolean;initialTab?:Tab}) {
+  const router = useRouter();
+  const params = useSearchParams();
+  const creating = params.get("walk") === "create" || params.get("tab") === "walk";
+  const [creationMap, setCreationMap] = useState<CreationMap>({items:[], focus:null, picking:false});
+  const [picked, setPicked] = useState<Coordinates | null>(null);
+  const opener = useRef<HTMLElement | null>(null);
+  const closeCreation = useCallback(() => { router.replace("/", {scroll:false}); setPicked(null); setTimeout(() => opener.current?.focus(), 0); }, [router]);
+  const rememberOpener = () => { opener.current = document.activeElement as HTMLElement; };
   const [tab,setTab]=useState<Tab>(initialTab ?? "nearby");
   const [search,setSearch]=useState(false),[query,setQuery]=useState("");
   const [selected,setSelected]=useState<string>();
@@ -52,11 +62,6 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
   useEffect(()=>{if(search)input.current?.focus();},[search]);
   useEffect(()=>{
     const timer=setTimeout(()=>setPrompt(shouldShowGeoPrompt(localStorage)),0);
-    return()=>clearTimeout(timer);
-  },[]);
-  useEffect(()=>{
-    if(new URLSearchParams(location.search).get("tab")!=="walk")return;
-    const timer=setTimeout(()=>setTab("walk"),0);
     return()=>clearTimeout(timer);
   },[]);
   useEffect(()=>{
@@ -156,11 +161,12 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
   function metadata(pin:StoryPin){return [pin.duration?`${Math.ceil(pin.duration/60)} мин · аудио`:pin.status,user?`${distanceLabel(distance(user,pin.location))} по прямой`:null].filter(Boolean).join(" · ");}
   const createHref=place?.address?`/create?${new URLSearchParams({address:place.address,lat:String(place.location.lat),lon:String(place.location.lon)})}`:"/create?new=1";
   const walkStart=place?.address?place:active;
-  const walkHref=walkStart?.address?`/walk?${new URLSearchParams({address:walkStart.address,lat:String(walkStart.location.lat),lon:String(walkStart.location.lon)})}`:"/walk";
+  const walkHref=walkStart?.address?`/?${new URLSearchParams({walk:"create",address:walkStart.address,lat:String(walkStart.location.lat),lon:String(walkStart.location.lon)})}`:"/?walk=create";
 
   return <>
-    {tab==="nearby"?<ExploreMap viewState={nearbyMapView} items={mapItems} selectedId={selected??(place?"picked-place":undefined)} focus={focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin)select(pin);}} onPoint={point=>void findPlace(point)} />:null}
-    <div className={`around-content ${tab!=="nearby"?"scroll-view":""}${search?" searching":""}`}>
+    {creating && <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />}
+    {tab==="nearby"?<ExploreMap viewState={nearbyMapView} items={creating ? creationMap.items : mapItems} geometry={creating ? creationMap.geometry : undefined} routePadding={creating ? creationMap.padding : undefined} selectedId={selected??(place?"picked-place":undefined)} focus={creating ? creationMap.focus : focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}}} onPoint={point=>creating ? setPicked(point) : void findPlace(point)} />:null}
+    <div className={`around-content ${creating?"creation-open ":""}${tab!=="nearby"?"scroll-view":""}${search?" searching":""}`}>
       <header className="around-header">
         <div className="around-topline"><Link href="/" prefetch={false} className="around-brand"><BrandMark /></Link><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>
         {tab==="walk"?<h1 id="around-title" tabIndex={-1}>Пойдём гулять.</h1>:null}
@@ -189,13 +195,13 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
         </details>:null}</div><button type="button" aria-label="Скрыть сообщение" onClick={()=>setGeoMessage("")}><ExploreIcon name="close"/></button></div>:null}
         {prompt&&!active&&!place&&!placeBusy&&!placeError&&!search?<section className="around-location-card" aria-labelledby="location-title"><button type="button" className="around-icon around-location-close" aria-label="Закрыть карточку" onClick={dismissGeoPrompt}><ExploreIcon name="close"/></button><h2 id="location-title">Смотрите истории рядом с вами</h2><button type="button" className="around-primary" onClick={locate} disabled={geo==="loading"}>{geo==="loading"?"Определяем положение…":geo==="denied"||geo==="error"?"Проверить снова":"Включить геолокацию"}<ExploreIcon name="locate"/></button></section>
         :active?<section className="around-place-card" aria-labelledby="selected-place-title"><div className="around-card-label"><span>{active.pending?"Готовим для вас":active.chapter!==undefined?`По дороге · часть ${active.chapter+1}`:"История места"}</span><button type="button" className="around-icon" aria-label="Закрыть карточку" onClick={()=>setSelected(undefined)}><ExploreIcon name="close"/></button></div><h2 id="selected-place-title">{active.title}</h2>{active.title!==active.address?<p>{active.address}</p>:null}<small>{metadata(active)}</small>{active.paragraphs?.length?<div className="around-story-text">{active.paragraphs.map((paragraph,index)=><p key={index}>{paragraph}</p>)}</div>:null}{active.audioUrl?<audio controls preload="metadata" src={active.audioUrl}>Ваш браузер не поддерживает аудио.</audio>:null}{active.chapter!==undefined?<button type="button" className="around-primary" onClick={()=>onStart(active.chapter)}>Слушать эту часть <ExploreIcon name="headphones"/></button>:active.jobId?<Link className="around-primary" href={`/create?job=${active.jobId}`} prefetch={false}>{active.duration?"Открыть и слушать":"Открыть подготовку"}<ExploreIcon name={active.duration?"headphones":"arrow"}/></Link>:active.placeId&&!active.paragraphs?.length?<p>Проверенный текст доступен в карточке места{active.audioUrl?"; запись можно слушать здесь.":"; озвучивание ещё не готово."}</p>:null}</section>
-        :explorePanel==="place"?<section className="around-place-card" aria-labelledby="new-place-title"><div className="around-card-label"><span>История по запросу</span><button type="button" className="around-icon" aria-label="Закрыть выбранное место" onClick={()=>{lookup.current?.abort();setPlace(null);setPlaceBusy(false);setPlaceError("");setNearbyCenter(null);}}><ExploreIcon name="close"/></button></div><h2 id="new-place-title">{placeBusy?"Определяем адрес…":place?.address??"О чём расскажет этот дом?"}</h2>{placeError?<p role="status">{placeError}</p>:placeBusy?<p role="status">Смотрим, какой дом находится рядом с выбранной точкой.</p>:<p>{place?.address?"Найдём факты об этом строении и подготовим историю с озвучкой за 5 минут.":"У этой точки нет точного номера дома. Введите адрес, чтобы мы искали историю нужного здания."}</p>}{!placeBusy?<Link className="around-primary" href={createHref} prefetch={false}>{place?.address?"Подготовить историю этого дома":"Ввести адрес вручную"}<ExploreIcon name="plus"/></Link>:null}{place?.address?<Link className="around-secondary" href={walkHref} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk"/></Link>:null}</section>
+        :explorePanel==="place"?<section className="around-place-card" aria-labelledby="new-place-title"><div className="around-card-label"><span>История по запросу</span><button type="button" className="around-icon" aria-label="Закрыть выбранное место" onClick={()=>{lookup.current?.abort();setPlace(null);setPlaceBusy(false);setPlaceError("");setNearbyCenter(null);}}><ExploreIcon name="close"/></button></div><h2 id="new-place-title">{placeBusy?"Определяем адрес…":place?.address??"О чём расскажет этот дом?"}</h2>{placeError?<p role="status">{placeError}</p>:placeBusy?<p role="status">Смотрим, какой дом находится рядом с выбранной точкой.</p>:<p>{place?.address?"Найдём факты об этом строении и подготовим историю с озвучкой за 5 минут.":"У этой точки нет точного номера дома. Введите адрес, чтобы мы искали историю нужного здания."}</p>}{!placeBusy?<Link className="around-primary" href={createHref} prefetch={false}>{place?.address?"Подготовить историю этого дома":"Ввести адрес вручную"}<ExploreIcon name="plus"/></Link>:null}{place?.address?<Link className="around-secondary" href={walkHref} onClick={rememberOpener} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk"/></Link>:null}</section>
         :explorePanel==="nearby"?<section className="around-place-card nearby-recommendations" aria-labelledby="nearby-title"><div className="around-card-label"><span>Готовые истории рядом</span></div><h2 id="nearby-title">В радиусе {nearbyRadius} м</h2><div className="nearby-radius" aria-label="Радиус поиска">{nearbyRadii.map(radius=><button key={radius} type="button" aria-pressed={nearbyRadius===radius} onClick={()=>setNearbyRadius(radius)}>{radius} м</button>)}</div>{recommendations.length?<ol className="nearby-story-list">{recommendations.map((story,index)=><li key={story.id}><div><strong>{story.title}</strong><span>{story.address} · {Math.round(story.distanceM)} м по прямой</span>{index===0?<small>{story.reason}</small>:null}</div><button type="button" className={index===0?"around-primary":"around-secondary"} onClick={()=>selectRecommendation(story.id)}>{index===0?"Слушать":"Альтернатива"}<ExploreIcon name={index===0?"headphones":"arrow"}/></button></li>)}</ol>:<div className="nearby-empty"><p>В этом радиусе пока нет готовой проверенной истории.</p>{nearbyRadius<300?<button type="button" className="around-secondary" onClick={()=>setNearbyRadius(nearbyRadii[nearbyRadii.indexOf(nearbyRadius)+1])}>Искать в большем радиусе <ExploreIcon name="arrow"/></button>:<button type="button" className="around-secondary" onClick={()=>{setNearbyCenter(null);setPlace(null);setPrompt(false);}}>Выбрать другую точку <ExploreIcon name="map"/></button>}</div>}</section>
         :!search&&mapHintVisible?<div className="around-map-hint"><span><strong>Какой дом вам интересен?</strong>Нажмите на карту — найдём его историю.</span><button className="around-icon" type="button" aria-label="Закрыть подсказку" onClick={()=>setMapHintVisible(false)}><ExploreIcon name="close"/></button></div>:null}
-        {active?.address&&!placeBusy?<Link className="around-secondary" href={walkHref} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk"/></Link>:null}
+        {active?.address&&!placeBusy?<Link className="around-secondary" href={walkHref} onClick={rememberOpener} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk"/></Link>:null}
         {updateAvailable?<a className="around-update" href="/update.html">Доступна новая версия · обновить</a>:null}
       </div>
     </>:null}
-    <AppNavigation embedded active={tab} onNearby={()=>{setTab("nearby");setSearch(false);}} />
+    <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : tab} onNearby={()=>{if(creating)closeCreation();setTab("nearby");setSearch(false);}} />
   </>;
 }

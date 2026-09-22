@@ -115,6 +115,7 @@ summary:focus-visible {
 }
 
 .brand-mark {
+  font-size: 28px;
   font-family: var(--font-display), Georgia, serif;
   font-weight: 700;
   letter-spacing: -0.035em;

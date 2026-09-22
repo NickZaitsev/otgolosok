@@ -1,13 +1,12 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TourExperience } from "../tour/tour-experience";
-import { WalkBuilder } from "../walk-builder/walk-builder";
+import { creationLocation } from "../walk-builder/creation-location";
 import { getLastUserId, getSession } from "../auth/client";
 import { getLocalWalk, migrateLocalWalks } from "./local-store";
 import { loadAccountWalkWithOfflineCopy, loadCatalogWalk, loadLocalWalkView, loadSharedWalk, WalkLoadError } from "./walk-loader";
-import { WalkLibrary } from "./walk-library";
 import type { WalkView } from "./model";
 import "./walks.css";
 
@@ -16,6 +15,9 @@ type Loaded = { key: string; view: WalkView | null; error: string; offlineNotice
 
 export function WalkScreen() {
   const search = useSearchParams();
+  const router = useRouter();
+  const redirect = creationLocation(search);
+  useEffect(() => { if (redirect) router.replace(redirect); }, [redirect, router]);
   const queryKey = search.toString();
   const [loaded, setLoaded] = useState<Loaded>({ key: "", view: null, error: "", offlineNotice: "" });
   const query = Object.fromEntries(keys.flatMap(key => { const value = search.get(key); return value ? [[key, value]] : []; }));
@@ -58,9 +60,9 @@ export function WalkScreen() {
 
   if (queryConflict) return <WalkError message="Ссылка содержит конфликтующие параметры." />;
   if (edit && (selected.length !== 1 || !["local", "id"].includes(selected[0]))) return <WalkError message="Редактировать можно только свою прогулку." />;
-  if (selected.length === 1 && edit) return <WalkBuilder />;
-  if (createIntent) return <WalkBuilder />;
-  if (selected.length === 0) return <WalkLibrary />;
+  if (selected.length === 1 && edit) return <p role="status">Открываем карту…</p>;
+  if (createIntent) return <p role="status">Открываем карту…</p>;
+  if (selected.length === 0) return <p role="status">Открываем историю…</p>;
   const current = loaded.key === queryKey ? loaded : null;
   if (current?.error) return <WalkError message={current.error} />;
   if (!current?.view) return <main className="walk-screen"><p role="status">Открываем прогулку…</p></main>;
@@ -68,5 +70,5 @@ export function WalkScreen() {
 }
 
 function WalkError({ message }: { message: string }) {
-  return <main className="walk-screen"><p className="walk-warning" role="alert">{message}</p><a href="/walk">Вернуться к прогулкам</a></main>;
+  return <main className="walk-screen"><p className="walk-warning" role="alert">{message}</p><a href="/history">Вернуться к прогулкам</a></main>;
 }
