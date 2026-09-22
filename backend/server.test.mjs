@@ -115,7 +115,11 @@ test("admin manages content batches and revocable worker credentials",async t=>{
   assert.equal((await fetch(f.base+"/api/worker/v1/claim",{method:"POST",headers:{Authorization:`Bearer ${worker.token}`,"X-Worker-Id":"gpu","Content-Type":"application/json"},body:JSON.stringify({requestId:"credential-1",profileIds:["silero-ru-v1"]})})).status,401);
   const items=await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?limit=1&offset=0&status=waiting`);
   assert.equal(items.status,200);const page=await items.json();
-  assert.deepEqual(page,{items:[{placeId:"osm:node:8",name:"Музей",address:null,state:"queued",error:null}],total:1,hasMore:false});
+  assert.deepEqual(page,{items:[{placeId:"osm:node:8",name:"Музей",address:null,state:"queued",error:null}],total:1,hasMore:false,errors:[{code:null,count:1}]});
+  const byError=await (await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?error=ADDRESS_UNCLEAR`)).json();
+  assert.equal(byError.total,0);assert.deepEqual(byError.errors,[{code:null,count:1}]);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?error=none`)).status,200);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?error=%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B0`)).status,400);
   assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?status=unknown`)).status,400);
   assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?page=1`)).status,400);
   assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/11111111-1111-4111-8111-111111111111/items`)).status,404);

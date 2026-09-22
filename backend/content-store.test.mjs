@@ -117,3 +117,27 @@ test("batch items are paged and filtered by the same status buckets the editor o
     assert.throws(()=>store.listBatchItems(batch.id,invalid),{code:"BAD_REQUEST"});
   }
 });
+
+test("batch items filter by error code and report the codes present in the current status bucket",t=>{
+  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const batch=store.createBatch({requestKey:"items-error-1",name:"Errors",limit:2});
+  const unclear=store.claimContentJob();store.failContentJob(unclear.id,{code:"ADDRESS_UNCLEAR",message:"ADDRESS_UNCLEAR"},"review_required");
+  const review=store.claimContentJob();store.failContentJob(review.id,{code:"REVIEW_REQUIRED",message:"REVIEW_REQUIRED"},"review_required");
+  const all=store.listBatchItems(batch.id);
+  assert.deepEqual(all.errors,[{code:"ADDRESS_UNCLEAR",count:1},{code:"REVIEW_REQUIRED",count:1}]);
+  const unclearOnly=store.listBatchItems(batch.id,{error:"ADDRESS_UNCLEAR"});
+  assert.equal(unclearOnly.total,1);
+  assert.deepEqual(unclearOnly.items.map(item=>item.error.code),["ADDRESS_UNCLEAR"]);
+  // The code list ignores the error filter, so the editor can switch straight to another code.
+  assert.deepEqual(unclearOnly.errors,all.errors);
+  assert.equal(store.listBatchItems(batch.id,{error:"none"}).total,0);
+  assert.equal(store.listBatchItems(batch.id,{status:"ready",error:"ADDRESS_UNCLEAR"}).total,0);
+  assert.deepEqual(store.listBatchItems(batch.id,{status:"ready"}).errors,[]);
+  assert.equal(store.listBatchItems(batch.id,{error:"NEVER_HAPPENED"}).total,0);
+  store.retryBatchItem(batch.id,unclear.place.id,{restartFrom:"auto"});
+  assert.deepEqual(store.listBatchItems(batch.id,{status:"waiting"}).errors,[{code:null,count:1}]);
+  assert.equal(store.listBatchItems(batch.id,{status:"waiting",error:"none"}).total,1);
+  for(const invalid of [{error:""},{error:"lowercase"},{error:"WITH SPACE"},{error:"A".repeat(65)},{error:5}]) {
+    assert.throws(()=>store.listBatchItems(batch.id,invalid),{code:"BAD_REQUEST"});
+  }
+});

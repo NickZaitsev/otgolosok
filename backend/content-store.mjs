@@ -7,6 +7,8 @@ const encode = JSON.stringify;
 const decode = value => value == null ? null : JSON.parse(value);
 const iso = now => new Date(now()).toISOString();
 const fail = (code, message=code) => Object.assign(new Error(message),{code});
+const ERROR_CODE = /^[A-Z][A-Z0-9_]{0,63}$/;
+const ERROR_CODE_SQL = "json_extract(i.error_json,'$.code')";
 
 export const BATCH_ITEM_STATES = {
   all: null,
@@ -158,15 +160,22 @@ export function createContentStore({db,now,transaction}) {
       });
     },
     listBatches() {return db.prepare("SELECT * FROM content_batches ORDER BY created_at DESC").all().map(row=>viewBatch(row,batchCounts(row.id)));},
-    listBatchItems(batchId,{limit=50,offset=0,status="all"}={}) {
-      if(!Number.isSafeInteger(limit)||limit<1||limit>200||!Number.isSafeInteger(offset)||offset<0||!Object.hasOwn(BATCH_ITEM_STATES,status))throw fail("BAD_REQUEST");
+    listBatchItems(batchId,{limit=50,offset=0,status="all",error="all"}={}) {
+      if(!Number.isSafeInteger(limit)||limit<1||limit>200||!Number.isSafeInteger(offset)||offset<0||!Object.hasOwn(BATCH_ITEM_STATES,status)
+        ||typeof error!=="string"||!(error==="all"||error==="none"||ERROR_CODE.test(error)))throw fail("BAD_REQUEST");
       if(!db.prepare("SELECT 1 FROM content_batches WHERE id=?").get(batchId))return null;
-      const states=BATCH_ITEM_STATES[status],filter=states?` AND i.state IN (${states.map(()=>"?").join(",")})`:"",params=states??[];
+      const states=BATCH_ITEM_STATES[status],byStatus=states?` AND i.state IN (${states.map(()=>"?").join(",")})`:"",statusParams=states??[];
+      // The filter reads the code out of error_json, so it stays correct whether an error-free item holds SQL NULL or the JSON literal null.
+      const byError=error==="all"?"":error==="none"?` AND ${ERROR_CODE_SQL} IS NULL`:` AND ${ERROR_CODE_SQL}=?`,
+        filter=byStatus+byError,params=[...statusParams,...(error==="all"||error==="none"?[]:[error])];
       const total=Number(db.prepare(`SELECT count(*) n FROM batch_items i WHERE i.batch_id=?${filter}`).get(batchId,...params).n);
       const items=db.prepare(`SELECT i.*,p.name,p.address FROM batch_items i JOIN places p ON p.id=i.place_id
         WHERE i.batch_id=?${filter} ORDER BY p.name,p.id LIMIT ? OFFSET ?`).all(batchId,...params,limit,offset)
         .map(item=>({placeId:item.place_id,name:item.name,address:item.address,state:item.state,error:decode(item.error_json)}));
-      return {items,total,hasMore:offset+items.length<total};
+      // Codes are counted under the status filter only, so the editor can switch between them without losing the list of what exists.
+      const errors=db.prepare(`SELECT ${ERROR_CODE_SQL} code,count(*) n FROM batch_items i WHERE i.batch_id=?${byStatus}
+        GROUP BY code ORDER BY n DESC,code`).all(batchId,...statusParams).map(row=>({code:row.code??null,count:Number(row.n)}));
+      return {items,total,hasMore:offset+items.length<total,errors};
     },
     getBatch(id) {const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
       const items=db.prepare(`SELECT i.*,p.name,p.address FROM batch_items i JOIN places p ON p.id=i.place_id WHERE i.batch_id=? ORDER BY p.name,p.id`).all(id)
