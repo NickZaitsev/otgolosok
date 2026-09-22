@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import type * as Leaflet from "leaflet";
 import type { Coordinates } from "../tour/types";
 import "leaflet/dist/leaflet.css";
+import "./map-dots.css";
 
-export type MapItem = {id:string; title:string; location:Coordinates; number?:number; pending?:boolean};
+export type MapItem = {id:string; title:string; location:Coordinates; number?:number; pending?:boolean; compact?:boolean};
 export type MapFocus = Coordinates & {zoom?:number};
 export type MapViewState = {current: {center:Coordinates; zoom:number; focus:MapFocus|null}|null};
 export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometry,mapLabel,viewState,routePadding}: {
@@ -67,8 +68,8 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
       const active=item.id===selectedId;
       // Marker contents are fixed symbols/numbers, never upstream HTML.
       const label=item.number ? String(item.number) : item.pending ? "…" : "♪";
-      const icon=rt.L.divIcon({className:`explore-pin${active?" selected":""}${item.pending?" pending":""}`,html:`<span><b>${label}</b></span>`,iconSize:[44,52],iconAnchor:[22,48]});
-      const marker=rt.L.marker([item.location.lat,item.location.lon],{icon,title:item.title,alt:item.title,keyboard:true,bubblingMouseEvents:false}).addTo(rt.markers);
+      const icon=item.compact ? rt.L.divIcon({className:"explore-dot",html:"<span></span>",iconSize:[32,32],iconAnchor:[16,16]}) : rt.L.divIcon({className:`explore-pin${active?" selected":""}${item.pending?" pending":""}`,html:`<span><b>${label}</b></span>`,iconSize:[44,52],iconAnchor:[22,48]});
+      const marker=rt.L.marker([item.location.lat,item.location.lon],{icon,title:item.title,alt:item.title,keyboard:true,zIndexOffset:item.compact?-1000:0,bubblingMouseEvents:false}).addTo(rt.markers);
       marker.on("click",()=>handlers.current.onSelect(item.id));
       marker.getElement()?.setAttribute("aria-pressed",String(active));
     }
