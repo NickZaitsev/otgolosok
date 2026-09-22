@@ -43,6 +43,10 @@ function progressSegments(counts: ContentBatch["counts"]): { key: Exclude<Conten
 
 export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProps) {
   const loaded = useRef(false);
+  const editorHeading = useRef<HTMLHeadingElement>(null);
+  const catalogHeading = useRef<HTMLHeadingElement>(null);
+  const placeOpener = useRef<HTMLButtonElement | null>(null);
+  const pendingNavigation = useRef<"editor" | "catalog" | null>(null);
   const [notice, setNotice] = useState("");
   const [stats, setStats] = useState<Stats | null>(null);
 
@@ -80,6 +84,18 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
 
   useEffect(() => { onDirtyChange(dirty); }, [dirty, onDirtyChange]);
   useEffect(() => () => onDirtyChange(false), [onDirtyChange]);
+
+  useEffect(() => {
+    if (busy || !pendingNavigation.current) return;
+    const target = pendingNavigation.current === "editor"
+      ? editorHeading.current
+      : placeOpener.current?.isConnected ? placeOpener.current : catalogHeading.current;
+    if (!target) return;
+    const block = pendingNavigation.current === "editor" ? "start" : "center";
+    pendingNavigation.current = null;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block, behavior: "instant" });
+  }, [busy, place]);
 
   async function loadOverview(signal: AbortSignal) {
     const [batchList, nextStats, workerList, audio] = await Promise.all([
@@ -147,17 +163,20 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
     });
   }
 
-  function openPlace(id: string) {
+  function openPlace(id: string, opener: HTMLButtonElement) {
     if (!consentToLoseDraft()) return;
     void run("Загрузка места…", async signal => {
       const value = (await api<{ place: ContentPlace }>(`/content/places/${id}`, signal)).place;
       const next = value.text?.draft ?? null;
+      placeOpener.current = opener;
+      pendingNavigation.current = "editor";
       setPlace(value); setDraft(next); setBaseline(JSON.stringify(next)); setNotice("");
     });
   }
 
   function closePlace() {
     if (!consentToLoseDraft()) return;
+    pendingNavigation.current = "catalog";
     setPlace(null); setDraft(null); setBaseline("");
   }
 
@@ -316,7 +335,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
 
       <section className="admin-review" aria-labelledby="content-catalog-title">
         <div className="admin-section-head"><div>
-          <h3 id="content-catalog-title">Каталог и редактура</h3>
+          <h3 id="content-catalog-title" ref={catalogHeading} tabIndex={-1}>Каталог и редактура</h3>
           <p className="admin-meta">Автоматический текст появляется публично и уходит в TTS только после утверждения.</p>
         </div></div>
         <form className="admin-filters" role="search" onSubmit={event => {
@@ -341,7 +360,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             <th scope="row">{item.name}<span className="admin-row-id">{item.address ?? item.id}</span></th>
             <td><span className={`admin-stage content-text-${item.textStatus}`}>{placeTextStatuses[item.textStatus]}</span></td>
             <td>{item.audio ? "Готово" : "Нет"}</td>
-            <td><button disabled={disabled} onClick={() => openPlace(item.id)}>Открыть</button></td>
+            <td><button disabled={disabled} onClick={event => openPlace(item.id, event.currentTarget)}>Открыть</button></td>
           </tr>)}</tbody>
         </table></div>
         {!placePage.places.length && <p className="admin-empty-row" role="status">По этим условиям мест не найдено.</p>}
@@ -351,9 +370,9 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
           <button disabled={disabled || !placePage.hasMore} onClick={() => void run("Загрузка мест…", signal => loadPlaces(placeOffset + PLACE_PAGE, signal))}>Далее</button>
         </nav>
 
-        {place && <article className="admin-document">
+        {place && <article className="admin-document" aria-labelledby="content-place-title">
           <div className="admin-document-head">
-            <div><p className="admin-context">{place.id}</p><h3>{place.name}</h3>
+            <div><p className="admin-context">{place.id}</p><h3 id="content-place-title" ref={editorHeading} tabIndex={-1}>{place.name}</h3>
               <p className="admin-meta">{place.address ?? "Адрес не указан"}{dirty ? " · есть несохранённые правки" : ""}</p></div>
             <button disabled={disabled} onClick={closePlace}>Закрыть</button>
           </div>
