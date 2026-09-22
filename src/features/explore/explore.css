@@ -1,5 +1,5 @@
 .around-shell{--around-green:#203e38;--around-orange:#b64b28;--around-nav-height:calc(78px + env(safe-area-inset-bottom));--around-sheet-top:calc(150px + env(safe-area-inset-top));position:relative;isolation:isolate;height:100svh;height:100dvh;overflow:hidden;background:#f5f3eb;color:var(--around-green)}
-.around-shell svg{width:24px;height:24px;flex-shrink:0}
+.around-shell svg:not(.leaflet-zoom-animated){width:24px;height:24px;flex-shrink:0}
 .around-shell :where(button,input){font:inherit}
 .around-shell button{cursor:pointer}
 .around-shell button:disabled{cursor:wait;opacity:.6}

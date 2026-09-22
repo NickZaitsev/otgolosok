@@ -101,6 +101,9 @@ test("создаёт A→Б на карте и восстанавливает е
   });
   expect(geometry.height).toBeGreaterThan(200);
   expect(geometry.contained).toBe(true);
+  const overlay = frame.locator(".leaflet-overlay-pane svg");
+  await expect(overlay).toBeVisible();
+  await expect.poll(() => overlay.evaluate(el => Math.abs(el.getBoundingClientRect().width - Number(el.getAttribute("width"))))).toBeLessThan(2);
   await page.screenshot({ path: info.outputPath("walk-page.png") });
   expect(errors).toEqual([]);
 });
@@ -402,4 +405,22 @@ test("достопримечательности остаются компакт
   }).toBe(true);
   await page.getByRole("button", { name: "Закрыть создание прогулки" }).click();
   await expect(pin).not.toHaveClass(/explore-dot/);
+});
+
+test("прогулка из Александровского сада с четырьмя остановками открывается с треком", async ({ page }, info) => {
+  const start = { address: "Александровский сад", location: { lat: 55.752, lon: 37.613 } };
+  const stops = Array.from({ length: 4 }, (_, i) => ({ address: `Москва, остановка ${i + 1}`, location: { lat: 55.754 + i * 0.001, lon: 37.61 } }));
+  const draft = { version: 1, title: "Из Александровского сада", start, mode: "loop", minutes: 60, stops, route: { stops, geometry: [start.location, ...stops.map(stop => stop.location), start.location], walkingMinutes: 30, distanceM: 2000, attribution: "OSM" }, jobs: [], submitting: null };
+  await page.addInitScript(value => localStorage.setItem("otgolosok:walk:v1", JSON.stringify(value)), draft);
+  await page.goto("/?walk=create&resume=1");
+  await expect(page.locator(".leaflet-overlay-pane path")).toBeVisible();
+  await page.getByRole("link", { name: "Начать прогулку", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Из Александровского сада", exact: true })).toBeVisible();
+  await expect(page.getByText("Некорректные данные прогулки.", { exact: true })).toHaveCount(0);
+  const map = page.locator(".route-map-live");
+  await map.scrollIntoViewIfNeeded();
+  await expect(map.locator(".leaflet-overlay-pane path")).toBeVisible();
+  const overlay = map.locator(".leaflet-overlay-pane svg");
+  await expect.poll(() => overlay.evaluate(el => Math.abs(el.getBoundingClientRect().width - Number(el.getAttribute("width"))))).toBeLessThan(2);
+  await page.screenshot({ path: info.outputPath("alexander-garden-track.png") });
 });
