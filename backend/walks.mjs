@@ -107,7 +107,8 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
     }
     async function run() {
       // Check the destination before discovery, and never sacrifice it for a candidate.
-      if(destination && !manual && !await routeStops([]))throw fail('WALK_NOT_FOUND');
+      const directRoute=destination&&!manual?await routeStops([]):null;
+      if(destination && !manual && !directRoute)throw fail('WALK_NOT_FOUND');
       if(!manual) {
         discovering=true;
         // Discovery is bounded; straight-line distances only rank candidates, never form a route.
@@ -131,6 +132,19 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           const item={address:`Москва, ${street}, ${house}`,location:{lat:p.lat,lon:p.lon}};
           if(candidates.some(c=>c.address===item.address||distance(c.location,p)<40))continue;
           candidates.push(item);
+        }
+        if(destination) {
+          discovering=false;
+          let result=directRoute,current=start;
+          // Try alternatives instead of discarding every stop after one costly detour.
+          // Bound router work independently of the size of the OSM catalog.
+          for(let attempts=0;candidates.length&&stops.length<4&&attempts<16;attempts++) {
+            candidates.sort((a,b)=>(distance(current.location,a.location)+distance(a.location,destination.location))-(distance(current.location,b.location)+distance(b.location,destination.location)));
+            const candidate=candidates.shift();
+            const next=await routeStops([...stops,candidate]);
+            if(next){stops.push(candidate);current=candidate;result=next;}
+          }
+          return result;
         }
         let current=start;
         while(candidates.length&&stops.length<4) {
