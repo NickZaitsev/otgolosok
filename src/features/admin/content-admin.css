@@ -16,6 +16,9 @@
 .content-stats dd small { font-size: .875rem; font-weight: 650; }
 .content-stats dd.content-stats-date { font-size: .95rem; font-weight: 650; overflow-wrap: anywhere; }
 .content-stats span { color: var(--muted); font-size: .75rem; }
+.content-stats-loading { display: flex; align-items: center; gap: .65rem; min-height: 7rem; margin: 1.25rem 0 1.75rem; padding: 1rem; color: var(--muted); background: var(--raised); box-shadow: 0 0 0 1px var(--line); font-size: .85rem; }
+.content-loading-spinner { width: 1rem; height: 1rem; flex: 0 0 auto; border: 2px solid var(--line); border-top-color: var(--admin-green); border-radius: 50%; animation: content-loading-spin .8s linear infinite; }
+@keyframes content-loading-spin { to { transform: rotate(360deg); } }
 
 .content-toolbar { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin: 0 0 .75rem; }
 .content-toolbar label { margin: 0; color: var(--muted); font-size: .8rem; font-weight: 700; }
@@ -66,4 +69,8 @@
   .content-admin .content-toolbar select { min-width: 0; width: 100%; }
   .content-admin .content-batch-form { grid-template-columns: minmax(0, 1fr); }
   .content-toolbar > .admin-meta { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content-loading-spinner { animation: none; }
 }

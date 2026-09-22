@@ -193,18 +193,18 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
       </div>
       {notice && <p className="admin-meta" role="status">{notice}</p>}
 
-      <dl className="content-stats">
-        <div><dt>Мест в каталоге</dt><dd>{numbers.format(stats?.places ?? 0)}</dd></div>
-        <div><dt>Текстов</dt><dd>{numbers.format(stats?.texts ?? 0)}</dd></div>
-        <div><dt>Аудио</dt><dd>{numbers.format(stats?.audio ?? 0)}</dd></div>
-        <div><dt>Очередь текстов</dt><dd>{numbers.format(stats?.jobs?.queued ?? 0)}</dd><span>в работе {numbers.format(stats?.jobs?.working ?? 0)}</span></div>
-        <div><dt>Очередь аудио</dt><dd>{numbers.format(stats?.external?.queued ?? 0)}</dd><span>у воркеров {numbers.format(stats?.external?.leased ?? 0)}</span></div>
-        <div><dt>Средняя попытка TTS</dt><dd>{stats?.audioQueue?.averageAttemptSec == null ? "—" : <>{stats.audioQueue.averageAttemptSec.toFixed(1)}<small> с</small></>}</dd></div>
-        <div><dt>Токенов текста</dt><dd>{numbers.format(stats?.textUsageTokens ?? 0)}</dd></div>
-        <div><dt>Аудиофайлов</dt><dd>{numbers.format(stats?.audioQueue?.artifacts ?? 0)}</dd><span>{numbers.format(Math.round((stats?.audioQueue?.artifactBytes ?? 0) / 1048576))} МиБ</span></div>
-        <div><dt>Старейший текст в очереди</dt><dd className="content-stats-date">{moment(stats?.oldestTextQueuedAt)}</dd></div>
-        <div><dt>Старейшее аудио в очереди</dt><dd className="content-stats-date">{moment(stats?.audioQueue?.oldestQueuedAt)}</dd></div>
-      </dl>
+      {stats ? <dl className="content-stats">
+        <div><dt>Мест в каталоге</dt><dd>{numbers.format(stats.places)}</dd></div>
+        <div><dt>Текстов</dt><dd>{numbers.format(stats.texts)}</dd></div>
+        <div><dt>Аудио</dt><dd>{numbers.format(stats.audio)}</dd></div>
+        <div><dt>Очередь текстов</dt><dd>{numbers.format(stats.jobs?.queued ?? 0)}</dd><span>в работе {numbers.format(stats.jobs?.working ?? 0)}</span></div>
+        <div><dt>Очередь аудио</dt><dd>{numbers.format(stats.external?.queued ?? 0)}</dd><span>у воркеров {numbers.format(stats.external?.leased ?? 0)}</span></div>
+        <div><dt>Средняя попытка TTS</dt><dd>{stats.audioQueue?.averageAttemptSec == null ? "—" : <>{stats.audioQueue.averageAttemptSec.toFixed(1)}<small> с</small></>}</dd></div>
+        <div><dt>Токенов текста</dt><dd>{numbers.format(stats.textUsageTokens ?? 0)}</dd></div>
+        <div><dt>Аудиофайлов</dt><dd>{numbers.format(stats.audioQueue?.artifacts ?? 0)}</dd><span>{numbers.format(Math.round((stats.audioQueue?.artifactBytes ?? 0) / 1048576))} МиБ</span></div>
+        <div><dt>Старейший текст в очереди</dt><dd className="content-stats-date">{moment(stats.oldestTextQueuedAt)}</dd></div>
+        <div><dt>Старейшее аудио в очереди</dt><dd className="content-stats-date">{moment(stats.audioQueue?.oldestQueuedAt)}</dd></div>
+      </dl> : <div className="content-stats-loading" role="status" aria-live="polite"><span className="content-loading-spinner" aria-hidden="true" />Загружаем статистику каталога…</div>}
 
       <section className="admin-review" aria-labelledby="content-new-batch-title">
         <h3 id="content-new-batch-title">Новая партия</h3>
