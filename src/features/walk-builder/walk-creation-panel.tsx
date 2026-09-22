@@ -38,14 +38,18 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     return () => { observer.disconnect(); window.removeEventListener("resize", measure); };
   }, []);
   const resolvePoint = useEffectEvent(async (point: Coordinates) => {
+    const target = state.picking || picker ? w.target : w.draft.start ? "destination" : "start";
     const place = await w.resolve(point);
     if (!place) return;
-    selectAddress(place);
+    w.setTarget(target);
+    if (target === "destination") setMode("destination");
+    selectAddress(place, target);
     dispatch({ type: "return" });
   });
   const close = useEffectEvent(() => { if (picker) { setPicker(null); panel.current?.querySelector<HTMLButtonElement>(`[data-endpoint="${w.target}"]`)?.focus(); } else if (state.picking) dispatch({ type: "return" }); else onClose(); });
   useEffect(() => { title.current?.focus(); const escape = (e: KeyboardEvent) => { if (e.key === "Escape") close(); }; window.addEventListener("keydown", escape); return () => window.removeEventListener("keydown", escape); }, []);
   // Apply a point selected by the external Leaflet map to the active endpoint.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (picked) void resolvePoint(picked); }, [picked]);
   useEffect(() => {
     const places = [w.draft.start, ...w.draft.stops, w.draft.destination].filter(p => p != null);
@@ -64,9 +68,9 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
   async function build() { await w.plan(); if (w.current.current.route) dispatch({ type: "step", step: "preview" }); }
   const preview = Boolean(w.draft.route) && !state.picking;
 
-  function selectAddress(place: Place) {
-    if (w.target === "start") w.edit({ start: place });
-    else if (w.target === "destination") w.edit({ destination: place, mode: "open" });
+  function selectAddress(place: Place, target = w.target) {
+    if (target === "start") w.edit({ start: place });
+    else if (target === "destination") w.edit({ destination: place, mode: "open" });
     else {
       const stops = [...w.draft.stops, place];
       if (!validStops(w.draft.start, stops, w.draft.destination)) { w.setError("Эту остановку нельзя добавить: проверьте расстояние и число остановок."); return; }

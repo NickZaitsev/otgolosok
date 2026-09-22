@@ -365,3 +365,21 @@ for (const endpoint of ["Откуда", "Куда"]) {
     await expect(page.getByRole("button", { name: endpoint === "Откуда" ? "Куда" : "Откуда", exact: true })).toContainText("Москва, Арбат, 10");
   });
 }
+
+test("клик карты после создания от дома задаёт финиш, а явный выбор меняет старт", async ({ page }) => {
+  const start = "Москва, Дербеневская, 1";
+  const finish = "Москва, Арбат, 10";
+  await page.route("**/api/content/places?*", route => route.fulfill({ json: { places: [{ id: "start-house", name: "Стартовый дом", address: start, location: { lat: 55.7249, lon: 37.6507 }, story: null, audio: null }] } }));
+  await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: finish, location: { lat: 55.75, lon: 37.6 } } }));
+  await page.goto("/");
+  await page.locator('[title="Стартовый дом"]').click();
+  await page.getByRole("link", { name: "Создать прогулку отсюда" }).click();
+  await expect(page.getByRole("button", { name: "Откуда", exact: true })).toContainText(start);
+  await page.locator(".explore-map").click({ position: { x: 150, y: 200 } });
+  await expect(page.getByRole("button", { name: "Куда", exact: true })).toContainText(finish);
+  await expect(page.getByRole("button", { name: "Откуда", exact: true })).toContainText(start);
+  await page.getByRole("button", { name: "Откуда", exact: true }).click();
+  await page.getByRole("button", { name: "Выбрать на карте", exact: true }).click();
+  await page.locator(".explore-map").click({ position: { x: 160, y: 210 } });
+  await expect(page.getByRole("button", { name: "Откуда", exact: true })).toContainText(finish);
+});
