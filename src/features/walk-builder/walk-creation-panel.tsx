@@ -8,7 +8,7 @@ import { ExploreIcon } from "../explore/icons";
 import { useWalkDraft } from "./use-walk-draft";
 import { creationReducer } from "./creation-state";
 import { AddressInput } from "./address-input";
-import { moveStop, validStops, type Place } from "./model";
+import { validStops, type Place } from "./model";
 import { ResearchPanel } from "./research-panel";
 import "../ui/surfaces.css";
 import "./walk-creation-panel.css";
@@ -88,7 +88,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
 
   return <section ref={panel} className={`creation-panel${state.picking ? " is-picking" : preview ? " is-preview" : ""}`} aria-labelledby="creation-title">
     <div className="creation-handle" aria-hidden="true" />
-    <header className={`creation-heading${preview ? "" : " is-compact"}`}><div><h1 id="creation-title" ref={title} tabIndex={-1}>{state.picking ? "Куда идём?" : preview ? "Ваш маршрут" : "Прогулка"}</h1></div><button type="button" className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки"><ExploreIcon name="close" /></button></header>
+    <header className="creation-heading is-compact"><div><h1 id="creation-title" ref={title} tabIndex={-1}>{state.picking ? "Куда идём?" : preview ? "Ваш маршрут" : "Прогулка"}</h1></div><button type="button" className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки"><ExploreIcon name="close" /></button></header>
     <div className="creation-body">
       {!w.loaded ? <p role="status">Открываем черновик…</p> : <>
         {!preview && !state.picking && <>
@@ -102,15 +102,13 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
         {state.picking && <div className="creation-map-pick"><p>Нажмите на карту в нужном месте.</p><button className="ui-button quiet creation-map-cancel" onClick={() => dispatch({ type: "return" })}>Отменить</button></div>}
         {preview && <>
           <div className="creation-summary"><strong>{w.draft.route!.walkingMinutes} <small>мин пешком</small></strong><strong>{(w.draft.route!.distanceM / 1000).toFixed(1).replace(".", ",")} <small>км</small></strong></div>
-          <p className="ui-muted">{w.draft.start?.address} → {w.draft.destination?.address ?? (w.draft.mode === "loop" ? "возвращение к началу" : "последняя остановка")}</p>
-          <ol className="creation-stops">{w.draft.stops.map((stop, i) => <li key={`${stop.address}-${i}`}><span>{stop.address}</span><div><button disabled={busy || i === 0} aria-label={`Поднять остановку ${i + 1}`} onClick={() => w.edit({ stops: moveStop(w.draft.stops, i, -1) })}>↑</button><button disabled={busy} aria-label={`Удалить остановку ${i + 1}`} onClick={() => w.edit({ stops: w.draft.stops.filter((_, index) => index !== i) })}>×</button></div></li>)}</ol>
-          {!w.draft.stops.length && <p className="ui-notice">Пешеходный маршрут построен. Исторических остановок по пути пока нет.</p>}
-          <details className="creation-details"><summary>Изменить название и маршрут</summary><label className="ui-field">Название<input value={w.draft.title} maxLength={120} onChange={e => w.persist({ ...w.current.current, title: e.target.value })} /></label><button className="creation-text" onClick={() => w.edit({})}>Изменить точки</button><button className="creation-text" onClick={() => { w.setTarget("stop"); setPicker("address"); w.edit({}); }}>Добавить остановку</button><button className="creation-text" onClick={w.download}>Скачать черновик</button></details>
+          <div className="creation-route-points"><p><small>Откуда</small>{w.draft.start?.address}</p><p><small>Куда</small>{w.draft.destination?.address ?? (w.draft.mode === "loop" ? w.draft.start?.address : w.draft.stops.at(-1)?.address)}</p></div>
+          <button className="creation-text" disabled={busy} onClick={() => w.edit({})}>Изменить маршрут</button>
+          {w.draft.stops.length > 0 && <details className="creation-details"><summary>Остановки · {w.draft.stops.length}</summary><ol className="creation-stops">{w.draft.stops.map((stop, i) => <li key={`${stop.address}-${i}`}>{stop.address}</li>)}</ol>
           {w.nextPlace && <label className="creation-consent"><input type="checkbox" checked={w.reviewed} onChange={e => w.setReviewed(e.target.checked)} />Подготовить историю выбранной остановки с помощью ИИ. Факты будут проверены по источникам.</label>}
           {w.nextPlace && <button className="ui-button secondary" disabled={busy || !w.reviewed || !!w.activeJob || !!w.draft.submitting || !!w.storageError} onClick={() => void w.prepareNext()}>Подготовить историю</button>}
           {w.draft.jobs.length > 0 && <div className="creation-jobs">{w.draft.jobs.map(job => <Link key={job.id} href={`/create?job=${job.id}`}>История: {job.place.address} →</Link>)}</div>}
-          {w.openHref && <Link className="ui-button" href={w.openHref}>Открыть прогулку</Link>}
-          <button className="creation-text" disabled={busy} onClick={() => void w.saveToAccount()}>{w.serverWalk ? "Обновить в аккаунте" : "Сохранить в аккаунте"}</button>
+          </details>}
         </>}
         <ResearchPanel draft={w.draft} current={w.current} persist={w.persist} offered={w.researchOffered} disabled={busy || !!w.storageError} chooseStartDisabled={busy} action={w.action} setBusy={w.setBusy} onApply={() => dispatch({ type: "step", step: "preview" })} onChooseStart={() => { w.setTarget("start"); w.edit({}); }} />
         {w.draft.submitting && <div className="ui-notice"><p>Результат отправки неизвестен. Введите ID истории из раздела запросов профиля.</p><label className="ui-field">ID истории<input value={w.recoveryId} onChange={e => w.setRecoveryId(e.target.value)} /></label><button className="ui-button secondary" onClick={() => void w.recoverJob()}>Восстановить</button></div>}
@@ -120,6 +118,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
       {w.message && <p className="ui-notice" role="status">{w.message}</p>}
       {busy && <p role="status" className="ui-muted">{w.busy || "Определяем местоположение…"}</p>}
     </div>
+    {preview && w.openHref && <footer className="creation-footer"><Link className="ui-button" href={w.openHref}>Начать прогулку</Link></footer>}
     {w.loaded && !preview && !state.picking && w.draft.start && (mode === "time" || w.draft.destination) && <footer className="creation-footer"><button className="ui-button" disabled={busy || !w.draft.start || (mode === "destination" && !w.draft.destination) || !!w.candidate || !!w.storageError} onClick={() => void build()}>Построить прогулку</button></footer>}
   </section>;
 }

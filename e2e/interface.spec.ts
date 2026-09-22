@@ -53,7 +53,7 @@ test("сбой сессии не выглядит как отсутствие п
   await expect(page.locator("main").getByRole("alert")).toContainText("вход");
 });
 
-test("создаёт A→Б на карте и восстанавливает его из истории", async ({ page }) => {
+test("создаёт A→Б на карте и восстанавливает его из истории", async ({ page }, info) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
   const start = { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } };
@@ -76,12 +76,18 @@ test("создаёт A→Б на карте и восстанавливает е
   await page.getByRole("textbox").press("Enter");
   await page.getByRole("button", { name: "Построить прогулку" }).click();
   await expect(page.getByRole("heading", { name: "Ваш маршрут" })).toBeVisible();
+  await expect(page.locator(".creation-stops:empty")).toHaveCount(0);
+  await expect(page.getByText("Пешеходный маршрут построен. Исторических остановок по пути пока нет.")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Сохранить в аккаунте" })).toHaveCount(0);
+  await expect(page.locator(".creation-panel [role=status]")).toHaveCount(0);
+  await page.screenshot({ path: info.outputPath("preview.png") });
+  await expect(page.getByRole("link", { name: "Начать прогулку", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Закрыть создание прогулки" }).click();
   await page.getByRole("link", { name: "История", exact: true }).click();
   await page.getByRole("link", { name: "Редактировать" }).click();
   await expect(page.getByRole("heading", { name: "Ваш маршрут" })).toBeVisible();
   await expect(page.locator(".creation-panel")).toContainText(destination.address);
-  await page.getByRole("link", { name: "Открыть прогулку", exact: true }).click();
+  await page.getByRole("link", { name: "Начать прогулку", exact: true }).click();
   await expect(page.locator(".creation-panel")).toHaveCount(0);
   expect(errors).toEqual([]);
 });

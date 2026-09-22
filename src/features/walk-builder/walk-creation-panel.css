@@ -25,3 +25,5 @@
 .creation-time-done{width:100%;margin-top:16px}
 
 .creation-map-pick p{margin:0 0 16px;font-size:14px;line-height:1.5;color:#627169}.creation-map-cancel{width:100%;min-height:48px}.creation-map-cancel:hover{background:rgb(32 62 56 / 6%)}
+
+.creation-panel.is-preview .creation-summary{gap:24px;margin:4px 0 16px}.creation-panel.is-preview .creation-summary strong{font-size:24px}.creation-route-points{background:var(--raised);border:1px solid #dce2da;border-radius:14px;overflow:hidden}.creation-route-points p{margin:0;padding:10px 14px;font-size:14px;line-height:1.4}.creation-route-points p+p{border-top:1px solid #dce2da}.creation-route-points small{display:block;margin-bottom:3px;font-size:12px;color:#6a766e}.creation-panel.is-preview .creation-body{padding-bottom:0}.creation-panel.is-preview .creation-footer{border-top:0;padding-top:8px}.creation-panel.is-preview .creation-footer .ui-button{justify-content:center;min-height:48px}.creation-panel.is-preview .creation-details{margin:0}
