@@ -15,6 +15,26 @@ const distance = (a,b) => {
   const h = Math.sin((b.lat-a.lat)*rad/2)**2 + Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin((b.lon-a.lon)*rad/2)**2;
   return 12742000 * Math.asin(Math.sqrt(Math.min(1,h)));
 };
+const MAX_AUTO_STOPS = 5;
+const NEAR_ROUTE_METERS = 50;
+
+// Approximate a point against a short Moscow walking polyline. Besides the
+// distance, progress keeps landmarks in walking order instead of creating
+// backtracking between nearby buildings.
+function routeProximity(point, geometry) {
+  let best={distanceM:Infinity,progressM:Infinity},passed=0;
+  for(let i=1;i<geometry.length;i++) {
+    const a=geometry[i-1],b=geometry[i],lat=(a.lat+b.lat+point.lat)/3*Math.PI/180;
+    const scaleX=111320*Math.cos(lat),scaleY=111320;
+    const bx=(b.lon-a.lon)*scaleX,by=(b.lat-a.lat)*scaleY;
+    const px=(point.lon-a.lon)*scaleX,py=(point.lat-a.lat)*scaleY;
+    const length2=bx*bx+by*by,t=length2?Math.max(0,Math.min(1,(px*bx+py*by)/length2)):0;
+    const segmentM=Math.sqrt(length2),distanceM=Math.hypot(px-bx*t,py-by*t);
+    if(distanceM<best.distanceM)best={distanceM,progressM:passed+segmentM*t};
+    passed+=segmentM;
+  }
+  return best;
+}
 
 function place(p) {
   if (!keys(p,['address','location']) || !clean(p.address,240) || !keys(p.location,['lat','lon']) || !inBox(p.location)) throw fail('WALK_INVALID');
@@ -138,10 +158,21 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
         }
         if(destination) {
           discovering=false;
-          let result=directRoute,current=start;
+          let result=directRoute,current=start,attempts=0;
+          // Landmarks that the direct walking line already passes should win
+          // over detours. Keep them ordered along the line.
+          const alongRoute=candidates.map(candidate=>({candidate,...routeProximity(candidate.location,directRoute.geometry)}))
+            .filter(item=>item.distanceM<=NEAR_ROUTE_METERS)
+            .sort((a,b)=>a.progressM-b.progressM||a.distanceM-b.distanceM);
+          for(const item of alongRoute) {
+            if(stops.length>=MAX_AUTO_STOPS||attempts>=16)break;
+            candidates.splice(candidates.indexOf(item.candidate),1);attempts++;
+            const next=await routeStops([...stops,item.candidate]);
+            if(next){stops.push(item.candidate);current=item.candidate;result=next;}
+          }
           // Try alternatives instead of discarding every stop after one costly detour.
           // Bound router work independently of the size of the OSM catalog.
-          for(let attempts=0;candidates.length&&stops.length<4&&attempts<16;attempts++) {
+          for(;candidates.length&&stops.length<4&&attempts<16;attempts++) {
             candidates.sort((a,b)=>(distance(current.location,a.location)+distance(a.location,destination.location))-(distance(current.location,b.location)+distance(b.location,destination.location)));
             const candidate=candidates.shift();
             const next=await routeStops([...stops,candidate]);
