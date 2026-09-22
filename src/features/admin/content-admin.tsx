@@ -78,6 +78,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
   const [heartbeats, setHeartbeats] = useState<ContentHeartbeat[]>([]);
   const [audioJobs, setAudioJobs] = useState<ContentAudioJob[]>([]);
   const [workerToken, setWorkerToken] = useState("");
+  const [ttsTransport, setTtsTransport] = useState<"worker" | "http">("worker");
   // Freshness is read off the clock when the list arrives: during render `Date.now()` would be impure and the
   // callout would silently go stale anyway, because nothing re-renders the component as the window expires.
   const [workerOnline, setWorkerOnline] = useState(false);
@@ -114,11 +115,12 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
       const [batchList, nextStats, workerList, audio] = await Promise.all([
         api<{ batches: ContentBatch[] }>("/content/batches", signal),
         api<Stats>("/content/stats", signal),
-        api<{ workers: ContentWorker[]; heartbeats: ContentHeartbeat[] }>("/content/workers", signal),
+        api<{ transport: "worker" | "http"; workers: ContentWorker[]; heartbeats: ContentHeartbeat[] }>("/content/workers", signal),
         api<{ audioJobs: ContentAudioJob[] }>("/content/audio", signal),
       ]);
       setBatches(batchList.batches); setStats(nextStats);
       setWorkers(workerList.workers); setHeartbeats(workerList.heartbeats); setAudioJobs(audio.audioJobs);
+      setTtsTransport(workerList.transport);
       setWorkerOnline(workerList.workers.some(worker => !worker.revokedAt && worker.lastSeenAt
         && Date.now() - new Date(worker.lastSeenAt).valueOf() < HEARTBEAT_WINDOW_MS));
     });
@@ -442,12 +444,12 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
                 setNotice("Озвучка поставлена в очередь.");
               })}>Озвучить заново</button>}
             </div>
-            {!workerOnline && <p className="admin-callout">Сейчас нет online-воркера TTS. Поставленная озвучка останется в очереди до его подключения.</p>}
+            {ttsTransport === "worker" && !workerOnline && <p className="admin-callout">Сейчас нет online-воркера TTS. Поставленная озвучка останется в очереди до его подключения.</p>}
           </> : <p className="admin-empty">Для этого места текст ещё не создан. Включите его в новую партию, чтобы запустить подготовку.</p>}
         </article>}
       </section>
 
-      <section className="admin-review" aria-labelledby="content-workers-title">
+      {ttsTransport === "worker" ? <section className="admin-review" aria-labelledby="content-workers-title">
         <div className="admin-section-head">
           <div><h3 id="content-workers-title">Локальные TTS-воркеры</h3>
             <p className="admin-meta">Активным считается воркер, обращавшийся к API за последние две минуты.</p></div>
@@ -483,7 +485,10 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
           })}</tbody>
         </table></div>
         {!loading.overview && !workers.length && <p className="admin-empty-row" role="status">Ключи воркеров ещё не выпускались.</p>}
-      </section>
+      </section> : <section className="admin-review" aria-labelledby="content-workers-title">
+        <h3 id="content-workers-title">Сервер TTS</h3>
+        <p className="admin-meta">Озвучка обрабатывается сервером TTS через закрытое HTTP-подключение. Ключи внешних воркеров в этом режиме не используются.</p>
+      </section>}
     </section>
   );
 }
