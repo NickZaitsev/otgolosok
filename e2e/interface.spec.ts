@@ -46,14 +46,12 @@ test("создаёт A→Б на карте и восстанавливает е
   await page.getByRole("link", { name: "Прогулка", exact: true }).click();
   await page.getByRole("button", { name: "Откуда", exact: true }).click();
   await page.getByRole("button", { name: "Ввести адрес", exact: false }).click();
-  await page.getByRole("combobox", { name: "Откуда", exact: true }).fill(start.address);
-  await page.getByRole("combobox").press("Enter");
-  await page.getByRole("button", { name: "Выбрать эту точку" }).click();
+  await page.getByRole("textbox", { name: "Откуда", exact: true }).fill(start.address);
+  await page.getByRole("textbox").press("Enter");
   await page.getByRole("button", { name: "Куда", exact: true }).click();
   await page.getByRole("button", { name: "Ввести адрес", exact: false }).click();
-  await page.getByRole("combobox", { name: "Куда", exact: true }).fill(destination.address);
-  await page.getByRole("combobox").press("Enter");
-  await page.getByRole("button", { name: "Выбрать эту точку" }).click();
+  await page.getByRole("textbox", { name: "Куда", exact: true }).fill(destination.address);
+  await page.getByRole("textbox").press("Enter");
   await page.getByRole("button", { name: "Построить прогулку" }).click();
   await expect(page.getByRole("heading", { name: "Ваш маршрут" })).toBeVisible();
   await page.getByRole("button", { name: "Закрыть создание прогулки" }).click();
@@ -182,6 +180,7 @@ for (const [width, height] of [[360, 800], [390, 844], [568, 400], [844, 390], [
     await expect(page.getByRole("textbox")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "По времени" })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Прогулка", exact: true })).toBeVisible();
+    await expect(page.locator(".creation-letter")).toHaveCount(0);
     const panel = await page.locator(".creation-panel").boundingBox();
     expect(panel!.height).toBeLessThanOrEqual(240);
     const nav = await page.getByRole("navigation", { name: "Основная навигация" }).boundingBox();
@@ -222,39 +221,23 @@ for (const width of [390, 1440]) {
   });
 }
 
- test("ввод в самом поле предлагает адреса и выбирает их с клавиатуры", async ({ page }, info) => {
-   const place = { address: "Москва, Арбат, 20", location: { lat: 55.752, lon: 37.6 } };
-   let geocoding = 0;
-   await page.route("**/api/story-place?*", route => { geocoding++; return route.fulfill({ json: place }); });
-   await page.route("**/api/content/places?*", route => route.fulfill({ json: { places: route.request().url().includes("q=") ? [place] : [] } }));
-   await page.goto("/?walk=create");
-   const background = await page.locator(".creation-endpoint").first().evaluate(el => getComputedStyle(el).backgroundColor);
-   expect(background).toBe("rgb(251, 248, 242)");
-   await page.getByRole("button", { name: "Куда", exact: true }).click();
-   await page.getByRole("button", { name: "Ввести адрес", exact: true }).click();
-   const input = page.getByRole("combobox", { name: "Куда", exact: true });
-   await expect(input).toBeFocused();
-   await expect(page.getByRole("button", { name: "Найти", exact: true })).toHaveCount(0);
-   await input.fill("Арбат");
-   await expect(page.getByRole("option", { name: place.address })).toBeVisible();
-   await page.screenshot({ path: info.outputPath("inline-address.png") });
-   await input.press("ArrowDown");
-   await input.press("Enter");
-   await expect(page.getByRole("button", { name: "Куда", exact: true })).toContainText(place.address);
-   expect(geocoding).toBe(0);
- });
-
- test("при отказе подсказок введённый адрес сохраняется и доступен поиск по Enter", async ({ page }) => {
-   await page.route("**/api/content/places?*", route => route.fulfill({ status: 400, json: {} }));
-   await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: "Москва, Арбат, 20", location: { lat: 55.752, lon: 37.6 } } }));
-   await page.goto("/?walk=create");
-   await page.getByRole("button", { name: "Откуда", exact: true }).click();
-   await page.getByRole("button", { name: "Ввести адрес", exact: true }).click();
-   const input = page.getByRole("combobox", { name: "Откуда", exact: true });
-   await input.fill("Арбат 20");
-   await expect(page.getByRole("status")).toContainText("Подсказки недоступны");
-   await expect(input).toHaveValue("Арбат 20");
-   await input.press("Enter");
-   await page.getByRole("button", { name: "Выбрать эту точку" }).click();
-   await expect(page.getByRole("button", { name: "Откуда", exact: true })).toContainText("Москва, Арбат, 20");
- });
+test("ручной адрес подтверждается кнопкой без каталога и сохраняется при ошибке", async ({ page }) => {
+  let attempts = 0;
+  await page.route("**/api/content/places?*", route => route.fulfill({ json: { places: [] } }));
+  await page.route("**/api/story-place?*", route => {
+    attempts++;
+    return route.fulfill(attempts === 1 ? { status: 404, json: { error: { message: "Уточните номер дома" } } } : { json: { address: "Москва, Дербеневская улица, 3", location: { lat: 55.7254969, lon: 37.6513112 } } });
+  });
+  await page.goto("/?walk=create");
+  await page.getByRole("button", { name: "Куда", exact: true }).click();
+  await page.getByRole("button", { name: "Ввести адрес", exact: true }).click();
+  const input = page.getByRole("textbox", { name: "Куда", exact: true });
+  await input.fill("Дербеневская 3");
+  await page.getByRole("button", { name: "Подтвердить адрес" }).click();
+  await expect(page.locator(".creation-panel").getByRole("alert")).toContainText("Уточните номер дома");
+  await expect(input).toHaveValue("Дербеневская 3");
+  await input.press("Enter");
+  await expect(page.getByRole("button", { name: "Куда", exact: true })).toContainText("Москва, Дербеневская улица, 3");
+  await expect(page.getByRole("button", { name: "Выбрать эту точку" })).toHaveCount(0);
+  expect(attempts).toBe(2);
+});

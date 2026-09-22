@@ -211,6 +211,7 @@ export function useWalkDraft() {
       if (!isPlace(found)) throw new Error("Не найден точный адрес дома в Москве. Уточните улицу и номер.");
       const place = { address: found.address, location: { lat: found.location.lat, lon: found.location.lon } };
       setCandidate(place); setFocus(place.location);
+      return place;
     } catch (caught) { if (!controller.signal.aborted) setError(caught instanceof Error ? caught.message : "Не удалось найти адрес."); }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
   }
