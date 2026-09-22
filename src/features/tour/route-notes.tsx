@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { StorySources, StoryText } from "./story-content";
+import { AppIcon } from "../ui/app-icon";
 import type { RouteNote } from "./types";
 
 export function RouteNotes({ notes, narrated = false }: { notes: RouteNote[]; narrated?: boolean }) {
@@ -24,7 +25,7 @@ function Note({ note, narrated }: { note: RouteNote; narrated: boolean }) {
     <summary>
       <span className="route-note-place">{note.place}</span>
       <span className="route-note-title">{note.story.opening}</span>
-      <span className="route-note-duration">Читать · около {note.story.duration_sec} сек <span aria-hidden="true" className="route-note-arrow">↓</span></span>
+      <span className="route-note-duration">Читать · около {note.story.duration_sec} сек <AppIcon className="route-note-arrow" name="chevron-down" size={18} /></span>
     </summary>
     <div className="route-note-body">
       <StoryText story={note.story} />
