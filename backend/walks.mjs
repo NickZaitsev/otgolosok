@@ -93,7 +93,10 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           const s=leg?.summary;
           if(!s||!Number.isFinite(s.time)||s.time<=0||!Number.isFinite(s.length)||s.length<=0||s.time>86400||s.length>100)throw fail('WALK_UNAVAILABLE');
           const shape=decode(leg.shape);
-          if(distance(shape[0],points[i].location)>150||distance(shape.at(-1),points[i+1].location)>150||(geometry.length&&distance(geometry.at(-1),shape[0])>10))throw fail('WALK_UNAVAILABLE');
+          if(distance(shape[0],points[i].location)>150||distance(shape.at(-1),points[i+1].location)>150)throw fail('WALK_UNAVAILABLE');
+          // Snapping a stop to different pedestrian edges can leave a real gap.
+          // Reject this candidate, never draw an invented connecting segment.
+          if(geometry.length&&distance(geometry.at(-1),shape[0])>10)return null;
           let measured=0;for(let j=1;j<shape.length;j++)measured+=distance(shape[j-1],shape[j]);
           if(Math.abs(measured-s.length*1000)>Math.max(100,s.length*1000*0.25))throw fail('WALK_UNAVAILABLE');
           seconds+=s.time;distanceM+=s.length*1000;geometry.push(...(geometry.length?shape.slice(1):shape));
