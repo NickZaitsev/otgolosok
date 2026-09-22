@@ -222,7 +222,7 @@ export function useWalkDraft() {
     else if (target === "destination") edit({ destination: candidate, mode: "open" });
     else {
       const stops = [...draft.stops, candidate];
-      if (!validStops(draft.start, stops)) { setError("Добавьте от 1 до 5 разных домов, не ближе 25 м к старту и друг к другу."); return; }
+      if (!validStops(draft.start, stops)) { setError("Добавьте от 1 до 10 разных домов, не ближе 25 м к старту и друг к другу."); return; }
       edit({ stops }); setSelection("manual");
     }
     setCandidate(null); setQuery("");

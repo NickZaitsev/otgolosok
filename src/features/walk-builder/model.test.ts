@@ -40,7 +40,9 @@ describe("walk draft", () => {
     expect(validStops(start, [])).toBe(false);
     expect(validStops(start, [start])).toBe(false);
     expect(validStops(start, [stop, stop])).toBe(false);
-    expect(validStops(start, Array(6).fill(stop))).toBe(false);
+    const distinct = Array.from({ length: 10 }, (_, index) => ({ address: `Москва, Арбат, ${index + 10}`, location: { lat: 55.752 + index * 0.001, lon: 37.604 } }));
+    expect(validStops(start, distinct)).toBe(true);
+    expect(validStops(start, [...distinct, { address: "Москва, Арбат, 20", location: { lat: 55.762, lon: 37.604 } }])).toBe(false);
   });
   it("reorders immutably with bounded accessible up/down operations", () => {
     const stops = [stop, last];

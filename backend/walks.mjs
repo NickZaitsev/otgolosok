@@ -15,7 +15,8 @@ const distance = (a,b) => {
   const h = Math.sin((b.lat-a.lat)*rad/2)**2 + Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin((b.lon-a.lon)*rad/2)**2;
   return 12742000 * Math.asin(Math.sqrt(Math.min(1,h)));
 };
-const MAX_AUTO_STOPS = 5;
+const MAX_WALK_STOPS = 10;
+const AUTO_STOP_LIMITS = {30:5,60:8,90:10};
 const NEAR_ROUTE_METERS = 50;
 
 // Approximate a point against a short Moscow walking polyline. Besides the
@@ -72,10 +73,11 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
   let active=false,lastStart=-Infinity;
   return async function planWalk(input) {
     if(!keys(input,['start','mode','minutes','stops','destination']) || !['loop','open'].includes(input.mode) || ![30,60,90].includes(input.minutes))throw fail('WALK_INVALID');
+    const stopLimit=AUTO_STOP_LIMITS[input.minutes];
     const destination=input.destination==null?null:place(input.destination);
     if(destination&&input.mode!=='open')throw fail('WALK_INVALID');
     const start=place(input.start), manual=Object.hasOwn(input,'stops');
-    if(manual&&(!Array.isArray(input.stops)||input.stops.length<(destination?0:1)||input.stops.length>5))throw fail('WALK_INVALID');
+    if(manual&&(!Array.isArray(input.stops)||input.stops.length<(destination?0:1)||input.stops.length>MAX_WALK_STOPS))throw fail('WALK_INVALID');
     let stops=manual?input.stops.map(place):[];
     const distinct=[start,...stops,...(destination?[destination]:[])];
     if(distinct.some((p,i)=>distinct.slice(0,i).some(q=>distance(p.location,q.location)<25)))throw fail('WALK_INVALID');
@@ -165,14 +167,14 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
             .filter(item=>item.distanceM<=NEAR_ROUTE_METERS)
             .sort((a,b)=>a.progressM-b.progressM||a.distanceM-b.distanceM);
           for(const item of alongRoute) {
-            if(stops.length>=MAX_AUTO_STOPS||attempts>=16)break;
+            if(stops.length>=stopLimit||attempts>=16)break;
             candidates.splice(candidates.indexOf(item.candidate),1);attempts++;
             const next=await routeStops([...stops,item.candidate]);
             if(next){stops.push(item.candidate);current=item.candidate;result=next;}
           }
           // Try alternatives instead of discarding every stop after one costly detour.
           // Bound router work independently of the size of the OSM catalog.
-          for(;candidates.length&&stops.length<4&&attempts<16;attempts++) {
+          for(;candidates.length&&stops.length<stopLimit&&attempts<16;attempts++) {
             candidates.sort((a,b)=>(distance(current.location,a.location)+distance(a.location,destination.location))-(distance(current.location,b.location)+distance(b.location,destination.location)));
             const candidate=candidates.shift();
             const next=await routeStops([...stops,candidate]);
@@ -181,7 +183,7 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           return result;
         }
         let current=start;
-        while(candidates.length&&stops.length<4) {
+        while(candidates.length&&stops.length<stopLimit) {
           candidates.sort((a,b)=>distance(current.location,a.location)-distance(current.location,b.location));
           current=candidates.shift();stops.push(current);
         }

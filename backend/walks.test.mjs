@@ -51,13 +51,20 @@ for(const mode of ['loop','open'])test(`manual ${mode} preserves stop order and 
 
 test('strict input validation makes no upstream calls',async()=>{
   const {plan,calls}=fixture(()=>{throw new Error('must not fetch');});
-  for(const value of [null,[],{},input({mode:'drive'}),input({minutes:'30'}),input({minutes:31}),input({extra:true}),input({stops:[]}),input({stops:undefined}),input({stops:Array.from({length:6},(_,i)=>stop(i+1))}),input({stops:[start]}),input({stops:[stop(1),stop(1)]}),input({start:{...start,address:'<script>'}}),input({start:{...start,address:'a'.repeat(241)}}),input({start:{...start,location:{lat:'55.75',lon:37.6}}}),input({start:{...start,location:{lat:56,lon:37.6}}}),input({start:{...start,location:{lat:55.75,lon:NaN}}}),input({start:{...start,location:{...start.location,z:1}}})]) {
+  for(const value of [null,[],{},input({mode:'drive'}),input({minutes:'30'}),input({minutes:31}),input({extra:true}),input({stops:[]}),input({stops:undefined}),input({stops:Array.from({length:11},(_,i)=>stop(i+1))}),input({stops:[start]}),input({stops:[stop(1),stop(1)]}),input({start:{...start,address:'<script>'}}),input({start:{...start,address:'a'.repeat(241)}}),input({start:{...start,location:{lat:'55.75',lon:37.6}}}),input({start:{...start,location:{lat:56,lon:37.6}}}),input({start:{...start,location:{lat:55.75,lon:NaN}}}),input({start:{...start,location:{...start.location,z:1}}})]) {
     await assert.rejects(plan(value),{code:'WALK_INVALID'});
   }
   assert.equal(calls.length,0);
 });
 
-for(const mode of ['loop','open'])test(`automatic ${mode} selects 2-4 ordered addressed buildings`,async()=>{
+test('manual routes accept ten distinct stops',async()=>{
+  const stops=Array.from({length:10},(_,index)=>stop(index+1));
+  const {plan}=fixture((url,o)=>route(JSON.parse(o.body)));
+  const result=await plan({start,mode:'open',minutes:30,stops});
+  assert.deepEqual(result.stops,stops);
+});
+
+for(const mode of ['loop','open'])test(`automatic ${mode} selects ordered addressed buildings`,async()=>{
   const data=candidates();
   data.elements.reverse();data.elements.push(...[
     {...data.elements[0],tags:{...data.elements[0].tags,'addr:housenumber':'<123>'}},
@@ -282,6 +289,28 @@ test('automatic destination also includes a fifth landmark directly along the ro
   const result=await plan({start,mode:'open',minutes:30,destination:stop(8)});
   assert.deepEqual(result.stops,[1,2,3,4,5].map(stop));
   assert.deepEqual(result.geometry.at(-1),stop(8).location);
+});
+
+for(const [minutes,expected] of [[30,5],[60,8],[90,10]]) test(`automatic destination uses a ${expected}-stop cap for ${minutes} minutes`, async () => {
+  const data={elements:Array.from({length:10},(_,index)=>{
+    const n=index+1;
+    return {...candidates().elements[0],center:stop(n).location,tags:{...candidates().elements[0].tags,'addr:housenumber':String(n+2)}};
+  })};
+  const {plan}=fixture((url,o)=>url.includes('osm')?data:route(JSON.parse(o.body)));
+  const result=await plan({start,mode:'open',minutes,destination:stop(12)});
+  assert.deepEqual(result.stops,Array.from({length:expected},(_,index)=>stop(index+1)));
+  assert.deepEqual(result.geometry.at(-1),stop(12).location);
+});
+
+for(const [minutes,expected] of [[30,5],[60,8],[90,10]]) test(`automatic loop uses a ${expected}-stop cap for ${minutes} minutes`, async () => {
+  const data={elements:Array.from({length:10},(_,index)=>{
+    const n=index+1;
+    return {...candidates().elements[0],center:stop(n).location,tags:{...candidates().elements[0].tags,'addr:housenumber':String(n+2)}};
+  })};
+  const {plan}=fixture((url,o)=>url.includes('osm')?data:route(JSON.parse(o.body)));
+  const result=await plan({start,mode:'loop',minutes});
+  assert.deepEqual(result.stops,Array.from({length:expected},(_,index)=>stop(index+1)));
+  assert.deepEqual(result.geometry.at(-1),start.location);
 });
 
 test('an optional stop with disconnected snapped legs does not discard a valid route', async () => {
