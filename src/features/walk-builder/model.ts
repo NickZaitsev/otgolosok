@@ -3,6 +3,7 @@ import { isMoscowPoint } from "../explore/map-jobs";
 import { stageLabels, type GenerationStage } from "../generator/types";
 
 export const DRAFT_KEY = "otgolosok:walk:v1";
+export const MAX_WALK_STOPS = 10;
 export type Place = { address: string; location: Coordinates };
 export type Plan = { stops: Place[]; geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string };
 export type StoryRef = { place: Place; id: string; stage: GenerationStage };
@@ -36,7 +37,7 @@ export function rememberStory(jobs: StoryRef[], job: StoryRef): StoryRef[] {
   return [...jobs.filter(j => j.id !== job.id), job];
 }
 export function validStops(start: Place | null, stops: Place[], destination?: Place | null) {
-  if (!start || !isPlace(start) || stops.length < (destination ? 0 : 1) || stops.length > 5 || !stops.every(isPlace)) return false;
+  if (!start || !isPlace(start) || stops.length < (destination ? 0 : 1) || stops.length > MAX_WALK_STOPS || !stops.every(isPlace)) return false;
   if (destination && !isPlace(destination)) return false;
   const points = [start, ...stops, ...(destination ? [destination] : [])];
   return points.every((p, i) => points.slice(0, i).every(q => {
@@ -46,7 +47,7 @@ export function validStops(start: Place | null, stops: Place[], destination?: Pl
   }));
 }
 export function isPlan(v: unknown): v is Plan {
-  return record(v) && Array.isArray(v.stops) && v.stops.length >= 0 && v.stops.length <= 5 && v.stops.every(isPlace) &&
+  return record(v) && Array.isArray(v.stops) && v.stops.length >= 0 && v.stops.length <= MAX_WALK_STOPS && v.stops.every(isPlace) &&
     Array.isArray(v.geometry) && v.geometry.length >= 2 && v.geometry.length <= 12000 && v.geometry.every(p => record(p) && typeof p.lat === "number" && typeof p.lon === "number" && isMoscowPoint(p as Coordinates)) &&
     typeof v.distanceM === "number" && Number.isFinite(v.distanceM) && v.distanceM > 0 && v.distanceM <= 8100 &&
     typeof v.walkingMinutes === "number" && Number.isFinite(v.walkingMinutes) && v.walkingMinutes > 0 && v.walkingMinutes <= 90 && typeof v.attribution === "string" && v.attribution.length > 0 && v.attribution.length <= 2000;
@@ -79,10 +80,10 @@ export function applyResearch(draft: Draft, job: ResearchJob): Draft {
 export function parseDraft(raw: string | null): Draft {
   if (raw === null) return emptyDraft();
   const v: unknown = JSON.parse(raw);
-  if (!record(v) || v.version !== 1 || typeof v.title !== "string" || v.title.length > 120 || (v.start !== null && !isPlace(v.start)) || !["loop","open"].includes(String(v.mode)) || ![30,60,90].includes(Number(v.minutes)) || typeof v.minutes !== "number" || !Array.isArray(v.stops) || v.stops.length > 5 || !v.stops.every(isPlace) || !Array.isArray(v.jobs) || v.jobs.length > 100 || !v.jobs.every(j => record(j) && isPlace(j.place) && isJobId(j.id) && isStage(j.stage)) || (v.submitting !== null && !isPlace(v.submitting))) throw new Error("Черновик не удалось прочитать. Исходная копия не изменена.");
+  if (!record(v) || v.version !== 1 || typeof v.title !== "string" || v.title.length > 120 || (v.start !== null && !isPlace(v.start)) || !["loop","open"].includes(String(v.mode)) || ![30,60,90].includes(Number(v.minutes)) || typeof v.minutes !== "number" || !Array.isArray(v.stops) || v.stops.length > MAX_WALK_STOPS || !v.stops.every(isPlace) || !Array.isArray(v.jobs) || v.jobs.length > 100 || !v.jobs.every(j => record(j) && isPlace(j.place) && isJobId(j.id) && isStage(j.stage)) || (v.submitting !== null && !isPlace(v.submitting))) throw new Error("Черновик не удалось прочитать. Исходная копия не изменена.");
   if (v.destination != null && (v.mode !== "open" || !isPlace(v.destination))) throw new Error("Некорректный финиш прогулки.");
   if (v.route !== null && (!isPlan(v.route) || !validStops(v.start as Place | null, v.stops, v.destination as Place | null) || JSON.stringify(v.route.stops) !== JSON.stringify(v.stops) || v.route.walkingMinutes > v.minutes)) throw new Error("Сохранённый маршрут повреждён. Исходная копия не изменена.");
-  if ((v.research !== undefined && (!record(v.research) || !isJobId(v.research.recoveryToken) || !isResearchRequest(v.research.request) || (v.research.id !== null && !isJobId(v.research.id)) || !Array.isArray(v.research.stops) || v.research.stops.length > 5 || !v.research.stops.every(isPlace))) || (v.researchApplied !== undefined && typeof v.researchApplied !== "boolean")) throw new Error("Сохранённое исследование повреждено. Исходная копия не изменена.");
+  if ((v.research !== undefined && (!record(v.research) || !isJobId(v.research.recoveryToken) || !isResearchRequest(v.research.request) || (v.research.id !== null && !isJobId(v.research.id)) || !Array.isArray(v.research.stops) || v.research.stops.length > MAX_WALK_STOPS || !v.research.stops.every(isPlace))) || (v.researchApplied !== undefined && typeof v.researchApplied !== "boolean")) throw new Error("Сохранённое исследование повреждено. Исходная копия не изменена.");
   // Older drafts could contain the same backend job for multiple map points.
   return { ...v, jobs: (v.jobs as StoryRef[]).reduce(rememberStory, []) } as Draft;
 }
