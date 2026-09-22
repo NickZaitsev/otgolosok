@@ -287,11 +287,11 @@ describe("прелоадеры таблиц", () => {
   }
 
   function skeletons(title: string) {
-    return section(title).querySelectorAll("tr.content-skeleton-row").length;
+    return section(title).querySelectorAll("tr.admin-skeleton-row").length;
   }
 
   function rows(title: string) {
-    return section(title).querySelectorAll("tbody tr:not(.content-skeleton-row)").length;
+    return section(title).querySelectorAll("tbody tr:not(.admin-skeleton-row)").length;
   }
 
   it("заменяет строки партий и воркеров скелетоном на время обновления", async () => {

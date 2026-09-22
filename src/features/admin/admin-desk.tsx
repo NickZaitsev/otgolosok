@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { WalkAdmin } from "./walk-admin";
 import { ContentAdmin } from "./content-admin";
 import { draftCheck, initialDraft, safeSourceLink, stages, type AdminApi, type Draft, type Job, type Summary, type TtsProvider } from "./model";
+import { skeletonRows } from "./table-skeleton";
 import { csrfHeaders, getSession, signOut } from "../auth/client";
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -38,6 +39,8 @@ export function AdminDesk() {
   const [section, setSection] = useState<AdminSection>("addresses");
   const [walkDirty, setWalkDirty] = useState(false);
   const [jobs, setJobs] = useState<Summary[]>([]);
+  // The queue table swaps to placeholder rows while its own request runs, instead of holding stale rows.
+  const [queueLoading, setQueueLoading] = useState(false);
   const [contentDirty, setContentDirty] = useState(false);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -150,7 +153,14 @@ export function AdminDesk() {
     return !hasUnsavedWork || window.confirm("Есть несохранённые правки. Отбросить их и продолжить?");
   }
 
+  /** Keeps the flag up for the whole request, including the retry that walks back a page that fell off the end. */
   async function loadQueue(nextOffset: number, signal: AbortSignal, nextFilters?: { q?: string; stage?: string; relevance?: RelevanceFilter }) {
+    setQueueLoading(true);
+    try { await fetchQueue(nextOffset, signal, nextFilters); }
+    finally { setQueueLoading(false); }
+  }
+
+  async function fetchQueue(nextOffset: number, signal: AbortSignal, nextFilters?: { q?: string; stage?: string; relevance?: RelevanceFilter }) {
     const nextQuery = nextFilters?.q ?? query;
     const nextStage = nextFilters?.stage ?? stageFilter;
     const nextRelevance = nextFilters?.relevance ?? relevanceFilter;
@@ -159,7 +169,7 @@ export function AdminDesk() {
     if (nextStage !== "all") params.set("stage", nextStage);
     const result = await api<{ jobs: Summary[]; hasMore: boolean }>(`?${params}`, signal);
     if (!result.jobs.length && nextOffset > 0) {
-      await loadQueue(Math.max(0, nextOffset - PAGE_SIZE), signal, nextFilters);
+      await fetchQueue(Math.max(0, nextOffset - PAGE_SIZE), signal, nextFilters);
       return;
     }
     setJobs(result.jobs); setHasMore(result.hasMore); setOffset(nextOffset);
@@ -303,7 +313,7 @@ export function AdminDesk() {
           ) : (
             <section className="admin-addresses" aria-labelledby="admin-addresses-title">
               <div className="admin-section-head">
-                <div><h2 id="admin-addresses-title" ref={queueHeading} tabIndex={-1}>Адресные истории</h2><p className="admin-meta">{jobs.length ? `${offset + 1}–${offset + jobs.length}` : "По этим условиям ничего не найдено"}</p></div>
+                <div><h2 id="admin-addresses-title" ref={queueHeading} tabIndex={-1}>Адресные истории</h2><p className="admin-meta">{queueLoading ? "Загружаем адреса…" : jobs.length ? `${offset + 1}–${offset + jobs.length}` : "По этим условиям ничего не найдено"}</p></div>
                 <button disabled={Boolean(busy)} onClick={() => void run("Обновление списка…", signal => loadQueue(offset, signal))}>Обновить</button>
               </div>
               <form className="admin-filters" role="search" onSubmit={event => {
@@ -322,10 +332,10 @@ export function AdminDesk() {
                 <button className="admin-filter-submit" type="submit" disabled={Boolean(busy)}>Найти</button>
               </form>
 
-              <div className="admin-table-wrap"><table className="admin-table">
+              <div className="admin-table-wrap" aria-busy={queueLoading}><table className="admin-table">
                 <caption className="admin-sr-only">Адресные истории и действия редактора</caption>
                 <thead><tr><th scope="col">Адрес</th><th scope="col">Состояние</th><th scope="col">Выбранный голос</th><th scope="col">Обновлено</th><th scope="col">Действия</th></tr></thead>
-                <tbody>{jobs.map(item => <tr key={item.id} data-current={job?.id === item.id || undefined}>
+                <tbody>{queueLoading ? skeletonRows(5, jobs.length) : jobs.map(item => <tr key={item.id} data-current={job?.id === item.id || undefined}>
                   <th scope="row"><button className="admin-address-link" disabled={Boolean(busy)} onClick={() => openJob(item.id)}>{item.address}</button><span className="admin-row-id">{item.id.slice(0, 8)} · версия {item.revision}</span></th>
                   <td><span className={`admin-stage admin-stage-${item.stage}`}>{item.irrelevant ? "Нерелевантный" : stages[item.stage] ?? item.stage}</span>{item.error && <span className="admin-row-error">{item.error.message}</span>}</td>
                   <td>{voiceLabel(item)}</td><td><time dateTime={item.updatedAt}>{formattedDate(item.updatedAt)}</time></td>
