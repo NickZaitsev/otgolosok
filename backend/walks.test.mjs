@@ -371,3 +371,28 @@ test('a manual route with disconnected legs is not returned as a walking track',
   });
   await assert.rejects(plan(input()),{code:'WALK_NOT_FOUND'});
 });
+
+test('an optional landmark snapped onto the start does not discard the route', async () => {
+  const {plan}=fixture((url,o)=>{
+    if(url.includes('osm'))return candidates();
+    const request=JSON.parse(o.body),data=route(request);
+    if(request.locations.some(p=>p.lat===stop(1).location.lat)) {
+      data.trip.legs[0]={summary:{time:0,length:0},shape:encode([start.location,start.location])};
+    }
+    return data;
+  });
+  const result=await plan({start,mode:'open',minutes:30,destination:stop(5)});
+  assert.deepEqual(result.stops,[stop(2),stop(3),stop(4)]);
+  assert.deepEqual(result.geometry[0],start.location);
+  assert.deepEqual(result.geometry.at(-1),stop(5).location);
+});
+
+test('zero-length required legs are an unusable route, not a router outage', async () => {
+  const {plan}=fixture((url,o)=>{
+    const data=route(JSON.parse(o.body));
+    data.trip.legs[0]={summary:{time:0,length:0},shape:encode([start.location,start.location])};
+    return data;
+  });
+  await assert.rejects(plan(input()),{code:'WALK_NOT_FOUND'});
+  await assert.rejects(plan({start,mode:'open',minutes:30,destination:stop(5)}),{code:'WALK_NOT_FOUND'});
+});
