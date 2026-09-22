@@ -18,25 +18,74 @@ export type ContentBatch = {
   counts: { total: number; queued: number; working: number; ready: number; failed: number };
 };
 export type ContentBatchItem = { placeId: string; name: string; address: string | null; state: string; error: { message?: string } | null };
-export type ContentStatusFilter = "all" | "ready" | "waiting" | "stopped";
+export type ContentBatchItemPage = { items: ContentBatchItem[]; total: number; hasMore: boolean };
+export type ContentStatusFilter = "all" | "ready" | "working" | "waiting" | "stopped";
 
+export const batchStates: Record<string, string> = {
+  running: "Выполняется", paused: "На паузе", cancelled: "Отменена",
+};
+
+/** Every state a batch item can hold; the four status buckets below partition this set. */
+export const batchItemStates: Record<string, string> = {
+  queued: "В очереди", retry_wait: "Ждёт повтора", working: "В работе", ready: "Готово",
+  failed: "Ошибка", review_required: "Нужна редактура", insufficient_evidence: "Недостаточно источников", cancelled: "Отменено",
+};
+
+/** Mirrors BATCH_ITEM_STATES in backend/content-store.mjs — the server filters items by the same buckets. */
+export const contentStatusStates: Record<Exclude<ContentStatusFilter, "all">, string[]> = {
+  ready: ["ready"],
+  working: ["working"],
+  waiting: ["queued", "retry_wait"],
+  stopped: ["failed", "review_required", "insufficient_evidence", "cancelled"],
+};
+
+/** Labels spell out which item states a bucket covers, so the filter needs no separate legend. */
+export const contentStatusOptions: { value: ContentStatusFilter; label: string }[] = [
+  { value: "all", label: "Любой статус" },
+  { value: "ready", label: "Готово" },
+  { value: "working", label: "В работе" },
+  { value: "waiting", label: "Ждут очереди или повтора" },
+  { value: "stopped", label: "Остановлены: ошибка, редактура, нет источников, отмена" },
+];
+
+export const retryableItemStates = ["failed", "review_required", "insufficient_evidence", "retry_wait"];
+
+const batchCountKey: Record<Exclude<ContentStatusFilter, "all">, keyof ContentBatch["counts"]> = {
+  ready: "ready", working: "working", waiting: "queued", stopped: "failed",
+};
+
+/** A batch matches when at least one of its items sits in the bucket; counts in the row stay complete. */
 export function filterContentBatches(batches: ContentBatch[], filter: ContentStatusFilter): ContentBatch[] {
   if (filter === "all") return batches;
-  return batches.filter(batch => filter === "ready" ? batch.counts.ready > 0
-    : filter === "waiting" ? batch.counts.queued > 0
-      : batch.counts.failed > 0);
+  return batches.filter(batch => batch.counts[batchCountKey[filter]] > 0);
 }
 
-export function filterContentBatchItems(items: ContentBatchItem[], filter: ContentStatusFilter): ContentBatchItem[] {
-  if (filter === "all") return items;
-  return items.filter(item => filter === "ready" ? item.state === "ready"
-    : filter === "waiting" ? ["queued", "retry_wait"].includes(item.state)
-      : ["failed", "review_required", "insufficient_evidence", "cancelled"].includes(item.state));
+/** Human range for a server-paged list: "51–100 из 6107". */
+export function pageRange(offset: number, count: number, total: number) {
+  if (!total || !count) return "0";
+  return `${offset + 1}–${offset + count} из ${total}`;
+}
+
+export function pageCount(total: number, size: number) {
+  return Math.max(1, Math.ceil(total / size));
 }
 export type ContentPlace = {
   id: string; name: string; address: string | null; location: { lat: number; lon: number };
   text: null | { id: string; profile: string; story: Draft; draft: Draft; verification: string; audio: Audio | null; createdAt: string };
 };
+/** Catalog rows come from listPlaces, which reports text presence instead of the full text record. */
+export type ContentPlaceSummary = {
+  id: string; name: string; address: string | null; textStatus: "none" | "draft" | "approved"; audio: Audio | null;
+};
+export type ContentPlaceStatusFilter = "all" | "ready" | "missing";
+export const placeTextStatuses: Record<ContentPlaceSummary["textStatus"], string> = {
+  none: "Нет текста", draft: "Черновик", approved: "Утверждён",
+};
+export const placeStatusOptions: { value: ContentPlaceStatusFilter; label: string }[] = [
+  { value: "all", label: "Все места" },
+  { value: "ready", label: "Только с утверждённым текстом" },
+  { value: "missing", label: "Только без текста" },
+];
 export type ContentWorker = { id: string; name: string; profiles: string[]; createdAt: string; lastSeenAt: string | null; revokedAt: string | null };
 export type ContentHeartbeat = { credentialId: string; workerName: string; version: string | null; profileIds: string[]; currentJobId: string | null; progress: {stage?:string;percent?:number}|null; seenAt: string };
 export type ContentAudioJob = { id:string; state:string; profileId:string; attempts:number; maxAttempts:number; updatedAt:string; placeId:string|null; placeName:string|null; error:{message?:string;code?:string}|null };
