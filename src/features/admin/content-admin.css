@@ -46,6 +46,8 @@
 .content-admin .content-counts button:disabled b { color: var(--muted); font-weight: 500; }
 .content-admin .content-counts button[data-segment=stopped]:not(:disabled) b { color: var(--admin-orange); }
 .content-counts > .admin-row-id { margin-top: 0; }
+/* A failure with no editor-facing message leaves the code alone in its cell. */
+.content-admin .admin-table td > .admin-row-id:first-child { margin-top: 0; }
 
 .content-admin .admin-stage { font-size: .78rem; }
 .content-batch-state-running::before { background: var(--admin-green); }
