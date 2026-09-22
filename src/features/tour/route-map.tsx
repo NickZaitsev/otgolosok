@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { ExploreMap } from "../explore/explore-map";
-import { AppIcon } from "../ui/app-icon";
 import type { Route } from "./types";
 import "./route-map.css";
 
@@ -46,7 +45,7 @@ export function RouteMap({ route, universal = false }: { route: Route; universal
     </figcaption>
     <div className="route-map-links">
       <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>
-      <a href="https://www.openstreetmap.org/#map=18/55.7240/37.6500" target="_blank" rel="noreferrer">Открыть карту <AppIcon name="external" size={16} /></a>
+      <a href="https://www.openstreetmap.org/#map=18/55.7240/37.6500" target="_blank" rel="noreferrer">Открыть карту ↗</a>
     </div>
   </figure>;
 }

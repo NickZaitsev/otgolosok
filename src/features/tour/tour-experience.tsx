@@ -56,7 +56,6 @@ import { getLastUserId, getSession } from "../auth/client";
 import { saveWalkOffline } from "../walks/offline";
 import { WalkSession } from "./walk-session";
 import { playbackRates } from "./walk-settings";
-import { AppIcon } from "../ui/app-icon";
 
 type SessionPhase = "reading" | "walking";
 type AudioStatus = "locked" | "unlocking" | "ready" | "loading" | "playing" | "paused" | "ended" | "blocked" | "error";
@@ -801,19 +800,19 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
                 <div><dt>Сейчас доступно</dt><dd>{chapter ? `${chapters.length} части · ${hasWalkAudio ? "аудио и текст" : "текст"}` : hasStoryText && usesTestAudio ? "История · текст" : usesTestAudio ? "Тестовая точка" : universal && !hasStoryText ? "Маршрут без историй" : "Первая история"}</dd></div>
               </dl>
               <button className="start-button" type="button" ref={startButtonRef} onClick={() => void startTour()}>
-                <span>{savedCheckpoint ? "Продолжить прогулку" : "Начать прогулку"}</span><b><AppIcon name="arrow-right" /></b>
+                <span>{savedCheckpoint ? "Продолжить прогулку" : "Начать прогулку"}</span><b aria-hidden="true">→</b>
               </button>
               {savedCheckpoint && savedChapterIndex >= 0 ? <>
                 <p className="start-note">Часть {savedChapterIndex + 1} · {chapters[savedChapterIndex].title} · {formatPlaybackTime(savedCheckpoint.positionSec)}</p>
                 <button type="button" className="restart-walk" onClick={() => startTour(false)}>Начать сначала</button>
               </> : null}
               <p className="start-note">{route.walk ? hasWalkAudio ? `Около ${route.duration_min} минут ходьбы без остановок. Первая запись включится при старте, следующие по кнопке «Дальше». Озвучка доступна.` : universal && !hasStoryText ? `Около ${route.duration_min} минут ходьбы. Истории и аудио для этого маршрута пока не подготовлены.` : `Около ${route.duration_min} минут ходьбы без остановок. Рассказы переключаются вручную; озвучка готовится.` : usesTestAudio ? "Проверка геолокации и звука на одной точке. Запись аудио готовится." : "Разрешите звук и геолокацию после нажатия."}</p>
-              {chapters.length > 0 ? <a className="read-story-link" href="#walk-plan">Как пойдём · {chapters.length} {chapterWord(chapters.length)} <AppIcon name="arrow-down" size={18} /></a> : null}
-              <a className="read-story-link" href="/create">Подготовить историю другого дома <AppIcon name="arrow-right" size={18} /></a>
-              {hasStoryText ? <a className="read-story-link" href="#story">Читать первую историю · около {storyMinutes} мин <AppIcon name="arrow-down" size={18} /></a> : null}
-              {readyNotes.length > 0 ? <div><a className="read-story-link" href="#along-the-way">По дороге · короткие заметки ({readyNotes.length}) <AppIcon name="arrow-down" size={18} /></a></div> : null}
+              {chapters.length > 0 ? <a className="read-story-link" href="#walk-plan">Как пойдём · {chapters.length} {chapterWord(chapters.length)} <span aria-hidden="true">↓</span></a> : null}
+              <a className="read-story-link" href="/create">Подготовить историю другого дома <span aria-hidden="true">→</span></a>
+              {hasStoryText ? <a className="read-story-link" href="#story">Читать первую историю · около {storyMinutes} мин <span aria-hidden="true">↓</span></a> : null}
+              {readyNotes.length > 0 ? <div><a className="read-story-link" href="#along-the-way">По дороге · короткие заметки ({readyNotes.length}) <span aria-hidden="true">↓</span></a></div> : null}
               <p className="start-note" role="status">{offlineStatus}</p>
-              {view ? <button className="read-story-link offline-save-button" type="button" disabled={offlineBusy} onClick={() => void saveOffline()}>{offlineBusy ? "Сохраняем без сети…" : <>Сохранить прогулку без сети <AppIcon name="arrow-down" size={18} /></>}</button> : null}
+              {view ? <button className="read-story-link offline-save-button" type="button" disabled={offlineBusy} onClick={() => void saveOffline()}>{offlineBusy ? "Сохраняем без сети…" : "Сохранить прогулку без сети ↓"}</button> : null}
               <div className="update-control">
                 {updateAvailable ? <p role="status">Доступна новая версия сайта.</p> : null}
                 <a href="/update.html">{updateAvailable ? "Обновить прогулку" : "Проверить обновление"}</a>

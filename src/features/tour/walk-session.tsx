@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { ExploreMap, type MapFocus } from "../explore/explore-map";
-import { AppIcon } from "../ui/app-icon";
+import { ExploreIcon } from "../explore/icons";
 import type { Coordinates, Route } from "./types";
 import type { WalkChapter } from "./walk-plan";
 import "../explore/explore.css";
@@ -51,8 +51,8 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
           if (position >= 0) { if (active) select(position); else setDrawer("stops"); }
         }} mapLabel="Карта прогулки: пешеходный маршрут и остановки" />
     </div>
-    <Link className="walk-session-back" href="/" aria-label="Закрыть прогулку" onClick={() => onStop()}><AppIcon name="close" /></Link>
-    {active && user ? <button type="button" className="walk-session-locate" aria-label="Моё местоположение" onClick={() => setFocus({ lat: user.lat, lon: user.lon, zoom: 16 })}><AppIcon name="locate" /></button> : null}
+    <Link className="walk-session-back" href="/" aria-label="Закрыть прогулку" onClick={() => onStop()}><ExploreIcon name="close" /></Link>
+    {active && user ? <button type="button" className="walk-session-locate" aria-label="Моё местоположение" onClick={() => setFocus({ lat: user.lat, lon: user.lon, zoom: 16 })}><ExploreIcon name="locate" /></button> : null}
     <section ref={panelRef} className="walk-session-panel" aria-labelledby="walk-session-title">
       <header className="walk-session-heading">
         <div>
@@ -60,7 +60,7 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
           <h1 id="walk-session-title" ref={titleRef} tabIndex={-1}>{completed ? "Прогулка завершена" : active ? chapter?.title ?? route.walk?.finish.address ?? "Прогулка" : "Ваш маршрут"}</h1>
         </div>
         {!completed ? <button type="button" className="walk-session-icon" aria-label="Настройки прогулки" aria-expanded={drawer === "settings"} onClick={() => setDrawer(drawer === "settings" ? null : "settings")}>
-          <AppIcon name="settings" size={22} />
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor"/><circle cx="15" cy="17" r="3" fill="currentColor"/></svg>
         </button> : null}
       </header>
       {!active && !completed ? <p className="walk-session-address">{route.walk?.start.address} → {route.walk?.finish.address}</p> : null}
@@ -70,7 +70,7 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
       {active && positionFailed ? <p className="walk-session-notice" role="status">Геопозиция недоступна. Остановки можно переключать вручную.</p> : null}
       {active && chapter && !chapter.audio && !hasText ? <p className="walk-session-muted">Без истории</p> : null}
       {!completed ? <div className="walk-session-tools">
-        {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><AppIcon name="list" />Остановки · {chapters.length}</button> : null}
+        {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />Остановки · {chapters.length}</button> : null}
         {active && hasText ? <button type="button" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}>Читать историю</button> : null}
       </div> : null}
       {drawer && !completed ? <div className="walk-session-drawer" key={`${drawer}-${index}`}>
@@ -80,9 +80,9 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
       </div> : null}
       <footer className="walk-session-actions">
         {completed ? <Link className="walk-session-primary" href="/">На карту</Link> : active ? <>
-          {index > 0 ? <button type="button" className="walk-session-previous" aria-label="Предыдущая остановка" onClick={() => select(index - 1)}><AppIcon name="arrow-right" /></button> : null}
-          <button type="button" className="walk-session-primary" onClick={() => { setDrawer(null); if (index + 1 < chapters.length) select(index + 1); else onStop(true); }}>{index + 1 < chapters.length ? "Дальше" : "Завершить"}<AppIcon name="arrow-right" /></button>
-        </> : <button type="button" ref={startRef} disabled={!canStart} className="walk-session-primary" onClick={() => { setDrawer(null); onStart(); }}>{resume ? "Продолжить прогулку" : "Начать прогулку"}<AppIcon name="arrow-right" /></button>}
+          {index > 0 ? <button type="button" className="walk-session-previous" aria-label="Предыдущая остановка" onClick={() => select(index - 1)}><ExploreIcon name="arrow" /></button> : null}
+          <button type="button" className="walk-session-primary" onClick={() => { setDrawer(null); if (index + 1 < chapters.length) select(index + 1); else onStop(true); }}>{index + 1 < chapters.length ? "Дальше" : "Завершить"}<ExploreIcon name="arrow" /></button>
+        </> : <button type="button" ref={startRef} disabled={!canStart} className="walk-session-primary" onClick={() => { setDrawer(null); onStart(); }}>{resume ? "Продолжить прогулку" : "Начать прогулку"}<ExploreIcon name="arrow" /></button>}
       </footer>
       {!canStart ? <p role="alert" className="walk-session-notice">В этой прогулке ещё нет маршрута. Постройте его в редакторе из истории.</p> : null}
     </section>

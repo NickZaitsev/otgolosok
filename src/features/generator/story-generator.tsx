@@ -8,7 +8,6 @@ import { formatPlaybackTime } from "@/lib/audio/playback-progress";
 import { jobUrl, isStorySaved, saveStoryOffline, removeSavedStory, savedStories } from "./offline";
 import { placeFromQuery, rememberMapJob } from "../explore/map-jobs";
 import { stageLabels, terminalStages, type GenerationJob } from "./types";
-import { AppIcon } from "../ui/app-icon";
 
 const LAST_JOB = "otgolosok:generated-job";
 const idPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -147,7 +146,7 @@ export function StoryGenerator() {
         <label htmlFor="story-address">Улица, дом и строение</label>
         <input id="story-address" name="address" value={address} onChange={(event)=>setAddress(event.target.value)} minLength={6} maxLength={180} required autoComplete="street-address" placeholder="Кожевническая улица, 16, строение 1" aria-describedby="address-note" />
         <p id="address-note">Для поиска отправим введённый адрес. Ваша геопозиция не нужна.</p>
-        <button type="submit" className="start-button" disabled={busy||address.trim().length<6}><span>{busy?"Отправляем адрес…":"Подготовить историю"}</span><b><AppIcon name="arrow-right" /></b></button>
+        <button type="submit" className="start-button" disabled={busy||address.trim().length<6}><span>{busy?"Отправляем адрес…":"Подготовить историю"}</span><b aria-hidden="true">→</b></button>
       </form>
       {error?<p role="alert" className="generator-error">{error}</p>:null}
     </section>
@@ -156,7 +155,7 @@ export function StoryGenerator() {
       <div className="generation-heading" role="status"><h2 id="generation-status">{stageLabels[job.stage]}</h2><span>{formatPlaybackTime(job.elapsedSec)}</span></div>
       <p className="generation-address">{job.address}</p>
       {!terminalStages.has(job.stage)?<>
-        <ol className="generation-stages">{stages.map((stage,index)=><li key={stage} aria-current={index===activeIndex?"step":undefined} data-complete={index<activeIndex}><span aria-hidden="true">{index<activeIndex?<AppIcon name="check" size={18}/>:index+1}</span>{stageLabels[stage]}</li>)}</ol>
+        <ol className="generation-stages">{stages.map((stage,index)=><li key={stage} aria-current={index===activeIndex?"step":undefined} data-complete={index<activeIndex}><span aria-hidden="true">{index<activeIndex?"✓":index+1}</span>{stageLabels[stage]}</li>)}</ol>
         <p className="generation-help">Можно закрыть страницу. Подготовка продолжится, а здесь сохранится ссылка на результат.</p>
       </>:null}
       {job.error?<p className="generator-error" role="status">{job.error.message}</p>:null}

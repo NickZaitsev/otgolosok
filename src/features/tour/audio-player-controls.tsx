@@ -1,6 +1,5 @@
 import { formatPlaybackTime } from "@/lib/audio/playback-progress";
 import { playbackRates, type PlaybackRate } from "./walk-settings";
-import { AppIcon } from "../ui/app-icon";
 
 type Props = {
   compact?: boolean;
@@ -22,7 +21,7 @@ export function AudioPlayerControls({ compact = false, position, duration, canSe
   const current = Math.min(maximum, Math.max(0, position));
   if (compact) return <section className="session-audio" aria-label="Плеер истории">
     <button type="button" aria-label={label} onClick={onToggle}>
-      <AppIcon name={playing ? "pause" : "play"} size={22} />
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">{playing ? <path d="M6 4h4v16H6zM14 4h4v16h-4z" /> : <path d="m8 4 12 8-12 8z" />}</svg>
     </button>
     <div><input type="range" min={0} max={maximum || 1} step="any" value={current} disabled={!canSeek}
       aria-label="Позиция воспроизведения" aria-valuetext={`${formatPlaybackTime(current)} из ${formatPlaybackTime(maximum)}`}
@@ -40,12 +39,12 @@ export function AudioPlayerControls({ compact = false, position, duration, canSe
       onChange={(event) => onSeek(Number(event.target.value))} />
     <div className="audio-player-buttons">
       <button type="button" className="audio-skip" aria-label="Назад на 15 секунд"
-        disabled={!canSeek || current <= 0} onClick={() => onSeek(current - 15)}><AppIcon name="rewind" size={20} />15 с</button>
+        disabled={!canSeek || current <= 0} onClick={() => onSeek(current - 15)}><span aria-hidden="true">↶</span>15 с</button>
       <button className="audio-button" type="button" onClick={onToggle}>
-        <span>{label}</span><b><AppIcon name={playing ? "pause" : "play"} /></b>
+        <span>{label}</span><b aria-hidden="true">{playing ? "Ⅱ" : "▶"}</b>
       </button>
       <button type="button" className="audio-skip" aria-label="Вперёд на 15 секунд"
-        disabled={!canSeek || current >= maximum} onClick={() => onSeek(current + 15)}><AppIcon name="forward" size={20} />15 с</button>
+        disabled={!canSeek || current >= maximum} onClick={() => onSeek(current + 15)}><span aria-hidden="true">↷</span>15 с</button>
     </div>
     <div className="audio-rate" role="group" aria-label="Скорость рассказа">
       {playbackRates.map((value) => (
