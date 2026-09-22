@@ -74,7 +74,13 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     }
     w.setCandidate(null); setPicker(null);
   }
-  const inlineAddress = <AddressInput disabled={busy} key={w.target} label={w.target === "start" ? "Откуда" : w.target === "destination" ? "Куда" : "Остановка"} initialValue={w.target === "start" ? w.draft.start?.address : w.target === "destination" ? w.draft.destination?.address : ""} onResolve={async query => { const place = await w.resolve(query); if (place) selectAddress(place); }} />;
+  function cancelAddress() {
+    if (w.target === "start") w.edit({ start: null });
+    else if (w.target === "destination") { setMode("destination"); w.edit({ destination: null, mode: "open" }); }
+    w.setCandidate(null); w.setQuery(""); w.setError(""); setPicker(null);
+    requestAnimationFrame(() => panel.current?.querySelector<HTMLButtonElement>(`[data-endpoint="${w.target}"]`)?.focus());
+  }
+  const inlineAddress = <AddressInput onCancel={cancelAddress} disabled={busy} key={w.target} label={w.target === "start" ? "Откуда" : w.target === "destination" ? "Куда" : "Остановка"} initialValue={w.target === "start" ? w.draft.start?.address : w.target === "destination" ? w.draft.destination?.address : ""} onResolve={async query => { const place = await w.resolve(query); if (place) selectAddress(place); }} />;
   const addressPicker = picker && (picker !== "address" || w.candidate) && <div id="creation-picker" className="creation-picker">
             {picker === "choices" && <div className="creation-options">
               <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker("address"); }}>Ввести адрес</button>

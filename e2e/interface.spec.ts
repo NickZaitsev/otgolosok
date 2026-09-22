@@ -335,3 +335,23 @@ test("выбор на карте показывает понятный заго�
   await expect(page.getByRole("button", { name: "Откуда", exact: true })).toBeVisible();
   await expect(page.locator(".creation-panel.is-picking")).toHaveCount(0);
 });
+
+for (const endpoint of ["Откуда", "Куда"]) {
+  test(`крестик сбрасывает ввод ${endpoint} и сохраняет другое поле`, async ({ page }) => {
+    await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: "Москва, Арбат, 10", location: { lat: 55.75, lon: 37.6 } } }));
+    await page.goto("/?walk=create");
+    for (const label of ["Откуда", "Куда"]) {
+      await page.getByRole("button", { name: label, exact: true }).click();
+      await page.getByRole("button", { name: "Ввести адрес", exact: true }).click();
+      await page.getByRole("textbox", { name: label, exact: true }).fill("Москва, Арбат, 10");
+      await page.getByRole("textbox", { name: label, exact: true }).press("Enter");
+    }
+    await page.getByRole("button", { name: endpoint, exact: true }).click();
+    await page.getByRole("button", { name: "Ввести адрес", exact: true }).click();
+    await page.getByRole("textbox", { name: endpoint, exact: true }).fill("Несуществующий адрес");
+    await page.getByRole("button", { name: `Отменить ввод: ${endpoint}`, exact: true }).click();
+    await expect(page.getByRole("textbox")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: endpoint, exact: true })).toContainText(endpoint === "Откуда" ? "Выберите начало" : "Выберите место или время");
+    await expect(page.getByRole("button", { name: endpoint === "Откуда" ? "Куда" : "Откуда", exact: true })).toContainText("Москва, Арбат, 10");
+  });
+}
