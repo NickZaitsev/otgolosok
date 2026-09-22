@@ -1,18 +1,6 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
 import { AppNavigation } from "@/features/navigation/app-navigation";
 import "./globals.css";
-
-const display = Cormorant_Garamond({
-  variable: "--font-display",
-  subsets: ["cyrillic", "latin"],
-  weight: ["500", "600", "700"],
-});
-
-const body = Manrope({
-  variable: "--font-body",
-  subsets: ["cyrillic", "latin"],
-});
 
 export const metadata: Metadata = {
   icons: { icon: "/icon.svg" },
@@ -30,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ru" className={`${display.variable} ${body.variable}`}>
+    <html lang="ru">
       <body>{children}<AppNavigation /></body>
     </html>
   );

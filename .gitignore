@@ -21,6 +21,12 @@
 /build
 /backend/data/
 
+# local agent and browser tooling scratch
+/.playwright-mcp/
+/.serena/
+/.orca/
+/.claude/worktrees/
+
 # misc
 .DS_Store
 *.pem

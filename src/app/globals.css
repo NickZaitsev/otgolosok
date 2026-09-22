@@ -1,4 +1,6 @@
 :root {
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-body: Arial, Helvetica, sans-serif;
   --paper: #f5f1e8;
   --raised: #fbf8f2;
   --sunken: #eae3d6;

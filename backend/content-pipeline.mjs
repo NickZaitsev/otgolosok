@@ -4,6 +4,23 @@ import { sourceText } from "./source-text.mjs";
 import { researchPrompt, factsPrompt } from "./prompts.mjs";
 import { requestStructured, usageTokens } from "./model-output.mjs";
 import { writeStory } from "./story-writing.mjs";
+import { errorMessages } from "./pipeline.mjs";
+
+/** Codes only this pipeline raises; the shared errorMessages cover the rest. The editor reads these in the batch list. */
+const CONTENT_FAILURES = {
+  SOURCE_EMPTY: "Источник открылся, но полезного текста о месте в нём не нашлось.",
+  SOURCE_FAILED: "Источник не удалось прочитать.",
+  PROVIDER_FAILED: "Сервис подготовки вернул ошибку. Можно повторить попытку.",
+  INVALID_MODEL_OUTPUT: "Ответ модели не удалось разобрать. Можно повторить попытку.",
+  INVALID_DRAFT: "Черновик не прошёл проверку формата. Можно повторить попытку.",
+  INTERRUPTED: "Подготовка прервана. Задание можно повторить.",
+  PREPARATION_FAILED: "Не удалось подготовить текст. Можно повторить попытку.",
+};
+
+/** The code drives filtering and routing, the message is what the editor reads, so a failure carries both. */
+export function contentFailureMessage(code) {
+  return errorMessages[code] ?? CONTENT_FAILURES[code] ?? CONTENT_FAILURES.PREPARATION_FAILED;
+}
 
 function placePrompt(place) {
   return researchPrompt(place.address,{id:place.id,name:place.name,postalAddress:place.address,location:place.location,geometry:place.geometry,tags:place.tags});
@@ -41,7 +58,7 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,si
   } catch(error) {
     const code=["TimeoutError","AbortError"].includes(error?.name)?"TIMEOUT":error?.code??"PREPARATION_FAILED";
     const state=code==="INSUFFICIENT_EVIDENCE"?"insufficient_evidence":["REVIEW_REQUIRED","ADDRESS_UNCLEAR"].includes(code)?"review_required":"failed";
-    return store.failContentJob(job.id,{code,message:code},state);
+    return store.failContentJob(job.id,{code,message:contentFailureMessage(code)},state);
   }
 }
 

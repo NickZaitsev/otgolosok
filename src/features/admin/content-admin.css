@@ -1,0 +1,78 @@
+.content-admin .admin-review { margin-bottom: 1.75rem; }
+.content-admin .admin-review > .admin-section-head { margin-bottom: .75rem; }
+.content-admin .admin-review .admin-filters { margin-top: 1rem; background: var(--raised); }
+#content-place-title, #content-catalog-title { scroll-margin-top: 1.5rem; }
+
+.content-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1px;
+  margin: 1.25rem 0 1.75rem;
+}
+/* Outlines rather than a grid-gap background, so a partly filled last row stays empty instead of grey. */
+.content-stats > div { display: flex; flex-direction: column; gap: .15rem; padding: .85rem 1rem; background: var(--raised); box-shadow: 0 0 0 1px var(--line); }
+.content-stats dt { color: var(--muted); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+.content-stats dd { margin: 0; color: var(--admin-green); font-size: 1.375rem; font-weight: 750; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.content-stats dd small { font-size: .875rem; font-weight: 650; }
+.content-stats dd.content-stats-date { font-size: .95rem; font-weight: 650; overflow-wrap: anywhere; }
+.content-stats span { color: var(--muted); font-size: .75rem; }
+.content-stats-loading { display: flex; align-items: center; gap: .65rem; min-height: 7rem; margin: 1.25rem 0 1.75rem; padding: 1rem; color: var(--muted); background: var(--raised); box-shadow: 0 0 0 1px var(--line); font-size: .85rem; }
+.content-loading-spinner { width: 1rem; height: 1rem; flex: 0 0 auto; border: 2px solid var(--line); border-top-color: var(--admin-green); border-radius: 50%; animation: content-loading-spin .8s linear infinite; }
+@keyframes content-loading-spin { to { transform: rotate(360deg); } }
+
+.content-toolbar { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin: 0 0 .75rem; }
+.content-toolbar label { margin: 0; color: var(--muted); font-size: .8rem; font-weight: 700; }
+.content-admin .content-toolbar select { width: auto; min-width: 16rem; max-width: 100%; }
+.content-toolbar > .admin-meta { margin-left: auto; }
+.content-admin .content-batch-form { grid-template-columns: minmax(10rem, .5fr) minmax(12rem, .5fr) auto; }
+
+.content-progress { display: flex; gap: 2px; width: min(16rem, 100%); height: .4rem; margin-bottom: .4rem; background: var(--line); }
+.content-progress span { min-width: 2px; }
+.content-progress [data-segment=ready] { background: var(--teal); }
+.content-progress [data-segment=working] { background: var(--admin-green); }
+.content-progress [data-segment=waiting] { background: #8a6420; }
+.content-progress [data-segment=stopped] { background: var(--admin-orange); }
+
+/* Each count opens the job list filtered to that bucket, so it reads as a link, not a label. */
+.content-counts { display: flex; align-items: baseline; gap: .1rem .5rem; flex-wrap: wrap; }
+.content-admin .content-counts button {
+  min-height: 0; padding: .1rem .2rem; border: 0; border-radius: .2rem; color: var(--muted);
+  font-size: .78rem; font-weight: 500; text-align: left;
+}
+.content-admin .content-counts button b { color: var(--ink); font-weight: 750; font-variant-numeric: tabular-nums; }
+.content-admin .content-counts button:hover:not(:disabled) { background: transparent; color: var(--admin-orange); text-decoration: underline; text-underline-offset: .2em; }
+.content-admin .content-counts button:hover:not(:disabled) b { color: var(--admin-orange); }
+.content-admin .content-counts button:disabled { opacity: 1; color: var(--muted); }
+.content-admin .content-counts button:disabled b { color: var(--muted); font-weight: 500; }
+.content-admin .content-counts button[data-segment=stopped]:not(:disabled) b { color: var(--admin-orange); }
+.content-counts > .admin-row-id { margin-top: 0; }
+/* A failure with no editor-facing message leaves the code alone in its cell. */
+.content-admin .admin-table td > .admin-row-id:first-child { margin-top: 0; }
+
+.content-admin .admin-stage { font-size: .78rem; }
+.content-batch-state-running::before { background: var(--admin-green); }
+.content-batch-state-paused::before { background: #8a6420; }
+.content-batch-state-cancelled::before { background: var(--muted); }
+.content-text-approved::before { background: var(--teal); }
+.content-text-draft::before { background: #8a6420; }
+.content-text-none::before { background: var(--muted); }
+.admin-stage-working::before, .admin-stage-queued::before, .admin-stage-retry_wait::before { background: #8a6420; }
+.admin-stage-cancelled::before { background: var(--muted); }
+.admin-stage-review_required::before { background: var(--admin-orange); }
+
+.admin-empty-row { margin-top: .75rem; padding: 1rem; border: 1px dashed var(--line); color: var(--muted); font-size: .85rem; }
+
+.content-admin .admin-document { margin-top: 2rem; }
+.content-admin .admin-document textarea { min-height: 9rem; }
+.content-admin .admin-callout pre { margin: .75rem 0; overflow-x: auto; font-size: .8rem; }
+
+@media (max-width: 45rem) {
+  .content-stats { grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); }
+  .content-admin .content-toolbar select { min-width: 0; width: 100%; }
+  .content-admin .content-batch-form { grid-template-columns: minmax(0, 1fr); }
+  .content-toolbar > .admin-meta { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content-loading-spinner { animation: none; }
+}
