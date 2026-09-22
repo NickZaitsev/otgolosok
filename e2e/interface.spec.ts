@@ -241,3 +241,18 @@ test("ручной адрес подтверждается кнопкой без
   await expect(page.getByRole("button", { name: "Выбрать эту точку" })).toHaveCount(0);
   expect(attempts).toBe(2);
 });
+
+test("время имеет мягкий акцент, а Готово подтверждает выбор", async ({ page }) => {
+  await page.goto("/?walk=create");
+  await page.getByRole("button", { name: "Куда", exact: true }).click();
+  await page.getByRole("button", { name: "По времени", exact: true }).click();
+  const duration = page.getByRole("button", { name: "60 мин", exact: true });
+  await duration.click();
+  await expect(duration).toHaveAttribute("aria-pressed", "true");
+  expect(await duration.evaluate(el => getComputedStyle(el).backgroundColor)).toBe("rgba(32, 62, 56, 0.12)");
+  const done = page.getByRole("button", { name: "Готово", exact: true });
+  expect(await done.evaluate(el => getComputedStyle(el).backgroundColor)).toBe("rgb(32, 62, 56)");
+  await done.click();
+  await expect(page.locator("#creation-picker")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Куда", exact: true })).toContainText("60 мин пешком");
+});

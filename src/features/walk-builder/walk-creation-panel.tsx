@@ -78,7 +78,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
             </div>}
 
             {w.candidate && <div className="creation-candidate"><p>{w.candidate.address}</p><button className="ui-button" onClick={() => { w.confirmPlace(); setPicker(null); }}>Выбрать эту точку</button></div>}
-            {picker === "time" && <><fieldset className="creation-time" disabled={busy}><legend>Время пешком</legend><div>{([30, 60, 90] as const).map(minutes => <button type="button" key={minutes} aria-pressed={w.draft.minutes === minutes} onClick={() => w.edit({ minutes })}>{minutes} мин</button>)}</div></fieldset><label className="creation-switch"><span>Вернуться к началу</span><input type="checkbox" checked={w.draft.mode === "loop"} onChange={e => w.edit({ mode: e.target.checked ? "loop" : "open" })} /></label><button className="creation-text" onClick={() => setPicker(null)}>Готово</button></>}
+            {picker === "time" && <><fieldset className="creation-time" disabled={busy}><legend>Время пешком</legend><div>{([30, 60, 90] as const).map(minutes => <button type="button" key={minutes} aria-pressed={w.draft.minutes === minutes} onClick={() => w.edit({ minutes })}>{minutes} мин</button>)}</div></fieldset><label className="creation-switch"><span>Вернуться к началу</span><input type="checkbox" checked={w.draft.mode === "loop"} onChange={e => w.edit({ mode: e.target.checked ? "loop" : "open" })} /></label><button className="ui-button creation-time-done" onClick={() => setPicker(null)}>Готово</button></>}
           </div>;
 
   return <section ref={panel} className={`creation-panel${state.picking ? " is-picking" : preview ? " is-preview" : ""}`} aria-labelledby="creation-title">
