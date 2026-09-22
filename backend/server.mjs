@@ -217,8 +217,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const entries=[...url.searchParams];if(entries.some(([key,value])=>key!=="state"||!value)||entries.length>1)throw failure("BAD_REQUEST");
           const states=(url.searchParams.get("state")??"failed,cancelled").split(",");json(res,200,{audioJobs:store.listExternalAudio({states})});return;
         }
-        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/workers") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{workers:store.listWorkerCredentials(),heartbeats:store.listWorkerHeartbeats()});return;}
-        if(req.method==="POST"&&url.pathname==="/api/story-admin/content/workers") {if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/workers") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{transport:localTts.transport,workers:store.listWorkerCredentials(),heartbeats:store.listWorkerHeartbeats()});return;}
+        if(req.method==="POST"&&url.pathname==="/api/story-admin/content/workers") {if(localTts.transport==="http"){json(res,503,{error:{code:"WORKER_DISABLED",message:"HTTP TTS transport is active."}});return;}if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           json(res,201,{worker:store.createWorkerCredential(await body(req,4096))});return;}
         const revokeWorker=new RegExp(`^/api/story-admin/content/workers/(${UUID})/revoke$`).exec(url.pathname);
         if(revokeWorker&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}

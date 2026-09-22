@@ -47,6 +47,26 @@ test("serves complete and partial audio and rejects traversal or invalid range",
   assert.equal((await fetch(`${f.base}/api/story-audio/%2e%2e/server.mjs`)).status,404);
 });
 
+test("HTTP TTS reports its transport without suggesting an external worker",async(t)=>{
+  const f=await fixture(t,{localTts:{transport:"http",defaultProfile:"f5-ru-v1"}});
+  const response=await fetch(`${f.base}/api/story-admin/content/workers`);
+  assert.equal(response.status,200);
+  const value=await response.json();
+  assert.equal(value.transport,"http");
+  assert.deepEqual(value.workers,[]);
+  assert.deepEqual(value.heartbeats,[]);
+  assert.equal((await fetch(`${f.base}/api/worker/v1/claim`,{method:"POST"})).status,503);
+  const issue=await f.post("/api/story-admin/content/workers",{name:"GPU",profiles:["f5-ru-v1"]});
+  assert.equal(issue.status,503);
+});
+
+test("worker transport still exposes credentials and allows issuing keys",async(t)=>{
+  const f=await fixture(t);
+  const response=await fetch(`${f.base}/api/story-admin/content/workers`);
+  assert.equal((await response.json()).transport,"worker");
+  assert.equal((await f.post("/api/story-admin/content/workers",{name:"GPU",profiles:["silero-ru-v1"]})).status,201);
+});
+
 test("external worker API authenticates, leases and accepts an idempotent upload",async(t)=>{
   const artifact={url:`/api/story-audio/${"b".repeat(64)}.mp3`,sha256:"b".repeat(64),bytes:100,durationSec:60,model:"external",voice:"external",provider:"external",synthetic:true};
   const f=await fixture(t,{workerToken:"worker-secret",audioIngest:async req=>{

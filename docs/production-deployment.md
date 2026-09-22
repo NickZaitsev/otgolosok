@@ -23,12 +23,16 @@ Admin API authentication remains in the backend.
 
 `LOCAL_TTS_ENGINE=silero` (по умолчанию) или `f5` выбирает профиль новых партий
 и ручной озвучки. После изменения нужен перезапуск backend. Созданные задания
-сохраняют профиль и ждут подходящий воркер; автоматического fallback нет.
+сохраняют профиль и ждут подходящий обработчик; автоматического fallback нет.
+В production используется `LOCAL_TTS_TRANSPORT=http`: backend сам отправляет
+задания на закрытый сервер `just-tts`, без выпуска ключей внешних воркеров.
+В режиме `LOCAL_TTS_TRANSPORT=worker` отдельный воркер подключается по ключу.
 
 Для F5 обязательны `F5_MODEL_SHA256`, `F5_REFERENCE_ID` и `F5_CONFIG_SHA256`;
 при необходимости задаётся `F5_REFERENCE_SHA256`. Значения должны совпадать с
-профилем just-tts. Серверный переключатель не запускает локальный воркер: ему
-отдельно задаются `TTS_ENGINE=f5`, `WORKER_PROFILE_ID=f5-ru-v1` и пути к Portable.
+профилем just-tts. Для HTTP-транспорта также нужны `TTS_API_URL` и
+`TTS_API_TOKEN`; настройки `TTS_ENGINE=f5` и `WORKER_PROFILE_ID=f5-ru-v1`
+относятся только к альтернативному внешнему воркеру.
 
 The site directory is `/srv/sites/otgolosok.softmg.tech`:
 

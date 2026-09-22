@@ -4,7 +4,7 @@ import { act, createElement, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ContentAdmin } from "./content-admin";
-import { contentStatusStates, type AdminApi, type AdminRun, type ContentBatch, type ContentBatchItem, type ContentPlace } from "./model";
+import { contentStatusStates, type AdminApi, type AdminRun, type ContentBatch, type ContentBatchItem, type ContentPlace, type ContentWorker } from "./model";
 
 const story = { title: "История дома", paragraphs: [{ text: "Текст истории", factIds: [] }] };
 const places: ContentPlace[] = [
@@ -32,6 +32,8 @@ let gate: { promise: Promise<void>; open: () => void } | null;
 let scrolled: Element[];
 let itemQueries: URLSearchParams[];
 let items: ContentBatchItem[];
+let transport: "worker" | "http";
+let configuredWorkers: ContentWorker[];
 const onDirtyChange = vi.fn();
 
 /** Mirrors the server: items are narrowed by status and error, while the code list follows the status filter alone. */
@@ -70,7 +72,7 @@ const api: AdminApi = async <T,>(path: string): Promise<T> => {
   const responses: Record<string, unknown> = {
     "/content/batches": { batches: [batch] },
     "/content/stats": { places: 2, texts: 1, audio: 0 },
-    "/content/workers": { workers: [], heartbeats: [] },
+    "/content/workers": { transport, workers: configuredWorkers, heartbeats: [] },
     "/content/audio": { audioJobs: [] },
   };
   if (!(path in responses)) throw new Error(`Неожиданный запрос: ${path}`);
@@ -132,6 +134,8 @@ beforeEach(async () => {
   scrolled = [];
   itemQueries = [];
   items = structuredClone(batchItems);
+  transport = "worker";
+  configuredWorkers = [];
   Object.defineProperty(Element.prototype, "scrollIntoView", {
     configurable: true, value: function (this: Element) { scrolled.push(this); },
   });
@@ -148,6 +152,25 @@ afterEach(async () => {
   Reflect.deleteProperty(Element.prototype, "scrollIntoView");
   vi.unstubAllGlobals();
   onDirtyChange.mockClear();
+});
+
+describe("подключение TTS", () => {
+  it("в HTTP-режиме не предлагает выпускать недействующий ключ воркера", async () => {
+    transport = "http";
+    await click(buttons("Обновить")[0]);
+    await click(buttons("Открыть")[0]);
+    expect(container.textContent).not.toContain("нет online-воркера TTS");
+    const workersSection = container.querySelector('[aria-labelledby="content-workers-title"]')!;
+    expect(workersSection.textContent).toContain("Озвучка обрабатывается сервером TTS");
+    expect(workersSection.textContent).not.toContain("Выпустить ключ");
+    expect(workersSection.textContent).not.toContain("Ключи воркеров ещё не выпускались");
+  });
+
+  it("в режиме внешнего воркера объясняет очередь, если воркер не подключён", async () => {
+    await click(buttons("Открыть")[0]);
+    expect(container.textContent).toContain("нет online-воркера TTS");
+    expect(buttons("Выпустить ключ")).toHaveLength(1);
+  });
 });
 
 describe("переход из каталога к редактору места", () => {
