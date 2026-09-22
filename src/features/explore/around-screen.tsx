@@ -109,6 +109,10 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
   },[route,tracked,jobs,catalog]);
   const recommendations=useMemo(()=>nearbyCenter?recommendNearbyStories(nearbyCenter,nearbyRadius,[...nearbyStoryCatalog(route),...catalog.filter(place=>place.audio&&place.story).map(place=>({id:place.id,title:place.story!.title,address:place.address??place.name,location:place.location,durationSec:place.audio!.durationSec,sourceCount:place.story!.sources?.length??1,factCount:place.story!.facts?.length??1}))]):[],[nearbyCenter,nearbyRadius,route,catalog]);
   const visible=useMemo(()=>[...pins].sort((a,b)=>user?distance(user,a.location)-distance(user,b.location):0),[pins,user]);
+  const creationItems=useMemo(()=>[
+    ...visible.filter(pin=>!creationMap.items.some(point=>distance(pin.location,point.location)<15)).map(pin=>({...pin,compact:true})),
+    ...creationMap.items,
+  ],[visible,creationMap.items]);
   const active=pins.find(pin=>pin.id===selected);
   const explorePanel=selectExplorePanel({nearbyCenter:Boolean(nearbyCenter),place:Boolean(place),placeBusy,placeError:Boolean(placeError)});
   const mapItems=useMemo(()=>place?[...visible,{id:"picked-place",title:place.address??"Выбранное место",location:place.location,pending:true}]:visible,[visible,place]);
@@ -166,7 +170,7 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
 
   return <>
     {creating && <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />}
-    {tab==="nearby"?<ExploreMap viewState={nearbyMapView} items={creating ? creationMap.items : mapItems} geometry={creating ? creationMap.geometry : undefined} routePadding={creating ? creationMap.padding : undefined} selectedId={selected??(place?"picked-place":undefined)} focus={creating ? creationMap.focus : focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}}} onPoint={point=>creating ? setPicked(point) : void findPlace(point)} />:null}
+    {tab==="nearby"?<ExploreMap viewState={nearbyMapView} items={creating ? creationItems : mapItems} geometry={creating ? creationMap.geometry : undefined} routePadding={creating ? creationMap.padding : undefined} selectedId={selected??(place?"picked-place":undefined)} focus={creating ? creationMap.focus : focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}}} onPoint={point=>creating ? setPicked(point) : void findPlace(point)} />:null}
     <div className={`around-content ${creating?"creation-open ":""}${tab!=="nearby"?"scroll-view":""}${search?" searching":""}`}>
       <header className="around-header">
         <div className="around-topline"><Link href="/" prefetch={false} className="around-brand"><BrandMark /></Link><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>

@@ -386,3 +386,17 @@ test("клик карты после создания от дома задаёт
   await page.locator(".explore-map").click({ position: { x: 160, y: 210 } });
   await expect(page.getByRole("button", { name: "Откуда", exact: true })).toContainText(finish);
 });
+
+test("достопримечательности остаются компактными точками при создании прогулки", async ({ page }) => {
+  await page.route("**/api/content/places?*", route => route.fulfill({ json: { places: [{ id: "landmark", name: "Тестовая достопримечательность", address: "Москва, Арбат, 10", location: { lat: 55.7249, lon: 37.6507 }, story: null, audio: null }] } }));
+  await page.goto("/");
+  const pin = page.locator('[title="Тестовая достопримечательность"]');
+  await expect(pin).toBeVisible();
+  await page.getByRole("link", { name: "Прогулка", exact: true }).click();
+  await expect(pin).toBeVisible();
+  await expect(pin).toHaveClass(/explore-dot/);
+  const dot = await pin.locator("span").boundingBox();
+  expect(dot!.width).toBeLessThanOrEqual(14);
+  await page.getByRole("button", { name: "Закрыть создание прогулки" }).click();
+  await expect(pin).not.toHaveClass(/explore-dot/);
+});
