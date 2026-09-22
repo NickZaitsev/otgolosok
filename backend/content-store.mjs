@@ -8,6 +8,14 @@ const decode = value => value == null ? null : JSON.parse(value);
 const iso = now => new Date(now()).toISOString();
 const fail = (code, message=code) => Object.assign(new Error(message),{code});
 
+export const BATCH_ITEM_STATES = {
+  all: null,
+  ready: ["ready"],
+  working: ["working"],
+  waiting: ["queued", "retry_wait"],
+  stopped: ["failed", "review_required", "insufficient_evidence", "cancelled"],
+};
+
 function addressOf(place) {
   return osmPostalAddress(place.tags);
 }
@@ -108,8 +116,11 @@ export function createContentStore({db,now,transaction}) {
       const distanceParams=lat===null?[]:[lat,lat,lon];if(lat!==null){filters.push(`${distanceSql}<=?`);params.push(...distanceParams,radius);}
       const rows=db.prepare(`SELECT p.*,(SELECT approved_story_json FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL ORDER BY t.created_at DESC,t.rowid DESC LIMIT 1) story_json,
         (SELECT audio_json FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL AND t.audio_json IS NOT NULL AND t.audio_json<>'null' ORDER BY t.created_at DESC,t.rowid DESC LIMIT 1) audio_json,
+        (SELECT count(*) FROM place_texts t WHERE t.place_id=p.id) text_count,
         ${distanceSql} distance_m FROM places p WHERE ${filters.join(" AND ")} ORDER BY ${lat===null?"p.name,p.id":"distance_m,p.name,p.id"} LIMIT ? OFFSET ?`).all(...distanceParams,...params,limit+1,offset);
-      return {places:rows.slice(0,limit).map(row=>({...viewPlace(row),story:row.story_json?decode(row.story_json):null,audio:decode(row.audio_json),distanceM:row.distance_m==null?null:Number(row.distance_m)})),hasMore:rows.length>limit};
+      const total=Number(db.prepare(`SELECT count(*) n FROM places p WHERE ${filters.join(" AND ")}`).get(...params).n);
+      return {total,places:rows.slice(0,limit).map(row=>({...viewPlace(row),story:row.story_json?decode(row.story_json):null,audio:decode(row.audio_json),
+        textStatus:row.story_json?"approved":Number(row.text_count)?"draft":"none",distanceM:row.distance_m==null?null:Number(row.distance_m)})),hasMore:rows.length>limit};
     },
     getPlace(id) {
       const place=viewPlace(db.prepare("SELECT * FROM places WHERE id=? AND archived=0").get(id));
@@ -147,6 +158,16 @@ export function createContentStore({db,now,transaction}) {
       });
     },
     listBatches() {return db.prepare("SELECT * FROM content_batches ORDER BY created_at DESC").all().map(row=>viewBatch(row,batchCounts(row.id)));},
+    listBatchItems(batchId,{limit=50,offset=0,status="all"}={}) {
+      if(!Number.isSafeInteger(limit)||limit<1||limit>200||!Number.isSafeInteger(offset)||offset<0||!Object.hasOwn(BATCH_ITEM_STATES,status))throw fail("BAD_REQUEST");
+      if(!db.prepare("SELECT 1 FROM content_batches WHERE id=?").get(batchId))return null;
+      const states=BATCH_ITEM_STATES[status],filter=states?` AND i.state IN (${states.map(()=>"?").join(",")})`:"",params=states??[];
+      const total=Number(db.prepare(`SELECT count(*) n FROM batch_items i WHERE i.batch_id=?${filter}`).get(batchId,...params).n);
+      const items=db.prepare(`SELECT i.*,p.name,p.address FROM batch_items i JOIN places p ON p.id=i.place_id
+        WHERE i.batch_id=?${filter} ORDER BY p.name,p.id LIMIT ? OFFSET ?`).all(batchId,...params,limit,offset)
+        .map(item=>({placeId:item.place_id,name:item.name,address:item.address,state:item.state,error:decode(item.error_json)}));
+      return {items,total,hasMore:offset+items.length<total};
+    },
     getBatch(id) {const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
       const items=db.prepare(`SELECT i.*,p.name,p.address FROM batch_items i JOIN places p ON p.id=i.place_id WHERE i.batch_id=? ORDER BY p.name,p.id`).all(id)
       .map(item=>({placeId:item.place_id,name:item.name,address:item.address,state:item.state,error:decode(item.error_json)}));return {...viewBatch(row,batchCounts(id)),items};},

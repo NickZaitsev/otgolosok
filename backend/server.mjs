@@ -228,6 +228,13 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const input=await body(req,65536);if(input.mode==="text-and-audio"&&!input.ttsProfile)input.ttsProfile=localTts.defaultProfile;
           const batch=store.createBatch(input);json(res,200,{batch});contentWorker?.wake();return;
         }
+        const batchItems=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/items$/.exec(url.pathname);
+        if(batchItems&&req.method==="GET"){
+          const entries=[...url.searchParams];
+          if(entries.some(([key,value])=>!["limit","offset","status"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
+          const page=store.listBatchItems(batchItems[1],{limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0),status:url.searchParams.get("status")??"all"});
+          json(res,page?200:404,page??{error:{code:"NOT_FOUND",message:"Batch not found."}});return;
+        }
         const contentBatch=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)(?:\/(pause|resume|cancel))?$/.exec(url.pathname);
         if(contentBatch&&req.method==="GET"&&!contentBatch[2]){const batch=store.getBatch(contentBatch[1]);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});return;}
         if(contentBatch&&req.method==="POST"&&contentBatch[2]){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
