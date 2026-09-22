@@ -280,3 +280,15 @@ test("подпись карты размером 11 пикселей без по
   expect(await attribution.evaluate(el => ({ size: getComputedStyle(el).fontSize, decoration: getComputedStyle(el).textDecorationLine }))).toEqual({ size: "11px", decoration: "none" });
   await expect(attribution).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
 });
+
+for (const [width, height, expectedGap] of [[390, 844, 20], [1440, 900, 12], [568, 400, 20]]) {
+  test(`карточка близко к навигации ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: "Москва, Дербеневская улица, 3", location: { lat: 55.725, lon: 37.65 } } }));
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Смотрите истории рядом с вами", exact: true })).toBeVisible();
+    const card = await page.locator(".around-bottom").boundingBox();
+    const nav = await page.getByRole("navigation", { name: "Основная навигация" }).boundingBox();
+    expect(Math.abs(nav!.y - card!.y - card!.height - expectedGap)).toBeLessThanOrEqual(1);
+  });
+}
