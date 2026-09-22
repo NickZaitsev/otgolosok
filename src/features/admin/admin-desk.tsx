@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { WalkAdmin } from "./walk-admin";
-import { draftCheck, filterContentBatches, filterContentBatchItems, initialDraft, safeSourceLink, stages, type AdminApi, type ContentAudioJob, type ContentBatch, type ContentBatchItem, type ContentHeartbeat, type ContentPlace, type ContentStatusFilter, type ContentWorker, type Draft, type Job, type Summary, type TtsProvider } from "./model";
+import { ContentAdmin } from "./content-admin";
+import { draftCheck, initialDraft, safeSourceLink, stages, type AdminApi, type Draft, type Job, type Summary, type TtsProvider } from "./model";
 import { csrfHeaders, getSession, signOut } from "../auth/client";
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -37,19 +38,7 @@ export function AdminDesk() {
   const [section, setSection] = useState<AdminSection>("addresses");
   const [walkDirty, setWalkDirty] = useState(false);
   const [jobs, setJobs] = useState<Summary[]>([]);
-  const [batches, setBatches] = useState<ContentBatch[]>([]);
-  const [contentStatusFilter, setContentStatusFilter] = useState<ContentStatusFilter>("all");
-  const [batchLimit, setBatchLimit] = useState(50);
-  const [selectedBatch, setSelectedBatch] = useState<(ContentBatch & { items: ContentBatchItem[] }) | null>(null);
-  const [contentPlaces, setContentPlaces] = useState<ContentPlace[]>([]);
-  const [contentQuery, setContentQuery] = useState("");
-  const [contentPlace, setContentPlace] = useState<ContentPlace | null>(null);
-  const [contentDraft, setContentDraft] = useState<Draft | null>(null);
-  const [contentWorkers, setContentWorkers] = useState<ContentWorker[]>([]);
-  const [contentHeartbeats, setContentHeartbeats] = useState<ContentHeartbeat[]>([]);
-  const [contentAudioJobs, setContentAudioJobs] = useState<ContentAudioJob[]>([]);
-  const [newWorkerToken, setNewWorkerToken] = useState("");
-  const [contentStats, setContentStats] = useState<{ places: number; texts: number; audio: number; jobs?:Record<string,number>; external?:Record<string,number>;textUsageTokens?:number;oldestTextQueuedAt?:string|null;audioQueue?:{oldestQueuedAt:string|null;averageAttemptSec:number|null;artifactBytes:number;artifacts:number} } | null>(null);
+  const [contentDirty, setContentDirty] = useState(false);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [queryInput, setQueryInput] = useState("");
@@ -67,7 +56,7 @@ export function AdminDesk() {
   const [notice, setNotice] = useState("");
   const [conflict, setConflict] = useState(false);
   const dirty = draft !== null && JSON.stringify(draft) !== baseline;
-  const hasUnsavedWork = dirty || walkDirty;
+  const hasUnsavedWork = dirty || walkDirty || contentDirty;
 
   useEffect(() => {
     if (!authenticated || busy || section !== "addresses" || !pendingNavigation.current) return;
@@ -88,8 +77,8 @@ export function AdminDesk() {
 
   function clearAccess() {
     pendingNavigation.current = null;
-    setAuthenticated(false); setAccessState("checking"); setSection("addresses"); setWalkDirty(false);
-    setJobs([]); setBatches([]); setContentStats(null); setOffset(0); setHasMore(false); setJob(null); setDraft(null); setBaseline("");
+    setAuthenticated(false); setAccessState("checking"); setSection("addresses"); setWalkDirty(false); setContentDirty(false);
+    setJobs([]); setOffset(0); setHasMore(false); setJob(null); setDraft(null); setBaseline("");
     setConfirmed(false); setConflict(false); setNotice(""); setTtsProvider("openai"); setTtsVoice("");
   }
 
@@ -176,11 +165,6 @@ export function AdminDesk() {
     setJobs(result.jobs); setHasMore(result.hasMore); setOffset(nextOffset);
   }
 
-  async function loadBatches(signal: AbortSignal) {
-    const [result,stats,places,workers,audio]=await Promise.all([api<{ batches: ContentBatch[] }>("/content/batches", signal),api<{ places:number;texts:number;audio:number;jobs:Record<string,number>;external:Record<string,number>;textUsageTokens:number;oldestTextQueuedAt:string|null;audioQueue:{oldestQueuedAt:string|null;averageAttemptSec:number|null;artifactBytes:number;artifacts:number} }>("/content/stats",signal),api<{places:ContentPlace[]}>(`/content/places?limit=50&q=${encodeURIComponent(contentQuery)}`,signal),api<{workers:ContentWorker[];heartbeats:ContentHeartbeat[]}>("/content/workers",signal),api<{audioJobs:ContentAudioJob[]}>("/content/audio",signal)]);
-    setBatches(result.batches);setContentStats(stats);setContentPlaces(places.places);setContentWorkers(workers.workers);setContentHeartbeats(workers.heartbeats);setContentAudioJobs(audio.audioJobs);
-  }
-
   useEffect(() => {
     if (sessionRestored.current) return;
     sessionRestored.current = true;
@@ -197,7 +181,7 @@ export function AdminDesk() {
       }
       setAccessState("editor");
       setAuthenticated(true);
-      await Promise.all([loadQueue(0, signal), loadBatches(signal)]);
+      await loadQueue(0, signal);
       const params = new URLSearchParams(window.location.search);
       const id = params.get("job");
       if (id && UUID.test(id)) {
@@ -230,7 +214,8 @@ export function AdminDesk() {
   function changeSection(next: AdminSection) {
     if (next === section || request.current) return;
     if (section === "walks" && walkDirty && !window.confirm("Есть несохранённые правки главы. Отбросить их и открыть другой раздел?")) return;
-    setSection(next); setWalkDirty(false); setError(""); setNotice("");
+    if (section === "content" && contentDirty && !window.confirm("Есть несохранённые правки текста места. Отбросить их и открыть другой раздел?")) return;
+    setSection(next); setWalkDirty(false); setContentDirty(false); setError(""); setNotice("");
     window.history.replaceState(window.history.state, "", next === "addresses" ? (job ? `/admin?job=${job.id}` : "/admin") : `/admin?section=${next}`);
   }
 
@@ -314,36 +299,7 @@ export function AdminDesk() {
           {section === "walks" ? (
             <WalkAdmin api={api} busy={busy} run={run} openJob={openJob} onDirtyChange={setWalkDirty} />
           ) : section === "content" ? (
-            <section className="admin-addresses" aria-labelledby="admin-content-title">
-              <div className="admin-section-head"><div><h2 id="admin-content-title">OSM-партии</h2><p className="admin-meta">Массовая подготовка текстов и очередь локального Silero/F5-TTS.</p>{contentStats&&<p className="admin-meta">В каталоге {contentStats.places} · текстов {contentStats.texts} · аудио {contentStats.audio} · текстовая очередь {contentStats.jobs?.queued??0}/{contentStats.jobs?.working??0} · аудиоочередь {contentStats.external?.queued??0}/{contentStats.external?.leased??0}</p>}</div><button disabled={Boolean(busy)} onClick={()=>void run("Обновление партий…",loadBatches)}>Обновить</button></div>
-              <form className="admin-filters" onSubmit={event=>{event.preventDefault();void run("Создание партии…",async signal=>{
-                await api("/content/batches",signal,{requestKey:crypto.randomUUID(),name:`OSM · ${new Date().toLocaleString("ru")}`,limit:batchLimit,textProfile:"story-v1",mode:"text-and-audio"});
-                await loadBatches(signal);setNotice("Партия создана и поставлена в очередь.");});}}>
-                <label><span>Количество объектов</span><input type="number" min={1} max={5000} value={batchLimit} disabled={Boolean(busy)} onChange={event=>setBatchLimit(Math.max(1,Math.min(5000,Number(event.target.value)||1)))} /></label>
-                <button className="admin-primary" disabled={Boolean(busy)}>Создать партию</button>
-              </form>
-              {contentStats&&<p className="admin-meta">Токенов текста: {contentStats.textUsageTokens??0} · средняя попытка TTS: {contentStats.audioQueue?.averageAttemptSec?.toFixed(1)??"—"} с · аудиофайлов: {contentStats.audioQueue?.artifacts??0} ({Math.round((contentStats.audioQueue?.artifactBytes??0)/1048576)} МиБ) · старейший текст: {contentStats.oldestTextQueuedAt?formattedDate(contentStats.oldestTextQueuedAt):"нет"} · старейшее аудио: {contentStats.audioQueue?.oldestQueuedAt?formattedDate(contentStats.audioQueue.oldestQueuedAt):"нет"}</p>}
-              <div className="admin-content-filter"><label htmlFor="admin-content-status">Статус заданий</label><select id="admin-content-status" value={contentStatusFilter} onChange={event=>setContentStatusFilter(event.target.value as ContentStatusFilter)}><option value="all">Все</option><option value="ready">Готово</option><option value="waiting">Ждут</option><option value="stopped">Остановлено</option></select></div>
-              <div className="admin-table-wrap"><table className="admin-table"><caption className="admin-sr-only">Партии OSM</caption><thead><tr><th>Партия</th><th>Состояние</th><th>Прогресс</th><th>Действия</th></tr></thead><tbody>{filterContentBatches(batches,contentStatusFilter).map(batch=><tr key={batch.id}>
-                <th>{batch.name}<span className="admin-row-id">{batch.id.slice(0,8)}</span></th><td>{batch.state}</td><td>{batch.counts.ready} готово · {batch.counts.working} в работе · {batch.counts.queued} ждут · {batch.counts.failed} остановлено · всего {batch.counts.total}</td><td><div className="admin-row-actions">
-                  <button disabled={Boolean(busy)} onClick={()=>void run("Загрузка партии…",async signal=>setSelectedBatch((await api<{batch:ContentBatch & {items:ContentBatchItem[]}}>(`/content/batches/${batch.id}`,signal)).batch))}>Состав</button>
-                  {batch.state==="running"?<button disabled={Boolean(busy)} onClick={()=>void run("Пауза…",async signal=>{await api(`/content/batches/${batch.id}/pause`,signal,{});await loadBatches(signal);})}>Пауза</button>:batch.state==="paused"?<button disabled={Boolean(busy)} onClick={()=>void run("Продолжение…",async signal=>{await api(`/content/batches/${batch.id}/resume`,signal,{});await loadBatches(signal);})}>Продолжить</button>:null}
-                  {batch.state!=="cancelled"&&<button disabled={Boolean(busy)} onClick={()=>void run("Отмена…",async signal=>{await api(`/content/batches/${batch.id}/cancel`,signal,{});await loadBatches(signal);})}>Отменить</button>}
-                </div></td></tr>)}</tbody></table></div>
-              {filterContentBatches(batches,contentStatusFilter).length===0&&<p className="admin-meta" role="status">Партий с выбранным статусом нет.</p>}
-              {selectedBatch&&<section className="admin-review"><div className="admin-section-head"><h3>Состав: {selectedBatch.name}</h3><button onClick={()=>setSelectedBatch(null)}>Закрыть</button></div><div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Место</th><th>Состояние</th><th>Ошибка</th><th>Действие</th></tr></thead><tbody>{filterContentBatchItems(selectedBatch.items,contentStatusFilter).map(item=><tr key={item.placeId}><th>{item.name}<span className="admin-row-id">{item.address??item.placeId}</span></th><td>{item.state}</td><td>{item.error?.message??"—"}</td><td>{["failed","review_required","insufficient_evidence","retry_wait"].includes(item.state)&&<button disabled={Boolean(busy)} onClick={()=>void run("Повтор задания…",async signal=>{const result=await api<{batch:ContentBatch & {items:ContentBatchItem[]}}>(`/content/batches/${selectedBatch.id}/items/${item.placeId}/retry`,signal,{});setSelectedBatch(result.batch);await loadBatches(signal);})}>Повторить</button>}</td></tr>)}</tbody></table></div>{filterContentBatchItems(selectedBatch.items,contentStatusFilter).length===0&&<p className="admin-meta" role="status">Заданий с выбранным статусом нет.</p>}</section>}
-              {contentAudioJobs.length>0&&<section className="admin-review"><div className="admin-section-head"><div><h3>Остановленные аудиозадания</h3><p className="admin-meta">Повтор запускает новую ограниченную серию попыток с тем же утверждённым текстом.</p></div></div><div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Место</th><th>Профиль</th><th>Ошибка</th><th>Действие</th></tr></thead><tbody>{contentAudioJobs.map(audio=><tr key={audio.id}><th>{audio.placeName??audio.placeId??audio.id}<span className="admin-row-id">{audio.id.slice(0,8)} · {audio.state} · {audio.attempts}/{audio.maxAttempts}</span></th><td>{audio.profileId}</td><td>{audio.error?.message??audio.error?.code??"—"}</td><td><button disabled={Boolean(busy)} onClick={()=>void run("Повтор озвучивания…",async signal=>{await api(`/content/audio/${audio.id}/retry`,signal,{});await loadBatches(signal);setNotice("Аудиозадание снова поставлено в очередь.");})}>Повторить</button></td></tr>)}</tbody></table></div></section>}
-              <section className="admin-review"><div className="admin-section-head"><div><h3>Каталог и редактура</h3><p className="admin-meta">Автоматический текст появляется публично и уходит в TTS только после утверждения.</p></div></div>
-                <form className="admin-filters" role="search" onSubmit={event=>{event.preventDefault();void run("Поиск мест…",loadBatches);}}><label className="admin-search"><span>Название или адрес</span><input value={contentQuery} onChange={event=>setContentQuery(event.target.value)}/></label><button>Найти</button></form>
-                <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Место</th><th>Текст</th><th>Аудио</th><th>Действие</th></tr></thead><tbody>{contentPlaces.map(place=><tr key={place.id}><th>{place.name}<span className="admin-row-id">{place.address??place.id}</span></th><td>{place.text?.verification??"нет"}</td><td>{place.text?.audio?"готово":"нет"}</td><td><button disabled={Boolean(busy)} onClick={()=>void run("Загрузка места…",async signal=>{const value=(await api<{place:ContentPlace}>(`/content/places/${place.id}`,signal)).place;setContentPlace(value);setContentDraft(value.text?.draft??null);})}>Открыть</button></td></tr>)}</tbody></table></div>
-                {contentPlace&&<article className="admin-document"><div className="admin-document-head"><div><p className="admin-context">{contentPlace.id}</p><h3>{contentPlace.name}</h3></div><button onClick={()=>{setContentPlace(null);setContentDraft(null);}}>Закрыть</button></div>{contentDraft?<><label htmlFor="content-title">Заголовок</label><input id="content-title" value={contentDraft.title} onChange={event=>setContentDraft({...contentDraft,title:event.target.value})}/>{contentDraft.paragraphs.map((paragraph,index)=><label key={index}>Абзац {index+1}<textarea value={paragraph.text} onChange={event=>setContentDraft({...contentDraft,paragraphs:contentDraft.paragraphs.map((value,i)=>i===index?{...value,text:event.target.value}:value)})}/></label>)}<div className="admin-actions"><button className="admin-primary" disabled={Boolean(busy)||!contentDraft.title.trim()||contentDraft.paragraphs.some(item=>!item.text.trim())} onClick={()=>void run("Утверждение текста…",async signal=>{const value=(await api<{place:ContentPlace}>(`/content/places/${contentPlace.id}/approve`,signal,{story:contentDraft})).place;setContentPlace(value);setContentDraft(value.text?.draft??null);await loadBatches(signal);setNotice("Текст утверждён; нужная озвучка поставлена в очередь.");})}>Утвердить текст</button>{contentPlace.text?.verification==="editorial"&&<button disabled={Boolean(busy)} onClick={()=>void run("Постановка аудио…",async signal=>{await api(`/content/places/${contentPlace.id}/audio`,signal,{});setNotice("Озвучка поставлена в очередь.");})}>Озвучить</button>}</div></>:<p className="admin-empty">Для этого места текст ещё не создан.</p>}</article>}
-              </section>
-              <section className="admin-review"><div className="admin-section-head"><div><h3>Локальные TTS-воркеры</h3><p className="admin-meta">Активным считается воркер, обращавшийся к API за последние две минуты.</p></div><button disabled={Boolean(busy)} onClick={()=>void run("Создание ключа…",async signal=>{const result=await api<{worker:ContentWorker & {token:string}}>("/content/workers",signal,{name:`Локальный воркер ${new Date().toLocaleDateString("ru")}`,profiles:["silero-ru-v1","f5-ru-v1"]});setNewWorkerToken(result.worker.token);await loadBatches(signal);})}>Выпустить ключ</button></div>
-                {newWorkerToken&&<div className="admin-callout"><strong>Скопируйте токен сейчас:</strong><pre>{newWorkerToken}</pre><button onClick={()=>void navigator.clipboard.writeText(newWorkerToken)}>Копировать</button></div>}
-                {!contentWorkers.some(worker=>!worker.revokedAt&&worker.lastSeenAt&&Date.now()-new Date(worker.lastSeenAt).valueOf()<120000)&&<p className="admin-callout">Сейчас нет подходящего online-воркера. Аудиозадания останутся в очереди.</p>}
-                <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Воркер</th><th>Профили</th><th>Последний heartbeat</th><th>Текущая работа</th><th>Действие</th></tr></thead><tbody>{contentWorkers.map(worker=>{const heartbeat=contentHeartbeats.find(item=>item.credentialId===worker.id);return <tr key={worker.id}><th>{worker.name}{heartbeat&&<span className="admin-row-id">{heartbeat.workerName} · {heartbeat.version??"версия неизвестна"}</span>}</th><td>{worker.profiles.join(", ")}</td><td>{worker.revokedAt?"отозван":worker.lastSeenAt?formattedDate(worker.lastSeenAt):"ещё не подключался"}</td><td>{heartbeat?.currentJobId?`${heartbeat.progress?.stage??"работает"}${heartbeat.progress?.percent===undefined?"":` · ${heartbeat.progress.percent}%`}`:"—"}</td><td>{!worker.revokedAt&&<button disabled={Boolean(busy)} onClick={()=>void run("Отзыв ключа…",async signal=>{await api(`/content/workers/${worker.id}/revoke`,signal,{});await loadBatches(signal);})}>Отозвать</button>}</td></tr>})}</tbody></table></div>
-              </section>
-            </section>
+            <ContentAdmin api={api} busy={busy} run={run} onDirtyChange={setContentDirty} />
           ) : (
             <section className="admin-addresses" aria-labelledby="admin-addresses-title">
               <div className="admin-section-head">

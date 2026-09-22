@@ -1,0 +1,434 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import {
+  batchItemStates, batchStates, contentStatusOptions, filterContentBatches, pageCount, pageRange,
+  placeStatusOptions, placeTextStatuses, retryableItemStates,
+  type AdminApi, type AdminRun, type ContentAudioJob, type ContentBatch, type ContentBatchItemPage,
+  type ContentHeartbeat, type ContentPlace, type ContentPlaceStatusFilter, type ContentPlaceSummary,
+  type ContentStatusFilter, type ContentWorker, type Draft,
+} from "./model";
+import "./content-admin.css";
+
+type ContentAdminProps = { api: AdminApi; busy: string; run: AdminRun; onDirtyChange: (dirty: boolean) => void };
+type Stats = {
+  places: number; texts: number; audio: number;
+  jobs?: Record<string, number>; external?: Record<string, number>;
+  textUsageTokens?: number; oldestTextQueuedAt?: string | null;
+  audioQueue?: { oldestQueuedAt: string | null; averageAttemptSec: number | null; artifactBytes: number; artifacts: number };
+};
+type PlacePage = { places: ContentPlaceSummary[]; total: number; hasMore: boolean };
+
+const PLACE_PAGE = 50;
+const ITEM_PAGE = 50;
+const BATCH_PAGE = 20;
+const HEARTBEAT_WINDOW_MS = 120_000;
+const numbers = new Intl.NumberFormat("ru-RU");
+
+function moment(value: string | null | undefined) {
+  if (!value) return "нет";
+  const date = new Date(value);
+  return Number.isNaN(date.valueOf()) ? "—" : date.toLocaleString("ru-RU");
+}
+
+/** Item states are grouped into four buckets; the bar shows the same grouping as the status filter. */
+function progressSegments(counts: ContentBatch["counts"]) {
+  return [
+    { key: "ready", label: "готово", value: counts.ready },
+    { key: "working", label: "в работе", value: counts.working },
+    { key: "waiting", label: "ждут", value: counts.queued },
+    { key: "stopped", label: "остановлено", value: counts.failed },
+  ];
+}
+
+export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProps) {
+  const loaded = useRef(false);
+  const [notice, setNotice] = useState("");
+  const [stats, setStats] = useState<Stats | null>(null);
+
+  const [batches, setBatches] = useState<ContentBatch[]>([]);
+  const [batchStatus, setBatchStatus] = useState<ContentStatusFilter>("all");
+  const [batchPage, setBatchPage] = useState(0);
+  const [batchLimit, setBatchLimit] = useState(50);
+  const [batchMode, setBatchMode] = useState<"text-and-audio" | "text-only">("text-and-audio");
+
+  const [batch, setBatch] = useState<ContentBatch | null>(null);
+  const [itemPage, setItemPage] = useState<ContentBatchItemPage | null>(null);
+  const [itemStatus, setItemStatus] = useState<ContentStatusFilter>("all");
+  const [itemOffset, setItemOffset] = useState(0);
+
+  const [placePage, setPlacePage] = useState<PlacePage>({ places: [], total: 0, hasMore: false });
+  const [placeOffset, setPlaceOffset] = useState(0);
+  const [placeQueryInput, setPlaceQueryInput] = useState("");
+  const [placeQuery, setPlaceQuery] = useState("");
+  const [placeStatus, setPlaceStatus] = useState<ContentPlaceStatusFilter>("all");
+
+  const [place, setPlace] = useState<ContentPlace | null>(null);
+  const [draft, setDraft] = useState<Draft | null>(null);
+  const [baseline, setBaseline] = useState("");
+
+  const [workers, setWorkers] = useState<ContentWorker[]>([]);
+  const [heartbeats, setHeartbeats] = useState<ContentHeartbeat[]>([]);
+  const [audioJobs, setAudioJobs] = useState<ContentAudioJob[]>([]);
+  const [workerToken, setWorkerToken] = useState("");
+
+  const dirty = Boolean(draft && JSON.stringify(draft) !== baseline);
+  const disabled = Boolean(busy);
+  const visibleBatches = filterContentBatches(batches, batchStatus);
+  const batchPages = pageCount(visibleBatches.length, BATCH_PAGE);
+  const batchRows = visibleBatches.slice(batchPage * BATCH_PAGE, batchPage * BATCH_PAGE + BATCH_PAGE);
+  const workerOnline = workers.some(worker => !worker.revokedAt && worker.lastSeenAt
+    && Date.now() - new Date(worker.lastSeenAt).valueOf() < HEARTBEAT_WINDOW_MS);
+
+  useEffect(() => { onDirtyChange(dirty); }, [dirty, onDirtyChange]);
+  useEffect(() => () => onDirtyChange(false), [onDirtyChange]);
+
+  async function loadOverview(signal: AbortSignal) {
+    const [batchList, nextStats, workerList, audio] = await Promise.all([
+      api<{ batches: ContentBatch[] }>("/content/batches", signal),
+      api<Stats>("/content/stats", signal),
+      api<{ workers: ContentWorker[]; heartbeats: ContentHeartbeat[] }>("/content/workers", signal),
+      api<{ audioJobs: ContentAudioJob[] }>("/content/audio", signal),
+    ]);
+    setBatches(batchList.batches); setStats(nextStats);
+    setWorkers(workerList.workers); setHeartbeats(workerList.heartbeats); setAudioJobs(audio.audioJobs);
+  }
+
+  async function loadPlaces(offset: number, signal: AbortSignal, next?: { q?: string; status?: ContentPlaceStatusFilter }) {
+    const q = next?.q ?? placeQuery;
+    const status = next?.status ?? placeStatus;
+    const params = new URLSearchParams({ limit: String(PLACE_PAGE), offset: String(offset), status });
+    if (q) params.set("q", q);
+    const result = await api<PlacePage>(`/content/places?${params}`, signal);
+    // A page can fall off the end when places are archived between requests.
+    if (!result.places.length && offset > 0) { await loadPlaces(Math.max(0, offset - PLACE_PAGE), signal, next); return; }
+    setPlacePage(result); setPlaceOffset(offset);
+  }
+
+  async function loadItems(id: string, offset: number, signal: AbortSignal, status?: ContentStatusFilter) {
+    const params = new URLSearchParams({ limit: String(ITEM_PAGE), offset: String(offset), status: status ?? itemStatus });
+    const result = await api<ContentBatchItemPage>(`/content/batches/${id}/items?${params}`, signal);
+    if (!result.items.length && offset > 0) { await loadItems(id, Math.max(0, offset - ITEM_PAGE), signal, status); return; }
+    setItemPage(result); setItemOffset(offset);
+  }
+
+  useEffect(() => {
+    if (loaded.current) return;
+    loaded.current = true;
+    void run("Загрузка OSM-каталога…", async signal => { await Promise.all([loadOverview(signal), loadPlaces(0, signal)]); });
+  // The ref keeps this a one-time mount load; later refreshes go through explicit buttons.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function refresh() {
+    void run("Обновление данных…", async signal => {
+      await loadOverview(signal);
+      await loadPlaces(placeOffset, signal);
+      if (batch) await loadItems(batch.id, itemOffset, signal);
+      setNotice("");
+    });
+  }
+
+  function consentToLoseDraft() {
+    return !dirty || window.confirm("Есть несохранённые правки текста места. Отбросить их и продолжить?");
+  }
+
+  function openBatch(next: ContentBatch) {
+    void run("Загрузка состава партии…", async signal => {
+      setBatch(next); setItemStatus("all");
+      await loadItems(next.id, 0, signal, "all");
+    });
+  }
+
+  function batchAction(id: string, action: "pause" | "resume" | "cancel", label: string) {
+    void run(label, async signal => {
+      await api(`/content/batches/${id}/${action}`, signal, {});
+      await loadOverview(signal);
+      if (batch?.id === id) await loadItems(id, itemOffset, signal);
+      setNotice(action === "pause" ? "Партия поставлена на паузу." : action === "resume" ? "Партия продолжена." : "Партия отменена, ожидающие задания сняты.");
+    });
+  }
+
+  function openPlace(id: string) {
+    if (!consentToLoseDraft()) return;
+    void run("Загрузка места…", async signal => {
+      const value = (await api<{ place: ContentPlace }>(`/content/places/${id}`, signal)).place;
+      const next = value.text?.draft ?? null;
+      setPlace(value); setDraft(next); setBaseline(JSON.stringify(next)); setNotice("");
+    });
+  }
+
+  function closePlace() {
+    if (!consentToLoseDraft()) return;
+    setPlace(null); setDraft(null); setBaseline("");
+  }
+
+  const draftValid = Boolean(draft?.title.trim() && draft.paragraphs.length && draft.paragraphs.every(item => item.text.trim()));
+
+  return (
+    <section className="admin-addresses content-admin" aria-labelledby="admin-content-title">
+      <div className="admin-section-head">
+        <div>
+          <h2 id="admin-content-title">OSM-партии</h2>
+          <p className="admin-meta">Массовая подготовка текстов и очередь локального Silero/F5-TTS.</p>
+        </div>
+        <button disabled={disabled} onClick={refresh}>Обновить</button>
+      </div>
+      {notice && <p className="admin-meta" role="status">{notice}</p>}
+
+      <dl className="content-stats">
+        <div><dt>Мест в каталоге</dt><dd>{numbers.format(stats?.places ?? 0)}</dd></div>
+        <div><dt>Текстов</dt><dd>{numbers.format(stats?.texts ?? 0)}</dd></div>
+        <div><dt>Аудио</dt><dd>{numbers.format(stats?.audio ?? 0)}</dd></div>
+        <div><dt>Очередь текстов</dt><dd>{numbers.format(stats?.jobs?.queued ?? 0)}</dd><span>в работе {numbers.format(stats?.jobs?.working ?? 0)}</span></div>
+        <div><dt>Очередь аудио</dt><dd>{numbers.format(stats?.external?.queued ?? 0)}</dd><span>у воркеров {numbers.format(stats?.external?.leased ?? 0)}</span></div>
+        <div><dt>Средняя попытка TTS</dt><dd>{stats?.audioQueue?.averageAttemptSec == null ? "—" : <>{stats.audioQueue.averageAttemptSec.toFixed(1)}<small> с</small></>}</dd></div>
+        <div><dt>Токенов текста</dt><dd>{numbers.format(stats?.textUsageTokens ?? 0)}</dd></div>
+        <div><dt>Аудиофайлов</dt><dd>{numbers.format(stats?.audioQueue?.artifacts ?? 0)}</dd><span>{numbers.format(Math.round((stats?.audioQueue?.artifactBytes ?? 0) / 1048576))} МиБ</span></div>
+        <div><dt>Старейший текст в очереди</dt><dd className="content-stats-date">{moment(stats?.oldestTextQueuedAt)}</dd></div>
+        <div><dt>Старейшее аудио в очереди</dt><dd className="content-stats-date">{moment(stats?.audioQueue?.oldestQueuedAt)}</dd></div>
+      </dl>
+
+      <section className="admin-review" aria-labelledby="content-new-batch-title">
+        <h3 id="content-new-batch-title">Новая партия</h3>
+        <p className="admin-meta">Берёт указанное число мест из каталога по алфавиту и ставит их в очередь подготовки.</p>
+        <form className="admin-filters content-batch-form" onSubmit={event => {
+          event.preventDefault();
+          void run("Создание партии…", async signal => {
+            await api("/content/batches", signal, {
+              requestKey: crypto.randomUUID(), name: `OSM · ${new Date().toLocaleString("ru-RU")}`,
+              limit: batchLimit, textProfile: "story-v1", mode: batchMode,
+            });
+            await loadOverview(signal);
+            setBatchStatus("all"); setBatchPage(0);
+            setNotice("Партия создана и поставлена в очередь.");
+          });
+        }}>
+          <label><span>Количество объектов</span><input type="number" min={1} max={5000} value={batchLimit} disabled={disabled}
+            onChange={event => setBatchLimit(Math.max(1, Math.min(5000, Number(event.target.value) || 1)))} /></label>
+          <label><span>Что готовить</span><select value={batchMode} disabled={disabled}
+            onChange={event => setBatchMode(event.target.value as typeof batchMode)}>
+            <option value="text-and-audio">Текст и озвучку</option>
+            <option value="text-only">Только текст</option>
+          </select></label>
+          <button className="admin-primary" disabled={disabled}>Создать партию</button>
+        </form>
+      </section>
+
+      <section className="admin-review" aria-labelledby="content-batches-title">
+        <div className="admin-section-head">
+          <div>
+            <h3 id="content-batches-title">Партии</h3>
+            <p className="admin-meta" id="content-batch-filter-note">Партия попадает в выборку, если хотя бы одно её задание в выбранном статусе. Счётчики в строке всегда показывают все задания партии.</p>
+          </div>
+        </div>
+        <div className="content-toolbar">
+          <label htmlFor="content-batch-status">Есть задания со статусом</label>
+          <select id="content-batch-status" value={batchStatus} disabled={disabled} aria-describedby="content-batch-filter-note"
+            onChange={event => { setBatchStatus(event.target.value as ContentStatusFilter); setBatchPage(0); }}>
+            {contentStatusOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+          </select>
+          <p className="admin-meta" role="status">Показано {visibleBatches.length} из {batches.length} партий.</p>
+        </div>
+        <div className="admin-table-wrap"><table className="admin-table">
+          <caption className="admin-sr-only">Партии OSM</caption>
+          <thead><tr><th scope="col">Партия</th><th scope="col">Состояние</th><th scope="col">Прогресс заданий</th><th scope="col">Действия</th></tr></thead>
+          <tbody>{batchRows.map(item => {
+            const segments = progressSegments(item.counts);
+            return <tr key={item.id} data-current={batch?.id === item.id || undefined}>
+              <th scope="row">{item.name}<span className="admin-row-id">{item.id.slice(0, 8)} · {item.mode === "text-only" ? "только текст" : "текст и озвучка"} · создана {moment(item.createdAt)}</span></th>
+              <td><span className={`admin-stage content-batch-state-${item.state}`}>{batchStates[item.state] ?? item.state}</span></td>
+              <td>
+                <div className="content-progress" aria-hidden="true">{segments.map(segment => segment.value
+                  ? <span key={segment.key} data-segment={segment.key} style={{ flexGrow: segment.value }} /> : null)}</div>
+                <span className="admin-row-id">{segments.map(segment => `${segment.value} ${segment.label}`).join(" · ")} · всего {item.counts.total}</span>
+              </td>
+              <td><div className="admin-row-actions">
+                <button disabled={disabled} onClick={() => openBatch(item)}>Состав</button>
+                {item.state === "running" && <button disabled={disabled} onClick={() => batchAction(item.id, "pause", "Пауза…")}>Пауза</button>}
+                {item.state === "paused" && <button disabled={disabled} onClick={() => batchAction(item.id, "resume", "Продолжение…")}>Продолжить</button>}
+                {item.state !== "cancelled" && <button disabled={disabled} onClick={() => {
+                  if (window.confirm(`Отменить партию «${item.name}»? Ожидающие задания и их аудио будут сняты с очереди.`)) batchAction(item.id, "cancel", "Отмена…");
+                }}>Отменить</button>}
+              </div></td>
+            </tr>;
+          })}</tbody>
+        </table></div>
+        {!visibleBatches.length && <p className="admin-empty-row" role="status">{batches.length ? "Партий с выбранным статусом заданий нет." : "Партий пока нет."}</p>}
+        {batchPages > 1 && <nav className="admin-pagination" aria-label="Страницы партий">
+          <button disabled={disabled || batchPage === 0} onClick={() => setBatchPage(page => Math.max(0, page - 1))}>Назад</button>
+          <span className="admin-meta">Страница {batchPage + 1} из {batchPages}</span>
+          <button disabled={disabled || batchPage + 1 >= batchPages} onClick={() => setBatchPage(page => Math.min(batchPages - 1, page + 1))}>Далее</button>
+        </nav>}
+      </section>
+
+      {batch && <section className="admin-review" aria-labelledby="content-items-title">
+        <div className="admin-section-head">
+          <div><h3 id="content-items-title">Состав партии «{batch.name}»</h3>
+            <p className="admin-meta">Всего заданий {batch.counts.total}. Фильтр ниже действует только на этот список.</p></div>
+          <button disabled={disabled} onClick={() => { setBatch(null); setItemPage(null); setItemOffset(0); }}>Закрыть</button>
+        </div>
+        <div className="content-toolbar">
+          <label htmlFor="content-item-status">Статус задания</label>
+          <select id="content-item-status" value={itemStatus} disabled={disabled} onChange={event => {
+            const next = event.target.value as ContentStatusFilter; setItemStatus(next);
+            void run("Фильтрация заданий…", signal => loadItems(batch.id, 0, signal, next));
+          }}>{contentStatusOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
+          <p className="admin-meta" role="status">Показано {pageRange(itemOffset, itemPage?.items.length ?? 0, itemPage?.total ?? 0)}</p>
+        </div>
+        <div className="admin-table-wrap"><table className="admin-table">
+          <caption className="admin-sr-only">Задания партии</caption>
+          <thead><tr><th scope="col">Место</th><th scope="col">Состояние</th><th scope="col">Ошибка</th><th scope="col">Действие</th></tr></thead>
+          <tbody>{(itemPage?.items ?? []).map(item => <tr key={item.placeId}>
+            <th scope="row">{item.name}<span className="admin-row-id">{item.address ?? item.placeId}</span></th>
+            <td><span className={`admin-stage admin-stage-${item.state}`}>{batchItemStates[item.state] ?? item.state}</span></td>
+            <td>{item.error?.message ?? "—"}</td>
+            <td>{retryableItemStates.includes(item.state) && <button disabled={disabled} onClick={() => void run("Повтор задания…", async signal => {
+              await api(`/content/batches/${batch.id}/items/${item.placeId}/retry`, signal, {});
+              await loadItems(batch.id, itemOffset, signal);
+              await loadOverview(signal);
+              setNotice(`Задание «${item.name}» снова поставлено в очередь.`);
+            })}>Повторить</button>}</td>
+          </tr>)}</tbody>
+        </table></div>
+        {!itemPage?.items.length && <p className="admin-empty-row" role="status">Заданий с выбранным статусом в партии нет.</p>}
+        <nav className="admin-pagination" aria-label="Страницы заданий партии">
+          <button disabled={disabled || itemOffset === 0} onClick={() => void run("Загрузка заданий…", signal => loadItems(batch.id, Math.max(0, itemOffset - ITEM_PAGE), signal))}>Назад</button>
+          <span className="admin-meta">Страница {Math.floor(itemOffset / ITEM_PAGE) + 1} из {pageCount(itemPage?.total ?? 0, ITEM_PAGE)}</span>
+          <button disabled={disabled || !itemPage?.hasMore} onClick={() => void run("Загрузка заданий…", signal => loadItems(batch.id, itemOffset + ITEM_PAGE, signal))}>Далее</button>
+        </nav>
+      </section>}
+
+      {audioJobs.length > 0 && <section className="admin-review" aria-labelledby="content-audio-title">
+        <div className="admin-section-head"><div>
+          <h3 id="content-audio-title">Остановленные аудиозадания</h3>
+          <p className="admin-meta">Показано {audioJobs.length}. Повтор запускает новую ограниченную серию попыток с тем же утверждённым текстом.</p>
+        </div></div>
+        <div className="admin-table-wrap"><table className="admin-table">
+          <caption className="admin-sr-only">Остановленные аудиозадания</caption>
+          <thead><tr><th scope="col">Место</th><th scope="col">Профиль</th><th scope="col">Попытки</th><th scope="col">Ошибка</th><th scope="col">Действие</th></tr></thead>
+          <tbody>{audioJobs.map(audio => <tr key={audio.id}>
+            <th scope="row">{audio.placeName ?? audio.placeId ?? audio.id}<span className="admin-row-id">{audio.id.slice(0, 8)} · {batchItemStates[audio.state] ?? audio.state}</span></th>
+            <td>{audio.profileId}</td>
+            <td>{audio.attempts} из {audio.maxAttempts}</td>
+            <td>{audio.error?.message ?? audio.error?.code ?? "—"}</td>
+            <td><button disabled={disabled} onClick={() => void run("Повтор озвучивания…", async signal => {
+              await api(`/content/audio/${audio.id}/retry`, signal, {});
+              await loadOverview(signal);
+              setNotice("Аудиозадание снова поставлено в очередь.");
+            })}>Повторить</button></td>
+          </tr>)}</tbody>
+        </table></div>
+      </section>}
+
+      <section className="admin-review" aria-labelledby="content-catalog-title">
+        <div className="admin-section-head"><div>
+          <h3 id="content-catalog-title">Каталог и редактура</h3>
+          <p className="admin-meta">Автоматический текст появляется публично и уходит в TTS только после утверждения.</p>
+        </div></div>
+        <form className="admin-filters" role="search" onSubmit={event => {
+          event.preventDefault();
+          const q = placeQueryInput.trim(); setPlaceQuery(q);
+          void run("Поиск мест…", signal => loadPlaces(0, signal, { q }));
+        }}>
+          <label className="admin-search"><span>Название или адрес</span>
+            <input type="search" value={placeQueryInput} placeholder="Например, Пятницкая" disabled={disabled}
+              onChange={event => setPlaceQueryInput(event.target.value)} /></label>
+          <label><span>Состояние текста</span><select value={placeStatus} disabled={disabled} onChange={event => {
+            const next = event.target.value as ContentPlaceStatusFilter; setPlaceStatus(next);
+            void run("Фильтрация мест…", signal => loadPlaces(0, signal, { status: next }));
+          }}>{placeStatusOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+          <button className="admin-filter-submit" type="submit" disabled={disabled}>Найти</button>
+        </form>
+        <p className="admin-meta" role="status">Показано {pageRange(placeOffset, placePage.places.length, placePage.total)} мест.</p>
+        <div className="admin-table-wrap"><table className="admin-table">
+          <caption className="admin-sr-only">Каталог мест OSM</caption>
+          <thead><tr><th scope="col">Место</th><th scope="col">Текст</th><th scope="col">Аудио</th><th scope="col">Действие</th></tr></thead>
+          <tbody>{placePage.places.map(item => <tr key={item.id} data-current={place?.id === item.id || undefined}>
+            <th scope="row">{item.name}<span className="admin-row-id">{item.address ?? item.id}</span></th>
+            <td><span className={`admin-stage content-text-${item.textStatus}`}>{placeTextStatuses[item.textStatus]}</span></td>
+            <td>{item.audio ? "Готово" : "Нет"}</td>
+            <td><button disabled={disabled} onClick={() => openPlace(item.id)}>Открыть</button></td>
+          </tr>)}</tbody>
+        </table></div>
+        {!placePage.places.length && <p className="admin-empty-row" role="status">По этим условиям мест не найдено.</p>}
+        <nav className="admin-pagination" aria-label="Страницы каталога мест">
+          <button disabled={disabled || placeOffset === 0} onClick={() => void run("Загрузка мест…", signal => loadPlaces(Math.max(0, placeOffset - PLACE_PAGE), signal))}>Назад</button>
+          <span className="admin-meta">Страница {Math.floor(placeOffset / PLACE_PAGE) + 1} из {pageCount(placePage.total, PLACE_PAGE)}</span>
+          <button disabled={disabled || !placePage.hasMore} onClick={() => void run("Загрузка мест…", signal => loadPlaces(placeOffset + PLACE_PAGE, signal))}>Далее</button>
+        </nav>
+
+        {place && <article className="admin-document">
+          <div className="admin-document-head">
+            <div><p className="admin-context">{place.id}</p><h3>{place.name}</h3>
+              <p className="admin-meta">{place.address ?? "Адрес не указан"}{dirty ? " · есть несохранённые правки" : ""}</p></div>
+            <button disabled={disabled} onClick={closePlace}>Закрыть</button>
+          </div>
+          {draft ? <>
+            <label htmlFor="content-title">Заголовок</label>
+            <input id="content-title" value={draft.title} disabled={disabled}
+              onChange={event => setDraft({ ...draft, title: event.target.value })} />
+            {draft.paragraphs.map((paragraph, index) => <div className="admin-paragraph" key={index}>
+              <label htmlFor={`content-paragraph-${index}`}>Абзац {index + 1}</label>
+              <textarea id={`content-paragraph-${index}`} rows={6} value={paragraph.text} disabled={disabled}
+                onChange={event => setDraft({ ...draft, paragraphs: draft.paragraphs.map((value, i) => i === index ? { ...value, text: event.target.value } : value) })} />
+            </div>)}
+            <div className="admin-actions">
+              <button className="admin-primary" disabled={disabled || !draftValid} onClick={() => void run("Утверждение текста…", async signal => {
+                const value = (await api<{ place: ContentPlace }>(`/content/places/${place.id}/approve`, signal, { story: draft })).place;
+                const next = value.text?.draft ?? null;
+                setPlace(value); setDraft(next); setBaseline(JSON.stringify(next));
+                await loadOverview(signal); await loadPlaces(placeOffset, signal);
+                setNotice("Текст утверждён; нужная озвучка поставлена в очередь.");
+              })}>Утвердить текст</button>
+              {place.text?.verification === "editorial" && <button disabled={disabled || dirty} onClick={() => void run("Постановка аудио…", async signal => {
+                await api(`/content/places/${place.id}/audio`, signal, {});
+                await loadOverview(signal);
+                setNotice("Озвучка поставлена в очередь.");
+              })}>Озвучить заново</button>}
+            </div>
+            {!workerOnline && <p className="admin-callout">Сейчас нет online-воркера TTS. Поставленная озвучка останется в очереди до его подключения.</p>}
+          </> : <p className="admin-empty">Для этого места текст ещё не создан. Включите его в новую партию, чтобы запустить подготовку.</p>}
+        </article>}
+      </section>
+
+      <section className="admin-review" aria-labelledby="content-workers-title">
+        <div className="admin-section-head">
+          <div><h3 id="content-workers-title">Локальные TTS-воркеры</h3>
+            <p className="admin-meta">Активным считается воркер, обращавшийся к API за последние две минуты.</p></div>
+          <button disabled={disabled} onClick={() => void run("Создание ключа…", async signal => {
+            const result = await api<{ worker: ContentWorker & { token: string } }>("/content/workers", signal,
+              { name: `Локальный воркер ${new Date().toLocaleDateString("ru-RU")}`, profiles: ["silero-ru-v1", "f5-ru-v1"] });
+            setWorkerToken(result.worker.token);
+            await loadOverview(signal);
+          })}>Выпустить ключ</button>
+        </div>
+        {workerToken && <div className="admin-callout"><strong>Скопируйте токен сейчас — второй раз он не показывается:</strong>
+          <pre>{workerToken}</pre>
+          <div className="admin-actions">
+            <button onClick={() => void navigator.clipboard.writeText(workerToken)}>Копировать</button>
+            <button onClick={() => setWorkerToken("")}>Скрыть</button>
+          </div></div>}
+        {!workerOnline && <p className="admin-callout">Сейчас нет подходящего online-воркера. Аудиозадания останутся в очереди.</p>}
+        <div className="admin-table-wrap"><table className="admin-table">
+          <caption className="admin-sr-only">Ключи и состояние локальных TTS-воркеров</caption>
+          <thead><tr><th scope="col">Воркер</th><th scope="col">Профили</th><th scope="col">Последний heartbeat</th><th scope="col">Текущая работа</th><th scope="col">Действие</th></tr></thead>
+          <tbody>{workers.map(worker => {
+            const heartbeat = heartbeats.find(item => item.credentialId === worker.id);
+            return <tr key={worker.id}>
+              <th scope="row">{worker.name}{heartbeat && <span className="admin-row-id">{heartbeat.workerName} · {heartbeat.version ?? "версия неизвестна"}</span>}</th>
+              <td>{worker.profiles.join(", ")}</td>
+              <td>{worker.revokedAt ? "отозван" : worker.lastSeenAt ? moment(worker.lastSeenAt) : "ещё не подключался"}</td>
+              <td>{heartbeat?.currentJobId ? `${heartbeat.progress?.stage ?? "работает"}${heartbeat.progress?.percent === undefined ? "" : ` · ${heartbeat.progress.percent}%`}` : "—"}</td>
+              <td>{!worker.revokedAt && <button disabled={disabled} onClick={() => {
+                if (!window.confirm(`Отозвать ключ воркера «${worker.name}»? Он немедленно потеряет доступ к очереди.`)) return;
+                void run("Отзыв ключа…", async signal => { await api(`/content/workers/${worker.id}/revoke`, signal, {}); await loadOverview(signal); });
+              }}>Отозвать</button>}</td>
+            </tr>;
+          })}</tbody>
+        </table></div>
+        {!workers.length && <p className="admin-empty-row" role="status">Ключи воркеров ещё не выпускались.</p>}
+      </section>
+    </section>
+  );
+}
