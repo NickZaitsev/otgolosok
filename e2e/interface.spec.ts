@@ -292,3 +292,18 @@ for (const [width, height, expectedGap] of [[390, 844, 20], [1440, 900, 12], [56
     expect(Math.abs(nav!.y - card!.y - card!.height - expectedGap)).toBeLessThanOrEqual(1);
   });
 }
+
+test("выбор на карте показывает понятный заголовок и контурную отмену", async ({ page }, info) => {
+  await page.goto("/?walk=create");
+  await page.getByRole("button", { name: "Куда", exact: true }).click();
+  await page.getByRole("button", { name: "Выбрать на карте", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Куда идём?", exact: true })).toBeVisible();
+  const cancel = page.getByRole("button", { name: "Отменить", exact: true });
+  const style = await cancel.evaluate(el => ({ background: getComputedStyle(el).backgroundColor, border: getComputedStyle(el).borderTopWidth }));
+  expect(style).toEqual({ background: "rgba(0, 0, 0, 0)", border: "1px" });
+  await page.screenshot({ path: info.outputPath("map-picking.png") });
+  await cancel.click();
+  await expect(page.getByRole("heading", { name: "Прогулка", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Откуда", exact: true })).toBeVisible();
+  await expect(page.locator(".creation-panel.is-picking")).toHaveCount(0);
+});

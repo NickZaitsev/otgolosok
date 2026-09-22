@@ -83,7 +83,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
 
   return <section ref={panel} className={`creation-panel${state.picking ? " is-picking" : preview ? " is-preview" : ""}`} aria-labelledby="creation-title">
     <div className="creation-handle" aria-hidden="true" />
-    <header className={`creation-heading${preview ? "" : " is-compact"}`}><div><h1 id="creation-title" ref={title} tabIndex={-1}>{preview ? "Ваш маршрут" : "Прогулка"}</h1></div><button className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки">×</button></header>
+    <header className={`creation-heading${preview ? "" : " is-compact"}`}><div><h1 id="creation-title" ref={title} tabIndex={-1}>{state.picking ? "Куда идём?" : preview ? "Ваш маршрут" : "Прогулка"}</h1></div><button className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки">×</button></header>
     <div className="creation-body">
       {!w.loaded ? <p role="status">Открываем черновик…</p> : <>
         {!preview && !state.picking && <>
@@ -94,7 +94,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
 
 
         </>}
-        {state.picking && <div><p>Нажмите на карту в нужном месте.</p><button className="ui-button secondary" onClick={() => dispatch({ type: "return" })}>Вернуться к адресам</button></div>}
+        {state.picking && <div className="creation-map-pick"><p>Нажмите на карту в нужном месте.</p><button className="ui-button quiet creation-map-cancel" onClick={() => dispatch({ type: "return" })}>Отменить</button></div>}
         {preview && <>
           <div className="creation-summary"><strong>{w.draft.route!.walkingMinutes} <small>мин пешком</small></strong><strong>{(w.draft.route!.distanceM / 1000).toFixed(1).replace(".", ",")} <small>км</small></strong></div>
           <p className="ui-muted">{w.draft.start?.address} → {w.draft.destination?.address ?? (w.draft.mode === "loop" ? "возвращение к началу" : "последняя остановка")}</p>
