@@ -252,7 +252,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           if(!place?.text||place.text.verification!=="editorial"){json(res,404,{error:{code:"NOT_FOUND",message:"Approved place text not found."}});return;}
           const audioJob=await store.enqueueExternalAudio({sourceJobId:`place-text:${place.text.id}`,sourceRevision:0,story:{...place.text.story,address:place.address??place.name},profileId:input.profileId??localTts.defaultProfile});
           json(res,200,{place,audioJob});return;}
-        const retryAudio=/^\/api\/story-admin\/content\/audio\/(${UUID})\/retry$/.exec(url.pathname);
+        const retryAudio=new RegExp(`^/api/story-admin/content/audio/(${UUID})/retry$`).exec(url.pathname);
         if(retryAudio&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const audioJob=store.retryExternalAudio(retryAudio[1]);json(res,audioJob?200:404,audioJob?{audioJob}:{error:{code:"NOT_FOUND",message:"Failed audio job not found."}});return;}
         const walkRegenerateMatch=/^\/api\/story-admin\/walks\/([a-z0-9][a-z0-9-]{0,127})\/regenerate$/.exec(url.pathname);
