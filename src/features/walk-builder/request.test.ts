@@ -2,6 +2,15 @@ import { describe, expect, it, vi } from "vitest";
 import { RejectedRequest, request } from "./request";
 
 describe("ограниченный транспорт конструктора", () => {
+  it("повторяет ограничение частоты без изменения ключа задания", async () => {
+    const fetcher = vi.fn()
+      .mockResolvedValueOnce(new Response("{}", { status: 429, headers: { "retry-after": "0.01" } }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "accepted" })));
+    vi.stubGlobal("fetch", fetcher);
+    const body = { recoveryToken: "stable-key" };
+    await expect(request("/api/walk-research-jobs", new AbortController().signal, body)).resolves.toEqual({ id: "accepted" });
+    expect(fetcher.mock.calls.map(call => call[1].body)).toEqual([JSON.stringify(body), JSON.stringify(body)]);
+  });
   it("повторяет временный сетевой сбой тем же запросом", async () => {
     const fetcher = vi.fn()
       .mockRejectedValueOnce(new TypeError("offline"))

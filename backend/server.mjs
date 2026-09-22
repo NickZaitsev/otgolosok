@@ -17,6 +17,7 @@ import { createBackendLogger } from "./logs.mjs";
 import { ingestAudio } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword } from "./auth.mjs";
+import { favoriteSummary } from "./favorite-summary.mjs";
 import { createAccountStore } from "./account-store.mjs";
 import { resolveWalkView } from "./walk-view.mjs";
 import { builtinRoutes } from "./builtin-routes.mjs";
@@ -100,7 +101,7 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(ownWalk&&req.method==="PATCH"){const walk=accountStore.updateWalk(session.user.id,ownWalk[1],await body(req,100000));json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="DELETE"){json(res,accountStore.deleteWalk(session.user.id,ownWalk[1])?200:404,{success:true});return;}
         if(url.pathname==="/api/me/requests"&&req.method==="GET"){json(res,200,accountStore.listRequests(session.user.id,...Object.values(accountQuery())));return;}
-        if(url.pathname==="/api/me/favorites"&&req.method==="GET"){json(res,200,accountStore.listFavorites(session.user.id,...Object.values(accountQuery())));return;}
+        if(url.pathname==="/api/me/favorites"&&req.method==="GET"){const data=accountStore.listFavorites(session.user.id,...Object.values(accountQuery()));json(res,200,{...data,favorites:data.favorites.map(item=>favoriteSummary(item,{userId:session.user.id,accountStore,store,routes:builtinRoutes}))});return;}
         if(url.pathname==="/api/me/import"&&req.method==="POST"){json(res,200,{result:accountStore.importLocal(session.user.id,await body(req,110000))});return;}
         const favorite=/^\/api\/me\/favorites\/(story|walk)\/([a-zA-Z0-9-]{1,128})$/.exec(url.pathname);
         if(favorite&&req.method==="PUT"){accountStore.setFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}
@@ -175,10 +176,11 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
             if(job?.kind!=="walk_research")job=null;
           } else {
             const entries=[...url.searchParams];
-            if(entries.length!==5||new Set(entries.map(([k])=>k)).size!==5||entries.some(([k,v])=>!["lat","lon","mode","minutes","recoveryToken"].includes(k)||!v.trim()))throw failure("BAD_REQUEST");
+            if(![5,7].includes(entries.length)||new Set(entries.map(([k])=>k)).size!==entries.length||entries.some(([k,v])=>!["lat","lon","mode","minutes","recoveryToken","destinationLat","destinationLon"].includes(k)||!v.trim()))throw failure("BAD_REQUEST");
             const q=Object.fromEntries(entries);
             if(!/^(30|60|90)$/.test(q.minutes)||![q.lat,q.lon].every(v=>/^-?\d+(?:\.\d+)?$/.test(v)))throw failure("BAD_REQUEST");
-            const request=validateWalkResearch({start:{location:{lat:Number(q.lat),lon:Number(q.lon)}},mode:q.mode,minutes:Number(q.minutes)},true);
+            if ((q.destinationLat === undefined) !== (q.destinationLon === undefined) || (q.destinationLat !== undefined && ![q.destinationLat,q.destinationLon].every(v=>/^-?\d+(?:\.\d+)?$/.test(v)))) throw failure("BAD_REQUEST");
+            const request=validateWalkResearch({start:{location:{lat:Number(q.lat),lon:Number(q.lon)}},mode:q.mode,minutes:Number(q.minutes),...(q.destinationLat?{destination:{location:{lat:Number(q.destinationLat),lon:Number(q.destinationLon)}}}:{})},true);
             job=store.lookupWalkResearch(request,q.recoveryToken);
             if(auth&&job&&!accountStore.ownsRequest(session.user.id,job.id)) {
               if(!accountStore.beginGeneration){accountStore.attachRequest(session.user.id,job.id,"walk_research",q.recoveryToken);}

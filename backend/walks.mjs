@@ -51,11 +51,13 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
   timeoutMs=12000, minIntervalMs=2000}={}) {
   let active=false,lastStart=-Infinity;
   return async function planWalk(input) {
-    if(!keys(input,['start','mode','minutes','stops']) || !['loop','open'].includes(input.mode) || ![30,60,90].includes(input.minutes))throw fail('WALK_INVALID');
+    if(!keys(input,['start','mode','minutes','stops','destination']) || !['loop','open'].includes(input.mode) || ![30,60,90].includes(input.minutes))throw fail('WALK_INVALID');
+    const destination=input.destination==null?null:place(input.destination);
+    if(destination&&input.mode!=='open')throw fail('WALK_INVALID');
     const start=place(input.start), manual=Object.hasOwn(input,'stops');
-    if(manual&&(!Array.isArray(input.stops)||input.stops.length<1||input.stops.length>5))throw fail('WALK_INVALID');
+    if(manual&&(!Array.isArray(input.stops)||input.stops.length<(destination?0:1)||input.stops.length>5))throw fail('WALK_INVALID');
     let stops=manual?input.stops.map(place):[];
-    const distinct=[start,...stops];
+    const distinct=[start,...stops,...(destination?[destination]:[])];
     if(distinct.some((p,i)=>distinct.slice(0,i).some(q=>distance(p.location,q.location)<25)))throw fail('WALK_INVALID');
     if(!routerUrl)throw fail('WALK_UNAVAILABLE');
     if(active||now()-lastStart<minIntervalMs)throw fail('WALK_BUSY');
@@ -78,41 +80,8 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
         return JSON.parse(Buffer.concat(chunks).toString());
       } finally {controller.signal.removeEventListener('abort',cancel);cancel();}
     }
-    async function run() {
-      if(!manual) {
-        discovering=true;
-        // Discovery is bounded; straight-line distances only rank candidates, never form a route.
-        // A loop must also cover the return leg; routing below enforces the actual budget.
-        const radius=Math.min(4050,input.minutes*90/(input.mode==='loop'?2:1)),around=`around:${radius},${start.location.lat},${start.location.lon}`;
-        let elements=discoveryElements;
-        if(elements===null) {
-          // An address is the only handle the story pipeline has on a building.
-          const query=`[out:json][timeout:8];(${DISCOVERY_TAGS.map(tag=>`nwr(${around})[building]["addr:street"]["addr:housenumber"]${tag};`).join('')});out center tags 160;`;
-          const data=await request(overpassUrl,new URLSearchParams({data:query}).toString(),'application/x-www-form-urlencoded');
-          if(!Array.isArray(data?.elements)||data.elements.length>500||data.remark)throw unavailable();
-          elements=data.elements;
-        }
-        const candidates=[];
-        for(const e of elements) {
-          const t=e?.tags,p=e?.center??e;
-          if(!t||!inBox(p)||!clean(t.building,80)||t.building==='no'||!notable(t))continue;
-          const street=clean(t['addr:street'],160),house=clean(t['addr:housenumber'],40);
-          if(!street||!house||!/^\d[\p{L}\p{N}\s/.,-]*$/u.test(house)||distance(start.location,p)>radius||distance(start.location,p)<60)continue;
-          const item={address:`Москва, ${street}, ${house}`,location:{lat:p.lat,lon:p.lon}};
-          if(candidates.some(c=>c.address===item.address||distance(c.location,p)<40))continue;
-          candidates.push(item);
-        }
-        let current=start;
-        while(candidates.length&&stops.length<4) {
-          candidates.sort((a,b)=>distance(current.location,a.location)-distance(current.location,b.location));
-          current=candidates.shift();stops.push(current);
-        }
-        if(stops.length<2)throw fail('WALK_STOPS_NOT_FOUND');
-        discovering=false;
-      }
-      while(true) {
-        controller.signal.throwIfAborted();
-        const points=[start,...stops,...(input.mode==='loop'?[start]:[])];
+    async function routeStops(routeStops) {
+        const points=[start,...routeStops,...(destination?[destination]:input.mode==='loop'?[start]:[])];
         const url=new URL(routerUrl);
         if(!['http:','https:'].includes(url.protocol)||url.username||url.password)throw fail('WALK_UNAVAILABLE');
         const data=await request(url.toString(),JSON.stringify({locations:points.map(p=>({...p.location,type:'break',radius:100})),costing:'pedestrian',units:'kilometers',shape_format:'polyline6'}),'application/json');
@@ -132,12 +101,54 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
         }
         const direct=points.slice(1).reduce((sum,p,i)=>sum+distance(points[i].location,p.location),0);
         if(seconds<=input.minutes*60&&distanceM<=input.minutes*90&&distanceM<=Math.max(1200,direct*4)) {
-          return {stops,geometry,distanceM:Math.round(distanceM),walkingMinutes:Math.ceil(seconds/60),attribution:'© OpenStreetMap contributors; pedestrian routing by Valhalla. Map information is not verified historical evidence.'};
+          return {stops:routeStops,geometry,distanceM:Math.round(distanceM),walkingMinutes:Math.ceil(seconds/60),attribution:'© OpenStreetMap contributors; pedestrian routing by Valhalla. Map information is not verified historical evidence.'};
         }
-        if(manual||stops.length<=2)throw fail('WALK_NOT_FOUND');
+      return null;
+    }
+    async function run() {
+      // Check the destination before discovery, and never sacrifice it for a candidate.
+      if(destination && !manual && !await routeStops([]))throw fail('WALK_NOT_FOUND');
+      if(!manual) {
+        discovering=true;
+        // Discovery is bounded; straight-line distances only rank candidates, never form a route.
+        // A loop must also cover the return leg; routing below enforces the actual budget.
+        const radius=Math.min(4050,input.minutes*90/(input.mode==='loop'?2:1)),around=`around:${radius},${start.location.lat},${start.location.lon}`;
+        let elements=discoveryElements;
+        if(elements===null) {
+          // An address is the only handle the story pipeline has on a building.
+          const query=`[out:json][timeout:8];(${DISCOVERY_TAGS.map(tag=>`nwr(${around})[building]["addr:street"]["addr:housenumber"]${tag};`).join('')});out center tags 160;`;
+          const data=await request(overpassUrl,new URLSearchParams({data:query}).toString(),'application/x-www-form-urlencoded');
+          if(!Array.isArray(data?.elements)||data.elements.length>500||data.remark)throw unavailable();
+          elements=data.elements;
+        }
+        const candidates=[];
+        for(const e of elements) {
+          const t=e?.tags,p=e?.center??e;
+          if(!t||!inBox(p)||!clean(t.building,80)||t.building==='no'||!notable(t))continue;
+          const street=clean(t['addr:street'],160),house=clean(t['addr:housenumber'],40);
+          if(!street||!house||!/^\d[\p{L}\p{N}\s/.,-]*$/u.test(house)||distance(start.location,p)>radius||distance(start.location,p)<60)continue;
+          if(destination&&(distance(p,destination.location)<25||distance(start.location,p)+distance(p,destination.location)>input.minutes*90))continue;
+          const item={address:`Москва, ${street}, ${house}`,location:{lat:p.lat,lon:p.lon}};
+          if(candidates.some(c=>c.address===item.address||distance(c.location,p)<40))continue;
+          candidates.push(item);
+        }
+        let current=start;
+        while(candidates.length&&stops.length<4) {
+          candidates.sort((a,b)=>distance(current.location,a.location)-distance(current.location,b.location));
+          current=candidates.shift();stops.push(current);
+        }
+        if(!destination&&stops.length<2)throw fail('WALK_STOPS_NOT_FOUND');
+        discovering=false;
+      }
+      while(true) {
+        controller.signal.throwIfAborted();
+        const result=await routeStops(stops);
+        if(result)return result;
+        if(manual||stops.length<=(destination?0:2))throw fail('WALK_NOT_FOUND');
         stops=stops.slice(0,-1);
       }
     }
+
     try {return await Promise.race([run(),deadline]);}
     catch(error) {if(['WALK_NOT_FOUND','WALK_STOPS_NOT_FOUND','WALK_DISCOVERY_UNAVAILABLE'].includes(error?.code))throw error;throw unavailable();}
     finally {clearTimeout(timer);controller.abort();active=false;}

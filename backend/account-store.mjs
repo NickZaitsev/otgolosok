@@ -82,7 +82,12 @@ export function createAccountStore(db, now = Date.now) {
     return { id: row.id, title: row.title, snapshot, revision: Number(row.revision), createdAt: row.created_at, updatedAt: row.updated_at,
       visibility: row.visibility, shareToken: row.visibility === "shared" ? row.share_token : null, ...(snapshotError ? { snapshotError } : {}) };
   };
-  const listItem = row => ({id:row.id,title:row.title,revision:Number(row.revision),updatedAt:row.updated_at,visibility:row.visibility,shareToken:row.visibility==='shared'?row.share_token:null});
+  const listItem = row => {
+    const view = viewWalk(row);
+    const snapshot = view.snapshotError ? null : view.snapshot;
+    return {id:row.id,title:row.title,revision:Number(row.revision),updatedAt:row.updated_at,visibility:row.visibility,shareToken:row.visibility==='shared'?row.share_token:null,
+      ...(snapshot ? {draft:!snapshot.route,walkingMinutes:snapshot.route?.walkingMinutes??null,distanceM:snapshot.route?.distanceM??null} : {})};
+  };
   return {
     updateProfile(userId, name) { const value=cleanName(name),time=timestamp();db.prepare("UPDATE user SET name=?,updatedAt=? WHERE id=?").run(value,time,userId);return value; },
     listWalks(userId, limit=20,after=null) { limit=Math.min(50,Math.max(1,limit));const c=cursor(after),rows=c?db.prepare("SELECT * FROM user_walks WHERE user_id=? AND (updated_at<? OR (updated_at=? AND id<?)) ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT * FROM user_walks WHERE user_id=? ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,listItem);return {walks:result.items,nextCursor:result.nextCursor,hasMore:Boolean(result.nextCursor)}; },

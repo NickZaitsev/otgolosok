@@ -4,7 +4,7 @@ export type StoryRef = { kind: "job" | "osm" | "catalog"; id: string } | null;
 export type WalkStop = { id: string; place: Place; storyRef: StoryRef; transition: string; nextHint: string; triggerLocation?: Coordinates };
 export type WalkDocument = {
   version: 2; id: string; title: string; description: string; city: "Москва"; mode: "open" | "loop";
-  minutes: number; start: Place | null; stops: WalkStop[];
+  minutes: number; start: Place | null; destination?: Place | null; stops: WalkStop[];
   route: { geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string } | null;
   fieldChecked: boolean;
 };
