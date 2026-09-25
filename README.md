@@ -42,6 +42,23 @@ pnpm build
 pnpm start
 ```
 
+## Проморолик Remotion
+
+Вертикальный ролик 1080×1920, 18 секунд: фирменная заставка, маршрут
+Павелецкой, прослушивание истории и заключительный экран. Исходник находится в
+`src/video/`; он использует карту и MP3 из `public/`. На карте указано авторство
+участников OpenStreetMap.
+
+```bash
+pnpm video:studio
+pnpm video:render
+```
+
+Вторая команда создаёт `artifacts/video/otgolosok-promo.mp4`. Это локальный
+результат рендера; каталог исключён из Git. Для изменения хронометража сцены
+редактируются в `src/video/timeline.ts`, а оформление — в
+`src/video/otgolosok-promo.tsx`.
+
 ## Docker Compose
 
 Нужны Docker Engine / Docker Desktop с Compose v2, доступ в интернет для загрузки

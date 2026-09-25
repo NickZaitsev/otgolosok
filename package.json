@@ -16,7 +16,9 @@
     "test": "vitest run && node --test backend/*.test.mjs",
     "generator:dev": "STATIC_DIR=out node backend/server.mjs",
     "auth:set-editor": "node scripts/set-editor.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "video:studio": "remotion studio src/video/index.ts",
+    "video:render": "remotion render src/video/index.ts OtgolosokPromo artifacts/video/otgolosok-promo.mp4"
   },
   "dependencies": {
     "@softmg/airouter-logs": "file:vendor/softmg-airouter-logs-0.1.0.tgz",
@@ -29,6 +31,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
+    "@remotion/cli": "4.0.529",
     "@types/leaflet": "^1.9.22",
     "@types/node": "^24.13.3",
     "@types/react": "^19",
@@ -36,6 +39,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "jsdom": "^30.1.1",
+    "remotion": "4.0.529",
     "typescript": "^5",
     "vitest": "^5.0.0"
   },
