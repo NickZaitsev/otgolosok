@@ -8,6 +8,7 @@ export const videoAssets = [
   ["video/assets/video/moscow-evening.webp", "video/moscow-evening.webp"],
   ["video/assets/video/brick-facade.webp", "video/brick-facade.webp"],
   ["video/assets/video/ad-bed.wav", "video/ad-bed.wav"],
+  ...["catalog", "route", "listen", "read-button", "text", "settings-button", "settings", "stops-button", "stops", "next"].map(name => [`video/assets/guide/${name}.png`, `guide/${name}.png`]),
 ];
 
 export async function prepareVideoAssets(root, publicDir) {

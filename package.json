@@ -21,6 +21,7 @@
     "video:studio": "pnpm video:prepare && remotion studio src/video/index.ts --public-dir artifacts/video/public",
     "video:render": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokPromo artifacts/video/otgolosok-promo.mp4 --public-dir artifacts/video/public",
     "video:render:ad": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokAd artifacts/video/otgolosok-ad.mp4 --public-dir artifacts/video/public",
+    "video:render:guide": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokGuide artifacts/video/otgolosok-guide.mp4 --public-dir artifacts/video/public",
     "video:bed": "node scripts/build-video-bed.mjs"
   },
   "dependencies": {
