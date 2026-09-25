@@ -1,0 +1,146 @@
+{
+  "intro": {
+    "key": "09a13f60f0f531aac10d64cb88e9d80c960fca04e7954ebdd860f399e6fa8bb4",
+    "text": "Как гулять с Отголоском. Покажем весь путь: от выбора маршрута до следующей истории.",
+    "sha256": "905b3730cdedb82febe4d9471cfab37f67e99bdab3020baee611abaac40cfcab",
+    "durationSeconds": 6.408,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "home-do": {
+    "key": "3fa291c9850e5739fefa61561aa4e81d7f66c669aee66c6927de36c3309fb295",
+    "text": "Откройте раздел «История» в нижнем меню.",
+    "sha256": "b34d45f65d238327a190687ac4bb20a2baa6026df0bce81ec12a5afb2d37cb28",
+    "durationSeconds": 3.192,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "home-done": {
+    "key": "6a33e3851f6e790d9c9c0711d9f63e05bcf1122cbaa4f3167f9785d7da9c5306",
+    "text": "Здесь хранятся ваши прогулки и готовые маршруты.",
+    "sha256": "e012446293b1d5803c7a89cea380187caed0502cd28f6f01944b209232f955b9",
+    "durationSeconds": 3.888,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "catalog-do": {
+    "key": "ba7f30f38eccb7d1c12d8674bc3954e8951346f24edff17a746e1819fdd16757",
+    "text": "Прокрутите вниз, к готовому маршруту, и нажмите «Открыть прогулку».",
+    "sha256": "16bbc171ad933c075be918cbd7d3d559da7a26133175e6f7a05fc1133b404a52",
+    "durationSeconds": 5.112,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "catalog-done": {
+    "key": "2f2f0c1d7e3e88606bffc9d3e9b0c740b01a7803818518b5f09c3c9eb8b20008",
+    "text": "Откроется карта с путём и остановками.",
+    "sha256": "80ff248858267d57ef941d1bac6dc1e93e4e97592de670199b0c263add349624",
+    "durationSeconds": 3.12,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "start-do": {
+    "key": "a44b9e08e78bf36f86124a67c5a972975f28233e0e101b59a45e31679cdbb92c",
+    "text": "Посмотрите маршрут целиком и нажмите «Начать прогулку».",
+    "sha256": "cb0418c05ed0113906dcec1aaaebfce63ca633352e4e1064d8c5b20938ebb707",
+    "durationSeconds": 4.344,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "start-done": {
+    "key": "8dcbc780c0366326e3e9a42cec0f342c7be3bc1539e317f50a6d7156b2682a36",
+    "text": "Появится первая остановка, и зазвучит рассказ.",
+    "sha256": "7242ebeaa387d0d37f2d42848d6f939e0dfd36cd32beb907ed9608658820c95b",
+    "durationSeconds": 3.72,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "pause-do": {
+    "key": "e5863d8152ab02274b88ee921d08c53b2ea896be24b3f7f3130ccd6d1c6b104f",
+    "text": "Круглая кнопка ставит рассказ на паузу.",
+    "sha256": "7c124099582a3edb9f12323d0f792da2d0e245f7d00dfa025db7a976db94283e",
+    "durationSeconds": 3.24,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "pause-done": {
+    "key": "1039dcc61023ed839333d86c1750e24498e8b048e33dce488cd11f798735a299",
+    "text": "Нажмите её ещё раз, чтобы продолжить слушать.",
+    "sha256": "7c71c620a83616da390e7599c998992fad08b4348b728e6889e58d3a17c8812d",
+    "durationSeconds": 3.648,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "read-do": {
+    "key": "f3bfecc1f5083ba37d544c485107a36df19b3ed5b09029ee90ca5d6fb628e08f",
+    "text": "Хотите читать, а не слушать? Нажмите «Читать историю».",
+    "sha256": "2d5a242d36938a1bcaa09ab9273e278e42ba5505840290e2bc1325b92f0fc92e",
+    "durationSeconds": 4.176,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "read-done": {
+    "key": "6e252a8dd64a6ef51f630b2a2d6f5e69ae9c3c827207eab9bfbd53c4022bcd9c",
+    "text": "Текст откроется прямо в карточке. Повторное нажатие его свернёт.",
+    "sha256": "dee38ca2f80e37a996bef0bb8362206f004b62f1cce576f641bbdbdace02319f",
+    "durationSeconds": 4.992,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "settings-do": {
+    "key": "9bf24002c6ccc9235e4cd25eb52c5caea380ad4507b313ab6819598e0d8cab6a",
+    "text": "Кнопка с ползунками открывает настройки прогулки.",
+    "sha256": "aefc96325ba2e788f5aac3122f5b2be49100c3a2f95d276df3e0dc3967f2d34a",
+    "durationSeconds": 3.936,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "settings-done": {
+    "key": "df3d457e8cd6b91e0c2b34be01ed4869f6cc7387cf90ef8ce34a04cb1ca21398",
+    "text": "Здесь выбирают, как переключаются остановки, и меняют скорость аудио.",
+    "sha256": "7cd37ee293a2a86b819033d3896a2991db3a032659aa060faaf849d6ed913ca2",
+    "durationSeconds": 5.352,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "stops-do": {
+    "key": "3d8bf1e29805f78b397c29fa01d9f4baf4ee3d67af4d2fbce5bdd3b69d5f9a1b",
+    "text": "Нажмите «Остановки», чтобы увидеть все части прогулки.",
+    "sha256": "8ef07f306a4338369a6f3c72750e3ed76f614cf3414f7f69d1b6736fffc04845",
+    "durationSeconds": 4.224,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "stops-done": {
+    "key": "b099b5c0720a8f00db64bc2b1cbfedc3571c801c6955bcbe204eae505a094a2d",
+    "text": "Любую из них можно выбрать прямо из списка.",
+    "sha256": "3472c237c0d95be526837ea46b06080f82998fbf89fbdc9826e6864f8256bbc3",
+    "durationSeconds": 3.528,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "next-do": {
+    "key": "dde2f3e5d762107d4c969bb034d180080dac6bf8bd43f8d7e7256351aa68d5e5",
+    "text": "Теперь выберите в списке следующую историю.",
+    "sha256": "1ddda07698f979ecc79a33d04b8ba86da9bc0921054740f3738ec8d7d94cf4bc",
+    "durationSeconds": 3.48,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "next-done": {
+    "key": "45c97a00db040bebb68e6bad94aebb100a15db609c11b749c141e85110df82b4",
+    "text": "Кнопка «Дальше» тоже переключает остановки. Без геопозиции переходите между ними вручную.",
+    "sha256": "231b55612920011de88e8fd7f09695d72f8540a8b20ec6df530a46c40b7b186a",
+    "durationSeconds": 6.768,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "outro": {
+    "key": "165e59a05470ad7a7ff9ac5b25dd6298bd05140db496880f76aa36ff63242a41",
+    "text": "Теперь ваша очередь. Откройте маршрут, включите историю и смотрите на город вокруг.",
+    "sha256": "8b2956be118122e8c23ccc081544b78acea28e1362d07658bea0c5d7e7c22474",
+    "durationSeconds": 6.36,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  }
+}

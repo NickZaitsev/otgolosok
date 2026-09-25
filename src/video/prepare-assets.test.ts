@@ -24,10 +24,14 @@ async function fixture() {
 describe("подготовка материалов Remotion", () => {
   it("копирует каждый ресурс в отдельный каталог с ожидаемым путём", async () => {
     const {root, publicDir} = await fixture();
-    await prepareVideoAssets(root, publicDir);
+    await prepareVideoAssets(root, publicDir, {bedSeconds: 1});
 
     for (const [source, destination] of videoAssets) {
       expect(await readFile(join(publicDir, destination), "utf8")).toBe(source);
+    }
+    // Фон и щелчок инструкции синтезируются, а не копируются.
+    for (const generated of ["guide/bed.wav", "guide/click.wav"]) {
+      expect((await readFile(join(publicDir, generated))).toString("ascii", 0, 4)).toBe("RIFF");
     }
   });
 

@@ -21,8 +21,9 @@
     "video:studio": "pnpm video:prepare && remotion studio src/video/index.ts --public-dir artifacts/video/public",
     "video:render": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokPromo artifacts/video/otgolosok-promo.mp4 --public-dir artifacts/video/public",
     "video:render:ad": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokAd artifacts/video/otgolosok-ad.mp4 --public-dir artifacts/video/public",
-    "video:render:guide": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokGuide artifacts/video/otgolosok-guide.mp4 --public-dir artifacts/video/public",
-    "video:bed": "node scripts/build-video-bed.mjs"
+    "video:render:guide": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokGuide artifacts/video/otgolosok-guide.mp4 --public-dir artifacts/video/public --image-format=png --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "video:bed": "node scripts/build-video-bed.mjs",
+    "video:voice": "node --env-file-if-exists=.env scripts/build-guide-voice.mjs"
   },
   "dependencies": {
     "@softmg/airouter-logs": "file:vendor/softmg-airouter-logs-0.1.0.tgz",
@@ -34,8 +35,12 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
     "@playwright/test": "^1.63.0",
     "@remotion/cli": "4.0.529",
+    "@remotion/fonts": "4.0.529",
+    "@remotion/transitions": "4.0.529",
     "@types/leaflet": "^1.9.22",
     "@types/node": "^24.13.3",
     "@types/react": "^19",

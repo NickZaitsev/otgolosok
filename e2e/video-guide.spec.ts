@@ -4,6 +4,10 @@ import {routeToWalkView} from "../src/features/walks/adapters";
 import routeData from "../public/data/routes/paveletskaya.json" with {type: "json"};
 import type {Route} from "../src/features/tour/types";
 
+// Снимки для ролика 1920×1080 увеличиваются камерой до ~1,8×: снимаем в 2×,
+// чтобы текст интерфейса оставался резким. Координаты целей — в CSS-пикселях.
+test.use({deviceScaleFactor: 2});
+
 test("видеоинструкция: от каталога до следующей остановки", async ({page}) => {
   test.setTimeout(90_000);
   await page.setViewportSize({width: 1280, height: 800});
@@ -36,7 +40,12 @@ test("видеоинструкция: от каталога до следующ�
       await page.screenshot({path: `video/assets/guide/${name}.png`, animations: "disabled", style: "nextjs-portal { visibility: hidden; }"});
     }
   }
-  await page.goto("/history");
+  await page.goto("/");
+  const historyTab = page.getByRole("link", {name: "История", exact: true});
+  await capture("home", historyTab);
+  await historyTab.click();
+  await expect(page).toHaveURL(/\/history/);
+  await capture("history", page.getByRole("link", {name: "История", exact: true}));
   const ready = page.locator('a[href="/walk?catalog=paveletskaya"]');
   await ready.scrollIntoViewIfNeeded();
   await capture("catalog", ready);
