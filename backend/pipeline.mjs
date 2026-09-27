@@ -45,6 +45,9 @@ export const errorMessages = {
   AUDIO_DURATION: "Не удалось подготовить запись подходящей длительности. Текст доступен.",
   TIMEOUT: "Подготовка заняла слишком долго. Сохранённые этапы можно продолжить повторным запуском.",
   PROVIDER_BUSY: "Сервис подготовки занят. Попробуйте повторить позже.",
+  PROVIDER_UNAVAILABLE: "Сервис подготовки временно недоступен. Попробуйте повторить позже.",
+  PROVIDER_UNREACHABLE: "Не удалось связаться с сервисом подготовки. Попробуйте повторить позже.",
+  PROVIDER_AUTH: "Сервис подготовки отклонил ключ доступа. Нужна проверка настроек.",
   SOURCE_ACCESS_FAILED: "Источники найдены, но их не удалось загрузить или прочитать. Можно повторить поиск позже.",
 };
 
@@ -151,7 +154,10 @@ export function startWorker(options) {
   const controller = new AbortController();
   const wake = () => {
     if (stopped || running) return;
-    const job = options.store.claimNext({ audioOnly: !options.provider });
+    let job;
+    // A timer callback has no caller: an uncaught SQLITE_BUSY here used to crash the whole service.
+    try { job = options.store.claimNext({ audioOnly: !options.provider }); }
+    catch (error) { console.error("Story worker could not claim a job", error?.code ?? error); options.logs?.captureException(error,{operation:"claimNext"}); return; }
     if (!job) return;
     running = runJob(job,{...options,signal:controller.signal}).then(result => {
       if(result.stage==="failed") options.logs?.captureMessage(result.error?.code??"Job failed","error",{operation:"runJob",context:{jobId:result.id,kind:result.kind,code:result.error?.code}});

@@ -23,10 +23,23 @@ export async function boundedBody(response, maximum, signal) {
 }
 
 const transient = status => status === 429 || status >= 500;
+/**
+ * 429, 5xx and a rejected key mean the provider is unavailable for every job; another 4xx concerns this request only.
+ * Callers pause on the first group instead of burning job attempts (see PROVIDER_OUTAGE_CODES).
+ */
+export function providerStatusCode(status) {
+  if (status === 429) return "PROVIDER_BUSY";
+  if (status === 401 || status === 403) return "PROVIDER_AUTH";
+  if (status >= 500) return "PROVIDER_UNAVAILABLE";
+  return "PROVIDER_REJECTED";
+}
+export const PROVIDER_OUTAGE_CODES = new Set(["PROVIDER_BUSY", "PROVIDER_AUTH", "PROVIDER_UNAVAILABLE", "PROVIDER_UNREACHABLE"]);
+
 async function fetchWithRetry(fetchImpl,url,options,signal) {
   let response;
   for(let attempt=0;attempt<3;attempt++){
-    try{response=await fetchImpl(url,options);}catch(error){if(attempt===2||signal?.aborted)throw error;response=null;}
+    // A network or DNS failure is not the request's fault: report it as an unreachable provider, not a bare TypeError.
+    try{response=await fetchImpl(url,options);}catch(error){if(signal?.aborted)throw error;if(attempt===2)throw Object.assign(failure("PROVIDER_UNREACHABLE"),{cause:error});response=null;}
     if(response&&!transient(response.status))return response;
     if(response&&attempt===2)return response;
     if(response?.body)await response.body.cancel().catch(()=>{});
@@ -58,7 +71,7 @@ export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-med
     const res = await fetchWithRetry(fetchImpl,`${endpoint}/responses`, { method: "POST", headers, signal: deadline,
       body: JSON.stringify({ model: selectedModel, store: false, stream: false, input: prompt, max_output_tokens: maxTokens,
         ...(search ? { tools: [{type:"web_search"}], include:["web_search_call.action.sources"] } : {}) }) },deadline);
-    if (!res.ok) { await res.body?.cancel(); throw failure(res.status === 429 ? "PROVIDER_BUSY" : "PROVIDER_FAILED"); }
+    if (!res.ok) { await res.body?.cancel(); throw failure(providerStatusCode(res.status)); }
     const payload = unpackResponse(await boundedBody(res, 2000000, deadline), res.headers.get("content-type") ?? "");
     if (payload.status !== "completed") throw failure("PROVIDER_INCOMPLETE");
     const parts = (payload.output ?? []).filter((item) => item.type === "message").flatMap((item) => item.content ?? []);
