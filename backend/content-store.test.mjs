@@ -225,3 +225,38 @@ test("restart from facts on a job without a checkpoint starts clean", t => {
   assert.ok(store.retryBatchItem(batch.id, "osm:node:1", { restartFrom: "facts" }));
   assert.equal(store.claimContentJob().checkpoint, null);
 });
+
+function clockedStore(t, requestKey) {
+  let time = Date.parse("2026-09-27T12:00:00Z");
+  const store = createStore(":memory:", { maxDaily: 100, maxActive: 100, now: () => time }); t.after(() => store.close()); store.importPlaces(catalog);
+  store.createBatch({ requestKey, placeIds: ["osm:node:1"], limit: 1 });
+  return { store, later: () => { time += 10 * 60000; } };
+}
+
+test("a provider outage gives the attempt back, while the job's own failure still counts", t => {
+  const { store, later } = clockedStore(t, "outage-refund");
+  // Far more outages than max_attempts (3): the job must keep waiting, not fail.
+  for (let round = 0; round < 5; round++) {
+    const job = store.claimContentJob();
+    assert.ok(job, `round ${round}: the job is claimable again`);
+    assert.equal(store.failContentJob(job.id, { code: "PROVIDER_BUSY", message: "Занят" }, "failed", { countAttempt: false }).state, "retry_wait");
+    later();
+  }
+  const job = store.claimContentJob();
+  assert.equal(job.attempts, 6);
+  assert.equal(store.failContentJob(job.id, { code: "INVALID_DRAFT", message: "Черновик" }, "failed").state, "failed");
+});
+
+test("a counted retryable failure stops at max_attempts", t => {
+  const { store, later } = clockedStore(t, "outage-counted");
+  const states = [];
+  for (let round = 0; round < 3; round++) { const job = store.claimContentJob(); states.push(store.failContentJob(job.id, { code: "TIMEOUT", message: "Долго" }).state); later(); }
+  assert.deepEqual(states, ["retry_wait", "retry_wait", "failed"]);
+  assert.equal(store.claimContentJob(), null);
+});
+
+test("a refund does not turn a non-retryable failure into a retry", t => {
+  const { store } = clockedStore(t, "outage-nonretry");
+  const job = store.claimContentJob();
+  assert.equal(store.failContentJob(job.id, { code: "INVALID_DRAFT", message: "Черновик" }, "failed", { countAttempt: false }).state, "failed");
+});
