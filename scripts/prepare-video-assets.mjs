@@ -13,7 +13,7 @@ import {wideMotionScore} from "./motion-wide-score.mjs";
 export const GUIDE_BED_SECONDS = 180;
 
 const guideScreens = ["home", "history", "catalog", "route", "listen", "read-button", "text", "settings-button", "settings", "stops-button", "stops", "next"];
-const createScreens = ["home", "empty", "start", "choices", "time", "time-60", "ready", "preview", "stops", "walk", "listen", "settings", "settings-place", "walking", "arrived", "last", "done"];
+const createScreens = ["home", "empty", "start", "choices", "time", "time-60", "ready", "preview", "walk", "listen", "walking", "arrived", "last", "done"];
 const fonts = [
   ...["400", "600", "700"].flatMap(weight => ["cyrillic", "latin"].map(subset => `manrope/files/manrope-${subset}-${weight}-normal.woff2`)),
   ...["500", "600"].flatMap(weight => ["cyrillic", "latin"].map(subset => `cormorant-garamond/files/cormorant-garamond-${subset}-${weight}-normal.woff2`)),

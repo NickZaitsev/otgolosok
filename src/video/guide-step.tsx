@@ -44,7 +44,6 @@ export function GuideStepScene({guide, step, index, timing, from}: {guide: Guide
   const box = guide.targets[step.before];
   if (!box) throw new Error(`Нет цели для снимка «${step.before}»: переснимите материалы инструкции`);
   // Шаг без нажатия (идти по маршруту): только подсветка цели и подсказка.
-  const clicks = step.gesture !== "look";
   const center = {x: box.x + box.width / 2, y: box.y + box.height / 2};
 
   // Курсор движется по странице и поэтому едет вместе с камерой, как при записи экрана.
@@ -56,7 +55,7 @@ export function GuideStepScene({guide, step, index, timing, from}: {guide: Guide
   const ring = {left: topLeft.x - 9, top: topLeft.y - 9, width: box.width * scale + 18, height: box.height * scale + 18};
   const spotlight = progress(frame, 32, 48) * (1 - progress(frame, click + 2, click + 14));
   const pulse = 0.5 + 0.5 * Math.sin((frame / 30) * Math.PI * 1.6);
-  const ripple = clicks ? progress(frame, click, click + 22, easeOut) : 0;
+  const ripple = progress(frame, click, click + 22, easeOut);
   const tipShown = progress(frame, 42, 54, easeOut) * (1 - progress(frame, click, click + 8));
   const tipAbove = ring.top > 90;
 
@@ -89,7 +88,7 @@ export function GuideStepScene({guide, step, index, timing, from}: {guide: Guide
         padding: "10px 18px", borderRadius: 12, fontSize: 22, fontWeight: 600, whiteSpace: "nowrap", boxShadow: "0 10px 24px #0003"}}>
         {step.tip ?? `Нажмите «${step.action}»`}
       </div>}
-      {clicks && <Cursor x={pointer.x} y={pointer.y} scale={press} opacity={progress(frame, 16, 26) * (1 - progress(frame, click + 22, click + 36))} />}
+      <Cursor x={pointer.x} y={pointer.y} scale={press} opacity={progress(frame, 16, 26) * (1 - progress(frame, click + 22, click + 36))} />
       <Attribution screens={[step.before, step.after]} />
     </BrowserWindow>
 
@@ -101,7 +100,7 @@ export function GuideStepScene({guide, step, index, timing, from}: {guide: Guide
     </div>
 
     <Sequence from={doFrom} name="Голос: инструкция"><Html5Audio src={staticFile(`${guide.voiceDir}/${step.id}-do.mp3`)} /></Sequence>
-    {clicks && <Sequence from={click} durationInFrames={15} name="Щелчок"><Html5Audio src={staticFile("guide/click.wav")} volume={0.55} /></Sequence>}
+    <Sequence from={click} durationInFrames={15} name="Щелчок"><Html5Audio src={staticFile("guide/click.wav")} volume={0.55} /></Sequence>
     <Sequence from={doneFrom} name="Голос: результат"><Html5Audio src={staticFile(`${guide.voiceDir}/${step.id}-done.mp3`)} /></Sequence>
   </AbsoluteFill>;
 }

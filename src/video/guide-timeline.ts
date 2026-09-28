@@ -8,14 +8,11 @@ export const GUIDE_WIDTH = 1920;
 export const GUIDE_HEIGHT = 1080;
 export const GUIDE_TRANSITION_FRAMES = 15;
 
-/**
- * Шаг инструкции. gesture "look" — действие без нажатия (например, идти по маршруту):
- * курсора и щелчка нет, подсказка показывает tip.
- */
+/** Шаг инструкции; tip заменяет подсказку «Нажмите «action»», если нажимают не на кнопку. */
 export type GuideStepSpec = {
   id: string; before: string; after: string; page: string; resultPage: string;
   title: string; description: string; result: string; action: string; focus: Rect; resultFocus: Rect;
-  gesture?: "click" | "look"; tip?: string;
+  tip?: string;
 };
 export type VoiceManifest = Partial<Record<string, {durationSeconds: number}>>;
 /** Всё, что отличает одну видеоинструкцию от другой. */

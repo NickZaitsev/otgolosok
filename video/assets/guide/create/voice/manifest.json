@@ -119,22 +119,6 @@
     "profile": "f5-ru-v1",
     "voice": "obrazec6"
   },
-  "stops-do": {
-    "key": "5f1aec06c9733f5979b90d2520449d55466e3a7084186ed15e0528c175bbbc36",
-    "text": "Раскройте список «Остановки», чтобы увидеть адреса по порядку.",
-    "sha256": "54de3f0ef671aba602e3bde06169c06cf37695c5c93e7ad31930d6f40f8977b5",
-    "durationSeconds": 4.8,
-    "profile": "f5-ru-v1",
-    "voice": "obrazec6"
-  },
-  "stops-done": {
-    "key": "838289c4c0400e6f2d76c0fbda6895199ad4155c9f67374aa8c4bb2d9284c151",
-    "text": "Если что-то не нравится, нажмите «Изменить маршрут» и постройте заново.",
-    "sha256": "4085a5a2af4482503fd2f5e994fa646f5cbe12e05010a0147d393244e0ee00a5",
-    "durationSeconds": 5.424,
-    "profile": "f5-ru-v1",
-    "voice": "obrazec6"
-  },
   "open-do": {
     "key": "e826e501b37383441eef87f72508438c5b7053ba76724eca3cfd298fcbacbb51",
     "text": "Если маршрут подходит, нажмите кнопку «Начать прогулку».",
@@ -167,35 +151,19 @@
     "profile": "f5-ru-v1",
     "voice": "obrazec6"
   },
-  "place-do": {
-    "key": "4bd169fd33c3ad6278990e6dd8045d857f6cff5812c98bbeb07ea6fa561c9ae1",
-    "text": "Откройте настройки кнопкой с ползунками и в переключении остановок выберите «По месту».",
-    "sha256": "36d79e5c65f138e5b09ff937535a29fa370053e5d80f789db0c4b252267b36db",
-    "durationSeconds": 6.6,
-    "profile": "f5-ru-v1",
-    "voice": "obrazec6"
-  },
-  "place-done": {
-    "key": "074ed0664914b2f0a0b715f433bc4e43b48ac826e999de956c3279c5f36d4730",
-    "text": "Теперь истории будут сменяться сами, когда вы подходите к дому.",
-    "sha256": "9014f2a50ad9941ce25160ba335275958fa30602e25926b5485013ef0be1e801",
-    "durationSeconds": 4.92,
-    "profile": "f5-ru-v1",
-    "voice": "obrazec6"
-  },
   "walk-do": {
-    "key": "f22a9c4b13d2b54b97800a22733ba2000d108e2924f613013269eac5dafb35ba",
-    "text": "Идите по линии маршрута. Синяя точка показывает, где вы сейчас.",
-    "sha256": "cbd2211f8e26d0cd2705a5d2571507c6667ba22c9dc5cb9dad69851912bcbc39",
-    "durationSeconds": 4.92,
+    "key": "8ef034bf7184fc3080e6dc5a465d86eb7054044aa5bd099ecd065915f5390836",
+    "text": "Идите по линии маршрута: синяя точка показывает, где вы сейчас. У следующего дома нажмите «Дальше».",
+    "sha256": "7d54e808bde9416ef61116f15358d856d367260ab73fd5c279ffbe59239078a3",
+    "durationSeconds": 7.44,
     "profile": "f5-ru-v1",
     "voice": "obrazec6"
   },
   "walk-done": {
-    "key": "f4d48f233e5b76ed6044a0176400b1fc1331d96c4b2001a7d9db03599174abca",
-    "text": "У следующего дома зазвучит новая история. Если геопозиция недоступна, нажмите «Дальше».",
-    "sha256": "a78c2d1e976e8e155a7cc51d62bd0196274bd613c99ce7e7899a4a833c555216",
-    "durationSeconds": 6.6,
+    "key": "48e3dd8cbead6b90add99d4e5be050a3f9ef9c0c3c8e4391bbb35a4b0e740c62",
+    "text": "Зазвучит история следующей остановки. И так — до конца маршрута.",
+    "sha256": "70f9ad2a8baa4ee73dda5a2beb217b8cc6b9004c5a870d9ce23580d3d804f392",
+    "durationSeconds": 4.944,
     "profile": "f5-ru-v1",
     "voice": "obrazec6"
   },

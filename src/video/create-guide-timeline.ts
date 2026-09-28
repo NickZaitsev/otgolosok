@@ -8,10 +8,8 @@ import {guideTimeline, type GuideSpec, type GuideStepSpec, type VoiceManifest} f
 const DRAFT: Rect = {x: 380, y: 90, width: 520, height: 400};
 const TIME_PICKER: Rect = {x: 360, y: 90, width: 560, height: 560};
 const ROUTE: Rect = {x: 420, y: 70, width: 850, height: 540};
-const STOPS_LIST: Rect = {x: 360, y: 80, width: 620, height: 620};
 const WALK_PAGE: Rect = {x: 320, y: 60, width: 640, height: 660};
 const WALK_PANEL: Rect = {x: 395, y: 360, width: 490, height: 350};
-const WALK_SETTINGS: Rect = {x: 395, y: 200, width: 490, height: 510};
 
 export const CREATE_GUIDE_STEPS = [
   {id: "tab", before: "create/home", after: "create/empty", page: "Рядом", resultPage: "Новая прогулка", title: "Откройте «Прогулку»", description: "В нижнем меню нажмите «Прогулка».", result: "Над картой откроется панель новой прогулки.", action: "Прогулка",
@@ -28,16 +26,12 @@ export const CREATE_GUIDE_STEPS = [
     focus: TIME_PICKER, resultFocus: DRAFT},
   {id: "build", before: "create/ready", after: "create/preview", page: "Новая прогулка", resultPage: "Новая прогулка", title: "Постройте маршрут", description: "Нажмите «Построить прогулку».", result: "Путь, остановки, время и расстояние.", action: "Построить прогулку",
     focus: DRAFT, resultFocus: ROUTE},
-  {id: "stops", before: "create/preview", after: "create/stops", page: "Новая прогулка", resultPage: "Новая прогулка", title: "Проверьте остановки", description: "Раскройте «Остановки» — адреса идут по порядку.", result: "Не нравится — «Изменить маршрут».", action: "Остановки",
-    focus: ROUTE, resultFocus: STOPS_LIST},
-  {id: "open", before: "create/stops", after: "create/walk", page: "Новая прогулка", resultPage: "Прогулка", title: "Откройте прогулку", description: "Нажмите «Начать прогулку».", result: "Карта и остановки в режиме прогулки.", action: "Начать прогулку",
-    focus: STOPS_LIST, resultFocus: WALK_PAGE},
+  {id: "open", before: "create/preview", after: "create/walk", page: "Новая прогулка", resultPage: "Прогулка", title: "Откройте прогулку", description: "Нажмите «Начать прогулку».", result: "Карта и остановки в режиме прогулки.", action: "Начать прогулку",
+    focus: ROUTE, resultFocus: WALK_PAGE},
   {id: "start", before: "create/walk", after: "create/listen", page: "Прогулка", resultPage: "Прогулка", title: "Начните у первой точки", description: "Ещё раз нажмите «Начать прогулку».", result: "Сайт спросит геопозицию, зазвучит история.", action: "Начать прогулку",
     focus: WALK_PAGE, resultFocus: WALK_PANEL},
-  {id: "place", before: "create/settings", after: "create/settings-place", page: "Прогулка", resultPage: "Прогулка", title: "Включите «По месту»", description: "В настройках выберите переключение «По месту».", result: "Истории сменяются, когда вы подходите к дому.", action: "По месту",
-    focus: WALK_SETTINGS, resultFocus: WALK_SETTINGS},
-  {id: "walk", before: "create/walking", after: "create/arrived", page: "Прогулка", resultPage: "Прогулка", title: "Идите по маршруту", description: "Синяя точка на карте — это вы.", result: "У дома — новая история. Без геопозиции — «Дальше».", action: "Идти", gesture: "look", tip: "Идите по линии маршрута",
-    focus: {x: 400, y: 60, width: 480, height: 330}, resultFocus: {x: 360, y: 60, width: 560, height: 440}},
+  {id: "walk", before: "create/walking", after: "create/arrived", page: "Прогулка", resultPage: "Прогулка", title: "Идите по маршруту", description: "Синяя точка — это вы. У дома нажмите «Дальше».", result: "Зазвучит история следующей остановки.", action: "Дальше",
+    focus: WALK_PAGE, resultFocus: WALK_PAGE},
   {id: "finish", before: "create/last", after: "create/done", page: "Прогулка", resultPage: "Прогулка", title: "Завершите прогулку", description: "На последней остановке нажмите «Завершить».", result: "Прогулка останется в «Истории».", action: "Завершить",
     focus: WALK_PANEL, resultFocus: {x: 300, y: 60, width: 700, height: 660}},
 ] as const satisfies readonly (GuideStepSpec & {before: keyof typeof targets})[];

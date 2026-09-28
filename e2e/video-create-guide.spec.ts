@@ -94,6 +94,9 @@ test("видеоинструкция: своя прогулка по време�
 
   const targets: Record<string, Box> = {};
   async function capture(name: string, target: Locator | Box) {
+    // Карта может ещё доезжать к новой точке: цель меряем только после остановки,
+    // иначе рамка в ролике окажется в стороне от кнопки или метки.
+    await settleMap(page);
     let box: Box | null;
     if ("boundingBox" in target) {
       await expect(target).toBeVisible();
@@ -102,7 +105,6 @@ test("видеоинструкция: своя прогулка по време�
     expect(box).not.toBeNull();
     targets[`create/${name}`] = box!;
     if (capturing) {
-      await settleMap(page);
       await mkdir(OUTPUT, {recursive: true});
       await page.screenshot({path: `${OUTPUT}/${name}.png`, animations: "disabled", style: "nextjs-portal { visibility: hidden; }"});
     }
@@ -137,11 +139,9 @@ test("видеоинструкция: своя прогулка по време�
   await capture("ready", build);
   await build.click();
   await expect(page.getByRole("heading", {name: "Ваш маршрут", exact: true})).toBeVisible();
-  const stops = page.getByText(`Остановки · ${walk.plan.stops.length}`, {exact: true});
-  await capture("preview", stops);
-  await stops.click();
+  await expect(page.getByText(`Остановки · ${walk.plan.stops.length}`, {exact: true})).toBeVisible();
   const open = page.getByRole("link", {name: "Начать прогулку", exact: true});
-  await capture("stops", open);
+  await capture("preview", open);
   await open.click();
 
   await expect(page).toHaveURL(/\/walk\?local=/);
@@ -151,26 +151,20 @@ test("видеоинструкция: своя прогулка по време�
   await start.click();
   const pause = page.getByRole("button", {name: "Пауза", exact: true});
   await expect(pause).toBeVisible();
-  // В режиме «По месту» остановка сменяется, только когда рассказ не звучит.
-  await pause.click();
-  await expect.poll(() => page.locator("audio").evaluate(el => (el as HTMLAudioElement).paused)).toBe(true);
-  await capture("listen", page.getByRole("button", {name: "Настройки прогулки"}));
-  await page.getByRole("button", {name: "Настройки прогулки"}).click();
-  const advance = page.getByLabel("Переключение остановок");
-  await capture("settings", advance);
-  await advance.selectOption("place");
-  await capture("settings-place", advance);
-  await page.getByRole("button", {name: "Настройки прогулки"}).click();
+  await capture("listen", pause);
 
+  // По умолчанию остановки переключаются кнопкой: подходим ко второй и жмём «Дальше».
   const second = walk.plan.stops[1].location;
-  const marker = page.locator(".explore-user-position");
-  await capture("walking", marker);
-  for (const [lat, lon] of [[second.lat + 0.0002, second.lon], [second.lat + 0.0001, second.lon], [second.lat, second.lon], [second.lat, second.lon + 0.00005]]) {
+  for (const [lat, lon] of [[second.lat + 0.0006, second.lon - 0.0004], [second.lat + 0.0003, second.lon - 0.0002]]) {
     await context.setGeolocation({latitude: lat, longitude: lon, accuracy: 8});
     await page.waitForTimeout(400);
   }
+  await expect(page.locator(".explore-user-position")).toBeVisible();
+  const next = page.getByRole("button", {name: "Дальше", exact: true});
+  await capture("walking", next);
+  await next.click();
   await expect(page.getByRole("heading", {name: stories[1].story.title, exact: true})).toBeVisible();
-  await capture("arrived", marker);
+  await capture("arrived", page.getByRole("heading", {name: stories[1].story.title, exact: true}));
 
   const last = stories.length - 1;
   await page.getByRole("button", {name: /Остановки ·/}).click();

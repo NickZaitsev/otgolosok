@@ -43,13 +43,7 @@
   },
   "create/preview": {
     "x": 455,
-    "y": 403.859375,
-    "width": 370,
-    "height": 48
-  },
-  "create/stops": {
-    "x": 455,
-    "y": 577.140625,
+    "y": 459.859375,
     "width": 370,
     "height": 48.390625
   },
@@ -60,34 +54,22 @@
     "height": 50.390625
   },
   "create/listen": {
-    "x": 789,
-    "y": 409.015625,
-    "width": 40,
-    "height": 40
-  },
-  "create/settings": {
     "x": 451,
-    "y": 438,
-    "width": 378,
-    "height": 44
-  },
-  "create/settings-place": {
-    "x": 451,
-    "y": 438,
-    "width": 378,
+    "y": 512.609375,
+    "width": 44,
     "height": 44
   },
   "create/walking": {
-    "x": 602,
-    "y": 108,
-    "width": 30,
-    "height": 30
+    "x": 451,
+    "y": 620.609375,
+    "width": 378,
+    "height": 50.390625
   },
   "create/arrived": {
-    "x": 629,
-    "y": 241,
-    "width": 30,
-    "height": 30
+    "x": 451,
+    "y": 412.609375,
+    "width": 326,
+    "height": 55
   },
   "create/last": {
     "x": 511,
