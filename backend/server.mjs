@@ -184,8 +184,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
           if(uploaded.uploadSha256!==expected)throw failure("AUDIO_CHECKSUM");
           const artifact={...uploaded.artifact,model:String(req.headers["x-tts-model"]??"external").slice(0,100),voice:String(req.headers["x-tts-voice"]??"external").slice(0,64),
             ...(preparationVersion?{preparationVersion,preparedTextSha256:String(req.headers["x-tts-prepared-text-sha256"]??"")||null}:{}),...(configSha256?{configSha256}:{})};
-          try {json(res,200,{job:store.acceptExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,uploadId,uploadSha256:expected,artifact})});}
-          catch(error){throw error;}
+          json(res,200,{job:store.acceptExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,uploadId,uploadSha256:expected,artifact})});
           return;
         }
         json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;
