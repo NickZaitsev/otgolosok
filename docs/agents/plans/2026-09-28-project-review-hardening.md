@@ -1,6 +1,6 @@
 # Plan: Project review round 2 — reliability, offline, quotas and tooling
 
-Status: in progress since 2026-09-28, phases 0–2 (merge, security, backend reliability) done; phase 3 next.
+Status: implemented 2026-09-28 in branch `feat/auth-account-osm-pipeline`. Docker could not run on the dev machine: `nginx -t`, `docker compose build/up` and the nginx/valhalla image pins (4.4) are not done; 1.4 `engine-strict` skipped.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -104,7 +104,7 @@ Each numbered phase ends with `pnpm check` green and an atomic commit (`type(sco
 
 1.3 `package.json`: `"check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:py && pnpm build"`. Update `Makefile` `check` to call `pnpm check`. Mention `pnpm check` (and the uv requirement) in README «Запуск».
 
-1.4 `.npmrc` with `engine-strict=true` so an older Node fails fast (document Node 24.20+ in README already present).
+1.4 `.npmrc` with `engine-strict=true` so an older Node fails fast (document Node 24.20+ in README already present). **Skipped during implementation:** the dev machine runs Node 24.18, so engine-strict would block every local command; README already documents the requirement.
 
 1.5 Commit(s): `test(admin): пропускать проверки Makefile без POSIX-окружения`, `chore(python): добавить ruff, pyright и pytest через uv`, `chore(scripts): добавить общую проверку pnpm check`.
 
@@ -134,16 +134,16 @@ Each numbered phase ends with `pnpm check` green and an atomic commit (`type(sco
 - Replace `provider.mjs` private `fetchWithRetry` with it and apply to `speech()`; apply to `yandex-tts.mjs`; in `tts-api-client.mjs` wrap `create` (idempotent via `requestId`), `get`, `audio`, `ack` and use the existing `error.transient` flag as `isTransient`; in `safe-fetch.mjs` consumers, use `retryable`.
 - Tests with fake fetch + fake timers: 503→200 succeeds after one retry; 429 with `Retry-After: 2` waits ~2 s; 400 is not retried; attempts are bounded; abort cancels the backoff wait.
 
-2.6 **TTS HTTP worker.** In `tts-api-worker.mjs`: `wait()` removes its abort listener on resolve; the poll loop has an overall deadline (`TTS_API_POLL_DEADLINE_MS`, default 15 min) after which the job fails with a transient `TTS_TIMEOUT`; single poll errors go through `withRetry` instead of failing the job. Test: listener count stays constant over many waits; deadline fails the job; a transient poll error does not.
+2.6 **TTS HTTP worker.** In `tts-api-worker.mjs`: `wait()` removes its abort listener on resolve; the poll loop has an overall deadline (implemented as a fixed 15 min constant, no env var) after which the job fails with a transient `TTS_TIMEOUT`; single poll errors go through `withRetry` instead of failing the job. Test: listener count stays constant over many waits; deadline fails the job; a transient poll error does not.
 
 2.7 **Graceful shutdown.**
 - `server.mjs` `close()`: `server.close()` (stop accepting) → `server.closeIdleConnections()` → wait for in-flight requests up to `SHUTDOWN_GRACE_MS` (default 20 s) → `closeAllConnections()` → stop workers → close auth, account-store DB, logs, store. Signal handler awaits it and exits with code 0; a second signal forces exit.
-- Jobs aborted by shutdown are recorded as `INTERRUPTED` and **do not consume an attempt** (today `safeError` in `pipeline.mjs` maps `AbortError` to `TIMEOUT`); pass a distinguishable abort reason from `stop()`. `store.recoverInterrupted()` already requeues on start — verify it covers this state.
+- **As implemented:** jobs aborted by shutdown go straight back to the queue with the attempt refunded, instead of a separate `INTERRUPTED` state (same outcome, simpler). Original text: jobs aborted by shutdown are recorded as `INTERRUPTED` and **do not consume an attempt** (today `safeError` in `pipeline.mjs` maps `AbortError` to `TIMEOUT`); pass a distinguishable abort reason from `stop()`. `store.recoverInterrupted()` already requeues on start — verify it covers this state.
 - On startup, delete `.upload-*` files older than 1 hour in the audio directory (log count, ignore ENOENT).
 - `compose.yaml` backend: `stop_grace_period: 30s`.
 - Tests: in-flight request completes during shutdown; worker abort on stop yields `INTERRUPTED` with unchanged attempt count; orphan sweep removes only old `.upload-*` files.
 
-2.8 **Request body limits.** `authRequestHandler` rejects bodies over 16 KiB with 413 before handing the request to better-auth (check `Content-Length`, and cap streamed bytes). In `docker/nginx.conf` set `client_max_body_size 64k` for `/api/` and a dedicated `location` for the worker result upload path with `64m` (confirm exact path in `server.mjs`). Test: 17 KiB sign-in body → 413.
+2.8 **Request body limits.** `authRequestHandler` rejects bodies over 16 KiB with 413 before handing the request to better-auth (check `Content-Length`, and cap streamed bytes). In `docker/nginx.conf` set `client_max_body_size 64k` (implemented as 128k: walk document JSON bodies reach ~110 KB; the backend keeps tighter per-endpoint limits) for `/api/` and a dedicated `location` for the worker result upload path with `64m` (confirm exact path in `server.mjs`). Test: 17 KiB sign-in body → 413.
 
 2.9 **Walk planner fairness.** Replace the immediate process-wide `WALK_BUSY` with: a FIFO wait queue (max 8 waiters, max wait 10 s, then `WALK_BUSY`) that preserves the existing one-at-a-time + `minIntervalMs` spacing toward Valhalla, plus a per-client limit (key: `x-real-ip`, same trusted header as auth) of 1 request per `minIntervalMs` → 429 `WALK_RATE_LIMITED`. Coordinate with the concurrent walk-duration work in `backend/walks.mjs`. Tests with fake clock: two clients each get served; one client spamming gets 429 while the other is served.
 
@@ -164,7 +164,7 @@ Commits per sub-item group, e.g. `fix(auth): вынести account store в о�
 - UI: on the walk screen, when a copy exists show «Офлайн-копия сохранена · N записей» and a «Удалить офлайн-копию» button (uses `removeOfflineWalk`); initial status reflects `isWalkOffline()`.
 - Sign-out (`account.tsx`): call `signOut()`/`signOutEverywhere()` first, then best-effort `clearOfflineScope(user.id)` in `finally`/after, never blocking sign-out; the cleanup also removes that user's walk audio via the refcount above. Account deletion same.
 - Tests (Vitest, fake Cache Storage): catalog/shared/local walk opens offline from the saved copy; 404 does not fall back; removing one walk keeps audio still referenced by another; sign-out succeeds when `caches` is undefined.
-- Playwright: extend `e2e/walk-session.spec.ts` (or new `e2e/offline-walk.spec.ts`) — save a catalog walk, `context.setOffline(true)`, reload, walk opens with text.
+- Playwright: extend `e2e/walk-session.spec.ts` (or new `e2e/offline-walk.spec.ts`) — save a catalog walk, `context.setOffline(true)`, reload, walk opens with text. As implemented, `e2e/offline-walk.spec.ts` aborts the walk API requests (`internetdisconnected`) instead of `context.setOffline(true)`; the page itself is still served by the dev server.
 
 3.2 **Published-route audio cache** (`published-route-cache.ts`): for each URL first `cache.match(url)`; download only missing files, sequentially (or concurrency 2), each with its own timeout (e.g. 30 s) and abort support; put each file as soon as it's verified so progress survives interruptions. Remove `cache: "no-store"` for content-addressed URLs. Tests: cached files are not fetched; one slow file doesn't lose the others.
 
@@ -178,9 +178,9 @@ Commits per sub-item group, e.g. `fix(auth): вынести account store в о�
 
 3.7 **A11y.** Map container `role="region"` + label; trigger meter `role="meter"` with `aria-valuenow/min/max` (or `role="img"` if not numeric); fix the «на главную» link target to `/`.
 
-3.8 **Dead code and leaks.** Delete `walk-builder.css`, the unreachable save button, `initialTab` prop, unused exports (`deleteLocalWalk`/`exportLocalWalks` only if 3.1 doesn't use them; `routeToWalkView`, `moveStop`); remove the SW-activation listener on unmount; guard the geolocation callback in `walk-creation-panel.tsx` with an unmounted/aborted flag.
+3.8 **Dead code and leaks.** Delete `walk-builder.css`, the unreachable save button, `initialTab` prop, unused exports (`deleteLocalWalk`/`exportLocalWalks` only if 3.1 doesn't use them; `routeToWalkView`, `moveStop`) — `routeToWalkView` was kept: the e2e capture specs use it; remove the SW-activation listener on unmount; guard the geolocation callback in `walk-creation-panel.tsx` with an unmounted/aborted flag.
 
-3.9 **Split `tour-experience.tsx`** (after 3.1–3.8, behaviour-preserving): `use-offline-shell.ts` (SW update + offline status), `use-walk-audio.ts` (play/toggle/seek/finish/checkpoints), `use-walk-position.ts` (tracking + trigger), and components for the classic walk view and reading view. No behaviour change; existing tests and e2e stay green.
+3.9 **Split `tour-experience.tsx`** (after 3.1–3.8, behaviour-preserving): `use-offline-shell.ts` (SW update + offline status), `use-walk-audio.ts` (play/toggle/seek/finish/checkpoints), `use-walk-position.ts` (tracking + trigger), and components for the classic walk view and reading view. As implemented, offline-copy state and controls got their own `offline-copy.tsx`, and the debug panel lives in `walk-diagnostics.tsx`. No behaviour change; existing tests and e2e stay green.
 
 Commits: `fix(offline): открывать сохранённые прогулки любого типа без сети`, `feat(offline): удалять офлайн-копию прогулки`, `fix(account): не блокировать выход из-за очистки кеша`, `perf(tour): не перекачивать закешированное аудио маршрута`, `perf(map): не пересоздавать маркеры при воспроизведении`, `fix(ui): показывать понятные ошибки сети по-русски`, `fix(sw): удалять устаревшие кеши после обновления`, `fix(a11y): …`, `refactor(tour): разделить экран прогулки на хуки`.
 
@@ -195,7 +195,7 @@ Commits: `fix(offline): открывать сохранённые прогулк
 - `"typecheck": "tsc --noEmit && tsc -p tsconfig.backend.json"`.
 - Fix all reported errors with minimal JSDoc (`@param`, `@returns`, `@typedef` for store records and API payloads). No behaviour changes; where a real bug surfaces, fix it with a test in a separate commit.
 
-4.4 **Docker hygiene.** Root `.dockerignore`: add `artifacts/`, `video/`, `docs/`, `e2e/`, `.kilo/`, `.agents/`, `.claude/`, `test-results/`, `playwright-report/`. `backend/Dockerfile.dockerignore`: add `backend/*.test.mjs`, `backend/**/*.test.mjs`; delete dead `backend/.dockerignore`. Pin `node:24.20.0-bookworm-slim` in `backend/Dockerfile`, pin nginx and valhalla image versions in `compose.yaml`/`Dockerfile` to the currently resolved versions (look them up with `docker image inspect`, record in comments). Unify pnpm installation (corepack in both images). Verify `docker compose build` and `docker compose up -d` + healthchecks locally.
+4.4 **Docker hygiene.** Root `.dockerignore`: add `artifacts/`, `video/`, `docs/`, `e2e/`, `.kilo/`, `.agents/`, `.claude/`, `test-results/`, `playwright-report/`. `backend/Dockerfile.dockerignore`: add `backend/*.test.mjs`, `backend/**/*.test.mjs`; delete dead `backend/.dockerignore`. Pin `node:24.20.0-bookworm-slim` in `backend/Dockerfile`, pin nginx and valhalla image versions in `compose.yaml`/`Dockerfile` to the currently resolved versions (look them up with `docker image inspect`, record in comments). **Not done:** Docker Desktop was unavailable, so the pins and the compose verification remain open. Unify pnpm installation (corepack in both images). Verify `docker compose build` and `docker compose up -d` + healthchecks locally.
 
 4.5 **`start` script.** Add `serve` as a pinned devDependency; `"start": "serve out"`.
 
@@ -212,14 +212,14 @@ Do this phase last and only when no other session is actively changing `src/vide
 5.1 **Untrack binary media.**
 - `git rm --cached artifacts/*.wav artifacts/*.txt`; `.gitignore`: `/artifacts/` (replacing `/artifacts/video/`).
 - `git rm --cached` all `video/assets/**/*.png` produced by the capture specs; `.gitignore` them. Keep `targets.json`, voice `manifest.json` and voice MP3s, `video/assets/video/*.webp`/`*.wav` tracked unless reproducible (check `scripts/build-video-bed.mjs`: if `ad-bed.wav` is fully reproducible, untrack it too and have `video:prepare` build it).
-- `scripts/prepare-video-assets.mjs`: when a required PNG is missing, fail with a Russian message naming the capture command (`CAPTURE_VIDEO_GUIDE=1 pnpm test:e2e e2e/video-guide.spec.ts`, and the create-guide spec).
+- `scripts/prepare-video-assets.mjs`: when a required PNG is missing, fail with a Russian message naming the capture command (`CAPTURE_VIDEO_GUIDE=1 pnpm test:e2e e2e/video-guide.spec.ts`, and the create-guide spec). As implemented, `ad-bed.wav` is byte-reproducible (`adBedWav()` in `build-video-bed.mjs`), so it is untracked and generated by `video:prepare`; the `video:bed` script was removed. The PNG size test in `guide-timeline.test.ts` is skipped while screenshots are absent.
 - Update README «Видео Remotion» and `docs/agents/video-guide.md`: renders now require a fresh capture; screenshots reflect the current UI, so re-rendering after UI changes is expected to change the video.
 
 5.2 **Video workspace package.**
 - `pnpm-workspace.yaml`: add `packages: ["video"]` (keep `ignoredBuiltDependencies`).
 - `video/package.json` (`"name": "@otgolosok/video"`, private, `type: module`) with all Remotion deps moved from the root; move `src/video/**` → `video/src/**`, and the video-only scripts (`prepare-video-assets.mjs`, `build-guide-audio.mjs`, `build-guide-voice.mjs`, `build-video-bed.mjs`, `render-*.mjs`, `build-*-voice.mjs`, `scripts/lib/voice-audio.mjs` and any other video-only helpers — verify by import graph) → `video/scripts/`. Fix relative imports (`video/assets/**`).
 - `video/tsconfig.json` and a Vitest config for video tests; root `vitest` must not pick up `video/**`; root `tsconfig.json` excludes `video`. `pnpm test` runs video tests via `pnpm --filter @otgolosok/video test`.
-- Root scripts `video:*` become thin proxies: `pnpm --filter @otgolosok/video <script>`.
+- Root scripts `video:*` become thin proxies: `pnpm --filter @otgolosok/video <script>`. As implemented, `video:prepare` maps to the package script `assets` (a script named `prepare` would run on every install). Video scripts resolve files from the repo root via `video/scripts/lib/paths.mjs` / `import.meta.url`, not from the working directory. `scripts/build-map.mjs` stays at the root (the site build uses it) and `video/scripts/build-centre-walk-video.mjs` imports it from there. The frontend install filter was verified with a local `pnpm install --frozen-lockfile --filter otgolosok` simulation (506 packages, no Remotion), not with a Docker build.
 - Frontend `Dockerfile`: install only the root package (e.g. `pnpm install --frozen-lockfile --filter otgolosok`); read pnpm docs for the exact filter semantics before choosing, then verify the image builds without Remotion (`docker compose build` + check `node_modules` size / absence of `@remotion`).
 - Update `docs/agents/video-guide.md` paths and README.
 
@@ -227,7 +227,7 @@ Commits: `chore(repo): убрать тестовые WAV и скриншоты �
 
 ### 6. Documentation
 
-- README: env var changes (no `MAX_DAILY_JOBS`; `USER_DAILY_GENERATION_LIMIT` per user; storage caps; `SHUTDOWN_GRACE_MS`, `TTS_API_POLL_DEADLINE_MS`), `pnpm check`, uv requirement, offline behaviour for all walk kinds, video workflow.
+- README: env var changes (no `MAX_DAILY_JOBS`; `USER_DAILY_GENERATION_LIMIT` per user; storage caps; shutdown grace — implemented as a 20 s `createApp` option, not an env var; no `TTS_API_POLL_DEADLINE_MS`), `pnpm check`, uv requirement, offline behaviour for all walk kinds, video workflow.
 - `docs/agents/project-code-review-2026-09-28.md` (Russian): findings, evidence, what was fixed/dropped; add it to `docs/agents/README.md` with a two-sentence description.
 - Update this plan's `Status:` line.
 
