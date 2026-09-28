@@ -1,0 +1,30 @@
+# Служебный API промо-прогулок
+
+`POST /api/service/promo-walks` (`backend/promo-walks.mjs`, маршрут в `backend/server.mjs`
+до общего Origin-гейта POST) — единственная точка, через которую воркер YouTube Shorts
+из `otgolosok-content` получает общую ссылку на прогулку из ролика.
+
+## Контракт
+
+- Авторизация: `Authorization: Bearer <PROMO_WALKS_TOKEN>` через `adminAuth`
+  (сравнение SHA-256 в постоянное время, 429 после 20 неудач за 60 с). Без токена — 404,
+  токен короче 32 символов — сервер не стартует.
+- Вход строгий: `idempotencyKey`, `title`, `description?`, `dryRun?`, `walk`. `walk`
+  уходит в общий экземпляр планировщика с ключом клиента `service:promo-walks`, поэтому
+  к нему применяются общие очередь и частота (одно планирование на клиента в 2 с).
+- Пробный прогон ничего не пишет; `idempotencyKey` и `title` всё равно обязательны.
+- Создание: `planToWalkDocument` (`backend/walk-plan-document.mjs`, серверный двойник
+  `draftToWalkDocument`, обрезает адреса до 180 символов) → `createWalk(..., {maxWalks: Infinity})`
+  → `setWalkSharing(..., true)`. Ошибка валидации документа — 500 (ошибка сервера, не клиента).
+- Повтор сравнивает название, режим, длительность, координаты старта и ручных остановок;
+  прогулку, сохранённую без общей ссылки (сбой между шагами), повтор делает общей.
+- Ошибки планировщика общие с `/api/walk-plan`: `walkPlanErrorResponse` в
+  `backend/walk-plan-errors.mjs`.
+
+## Риски
+
+- Пользователь `promo-walks` владеет всеми промо-прогулками; его удаление (`ON DELETE CASCADE`)
+  сломает ссылки во всех опубликованных роликах.
+- Производственный compose лежит в отдельном репозитории `services`
+  (`deploy-scripts/otgolosok-generator-compose.yml`); если он перечисляет переменные
+  явно, `PROMO_WALKS_TOKEN` нужно добавить и туда.

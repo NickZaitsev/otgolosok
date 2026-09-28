@@ -187,6 +187,37 @@ loopback bind; `BIND_ADDRESS=0.0.0.0` открывает HTTP на всех ин
 аккаунта удаляет приватные копии. Подробности безопасного `WalkView`, повторов запросов и
 разделения приватного кеша описаны в [`docs/agents/walks.md`](docs/agents/walks.md).
 
+### Служебный API промо-прогулок
+
+`POST /api/service/promo-walks` создаёт общедоступную прогулку для роликов
+YouTube Shorts (единственный клиент — воркер из репозитория `otgolosok-content`).
+Эндпоинт включается переменной `PROMO_WALKS_TOKEN` (не короче 32 символов;
+при более коротком значении сервер не стартует, без значения отвечает 404).
+Проверки `Origin` нет: доступ только по заголовку `Authorization: Bearer`,
+после 20 неудачных попыток за минуту — 429.
+
+```bash
+curl -X POST https://otgolosok.online/api/service/promo-walks \
+  -H "Authorization: Bearer $PROMO_WALKS_TOKEN" -H "Content-Type: application/json" \
+  -d '{"idempotencyKey":"shorts-run-0001","title":"Прогулка от метро «Чистые пруды» · 60 минут","dryRun":true,
+       "walk":{"start":{"address":"метро «Чистые пруды»","location":{"lat":55.765,"lon":37.6386}},"mode":"loop","minutes":60}}'
+```
+
+- Тело: `idempotencyKey` (`[\w.-]{8,100}`), `title` (1–120 символов), `description`
+  (необязательно, до 1000 символов без переводов строк), `dryRun`, `walk` — вход
+  обычного планировщика (`start`, `mode`, `minutes`, `stops` для ручных остановок).
+- `dryRun: true` только строит маршрут и возвращает `{view}` — ничего не сохраняет.
+- Иначе прогулка сохраняется за системным пользователем `promo-walks` (роль
+  `service`, без пароля и без лимита в 200 прогулок), для неё включается общая
+  ссылка, ответ `201 {walk:{id,title,revision,shareToken,shareUrl,createdAt},view}`.
+- Повтор с тем же ключом и тем же запросом возвращает ту же прогулку с `200`
+  без нового планирования; тот же ключ с другим запросом — `409 CONFLICT`.
+- Ошибки планировщика совпадают с `/api/walk-plan` (400/404/429 с `Retry-After`/503).
+
+Пользователя `promo-walks` нельзя удалять: каскадное удаление уберёт все
+промо-прогулки и сломает ссылки в опубликованных роликах. Подробнее — в
+[`docs/agents/promo-walks-service-api.md`](docs/agents/promo-walks-service-api.md).
+
 ### Первый Запуск
 
 Valhalla использует поддерживаемый upstream-образ

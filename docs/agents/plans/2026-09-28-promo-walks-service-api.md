@@ -1,6 +1,6 @@
 # Plan: Service API for promo walks (YouTube Shorts)
 
-Status: plan, 2026-09-28.
+Status: implemented 2026-09-28 in branch `feat/auth-account-osm-pipeline` — step 7 (production token and deploy) and the production smoke are not done: they need the user's go-ahead.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -136,12 +136,12 @@ No paid external APIs are involved. The endpoint uses the existing planner (self
 
 `planToWalkDocument(plan, {id, title, description, mode, minutes, start})` follows the frontend rules listed in Key codebase facts.
 
-- `version: 2`, `city: "Москва"`, `destination: null`, `fieldChecked: false`.
+- `version: 2`, `city: "Москва"`, `fieldChecked: false`; `destination` is omitted (as in the frontend adapter).
 - `start` is `{address, location}` taken from the request.
 - Stops map from `plan.stops`, with `storyRef` from `contentId`.
 - The route is copied from the plan.
 - Addresses longer than 180 characters are cut to 179 characters (`Array.from` code points) plus `…`.
-- The result is passed through `validateWalkDocument`. A validation failure is a programming error: rethrow as a 500 and log the details, never the token.
+- The result is passed through `validateWalkDocument`. A validation failure is a programming error: it is rethrown as a code-less `Error` (with `cause`), which the server's generic handler turns into a logged 500.
 
 ### 4. Service — `backend/promo-walks.mjs`
 
@@ -152,7 +152,7 @@ No paid external APIs are involved. The endpoint uses the existing planner (self
 ```
 {idempotencyKey: /^[\w.-]{8,100}$/,
  title: 1–120 chars (same forbidden characters as cleanTitle),
- description?: ≤1000 chars,
+ description?: ≤1000 chars, single line (the document forbids \p{Cc}),
  dryRun?: boolean,
  walk: {start, mode, minutes, stops?}}
 ```
@@ -175,7 +175,7 @@ No paid external APIs are involved. The endpoint uses the existing planner (self
     view: resolveWalkView(snapshot, revision, store)}
    ```
 
-**Planner errors** keep their codes. Move the inline status and message maps from `server.mjs:~511–514` into an exported `walkPlanErrorResponse(error)` (new, in `backend/walks.mjs` or a small `backend/walk-plan-errors.mjs`) so that `/api/walk-plan` and the service share one mapping. `Retry-After: 2` stays on 429.
+**Planner errors** keep their codes. Move the inline status and message maps from `server.mjs:~511–514` into an exported `walkPlanErrorResponse(error)` in the new `backend/walk-plan-errors.mjs`; it returns `{status, headers, body}` so that `/api/walk-plan` and the service share one mapping. `Retry-After: 2` stays on 429.
 
 ### 5. Route — `backend/server.mjs`
 
@@ -187,6 +187,7 @@ Add a block after the worker API block and before the generic POST/Origin block:
   - 429 with `Retry-After: 60` for the failure bucket.
 - Method other than POST: 405 `METHOD_NOT_ALLOWED` with `Allow: POST`. No query string allowed (`BAD_REQUEST`).
 - Body: `body(req, 8192)`, which requires `application/json`. Run `service.create(input)` and send its status/body with the standard `json()` headers (`no-store`).
+- Token configured but no account store: 503 `PROMO_WALKS_UNAVAILABLE`.
 - No Origin check here — this is the point of the endpoint. Errors from `createWalk`/`setWalkSharing` go through the existing error serialization.
 - Log unexpected failures through the existing `logs` handle without request headers.
 
@@ -217,7 +218,7 @@ Add a block after the worker API block and before the generic POST/Origin block:
   - addresses of exactly 180 characters and of 240 characters (truncated with `…`);
   - geometry and route are copied;
   - every result passes `validateWalkDocument`.
-- **`backend/account-api.test.mjs`:**
+- **`backend/account-connection.test.mjs`** (where the cap tests already live):
   - the default cap still rejects the 201st walk with `STORAGE_LIMIT`;
   - `{maxWalks: Infinity}` allows it;
   - `findWalkByIdempotencyKey` returns null for another user's key.
