@@ -12,6 +12,8 @@ import { normalizeAddress, addressKey, publicJob, failure } from "./domain.mjs";
 import { errorMessages, safeError, startWorker } from "./pipeline.mjs";
 import { createPlaceResolver } from "./places.mjs";
 import { createWalkPlanner } from "./walks.mjs";
+import { walkPlanErrorResponse } from "./walk-plan-errors.mjs";
+import { createPromoWalkService, ensurePromoWalksUser } from "./promo-walks.mjs";
 import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
 import { validateWalkResearch, publicWalkResearch, walkResearchKey } from "./walk-research.mjs";
 import { createBackendLogger } from "./logs.mjs";
@@ -104,6 +106,7 @@ export function parseUserDailyLimit(value) {
  * @property {string} [adminToken]
  * @property {boolean} [allowLegacyAdminToken]
  * @property {string} [workerToken]
+ * @property {string} [promoWalksToken]
  * @property {ReturnType<typeof createBackendLogger>} [logs]
  * @property {typeof ingestAudio} [audioIngest]
  * @property {Awaited<ReturnType<typeof createAuth>>["auth"] | null} [auth]
@@ -115,7 +118,7 @@ export function parseUserDailyLimit(value) {
  */
 
 /** @param {CreateAppOptions} options */
-export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000}) {
+export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
@@ -124,6 +127,10 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
   const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,logs,resolveLocation:osmGeocoder ? place=>osmGeocoder.resolve(place) : null,concurrency:Number(process.env.CONTENT_WORKER_CONCURRENCY??1),autoApprove:process.env.CONTENT_AUTO_APPROVE==="true"}):null;
   const ttsApiWorker=workerEnabled&&localTts.transport==="http"&&ttsApiClient?startTtsApiWorker({store,client:ttsApiClient,audioDirectory,profileId:localTts.defaultProfile,logs}):null;
   const authorizeAdmin=adminAuth(adminToken);
+  const promoEnabled=typeof promoWalksToken==="string"&&promoWalksToken.length>0;
+  if(promoEnabled&&promoWalksToken.length<32)throw new Error("PROMO_WALKS_TOKEN must contain at least 32 characters");
+  const authorizePromo=adminAuth(promoEnabled?promoWalksToken:"");
+  const promoWalks=promoEnabled&&accountStore?createPromoWalkService({accountStore,planWalk:walkPlanner,store,origin}):null;
   const legacyAdminEnabled=allowLegacyAdminToken??(!auth||process.env.ALLOW_LEGACY_ADMIN_TOKEN==="true");
   const server=httpServer(async(req,res)=>{
     try {
@@ -219,6 +226,20 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
           return;
         }
         json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;
+      }
+      // Token-authenticated service API for the YouTube Shorts worker; it has no
+      // browser Origin, so it is dispatched before the same-origin POST gate.
+      if(url.pathname==="/api/service/promo-walks") {
+        if(!promoEnabled){json(res,404,{error:{message:"Страница не найдена."}});return;}
+        const authorized=authorizePromo(req.headers.authorization);
+        if(authorized===429){res.setHeader("Retry-After","60");json(res,429,{error:{code:"RATE_LIMITED",message:"Too many failed attempts."}});return;}
+        if(authorized!==200){res.setHeader("WWW-Authenticate","Bearer");json(res,401,{error:{code:"UNAUTHORIZED",message:"Service authentication required."}});return;}
+        if(req.method!=="POST"){res.setHeader("Allow","POST");json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;}
+        if(url.search)throw failure("BAD_REQUEST");
+        if(!promoWalks){json(res,503,{error:{code:"PROMO_WALKS_UNAVAILABLE",message:"Account storage is unavailable."}});return;}
+        const result=await promoWalks.create(await body(req,8192));
+        for(const [name,value] of Object.entries(result.headers))res.setHeader(name,value);
+        json(res,result.status,result.body);return;
       }
       const researchMatch=new RegExp(`^/api/walk-research-jobs(?:/(${UUID})(/retry)?)?$`).exec(url.pathname);
       if(researchMatch) {
@@ -511,10 +532,9 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
           // X-Real-IP is overwritten by nginx, as for Better Auth rate limiting.
           try {json(res,200,await walkPlanner(await body(req,8192),{client:String(req.headers["x-real-ip"]??req.socket.remoteAddress??"")}));}
           catch(error) {
-            const messages={WALK_INVALID:"Проверьте начало, остановки и параметры прогулки.",WALK_BUSY:"Планировщик занят. Повторите через пару секунд.",WALK_RATE_LIMITED:"Слишком частые запросы маршрута. Повторите через пару секунд.",WALK_NOT_FOUND:"Не удалось построить пешеходную прогулку в выбранное время. Измените точки или длительность.",WALK_STOPS_NOT_FOUND:"Рядом со стартом недостаточно достопримечательностей в каталоге. Добавьте остановки вручную или выберите другое начало прогулки.",WALK_DISCOVERY_UNAVAILABLE:"Не удалось автоматически подобрать остановки. Попробуйте позже или добавьте остановки вручную.",WALK_UNAVAILABLE:"Пешеходный маршрутизатор временно недоступен. Попробуйте позже."};
-            const code=error.code==="BAD_REQUEST"?"WALK_INVALID":Object.hasOwn(messages,error.code)?error.code:"WALK_UNAVAILABLE";
-            if(["WALK_BUSY","WALK_RATE_LIMITED"].includes(code))res.setHeader("Retry-After","2");
-            json(res,{WALK_INVALID:400,WALK_BUSY:429,WALK_RATE_LIMITED:429,WALK_NOT_FOUND:404,WALK_STOPS_NOT_FOUND:404,WALK_DISCOVERY_UNAVAILABLE:503,WALK_UNAVAILABLE:503}[code],{error:{code,message:messages[code]}});
+            const planError=walkPlanErrorResponse(error);
+            for(const [name,value] of Object.entries(planError.headers))res.setHeader(name,value);
+            json(res,planError.status,planError.body);
           }
           return;
         }
@@ -606,6 +626,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const appOrigin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
   const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production"});
   const accountStore=createAccountStore(authRuntime.accountDatabase);
+  if(process.env.PROMO_WALKS_TOKEN)ensurePromoWalksUser(authRuntime.accountDatabase);
   const osmGeocoder=openOsmGeocoder(join(directory,"osm-addresses.sqlite"));
   try {const swept=await sweepAudioTemporaries(join(directory,"audio"));if(swept)console.log(`Removed ${swept} abandoned temporary audio files`);}
   catch(error) {logs?.captureException(error,{operation:"sweepAudioTemporaries"});}

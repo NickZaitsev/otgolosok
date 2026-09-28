@@ -20,7 +20,8 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
   player: ReactNode; story: ReactNode; settings: ReactNode; audioError: string;
 }) {
   const panelRef = useRef<HTMLElement>(null);
-  const [panelHeight, setPanelHeight] = useState(250);
+  // The panel covers the bottom of the map or, on a low landscape screen, a column on the right.
+  const [cover, setCover] = useState<{ side: "bottom" | "right"; size: number }>({ side: "bottom", size: 250 });
   const [focus, setFocus] = useState<MapFocus | null>(null);
   const [drawer, setDrawer] = useState<"stops" | "story" | "settings" | null>(null);
   const chapter = chapters[index];
@@ -30,13 +31,25 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
     ...chapters.map((item, i) => ({ id: item.id, title: `Остановка ${i + 1}: ${item.title}`, location: item.location, number: i + 1 })),
     ...(route.walk ? [{ id: "walk-finish", title: `Финиш: ${route.walk.finish.address}`, location: route.walk.finish.location, compact: true }] : []),
   ], [chapters, route.walk]);
-  const padding = useMemo(() => ({ top: 70, right: 45, bottom: panelHeight + 125, left: 45 }), [panelHeight]);
+  // Beside the panel the route also keeps clear of the map buttons above the navigation.
+  const padding = useMemo(() => cover.side === "right"
+    ? { top: 70, right: cover.size + 24, bottom: 160, left: 45 }
+    : { top: 70, right: 45, bottom: cover.size + 125, left: 45 }, [cover]);
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
-    const observer = new ResizeObserver(() => setPanelHeight(Math.ceil(panel.getBoundingClientRect().height)));
+    const measure = () => {
+      const box = panel.getBoundingClientRect();
+      // walk-session.css docks the panel to the right on a low landscape screen.
+      const side = getComputedStyle(panel).getPropertyValue("--walk-panel-dock").trim() === "right" ? "right" : "bottom";
+      const size = Math.ceil(side === "right" ? (panel.parentElement?.getBoundingClientRect().right ?? innerWidth) - box.left : box.height);
+      setCover(current => current.side === side && current.size === size ? current : { side, size });
+    };
+    const observer = new ResizeObserver(measure);
     observer.observe(panel);
-    return () => observer.disconnect();
+    // Turning the phone may keep the panel's size while its dock changes.
+    addEventListener("resize", measure);
+    return () => { observer.disconnect(); removeEventListener("resize", measure); };
   }, []);
   function select(position: number) { setDrawer(null); onSelect(position); }
   const distance = (route.walk?.distance_m ?? 0) / 1000;

@@ -27,23 +27,3 @@ export function getWalkChapters(route: Route, includePending = false): WalkChapt
     return content && (includePending || content.story.text_status === "ready") ? [{ ...step, content }] : [];
   });
 }
-
-export function WalkPlanPreview({ chapters }: { chapters: WalkChapter[] }) {
-  if (chapters.length === 0) return null;
-  const hasAudio = chapters.every((chapter) => chapter.audio?.url);
-  const count = chapters.length;
-  const noun = count % 10 === 1 && count % 100 !== 11 ? "история" : count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20) ? "истории" : "историй";
-  return <section className="walk-plan" id="walk-plan" aria-labelledby="walk-plan-title">
-    <p className="kicker">Маршрут и остановки</p>
-    <h2 id="walk-plan-title">Одна прогулка, {count} {noun}</h2>
-    <p className="walk-plan-intro">Начните прогулку, чтобы {hasAudio ? "слушать" : "читать"} рассказы по порядку. Между частями есть переходы; двигаться дальше можно в своём темпе.</p>
-    <ol className="walk-plan-steps">
-      {chapters.map((chapter, index) => <li key={chapter.id}>
-        <span className="walk-plan-index" aria-hidden="true">{index + 1}</span>
-        <div><h3>{chapter.title}</h3><p>{chapter.place}</p></div>
-        <span className="walk-plan-duration">{chapter.audio ? "" : "≈ "}{chapter.duration_sec} сек</span>
-      </li>)}
-    </ol>
-    <p className="walk-plan-intro">{hasAudio ? `${count} ${noun} с озвучкой. «Дальше» включает следующую часть; текст и источники остаются под рукой.` : "Пока доступен текст. Части переключаются вручную, озвучка готовится."}</p>
-  </section>;
-}
