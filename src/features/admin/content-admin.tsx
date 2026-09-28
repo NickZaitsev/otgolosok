@@ -9,6 +9,7 @@ import {
   type ContentPlaceSummary, type ContentStatusFilter, type ContentWorker, type Draft,
 } from "./model";
 import { skeletonRows } from "./table-skeleton";
+import { IdentityCandidates } from "./identity-candidates";
 import "./content-admin.css";
 
 type ContentAdminProps = { api: AdminApi; busy: string; run: AdminRun; onDirtyChange: (dirty: boolean) => void };
@@ -79,6 +80,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
   const [audioJobs, setAudioJobs] = useState<ContentAudioJob[]>([]);
   const [workerToken, setWorkerToken] = useState("");
   const [ttsTransport, setTtsTransport] = useState<"worker" | "http">("worker");
+  const [workerStatusLoaded, setWorkerStatusLoaded] = useState(false);
   // Freshness is read off the clock when the list arrives: during render `Date.now()` would be impure and the
   // callout would silently go stale anyway, because nothing re-renders the component as the window expires.
   const [workerOnline, setWorkerOnline] = useState(false);
@@ -123,6 +125,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
       setTtsTransport(workerList.transport);
       setWorkerOnline(workerList.workers.some(worker => !worker.revokedAt && worker.lastSeenAt
         && Date.now() - new Date(worker.lastSeenAt).valueOf() < HEARTBEAT_WINDOW_MS));
+      setWorkerStatusLoaded(true);
     });
   }
 
@@ -235,9 +238,23 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
         <div><dt>Старейшее аудио в очереди</dt><dd className="content-stats-date">{moment(stats.audioQueue?.oldestQueuedAt)}</dd></div>
       </dl> : <div className="content-stats-loading" role="status" aria-live="polite"><span className="content-loading-spinner" aria-hidden="true" />Загружаем статистику каталога…</div>}
 
+      <section className="admin-review content-audio-backfill" aria-labelledby="content-audio-backfill-title">
+        <div className="admin-section-head"><div>
+          <h3 id="content-audio-backfill-title">Массовая озвучка</h3>
+          <p className="admin-meta">Поставляет в очередь утверждённые тексты без готового аудио. Повторный запуск не создаёт дубликаты.</p>
+        </div>
+          <button className="admin-primary" disabled={disabled || ttsTransport === "worker" && !workerOnline} onClick={() => void run("Постановка озвучки…", async signal => {
+            const result = await api<{ queued: number; retried: number; alreadyQueued: number; failed: number; inspected: number; hasMore: boolean }>("/content/audio/bulk", signal, { limit: 500 });
+            await loadOverview(signal);
+            setNotice(`В очередь поставлено: ${result.queued}. Повторено: ${result.retried}. Проверено: ${result.inspected}${result.hasMore ? " — нажмите ещё раз для продолжения" : ""}.`);
+          })}>Озвучить тексты без аудио</button>
+        </div>
+        {workerStatusLoaded && ttsTransport === "worker" && !workerOnline && <p className="admin-callout">Нет online-воркера TTS. Сначала подключите воркер.</p>}
+      </section>
+
       <section className="admin-review" aria-labelledby="content-new-batch-title">
         <h3 id="content-new-batch-title">Новая партия</h3>
-        <p className="admin-meta">Берёт указанное число мест из каталога по алфавиту и ставит их в очередь подготовки.</p>
+        <p className="admin-meta">Берёт следующие по алфавиту места, которые прошли проверку пригодности и ещё не стоят в очереди. Места со слабой идентификацией сюда не попадают — для них есть отдельный пилот.</p>
         <form className="admin-filters content-batch-form" onSubmit={event => {
           event.preventDefault();
           void run("Создание партии…", async signal => {
@@ -261,6 +278,8 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
         </form>
       </section>
 
+      <IdentityCandidates api={api} busy={busy} run={run} onPilotCreated={async (_created, signal) => { await loadOverview(signal); setBatchPage(0); }} />
+
       <section className="admin-review" aria-labelledby="content-batches-title">
         <div className="admin-section-head">
           <div>
@@ -274,7 +293,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
           <tbody>{loading.overview ? skeletonRows(4, batchRows.length) : batchRows.map(item => {
             const segments = progressSegments(item.counts);
             return <tr key={item.id} data-current={batch?.id === item.id || undefined}>
-              <th scope="row">{item.name}<span className="admin-row-id">{item.id.slice(0, 8)} · {item.mode === "text-only" ? "только текст" : "текст и озвучка"} · создана {moment(item.createdAt)}</span></th>
+              <th scope="row">{item.name}<span className="admin-row-id">{item.id.slice(0, 8)} · {item.mode === "text-only" ? "только текст" : "текст и озвучка"}{item.identityPolicy === "weak_identity" ? " · слабая идентификация, публикация после утверждения" : ""} · создана {moment(item.createdAt)}</span></th>
               <td><span className={`admin-stage content-batch-state-${item.state}`}>{batchStates[item.state] ?? item.state}</span></td>
               <td>
                 <div className="content-progress" aria-hidden="true">{segments.map(segment => segment.value

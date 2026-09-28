@@ -35,3 +35,69 @@ test("legacy editorial evidence remains readable",()=>{
   assert.equal(evidence.facts.length,1);
   assert.equal(evidence.facts[0].kind,undefined);
 });
+
+const placeFact=(kind,subjectRelation="object")=>({claim:`Факт вида ${kind} об объекте.`,kind,subjectRelation,...(kind==="content"?{contentReason:"Сообщает автора и время создания"}:{}),
+  topic:"place_history",scope:"site",location:"Памятник",distanceMeters:null,evidence:[{sourceId:"s1",quote}]});
+const content=placeFact("content"),identity=placeFact("identity"),address=placeFact("address"),neighbourIdentity=placeFact("identity","site_context");
+
+// An OSM place is identified by name, type and location; the user-entered address pipeline keeps the address as its identity.
+for(const [name,input,options,expected] of [
+  ["address mode still requires the address",{addressConfirmed:false,identityConfirmed:true,facts:[identity,content]},{identityMode:"address"},{code:"ADDRESS_UNCLEAR"}],
+  ["address mode ignores identityConfirmed",{addressConfirmed:true,facts:[content]},{identityMode:"address"},["content"]],
+  ["place without an address keeps identity and drops address facts",{addressConfirmed:false,identityConfirmed:true,facts:[identity,address,content]},{identityMode:"place"},["identity","content"]],
+  ["place with a confirmed address keeps address facts",{addressConfirmed:true,identityConfirmed:true,facts:[identity,address,content]},{identityMode:"place"},["identity","address","content"]],
+  ["confirmed address anchors a place without an identity fact",{addressConfirmed:true,identityConfirmed:true,facts:[content]},{identityMode:"place"},["content"]],
+  ["unconfirmed identity stops even with an address",{addressConfirmed:true,identityConfirmed:false,facts:[identity,content]},{identityMode:"place"},{code:"PLACE_UNCLEAR"}],
+  ["missing identityConfirmed is not a confirmation",{addressConfirmed:true,facts:[identity,content]},{identityMode:"place"},{code:"PLACE_UNCLEAR"}],
+  ["no address and no identity fact about the object",{addressConfirmed:false,identityConfirmed:true,facts:[content]},{identityMode:"place"},{code:"PLACE_UNCLEAR"}],
+  ["an identity fact about the site does not identify the object",{addressConfirmed:false,identityConfirmed:true,facts:[neighbourIdentity,content]},{identityMode:"place"},{code:"PLACE_UNCLEAR"}],
+]) test(`identityMode: ${name}`,()=>{
+  const run=()=>validateFacts({...base,...input},sources,{requireEditorialScope:true,...options});
+  if(!Array.isArray(expected)){assert.throws(run,expected);return;}
+  const evidence=run();
+  assert.deepEqual(evidence.facts.map(fact=>fact.kind),expected);
+  if(options.identityMode==="place")assert.equal(evidence.addressConfirmed,input.addressConfirmed);
+  else assert.equal(Object.hasOwn(evidence,"addressConfirmed"),false);
+});
+
+test("identityMode place needs classified facts and rejects unknown modes",()=>{
+  assert.throws(()=>validateFacts({...base,identityConfirmed:true},sources,{identityMode:"place"}),TypeError);
+  assert.throws(()=>validateFacts(base,sources,{requireEditorialScope:true,identityMode:"name"}),TypeError);
+});
+
+test("quotes match despite stress marks the model dropped or moved", () => {
+  const stressed = "Собо́р Чу́да Архистрати́га Михаи́ла в Хо́нех — утраченный православный храм в Московском Кремле.";
+  const stressedSources = [{ ...sources[0], text: `${stressed} `.repeat(6) }];
+  const quoteFact = { ...placeFact("identity"), evidence: [{ sourceId: "s1", quote: "Собор Чуда Архистрати́га Миха́ила в Хо́нех — утраченный православный храм" }] };
+  const evidence = validateFacts({ ...base, addressConfirmed: false, identityConfirmed: true, facts: [quoteFact, { ...content, evidence: [{ sourceId: "s1", quote: stressed }] }] },
+    stressedSources, { requireEditorialScope: true, identityMode: "place" });
+  assert.deepEqual(evidence.facts.map(fact => fact.kind), ["identity", "content"]);
+});
+
+test("an identity quote that fails the exact-excerpt check is reported apart from an unidentified place", () => {
+  const misquoted = { ...identity, evidence: [{ sourceId: "s1", quote: "Эту цитату модель придумала, в источнике её нет." }] };
+  assert.throws(() => validateFacts({ ...base, addressConfirmed: false, identityConfirmed: true, facts: [misquoted, content] }, sources,
+    { requireEditorialScope: true, identityMode: "place" }), { code: "IDENTITY_QUOTE_INVALID" });
+  assert.throws(() => validateFacts({ ...base, addressConfirmed: false, identityConfirmed: true, facts: [content] }, sources,
+    { requireEditorialScope: true, identityMode: "place" }), { code: "PLACE_UNCLEAR" });
+});
+
+// Listeners see resolvedAddress as the place's address, so a house number needs a confirmed address fact.
+for (const [resolvedAddress, addressConfirmed, expected] of [
+  ["Москва, Большая Ордынка, двор дома 17", false, "Памятник"],
+  ["Москва, улица Остоженка, 51/10", false, "Памятник"],
+  ["Москва, проспект Мира, 119 с50", false, "Памятник"],
+  ["Сиреневый бульвар, вл77", false, "Памятник"],
+  ["Москва, район Сокольники, начало улицы Гастелло", false, "Москва, район Сокольники, начало улицы Гастелло"],
+  ["Москва, 1-я Тверская-Ямская улица", false, "Москва, 1-я Тверская-Ямская улица"],
+  ["Москва, парк 850-летия Москвы", false, "Москва, парк 850-летия Москвы"],
+  ["Москва, улица Остоженка, 51/10", true, "Москва, улица Остоженка, 51/10"],
+]) test(`resolvedAddress "${resolvedAddress}" with addressConfirmed=${addressConfirmed}`, () => {
+  const evidence = validateFacts({ ...base, resolvedAddress, addressConfirmed, identityConfirmed: true, facts: [identity, content] }, sources,
+    { requireEditorialScope: true, identityMode: "place" });
+  assert.equal(evidence.resolvedAddress, expected);
+});
+
+test("the address pipeline keeps resolvedAddress as returned", () => {
+  assert.equal(validateFacts({ ...base, resolvedAddress: "Москва, Арбат, 21" }, sources, { requireEditorialScope: true }).resolvedAddress, "Москва, Арбат, 21");
+});
