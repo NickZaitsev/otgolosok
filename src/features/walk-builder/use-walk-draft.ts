@@ -37,6 +37,8 @@ export function useWalkDraft() {
   const [query, setQuery] = useState("");
   const [focus, setFocus] = useState<Coordinates | null>(null);
   const [selection, setSelection] = useState<"auto" | "manual">("auto");
+  // The planner chose the stops of the current route; not persisted, so a restored route never claims it.
+  const [autoRoute, setAutoRoute] = useState(false);
   const [reviewed, setReviewed] = useState(false);
   const [researchOffered, setResearchOffered] = useState(false);
   const [pollId, setPollId] = useState<string | null>(null);
@@ -142,7 +144,7 @@ export function useWalkDraft() {
     }
   }
   function edit(change: Parameters<typeof editDraft>[1]) {
-    setReviewed(false); setError(""); setMessage(""); setResearchOffered(false);
+    setReviewed(false); setError(""); setMessage(""); setResearchOffered(false); setAutoRoute(false);
     if (change.stops) setSelection("manual");
     else if (["start", "destination", "mode", "minutes"].some(key => Object.hasOwn(change, key))) setSelection("auto");
     persist(editDraft(current.current, change));
@@ -231,12 +233,12 @@ export function useWalkDraft() {
     if (!draft.start || action.current || candidate) return;
     const snapshot = current.current;
     const controller = new AbortController(); action.current = controller; setBusy("Строим пешеходный маршрут…");
-    setReviewed(false); setError(""); setResearchOffered(false); persist({ ...snapshot, route: null, researchApplied: false });
+    setReviewed(false); setError(""); setResearchOffered(false); setAutoRoute(false); persist({ ...snapshot, route: null, researchApplied: false });
     try {
       const result = await request("/api/walk-plan", controller.signal, { start: snapshot.start, mode: snapshot.mode, minutes: snapshot.minutes, ...(snapshot.destination ? {destination:snapshot.destination} : {}), ...(selection === "manual" ? { stops: snapshot.stops } : {}) });
       if (controller.signal.aborted) return;
       if (!isPlan(result) || !validStops(snapshot.start, result.stops, snapshot.destination) || result.walkingMinutes > snapshot.minutes || (selection === "manual" && JSON.stringify(result.stops) !== JSON.stringify(snapshot.stops))) throw new Error("Сервис вернул некорректный маршрут. Попробуйте построить заново.");
-      persist({ ...current.current, stops: result.stops, route: result }); setSelection("manual");
+      persist({ ...current.current, stops: result.stops, route: result }); setAutoRoute(selection === "auto"); setSelection("manual");
       setMessage("");
     } catch (caught) { if (!controller.signal.aborted) {
       const insufficient = shouldOfferResearch(selection, caught);
@@ -322,5 +324,5 @@ export function useWalkDraft() {
     finally {setBusy("");}
   }
   const openHref = serverWalk ? `/walk?id=${serverWalk.id}` : localIdForView ? `/walk?local=${localIdForView}` : null;
-  return {initialMode,draft,current,persist,edit,loaded,storageError,message,error,busy,action,candidate,setCandidate,target,setTarget,query,setQuery,focus,selection,setSelection,reviewed,setReviewed,researchOffered,pollId,setPollId,recoveryId,setRecoveryId,resolve,confirmPlace,plan,prepareNext,recoverJob,download,saveToAccount,serverWalk,openHref,nextPlace,activeJob,setBusy,setError};
+  return {initialMode,draft,current,persist,edit,loaded,storageError,message,error,busy,action,candidate,setCandidate,target,setTarget,query,setQuery,focus,selection,setSelection,autoRoute,reviewed,setReviewed,researchOffered,pollId,setPollId,recoveryId,setRecoveryId,resolve,confirmPlace,plan,prepareNext,recoverJob,download,saveToAccount,serverWalk,openHref,nextPlace,activeJob,setBusy,setError};
 }

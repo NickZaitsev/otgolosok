@@ -312,3 +312,20 @@ test("weak identity candidates are editor-only",async t=>{
   assert.equal((await fetch(`${f.base}/api/story-admin/content/identity-candidates`)).status,401);
   assert.equal((await f.post("/api/story-admin/content/identity-candidates/pilot",{requestKey:"identity-http-3",limit:1})).status,401);
 });
+
+test("guest walk resolves published OSM stories without an account",async t=>{
+  const f=await fixture(t);f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:9",osmType:"node",osmId:9,name:"Дом",location:{lat:55.75,lon:37.61},tags:{building:"yes"}}]});
+  f.store.createBatch({requestKey:"guest-walk",placeIds:["osm:node:9"],limit:1});const job=f.store.claimContentJob(),story={title:"История дома",paragraphs:[{text:"Проверенный текст о доме",factIds:["f1"]}]};f.store.completeContentJob(job.id,{story,evidence:{}});f.store.approvePlaceText("osm:node:9");
+  const stop=(id,placeId,lat)=>({id,place:{address:"Москва, дом",location:{lat,lon:37.61}},storyRef:{kind:"osm",id:placeId},transition:"",nextHint:""});
+  const document={version:2,id:"22222222-2222-4222-8222-222222222222",title:"Моя прогулка",description:"",city:"Москва",mode:"loop",minutes:30,start:{address:"Старт",location:{lat:55.749,lon:37.61}},destination:null,
+    stops:[stop("33333333-3333-4333-8333-000000000001","osm:node:9",55.75),stop("33333333-3333-4333-8333-000000000002","osm:node:404",55.751),stop("33333333-3333-4333-8333-000000000003","osm:node:9",55.76)],route:null,fieldChecked:false};
+  const resolve=(value,origin="https://otgolosok.test")=>fetch(f.base+"/api/story-walks/resolve",{method:"POST",headers:{Origin:origin,"Content-Type":"application/json"},body:JSON.stringify(value)});
+  const response=await resolve({document,revision:4});assert.equal(response.status,200);assert.equal(response.headers.get("cache-control"),"no-store");
+  const view=await response.json();
+  assert.equal(view.revision,4);assert.deepEqual(view.document,document);
+  assert.deepEqual(view.chapters.map(item=>item.status),["text_ready","unavailable","unavailable"]);assert.equal(view.chapters[0].story.title,"История дома");
+  for(const invalid of [{document,revision:-1},{document,revision:1,extra:true},{document:{...document,version:1},revision:0},{revision:0}]) assert.equal((await resolve(invalid)).status,400,JSON.stringify(invalid).slice(0,80));
+  assert.equal((await resolve({document:{...document,description:"я".repeat(60000)},revision:0})).status,400);
+  assert.equal((await resolve({document,revision:0},"https://other.test")).status,403);
+  assert.equal((await fetch(f.base+"/api/story-walks/resolve",{method:"POST",headers:{Origin:"https://otgolosok.test","Content-Type":"text/plain"},body:JSON.stringify({document,revision:0})})).status,400);
+});
