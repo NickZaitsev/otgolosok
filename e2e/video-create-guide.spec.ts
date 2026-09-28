@@ -13,7 +13,9 @@ const OUTPUT = "video/assets/guide/create";
 const capturing = process.env.CAPTURE_VIDEO_GUIDE === "1";
 
 async function settleMap(page: Page) {
-  if (!capturing || !await page.locator(".leaflet-tile").count()) return;
+  // Ждём по наличию карты, а не плиток: сразу после загрузки плиток ещё нет,
+  // и снимок получился бы с пустым фоном.
+  if (!capturing || !await page.locator(".leaflet-container").count()) return;
   // Leaflet двигает слои и после загрузки плиток: ждём устойчивого положения.
   let previous = "";
   let stableSince = Date.now();
@@ -111,6 +113,8 @@ test("видеоинструкция: своя прогулка по време�
   }
 
   await page.goto("/");
+  // Карта подгружается лениво: без ожидания главная снимется с пустым фоном.
+  await expect(page.locator(".leaflet-container")).toBeVisible();
   const walkTab = page.getByRole("link", {name: "Прогулка", exact: true});
   await capture("home", walkTab);
   await walkTab.click();

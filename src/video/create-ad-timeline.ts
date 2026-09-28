@@ -14,6 +14,9 @@ export const getCreateAdFrameState = timeline.frameState;
 /** Кадры нажатий внутри сцен; по ним же синтезируются щелчки в музыке. */
 export const CREATE_AD_TAPS = config.taps as Partial<Record<CreateAdSceneId, number[]>>;
 
+/** Кадр ролика, с которого звучит фрагмент истории; музыка под ним приглушается. */
+export const CREATE_AD_VOICE_FRAME: number = config.voice;
+
 export function tapAt(id: CreateAdSceneId): number {
   const frame = CREATE_AD_TAPS[id]?.[0];
   if (frame === undefined) throw new Error(`В сцене «${id}» нет нажатия`);

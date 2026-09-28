@@ -9,5 +9,6 @@
     {"id": "walk", "start": 540, "end": 660},
     {"id": "brand", "start": 660, "end": 765}
   ],
-  "taps": {"start": [48], "time": [52], "build": [38], "walk": [20]}
+  "taps": {"start": [48], "time": [52], "build": [38], "walk": [20]},
+  "voice": 600
 }

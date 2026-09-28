@@ -3,6 +3,7 @@ import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 import narration from "../src/video/guide-narration.json" with {type: "json"};
 import createNarration from "../src/video/create-guide-narration.json" with {type: "json"};
+import createAdNarration from "../src/video/create-ad-narration.json" with {type: "json"};
 import motion from "../src/video/motion-scenes.json" with {type: "json"};
 import createAd from "../src/video/create-ad-scenes.json" with {type: "json"};
 import {clickWav, guideBedWav} from "./build-guide-audio.mjs";
@@ -30,6 +31,7 @@ export const videoAssets = [
   ...Object.keys(narration).map(id => [`video/assets/guide/voice/${id}.mp3`, `guide/voice/${id}.mp3`]),
   ...createScreens.map(name => [`video/assets/guide/create/${name}.png`, `guide/create/${name}.png`]),
   ...Object.keys(createNarration).map(id => [`video/assets/guide/create/voice/${id}.mp3`, `guide/create/voice/${id}.mp3`]),
+  ...Object.keys(createAdNarration).map(id => [`video/assets/guide/create-ad/voice/${id}.mp3`, `guide/create-ad/voice/${id}.mp3`]),
   ...fonts.map(path => [`node_modules/@fontsource/${path}`, `fonts/${path.split("/").at(-1)}`]),
 ];
 
@@ -82,8 +84,11 @@ export function motionScore() {
   return sceneScore(motion, {voice: "listen", groove: "place", finale: "brand"});
 }
 
+/** @returns {ReturnType<typeof sceneScore>} */
 export function createAdScore() {
-  return sceneScore(createAd, {voice: null, groove: "start", finale: "brand"});
+  const score = sceneScore(createAd, {voice: null, groove: "start", finale: "brand"});
+  // Фрагмент истории звучит поверх последних сцен, а не целой сцены.
+  return {...score, duck: [createAd.voice / createAd.fps, score.seconds]};
 }
 
 /**

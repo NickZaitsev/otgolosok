@@ -21,7 +21,8 @@ test("видеоинструкция: от каталога до следующ�
     expect(box).not.toBeNull();
     targets[name] = box!;
     if (process.env.CAPTURE_VIDEO_GUIDE === "1") {
-      if (await page.locator(".leaflet-tile").count()) {
+      // Проверяем карту, а не плитки: пока плиток нет, снимок был бы пустым.
+      if (await page.locator(".leaflet-container").count()) {
         // Раскрытие панели меняет границы карты: ждём не только изображения,
         // но и устойчивое положение слоёв после окончания движения Leaflet.
         let previous = "";

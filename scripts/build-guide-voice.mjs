@@ -17,6 +17,7 @@ export const DEFAULT_PROFILE = "f5-ru-v1";
 export const GUIDE_VOICES = [
   {name: "guide", narration: "src/video/guide-narration.json", voiceDir: "video/assets/guide/voice"},
   {name: "create", narration: "src/video/create-guide-narration.json", voiceDir: "video/assets/guide/create/voice"},
+  {name: "create-ad", narration: "src/video/create-ad-narration.json", voiceDir: "video/assets/guide/create-ad/voice"},
 ];
 
 /** Ключ клипа меняется при смене текста или любой части голосового профиля. */

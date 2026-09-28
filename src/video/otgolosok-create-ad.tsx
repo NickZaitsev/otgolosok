@@ -1,7 +1,7 @@
 import type {ReactNode} from "react";
-import {AbsoluteFill, Easing, Html5Audio, Img, interpolate, staticFile, useCurrentFrame} from "remotion";
+import {AbsoluteFill, Easing, Html5Audio, Img, Sequence, interpolate, staticFile, useCurrentFrame} from "remotion";
 import {SANS, SERIF} from "./guide-fonts";
-import {getCreateAdFrameState, tapAt, type CreateAdSceneId} from "./create-ad-timeline";
+import {CREATE_AD_VOICE_FRAME, getCreateAdFrameState, tapAt, type CreateAdSceneId} from "./create-ad-timeline";
 import {Chars, CutBands, DotGrid, Grain, Kicker, Ripples, ScreenCrop, TapMark, cream, deep, green, peach, pop, progress, rust, sage, swing, type ScreenRect} from "./motion-kit";
 
 // Снимки сценария «своя прогулка» из e2e/video-create-guide.spec.ts.
@@ -335,6 +335,9 @@ export function OtgolosokCreateAd() {
       <AbsoluteFill style={{background: "radial-gradient(circle at 50% 50%, transparent 60%, #00000055 100%)", pointerEvents: "none"}} />
       <Grain frame={frame} />
       <Html5Audio src={staticFile("motion/create-bed.wav")} volume={0.9} />
+      <Sequence from={CREATE_AD_VOICE_FRAME} name="Фрагмент истории">
+        <Html5Audio src={staticFile("guide/create-ad/voice/story.mp3")} volume={(audioFrame) => Math.min(1, audioFrame / 6)} />
+      </Sequence>
     </AbsoluteFill>
   );
 }
