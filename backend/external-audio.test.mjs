@@ -30,6 +30,14 @@ test("external audio claims are exclusive and idempotent",async t=>{
   assert.equal(f.store.heartbeatExternalAudio(first.id,{workerId:"gpu-1",generation:first.leaseGeneration,leaseToken:first.leaseToken}).state,"leased");
 });
 
+test("a one-paragraph description can be queued, while a one-paragraph full story cannot",async t=>{
+  const f=await fixture(t,{enqueueBase:false});
+  const description={title:"Краткое описание",effectiveProfile:"description-v1",paragraphs:[{text:"Историческое здание находится в центре города и связано с жизнью нескольких поколений жителей. ".repeat(3).trim(),factIds:[]}]};
+  const queued=await f.store.enqueueExternalAudio({sourceJobId:f.source.id,sourceRevision:f.source.revision,story:description,profileId:"silero-ru-v1"});
+  assert.equal(queued.state,"queued");
+  await assert.rejects(f.store.enqueueExternalAudio({sourceJobId:f.source.id,sourceRevision:f.source.revision,story:{...description,effectiveProfile:"story-v1"},profileId:"silero-ru-v1"}),{code:"BAD_REQUEST"});
+});
+
 test("expired leases retry and stale workers cannot publish",async t=>{
   const f=await fixture(t);
   const stale=f.store.claimExternalAudio({workerId:"gpu-1",requestId:"request-0001",profileIds:["silero-ru-v1"],leaseMs:1000});

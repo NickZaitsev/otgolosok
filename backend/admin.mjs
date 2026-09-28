@@ -56,12 +56,12 @@ const factsView = (value) => array(value, 8).map((f) => {
 
 export function hasValidStoryText(value) {
   const story = object(value);
+  const profile=story.effectiveProfile??story.requestedProfile??"story-v1";
   if (typeof story.title !== "string" || !story.title.trim() || story.title.length > 140
-    || !Array.isArray(story.paragraphs) || story.paragraphs.length < 2 || story.paragraphs.length > 6) return false;
+    || !Array.isArray(story.paragraphs) || story.paragraphs.length < (profile==="description-v1"?1:2) || story.paragraphs.length > 6) return false;
   const paragraphs = story.paragraphs.map((paragraph) => object(paragraph).text);
   if (paragraphs.some((paragraph) => typeof paragraph !== "string" || !paragraph.trim() || paragraph.length > 2000)) return false;
   const wordCount = paragraphs.join(" ").trim().split(/\s+/u).length;
-  const profile=story.effectiveProfile??story.requestedProfile??"story-v1";
   return profile==="description-v1"?wordCount>=20&&wordCount<=100:wordCount>=100&&wordCount<=250;
 }
 
