@@ -89,6 +89,9 @@ const sourceLabels: Record<PositionSourceStatus | "idle", string> = {
   error: "ошибка",
 };
 
+const sourceKindLabels: Record<PositionSourceKind, string> = { browser: "геолокация браузера", replay: "тестовый трек" };
+const triggerPhaseLabels: Record<TriggerState["phase"], string> = { outside: "вне зоны", inside: "в зоне точки", cooldown: "точка пройдена" };
+
 const wakeLabels: Record<WakeLockStatus, string> = {
   unsupported: "не поддерживается",
   idle: "ожидает",
@@ -136,6 +139,8 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const [playbackTime, setPlaybackTime] = useState(0);
   const [mediaDuration, setMediaDuration] = useState(0);
   const [isReplay, setIsReplay] = useState(false);
+  // Diagnostics are for field testing only: ?replay=… or ?debug=1.
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [offlineStatus, setOfflineStatus] = useState("");
   // The static HTML assumes support; the client snapshot reveals browsers without Service Worker.
   const serviceWorkerMissing = useSyncExternalStore(subscribeNever, () => process.env.NODE_ENV === "production" && !("serviceWorker" in navigator), () => false);
@@ -523,6 +528,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     audioBusyRef.current = universal ? Boolean(startAudioUrl) : true;
     setShowSources(false);
     setIsReplay(replay);
+    setShowDiagnostics(Boolean(replayMode) || params.get("debug") === "1");
     triggerStateRef.current = createTriggerState();
     setDiagnostics({
       ...initialDiagnostics,
@@ -804,22 +810,22 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
           {walkContent.story.text_status === "ready" && walkContent.sources.length ? <StorySources content={walkContent} open={showSources} onToggle={() => setShowSources((value) => !value)} /> : null}
           {!chapter ? <RouteNotes notes={readyNotes} /> : null}
 
-          <details className="debug-panel" open={isReplay || undefined}>
+          {showDiagnostics ? <details className="debug-panel" open={isReplay || undefined}>
             <summary>Диагностика {isReplay ? "· replay" : ""}</summary>
             <dl>
-              <DebugValue label="Источник" value={diagnostics.source ?? "—"} />
+              <DebugValue label="Источник" value={diagnostics.source ? sourceKindLabels[diagnostics.source] : "—"} />
               <DebugValue label="Геопозиция" value={sourceLabels[diagnostics.sourceStatus]} />
               <DebugValue label="Точность" value={diagnostics.lastFix ? `${Math.round(diagnostics.lastFix.accuracyM)} м` : "—"} />
               <DebugValue label={chapter ? hasNextChapter ? "До следующей части" : "До финиша" : "До точки"} value={diagnostics.distanceM === null ? "—" : `${Math.round(diagnostics.distanceM)} м`} />
               <DebugValue label="Зона входа" value={`${triggerConfig.enterM} м`} />
               <DebugValue label="Кандидаты" value={`${candidateCount} / ${diagnostics.trigger.recentInside.length || triggerConfig.windowSize}`} />
-              <DebugValue label="Триггер" value={diagnostics.trigger.phase} />
+              <DebugValue label="Триггер" value={triggerPhaseLabels[diagnostics.trigger.phase]} />
               <DebugValue label="Переход" value={advanceModeLabels[settings.advance]} />
               <DebugValue label="Аудио" value={audioLabels[audioStatus]} />
               <DebugValue label="Экран" value={wakeLabels[wakeStatus]} />
             </dl>
             {diagnostics.sourceError ? <p className="debug-error">{diagnostics.sourceError}</p> : null}
-          </details>
+          </details> : null}
         </section>
       ) : (
         <AroundScreen route={route} onStart={(index) => startTour(index === undefined, index)} updateAvailable={updateAvailable} initialTab={universal ? "walk" : undefined}>
