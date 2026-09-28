@@ -10,12 +10,14 @@ export const SANS = '"Manrope", "Segoe UI", Arial, sans-serif';
 export const SERIF = '"Cormorant Garamond", Georgia, serif';
 
 const faces = [
-  ...["400", "600", "700"].map(weight => ({family: "Manrope", file: "manrope", weight})),
-  ...["500", "600"].map(weight => ({family: "Cormorant Garamond", file: "cormorant-garamond", weight})),
+  ...["400", "600", "700"].map(weight => ({family: "Manrope", file: "manrope", weight, style: "normal"})),
+  ...["500", "600"].map(weight => ({family: "Cormorant Garamond", file: "cormorant-garamond", weight, style: "normal"})),
+  // Настоящий курсив для акцентных строк моушн-ролика вместо синтетического наклона.
+  {family: "Cormorant Garamond", file: "cormorant-garamond", weight: "600", style: "italic"},
 ];
 
 // loadFont сам задерживает рендер до загрузки и прерывает его при ошибке.
-for (const {family, file, weight} of faces) {
-  void loadFont({family, weight, url: staticFile(`fonts/${file}-cyrillic-${weight}-normal.woff2`), unicodeRange: CYRILLIC});
-  void loadFont({family, weight, url: staticFile(`fonts/${file}-latin-${weight}-normal.woff2`), unicodeRange: LATIN});
+for (const {family, file, weight, style} of faces) {
+  void loadFont({family, weight, style, url: staticFile(`fonts/${file}-cyrillic-${weight}-${style}.woff2`), unicodeRange: CYRILLIC});
+  void loadFont({family, weight, style, url: staticFile(`fonts/${file}-latin-${weight}-${style}.woff2`), unicodeRange: LATIN});
 }

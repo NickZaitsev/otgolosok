@@ -4,12 +4,22 @@ import {AD_DURATION_IN_FRAMES, AD_FPS} from "./ad-timeline";
 import {OtgolosokAd} from "./otgolosok-ad";
 import {OtgolosokPromo} from "./otgolosok-promo";
 import {OtgolosokGuide} from "./otgolosok-guide";
+import {OtgolosokMotion} from "./otgolosok-motion";
+import {MOTION_DURATION_IN_FRAMES, MOTION_FPS} from "./motion-timeline";
 import {GUIDE_DURATION_IN_FRAMES, GUIDE_FPS, GUIDE_WIDTH, GUIDE_HEIGHT} from "./guide-timeline";
 
 export function VideoRoot() {
   return (
     <>
       <Composition id="OtgolosokGuide" component={OtgolosokGuide} durationInFrames={GUIDE_DURATION_IN_FRAMES} fps={GUIDE_FPS} width={GUIDE_WIDTH} height={GUIDE_HEIGHT} />
+      <Composition
+        id="OtgolosokMotion"
+        component={OtgolosokMotion}
+        durationInFrames={MOTION_DURATION_IN_FRAMES}
+        fps={MOTION_FPS}
+        width={1080}
+        height={1920}
+      />
       <Composition
         id="OtgolosokAd"
         component={OtgolosokAd}

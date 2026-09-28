@@ -30,3 +30,28 @@ export function pointOnRoute(progress: number): Point {
 
   return points.at(-1)!;
 }
+
+/** Метки остановок встроенной карты (#walk-stops, transform="translate(...)"). */
+export const MAP_STOPS: readonly Point[] = [
+  {x: 83.71, y: 94.04},
+  {x: 127.58, y: 152.37},
+  {x: 115.45, y: 207.51},
+  {x: 177.63, y: 309.89},
+];
+
+/** Доля пути до ближайшей к точке позиции на маршруте, 0..1. */
+export function routeProgressNear(target: Point): number {
+  let best = {distance: Infinity, travelled: 0};
+  let travelled = 0;
+  for (let index = 0; index < legs.length; index += 1) {
+    const from = points[index];
+    const to = points[index + 1];
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const ratio = legs[index] === 0 ? 0 : Math.max(0, Math.min(1, ((target.x - from.x) * dx + (target.y - from.y) * dy) / legs[index] ** 2));
+    const distance = Math.hypot(from.x + dx * ratio - target.x, from.y + dy * ratio - target.y);
+    if (distance < best.distance) best = {distance, travelled: travelled + legs[index] * ratio};
+    travelled += legs[index];
+  }
+  return best.travelled / ROUTE_LENGTH;
+}
