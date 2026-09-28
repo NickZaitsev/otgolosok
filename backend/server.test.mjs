@@ -223,7 +223,7 @@ test("admin can start a bounded bulk audio backfill", async t => {
 
   const response = await f.post("/api/story-admin/content/audio/bulk", { profileId: "f5-ru-v1", limit: 1 });
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { queued: 1, alreadyQueued: 0, retried: 0, skipped: 0, failed: 0, inspected: 1, hasMore: false });
+  assert.deepEqual(await response.json(), { queued: 1, alreadyQueued: 0, retried: 0, skipped: 0, failed: 0, inspected: 1, hasMore: false, awaitingApproval: 0 });
   assert.equal(f.store.getContentStats().external.queued, 1);
   assert.equal(f.store.getBatch(batch.id).counts.ready, 1);
 });

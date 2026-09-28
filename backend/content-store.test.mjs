@@ -71,7 +71,7 @@ test("catalog nearby query returns approved cards ordered by distance",t=>{
   assert.equal(store.listPlaces({status:"ready",lat:55.9,lon:37.9,radius:100}).places.length,0);assert.equal(store.getBatch(batch.id).counts.ready,1);
 });
 
-test("bulk audio backfill queues only approved texts without audio and is idempotent", async t => {
+test("bulk audio backfill queues only approved texts without audio, reports unapproved ones and is idempotent", async t => {
   const store = createStore(":memory:", {
     externalTtsProfiles: { "f5-ru-v1": { engine: "f5", language: "ru" } },
     normalizeExternalText: Object.assign(async text => text, { version: "plain-v1" }),
@@ -88,18 +88,25 @@ test("bulk audio backfill queues only approved texts without audio and is idempo
     ],
   };
   store.completeContentJob(job.id, { story, evidence: {}, autoApprove: false });
+  const unapproved = store.claimContentJob();
+  store.completeContentJob(unapproved.id, { story, evidence: {}, autoApprove: false });
+  assert.equal(store.getContentStats().awaitingApproval, 2);
   store.approvePlaceText(job.place.id);
+  assert.equal(store.getContentStats().awaitingApproval, 1);
 
   const first = await store.enqueueMissingPlaceAudio({ profileId: "f5-ru-v1", limit: 500 });
   assert.equal(first.queued, 1);
+  assert.equal(first.inspected, 1);
+  assert.equal(first.awaitingApproval, 1);
   assert.equal(first.hasMore, false);
   assert.equal(store.getExternalAudioStats().states.queued, 1);
 
   const second = await store.enqueueMissingPlaceAudio({ profileId: "f5-ru-v1", limit: 500 });
   assert.equal(second.queued, 0);
   assert.equal(second.inspected, 0);
+  assert.equal(second.awaitingApproval, 1);
   assert.equal(store.getExternalAudioStats().states.queued, 1);
-  assert.equal(store.getBatch(batch.id).counts.ready, 1);
+  assert.equal(store.getBatch(batch.id).counts.ready, 2);
 });
 
 test("job migrations add profile versions and priorities to existing databases",t=>{

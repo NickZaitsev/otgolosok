@@ -121,6 +121,18 @@ export const placeStatusOptions: { value: ContentPlaceStatusFilter; label: strin
   { value: "ready", label: "Только с утверждённым текстом" },
   { value: "missing", label: "Только без текста" },
 ];
+export type AudioBackfillResult = {
+  queued: number; retried: number; alreadyQueued: number; failed: number; inspected: number; hasMore: boolean; awaitingApproval: number;
+};
+
+/** Explains the bulk voicing outcome, including why nothing was queued: only approved texts are voiced. */
+export function audioBackfillNotice(result: AudioBackfillResult) {
+  const waiting = result.awaitingApproval > 0 ? ` Ждут утверждения, в очередь не ставятся: ${result.awaitingApproval}.` : "";
+  if (!result.inspected) return `Утверждённых текстов без аудио нет — ставить в очередь нечего.${waiting}`;
+  const failed = result.failed ? ` Ошибок: ${result.failed}.` : "";
+  return `В очередь поставлено: ${result.queued}. Повторено: ${result.retried}. Проверено: ${result.inspected}${result.hasMore ? " — нажмите ещё раз для продолжения" : ""}.${failed}${waiting}`;
+}
+
 export type ContentWorker = { id: string; name: string; profiles: string[]; createdAt: string; lastSeenAt: string | null; revokedAt: string | null };
 export type ContentHeartbeat = { credentialId: string; workerName: string; version: string | null; profileIds: string[]; currentJobId: string | null; progress: {stage?:string;percent?:number}|null; seenAt: string };
 export type ContentAudioJob = { id:string; state:string; profileId:string; attempts:number; maxAttempts:number; updatedAt:string; placeId:string|null; placeName:string|null; error:{message?:string;code?:string}|null };

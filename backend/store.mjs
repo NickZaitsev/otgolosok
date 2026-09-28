@@ -313,7 +313,7 @@ export function createStore(
           result.failed++;
         }
       }
-      return { ...result, inspected: rows.length, hasMore: candidates.length > limit };
+      return { ...result, inspected: rows.length, hasMore: candidates.length > limit, awaitingApproval: contentStore.countTextsAwaitingApproval() };
     },
     createOrGet({ key, address }) {
       if (typeof key !== "string" || key.length === 0) {
