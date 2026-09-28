@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
   pauseAudioElement,
@@ -702,9 +703,9 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   return (
     <main className={universal ? "walk-session" : isWalking ? "shell" : "around-shell"} data-mode={isWalking ? "walk" : "reading"}>
       {!universal && isWalking ? <header className="masthead">
-        <a className="wordmark" href="#top" aria-label="Отголосок, на главную">
+        <Link className="wordmark" href="/" aria-label="Отголосок, на главную">
           <BrandMark />
-        </a>
+        </Link>
         <p className="privacy-note"><i aria-hidden="true" /> Координаты остаются на устройстве</p>
       </header> : null}
 
@@ -740,7 +741,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
             </details> : chapterNarrative}
             {walkUsesTestAudio ? <p className="walk-note">{chapter ? "Части переключаются вручную. Запись аудио готовится; кнопка проверки звука включает сигнал на 5 секунд." : hasStoryText ? "Историю можно прочитать ниже. Запись аудио готовится; у точки пока звучит тестовый сигнал на 5 секунд." : "Аудиоистория готовится. У точки прозвучит тестовый сигнал на 5 секунд."}</p> : null}
             {chapter?.audio ? <p className="walk-note">{Math.ceil(chapter.audio.duration_sec)} сек · Озвучка доступна. «Дальше» включает следующую часть.</p> : null}
-            {!chapter ? <div className="trigger-meter" aria-label={`Подтверждений геопозиции: ${candidateCount} из ${triggerConfig.windowSize}`}>
+            {!chapter ? <div className="trigger-meter" role="meter" aria-label="Подтверждения геопозиции" aria-valuemin={0} aria-valuemax={triggerConfig.windowSize} aria-valuenow={candidateCount} aria-valuetext={`${candidateCount} из ${triggerConfig.windowSize}`}>
               {Array.from({ length: triggerConfig.windowSize }, (_, index) => (
                 <i key={index} className={index < candidateCount ? "filled" : ""} />
               ))}

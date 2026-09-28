@@ -57,3 +57,10 @@ it("keeps marker elements and keyboard focus across re-renders and selection", a
   expect(second.isConnected).toBe(false);
   expect(first.textContent).toBe("3");
 });
+
+it("exposes the map as a labelled region", async () => {
+  await render(items());
+  const map = container.querySelector(".explore-map");
+  expect(map?.getAttribute("role")).toBe("region");
+  expect(map?.getAttribute("aria-label")).toMatch(/^Карта историй/);
+});
