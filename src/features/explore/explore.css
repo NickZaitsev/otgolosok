@@ -1,4 +1,4 @@
-.around-shell{--around-green:#203e38;--around-orange:#b64b28;--around-nav-height:calc(78px + env(safe-area-inset-bottom));--around-sheet-top:calc(150px + env(safe-area-inset-top));position:relative;isolation:isolate;height:100svh;height:100dvh;overflow:hidden;background:#f5f3eb;color:var(--around-green)}
+.around-shell{--around-green:#203e38;--around-orange:#b64b28;--around-nav-height:calc(78px + env(safe-area-inset-bottom));--around-sheet-top:calc(150px + env(safe-area-inset-top));--around-sheet-bottom:calc(var(--around-nav-height) + 16px);position:relative;isolation:isolate;height:100svh;height:100dvh;overflow:hidden;background:#f5f3eb;color:var(--around-green)}
 .around-shell svg:not(.leaflet-zoom-animated){width:24px;height:24px;flex-shrink:0}
 .around-shell :where(button,input){font:inherit}
 .around-shell button{cursor:pointer}
@@ -55,7 +55,10 @@
 .around-geo-help li+li{margin-top:10px}
 .around-geo-help a{display:inline-block;padding:12px 0;text-decoration:underline;text-underline-offset:3px}
 .around-geo-help .around-text-button{min-height:44px;margin:0;padding:10px 0}
-.around-bottom{position:absolute;z-index:3;left:18px;right:18px;bottom:calc(var(--around-nav-height) + 16px);display:flex;flex-direction:column;max-height:calc(100% - var(--around-sheet-top) - var(--around-nav-height) - 16px);overflow:hidden;overscroll-behavior:contain;pointer-events:none;border-radius:26px}
+/* Нижняя панель занимает полосу от --around-sheet-top до --around-sheet-bottom.
+   Раскладки меняют только эти переменные на .around-shell, а не bottom и
+   max-height панели, чтобы отступ и наибольшая высота не расходились. */
+.around-bottom{position:absolute;z-index:3;left:18px;right:18px;bottom:var(--around-sheet-bottom);display:flex;flex-direction:column;max-height:calc(100% - var(--around-sheet-top) - var(--around-sheet-bottom));overflow:hidden;overscroll-behavior:contain;pointer-events:none;border-radius:26px}
 .around-bottom>section,.around-bottom>div,.around-bottom>a{pointer-events:auto}
 .around-bottom>.around-place-card{flex:0 1 auto;min-height:0}
 .around-bottom>.around-location-card{flex:0 1 auto;min-height:0}
@@ -157,20 +160,22 @@
 .around-route .walk-plan,.around-route .story-preview{margin-top:32px;padding-top:28px}
 .around-route .story-preview{display:block}
 .around-route .story-number{margin-bottom:20px}
-@media(min-width:700px){.around-header{width:min(760px,calc(100% - 56px));margin:18px auto 0;padding:26px 28px 30px;border:1px solid #203e3818;border-radius:24px;background:#fffaf0f2;box-shadow:0 8px 30px #203e3824}.around-header h1{font-size:var(--text-page)}.around-bottom{left:50%;right:auto;width:min(430px,calc(100% - 56px));transform:translateX(-50%)}.around-locate{top:28px;right:28px}.explore-map .leaflet-bottom.leaflet-right{top:88px;right:18px}.around-nav{left:50%;right:auto;bottom:18px;width:430px;transform:translateX(-50%);border:1px solid #203e3818;border-radius:24px;box-shadow:0 5px 25px #203e3812}.around-bottom{bottom:calc(var(--around-nav-height) + 30px)}.map-attribution{bottom:12px}.around-content.scroll-view{height:100%;padding-bottom:120px}.scroll-view .around-header{width:min(760px,calc(100% - 56px));max-width:none}.around-list{padding-top:12px}.around-geo-message{top:230px}}
-@media(max-width:699px){.around-header{margin:12px;padding:calc(14px + env(safe-area-inset-top)) 16px 18px;border:1px solid #203e3818;border-radius:24px;background:#fffaf0f2;box-shadow:0 8px 30px #203e3824}.around-nav{bottom:12px}.around-bottom{bottom:calc(var(--around-nav-height) + 32px)}}
+@media(min-width:700px){.around-header{width:min(760px,calc(100% - 56px));margin:18px auto 0;padding:26px 28px 30px;border:1px solid #203e3818;border-radius:24px;background:#fffaf0f2;box-shadow:0 8px 30px #203e3824}.around-header h1{font-size:var(--text-page)}.around-bottom{left:50%;right:auto;width:min(430px,calc(100% - 56px));transform:translateX(-50%)}.around-locate{top:28px;right:28px}.explore-map .leaflet-bottom.leaflet-right{top:88px;right:18px}.around-nav{left:50%;right:auto;bottom:18px;width:430px;transform:translateX(-50%);border:1px solid #203e3818;border-radius:24px;box-shadow:0 5px 25px #203e3812}.around-shell{--around-sheet-bottom:calc(var(--around-nav-height) + 30px)}.map-attribution{bottom:12px}.around-content.scroll-view{height:100%;padding-bottom:120px}.scroll-view .around-header{width:min(760px,calc(100% - 56px));max-width:none}.around-list{padding-top:12px}.around-geo-message{top:230px}}
+@media(max-width:699px){.around-header{margin:12px;padding:calc(14px + env(safe-area-inset-top)) 16px 18px;border:1px solid #203e3818;border-radius:24px;background:#fffaf0f2;box-shadow:0 8px 30px #203e3824}.around-nav{bottom:12px}.around-shell{--around-sheet-bottom:calc(var(--around-nav-height) + 32px)}}
 @media(max-width:360px){.around-header{padding-left:14px;padding-right:14px}.around-topline{gap:7px;font-size:var(--text-meta)}.around-brand{font-size:17px}.around-header h1{font-size:var(--text-page);letter-spacing:-1.5px}.around-bottom{left:12px;right:12px}.around-location-card,.around-place-card{padding:18px}.around-location-card h2,.around-place-card h2{font-size:var(--text-section)}}
 @media(max-height:700px){.around-header h1{margin:6px 0 13px}.around-location-card,.around-place-card{padding:16px}.around-location-card p,.around-place-card p{margin-bottom:10px}.around-locate{top:205px}.explore-map .leaflet-bottom.leaflet-right{top:260px}}
 @media(prefers-reduced-motion:reduce){.around-shell *{scroll-behavior:auto!important}}
 
-/* Keep the map controls above the sheet on short portrait screens. */
+/* На низком вертикальном экране кнопки карты стоят в ряд над нижней панелью:
+   панель начинается на 12 px ниже кнопок высотой 44 px. */
 @media(max-width:699px) and (max-height:700px){
-  .around-locate{top:calc(190px + env(safe-area-inset-top))}
-  .around-shell .explore-map .leaflet-bottom.leaflet-right{top:calc(190px + env(safe-area-inset-top));right:72px}
+  .around-shell{--around-controls-top:calc(190px + env(safe-area-inset-top));--around-sheet-top:calc(var(--around-controls-top) + 44px + 12px)}
+  .around-locate{top:var(--around-controls-top)}
+  .around-shell .explore-map .leaflet-bottom.leaflet-right{top:var(--around-controls-top);right:72px}
   .around-shell .explore-map .leaflet-control-zoom{display:flex;margin-bottom:0}
   .around-shell .explore-map .leaflet-control-zoom a{width:44px;border-bottom:0}
   .around-shell .explore-map .leaflet-control-zoom a:first-child{border-right:1px solid #203e381a}
-  .around-bottom{max-height:calc(100% - 320px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:hidden;overscroll-behavior:contain;pointer-events:auto;border-radius:26px}
+  .around-bottom{overflow:hidden;overscroll-behavior:contain;pointer-events:auto;border-radius:26px}
   .around-bottom .around-location-card,.around-bottom .around-place-card{max-height:none}
 }
 
@@ -180,7 +185,8 @@
   .around-topline{gap:6px;font-size:var(--text-meta)}
   .around-brand{font-size:17px}
   .around-header h1{font-size:var(--text-page);letter-spacing:-1px;margin:6px 0 10px}
-  .around-bottom{left:auto;right:max(12px,env(safe-area-inset-right));width:calc(50% - 24px);bottom:calc(var(--around-nav-height) + 32px);max-height:calc(100% - 134px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:hidden;overscroll-behavior:contain;pointer-events:auto;border-radius:26px}
+  .around-shell{--around-sheet-top:calc(24px + env(safe-area-inset-top));--around-sheet-bottom:calc(var(--around-nav-height) + 32px)}
+  .around-bottom{left:auto;right:max(12px,env(safe-area-inset-right));width:calc(50% - 24px);overflow:hidden;overscroll-behavior:contain;pointer-events:auto;border-radius:26px}
   .around-bottom .around-location-card,.around-bottom .around-place-card{max-height:none}
   .around-locate{top:auto;right:auto;left:max(18px,env(safe-area-inset-left));bottom:calc(98px + env(safe-area-inset-bottom))}
   .around-shell .explore-map .leaflet-bottom.leaflet-right{top:auto;right:auto;left:calc(max(18px,env(safe-area-inset-left)) + 56px);bottom:calc(98px + env(safe-area-inset-bottom))}

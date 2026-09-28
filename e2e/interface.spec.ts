@@ -1,4 +1,14 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+async function openLongStory(page: Page) {
+  const text = "Корпус имеет сложную, отдалённо Т-образную форму, а главный фасад построен как трёхчастная композиция. ".repeat(5);
+  await page.route("**/api/content/places?*", route => route.fulfill({ json: { places: [{ id: "long-story", name: "Длинная история", address: "Москва, Дербеневская, 1", location: { lat: 55.7249, lon: 37.6507 }, story: { title: "Длинная история", paragraphs: [{ text }, { text }, { text }], sources: [], facts: [] }, audio: { url: "/api/story-audio/long-story.mp3", durationSec: 120 } }] } }));
+  await page.goto("/");
+  await page.locator('[title="Длинная история"]').click();
+  const story = page.getByRole("region", { name: "Текст истории", exact: true });
+  await expect(story).toBeVisible();
+  return story;
+}
 
 for (const endpoint of ["Откуда", "Куда"]) {
   test(`точка карты сразу подставляется в ${endpoint}`, async ({ page }) => {
@@ -319,12 +329,7 @@ test("карточка выбранного дома не оставляет п�
 });
 
 test("длинная история прокручивается внутри карточки, закрытие и плеер остаются на месте", async ({ page }, info) => {
-  const text = "Корпус имеет сложную, отдалённо Т-образную форму, а главный фасад построен как трёхчастная композиция. ".repeat(5);
-  await page.route("**/api/content/places?*", route => route.fulfill({ json: { places: [{ id: "long-story", name: "Длинная история", address: "Москва, Дербеневская, 1", location: { lat: 55.7249, lon: 37.6507 }, story: { title: "Длинная история", paragraphs: [{ text }, { text }, { text }], sources: [], facts: [] }, audio: { url: "/api/story-audio/long-story.mp3", durationSec: 120 } }] } }));
-  await page.goto("/");
-  await page.locator('[title="Длинная история"]').click();
-  const story = page.getByRole("region", { name: "Текст истории", exact: true });
-  await expect(story).toBeVisible();
+  const story = await openLongStory(page);
   const card = page.locator(".around-story-card");
   const close = page.getByRole("button", { name: "Закрыть карточку", exact: true });
   const audio = card.locator("audio");
@@ -348,6 +353,25 @@ test("длинная история прокручивается внутри к
   expect(await audio.boundingBox()).toEqual(before.audio);
   await page.screenshot({ path: info.outputPath("story-card-scrolled.png") });
 });
+
+const shortPortraits: [number, number, { top: number; bottom: number }?][] = [[375, 667], [360, 640], [390, 700], [375, 667, { top: 47, bottom: 34 }]];
+for (const [width, height, insets] of shortPortraits) {
+  test(`длинная история не заходит на кнопки карты ${width}×${height}${insets ? ` с вырезами ${insets.top}/${insets.bottom}` : ""}`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height });
+    // Вырезы сдвигают и кнопки, и нижнюю панель: зазор между ними сохраняется.
+    if (insets) await (await page.context().newCDPSession(page)).send("Emulation.setSafeAreaInsetsOverride", { insets });
+    const story = await openLongStory(page);
+    // Текст прокручивается внутри, значит, карточка упёрлась в свою наибольшую высоту.
+    expect(await story.evaluate(el => el.scrollHeight - el.clientHeight)).toBeGreaterThan(0);
+    expect(await page.locator(".around-story-card").evaluate(el => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(1);
+    const sheet = (await page.locator(".around-bottom").boundingBox())!;
+    for (const control of [page.getByRole("button", { name: "Моё местоположение", exact: true }), page.locator(".explore-map .leaflet-control-zoom")]) {
+      const box = (await control.boundingBox())!;
+      expect(sheet.y - (box.y + box.height)).toBeGreaterThanOrEqual(8);
+    }
+    await page.screenshot({ path: info.outputPath("story-card-controls.png") });
+  });
+}
 
 test("часть прогулки без текста не добавляет область прокрутки в порядок фокуса", async ({ page }) => {
   await page.goto("/");
