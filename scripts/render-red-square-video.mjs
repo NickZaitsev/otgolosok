@@ -62,17 +62,36 @@ export function checkVoice(manifest) {
   }
 }
 
+/** Запас вокруг найденной речи: мягкая атака и затухание последнего звука тише порога. */
+const SPEECH_PAD_IN = 0.05;
+const SPEECH_PAD_OUT = 0.15;
+/** Короткое затухание на краях обрезки, чтобы не было щелчка. */
+const EDGE_FADE = 0.01;
+
 /**
- * Дорожка голоса на весь ролик: клипы по расписанию, остальное — тишина.
- * @param {{at: number}[]} schedule секунды от начала сцены player
+ * Дорожка голоса на весь ролик. Из каждого клипа берётся только речь с запасом по краям:
+ * тишина и щелчки в начале и хвосте клипов TTS длиннее паузы между фразами, и при
+ * наложении целых клипов тишина следующего затирала конец предыдущей фразы.
+ * @param {{at: number, from: number, to: number}[]} schedule секунды от начала сцены player
  * @param {Buffer[]} clips моно s16le, в порядке расписания
  */
 export function voiceTrack(schedule, clips, {offset, seconds, sampleRate}) {
-  const track = Buffer.alloc(Math.round(seconds * sampleRate) * 2);
-  schedule.forEach(({at}, index) => {
-    const from = Math.round((offset + at) * sampleRate) * 2;
-    if (from + clips[index].length > track.length) throw new RangeError("Клип озвучки выходит за конец ролика");
-    clips[index].copy(track, from);
+  const total = Math.round(seconds * sampleRate);
+  const track = Buffer.alloc(total * 2);
+  const fade = Math.max(1, Math.round(EDGE_FADE * sampleRate));
+  let busyUntil = 0;
+  schedule.forEach(({at, from, to}, index) => {
+    const clip = clips[index];
+    const clipStart = Math.round((offset + at) * sampleRate);
+    const start = Math.max(clipStart, Math.round((offset + from - SPEECH_PAD_IN) * sampleRate));
+    const end = Math.min(clipStart + clip.length / 2, Math.round((offset + to + SPEECH_PAD_OUT) * sampleRate));
+    if (end > total) throw new RangeError("Клип озвучки выходит за конец ролика");
+    if (start < busyUntil) throw new RangeError("Фразы озвучки накладываются друг на друга");
+    for (let sample = start; sample < end; sample += 1) {
+      const gain = Math.min(1, (sample - start + 1) / fade, (end - sample) / fade);
+      track.writeInt16LE(Math.round(clip.readInt16LE((sample - clipStart) * 2) * gain), sample * 2);
+    }
+    busyUntil = end;
   });
   return track;
 }

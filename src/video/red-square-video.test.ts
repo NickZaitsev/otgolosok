@@ -159,10 +159,32 @@ describe("озвучка экрана истории", () => {
     return buffer;
   };
 
-  it("дорожка голоса кладёт клипы на свои места, остальное — тишина", () => {
-    const track = voiceTrack([{at: 0}, {at: 2}], [pcm([100, 200]), pcm([300])], {offset: 1, seconds: 4, sampleRate: 1});
-    expect(Array.from({length: 4}, (_, index) => track.readInt16LE(index * 2))).toEqual([0, 100, 200, 300]);
-    expect(() => voiceTrack([{at: 3}], [pcm([1, 2])], {offset: 0, seconds: 4, sampleRate: 1})).toThrow(RangeError);
+  const samples = (track: Buffer, from: number, to: number) => Array.from({length: to - from}, (_, index) => track.readInt16LE((from + index) * 2));
+
+  it("тишина в начале следующего клипа не съедает конец предыдущей фразы", () => {
+    // 100 сэмплов/с. Фраза A звучит 0,1–1,0 с; у клипа B 0,45 с тишины — дольше паузы 0,35 с.
+    const first = pcm([...Array(10).fill(0), ...Array(90).fill(1000), ...Array(50).fill(0)]);
+    const second = pcm([...Array(45).fill(0), ...Array(15).fill(2000), ...Array(20).fill(0)]);
+    const schedule = [{at: 0, from: 0.1, to: 1.0}, {at: 0.9, from: 1.35, to: 1.5}];
+    const track = voiceTrack(schedule, [first, second], {offset: 0, seconds: 2, sampleRate: 100});
+    expect(samples(track, 11, 99)).toEqual(Array(88).fill(1000));
+    expect(samples(track, 136, 149)).toEqual(Array(13).fill(2000));
+  });
+
+  it("клип обрезается до речи с короткими краями: щелчок в хвосте и тишина не попадают в дорожку", () => {
+    const clip = pcm([...Array(20).fill(0), ...Array(50).fill(1000), ...Array(40).fill(0), 9000, ...Array(9).fill(0)]);
+    const track = voiceTrack([{at: 0, from: 0.2, to: 0.7}], [clip], {offset: 1, seconds: 3, sampleRate: 100});
+    expect(samples(track, 0, 115)).toEqual(Array(115).fill(0));
+    expect(samples(track, 121, 169)).toEqual(Array(48).fill(1000));
+    expect(samples(track, 185, 300)).toEqual(Array(115).fill(0));
+    // Края — плавные, без ступеньки на полную громкость.
+    expect(Math.abs(track.readInt16LE(115 * 2))).toBeLessThan(1000);
+  });
+
+  it("дорожка голоса: клип за концом ролика или наложение фраз — ошибка", () => {
+    const clip = pcm(Array(100).fill(1000));
+    expect(() => voiceTrack([{at: 3, from: 3, to: 3.9}], [clip], {offset: 0, seconds: 3.5, sampleRate: 100})).toThrow(RangeError);
+    expect(() => voiceTrack([{at: 0, from: 0, to: 0.9}, {at: 0.5, from: 0.5, to: 0.9}], [clip, clip], {offset: 0, seconds: 3, sampleRate: 100})).toThrow(/наклад/);
   });
 
   it("границы речи: тишина по краям и щелчок далеко в хвосте не считаются", () => {
