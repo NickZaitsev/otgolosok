@@ -4,7 +4,7 @@ import { mkdtemp,rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createServer } from "node:http";
-import { createAuth,authRequestHandler } from "./auth.mjs";
+import { createAuth,authRequestHandler,AUTH_BODY_LIMIT } from "./auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
 
 test("Better Auth email and password creates, reads and revokes a Node HTTP session",async t=>{
@@ -74,4 +74,20 @@ test("walk storage migrates legacy snapshots, keeps account IDs addressable and 
   const reenabled=store.setWalkSharing("walk-user",created.id,changed.revision+1,true);
   assert.equal(reenabled.shareToken,token);
   assert.equal(store.setWalkSharing("walk-user",created.id,changed.revision,true).shareToken,token);
+});
+
+test("oversized auth bodies are refused with 413 before Better Auth reads them",async t=>{
+  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://127.0.0.1",secret:"auth-limit-secret-with-more-than-32-characters",production:false});
+  const server=createServer(authRequestHandler(runtime.auth));await new Promise(done=>server.listen(0,"127.0.0.1",done));
+  t.after(async()=>{server.closeAllConnections();await new Promise(done=>server.close(done));runtime.close();});
+  const url=`http://127.0.0.1:${server.address().port}/api/auth/sign-in/email`,headers={Origin:"http://127.0.0.1","Content-Type":"application/json","X-Real-IP":"127.0.0.1"};
+  const padded=size=>JSON.stringify({email:"user@example.com",password:"correct-password",padding:"x".repeat(size)});
+  const announced=await fetch(url,{method:"POST",headers,body:padded(AUTH_BODY_LIMIT)});
+  assert.equal(announced.status,413);assert.equal((await announced.json()).code,"PAYLOAD_TOO_LARGE");
+  // Without Content-Length the streamed bytes are counted.
+  const bytes=new TextEncoder().encode(padded(AUTH_BODY_LIMIT));
+  const streamed=await fetch(url,{method:"POST",headers,duplex:"half",body:new ReadableStream({start(controller){controller.enqueue(bytes);controller.close();}})});
+  assert.equal(streamed.status,413);
+  const small=await fetch(url,{method:"POST",headers,body:padded(10)});
+  assert.equal(small.status,401);
 });
