@@ -47,7 +47,8 @@ typecheck: ## Проверить TypeScript
 test: ## Запустить unit-тесты
 	$(PNPM) test
 
-check: lint typecheck test build ## Выполнить все проверки
+check: ## Выполнить все проверки
+	$(PNPM) check
 
 clean: ## Удалить генерируемые каталоги Next.js
 	rm -rf -- .next out

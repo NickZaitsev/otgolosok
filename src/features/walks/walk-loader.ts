@@ -1,5 +1,5 @@
 import { validateWalkView, type WalkDocument, type WalkView } from "./model";
-import { loadOfflineWalk } from "./offline";
+import { loadOfflineWalk, type OfflineWalkRef } from "./offline";
 
 export type WalkCard = {
   id: string;
@@ -94,21 +94,25 @@ export function localWalkView(document: WalkDocument, revision: number): WalkVie
 }
 
 // Гостевая прогулка хранится только в браузере, поэтому опубликованные истории
-// её остановок сервер подставляет по присланному документу. Без сети прогулка
-// всё равно открывается: остановки остаются в статусе «готовится».
-export async function loadLocalWalkView(document: WalkDocument, revision: number, signal: AbortSignal) {
+// её остановок сервер подставляет по присланному документу.
+export async function resolveLocalWalkView(document: WalkDocument, revision: number, signal: AbortSignal) {
   const base = localWalkView(document, revision);
   if (!document.stops.some(stop => stop.storyRef)) return base;
+  const resolved = await loadJson("/api/story-walks/resolve", signal, (value): WalkView => {
+    const view: WalkView = validateWalkView(value);
+    if (view.revision !== revision || view.chapters.some((chapter, index) => chapter.id !== base.chapters[index].id)) throw new Error();
+    return view;
+  }, 3, { document, revision });
+  return validateWalkView({ ...base, contentVersion: `local:${revision}:${resolved.contentVersion}`, chapters: resolved.chapters });
+}
+
+// Без сети прогулка всё равно открывается: остановки остаются в статусе «готовится».
+export async function loadLocalWalkView(document: WalkDocument, revision: number, signal: AbortSignal) {
   try {
-    const resolved = await loadJson("/api/story-walks/resolve", signal, (value): WalkView => {
-      const view: WalkView = validateWalkView(value);
-      if (view.revision !== revision || view.chapters.some((chapter, index) => chapter.id !== base.chapters[index].id)) throw new Error();
-      return view;
-    }, 3, { document, revision });
-    return validateWalkView({ ...base, contentVersion: `local:${revision}:${resolved.contentVersion}`, chapters: resolved.chapters });
+    return await resolveLocalWalkView(document, revision, signal);
   } catch (error) {
     if (signal.aborted) throw error;
-    return base;
+    return localWalkView(document, revision);
   }
 }
 
@@ -124,13 +128,20 @@ export function loadAccountWalk(id: string, signal: AbortSignal) {
   return loadJson(`/api/me/walks/${encodeURIComponent(id)}/view`, signal, value => validateWalkView(value));
 }
 
-export async function loadAccountWalkWithOfflineCopy(id: string, scope: string | null, signal: AbortSignal) {
+export type LoadedWalk = { view: WalkView; offline: false } | { view: WalkView; offline: true; savedAt: string };
+
+/**
+ * Загружает прогулку из сети, а при сбое сети или сервера открывает сохранённую
+ * офлайн-копию. Ответы «не найдена» и «нет доступа» копией не подменяются.
+ */
+export async function loadWalkWithOfflineCopy(load: (signal: AbortSignal) => Promise<WalkView>, ref: OfflineWalkRef | null, signal: AbortSignal,
+  usable: (saved: WalkView) => boolean = () => true): Promise<LoadedWalk> {
   try {
-    return { view: await loadAccountWalk(id, signal), offline: false as const };
+    return { view: await load(signal), offline: false };
   } catch (error) {
-    if (signal.aborted || !scope || error instanceof WalkLoadError && error.status >= 400 && error.status < 500 && error.status !== 408 && error.status !== 429) throw error;
-    const saved = await loadOfflineWalk(scope, id).catch(() => null);
-    if (saved) return { view: saved.view, offline: true as const, savedAt: saved.manifest.savedAt };
+    if (signal.aborted || !ref || error instanceof WalkLoadError && error.status >= 400 && error.status < 500 && error.status !== 408 && error.status !== 429) throw error;
+    const saved = await loadOfflineWalk(ref).catch(() => null);
+    if (saved && usable(saved.view)) return { view: saved.view, offline: true, savedAt: saved.manifest.savedAt };
     throw error;
   }
 }

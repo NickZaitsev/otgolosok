@@ -32,7 +32,7 @@ test('URL validation enforces scheme, host, credentials, port, and literals', ()
 function fakeRequest(reply, seen) {
   return (options, callback) => {
     seen.push(options);
-    const req = new EventEmitter();
+    const req = /** @type {any} */ (new EventEmitter());
     req.end = () => queueMicrotask(() => reply(options, callback));
     req.destroy = () => {};
     return req;
@@ -40,7 +40,7 @@ function fakeRequest(reply, seen) {
 }
 
 function response(statusCode, headers, chunks = []) {
-  const res = new EventEmitter();
+  const res = /** @type {any} */ (new EventEmitter());
   res.statusCode = statusCode;
   res.headers = headers;
   res.resume = () => {};
@@ -53,7 +53,7 @@ test('mixed DNS answers are refused before a request is made', async () => {
   let called = false;
   await assert.rejects(fetchSource('https://example.com/', {
     lookup: async () => [{ address: '8.8.8.8', family: 4 }, { address: '127.0.0.1', family: 4 }],
-    request: () => { called = true; },
+    request: /** @type {any} */ (() => { called = true; }),
   }), { code: 'DNS_REJECTED' });
   assert.equal(called, false);
 });
@@ -90,13 +90,13 @@ test('rejects declared or streamed oversized responses', async () => {
     lookup, maxBytes: 3,
     request: fakeRequest((_o, cb) => cb(response(200, { 'content-type': 'text/plain' }, ['four'])), []),
   }), { code: 'SOURCE_TOO_LARGE' });
+});
 
 test('PDF has a separate 25 MiB default limit', async () => {
   const lookup=async()=>[{address:'8.8.8.8',family:4}],bytes=Buffer.alloc(1200001,1);bytes.write('%PDF-1.7');
   const result=await fetchSource('https://example.com/large.pdf',{lookup,request:fakeRequest((_o,cb)=>cb(response(200,{'content-type':'application/pdf'},[bytes])),[])});
   assert.equal(result.bytes.length,bytes.length);
   await assert.rejects(fetchSource('https://example.com/large.pdf',{lookup,maxPdfBytes:bytes.length-1,request:fakeRequest((_o,cb)=>cb(response(200,{'content-type':'application/pdf'},[bytes])),[])}),{code:'SOURCE_TOO_LARGE'});
-});
 });
 
 test('a redirect is DNS-revalidated and cannot reach a private answer', async () => {
@@ -112,7 +112,7 @@ test('a redirect is DNS-revalidated and cannot reach a private answer', async ()
 test('an already aborted literal request never starts', async () => {
   let called = false;
   await assert.rejects(fetchSource('https://8.8.8.8/', {
-    signal: AbortSignal.abort(), request: () => {called = true;},
+    signal: AbortSignal.abort(), request: /** @type {any} */ (() => {called = true;}),
   }));
   assert.equal(called,false);
 });
@@ -123,7 +123,7 @@ test('DNS and hung requests share the same bounded deadline', async () => {
   }),{code:'TIMEOUT'});
   let destroyed = false;
   await assert.rejects(fetchSource('https://8.8.8.8/', {
-    timeoutMs:10,request:()=>{const req=new EventEmitter();req.end=()=>{};req.destroy=()=>{destroyed=true;};return req;},
+    timeoutMs:10,request:()=>{const req=/** @type {any} */ (new EventEmitter());req.end=()=>{};req.destroy=()=>{destroyed=true;};return req;},
   }),{code:'TIMEOUT'});
   assert.equal(destroyed,true);
 });

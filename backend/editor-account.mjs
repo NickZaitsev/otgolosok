@@ -28,11 +28,15 @@ function normalizedEmail(value) {
 }
 
 // Keep both records atomic; use Better Auth's own password format.
+/**
+ * @param {DatabaseSync} database
+ * @param {{email: unknown, password?: unknown}} credentials
+ */
 export async function ensureEditor(database, { email: rawEmail, password }) {
   const email = normalizedEmail(rawEmail);
   if (password === undefined) throw fail("PASSWORD_REQUIRED");
   if (typeof password !== "string" || password.length < 10 || password.length > 128 || /[\r\n\0]/.test(password)) throw fail("PASSWORD");
-  const credential = () => database.prepare("SELECT u.id,a.password FROM user u LEFT JOIN account a ON a.userId=u.id AND a.providerId='credential' WHERE lower(u.email)=?").get(email);
+  const credential = () => /** @type {{id: string, password: string | null} | undefined} */ (database.prepare("SELECT u.id,a.password FROM user u LEFT JOIN account a ON a.userId=u.id AND a.providerId='credential' WHERE lower(u.email)=?").get(email));
   const prior = credential();
   if (prior && (!prior.password || !await verifyPassword({ hash: prior.password, password }))) throw fail("PASSWORD_INVALID");
   const passwordHash = prior ? null : await hashPassword(password);

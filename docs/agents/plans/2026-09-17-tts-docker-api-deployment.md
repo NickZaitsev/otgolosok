@@ -1,6 +1,6 @@
 # План: TTS в Docker на Linux, API и подключение Otgolosok
 
-Status: in progress since 2026-09-17, HTTP API, Docker packaging, MP3 lifecycle and Otgolosok transport implemented; Linux NVIDIA smoke and production deployment remain. A local Linux image build passed; no target GPU was available.
+Status: implemented — in production by 2026-09-22 (F5 over HTTP, profile `f5-ru-v1`; see `docs/agents/tts-production-incident-2026-09-22.md`). Open items in the just-tts repository: `/readyz` does not prove CUDA synthesis works, CDI migration.
 
 > Снимок на дату создания: сведения о коде могут устареть. Перед реализацией проверить пути, функции и контракты по актуальным исходникам. Документ написан по-русски согласно AGENTS.md; структура и строка Status следуют make-plan.
 

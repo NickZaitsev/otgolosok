@@ -7,6 +7,7 @@ import { type WalkCard, loadCatalogCards } from "./walk-loader";
 import { AppHeader } from "../navigation/app-header";
 import { mergePage } from "../account/pagination";
 import "./history.css";
+import { toUserMessage } from "@/lib/errors/user-message";
 type Card = WalkCard & { distanceM?: number; walkingMinutes?: number; draft?: boolean };
 export function WalkLibrary() {
   const [local, setLocal] = useState<Card[]>([]);
@@ -23,7 +24,7 @@ export function WalkLibrary() {
   useEffect(() => {
     let active = true;
     const controller = new AbortController();
-    const fail = (key: string, caught: unknown) => { if (active) setErrors(current => ({ ...current, [key]: caught instanceof Error ? caught.message : "Не удалось открыть прогулки." })); };
+    const fail = (key: string, caught: unknown) => { if (active) setErrors(current => ({ ...current, [key]: toUserMessage(caught, "Не удалось открыть прогулки.") })); };
     void (async () => {
       try {
         migrateLocalWalks(localStorage);
@@ -45,7 +46,7 @@ export function WalkLibrary() {
     try {
       const data = await accountApi(`/api/me/walks?cursor=${encodeURIComponent(cursor)}`);
       setAccount(current => mergePage(current, data.walks.map((item: WalkCard) => ({ ...item, kind: "account" })), (item: Card) => item.id)); setCursor(data.nextCursor ?? null);
-    } catch (caught) { setErrors(current => ({ ...current, page: caught instanceof Error ? caught.message : "Не удалось загрузить следующую страницу." })); }
+    } catch (caught) { setErrors(current => ({ ...current, page: toUserMessage(caught, "Не удалось загрузить следующую страницу.") })); }
     finally { setBusy(null); }
   }
   async function copy(token: string) {
@@ -58,7 +59,7 @@ export function WalkLibrary() {
       const data = await accountApi(`/api/me/walks/${encodeURIComponent(card.id)}/sharing`, { method: "PUT", body: JSON.stringify({ revision: card.revision, enabled: card.visibility !== "shared" }) });
       setAccount(current => current.map(item => item.id === card.id ? { ...item, ...data.walk } : item));
       if (data.walk.shareToken) await copy(data.walk.shareToken); else setNotice("Доступ по ссылке закрыт.");
-    } catch (caught) { setNotice(caught instanceof Error ? caught.message : "Не удалось изменить доступ."); } finally { setBusy(null); }
+    } catch (caught) { setNotice(toUserMessage(caught, "Не удалось изменить доступ.")); } finally { setBusy(null); }
   }
   const cards = [...account, ...local].sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
   const visible = cards.filter(card => filter === "all" || card.draft);

@@ -41,7 +41,7 @@ const placeFact=(kind,subjectRelation="object")=>({claim:`Факт вида ${ki
 const content=placeFact("content"),identity=placeFact("identity"),address=placeFact("address"),neighbourIdentity=placeFact("identity","site_context");
 
 // An OSM place is identified by name, type and location; the user-entered address pipeline keeps the address as its identity.
-for(const [name,input,options,expected] of [
+for(const [name,input,options,expected] of /** @type {Array<[string, any, any, any]>} */ ([
   ["address mode still requires the address",{addressConfirmed:false,identityConfirmed:true,facts:[identity,content]},{identityMode:"address"},{code:"ADDRESS_UNCLEAR"}],
   ["address mode ignores identityConfirmed",{addressConfirmed:true,facts:[content]},{identityMode:"address"},["content"]],
   ["place without an address keeps identity and drops address facts",{addressConfirmed:false,identityConfirmed:true,facts:[identity,address,content]},{identityMode:"place"},["identity","content"]],
@@ -51,7 +51,7 @@ for(const [name,input,options,expected] of [
   ["missing identityConfirmed is not a confirmation",{addressConfirmed:true,facts:[identity,content]},{identityMode:"place"},{code:"PLACE_UNCLEAR"}],
   ["no address and no identity fact about the object",{addressConfirmed:false,identityConfirmed:true,facts:[content]},{identityMode:"place"},{code:"PLACE_UNCLEAR"}],
   ["an identity fact about the site does not identify the object",{addressConfirmed:false,identityConfirmed:true,facts:[neighbourIdentity,content]},{identityMode:"place"},{code:"PLACE_UNCLEAR"}],
-]) test(`identityMode: ${name}`,()=>{
+])) test(`identityMode: ${name}`,()=>{
   const run=()=>validateFacts({...base,...input},sources,{requireEditorialScope:true,...options});
   if(!Array.isArray(expected)){assert.throws(run,expected);return;}
   const evidence=run();

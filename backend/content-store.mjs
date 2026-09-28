@@ -179,6 +179,7 @@ export function createContentStore({db,now,transaction}) {
       return {total,places:rows.slice(0,limit).map(row=>({...viewPlace(row),story:row.story_json?decode(row.story_json):null,audio:decode(row.audio_json),
         textStatus:row.story_json?"approved":Number(row.text_count)?"draft":"none",distanceM:row.distance_m==null?null:Number(row.distance_m)})),hasMore:rows.length>limit};
     },
+    /** @param {{lat?: number, lon?: number, radius?: number, limit?: number}} [options] */
     listWalkCandidates({lat,lon,radius,limit=500}={}) {
       if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||lat<55.05||lat>56.05||lon<36.75||lon>38.25||radius<50||radius>5000||!Number.isSafeInteger(limit)||limit<1||limit>500)throw fail("BAD_REQUEST");
       const latDelta=radius/111320,lonDelta=radius/(111320*Math.cos(lat*Math.PI/180));
@@ -255,6 +256,7 @@ export function createContentStore({db,now,transaction}) {
      * A bounded, paused pilot from current `auto` candidates without any text job yet. Categories take turns by
      * score so one numerous type cannot fill the pilot. A repeated requestKey returns the first batch untouched.
      */
+    /** @param {{requestKey: string, name?: string, limit?: number, mode?: string, ttsProfile?: string | null}} options */
     createIdentityPilot({requestKey,name,limit=20,mode="text-only",ttsProfile=null}) {
       const batchName=name??`Пилот weak_identity · ${new Date(now()).toLocaleString("ru-RU")}`;
       validateBatch({requestKey,name:batchName,limit,textProfile:"story-v1",mode,identityPolicy:"weak_identity"});

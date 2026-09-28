@@ -2,17 +2,17 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createStore } from "./store.mjs";
 import { addressKey, normalizeAddress, publicJob, validateFacts } from "./domain.mjs";
-import { runJob } from "./pipeline.mjs";
+import { runJob, SOURCE_RETRY } from "./pipeline.mjs";
 
 const paragraph=("Этот московский дом связан с историей города. Архивный источник подтверждает его назначение и важную роль в жизни улицы. ".repeat(3)+"Дом стал заметной частью городской среды, а его история отражает перемены района. Эти сведения позволяют рассказать о месте точно и без вымышленных деталей.").trim();
 function fixture(t,{factCount=3}={}){
-  const store=createStore(":memory:",{maxDaily:10});t.after(()=>store.close());const address=normalizeAddress("Кожевническая улица, 16");store.createOrGet({key:addressKey(address),address});
+  const store=createStore(":memory:");t.after(()=>store.close());const address=normalizeAddress("Кожевническая улица, 16");store.createOrGet({key:addressKey(address),address});
   const page="Тестовый дом построен в Москве и связан с городской историей. ".repeat(12),urls=["https://one.example/page"];
   const facts=Array.from({length:factCount},(_,index)=>({claim:`Подтверждённый факт ${index+1}`,kind:"content",subjectRelation:"object",contentReason:"Раскрывает историю дома",topic:"place_history",scope:"building",location:address,distanceMeters:null,evidence:[{sourceId:"s1",quote:"Тестовый дом построен в Москве и связан с городской историей."}]}));
   const ids=Array.from({length:factCount},(_,index)=>`f${index+1}`),checked={approved:true,issues:[],checks:{substantive:true,subjectAligned:true,audioClear:true},paragraphFacts:[{paragraph:1,factIds:ids}],claims:[{paragraph:1,text:"Этот московский дом связан с историей города.",factIds:ids,supported:true,address:false}]};
   const queue=[{text:"Источник найден",sources:urls.map(url=>({url,title:"Источник"}))},{value:{addressConfirmed:true,identityNote:"Источник описывает этот дом",placeName:"Тестовый дом",resolvedAddress:address,facts}}, {text:paragraph},{value:checked}];
   const provider={writerModel:"writer",response:async()=>({model:"test",usage:{total_tokens:1},...queue.shift()})};
-  const options={store,provider,fetchPage:async url=>({url,contentType:"text/html",html:page}),narrate:async()=>({url:"audio",durationSec:90}),audioDirectory:"unused"};return{store,address,queue,provider,options,page,urls};
+  const options={store,provider,fetchPage:async url=>({url,contentType:"text/html",html:page}),narrate:/** @type {() => Promise<{url: string, durationSec: number} | void>} */ (async()=>({url:"audio",durationSec:90})),audioDirectory:"unused"};return{store,address,queue,provider,options,page,urls};
 }
 
 test("one substantive publisher and three facts can produce a checked story",async t=>{const f=fixture(t);const job=await runJob(f.store.claimNext(),f.options);assert.equal(job.stage,"ready");assert.equal(job.data.story.facts.length,3);assert.equal(job.data.story.paragraphs[0].factIds.length,3);});
@@ -30,4 +30,11 @@ test("unfinished legacy evidence and draft are revalidated while fetched sources
   f.queue.shift();
   const job=await runJob(initial,f.options);
   assert.equal(job.stage,"ready");assert.equal(job.data.evidence.version,2);assert.equal(job.data.story.title,"Тестовый дом");assert.equal(f.queue.length,0);
+});
+
+test("source pages are retried only after network errors and busy or failing servers",()=>{
+  const {isTransient,attempts}=SOURCE_RETRY(undefined);
+  assert.equal(attempts,2);
+  for(const [error,expected] of [[{code:"NETWORK_ERROR"},true],[{code:"BAD_STATUS",status:503,retryable:true},true],[{code:"BAD_STATUS",status:404,retryable:false},false],
+    [{code:"TIMEOUT"},false],[{code:"DNS_REJECTED"},false],[{code:"BAD_CONTENT_TYPE"},false]])assert.equal(isTransient(error),expected,JSON.stringify(error));
 });

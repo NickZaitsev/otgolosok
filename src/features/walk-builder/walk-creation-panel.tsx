@@ -21,6 +21,8 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
   const mode = chosenMode ?? w.initialMode;
   const [picker, setPicker] = useState<"choices" | "address" | "time" | null>(null);
   const [geoBusy, setGeoBusy] = useState(false);
+  const mounted = useRef(false);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   const panel = useRef<HTMLElement>(null);
   const [padding, setPadding] = useState({top:100,right:24,bottom:110,left:24});
   const title = useRef<HTMLHeadingElement>(null);
@@ -59,7 +61,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
   function locate() {
     if (!navigator.geolocation) { w.setError("Геолокация недоступна. Найдите адрес или выберите точку на карте."); return; }
     setGeoBusy(true);
-    navigator.geolocation.getCurrentPosition(p => { setGeoBusy(false); void w.resolve({ lat: p.coords.latitude, lon: p.coords.longitude }); }, () => { setGeoBusy(false); w.setError("Не удалось определить место. Выберите точку на карте или введите адрес."); }, { timeout: 12000, maximumAge: 30000, enableHighAccuracy: true });
+    navigator.geolocation.getCurrentPosition(p => { if (!mounted.current) return; setGeoBusy(false); void w.resolve({ lat: p.coords.latitude, lon: p.coords.longitude }); }, () => { if (!mounted.current) return; setGeoBusy(false); w.setError("Не удалось определить место. Выберите точку на карте или введите адрес."); }, { timeout: 12000, maximumAge: 30000, enableHighAccuracy: true });
   }
   function changeMode(next: "destination" | "time") {
     setMode(next); w.edit({ destination: null, mode: next === "time" ? "loop" : "open" });

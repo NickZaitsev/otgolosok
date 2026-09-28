@@ -9,6 +9,7 @@ import type { GenerationJob } from "../generator/types";
 import { clearOfflineScope } from "../walks/offline";
 import { mergePage } from "./pagination";
 import "./account.css";
+import { toUserMessage } from "@/lib/errors/user-message";
 
 type RequestItem = { jobId: string; operation: string; createdAt: string };
 type Favorite = { type: string; id: string; createdAt: string; title?: string; href?: string | null };
@@ -37,7 +38,7 @@ export function Account() {
     let channel: BroadcastChannel | undefined;
     try { channel = new BroadcastChannel(AUTH_CHANNEL); channel.addEventListener("message", onMessage); } catch { /* Storage fallback. */ }
     addEventListener("storage", onStorage);
-    const fail = (key: string, caught: unknown) => { if (active) setErrors(current => ({ ...current, [key]: caught instanceof Error ? caught.message : "Не удалось загрузить раздел." })); };
+    const fail = (key: string, caught: unknown) => { if (active) setErrors(current => ({ ...current, [key]: toUserMessage(caught, "Не удалось загрузить раздел.") })); };
     void (async () => {
       try {
         const current = await getSession();
@@ -61,26 +62,30 @@ export function Account() {
       if (kind === "requests") setRequests(current => mergePage(current, data.requests, (item: RequestItem) => `${item.jobId}:${item.createdAt}`));
       else setFavorites(current => mergePage(current, data.favorites, (item: Favorite) => `${item.type}:${item.id}`));
       setCursors(current => ({ ...current, [kind]: data.nextCursor ?? null }));
-    } catch (caught) { setErrors(current => ({ ...current, [kind]: caught instanceof Error ? caught.message : "Не удалось загрузить следующую страницу." })); }
+    } catch (caught) { setErrors(current => ({ ...current, [kind]: toUserMessage(caught, "Не удалось загрузить следующую страницу.") })); }
     finally { setBusy(null); }
   }
   async function save(event: FormEvent) {
     event.preventDefault(); if (busy) return; setBusy("profile"); setNotice("");
     try { const data = await accountApi("/api/me", { method: "PATCH", body: JSON.stringify({ name: name.trim() }) }); setUser(data.user); setName(data.user.name); setNotice("Имя сохранено."); setEditing(false); }
-    catch (caught) { setErrors(current => ({ ...current, profile: caught instanceof Error ? caught.message : "Не удалось сохранить имя." })); }
+    catch (caught) { setErrors(current => ({ ...current, profile: toUserMessage(caught, "Не удалось сохранить имя.") })); }
     finally { setBusy(null); }
   }
   async function confirm(event: FormEvent) {
     event.preventDefault(); if (!confirmAction || busy) return; setBusy("settings");
     try {
-      if (confirmAction === "delete") await accountApi("/api/me", { method: "DELETE", body: JSON.stringify({ password }) });
-      else {
-        if (user) await clearOfflineScope(user.id);
-        await (confirmAction === "all" ? signOutEverywhere() : signOut());
+      // Private offline copies are removed best-effort: an unavailable Cache Storage must not block leaving the account.
+      const clearPrivateCopies = () => user ? clearOfflineScope(user.id).catch(() => {}) : Promise.resolve();
+      if (confirmAction === "delete") {
+        await accountApi("/api/me", { method: "DELETE", body: JSON.stringify({ password }) });
+        await clearPrivateCopies();
+      } else {
+        // signOut() also signs out locally when the server is unreachable, then reports it.
+        try { await (confirmAction === "all" ? signOutEverywhere() : signOut()); }
+        finally { await clearPrivateCopies(); }
       }
-      if (user && confirmAction === "delete") await clearOfflineScope(user.id);
       setPassword(""); location.replace("/");
-    } catch (caught) { setErrors(current => ({ ...current, settings: caught instanceof Error ? caught.message : "Не удалось выполнить действие." })); }
+    } catch (caught) { setErrors(current => ({ ...current, settings: toUserMessage(caught, "Не удалось выполнить действие.") })); }
     finally { setBusy(null); setPassword(""); }
   }
   const more = (kind: Section) => cursors[kind] && <button className="ui-button secondary" disabled={busy !== null} onClick={() => void loadMore(kind)}>Показать ещё</button>;

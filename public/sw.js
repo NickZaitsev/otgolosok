@@ -5,6 +5,9 @@ const CACHE_VERSION = `${CACHE_PREFIX}${version}`;
 const APP_SHELL = new Set(assets);
 const STORY_CACHE = "story-packs-v1";
 const WALK_CACHE = "walk-packs-v1";
+// Remembers the last activated app versions; outside CACHE_PREFIX so cleanup never removes it.
+const STATE_CACHE = "sw-state-v1";
+const ACTIVATED_KEY = "/__sw/activated.json";
 
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
@@ -15,17 +18,28 @@ self.addEventListener("install", (event) => {
   // Updates wait until existing walks close, keeping HTML and chunks in sync.
 });
 
+// App versions activated so far, oldest first; the current one is last.
+async function recordActivation(keys) {
+  const state = await caches.open(STATE_CACHE);
+  const saved = await state.match(ACTIVATED_KEY).then((response) => response?.json()).catch(() => null);
+  // Before the first record, cache creation order (caches.keys()) names the previous build.
+  const known = Array.isArray(saved?.versions) ? saved.versions : keys.filter((key) => key.startsWith(CACHE_PREFIX));
+  const versions = [...known.filter((key) => key !== CACHE_VERSION), CACHE_VERSION].slice(-2);
+  await state.put(ACTIVATED_KEY, new Response(JSON.stringify({ versions }), { headers: { "Content-Type": "application/json" } }));
+  return versions;
+}
+
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
-    // An explicit update can leave another tab on its previous build. Keep its
-    // immutable assets until a later activation with no open windows.
+    const keys = await caches.keys();
+    const activated = await recordActivation(keys);
+    // An explicit update can leave another tab on the previous build: keep that
+    // one build's immutable assets while windows are open, and nothing older.
     const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
-    if (!windows.length) {
-      const keys = await caches.keys();
-      await Promise.all(keys
-        .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_VERSION)
-        .map((key) => caches.delete(key)));
-    }
+    const keep = new Set(windows.length ? activated : [CACHE_VERSION]);
+    await Promise.all(keys
+      .filter((key) => key.startsWith(CACHE_PREFIX) && !keep.has(key))
+      .map((key) => caches.delete(key)));
     await self.clients.claim();
   })());
 });

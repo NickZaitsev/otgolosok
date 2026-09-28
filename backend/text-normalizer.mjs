@@ -5,6 +5,7 @@ const NORMALIZER_VERSION = "ru-normalizr-0.3.0-tts";
 const MAX_NORMALIZED_TEXT_BYTES = 100000;
 
 export function createTextNormalizer({ command = "python3", scriptUrl = new URL("./normalize-tts.py", import.meta.url), spawnImpl = spawn } = {}) {
+  /** @param {string} text @param {{signal?: AbortSignal}} [options] */
   return async function normalizeForSpeech(text, { signal } = {}) {
     if (typeof text !== "string" || !text.trim()) throw failure("TTS_FAILED");
     const deadline = AbortSignal.any([AbortSignal.timeout(30000), ...(signal ? [signal] : [])]);

@@ -34,7 +34,7 @@ function fixture(t, { now = () => Date.parse("2026-09-08T12:00:00.000Z"), checkC
   const find = db.prepare("SELECT record_json FROM jobs WHERE id = ?");
   const write = db.prepare("UPDATE jobs SET stage = ?, record_json = ? WHERE id = ?");
   const generic = {
-    get(id) { const row = find.get(id); return row ? JSON.parse(row.record_json) : null; },
+    get(id) { const row = find.get(id); return row ? JSON.parse(/** @type {string} */ (row.record_json)) : null; },
     update(id, patch, expectedRevision) {
       return transaction(() => {
         const current = generic.get(id);
@@ -215,7 +215,7 @@ test("restart keeps the draft and publication while interrupted narration become
   const directory = await mkdtemp(join(tmpdir(), "otgolosok-walk-admin-"));
   const databasePath = join(directory, "jobs.sqlite");
   t.after(async () => { try { store?.close(); } catch {} await rm(directory, { recursive: true, force: true }); });
-  let store = createStore(databasePath, { maxDaily: 10 });
+  let store = createStore(databasePath);
   const chapter = store.getWalkAdmin(routeId).chapters[0];
   const draft = structuredClone(chapter.draft);
   draft.title = "Черновик до перезапуска";
@@ -224,7 +224,7 @@ test("restart keeps the draft and publication while interrupted narration become
   assert.equal(store.claimNext().stage, "researching");
   store.close();
 
-  store = createStore(databasePath, { maxDaily: 10 });
+  store = createStore(databasePath);
   assert.equal(store.recoverInterrupted(), 1);
   const restored = store.getWalkAdmin(routeId).chapters[0];
   assert.equal(restored.draft.title, draft.title);
