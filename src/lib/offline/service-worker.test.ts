@@ -19,8 +19,10 @@ function setup() {
   const storyCache = {match: vi.fn(async (path: string)=>storyEntries.get(path)?.clone())};
   const walkEntries = new Map<string, Response>();
   const walkCache = {match: vi.fn(async (path: string)=>walkEntries.get(path)?.clone())};
+  const stateEntries = new Map<string, Response>();
+  const stateCache = { match: async (path: string) => stateEntries.get(path)?.clone(), put: async (path: string, value: Response) => { stateEntries.set(path, value); } };
   const caches = {
-    open: vi.fn(async (key: string) => key === "otgolosok-test" ? cache : key === "story-packs-v1" ? storyCache : key === "walk-packs-v1" ? walkCache : previousCache),
+    open: vi.fn(async (key: string) => key === "otgolosok-test" ? cache : key === "story-packs-v1" ? storyCache : key === "walk-packs-v1" ? walkCache : key === "sw-state-v1" ? stateCache : previousCache),
     keys: vi.fn(async () => ["otgolosok-v1", "otgolosok-test", "story-packs-v1", "another-app"]),
     delete: vi.fn().mockResolvedValue(true),
   };
@@ -59,7 +61,7 @@ function setup() {
     handlers.message({ data: { type }, source: { url }, waitUntil: (value: Promise<void>) => { completion = value; } });
     return completion;
   }
-  return { cache, caches, clients, entries, previousEntries, storyEntries, walkEntries, fetch, lifecycle, request, message, skipWaiting };
+  return { cache, caches, clients, entries, previousEntries, storyEntries, walkEntries, stateEntries, fetch, lifecycle, request, message, skipWaiting };
 }
 
 describe("offline service worker", () => {
@@ -110,6 +112,25 @@ describe("offline service worker", () => {
     await lifecycle("activate");
     expect(caches.delete).not.toHaveBeenCalled();
     expect(clients.claim).toHaveBeenCalledOnce();
+  });
+
+  it("keeps only the previous build for open tabs and removes older ones", async () => {
+    const { caches, clients, lifecycle, stateEntries } = setup();
+    // v2 was installed but never activated; open tabs still run v1.
+    caches.keys.mockResolvedValue(["otgolosok-v0", "otgolosok-v1", "otgolosok-v2", "otgolosok-test", "story-packs-v1"]);
+    stateEntries.set("/__sw/activated.json", new Response(JSON.stringify({ versions: ["otgolosok-v0", "otgolosok-v1"] })));
+    clients.matchAll.mockResolvedValue([{ url: `${origin}/` }]);
+    await lifecycle("activate");
+    expect(caches.delete.mock.calls.map(([key]) => key).sort()).toEqual(["otgolosok-v0", "otgolosok-v2"]);
+    expect(await stateEntries.get("/__sw/activated.json")?.json()).toEqual({ versions: ["otgolosok-v1", "otgolosok-test"] });
+  });
+
+  it("without a record, treats the newest older cache as the previous build", async () => {
+    const { caches, clients, lifecycle } = setup();
+    caches.keys.mockResolvedValue(["otgolosok-v0", "otgolosok-v1", "otgolosok-test"]);
+    clients.matchAll.mockResolvedValue([{ url: `${origin}/` }]);
+    await lifecycle("activate");
+    expect(caches.delete).toHaveBeenCalledExactlyOnceWith("otgolosok-v0");
   });
 
   it("activates on the recovery page's request, but not on unrelated messages", async () => {
