@@ -37,6 +37,20 @@ async function publication(audioBody = "new walk recording") {
   return { value, audioBody, audioUrl: step.audio.url };
 }
 
+// Generated recordings for the first steps, one per body.
+async function publicationWithRecordings(bodies: string[]) {
+  const value = structuredClone(route);
+  const audio = [] as Array<{ url: string; body: string }>;
+  for (const [index, body] of bodies.entries()) {
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(body));
+    const hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+    const step = value.walk!.steps[index];
+    step.audio = { ...step.audio!, url: `/api/story-audio/${hash}.mp3`, audio_sha256: hash };
+    audio.push({ url: step.audio.url, body });
+  }
+  return { value, audio };
+}
+
 function installCache(cache: MemoryCache) {
   vi.stubGlobal("caches", { open: vi.fn(async () => cache) });
 }
@@ -116,5 +130,46 @@ describe("published route cache", () => {
 
     expect(cache.writes).toEqual([update.audioUrl]);
     expect(await cache.match(manifestUrl)).toBeUndefined();
+  });
+
+  it("does not download recordings that are already cached", async () => {
+    const cache = new MemoryCache();
+    const update = await publication();
+    installCache(cache);
+    installNetwork(update.value, update.audioUrl, update.audioBody);
+    await loadPublishedRoute(route, new AbortController().signal);
+    const network = vi.mocked(fetch);
+    network.mockClear();
+
+    await loadPublishedRoute(route, new AbortController().signal);
+
+    expect(network.mock.calls.map(([input]) => String(input))).toEqual([manifestUrl]);
+  });
+
+  it("keeps verified recordings when another one stalls, and fetches only the missing one later", async () => {
+    const cache = new MemoryCache();
+    const update = await publicationWithRecordings(["first recording", "stalled recording"]);
+    let stalled = true;
+    const requested: string[] = [];
+    installCache(cache);
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      requested.push(url);
+      if (url === manifestUrl) return new Response(JSON.stringify(update.value), { headers: { "Content-Type": "application/json" } });
+      const audio = update.audio.find(item => item.url === url)!;
+      if (stalled && audio === update.audio[1]) {
+        return new Promise<Response>((_, reject) => init?.signal?.addEventListener("abort", () => reject(init.signal!.reason), { once: true }));
+      }
+      return new Response(audio.body, { headers: { "Content-Type": "audio/mpeg" } });
+    }));
+
+    await expect(loadPublishedRoute(route, new AbortController().signal, { audioTimeoutMs: 20 })).resolves.toBe(route);
+    expect(cache.writes).toEqual([update.audio[0].url]);
+
+    stalled = false;
+    requested.length = 0;
+    const result = await loadPublishedRoute(route, new AbortController().signal, { audioTimeoutMs: 20 });
+    expect(result.walk!.steps[1].audio?.url).toBe(update.audio[1].url);
+    expect(requested).toEqual([manifestUrl, update.audio[1].url]);
   });
 });
