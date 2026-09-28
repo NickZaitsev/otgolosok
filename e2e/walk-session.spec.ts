@@ -107,3 +107,25 @@ test("геопозиция отличается от остановок и не 
   await expect(position).toHaveCount(1);
   await expect(page.getByRole("button", { name: "Моё местоположение", exact: true })).toBeVisible();
 });
+
+test("гостевая прогулка показывает опубликованную историю остановки", async ({ page }) => {
+  const document = draftToWalkDocument({ version: 1, title: "Моя прогулка", start, destination: null, mode: "loop", minutes: 30,
+    stops: [{ ...stops[0], contentId: "osm:way:3" }], route: { stops, geometry: [start.location, stops[0].location, start.location], distanceM: 400, walkingMinutes: 6, attribution: "OSM" }, jobs: [], submitting: null }, id);
+  await page.addInitScript(({ id, document }) => {
+    localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
+  }, { id, document });
+  const requests: unknown[] = [];
+  await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/story-walks/resolve", route => {
+    requests.push(route.request().postDataJSON());
+    return route.fulfill({ json: { document, revision: 0, contentVersion: "e".repeat(64), chapters: [{ id: document.stops[0].id, status: "text_ready",
+      story: { title: "Дом с башенкой", address: stops[0].address, paragraphs: [{ text: "Опубликованный рассказ о доме.", factIds: [] }], sources: [], facts: [] }, audio: null }] } });
+  });
+  await page.goto(`/walk?local=${id}`);
+  await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+  await page.getByRole("button", { name: "Читать историю", exact: true }).click();
+  await expect(page.getByText("Опубликованный рассказ о доме.", { exact: true })).toBeVisible();
+  // В режиме разработки React дважды запускает эффект; каждый запрос несёт тот же документ.
+  expect(requests.length).toBeGreaterThan(0);
+  for (const request of requests) expect(request).toEqual({ document, revision: 0 });
+});
