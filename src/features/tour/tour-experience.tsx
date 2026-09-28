@@ -25,7 +25,7 @@ import { OfflineCopyControls, useOfflineCopy } from "./offline-copy";
 import { positionFailed, useWalkPosition } from "./use-walk-position";
 import { useWalkAudio } from "./use-walk-audio";
 import { ClassicWalkView, type PlayerState } from "./classic-walk-view";
-import { ReadingView } from "./reading-view";
+import { AroundScreen } from "../explore/around-screen";
 
 type SessionPhase = "reading" | "walking";
 
@@ -127,7 +127,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   useEffect(() => {
     if (phase !== "reading") walkTitleRef.current?.focus();
     if (phase === "reading" && restoreFocusRef.current) {
-      (startButtonRef.current ?? document.getElementById("around-title"))?.focus();
+      startButtonRef.current?.focus();
       restoreFocusRef.current = false;
     }
   }, [phase, chapterIndex]);
@@ -280,9 +280,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
           debug={{ show: showDiagnostics, replay: isReplay }}
           onToggle={audio.toggle} onSeek={audio.seek} onSelect={selectChapter} onStop={stopTour} />
       ) : (
-        <ReadingView route={route} chapters={chapters} chapterIndex={chapterIndex} savedCheckpoint={savedCheckpoint}
-          startRef={startButtonRef} onStart={(resumeSaved, index) => startTour(resumeSaved, index)}
-          shellStatus={shellStatus} updateAvailable={updateAvailable} showSources={showSources} onToggleSources={toggleSources} />
+        <AroundScreen route={route} onStart={(index) => startTour(false, index)} updateAvailable={updateAvailable} />
       )}
 
       <audio ref={audioRef} preload="auto" aria-label="Аудиогид" {...audioHandlers} />
