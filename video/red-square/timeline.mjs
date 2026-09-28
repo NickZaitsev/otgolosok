@@ -15,12 +15,18 @@ export const BEAT = 0.5;
 export const SCENES = Object.freeze([
   {id: "hook", start: 0, end: 4},
   {id: "ask", start: 4, end: 6},
-  {id: "map", start: 6, end: 13},
-  {id: "facts", start: 13, end: 23},
-  {id: "player", start: 23, end: 43},
-  {id: "board", start: 43, end: 46},
-  {id: "brand", start: 46, end: 50},
+  {id: "map", start: 6, end: 19},
+  {id: "facts", start: 19, end: 29},
+  {id: "player", start: 29, end: 42.5},
+  {id: "board", start: 42.5, end: 45.5},
+  {id: "brand", start: 45.5, end: 49.5},
 ]);
+
+/**
+ * Линия маршрута рисуется в сцене map с MAP_DRAW.from по MAP_DRAW.to (секунды от начала
+ * сцены) — около секунды на остановку; после неё камера отъезжает на общий план со счётчиками.
+ */
+export const MAP_DRAW = Object.freeze({from: 0.9, to: 10.9});
 
 export const DURATION = SCENES.at(-1).end;
 export const FRAME_COUNT = Math.round(DURATION * FPS);
@@ -40,7 +46,8 @@ export const FACTS = Object.freeze([
 /**
  * Остановка, чью историю «играет» телефон, и озвучка: `text` — фраза на экране (дословно из
  * истории или её заголовок), `speech` — то, что читает диктор (годы словами: так их не
- * исказит нормализатор TTS). Клипы звучат подряд с паузой VOICE_GAP.
+ * исказит нормализатор TTS). Клипы звучат подряд с паузой VOICE_GAP; историю не дочитывают
+ * до конца — голос уходит в затухание на склейке с табло (VOICE_FADE).
  */
 export const PLAYER = Object.freeze({
   stop: 5,
@@ -57,13 +64,14 @@ export const PLAYER = Object.freeze({
       text: "В 1588 году над захоронением Василия Блаженного к собору пристроили отдельную церковь.",
       speech: "В тысяча пятьсот восемьдесят восьмом году над захоронением Василия Блаженного к собору пристроили отдельную церковь.",
     },
-    {id: "complex", text: "Она стала десятым храмом комплекса.", speech: "Она стала десятым храмом комплекса."},
   ]),
 });
 
 /** С какой секунды сцены player звучит голос (после нажатия «play») и паузы между клипами. */
 export const VOICE_AT = 1.2;
 export const VOICE_GAP = 0.35;
+/** Голос затихает за столько секунд до конца сцены player. */
+export const VOICE_FADE = 0.8;
 
 /** Строки табло; каждая строка встаёт на удар. */
 export const BOARD = Object.freeze(["БЕЗ ЭКСКУРСОВОДА", "БЕЗ РАСПИСАНИЯ", "В СВОЁМ ТЕМПЕ"]);

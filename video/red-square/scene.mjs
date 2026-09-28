@@ -3,7 +3,7 @@
 // Вся анимация — чистая функция времени `seek(t)`, без CSS-переходов и таймеров.
 // Кадры листает scripts/render-red-square-video.mjs через scripts/lib/frame-render.mjs.
 import {
-  BOARD, BOARD_STEP, FACTS, FACT_LENGTH, FPS, HEIGHT, PLAYER, SCENES, WIDTH,
+  BOARD, BOARD_STEP, FACTS, FACT_LENGTH, FPS, HEIGHT, MAP_DRAW, PLAYER, SCENES, WIDTH,
   cameraProject, cameraTransform, scene, wordTimes,
 } from "/timeline.mjs";
 import {clamp, ease, hash, lerp, polyline, progress, spring, stripesPolygon} from "/shared/motion.mjs";
@@ -365,8 +365,7 @@ const map = (() => {
     return {...item, box, number: el("strong", {parent: box}), caption: el("span", {parent: box, text: item.label})};
   });
 
-  const drawFrom = 0.9;
-  const drawTo = 5.0;
+  const {from: drawFrom, to: drawTo} = MAP_DRAW;
   const headShare = (local) => progress(local, drawFrom, drawTo, ease.swing);
   const reachTimes = pins.map((pin) => timeWhen(headShare, pin.share - 0.002, drawFrom, drawTo));
   houses.forEach((house) => { house.litAt = house.distance < 42 ? timeWhen(headShare, house.share, drawFrom, drawTo) : Infinity; });
@@ -393,7 +392,7 @@ const map = (() => {
     const share = headShare(local);
     const target = local < drawFrom ? origin : follow(share);
     const intro = progress(local, 0, drawFrom + 0.6, ease.outCubic);
-    const blend = progress(local, 5.0, 6.2, ease.swing);
+    const blend = progress(local, drawTo, drawTo + 1.2, ease.swing);
     const settle = local < drawFrom ? {x: lerp(origin.x, target.x, intro), y: lerp(origin.y, target.y, intro)} : target;
     return {
       cx: lerp(settle.x, overview.cx, blend),
@@ -451,7 +450,7 @@ const map = (() => {
     revealChars(titleB.chars, local, 0.55, {step: 0.03});
 
     // Карточка текущей остановки: новая въезжает снизу, прошлая уходит вверх.
-    const cardShown = progress(local, drawFrom, drawFrom + 0.4) * (1 - progress(local, 5.0, 5.4));
+    const cardShown = progress(local, drawFrom, drawFrom + 0.4) * (1 - progress(local, drawTo, drawTo + 0.4));
     css(card, {opacity: cardShown.toFixed(3), transform: `translateY(${((1 - cardShown) * 60).toFixed(1)}px)`});
     rows.forEach((row, index) => {
       const enter = progress(local, reachTimes[index], reachTimes[index] + 0.3);
@@ -459,7 +458,7 @@ const map = (() => {
       css(row, {transform: `translateY(${((1 - enter) * 100 - leave * 100).toFixed(2)}%)`, opacity: enter > 0 && leave < 1 ? 1 : 0});
     });
     statList.forEach((stat, index) => {
-      const at = 5.3 + index * 0.15;
+      const at = drawTo + 0.3 + index * 0.15;
       const shown = progress(local, at, at + 0.5);
       stat.number.textContent = stat.format(stat.value * progress(local, at, at + 1.0, ease.outCubic));
       css(stat.box, {opacity: shown.toFixed(3), transform: `translateY(${((1 - shown) * 50).toFixed(1)}px)`});

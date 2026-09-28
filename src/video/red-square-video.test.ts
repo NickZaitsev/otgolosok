@@ -4,11 +4,11 @@ import {beforeAll, describe, expect, it} from "vitest";
 import {redSquareSamples, SAMPLE_RATE} from "../../scripts/red-square-music.mjs";
 import {decodePolyline6, mapLayers, pickStops, projection, simplify, STOPS, VIEW} from "../../scripts/fetch-red-square-walk.mjs";
 import {parseRenderArgs, resolveScenePath} from "../../scripts/lib/frame-render.mjs";
-import {speechBounds} from "../../scripts/lib/voice-audio.mjs";
+import {fadeOut, normalizeSpeech, speechBounds} from "../../scripts/lib/voice-audio.mjs";
 import {checkScript, checkVoice, loadVoice, voiceTrack} from "../../scripts/render-red-square-video.mjs";
 import {
   BEAT, BOARD, DURATION, FACTS, FACT_LENGTH, FPS, FRAME_COUNT, PLAYER, SCENES,
-  VOICE_AT, VOICE_GAP, cameraProject, cameraTransform, musicScore, scene, spokenLength, voiceSchedule, wordTimes,
+  MAP_DRAW, VOICE_AT, VOICE_FADE, VOICE_GAP, cameraProject, cameraTransform, musicScore, scene, spokenLength, voiceSchedule, wordTimes,
 } from "../../video/red-square/timeline.mjs";
 
 const walk = JSON.parse(readFileSync(resolve("video/red-square/walk.json"), "utf8"));
@@ -22,6 +22,12 @@ describe("хронометраж ролика «Красная площадь и
       expect((item.start / BEAT) % 1).toBe(0);
     });
     expect(FRAME_COUNT).toBe(DURATION * FPS);
+  });
+
+  it("маршрут рисуется не быстрее секунды на остановку и оставляет время на общий план", () => {
+    const map = scene("map");
+    expect((MAP_DRAW.to - MAP_DRAW.from) / STOPS.length).toBeGreaterThanOrEqual(1);
+    expect(map.end - map.start - MAP_DRAW.to).toBeGreaterThanOrEqual(2);
   });
 
   it("карточки фактов делят сцену поровну и сменяются на ударах", () => {
@@ -195,16 +201,51 @@ describe("озвучка экрана истории", () => {
     expect(() => speechBounds(pcm(Array(200).fill(0)), 1000)).toThrow(/нет речи/);
   });
 
-  it("начитанная озвучка укладывается в сцену экрана, эквалайзер — на каждый кадр", async () => {
+  const level = (buffer: Buffer, from: number, to: number) => {
+    let sum = 0;
+    for (let index = from; index < to; index += 1) sum += (buffer.readInt16LE(index * 2) / 32768) ** 2;
+    return 20 * Math.log10(Math.sqrt(sum / (to - from)));
+  };
+
+  it("тихая реплика поднимается до общей громкости речи, но пик не выше −1 дБFS", () => {
+    const quiet = pcm([...Array(50).fill(0), ...Array(100).fill(0).map((_, index) => (index % 2 ? 600 : -600))]);
+    const raised = normalizeSpeech(quiet, 100, {start: 0.5, end: 1.5});
+    expect(level(raised, 50, 150)).toBeCloseTo(-17, 1);
+    expect(samples(raised, 0, 50)).toEqual(Array(50).fill(0));
+    const spiky = pcm([30000, ...Array(99).fill(0).map((_, index) => (index % 2 ? 300 : -300))]);
+    expect(Math.abs(normalizeSpeech(spiky, 100, {start: 0, end: 1}).readInt16LE(0)) / 32768).toBeLessThanOrEqual(10 ** (-1 / 20) + 1e-4);
+    expect(() => normalizeSpeech(pcm(Array(100).fill(0)), 100, {start: 0, end: 1})).toThrow(/нет речи/);
+  });
+
+  it("затухание: до отрезка без изменений, внутри спадает, после — тишина", () => {
+    const track = fadeOut(pcm(Array(10).fill(1000)), {from: 0.4, to: 0.8, sampleRate: 10});
+    const values = samples(track, 0, 10);
+    expect(values.slice(0, 5)).toEqual([1000, 1000, 1000, 1000, 1000]);
+    expect(values[5]).toBeLessThan(1000);
+    expect(values[7]).toBeLessThan(values[5]);
+    expect(values.slice(8)).toEqual([0, 0]);
+    expect(() => fadeOut(pcm([1]), {from: 1, to: 1, sampleRate: 10})).toThrow(RangeError);
+  });
+
+  it("начитанная озвучка: реплики одной громкости, история обрывается затуханием на склейке", async () => {
     const {schedule, levels, track} = await loadVoice();
     const player = scene("player");
+    const length = player.end - player.start;
+    const rate = 48000;
     expect(schedule.map(({id}) => id)).toEqual(PLAYER.narration.map(({id}) => id));
     expect(schedule[0].from).toBeCloseTo(VOICE_AT, 6);
     schedule.slice(1).forEach((item, index) => expect(item.from - schedule[index].to).toBeCloseTo(VOICE_GAP, 6));
-    expect(schedule.at(-1)!.to).toBeLessThan(player.end - player.start);
-    expect(levels).toHaveLength(Math.round((player.end - player.start) * FPS));
+    // Все реплики, кроме последней, звучат целиком; последняя уходит в затухание.
+    schedule.slice(0, -1).forEach(({to}) => expect(to).toBeLessThan(length - VOICE_FADE));
+    expect(schedule.at(-1)!.from).toBeLessThan(length - VOICE_FADE);
+    const after = Math.round(player.end * rate);
+    expect(samples(track, after, after + rate).every((value) => value === 0)).toBe(true);
+    // Громкость речи до затухания — в пределах 1,5 дБ у всех реплик (короткие F5 были на 18–22 дБ тише).
+    const loudness = schedule.map(({from, to}) => level(track, Math.round((player.start + from) * rate), Math.round((player.start + Math.min(to, length - VOICE_FADE)) * rate)));
+    expect(Math.max(...loudness) - Math.min(...loudness)).toBeLessThan(1.5);
+    expect(levels).toHaveLength(Math.round(length * FPS));
     expect(Math.max(...levels)).toBe(1);
-    expect(track.length).toBe(Math.round(DURATION * 48000) * 2);
+    expect(track.length).toBe(Math.round(DURATION * rate) * 2);
   }, 60_000);
 });
 

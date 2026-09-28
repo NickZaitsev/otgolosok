@@ -12,8 +12,8 @@ import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 import {redSquareWav} from "./red-square-music.mjs";
 import {parseRenderArgs, renderStills, renderVideo, run, serveScene} from "./lib/frame-render.mjs";
-import {speechBounds, voiceLevels} from "./lib/voice-audio.mjs";
-import {DURATION, FACTS, FPS, FRAME_COUNT, HEIGHT, PLAYER, WIDTH, musicScore, scene, voiceSchedule} from "../video/red-square/timeline.mjs";
+import {fadeOut, normalizeSpeech, speechBounds, voiceLevels} from "./lib/voice-audio.mjs";
+import {DURATION, FACTS, FPS, FRAME_COUNT, HEIGHT, PLAYER, VOICE_FADE, WIDTH, musicScore, scene, voiceSchedule} from "../video/red-square/timeline.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SCENE_DIR = join(root, "video/red-square");
@@ -22,8 +22,6 @@ const STILLS = join(root, "artifacts/video/red-square-stills");
 const VOICE_DIR = join(SCENE_DIR, "voice");
 /** Частота дорожки голоса: такая же, как у музыки, чтобы не пересэмплировать дважды. */
 const VOICE_RATE = 48000;
-/** Сколько сцена player держится после последнего слова. */
-const VOICE_TAIL = 0.8;
 
 /**
  * Сверка сценария с данными: подписи фактов и фраза на экране взяты из опубликованных
@@ -96,20 +94,23 @@ export function voiceTrack(schedule, clips, {offset, seconds, sampleRate}) {
   return track;
 }
 
-/** Голос сцены player: расписание клипов, громкость по кадрам и дорожка PCM на весь ролик. */
+/**
+ * Голос сцены player: расписание клипов, громкость по кадрам и дорожка PCM на весь ролик.
+ * Историю не дочитывают: на склейке с табло голос затихает за VOICE_FADE секунд.
+ */
 export async function loadVoice() {
   const manifest = JSON.parse(await readFile(join(VOICE_DIR, "manifest.json"), "utf8"));
   checkVoice(manifest);
-  const clips = await Promise.all(PLAYER.narration.map(({id}) => run("ffmpeg", ["-v", "error", "-i", join(VOICE_DIR, `${id}.mp3`), "-ac", "1", "-ar", String(VOICE_RATE), "-f", "s16le", "-"])));
-  const schedule = voiceSchedule(PLAYER.narration.map(({id}, index) => {
-    const {start, end} = speechBounds(clips[index], VOICE_RATE);
-    return {id, lead: start, speech: end - start};
-  }));
+  const decoded = await Promise.all(PLAYER.narration.map(({id}) => run("ffmpeg", ["-v", "error", "-i", join(VOICE_DIR, `${id}.mp3`), "-ac", "1", "-ar", String(VOICE_RATE), "-f", "s16le", "-"])));
+  const bounds = decoded.map((pcm) => speechBounds(pcm, VOICE_RATE));
+  const clips = decoded.map((pcm, index) => normalizeSpeech(pcm, VOICE_RATE, bounds[index]));
+  const schedule = voiceSchedule(PLAYER.narration.map(({id}, index) => ({id, lead: bounds[index].start, speech: bounds[index].end - bounds[index].start})));
   const player = scene("player");
   const length = player.end - player.start;
-  const last = schedule.at(-1);
-  if (last.to + VOICE_TAIL > length) throw new Error(`Озвучка длится до ${last.to.toFixed(2)} с сцены, а сцена — ${length} с: удлините player в timeline.mjs`);
+  const silent = schedule.find(({from}) => from >= length - VOICE_FADE);
+  if (silent) throw new Error(`Реплика «${silent.id}» начинается после затухания голоса — уберите её из PLAYER.narration или удлините player`);
   const track = voiceTrack(schedule, clips, {offset: player.start, seconds: DURATION, sampleRate: VOICE_RATE});
+  fadeOut(track, {from: player.end - VOICE_FADE, to: player.end, sampleRate: VOICE_RATE});
   const levels = voiceLevels(track.subarray(Math.round(player.start * VOICE_RATE) * 2, Math.round(player.end * VOICE_RATE) * 2), VOICE_RATE, {fps: FPS, seconds: length});
   return {schedule, levels, track};
 }

@@ -22,13 +22,5 @@
     "durationSeconds": 8.784,
     "profile": "f5-ru-v1",
     "voice": "obrazec6"
-  },
-  "complex": {
-    "key": "bf43115d6e7b93c393e1cead1a50f7208cba7ea8dbaa4c399b800813e92c8758",
-    "text": "Она стала десятым храмом комплекса.",
-    "sha256": "464d1a4500477eb2d8f78a6d7d5fa9aa7af45d88b6e25c0f496afafd4efbdfac",
-    "durationSeconds": 2.952,
-    "profile": "f5-ru-v1",
-    "voice": "obrazec6"
   }
 }
