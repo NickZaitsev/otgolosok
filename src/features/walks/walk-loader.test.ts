@@ -26,14 +26,29 @@ describe("загрузка прогулок", () => {
     } satisfies Partial<WalkLoadError>));
   });
 
-  it("подтягивает готовую историю локального документа, не создавая новую задачу", async () => {
-    const jobId = "11111111-1111-4111-8111-111111111111";
-    const document: WalkDocument = { version: 2, id: "22222222-2222-4222-8222-222222222222", title: "Арбат", description: "", city: "Москва", mode: "open", minutes: 30,
-      start: { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } }, stops: [{ id: "33333333-3333-4333-8333-333333333333", place: { address: "Москва, Арбат, 10", location: { lat: 55.751, lon: 37.601 } }, storyRef: { kind: "job", id: jobId }, transition: "", nextHint: "" }], route: null, fieldChecked: false };
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify({ id: jobId, stage: "ready", story: { title: "История дома", address: "Москва, Арбат, 10", paragraphs: [{ text: "Проверенный рассказ.", factIds: [] }], sources: [], facts: [] }, audio: { url: `/api/story-audio/${"a".repeat(64)}.mp3`, sha256: "a".repeat(64), durationSec: 12 } }), { status: 200 })));
-    const result = await loadLocalWalkView(document, 0, new AbortController().signal);
-    expect(result.chapters[0].status).toBe("ready");
-    expect(result.chapters[0].audio?.durationSec).toBe(12);
+  it("показывает опубликованные истории остановок из OSM в гостевой прогулке", async () => {
+    const document: WalkDocument = { version: 2, id: "22222222-2222-4222-8222-222222222222", title: "Моя прогулка", description: "", city: "Москва", mode: "loop", minutes: 30,
+      start: { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } }, stops: [{ id: "33333333-3333-4333-8333-333333333333", place: { address: "Москва, Арбат, 10", location: { lat: 55.751, lon: 37.601 } }, storyRef: { kind: "osm", id: "osm:way:10" }, transition: "", nextHint: "" }], route: null, fieldChecked: false };
+    const audio = { url: `/api/story-audio/${"b".repeat(64)}.mp3`, sha256: "b".repeat(64), durationSec: 40 };
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ document, revision: 5, contentVersion: "c".repeat(64), chapters: [{ id: document.stops[0].id, status: "ready", story: { title: "Дом на Арбате", address: "Москва, Арбат, 10", paragraphs: [{ text: "Опубликованный рассказ.", factIds: [] }], sources: [], facts: [] }, audio }] }), { status: 200 }));
+    vi.stubGlobal("fetch", fetcher);
+    const result = await loadLocalWalkView(document, 5, new AbortController().signal);
+    expect(result.chapters[0]).toMatchObject({ status: "ready", audio });
+    expect(result.contentVersion).toBe(`local:5:${"c".repeat(64)}`);
+    const [url, init] = fetcher.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("/api/story-walks/resolve");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(String(init.body))).toEqual({ document, revision: 5 });
+  });
+
+  it("оставляет гостевую прогулку открытой, если истории не загрузились", async () => {
+    const document: WalkDocument = { version: 2, id: "22222222-2222-4222-8222-222222222222", title: "Моя прогулка", description: "", city: "Москва", mode: "loop", minutes: 30,
+      start: { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } }, stops: [{ id: "33333333-3333-4333-8333-333333333333", place: { address: "Москва, Арбат, 10", location: { lat: 55.751, lon: 37.601 } }, storyRef: { kind: "osm", id: "osm:way:10" }, transition: "", nextHint: "" }], route: null, fieldChecked: false };
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: { message: "Некорректные данные" } }), { status: 400 }));
+    vi.stubGlobal("fetch", fetcher);
+    const result = await loadLocalWalkView(document, 5, new AbortController().signal);
+    expect(result.chapters[0]).toMatchObject({ status: "preparing", story: null, audio: null });
+    expect(fetcher).toHaveBeenCalledTimes(1);
   });
 });
 
