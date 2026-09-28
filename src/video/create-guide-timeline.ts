@@ -7,7 +7,7 @@ import {guideTimeline, type GuideSpec, type GuideStepSpec, type VoiceManifest} f
 // Снимки — e2e/video-create-guide.spec.ts, области камеры в CSS-пикселях снимка 1280×800.
 const DRAFT: Rect = {x: 380, y: 90, width: 520, height: 400};
 const TIME_PICKER: Rect = {x: 360, y: 90, width: 560, height: 560};
-const ROUTE: Rect = {x: 400, y: 80, width: 800, height: 520};
+const ROUTE: Rect = {x: 420, y: 70, width: 850, height: 540};
 const STOPS_LIST: Rect = {x: 360, y: 80, width: 620, height: 620};
 const WALK_PAGE: Rect = {x: 320, y: 60, width: 640, height: 660};
 const WALK_PANEL: Rect = {x: 395, y: 360, width: 490, height: 350};

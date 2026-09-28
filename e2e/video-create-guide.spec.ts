@@ -1,14 +1,11 @@
 import {expect, test, type Locator, type Page} from "@playwright/test";
-import {mkdir, writeFile} from "node:fs/promises";
-import {routeToWalkView} from "../src/features/walks/adapters";
-import routeData from "../public/data/routes/paveletskaya.json" with {type: "json"};
+import {mkdir, readFile, writeFile} from "node:fs/promises";
 import walk from "./fixtures/video-create-walk.json" with {type: "json"};
-import type {Route} from "../src/features/tour/types";
 import type {WalkDocument} from "../src/features/walks/model";
 
 // Снимки второй видеоинструкции: создание своей прогулки по времени и путь по ней.
-// Маршрут и адреса — настоящие ответы Valhalla и Nominatim, сохранённые в фикстуре;
-// истории остановок взяты из опубликованного маршрута у Павелецкой.
+// Кольцо вокруг Кремля построено планировщиком Отголоска, истории и озвучка —
+// опубликованные материалы этих мест; всё сохранено в фикстуре.
 test.use({deviceScaleFactor: 2});
 
 type Box = {x: number; y: number; width: number; height: number};
@@ -32,13 +29,53 @@ async function settleMap(page: Page) {
   }, {timeout: 30_000}).toBe(true);
 }
 
+// Экранная точка координаты по положению загруженной плитки OSM: карта Leaflet
+// недоступна из теста, а плитка однозначно задаёт масштаб и сдвиг.
+async function screenPoint(page: Page, lat: number, lon: number) {
+  return page.locator(".leaflet-tile").evaluateAll((images, [lat, lon]) => {
+    for (const image of images) {
+      const match = /\/(\d+)\/(\d+)\/(\d+)\.png$/.exec((image as HTMLImageElement).src);
+      const rect = image.getBoundingClientRect();
+      if (!match || !rect.width || getComputedStyle(image).opacity !== "1") continue;
+      const [z, tx, ty] = match.slice(1).map(Number);
+      const size = 256 * 2 ** z, sin = Math.sin(lat * Math.PI / 180);
+      const wx = (lon + 180) / 360 * size, wy = (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * size;
+      const scale = rect.width / 256;
+      return {x: rect.x + (wx - tx * 256) * scale, y: rect.y + (wy - ty * 256) * scale};
+    }
+    return null;
+  }, [lat, lon] as const);
+}
+
+// Перетаскивает карту, пока точка не окажется в target; шаг ограничен окном.
+async function bringTo(page: Page, lat: number, lon: number, target: {x: number; y: number}) {
+  for (let attempt = 0; attempt < 8; attempt++) {
+    await page.waitForTimeout(500);
+    const current = await screenPoint(page, lat, lon);
+    expect(current).not.toBeNull();
+    const dx = target.x - current!.x, dy = target.y - current!.y;
+    if (Math.hypot(dx, dy) < 3) return;
+    // Тянем за свободную от панели кромку карты: слева направо или справа налево.
+    const stepX = Math.max(-1100, Math.min(1100, dx)), stepY = Math.max(-400, Math.min(400, dy));
+    const from = {x: stepX >= 0 ? 60 : 1200, y: 420 - stepY / 2};
+    await page.mouse.move(from.x, from.y);
+    await page.mouse.down();
+    await page.mouse.move(from.x + stepX, from.y + stepY, {steps: 12});
+    // Пауза перед отпусканием гасит инерцию Leaflet, иначе карта проскакивает цель.
+    await page.waitForTimeout(300);
+    await page.mouse.up();
+  }
+  throw new Error("Не удалось подвести карту к точке старта");
+}
+
 test("видеоинструкция: своя прогулка по времени", async ({page, context}) => {
   test.setTimeout(120_000);
   await page.setViewportSize({width: 1280, height: 800});
   await context.grantPermissions(["geolocation"]);
   await context.setGeolocation({latitude: walk.start.location.lat, longitude: walk.start.location.lon, accuracy: 10});
 
-  const catalog = routeToWalkView(routeData as Route);
+  const chapters = walk.chapters as Record<string, {status: string; story: {title: string}; audio: {url: string}}>;
+  const stories = walk.plan.stops.map(stop => chapters[stop.contentId]);
   await page.route("**/api/**", route => route.fulfill({status: 404, json: {error: {message: "Нет в записи"}}}));
   await page.route("**/api/auth/session", route => route.fulfill({json: {user: null}}));
   await page.route("**/api/content/places?*", route => route.fulfill({json: {places: [], total: 0}}));
@@ -46,8 +83,13 @@ test("видеоинструкция: своя прогулка по време�
   await page.route("**/api/walk-plan", route => route.fulfill({json: walk.plan}));
   await page.route("**/api/story-walks/resolve", route => {
     const {document, revision} = route.request().postDataJSON() as {document: WalkDocument; revision: number};
-    const chapters = document.stops.map((stop, index) => ({...catalog.chapters[index], id: stop.id}));
-    return route.fulfill({json: {document, revision, contentVersion: "f".repeat(64), chapters}});
+    const resolved = document.stops.map(stop => ({...chapters[stop.storyRef!.id], id: stop.id}));
+    return route.fulfill({json: {document, revision, contentVersion: "f".repeat(64), chapters: resolved}});
+  });
+  await page.route("**/api/story-audio/*.mp3", async route => {
+    const hash = new URL(route.request().url()).pathname.split("/").at(-1)!;
+    if (!/^[a-f0-9]{64}\.mp3$/.test(hash)) return route.fulfill({status: 404});
+    return route.fulfill({contentType: "audio/mpeg", body: await readFile(`e2e/fixtures/audio/${hash}`)});
   });
 
   const targets: Record<string, Box> = {};
@@ -72,12 +114,9 @@ test("видеоинструкция: своя прогулка по време�
   await walkTab.click();
   await expect(page.getByRole("heading", {name: "Прогулка", exact: true})).toBeVisible();
 
-  // Сдвигаем карту, чтобы Павелецкий вокзал оказался на открытом месте слева от панели.
-  await page.mouse.move(200, 250);
-  await page.mouse.down();
-  await page.mouse.move(260, 450, {steps: 8});
-  await page.mouse.up();
-  const point = {x: 235, y: 315};
+  // Подводим Манеж на открытое место слева от панели: щелчок попадает в сам старт.
+  const point = {x: 235, y: 330};
+  await bringTo(page, walk.start.location.lat, walk.start.location.lon, point);
   await capture("empty", {x: point.x - 30, y: point.y - 30, width: 60, height: 60});
   await page.mouse.click(point.x, point.y);
   const destination = page.getByRole("button", {name: "Куда", exact: true});
@@ -130,10 +169,10 @@ test("видеоинструкция: своя прогулка по време�
     await context.setGeolocation({latitude: lat, longitude: lon, accuracy: 8});
     await page.waitForTimeout(400);
   }
-  await expect(page.getByRole("heading", {name: catalog.chapters[1].story!.title, exact: true})).toBeVisible();
+  await expect(page.getByRole("heading", {name: stories[1].story.title, exact: true})).toBeVisible();
   await capture("arrived", marker);
 
-  const last = catalog.chapters.length - 1;
+  const last = stories.length - 1;
   await page.getByRole("button", {name: /Остановки ·/}).click();
   await page.locator(".walk-session-stops button").nth(last).click();
   const finish = page.getByRole("button", {name: "Завершить", exact: true});
