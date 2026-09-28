@@ -14,7 +14,7 @@ export const WIDE_TRANSITIONS: readonly number[] = config.transitions;
  * Начало каждой сцены на общей шкале: переход TransitionSeries накладывает
  * соседние сцены, поэтому следующая начинается раньше конца предыдущей.
  */
-export function layoutWideScenes(scenes: readonly {id: WideSceneId; frames: number}[], transitions: readonly number[]): WideScene[] {
+export function layoutWideScenes<Id extends string = WideSceneId>(scenes: readonly {id: Id; frames: number}[], transitions: readonly number[]): {id: Id; frames: number; start: number; end: number}[] {
   if (transitions.length !== scenes.length - 1) {
     throw new RangeError("Переходов должно быть на один меньше, чем сцен");
   }

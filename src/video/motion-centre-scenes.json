@@ -1,0 +1,15 @@
+{
+  "fps": 30,
+  "lockupFrame": 46,
+  "hook": {"fireStart": 44, "itemFrames": 36},
+  "scenes": [
+    {"id": "hook", "frames": 392},
+    {"id": "logo", "frames": 96},
+    {"id": "claim", "frames": 130},
+    {"id": "map", "frames": 240},
+    {"id": "facts", "frames": 200},
+    {"id": "steps", "frames": 208},
+    {"id": "outro", "frames": 150}
+  ],
+  "transitions": [14, 18, 16, 20, 18, 14]
+}

@@ -194,13 +194,13 @@ const steps = [
   {title: "Слушайте на месте", text: "История звучит рядом с местом событий", image: "guide/listen.png", path: "/walk"},
 ];
 
-function Browser({image, path}: {image: string; path: string}) {
+function Browser({image, path, site}: {image: string; path: string; site: string}) {
   return (
     <div style={{width: 1120, borderRadius: 22, overflow: "hidden", background: C.cream, border: "1px solid rgba(255,255,255,0.25)", boxShadow: `0 60px 140px rgba(0,0,0,0.65), 0 0 120px ${C.rust}55`}}>
       <div style={{height: 54, display: "flex", alignItems: "center", gap: 10, padding: "0 22px", background: "#efe9dd", borderBottom: "1px solid #e0d8c8"}}>
         {["#ff5f57", "#febc2e", "#28c840"].map((color) => <div key={color} style={{width: 14, height: 14, borderRadius: "50%", background: color}} />)}
         <div style={{marginLeft: 24, flex: 1, height: 32, borderRadius: 8, background: C.cream, display: "flex", alignItems: "center", padding: "0 16px", font: `600 18px ${SANS}`, color: C.paperMuted}}>
-          {SITE}{path}
+          {site}{path}
         </div>
       </div>
       <Img src={staticFile(image)} style={{display: "block", width: 1120, height: 700, objectFit: "cover"}} />
@@ -208,7 +208,7 @@ function Browser({image, path}: {image: string; path: string}) {
   );
 }
 
-export function Steps() {
+export function Steps({site = SITE}: {site?: string} = {}) {
   const frame = useCurrentFrame();
   return (
     <Night>
@@ -237,7 +237,7 @@ export function Steps() {
                 filter: `blur(${leave * 8}px)`,
               }}
             >
-              <Browser image={step.image} path={step.path} />
+              <Browser image={step.image} path={step.path} site={site} />
             </div>
           );
         })}
@@ -427,7 +427,7 @@ export function Facts() {
 
 const LOCKUP = WIDE_LOCKUP_FRAME;
 
-export function Outro() {
+export function Outro({site = SITE}: {site?: string} = {}) {
   const frame = useCurrentFrame();
   const grow = progress(frame, 0, LOCKUP, easeIn);
   return (
@@ -465,7 +465,7 @@ export function Outro() {
             filter: `blur(${interpolate(frame, [LOCKUP + 8, LOCKUP + 20], [20, 0], clamp)}px)`,
           }}
         >
-          {SITE}
+          {site}
         </div>
         <div style={{marginTop: 24, fontFamily: SERIF, fontStyle: "italic", fontWeight: 600, fontSize: 56, color: C.muted, opacity: progress(frame, LOCKUP + 24, LOCKUP + 36)}}>
           Город говорит там, где случилась <span style={{color: C.peach}}>история</span>

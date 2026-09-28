@@ -106,6 +106,19 @@ pnpm video:render:motion-wide
 Результат — `artifacts/video/otgolosok-motion-wide.mp4`. Подробности:
 [моушн-ролик](docs/agents/motion-video.md).
 
+`OtgolosokMotionCentre` — вторая версия горизонтального ролика, «Прогулка по
+центру»: 1920×1080 на 44 секунды. Хук называет по одному восемь мест от Храма
+Христа Спасителя до Палат бояр Романовых, камера летит по карте центра, путь
+рисуется по пешеходному графу OpenStreetMap. Названия, адреса, тексты,
+источники и озвучка карточки — из опубликованных историй otgolosok.online.
+
+```bash
+pnpm video:render:motion-centre
+```
+
+Результат — `artifacts/video/otgolosok-motion-centre.mp4`. Данные ролика лежат в
+`src/video/centre-walk.json`; обновляет их `pnpm video:centre:data` (нужна сеть).
+
 Кинетический ролик 1080×1920 на 24 секунды собирается без Remotion: страница
 `video/kinetic/` рисует любой кадр функцией времени, Playwright снимает кадры,
 FFmpeg (нужен в `PATH`) кодирует MP4 с синтезированной музыкой и фрагментом
