@@ -35,7 +35,7 @@ describe("подготовка материалов Remotion", () => {
       expect(await readFile(join(publicDir, destination), "utf8")).toBe(await readFile(join(root, source), "utf8"));
     }
     // Фон и щелчок инструкции синтезируются, а не копируются.
-    for (const generated of ["guide/bed.wav", "guide/click.wav", "motion/bed.wav", "motion/create-bed.wav"]) {
+    for (const generated of ["video/ad-bed.wav", "guide/bed.wav", "guide/click.wav", "motion/bed.wav", "motion/create-bed.wav"]) {
       expect((await readFile(join(publicDir, generated))).toString("ascii", 0, 4)).toBe("RIFF");
     }
     // Синтез трёх полноразмерных музыкальных подложек занимает несколько секунд процессора.
@@ -45,6 +45,13 @@ describe("подготовка материалов Remotion", () => {
     const {root, publicDir} = await fixture();
     await rm(join(root, videoAssets[0][0]));
     await expect(prepareVideoAssets(root, publicDir)).rejects.toMatchObject({code: "ENOENT"});
+  });
+
+  it("без снимка экрана подсказывает команду съёмки", async () => {
+    const {root, publicDir} = await fixture();
+    const screenshot = videoAssets.find(([source]) => source.endsWith(".png"))![0];
+    await rm(join(root, screenshot));
+    await expect(prepareVideoAssets(root, publicDir)).rejects.toThrow(/CAPTURE_VIDEO_GUIDE=1/);
   });
 });
 

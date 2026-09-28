@@ -26,6 +26,10 @@ pnpm exec playwright test e2e/video-guide.spec.ts --workers=1
 Remove-Item Env:CAPTURE_VIDEO_GUIDE
 ```
 
+PNG не хранятся в Git (около 37 МБ): после клонирования снимите оба набора, иначе
+`pnpm video:prepare` остановится с подсказкой. Проверка размеров снимков в
+`guide-timeline.test.ts` пропускается, пока их нет.
+
 Съёмка ждёт загрузки тайлов и завершения движения Leaflet. После изменения
 интерфейса обновляйте PNG и `targets.json` вместе; тест `guide-timeline.test.ts`
 проверяет, что каждая цель попадает в область камеры своего шага.

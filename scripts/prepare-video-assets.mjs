@@ -8,6 +8,7 @@ import motion from "../src/video/motion-scenes.json" with {type: "json"};
 import createAd from "../src/video/create-ad-scenes.json" with {type: "json"};
 import {clickWav, guideBedWav} from "./build-guide-audio.mjs";
 import {motionBedWav} from "./build-motion-audio.mjs";
+import {adBedWav} from "./build-video-bed.mjs";
 import {wideMotionScore} from "./motion-wide-score.mjs";
 
 /** Фон видеоинструкции с запасом; тест проверяет, что ролик короче. */
@@ -26,7 +27,6 @@ export const videoAssets = [
   ["public/audio/walk/kozhevniki-d2ccb2df8e45.mp3", "audio/walk/kozhevniki-d2ccb2df8e45.mp3"],
   ["video/assets/video/moscow-evening.webp", "video/moscow-evening.webp"],
   ["video/assets/video/brick-facade.webp", "video/brick-facade.webp"],
-  ["video/assets/video/ad-bed.wav", "video/ad-bed.wav"],
   ...guideScreens.map(name => [`video/assets/guide/${name}.png`, `guide/${name}.png`]),
   ...Object.keys(narration).map(id => [`video/assets/guide/voice/${id}.mp3`, `guide/voice/${id}.mp3`]),
   ...createScreens.map(name => [`video/assets/guide/create/${name}.png`, `guide/create/${name}.png`]),
@@ -35,17 +35,33 @@ export const videoAssets = [
   ...fonts.map(path => [`node_modules/@fontsource/${path}`, `fonts/${path.split("/").at(-1)}`]),
 ];
 
+/** Снимки экранов инструкций не хранятся в git: их снимают тесты Playwright. */
+const CAPTURE_HINT = "Снимите экраны инструкций с переменной окружения CAPTURE_VIDEO_GUIDE=1: pnpm exec playwright test e2e/video-guide.spec.ts e2e/video-create-guide.spec.ts --workers=1 (см. docs/agents/video-guide.md).";
+
+async function sourceStat(root, source) {
+  try {
+    return await stat(join(root, source));
+  } catch (error) {
+    if (error?.code === "ENOENT" && source.startsWith("video/assets/guide/") && source.endsWith(".png")) {
+      throw Object.assign(new Error(`Нет снимка ${source}. ${CAPTURE_HINT}`), {code: "ENOENT"});
+    }
+    throw error;
+  }
+}
+
 export async function prepareVideoAssets(root, publicDir, {bedSeconds = GUIDE_BED_SECONDS} = {}) {
   for (const [source, destination] of videoAssets) {
     const sourcePath = join(root, source);
     const destinationPath = join(publicDir, destination);
-    const sourceInfo = await stat(sourcePath);
+    const sourceInfo = await sourceStat(root, source);
     if (!sourceInfo.isFile()) {
       throw new Error(`Материал ролика не является файлом: ${source}`);
     }
     await mkdir(dirname(destinationPath), {recursive: true});
     await copyFile(sourcePath, destinationPath);
   }
+  await mkdir(join(publicDir, "video"), {recursive: true});
+  await writeFile(join(publicDir, "video/ad-bed.wav"), adBedWav());
   await mkdir(join(publicDir, "guide"), {recursive: true});
   await writeFile(join(publicDir, "guide/bed.wav"), guideBedWav(bedSeconds));
   await writeFile(join(publicDir, "guide/click.wav"), clickWav());

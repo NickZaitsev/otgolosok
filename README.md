@@ -89,8 +89,12 @@ pnpm video:render
 Команды рендера создают `artifacts/video/otgolosok-ad.mp4` и
 `artifacts/video/otgolosok-promo.mp4`. Это локальные результаты, каталог исключён
 из Git. Рекламный монтаж находится в `src/video/otgolosok-ad.tsx`, хронометраж —
-в `src/video/ad-timeline.ts`. Фоновую дорожку можно пересоздать командой
-`pnpm video:bed`; она сохраняется в `video/assets/video/ad-bed.wav`.
+в `src/video/ad-timeline.ts`. Фоновую дорожку синтезирует `pnpm video:prepare`.
+
+Снимки экранов для роликов не хранятся в Git. Перед первым рендером и после
+изменений интерфейса снимите их тестами Playwright — команды описаны в
+`docs/agents/video-guide.md`; без снимков `pnpm video:prepare` остановится и
+подскажет команду.
 
 `OtgolosokMotionWide` — горизонтальный моушн-ролик 1920×1080 на 30 секунд для
 сайта, презентаций и YouTube: кинетическая типографика на ночном фоне, знак с
