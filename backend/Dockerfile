@@ -1,4 +1,4 @@
-FROM node:24-bookworm-slim
+FROM node:24.20.0-bookworm-slim
 RUN apt-get -o Acquire::ForceIPv4=true -o Acquire::http::Timeout=20 -o Acquire::Retries=1 update && apt-get -o Acquire::ForceIPv4=true -o Acquire::http::Timeout=20 -y --no-install-recommends install ffmpeg ca-certificates python3 python3-venv && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./

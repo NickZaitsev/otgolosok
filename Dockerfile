@@ -1,7 +1,8 @@
 FROM node:24.20.0-bookworm-slim AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm install --global pnpm@10.24.0
+# pnpm comes from the packageManager field in package.json, as in the backend image.
+RUN corepack enable pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY vendor/softmg-airouter-logs-0.1.0.tgz ./vendor/
 RUN pnpm install --frozen-lockfile
