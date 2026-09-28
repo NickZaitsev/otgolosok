@@ -75,7 +75,7 @@
 .around-card-label{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-10px -10px 4px 0;font-size:var(--text-meta);text-transform:uppercase;letter-spacing:1px;font-weight:800;color:var(--around-orange)}
 .around-card-label .around-icon{color:#617064}
 .around-story-scroll>small{display:block;font-size:var(--text-meta);color:#627064;line-height:1.5;margin:10px 0}
-.around-story-text{margin:14px 0}.around-story-text p{color:#33483f;font-size:var(--text-secondary);line-height:1.65;margin:0 0 10px}.around-story-text p:last-child{margin-bottom:0}
+.around-story-scroll .around-story-source{margin:0 0 12px;color:var(--muted);font-size:var(--text-secondary);line-height:1.5}.around-story-source a{color:inherit;text-decoration:underline;text-underline-offset:2px}.around-story-text{margin:14px 0}.around-story-text p{color:#33483f;font-size:var(--text-secondary);line-height:1.65;margin:0 0 10px}.around-story-text p:last-child{margin-bottom:0}
 .around-place-card .around-primary{margin-top:14px}
 .around-place-card .around-primary+.around-secondary{margin-top:10px}
 
