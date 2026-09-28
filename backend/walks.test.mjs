@@ -155,15 +155,45 @@ test('rejects malformed, oversized, and failing upstream responses',async()=>{
   }
 });
 
-test('missing router, concurrency, cooldown and total deadline are bounded',async()=>{
+test('missing router, total deadline and the waiting queue are bounded',{timeout:5000},async()=>{
   await assert.rejects(createWalkPlanner({routerUrl:''})(input()),{code:'WALK_UNAVAILABLE'});
-  let clock=0,signal;
-  const plan=createWalkPlanner({routerUrl:'https://router.test/route',timeoutMs:25,now:()=>clock,fetchImpl:async(url,o)=>{signal=o.signal;return new Promise(()=>{});}});
-  const first=plan(input());
+  const signals=[];
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',timeoutMs:25,minIntervalMs:0,maxWaiters:1,fetchImpl:async(url,o)=>{signals.push(o.signal);return new Promise(()=>{});}});
+  const first=plan(input()),second=plan(input());
   await assert.rejects(plan(input()),{code:'WALK_BUSY'});
-  await assert.rejects(first,{code:'WALK_UNAVAILABLE'});assert.equal(signal.aborted,true);
+  await assert.rejects(first,{code:'WALK_UNAVAILABLE'});assert.equal(signals[0].aborted,true);
+  // The queued plan runs once the first one ends and gets its own deadline.
+  await assert.rejects(second,{code:'WALK_UNAVAILABLE'});assert.equal(signals.length,2);assert.equal(signals[1].aborted,true);
+});
+
+test('a plan that waits in the queue too long is refused as busy',{timeout:5000},async()=>{
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',timeoutMs:300,minIntervalMs:0,maxWaitMs:20,fetchImpl:async()=>new Promise(()=>{})});
+  const first=plan(input()).catch(error=>error);
+  const began=Date.now();
   await assert.rejects(plan(input()),{code:'WALK_BUSY'});
-  clock=2001;await assert.rejects(plan(input()),{code:'WALK_UNAVAILABLE'});
+  assert.ok(Date.now()-began<250);
+  assert.equal((await first).code,'WALK_UNAVAILABLE');
+});
+
+test('simultaneous plans from different clients are served in arrival order, spaced by the interval',{timeout:5000},async()=>{
+  const started=[];
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:null,minIntervalMs:40,fetchImpl:async(url,o)=>{
+    const request=JSON.parse(o.body);started.push({lat:request.locations[1].lat,at:performance.now()});return Response.json(route(request));
+  }});
+  const results=await Promise.all([1,2,3].map(n=>plan(input({stops:[stop(n)]}),{client:`client-${n}`})));
+  assert.deepEqual(results.map(result=>result.stops[0]),[1,2,3].map(stop));
+  assert.deepEqual(started.map(call=>call.lat),[1,2,3].map(n=>stop(n).location.lat));
+  // Timers may fire a millisecond early; the gap is the interval, not zero.
+  for(let index=1;index<started.length;index++)assert.ok(started[index].at-started[index-1].at>=35,`gap ${started[index].at-started[index-1].at}`);
+});
+
+test('one client cannot start plans faster than the interval, others are not affected',{timeout:5000},async()=>{
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:null,minIntervalMs:60,fetchImpl:async(url,o)=>Response.json(route(JSON.parse(o.body)))});
+  await plan(input(),{client:'a'});
+  await assert.rejects(plan(input(),{client:'a'}),{code:'WALK_RATE_LIMITED'});
+  assert.ok((await plan(input(),{client:'b'})).geometry.length>0);
+  await new Promise(done=>setTimeout(done,70));
+  assert.ok((await plan(input(),{client:'a'})).geometry.length>0);
 });
 
 test('total deadline also covers a stalled response body',async()=>{

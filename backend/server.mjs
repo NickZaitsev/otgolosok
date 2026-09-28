@@ -474,12 +474,13 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
       if(req.method==="POST") {
         if(req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {json(res,403,{error:{message:"Откройте подготовку истории на сайте."}});return;}
         if(url.pathname==="/api/walk-plan") {
-          try {json(res,200,await walkPlanner(await body(req,8192)));}
+          // X-Real-IP is overwritten by nginx, as for Better Auth rate limiting.
+          try {json(res,200,await walkPlanner(await body(req,8192),{client:String(req.headers["x-real-ip"]??req.socket.remoteAddress??"")}));}
           catch(error) {
-            const messages={WALK_INVALID:"Проверьте начало, остановки и параметры прогулки.",WALK_BUSY:"Планировщик занят. Повторите через пару секунд.",WALK_NOT_FOUND:"Не удалось построить пешеходную прогулку в выбранное время. Измените точки или длительность.",WALK_STOPS_NOT_FOUND:"Рядом со стартом недостаточно достопримечательностей в каталоге. Добавьте остановки вручную или выберите другое начало прогулки.",WALK_DISCOVERY_UNAVAILABLE:"Не удалось автоматически подобрать остановки. Попробуйте позже или добавьте остановки вручную.",WALK_UNAVAILABLE:"Пешеходный маршрутизатор временно недоступен. Попробуйте позже."};
+            const messages={WALK_INVALID:"Проверьте начало, остановки и параметры прогулки.",WALK_BUSY:"Планировщик занят. Повторите через пару секунд.",WALK_RATE_LIMITED:"Слишком частые запросы маршрута. Повторите через пару секунд.",WALK_NOT_FOUND:"Не удалось построить пешеходную прогулку в выбранное время. Измените точки или длительность.",WALK_STOPS_NOT_FOUND:"Рядом со стартом недостаточно достопримечательностей в каталоге. Добавьте остановки вручную или выберите другое начало прогулки.",WALK_DISCOVERY_UNAVAILABLE:"Не удалось автоматически подобрать остановки. Попробуйте позже или добавьте остановки вручную.",WALK_UNAVAILABLE:"Пешеходный маршрутизатор временно недоступен. Попробуйте позже."};
             const code=error.code==="BAD_REQUEST"?"WALK_INVALID":Object.hasOwn(messages,error.code)?error.code:"WALK_UNAVAILABLE";
-            if(code==="WALK_BUSY")res.setHeader("Retry-After","2");
-            json(res,{WALK_INVALID:400,WALK_BUSY:429,WALK_NOT_FOUND:404,WALK_STOPS_NOT_FOUND:404,WALK_DISCOVERY_UNAVAILABLE:503,WALK_UNAVAILABLE:503}[code],{error:{code,message:messages[code]}});
+            if(["WALK_BUSY","WALK_RATE_LIMITED"].includes(code))res.setHeader("Retry-After","2");
+            json(res,{WALK_INVALID:400,WALK_BUSY:429,WALK_RATE_LIMITED:429,WALK_NOT_FOUND:404,WALK_STOPS_NOT_FOUND:404,WALK_DISCOVERY_UNAVAILABLE:503,WALK_UNAVAILABLE:503}[code],{error:{code,message:messages[code]}});
           }
           return;
         }
