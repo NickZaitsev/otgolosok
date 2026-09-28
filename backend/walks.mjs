@@ -18,6 +18,15 @@ const distance = (a,b) => {
 const MAX_WALK_STOPS = 10;
 const AUTO_STOP_LIMITS = {30:5,60:8,90:10};
 const NEAR_ROUTE_METERS = 50;
+// Automatic walks without a destination aim for at least this share of the chosen walking time.
+export const MIN_BUDGET_SHARE = 0.75;
+// Valhalla's pedestrian default is about 5.1 km/h; streets add roughly a third to straight lines.
+const WALK_METERS_PER_MINUTE = 85;
+const STRAIGHT_TO_WALK = 1.3;
+const MAX_AUTO_ROUTE_ATTEMPTS = 8;
+const MAX_SPACING_STEPS = 16;
+const MIN_SPACING_STEP_METERS = 20;
+const RANK_WINDOW_METERS = 150;
 const contentId = value => typeof value === 'string' && /^osm:(node|way|relation):\d+$/.test(value);
 const readinessRank = {none:0,story:1,audio:2};
 
@@ -37,6 +46,32 @@ function routeProximity(point, geometry) {
     passed+=segmentM;
   }
   return best;
+}
+
+// Greedy chain for a walk without a destination. Consecutive stops keep at least
+// spacingM between them, so a larger spacing spreads the same number of stories
+// over a longer walk. Straight-line distances only shape the chain; the router
+// still measures and accepts every walk. Among comparably placed landmarks,
+// ready content and the map catalog win, as on routes with a destination.
+export function selectChain({start,candidates,stopLimit,spacingM,loop,straightBudgetM}) {
+  const chain=[];let current=start,used=0;
+  while(chain.length<stopLimit) {
+    const eligible=[];
+    for(const candidate of candidates) {
+      if(chain.includes(candidate))continue;
+      const step=distance(current.location,candidate.location);
+      if(step<spacingM||[start,...chain].some(p=>distance(p.location,candidate.location)<spacingM/2))continue;
+      if(used+step+(loop?distance(candidate.location,start.location):0)>straightBudgetM)continue;
+      eligible.push({candidate,step});
+    }
+    if(!eligible.length)break;
+    const reach=Math.max(spacingM*1.5,spacingM+RANK_WINDOW_METERS),near=eligible.filter(item=>item.step<=reach);
+    const next=near.length
+      ?near.sort((a,b)=>b.candidate.contentRank-a.candidate.contentRank||b.candidate.catalogRank-a.candidate.catalogRank||a.step-b.step)[0]
+      :eligible.sort((a,b)=>a.step-b.step)[0];
+    chain.push(next.candidate);used+=next.step;current=next.candidate;
+  }
+  return chain;
 }
 
 function place(p) {
@@ -104,7 +139,9 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
         return JSON.parse(Buffer.concat(chunks).toString());
       } finally {controller.signal.removeEventListener('abort',cancel);cancel();}
     }
-    async function routeStops(routeStops) {
+    // Unusable routes (snapped or disconnected legs) are null; a usable route
+    // reports its walking time and whether it fits the chosen budget.
+    async function measureRoute(routeStops) {
         const points=[start,...routeStops,...(destination?[destination]:input.mode==='loop'?[start]:[])];
         const url=new URL(routerUrl);
         if(!['http:','https:'].includes(url.protocol)||url.username||url.password)throw fail('WALK_UNAVAILABLE');
@@ -130,12 +167,65 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           if(geometry.length>12000)throw fail('WALK_UNAVAILABLE');
         }
         const direct=points.slice(1).reduce((sum,p,i)=>sum+distance(points[i].location,p.location),0);
-        if(seconds<=input.minutes*60&&distanceM<=input.minutes*90&&distanceM<=Math.max(1200,direct*4)) {
-          const publicStops=routeStops.map(p=>({address:p.address,location:p.location,...(p.contentId?{contentId:p.contentId}:{})}));
-          return {stops:publicStops,geometry,distanceM:Math.round(distanceM),walkingMinutes:Math.ceil(seconds/60),attribution:'© OpenStreetMap contributors; pedestrian routing by Valhalla. Map information is not verified historical evidence.'};
-        }
-      return null;
+        const fits=seconds<=input.minutes*60&&distanceM<=input.minutes*90&&distanceM<=Math.max(1200,direct*4);
+        const publicStops=routeStops.map(p=>({address:p.address,location:p.location,...(p.contentId?{contentId:p.contentId}:{})}));
+        return {seconds,fits,route:{stops:publicStops,geometry,distanceM:Math.round(distanceM),walkingMinutes:Math.ceil(seconds/60),attribution:'© OpenStreetMap contributors; pedestrian routing by Valhalla. Map information is not verified historical evidence.'}};
     }
+    async function routeStops(routeStops) {
+      const measured=await measureRoute(routeStops);
+      return measured?.fits?measured.route:null;
+    }
+    // The nearest landmarks cluster into a short walk in dense areas, so spacing
+    // between stops is searched until the walk reaches the time floor. Every
+    // router call is bounded; the longest fitting walk is kept for sparse areas.
+    async function fillBudget(candidates,stopLimit) {
+      const loop=input.mode==='loop',budget=input.minutes*60,floor=MIN_BUDGET_SHARE*budget;
+      let straightBudgetM=input.minutes*WALK_METERS_PER_MINUTE/STRAIGHT_TO_WALK;
+      const chainFor=spacingM=>selectChain({start,candidates,stopLimit,spacingM,loop,straightBudgetM});
+      const straightLength=chain=>[start,...chain,...(loop?[start]:[])].slice(1).reduce((sum,p,i,points)=>sum+distance((i?points[i-1]:start).location,p.location),0);
+      let nearest=chainFor(0);
+      // The straight-line estimate may be too strict for sparse areas; let the router decide.
+      if(nearest.length<2)nearest=selectChain({start,candidates,stopLimit,spacingM:0,loop,straightBudgetM:Infinity});
+      const measured=new Map([[JSON.stringify(nearest.map(p=>p.address)),await measureRoute(nearest)]]);
+      let best=[...measured.values()][0];
+      if(best?.fits&&best.seconds>=floor)return best.route;
+      if(!best?.fits) {
+        // Spreading stops only lengthens a walk that is already too long or unusable.
+        for(let stops=nearest.slice(0,-1);stops.length>=2;stops=stops.slice(0,-1)) {
+          controller.signal.throwIfAborted();
+          const route=await routeStops(stops);
+          if(route)return route;
+        }
+        throw fail('WALK_NOT_FOUND');
+      }
+      let lo=0,hi=straightBudgetM/2,spacingM=straightBudgetM/(stopLimit+(loop?1:0));
+      for(let step=0;step<MAX_SPACING_STEPS&&hi-lo>=MIN_SPACING_STEP_METERS;step++) {
+        controller.signal.throwIfAborted();
+        const chain=chainFor(spacingM),key=JSON.stringify(chain.map(p=>p.address));
+        let result=null;
+        if(chain.length>=2) {
+          if(!measured.has(key)) {
+            if(measured.size>=MAX_AUTO_ROUTE_ATTEMPTS)break;
+            measured.set(key,await measureRoute(chain));
+          }
+          result=measured.get(key);
+        }
+        if(result) {
+          // Streets wind more or less than assumed: learn the ratio from the router
+          // so the next chains end just below the budget.
+          const calibrated=straightLength(chain)*budget/result.seconds*0.97;
+          if(result.seconds>budget) {straightBudgetM=Math.min(straightBudgetM*0.97,calibrated);continue;}
+          straightBudgetM=Math.max(straightBudgetM,calibrated);
+        }
+        // Too few stops, an unusable snap or a detour-heavy walk need tighter spacing.
+        if(!result?.fits)hi=spacingM;
+        else if(result.seconds>=floor)return result.route;
+        else {if(result.seconds>best.seconds)best=result;lo=spacingM;}
+        spacingM=(lo+hi)/2;
+      }
+      return best.route;
+    }
+
     async function run() {
       // Check the destination before discovery, and never sacrifice it for a candidate.
       const directRoute=destination&&!manual?await routeStops([]):null;
@@ -204,13 +294,9 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
           }
           return result;
         }
-        let current=start;
-        while(candidates.length&&stops.length<stopLimit) {
-          candidates.sort((a,b)=>distance(current.location,a.location)-distance(current.location,b.location));
-          current=candidates.shift();stops.push(current);
-        }
-        if(!destination&&stops.length<2)throw fail('WALK_STOPS_NOT_FOUND');
+        if(candidates.length<2)throw fail('WALK_STOPS_NOT_FOUND');
         discovering=false;
+        return await fillBudget(candidates,stopLimit);
       }
       while(true) {
         controller.signal.throwIfAborted();

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createWalkPlanner } from './walks.mjs';
+import { createWalkPlanner, selectChain } from './walks.mjs';
 import discoveryCatalog from './walk-discovery-catalog.mjs';
 
 const start={address:'Москва, Арбат, 1',location:{lat:55.75,lon:37.60}};
@@ -185,10 +185,8 @@ test('offline discovery routes both modes without contacting Overpass',async()=>
   for(const mode of ['loop','open']) {
     const result=await plan({start,mode,minutes:30});
     assert.deepEqual(result.stops,[1,2,3,4].map(stop));
-    assert.equal(calls.at(-1).costing,'pedestrian');
-    assert.equal(calls.at(-1).locations.length,mode==='loop'?6:5);
   }
-  assert.equal(calls.length,2);
+  assert.ok(calls.every(call=>call.costing==='pedestrian'));
   assert.deepEqual(elements,original);
 });
 
@@ -395,4 +393,117 @@ test('zero-length required legs are an unusable route, not a router outage', asy
   });
   await assert.rejects(plan(input()),{code:'WALK_NOT_FOUND'});
   await assert.rejects(plan({start,mode:'open',minutes:30,destination:stop(5)}),{code:'WALK_NOT_FOUND'});
+});
+
+// Valhalla-like timing: leg time follows its length at ~5 km/h, unlike the constant-time mock above.
+// Streets wind: the returned shape really is `detour` times longer than the straight line.
+const metres=(a,b)=>{
+  const rad=Math.PI/180,h=Math.sin((b.lat-a.lat)*rad/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin((b.lon-a.lon)*rad/2)**2;
+  return 12742000*Math.asin(Math.sqrt(Math.min(1,h)));
+};
+function walkRoute(request,detour=1.3) {
+  const points=request.locations;
+  return {trip:{status:0,units:'kilometers',legs:points.slice(1).map((p,i)=>{
+    const straight=metres(points[i],p),length=straight*detour;
+    const bend={lat:(points[i].lat+p.lat)/2+straight/2*Math.sqrt(detour**2-1)/111195,lon:(points[i].lon+p.lon)/2};
+    return {summary:{time:length/1.4,length:length/1000},shape:encode([points[i],bend,p])};
+  })}};
+}
+// Notable addressed buildings every ~150 m around the start, as in central Moscow.
+const grid=(half=12,stepM=150)=>{
+  const elements=[];let id=1;
+  for(let y=-half;y<=half;y++)for(let x=-half;x<=half;x++) {
+    if(!x&&!y)continue;
+    elements.push({type:'way',id:id++,center:{lat:start.location.lat+y*stepM/111195,lon:start.location.lon+x*stepM/(111195*Math.cos(start.location.lat*Math.PI/180))},
+      tags:{building:'yes','addr:street':`Улица ${y+half}`,'addr:housenumber':String(x+half+1),historic:'building'}});
+  }
+  return elements;
+};
+const gridPlanner=({elements=grid(),detour=1.3,...extra}={})=>{
+  const calls=[];
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:elements,minIntervalMs:0,...extra,
+    fetchImpl:async(url,o)=>{calls.push(JSON.parse(o.body));return Response.json(walkRoute(calls.at(-1),detour));}});
+  return {plan,calls};
+};
+
+for(const detour of [1.3,1.6])for(const mode of ['loop','open'])for(const minutes of [30,60,90])test(`automatic ${mode} fills at least 75% of a ${minutes}-minute walk in a dense area, detour ${detour}`,async()=>{
+  const {plan,calls}=gridPlanner({detour});
+  const result=await plan({start,mode,minutes});
+  assert.ok(result.walkingMinutes>=0.75*minutes,`${result.walkingMinutes} min for ${minutes}`);
+  assert.ok(result.walkingMinutes<=minutes);
+  assert.ok(result.stops.length>=2&&result.stops.length<={30:5,60:8,90:10}[minutes]);
+  if(mode==='loop')assert.deepEqual(result.geometry.at(-1),start.location);
+  assert.ok(calls.length<=8);
+});
+
+const east=(m,extra={})=>({address:`Москва, Восточная улица, ${m}`,location:{lat:start.location.lat,lon:start.location.lon+m/62600},contentRank:0,catalogRank:0,...extra});
+const west=(m,extra={})=>({address:`Москва, Западная улица, ${m}`,location:{lat:start.location.lat,lon:start.location.lon-m/62600},contentRank:0,catalogRank:0,...extra});
+for(const [name,spacingM,candidates,expected] of [
+  ['nearest without spacing',0,[east(100),west(400)],'Москва, Восточная улица, 100'],
+  ['ready audio within the rank window',0,[east(60),west(120,{contentRank:2})],'Москва, Западная улица, 120'],
+  ['map catalog within the rank window',0,[east(60),west(120,{catalogRank:1})],'Москва, Западная улица, 120'],
+  ['readiness before catalog',0,[east(60,{catalogRank:1}),west(120,{contentRank:1})],'Москва, Западная улица, 120'],
+  ['rank does not pull a far landmark',0,[east(60),west(400,{contentRank:2})],'Москва, Восточная улица, 60'],
+  ['spacing skips close landmarks',300,[east(100),west(320)],'Москва, Западная улица, 320'],
+  ['ready audio within a spaced window',300,[east(320),west(420,{contentRank:2})],'Москва, Западная улица, 420'],
+])test(`selectChain picks ${name}`,()=>{
+  const chain=selectChain({start,candidates,stopLimit:1,spacingM,loop:true,straightBudgetM:5000});
+  assert.equal(chain[0].address,expected);
+});
+
+test('selectChain respects the stop cap, spacing and the straight-line budget of a loop',()=>{
+  const candidates=[100,200,300,400,500,600].map(m=>east(m));
+  assert.equal(selectChain({start,candidates,stopLimit:3,spacingM:0,loop:true,straightBudgetM:5000}).length,3);
+  assert.deepEqual(selectChain({start,candidates,stopLimit:3,spacingM:190,loop:false,straightBudgetM:5000}).map(c=>c.address),[200,400,600].map(m=>east(m).address));
+  // Going out 300 m and back is 600 m; the 400 m landmark would need 800 m.
+  assert.deepEqual(selectChain({start,candidates,stopLimit:10,spacingM:0,loop:true,straightBudgetM:600}).map(c=>c.address),[100,200,300].map(m=>east(m).address));
+});
+
+test('a sparse area returns the longest fitting walk instead of failing',async()=>{
+  const elements=grid(1,150);
+  const {plan,calls}=gridPlanner({elements});
+  const result=await plan({start,mode:'loop',minutes:60});
+  assert.ok(result.walkingMinutes<45);
+  assert.ok(result.stops.length>=2);
+  const fitting=calls.map(call=>walkRoute(call).trip.legs.reduce((sum,leg)=>sum+leg.summary.time,0)).filter(seconds=>seconds<=3600);
+  assert.equal(result.walkingMinutes,Math.ceil(Math.max(...fitting)/60));
+});
+
+test('landmarks beyond the straight-line estimate are still checked by the router',async()=>{
+  const elements=[-1,1].map((side,index)=>({type:'way',id:index+1,center:{lat:start.location.lat,lon:start.location.lon+side*1000/62600},
+    tags:{building:'yes','addr:street':'Дальняя улица','addr:housenumber':String(index+1),historic:'building'}}));
+  const fast=gridPlanner({elements,detour:1});
+  const result=await fast.plan({start,mode:'loop',minutes:60});
+  assert.equal(result.stops.length,2);
+  assert.ok(fast.calls.length>=1);
+  const slow=gridPlanner({elements,detour:1.6});
+  await assert.rejects(slow.plan({start,mode:'loop',minutes:60}),{code:'WALK_NOT_FOUND'});
+  assert.ok(slow.calls.length>=1);
+});
+
+test('the spacing search makes a bounded number of router calls',async()=>{
+  let calls=0;
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:grid(),minIntervalMs:0,
+    fetchImpl:async(url,o)=>{
+      calls++;
+      // Implausibly fast walking keeps every measured walk short of the floor.
+      const data=walkRoute(JSON.parse(o.body));
+      for(const leg of data.trip.legs)leg.summary.time/=10;
+      return Response.json(data);
+    }});
+  const result=await plan({start,mode:'loop',minutes:90});
+  assert.ok(result.walkingMinutes<68);
+  assert.ok(calls>1&&calls<=8,`${calls} router calls`);
+});
+
+test('an unusable spaced walk does not abort the search',async()=>{
+  let calls=0;
+  const plan=createWalkPlanner({routerUrl:'https://router.test/route',discoveryElements:grid(),minIntervalMs:0,fetchImpl:async(url,o)=>{
+    const data=walkRoute(JSON.parse(o.body));
+    if(++calls===2)data.trip.legs[1]={summary:{time:0,length:0},shape:data.trip.legs[1].shape};
+    return Response.json(data);
+  }});
+  const result=await plan({start,mode:'loop',minutes:60});
+  assert.ok(calls>2);
+  assert.ok(result.walkingMinutes>=45&&result.walkingMinutes<=60);
 });
