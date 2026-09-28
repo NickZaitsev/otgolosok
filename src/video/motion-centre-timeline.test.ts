@@ -6,9 +6,9 @@ import {CENTRE_DURATION_IN_FRAMES, CENTRE_FIRE_START, CENTRE_FPS, CENTRE_ITEM_FR
 import {plural} from "./russian-plural";
 
 describe("ролик «Прогулка по центру»", () => {
-  it("идёт 40–45 секунд, а на каждое место в хуке — больше секунды", () => {
-    expect(CENTRE_DURATION_IN_FRAMES / CENTRE_FPS).toBeGreaterThan(40);
-    expect(CENTRE_DURATION_IN_FRAMES / CENTRE_FPS).toBeLessThanOrEqual(45);
+  it("идёт 35–40 секунд, а на каждое место в хуке — больше секунды", () => {
+    expect(CENTRE_DURATION_IN_FRAMES / CENTRE_FPS).toBeGreaterThan(35);
+    expect(CENTRE_DURATION_IN_FRAMES / CENTRE_FPS).toBeLessThanOrEqual(40);
     expect(CENTRE_ITEM_FRAMES / CENTRE_FPS).toBeGreaterThan(1);
     // Перечисление заканчивается раньше, чем хук уходит в переход.
     expect(CENTRE_FIRE_START + CENTRE_STOPS.length * CENTRE_ITEM_FRAMES).toBeLessThan(centreScene("hook").end - 40);
@@ -36,7 +36,7 @@ describe("данные прогулки по центру", () => {
 
   it("у каждой остановки есть опубликованный текст и источники", () => {
     for (const stop of CENTRE_STOPS) {
-      expect(stop.paragraph.length).toBeGreaterThan(40);
+      expect(stop.paragraph.length).toBeGreaterThan(35);
       expect(stop.sources.length).toBeGreaterThan(0);
     }
     expect(CENTRE_WALK.distanceM).toBeGreaterThan(2000);

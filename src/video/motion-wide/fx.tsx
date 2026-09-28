@@ -128,11 +128,15 @@ export function Words({text, start = 0, stagger = 4, exit, accent = [], accentCo
         const outAt = exit === undefined ? Infinity : exit + index * 2;
         const shift = frame < outAt ? (1 - progress(frame, inAt, inAt + 18)) * 110 : -progress(frame, outAt, outAt + 12, easeIn) * 115;
         const accented = accent.includes(word);
+        // Повёрнутое слово выступает углами из-под маски, поэтому до появления
+        // и после ухода оно полностью скрыто.
+        const hidden = frame < inAt || frame >= outAt + 12;
         return (
           <span key={index} style={{display: "inline-block", overflow: "hidden", paddingBottom: "0.14em", marginBottom: "-0.14em"}}>
             <span
               style={{
                 display: "inline-block",
+                opacity: hidden ? 0 : 1,
                 color: accented ? accentColor : undefined,
                 fontStyle: accented && accentItalic ? "italic" : undefined,
                 transform: `translateY(${shift}%) rotate(${(1 - progress(frame, inAt, inAt + 18)) * 6}deg)`,

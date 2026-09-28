@@ -3,7 +3,7 @@ import {layoutWideScenes} from "./motion-wide-timeline";
 
 // Хронометраж ролика «Прогулка по центру». JSON читает и синтез музыки,
 // чтобы удары совпадали со склейками, а щелчки — с названиями мест.
-export type CentreSceneId = "hook" | "logo" | "claim" | "map" | "facts" | "steps" | "outro";
+export type CentreSceneId = "hook" | "logo" | "map" | "facts" | "outro";
 
 export const CENTRE_FPS = config.fps;
 export const CENTRE_LOCKUP_FRAME = config.lockupFrame;

@@ -1,14 +1,12 @@
 import {linearTiming, TransitionSeries} from "@remotion/transitions";
-import {clockWipe} from "@remotion/transitions/clock-wipe";
 import {iris} from "@remotion/transitions/iris";
 import {pushCut} from "@remotion/transitions/push-cut";
 import {slide} from "@remotion/transitions/slide";
-import {wipe} from "@remotion/transitions/wipe";
 import {Fragment, type ReactNode} from "react";
 import {AbsoluteFill, Html5Audio, Sequence, staticFile} from "remotion";
 import {CENTRE_SITE, FACT_VOICE_FRAMES, FACT_VOICE_FROM, Facts, Hook, RouteMap} from "./motion-centre/scenes";
 import {C, easeInOut} from "./motion-wide/fx";
-import {Claim, Logo, Outro, Steps} from "./motion-wide/scenes";
+import {Logo, Outro} from "./motion-wide/scenes";
 import {CENTRE_SCENES, CENTRE_TRANSITIONS, centreScene, type CentreSceneId} from "./motion-centre-timeline";
 
 const WIDTH = 1920;
@@ -17,24 +15,24 @@ const HEIGHT = 1080;
 const scenes: Record<CentreSceneId, () => ReactNode> = {
   hook: Hook,
   logo: Logo,
-  claim: Claim,
   map: RouteMap,
   facts: Facts,
-  steps: () => <Steps site={CENTRE_SITE} />,
   outro: () => <Outro site={CENTRE_SITE} />,
 };
 
-// Переход перед сценой с тем же индексом + 1.
+// Переход перед сценой с тем же индексом + 1: вспышка к знаку, знак раскрывается
+// в карту, метка остановки в центре кадра раскрывается в её карточку, подъём к финалу.
 const presentations = [
   pushCut({flashColor: C.cinnabar, flashOpacity: 0.85}),
   iris({width: WIDTH, height: HEIGHT}),
-  wipe({direction: "from-right"}),
-  clockWipe({width: WIDTH, height: HEIGHT}),
+  iris({width: WIDTH, height: HEIGHT}),
   slide({direction: "from-bottom"}),
-  pushCut({flashColor: C.peach, flashOpacity: 0.6}),
 ];
 
-/** Горизонтальный моушн-ролик «Прогулка по центру» (V2) по опубликованным историям. */
+/**
+ * Горизонтальный моушн-ролик «Прогулка по центру» (V2) по опубликованным историям:
+ * места → знак → прогулка на карте → остановка 7 с голосом и источниками → финал.
+ */
 export function OtgolosokMotionCentre() {
   const facts = centreScene("facts");
   return (

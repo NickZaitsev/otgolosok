@@ -5,11 +5,9 @@
   "scenes": [
     {"id": "hook", "frames": 392},
     {"id": "logo", "frames": 96},
-    {"id": "claim", "frames": 130},
-    {"id": "map", "frames": 240},
-    {"id": "facts", "frames": 200},
-    {"id": "steps", "frames": 208},
+    {"id": "map", "frames": 300},
+    {"id": "facts", "frames": 250},
     {"id": "outro", "frames": 150}
   ],
-  "transitions": [14, 18, 16, 20, 18, 14]
+  "transitions": [14, 18, 20, 18]
 }
