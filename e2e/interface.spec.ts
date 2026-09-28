@@ -379,6 +379,32 @@ for (const [width, height, expectedGap] of [[390, 844, 20], [1440, 900, 12], [56
   });
 }
 
+// Горизонтальный телефон: шапка и карточка — две колонки по краям навигации, в том числе шире 700 px.
+for (const [width, height] of [[667, 375], [740, 360], [844, 390], [932, 430]]) {
+  test(`шапка и карточка стоят по краям навигации ${width}×${height}`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Смотрите истории рядом с вами", exact: true })).toBeVisible();
+    const nav = (await page.getByRole("navigation", { name: "Основная навигация" }).boundingBox())!;
+    const header = (await page.locator(".around-header").boundingBox())!;
+    const card = (await page.locator(".around-bottom").boundingBox())!;
+    expect(nav.x).toBeGreaterThanOrEqual(0);
+    expect(nav.x + nav.width).toBeLessThanOrEqual(width);
+    expect(header.x).toBeCloseTo(nav.x, 0);
+    // Колонки разнесены по горизонтали, поэтому не пересекаются при любой высоте карточки.
+    expect(header.x + header.width).toBeLessThanOrEqual(card.x);
+    expect(card.x + card.width).toBeCloseTo(nav.x + nav.width, 0);
+    await page.screenshot({ path: info.outputPath("landscape-map.png") });
+
+    // Поиск расширяет шапку вправо: она не сдвигается и не выходит за край навигации.
+    await page.getByRole("button", { name: "Найти адрес", exact: true }).click();
+    await expect(page.getByRole("textbox", { name: "Какой дом вас интересует?", exact: true })).toBeVisible();
+    const search = (await page.locator(".around-header").boundingBox())!;
+    expect(search.x).toBeCloseTo(header.x, 0);
+    expect(search.x + search.width).toBeLessThanOrEqual(nav.x + nav.width);
+  });
+}
+
 test("выбор на карте показывает понятный заголовок и контурную отмену", async ({ page }, info) => {
   await page.goto("/?walk=create");
   await page.getByRole("button", { name: "Куда", exact: true }).click();

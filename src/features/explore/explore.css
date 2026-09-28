@@ -189,8 +189,13 @@
   .around-shell .explore-map .leaflet-control-zoom a:first-child{border-right:1px solid #203e381a}
   .around-nav{left:12px;right:12px;bottom:12px;width:auto;border-radius:24px;padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}
   .around-content.scroll-view{height:calc(100% - 78px - env(safe-area-inset-bottom));padding-bottom:0}
-  .scroll-view .around-header,.searching .around-header{width:100%;max-width:760px}
+  .scroll-view .around-header,.searching .around-header{width:auto;max-width:760px}
   .around-shell .map-attribution{bottom:calc(94px + env(safe-area-inset-bottom))}
+  /* Шире 700 px здесь действует и блок min-width:700px: он ставит шапку по центру
+     полями auto, а нижнюю панель и навигацию — сдвигом на половину ширины.
+     Возвращаем колонки к краям навигации, как на экранах уже 700 px. */
+  .around-header{margin:12px}
+  .around-bottom,.around-nav{transform:none}
 }
 @media(min-width:568px) and (max-width:699px) and (max-height:540px){
   .around-bottom .around-location-card{padding:12px}
