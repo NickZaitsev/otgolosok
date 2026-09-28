@@ -11,34 +11,13 @@ import {fileURLToPath} from "node:url";
 import {motionBedWav} from "./build-motion-audio.mjs";
 import {parseRenderArgs, renderStills, renderVideo, run, serveScene} from "./lib/frame-render.mjs";
 import {stripRouteLayer} from "./prepare-video-assets.mjs";
+import {voiceLevels} from "./lib/voice-audio.mjs";
 import {DURATION, FPS, FRAME_COUNT, HEIGHT, VOICE, WIDTH, musicScore} from "../video/kinetic/timeline.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTPUT = join(root, "artifacts/video/otgolosok-kinetic.mp4");
 const STILLS = join(root, "artifacts/video/kinetic-stills");
 const VOICE_FILE = join(root, "public/audio/walk/kozhevniki-d2ccb2df8e45.mp3");
-
-/**
- * Громкость фрагмента озвучки по кадрам, 0…1, для эквалайзера в сцене прослушивания.
- * @param {Buffer} pcm моно s16le
- */
-export function voiceLevels(pcm, sampleRate, {fps = FPS, seconds}) {
-  const perFrame = Math.round(sampleRate / fps);
-  const frames = Math.round(seconds * fps);
-  const rms = Array.from({length: frames}, (_, frame) => {
-    let sum = 0;
-    let count = 0;
-    for (let index = frame * perFrame; index < (frame + 1) * perFrame && index * 2 + 1 < pcm.length; index += 1) {
-      const sample = pcm.readInt16LE(index * 2) / 32768;
-      sum += sample * sample;
-      count += 1;
-    }
-    return count ? Math.sqrt(sum / count) : 0;
-  });
-  const peak = Math.max(...rms);
-  if (!(peak > 0)) throw new Error("Фрагмент озвучки беззвучен");
-  return rms.map((value) => Number(Math.sqrt(value / peak).toFixed(3)));
-}
 
 /** Данные маршрута для сцены: путь и метки из карты, подписи и цифры из маршрута. */
 export function sceneData(route, mapSvg) {

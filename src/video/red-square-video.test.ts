@@ -4,10 +4,11 @@ import {beforeAll, describe, expect, it} from "vitest";
 import {redSquareSamples, SAMPLE_RATE} from "../../scripts/red-square-music.mjs";
 import {decodePolyline6, mapLayers, pickStops, projection, simplify, STOPS, VIEW} from "../../scripts/fetch-red-square-walk.mjs";
 import {parseRenderArgs, resolveScenePath} from "../../scripts/lib/frame-render.mjs";
-import {checkScript} from "../../scripts/render-red-square-video.mjs";
+import {speechBounds} from "../../scripts/lib/voice-audio.mjs";
+import {checkScript, checkVoice, loadVoice, voiceTrack} from "../../scripts/render-red-square-video.mjs";
 import {
   BEAT, BOARD, DURATION, FACTS, FACT_LENGTH, FPS, FRAME_COUNT, PLAYER, SCENES,
-  cameraProject, cameraTransform, musicScore, scene, wordTimes,
+  VOICE_AT, VOICE_GAP, cameraProject, cameraTransform, musicScore, scene, spokenLength, voiceSchedule, wordTimes,
 } from "../../video/red-square/timeline.mjs";
 
 const walk = JSON.parse(readFileSync(resolve("video/red-square/walk.json"), "utf8"));
@@ -61,7 +62,12 @@ describe("сверка сценария с опубликованными ист
 
   it.each([
     ["изменилась история факта", replaceStory(FACTS[1].stop, "Собор построили в XVI веке.") , /не подтверждён/],
-    ["изменилась история экрана", replaceStory(PLAYER.stop, FACTS[1].evidence.join(" ")), /Фразы экрана нет/],
+    ["изменилась история экрана", replaceStory(PLAYER.stop, FACTS[1].evidence.join(" ")), /Фразы «Его композицию/],
+    [
+      "остановку экрана переименовали",
+      {...walk, stops: walk.stops.map((stop: {label: string}, order: number) => (order === PLAYER.stop ? {...stop, label: "Покровский собор"} : stop))},
+      /Заголовок озвучки/,
+    ],
     ["остановок меньше, чем нужно фактам", {...walk, stops: walk.stops.slice(0, 3)}, /нет остановки/],
     ["нет маршрута", {...walk, route: []}, /геометрии маршрута/],
   ])("%s — рендер останавливается", (_, broken, message) => {
@@ -109,6 +115,77 @@ describe("время слов на экране истории", () => {
   });
 });
 
+describe("озвучка экрана истории", () => {
+  it.each([
+    ["слово", 5],
+    ["1588", 36],
+    ["1958-м", 38],
+    ["", 0],
+  ])("«%s» диктор произносит как %i букв", (word, expected) => {
+    expect(spokenLength(word)).toBe(expected);
+  });
+
+  it("год, который читают словами, получает больше времени, чем короткое слово", () => {
+    const [, year, after, end] = [...wordTimes(["В", "1588", "году"], 0, 4), 4];
+    expect(after - year).toBeGreaterThan(end - after);
+  });
+
+  it("реплики звучат встык по речи: тишина в начале клипа уходит раньше старта", () => {
+    const schedule = voiceSchedule([{id: "a", lead: 0.3, speech: 2}, {id: "b", lead: 0.5, speech: 1}], {at: 1, gap: 0.4});
+    expect(schedule).toEqual([
+      {id: "a", at: 0.7, from: 1, to: 3},
+      {id: "b", at: 2.9, from: 3.4, to: 4.4},
+    ]);
+  });
+
+  it.each([
+    ["клип без речи", [{id: "a", lead: 0, speech: 0}]],
+    ["тишина длиннее отступа сцены", [{id: "a", lead: VOICE_AT + 0.1, speech: 1}]],
+  ])("%s — ошибка", (_, clips) => {
+    expect(() => voiceSchedule(clips)).toThrow(RangeError);
+  });
+
+  it("манифест озвучки проверяется по тексту диктора", () => {
+    const manifest = Object.fromEntries(PLAYER.narration.map(({id, speech}) => [id, {text: speech}]));
+    expect(() => checkVoice(manifest)).not.toThrow();
+    const withoutNine = Object.fromEntries(Object.entries(manifest).filter(([id]) => id !== "nine"));
+    expect(() => checkVoice(withoutNine)).toThrow(/Нет клипа озвучки «nine»/);
+    expect(() => checkVoice({...manifest, tenth: {text: "В 1588 году…"}})).toThrow(/по старому тексту/);
+  });
+
+  const pcm = (samples: number[]) => {
+    const buffer = Buffer.alloc(samples.length * 2);
+    samples.forEach((sample, index) => buffer.writeInt16LE(sample, index * 2));
+    return buffer;
+  };
+
+  it("дорожка голоса кладёт клипы на свои места, остальное — тишина", () => {
+    const track = voiceTrack([{at: 0}, {at: 2}], [pcm([100, 200]), pcm([300])], {offset: 1, seconds: 4, sampleRate: 1});
+    expect(Array.from({length: 4}, (_, index) => track.readInt16LE(index * 2))).toEqual([0, 100, 200, 300]);
+    expect(() => voiceTrack([{at: 3}], [pcm([1, 2])], {offset: 0, seconds: 4, sampleRate: 1})).toThrow(RangeError);
+  });
+
+  it("границы речи: тишина по краям и щелчок далеко в хвосте не считаются", () => {
+    // Окно 20 мс при 1000 Гц — 20 сэмплов: 0,1 с тишины, 0,2 с речи, 0,6 с тишины, щелчок.
+    const loud = (count: number) => Array.from({length: count}, (_, index) => (index % 2 ? 8000 : -8000));
+    const samples = [...Array(100).fill(0), ...loud(200), ...Array(600).fill(0), ...loud(20), ...Array(40).fill(0)];
+    expect(speechBounds(pcm(samples), 1000)).toEqual({start: 0.1, end: 0.3});
+    expect(() => speechBounds(pcm(Array(200).fill(0)), 1000)).toThrow(/нет речи/);
+  });
+
+  it("начитанная озвучка укладывается в сцену экрана, эквалайзер — на каждый кадр", async () => {
+    const {schedule, levels, track} = await loadVoice();
+    const player = scene("player");
+    expect(schedule.map(({id}) => id)).toEqual(PLAYER.narration.map(({id}) => id));
+    expect(schedule[0].from).toBeCloseTo(VOICE_AT, 6);
+    schedule.slice(1).forEach((item, index) => expect(item.from - schedule[index].to).toBeCloseTo(VOICE_GAP, 6));
+    expect(schedule.at(-1)!.to).toBeLessThan(player.end - player.start);
+    expect(levels).toHaveLength(Math.round((player.end - player.start) * FPS));
+    expect(Math.max(...levels)).toBe(1);
+    expect(track.length).toBe(Math.round(DURATION * 48000) * 2);
+  }, 60_000);
+});
+
 describe("музыка ролика", () => {
   const score = musicScore();
   let left: Float32Array;
@@ -130,8 +207,15 @@ describe("музыка ролика", () => {
     expect(Math.abs(left.at(-1)!)).toBeLessThan(0.01);
   });
 
-  it("под экраном истории музыка тише, чем под картой", () => {
-    expect(rms(scene("player").start + 0.5, scene("player").end - 0.5)).toBeLessThan(rms(scene("map").start + 0.5, scene("map").end - 0.5) * 0.85);
+  it("под голосом диктора музыка тише, чем под картой, минимум на 12 дБ", () => {
+    const player = scene("player");
+    const underVoice = rms(player.start + VOICE_AT, player.end - 1);
+    expect(20 * Math.log10(underVoice / rms(scene("map").start + 0.5, scene("map").end - 0.5))).toBeLessThan(-12);
+  });
+
+  it("склейка в экран истории звучит в полную силу, приглушение начинается после неё", () => {
+    const start = scene("player").start;
+    expect(rms(start, start + 0.3)).toBeGreaterThan(rms(start + VOICE_AT, start + VOICE_AT + 0.3) * 2);
   });
 
   it("синтез детерминирован", () => {

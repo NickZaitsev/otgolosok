@@ -73,10 +73,12 @@ async function mediaDuration(root, path) {
 
 /**
  * @typedef {{key: string, text: string, sha256: string, durationSeconds: number, profile: string, voice: string}} VoiceClip
+ * @param {{root: string, client: any, profileId?: string, log?: (message: string) => void, guide?: {name: string, narration: string | Record<string, string>, voiceDir: string}}} options
  * @returns {Promise<Record<string, VoiceClip>>}
  */
 export async function buildGuideVoice({root, client, profileId = DEFAULT_PROFILE, log = console.log, guide = GUIDE_VOICES[0]}) {
-  const narration = JSON.parse(await readFile(join(root, guide.narration), "utf8"));
+  // Текст дикторов — путь к JSON от корня проекта или готовый объект {id: текст}.
+  const narration = typeof guide.narration === "string" ? JSON.parse(await readFile(join(root, guide.narration), "utf8")) : guide.narration;
   const voiceDir = join(root, guide.voiceDir);
   const manifestPath = join(voiceDir, "manifest.json");
   let manifest = {};

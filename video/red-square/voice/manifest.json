@@ -1,0 +1,34 @@
+{
+  "title": {
+    "key": "cc135ca2634d67cfc9662d07033bc3959118b84df7eff0dbe2f32f37dd924126",
+    "text": "Собор Василия Блаженного.",
+    "sha256": "1ec59c3e661511c33c3dd4a83a5a813132ceca19dba80e2f87ef9d9036dbd473",
+    "durationSeconds": 2.208,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "nine": {
+    "key": "dd40e79645b58847c0e4a1b95a2a373e8a8cf4f0d92a299dfe21b723742e0834",
+    "text": "Его композицию образуют девять самостоятельных столпообразных церквей, объединённых галереями.",
+    "sha256": "948267f40ca5fe96ccb4836747caab987dd8a860ff916cbabf5eaedd173fb763",
+    "durationSeconds": 7.224,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "tenth": {
+    "key": "8d9c5863cf547142f00d34f7679565ae1023fd5ceb78a6ceda5386ecc490212a",
+    "text": "В тысяча пятьсот восемьдесят восьмом году над захоронением Василия Блаженного к собору пристроили отдельную церковь.",
+    "sha256": "342648e577e6f390c5362df57c670be726051749bdfd5115cfc1d21ca7978aee",
+    "durationSeconds": 8.784,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "complex": {
+    "key": "bf43115d6e7b93c393e1cead1a50f7208cba7ea8dbaa4c399b800813e92c8758",
+    "text": "Она стала десятым храмом комплекса.",
+    "sha256": "464d1a4500477eb2d8f78a6d7d5fa9aa7af45d88b6e25c0f496afafd4efbdfac",
+    "durationSeconds": 2.952,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  }
+}

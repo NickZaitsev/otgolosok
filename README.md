@@ -132,15 +132,17 @@ pnpm video:preview:kinetic
 Результат — `artifacts/video/otgolosok-kinetic.mp4`. Подробности:
 [кинетический ролик](docs/agents/kinetic-video.md).
 
-Ролик «Красная площадь и Варварка» 1080×1920 на 35,5 секунды — тоже без Remotion:
+Ролик «Красная площадь и Варварка» 1080×1920 на 50 секунд — тоже без Remotion:
 собор из геометрических фигур, маршрут на 3D-карте центра по данным OpenStreetMap,
-факты с этого маршрута на счётчиках, экран истории, табло и знак. Остановки и подписи
-берутся из десяти опубликованных историй otgolosok.online, маршрут — из Valhalla.
+факты с этого маршрута на счётчиках, экран истории Собора Василия Блаженного с озвучкой,
+табло и знак. Остановки и подписи берутся из десяти опубликованных историй
+otgolosok.online, маршрут — из Valhalla, голос — из just-tts.
 
 ```bash
 pnpm video:render:red-square
 pnpm video:preview:red-square
-pnpm video:data:red-square   # обновить данные прогулки, нужна сеть
+pnpm video:data:red-square    # обновить данные прогулки, нужна сеть
+pnpm video:voice:red-square   # переозвучить после смены текста, нужны TTS_API_URL и TTS_API_TOKEN
 ```
 
 Результат — `artifacts/video/otgolosok-red-square.mp4`. Подробности:

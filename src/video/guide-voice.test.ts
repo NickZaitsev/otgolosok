@@ -45,6 +45,7 @@ describe("озвучка видеоинструкции", () => {
     expect(down).toHaveBeenCalledTimes(3);
   });
 
+  // Три прогона с ffprobe: под нагрузкой полного набора тестов 5 с по умолчанию не хватает.
   it("сохраняет MP3 и manifest, подтверждает приём и не синтезирует повторно", async () => {
     const root = await mkdtemp(join(tmpdir(), "otgolosok-voice-"));
     tempDirs.push(root);
@@ -81,7 +82,12 @@ describe("озвучка видеоинструкции", () => {
     const [first, second] = client.create.mock.calls.map(call => (call[0] as {requestId: string}).requestId);
     expect(first).toMatch(/^otgolosok-guide-intro-/);
     expect(second).toMatch(/^otgolosok-create-guide-intro-/);
-  });
+
+    // Текст можно передать объектом, без JSON-файла: так озвучивается рекламный ролик.
+    const inline = await buildGuideVoice({root, client, log: () => {}, guide: {name: "red-square", narration: {intro: "Привет."}, voiceDir: "video/red-square/voice"}});
+    expect(inline.intro.sha256).toBe(sha256);
+    expect(await readFile(join(root, "video/red-square/voice/intro.mp3"))).toEqual(bytes);
+  }, 30_000);
 
   it("отклоняет аудио с неверной контрольной суммой и не подтверждает его", async () => {
     const root = await mkdtemp(join(tmpdir(), "otgolosok-voice-"));

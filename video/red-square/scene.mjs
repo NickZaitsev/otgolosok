@@ -16,6 +16,13 @@ if (!response.ok) throw new Error(`Нет данных ролика: ${response.
 /** @type {{title: string, attribution: string, distanceM: number, walkMin: number, stops: {label: string, x: number, y: number}[], route: [number, number][], layers: {water: string, parks: string, walls: string, major: string, minor: string, buildings: {d: string, c: [number, number]}[]}}} */
 const data = await response.json();
 
+// Озвучка сцены player: расписание клипов (секунды от начала сцены) и громкость голоса по кадрам.
+// Файл собирает скрипт рендера из video/red-square/voice/.
+const voiceResponse = await fetch("/voice.json");
+if (!voiceResponse.ok) throw new Error(`Нет данных озвучки: ${voiceResponse.status}`);
+/** @type {{schedule: {id: string, at: number, from: number, to: number}[], levels: number[]}} */
+const voice = await voiceResponse.json();
+
 const COLORS = {deep: "#0d1714", green: "#203e38", paper: "#f5f1e8", cream: "#fffefa", ink: "#1a1714", rust: "#b64b28", coral: "#ff7a5c", peach: "#f5b296", sage: "#9fbfb1", gold: "#e8b04b"};
 
 function sceneRoot(id, background) {
@@ -473,22 +480,26 @@ const player = (() => {
   const screen = el("div", {cls: "screen", parent: phone});
   el("div", {cls: "island", parent: screen});
   const cover = el("div", {cls: "cover", parent: screen});
-  const coverArt = cathedral(cover, "cover", {width: 520, style: {position: "absolute", left: "44px", top: "-20px"}});
+  const coverArt = cathedral(cover, "cover", {width: 440, style: {position: "absolute", left: "66px", top: "-16px"}});
   coverArt.update(Infinity);
   const coverRings = rings(cover, 3, {color: "rgba(245, 178, 150, 0.6)", width: 3});
-  const stop = data.stops[PLAYER.stop];
-  const body = el("div", {parent: screen, style: {position: "absolute", left: "50px", right: "50px", top: "610px"}});
+  const body = el("div", {parent: screen, style: {position: "absolute", left: "50px", right: "50px", top: "510px"}});
   el("div", {cls: "chip", parent: body, text: `Остановка ${PLAYER.stop + 1} из ${data.stops.length}`});
-  el("div", {cls: "serif", parent: body, text: stop.label, style: {fontSize: "64px", marginTop: "22px", lineHeight: "1"}});
+  const heading = el("div", {cls: "serif", parent: body, style: {fontSize: "64px", marginTop: "22px", lineHeight: "1"}});
   const words = el("div", {cls: "words", parent: body, style: {marginTop: "26px"}});
-  const wordList = PLAYER.sentence.split(" ");
-  const wordNodes = wordList.flatMap((word, index) => {
-    const node = el("span", {parent: words, text: word});
-    if (index < wordList.length - 1) words.appendChild(document.createTextNode(" "));
-    return [node];
+  /** Слова каждой реплики с моментами начала: заголовок подсвечивается первым клипом. */
+  const lines = PLAYER.narration.map((line, lineIndex) => {
+    const slot = voice.schedule[lineIndex];
+    if (slot?.id !== line.id) throw new Error(`Расписание озвучки не совпадает с репликой «${line.id}»`);
+    const parent = lineIndex === 0 ? heading : words;
+    const list = line.text.split(" ");
+    const nodes = list.map((word, index) => {
+      const node = el("span", {parent, text: word});
+      if (index < list.length - 1 || (lineIndex > 0 && lineIndex < PLAYER.narration.length - 1)) parent.appendChild(document.createTextNode(" "));
+      return node;
+    });
+    return {nodes, starts: wordTimes(list, slot.from, slot.to), end: slot.to};
   });
-  const readFrom = 1.4;
-  const starts = wordTimes(wordList, readFrom, 4.9);
   const wave = el("div", {cls: "wave", parent: screen, style: {position: "absolute", left: "50px", right: "220px", bottom: "92px"}});
   const bars = Array.from({length: 26}, () => el("i", {parent: wave}));
   const play = el("div", {cls: "play", parent: screen, style: {right: "50px", bottom: "60px"}});
@@ -509,7 +520,9 @@ const player = (() => {
     revealChars(headLine.chars, local, 0.35, {step: 0.025});
     const enter = progress(local, 0.15, 1.0);
     const sway = Math.sin(local * 1.3) * 1.2;
-    css(phone, {transform: `translateY(${((1 - enter) * 700).toFixed(1)}px) rotate(${((1 - enter) * -10 + sway * 0.4).toFixed(3)}deg) perspective(2000px) rotateY(${((1 - enter) * 18 + sway).toFixed(3)}deg)`});
+    // Пока звучит голос, телефон медленно наезжает на зрителя.
+    const push = 1 + 0.04 * progress(local, 1, end - start, ease.linear);
+    css(phone, {transform: `translateY(${((1 - enter) * 700).toFixed(1)}px) scale(${push.toFixed(4)}) rotate(${((1 - enter) * -10 + sway * 0.4).toFixed(3)}deg) perspective(2000px) rotateY(${((1 - enter) * 18 + sway).toFixed(3)}deg)`});
     const playing = local >= tapAt;
     const press = local >= tapAt && local < tapAt + 0.25 ? 1 - Math.abs((local - tapAt) / 0.125 - 1) : 0;
     css(play, {transform: `scale(${(1 - press * 0.12).toFixed(4)})`});
@@ -520,14 +533,20 @@ const player = (() => {
       const size = 132 + ripple * 260;
       css(tapRing, {left: `${(PLAY_CENTER.x - size / 2).toFixed(1)}px`, top: `${(PLAY_CENTER.y - size / 2).toFixed(1)}px`, width: `${size.toFixed(1)}px`, height: `${size.toFixed(1)}px`, opacity: ((1 - ripple) * 0.8).toFixed(3)});
     } else css(tapRing, {opacity: 0});
-    updateRings(coverRings, playing ? local : -1, {x: 286, y: 235, from: tapAt, every: 0.7, life: 2.0, size: 700});
-    wordNodes.forEach((node, index) => {
-      const lit = progress(local, starts[index], starts[index] + 0.18, ease.linear);
-      const current = local >= starts[index] && (index + 1 >= starts.length || local < starts[index + 1]);
-      css(node, {color: mixColor("#b8ad9e", COLORS.ink, lit), background: current ? "rgba(245, 178, 150, 0.7)" : "transparent"});
-    });
+    updateRings(coverRings, playing ? local : -1, {x: 286, y: 190, from: tapAt, every: 0.7, life: 2.0, size: 700});
+    for (const {nodes, starts, end: lineEnd} of lines) {
+      nodes.forEach((node, index) => {
+        const lit = progress(local, starts[index], starts[index] + 0.18, ease.linear);
+        const next = index + 1 < starts.length ? starts[index + 1] : lineEnd;
+        const current = local >= starts[index] && local < next;
+        css(node, {color: mixColor("#b8ad9e", COLORS.ink, lit), background: current ? "rgba(245, 178, 150, 0.7)" : "transparent"});
+      });
+    }
+    // Эквалайзер — громкость настоящего голоса: полоса i показывает кадр на i шагов назад.
+    const frame = Math.round(local * FPS);
     bars.forEach((bar, index) => {
-      const energy = playing ? 0.35 + 0.65 * Math.abs(Math.sin(local * (5 + hash(index) * 7) + index * 1.7)) * (0.6 + 0.4 * hash(index + Math.floor(local * 8) * 13)) : 0.12;
+      const level = voice.levels[frame - index * 2] ?? 0;
+      const energy = playing ? 0.12 + 0.88 * level * (0.75 + 0.25 * hash(index)) : 0.12;
       css(bar, {height: `${(10 + energy * 60).toFixed(1)}px`, opacity: playing ? 1 : 0.5});
     });
   }};

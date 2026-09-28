@@ -3,6 +3,8 @@
 // истории — вполсилы), арпеджио под фактами и картой, подъём шума перед склейкой и удар
 // на ней, стук табло. Всё синтезируется детерминированно, без сэмплов.
 export const SAMPLE_RATE = 48000;
+/** Уровень музыки под голосом диктора: −10 дБ. */
+const DUCK_GAIN = 10 ** (-10 / 20);
 
 const TAU = 2 * Math.PI;
 const note = (semitones) => 220 * 2 ** (semitones / 12);
@@ -162,8 +164,11 @@ export function redSquareSamples(score) {
   for (let index = 0; index < length; index += 1) {
     const time = index / SAMPLE_RATE;
     const edge = Math.min(1, time / 0.02, (seconds - time) / 0.8);
-    left[index] *= gain * edge;
-    right[index] *= gain * edge;
+    // Под голосом музыка уходит на −10 дБ: удар склейки звучит, дальше плавный спуск до речи.
+    const voiceDuck = smooth(duck[0] + 0.4, duck[0] + 1.1, time) * (1 - smooth(duck[1] - 0.7, duck[1], time));
+    const ducked = 1 - (1 - DUCK_GAIN) * voiceDuck;
+    left[index] *= gain * edge * ducked;
+    right[index] *= gain * edge * ducked;
   }
   return {left, right};
 }

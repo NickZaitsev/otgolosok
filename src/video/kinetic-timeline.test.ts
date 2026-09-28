@@ -1,6 +1,7 @@
 import {readFileSync} from "node:fs";
 import {describe, expect, it} from "vitest";
-import {sceneData, voiceLevels} from "../../scripts/render-kinetic-video.mjs";
+import {sceneData} from "../../scripts/render-kinetic-video.mjs";
+import {voiceLevels} from "../../scripts/lib/voice-audio.mjs";
 import {
   BEAT, DURATION, FPS, FRAME_COUNT, SCENES, VOICE,
   bezier, frameTime, musicScore, parsePolyline, polyline, progress, scene, stripesPolygon,
