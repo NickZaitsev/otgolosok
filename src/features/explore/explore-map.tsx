@@ -80,7 +80,14 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     if(focus===appliedFocus.current)return;
     appliedFocus.current=focus;
     rt.map.setView([focus.lat,focus.lon],focus.zoom??Math.max(rt.map.getZoom(),16),{animate:false});
-    if(focus.zoom===undefined)rt.map.panBy([0,80],{animate:false});
+    if(routePadding){
+      // The creation panel covers part of the map: centre the point in the uncovered area, as the route is.
+      const size=rt.map.getSize();
+      const visible=rt.L.point((routePadding.left+size.x-routePadding.right)/2,(routePadding.top+size.y-routePadding.bottom)/2);
+      rt.map.panBy(size.divideBy(2).subtract(visible),{animate:false});
+    } else if(focus.zoom===undefined)rt.map.panBy([0,80],{animate:false});
+  // routePadding is read at the moment of focusing; a later resize must not move a view the user may have panned.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[focus,ready]);
 
   useEffect(()=>{
