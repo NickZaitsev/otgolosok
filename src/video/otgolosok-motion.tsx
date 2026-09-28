@@ -1,4 +1,4 @@
-import type {CSSProperties, ReactNode} from "react";
+import type {ReactNode} from "react";
 import {
   AbsoluteFill,
   Easing,
@@ -13,72 +13,16 @@ import {
 } from "remotion";
 import route from "../../public/data/routes/paveletskaya.json";
 import {SANS, SERIF} from "./guide-fonts";
+import {Chars, CutBands, DotGrid, Grain, Kicker, Ripples, cream, deep, expo, green, ink, paper, peach, pop, progress, rust, sage, swing} from "./motion-kit";
 import {MOTION_FPS, MOTION_SCENES, getMotionFrameState, type MotionSceneId} from "./motion-timeline";
 import {MAP_STOPS, pointOnRoute, routeProgressNear, ROUTE_LENGTH, ROUTE_PATH} from "./route-geometry";
 
-const green = "#203e38";
-const deep = "#0d1714";
-const cream = "#fffefa";
-const paper = "#f5f1e8";
-const ink = "#1a1714";
-const rust = "#b64b28";
-const peach = "#f5b296";
-const sage = "#9fbfb1";
 
 const facade = staticFile("video/brick-facade.webp");
 const city = staticFile("video/moscow-evening.webp");
 const mapBase = staticFile("motion/map-base.svg");
 const listenScreen = staticFile("guide/listen.png");
 const story = staticFile("audio/walk/kozhevniki-d2ccb2df8e45.mp3");
-
-const expo = Easing.bezier(0.16, 1, 0.3, 1);
-const swing = Easing.bezier(0.65, 0, 0.35, 1);
-
-function progress(frame: number, from: number, to: number, easing = expo) {
-  return interpolate(frame, [from, to], [0, 1], {easing, extrapolateLeft: "clamp", extrapolateRight: "clamp"});
-}
-
-function pop(frame: number, delay: number, damping = 11) {
-  return spring({frame: frame - delay, fps: MOTION_FPS, config: {damping, stiffness: 170, mass: 0.7}});
-}
-
-/** Буквы выезжают из-под маски строки по одной. */
-function Chars({text, frame, at, step = 1.6, style}: {text: string; frame: number; at: number; step?: number; style?: CSSProperties}) {
-  return (
-    <span style={{display: "inline-flex", overflow: "hidden", paddingBottom: "0.12em", marginBottom: "-0.12em", ...style}}>
-      {Array.from(text).map((char, index) => {
-        const shown = progress(frame, at + index * step, at + index * step + 18);
-        return (
-          <span key={index} style={{display: "inline-block", whiteSpace: "pre", transform: `translateY(${(1 - shown) * 105}%) rotate(${(1 - shown) * 12}deg)`, transformOrigin: "0 100%"}}>
-            {char}
-          </span>
-        );
-      })}
-    </span>
-  );
-}
-
-/** Круги расходятся от точки — визуальный «отголосок». */
-function Ripples({x, y, frame, from, every, count, size, color, width = 3}: {
-  x: number; y: number; frame: number; from: number; every: number; count: number; size: number; color: string; width?: number;
-}) {
-  return (
-    <>
-      {Array.from({length: count}, (_, index) => {
-        const life = progress(frame, from + index * every, from + index * every + 70, Easing.out(Easing.cubic));
-        if (life <= 0 || life >= 1) return null;
-        const diameter = size * life;
-        return (
-          <div key={index} style={{position: "absolute", left: x - diameter / 2, top: y - diameter / 2, width: diameter, height: diameter, borderRadius: "50%", border: `${width}px solid ${color}`, opacity: (1 - life) * 0.9}} />
-        );
-      })}
-    </>
-  );
-}
-
-function Kicker({children, color, style}: {children: ReactNode; color: string; style?: CSSProperties}) {
-  return <div style={{font: `700 26px ${SANS}`, letterSpacing: 6, textTransform: "uppercase", color, ...style}}>{children}</div>;
-}
 
 function Echo({frame}: {frame: number}) {
   const dot = pop(frame, 2, 9);
@@ -105,12 +49,6 @@ function Echo({frame}: {frame: number}) {
         <div style={{color: peach, fontStyle: "italic"}}><Chars text="голос." frame={frame} at={40} /></div>
       </div>
     </AbsoluteFill>
-  );
-}
-
-function DotGrid({frame, color}: {frame: number; color: string}) {
-  return (
-    <AbsoluteFill style={{backgroundImage: `radial-gradient(${color} 2px, transparent 2.5px)`, backgroundSize: "54px 54px", backgroundPosition: `0 ${-frame * 0.6}px`}} />
   );
 }
 
@@ -411,32 +349,6 @@ const reveals: Record<MotionSceneId, (t: number) => {clipPath: string; transform
   brand: (t) => ({clipPath: `circle(${t * 125}% at 50% 50%)`}),
 };
 
-/** Полосы-акценты, проходящие по экрану на склейке. */
-function CutBands({id, t}: {id: MotionSceneId; t: number}) {
-  const colors = id === "trust" ? [peach, rust] : [rust, peach, cream];
-  return (
-    <>
-      {colors.map((color, index) => {
-        const local = Math.max(0, Math.min(1, t * 1.6 - index * 0.18));
-        if (local <= 0 || local >= 1) return null;
-        return <div key={color} style={{position: "absolute", left: -300, right: -300, height: 60 - index * 16, top: `${110 - local * 130}%`, background: color, transform: "rotate(-12deg)", opacity: 0.9}} />;
-      })}
-    </>
-  );
-}
-
-function Grain({frame}: {frame: number}) {
-  return (
-    <svg width={1080} height={1920} style={{position: "absolute", inset: 0, mixBlendMode: "overlay", opacity: 0.16, pointerEvents: "none"}} aria-hidden="true">
-      <filter id="grain">
-        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={2} seed={frame % 12} />
-        <feColorMatrix type="saturate" values="0" />
-      </filter>
-      <rect width="100%" height="100%" filter="url(#grain)" />
-    </svg>
-  );
-}
-
 export function OtgolosokMotion() {
   const frame = useCurrentFrame();
   const {id, localFrame, outgoing, transition} = getMotionFrameState(frame);
@@ -456,7 +368,7 @@ export function OtgolosokMotion() {
       <AbsoluteFill style={reveal ?? undefined}>
         <Current frame={localFrame} />
       </AbsoluteFill>
-      {outgoing && <CutBands id={id} t={transition} />}
+      {outgoing && <CutBands t={transition} colors={id === "trust" ? [peach, rust] : undefined} />}
       <AbsoluteFill style={{background: "radial-gradient(circle at 50% 50%, transparent 60%, #00000055 100%)", pointerEvents: "none"}} />
       <Grain frame={frame} />
       <Html5Audio src={staticFile("motion/bed.wav")} volume={0.9} />

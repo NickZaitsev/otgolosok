@@ -2,7 +2,7 @@ import {copyFile, mkdtemp, mkdir, readFile, rm, writeFile} from "node:fs/promise
 import {tmpdir} from "node:os";
 import {dirname, join} from "node:path";
 import {afterEach, describe, expect, it} from "vitest";
-import {motionScore, prepareVideoAssets, stripRouteLayer, videoAssets} from "../../scripts/prepare-video-assets.mjs";
+import {createAdScore, motionScore, prepareVideoAssets, sceneScore, stripRouteLayer, videoAssets} from "../../scripts/prepare-video-assets.mjs";
 import {motionBedWav} from "../../scripts/build-motion-audio.mjs";
 
 const MAP = "public/data/maps/paveletskaya.svg";
@@ -35,7 +35,7 @@ describe("подготовка материалов Remotion", () => {
       expect(await readFile(join(publicDir, destination), "utf8")).toBe(await readFile(join(root, source), "utf8"));
     }
     // Фон и щелчок инструкции синтезируются, а не копируются.
-    for (const generated of ["guide/bed.wav", "guide/click.wav", "motion/bed.wav"]) {
+    for (const generated of ["guide/bed.wav", "guide/click.wav", "motion/bed.wav", "motion/create-bed.wav"]) {
       expect((await readFile(join(publicDir, generated))).toString("ascii", 0, 4)).toBe("RIFF");
     }
   });
@@ -62,7 +62,23 @@ describe("материалы моушн-ролика", () => {
   });
 
   it("строит партитуру по склейкам ролика", () => {
-    expect(motionScore()).toEqual({seconds: 30, cuts: [4, 9, 16, 23, 26], duck: [16, 23], groove: 4, finale: 26});
+    expect(motionScore()).toEqual({seconds: 30, cuts: [4, 9, 16, 23, 26], duck: [16, 23], groove: 4, finale: 26, taps: []});
+  });
+
+  it("ставит щелчки на нажатия рекламы создания прогулки и не приглушает музыку без голоса", () => {
+    expect(createAdScore()).toEqual({
+      seconds: 25.5,
+      cuts: [2.5, 7.5, 12.5, 18, 22],
+      duck: null,
+      groove: 2.5,
+      finale: 22,
+      taps: [(75 + 48) / 30, (225 + 52) / 30, (375 + 38) / 30, (540 + 20) / 30],
+    });
+  });
+
+  it("сообщает о сцене, которой нет в хронометраже", () => {
+    const config = {fps: 30, scenes: [{id: "a", start: 0, end: 30}], taps: {b: [1]}};
+    expect(() => sceneScore(config, {voice: null, groove: "a", finale: "a"})).toThrow(/нет сцены «b»/);
   });
 
   it("синтезирует музыку нужной длины без клиппинга", () => {
@@ -77,5 +93,6 @@ describe("материалы моушн-ролика", () => {
 
   it("не принимает склейку за пределами ролика", () => {
     expect(() => motionBedWav({...motionScore(), cuts: [31]})).toThrow(RangeError);
+    expect(() => motionBedWav({...createAdScore(), taps: [0]})).toThrow(RangeError);
   });
 });

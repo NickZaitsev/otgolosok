@@ -4,6 +4,7 @@ import {fileURLToPath} from "node:url";
 import narration from "../src/video/guide-narration.json" with {type: "json"};
 import createNarration from "../src/video/create-guide-narration.json" with {type: "json"};
 import motion from "../src/video/motion-scenes.json" with {type: "json"};
+import createAd from "../src/video/create-ad-scenes.json" with {type: "json"};
 import {clickWav, guideBedWav} from "./build-guide-audio.mjs";
 import {motionBedWav} from "./build-motion-audio.mjs";
 import {wideMotionScore} from "./motion-wide-score.mjs";
@@ -51,21 +52,38 @@ export async function prepareVideoAssets(root, publicDir, {bedSeconds = GUIDE_BE
   await writeFile(join(publicDir, "motion/map-base.svg"), stripRouteLayer(map));
   await writeFile(join(publicDir, "motion/bed.wav"), motionBedWav(motionScore()));
   await writeFile(join(publicDir, "motion/wide-bed.wav"), motionBedWav(wideMotionScore()));
+  await writeFile(join(publicDir, "motion/create-bed.wav"), motionBedWav(createAdScore()));
 }
 
 /**
- * Партитура музыки моушн-ролика из его хронометража, в секундах.
- * @returns {{seconds: number, cuts: number[], duck: [number, number], groove: number, finale: number}}
+ * Партитура музыки вертикального ролика из его хронометража, в секундах.
+ * @param {{fps: number, scenes: {id: string, start: number, end: number}[], taps?: Record<string, number[]>}} config
+ * @param {{voice: string | null, groove: string, finale: string}} cues — сцены с голосом, началом ритма и финалом.
+ * @returns {{seconds: number, cuts: number[], duck: [number, number] | null, groove: number, finale: number, taps: number[]}}
  */
-export function motionScore() {
-  const at = (id, edge) => motion.scenes.find((scene) => scene.id === id)[edge] / motion.fps;
-  return {
-    seconds: motion.scenes.at(-1).end / motion.fps,
-    cuts: motion.scenes.slice(1).map(({start}) => start / motion.fps),
-    duck: [at("listen", "start"), at("listen", "end")],
-    groove: at("place", "start"),
-    finale: at("brand", "start"),
+export function sceneScore(config, cues) {
+  const scene = (id) => {
+    const found = config.scenes.find((item) => item.id === id);
+    if (!found) throw new Error(`В хронометраже нет сцены «${id}»`);
+    return found;
   };
+  const seconds = (frame) => frame / config.fps;
+  return {
+    seconds: seconds(config.scenes.at(-1).end),
+    cuts: config.scenes.slice(1).map(({start}) => seconds(start)),
+    duck: cues.voice ? [seconds(scene(cues.voice).start), seconds(scene(cues.voice).end)] : null,
+    groove: seconds(scene(cues.groove).start),
+    finale: seconds(scene(cues.finale).start),
+    taps: Object.entries(config.taps ?? {}).flatMap(([id, frames]) => frames.map((frame) => seconds(scene(id).start + frame))),
+  };
+}
+
+export function motionScore() {
+  return sceneScore(motion, {voice: "listen", groove: "place", finale: "brand"});
+}
+
+export function createAdScore() {
+  return sceneScore(createAd, {voice: null, groove: "start", finale: "brand"});
 }
 
 /**

@@ -22,6 +22,7 @@
     "video:render": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokPromo artifacts/video/otgolosok-promo.mp4 --public-dir artifacts/video/public",
     "video:render:ad": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokAd artifacts/video/otgolosok-ad.mp4 --public-dir artifacts/video/public",
     "video:render:motion": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokMotion artifacts/video/otgolosok-motion.mp4 --public-dir artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "video:render:create-ad": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokCreateAd artifacts/video/otgolosok-create-ad.mp4 --public-dir artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
     "video:render:motion-wide": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokMotionWide artifacts/video/otgolosok-motion-wide.mp4 --public-dir artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
     "video:render:kinetic": "node scripts/render-kinetic-video.mjs",
     "video:preview:kinetic": "node scripts/render-kinetic-video.mjs --preview",

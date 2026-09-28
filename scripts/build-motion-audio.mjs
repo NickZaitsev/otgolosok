@@ -33,12 +33,13 @@ function ping(elapsed, frequency) {
 }
 
 /**
- * @param {{seconds: number, cuts: number[], duck: [number, number], groove: number, finale: number}} score
- *   Время в секундах: склейки, отрезок под голосом, начало ритма и финальный аккорд.
+ * @param {{seconds: number, cuts: number[], duck: [number, number] | null, groove: number, finale: number, taps?: number[]}} score
+ *   Время в секундах: склейки, отрезок под голосом (null — голоса нет), начало ритма,
+ *   финальный аккорд и нажатия на экране.
  */
-export function motionBedWav({seconds, cuts, duck, groove, finale}) {
-  if (!(seconds > 0) || cuts.some((cut) => cut <= 0 || cut >= seconds)) {
-    throw new RangeError("Склейки музыки должны лежать внутри ролика");
+export function motionBedWav({seconds, cuts, duck, groove, finale, taps = []}) {
+  if (!(seconds > 0) || [...cuts, ...taps].some((time) => time <= 0 || time >= seconds)) {
+    throw new RangeError("Склейки и нажатия должны лежать внутри ролика");
   }
   const samples = Math.round(seconds * SAMPLE_RATE);
   const data = Buffer.alloc(samples * 2);
@@ -86,10 +87,17 @@ export function motionBedWav({seconds, cuts, duck, groove, finale}) {
       if (after >= 0 && after < 0.8) transitions += Math.sin(2 * Math.PI * 55 * after) * Math.exp(-after * 7) * 0.9;
     }
 
-    const underVoice = time > duck[0] && time < duck[1] ? 0.4 : 1;
+    // Щелчок нажатия: короткий высокий тон и шорох, как у кнопки телефона.
+    let clicks = 0;
+    for (const tap of taps) {
+      const after = time - tap;
+      if (after >= 0 && after < 0.08) clicks += (Math.sin(2 * Math.PI * 2300 * after) * 0.8 + white * 0.5) * Math.exp(-after * 70);
+    }
+
+    const underVoice = duck && time > duck[0] && time < duck[1] ? 0.4 : 1;
     const fadeIn = Math.min(1, time / 0.08);
     const fadeOut = Math.min(1, (seconds - time) / 1.2);
-    const value = ((pad * 0.16 + rhythm * 0.22) * underVoice + echo * 0.09 + transitions * 0.14) * fadeIn * fadeOut;
+    const value = ((pad * 0.16 + rhythm * 0.22) * underVoice + echo * 0.09 + transitions * 0.14 + clicks * 0.3) * fadeIn * fadeOut;
     data.writeInt16LE(Math.round(Math.tanh(value * 2.4) * 0.92 * 32767), index * 2);
   }
   return Buffer.concat([wavHeader(samples), data]);
