@@ -14,9 +14,9 @@ const authFor=role=>({api:{getSession:async()=>({user:{id:`${role}-1`,email:`${r
 
 async function listen(t,{role="user",accountStore={},store=createStore(":memory:",{maxActive:20})}={}){
   const directory=await mkdtemp(join(tmpdir(),"otg-account-api-"));
-  const app=createApp({store,provider:{},origin,audioDirectory:directory,workerEnabled:false,auth:authFor(role),authSecret:secret,accountStore});
-  await new Promise(done=>app.server.listen(0,"127.0.0.1",done));
-  const base=`http://127.0.0.1:${app.server.address().port}`;
+  const app=createApp({store,provider:/** @type {any} */ ({}),origin,audioDirectory:directory,workerEnabled:false,auth:/** @type {any} */ (authFor(role)),authSecret:secret,accountStore:/** @type {any} */ (accountStore)});
+  await /** @type {Promise<void>} */ (new Promise(done=>app.server.listen(0,"127.0.0.1",done)));
+  const base=`http://127.0.0.1:${/** @type {import("node:net").AddressInfo} */ (app.server.address()).port}`;
   t.after(async()=>{await app.close();store.close();await rm(directory,{recursive:true,force:true});});
   return {base,store,headers:{Origin:origin,"Content-Type":"application/json","X-CSRF-Token":sessionCsrfToken(secret,sessionId)}};
 }
@@ -40,7 +40,7 @@ test("ordinary users cannot use editor API while an editor session can",async t=
 test("account deletion requires the current password and cancels private research",async t=>{
   let deleted=false,revoked=null;
   const accountStore={researchJobIds:()=>["research-1"],deleteAccountData:()=>{deleted=true;}};
-  const store=createStore(":memory:",{maxActive:20});store.revokeWalkResearchAccess=ids=>{revoked=ids;};
+  const store=createStore(":memory:",{maxActive:20});/** @type {any} */ (store).revokeWalkResearchAccess=ids=>{revoked=ids;};
   const f=await listen(t,{accountStore,store});
   assert.equal((await fetch(f.base+"/api/me",{method:"DELETE",headers:f.headers,body:JSON.stringify({password:"wrong-password"})})).status,403);assert.equal(deleted,false);
   assert.equal((await fetch(f.base+"/api/me",{method:"DELETE",headers:f.headers,body:JSON.stringify({password:"correct-password"})})).status,200);
@@ -53,7 +53,7 @@ test("a valid legacy recovery token claims a research job for the signed-in user
   const f=await realAccountFixture(t,{store});
   assert.equal(f.accountStore.ownsRequest("user-1",job.id),false);
   const response=await fetch(`${f.base}/api/walk-research-jobs?lat=55.75&lon=37.61&mode=loop&minutes=30&recoveryToken=${token}`);
-  assert.equal(response.status,200);assert.equal((await response.json()).id,job.id);
+  assert.equal(response.status,200);assert.equal(/** @type {any} */ (await response.json()).id,job.id);
   assert.equal(f.accountStore.ownsRequest("user-1",job.id),true);
   assert.deepEqual(f.accountStore.listRequests("user-1").requests.map(item=>[item.jobId,item.operation]),[[job.id,"walk_research"]]);
   // Claiming a job that already exists costs nothing.
@@ -66,9 +66,9 @@ test("generation idempotency is bound to the normalized request and quota",async
   runtime.database.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("user-1","user","user@example.test",1,now,now);
   const accountStore=createAccountStore(runtime.accountDatabase),f=await listen(t,{accountStore});
   const post=(address,key)=>fetch(f.base+"/api/story-jobs",{method:"POST",headers:f.headers,body:JSON.stringify({address,idempotencyKey:key})});
-  const key="same-request-key",first=await post("Arbat street, 1",key),firstValue=await first.json();
+  const key="same-request-key",first=await post("Arbat street, 1",key),firstValue=/** @type {any} */ (await first.json());
   assert.equal(first.status,200);const repeated=await post("Arbat street, 1",key);
-  assert.equal(repeated.status,200);assert.equal((await repeated.json()).id,firstValue.id);
+  assert.equal(repeated.status,200);assert.equal(/** @type {any} */ (await repeated.json()).id,firstValue.id);
   assert.equal((await post("Arbat street, 2",key)).status,409);
   for(let index=2;index<=6;index++)assert.equal((await post(`Arbat street, ${index}`,`request-key-${index}`)).status,200);
   assert.equal((await post("Arbat street, 7","request-key-7")).status,429);
@@ -94,7 +94,7 @@ test("account storage limits reach the client as 409 with a readable message, a 
   f.runtime.accountDatabase.exec("BEGIN");for(let index=0;index<MAX_FAVORITES_PER_USER;index++)insert.run("user-1","story",`seed-${index}`,time);f.runtime.accountDatabase.exec("COMMIT");
   const full=await fetch(`${f.base}/api/me/favorites/walk/one-too-many`,{method:"PUT",headers:f.headers});
   assert.equal(full.status,409);
-  assert.deepEqual((await full.json()).error,{code:"STORAGE_LIMIT",message:`В избранном может быть не больше ${MAX_FAVORITES_PER_USER} записей.`});
+  assert.deepEqual(/** @type {any} */ (await full.json()).error,{code:"STORAGE_LIMIT",message:`В избранном может быть не больше ${MAX_FAVORITES_PER_USER} записей.`});
   const existing=await fetch(`${f.base}/api/me/favorites/story/seed-0`,{method:"PUT",headers:f.headers});
   assert.equal(existing.status,200);
 });
@@ -107,16 +107,16 @@ test("account walk API returns cards, a safe view and a revocable current shared
   const snapshot={version:2,id:"11111111-1111-4111-8111-111111111111",title:"Арбатская прогулка",description:"",city:"Москва",mode:"open",minutes:30,start,
     stops:[{id:"22222222-2222-4222-8222-222222222222",place:stop,storyRef:{kind:"job",id:job.id},transition:"",nextHint:""}],route:{geometry:[start.location,stop.location],distanceM:220,walkingMinutes:4,attribution:"OSM"},fieldChecked:false};
   const post=await fetch(`${f.base}/api/me/walks`,{method:"POST",headers:f.headers,body:JSON.stringify({title:snapshot.title,snapshot,idempotencyKey:"http-walk-1"})});
-  assert.equal(post.status,201);const created=(await post.json()).walk;
-  const list=await (await fetch(`${f.base}/api/me/walks`)).json();assert.equal(list.walks.length,1);assert.equal("snapshot" in list.walks[0],false);assert.equal("shareToken" in list.walks[0],true);
-  const view=await fetch(`${f.base}/api/me/walks/${created.id}/view`);assert.equal(view.status,200);const viewValue=await view.json();assert.equal(viewValue.document.id,created.id);assert.equal(viewValue.chapters[0].status,"ready");assert.equal(JSON.stringify(viewValue).includes("private@example.test"),false);
-  const shared=await fetch(`${f.base}/api/me/walks/${created.id}/sharing`,{method:"PUT",headers:f.headers,body:JSON.stringify({revision:created.revision,enabled:true})});assert.equal(shared.status,200);const sharedValue=(await shared.json()).walk;assert.match(sharedValue.shareToken,/^[a-f0-9-]{36}$/);
+  assert.equal(post.status,201);const created=/** @type {any} */ (await post.json()).walk;
+  const list=/** @type {any} */ (await (await fetch(`${f.base}/api/me/walks`)).json());assert.equal(list.walks.length,1);assert.equal("snapshot" in list.walks[0],false);assert.equal("shareToken" in list.walks[0],true);
+  const view=await fetch(`${f.base}/api/me/walks/${created.id}/view`);assert.equal(view.status,200);const viewValue=/** @type {any} */ (await view.json());assert.equal(viewValue.document.id,created.id);assert.equal(viewValue.chapters[0].status,"ready");assert.equal(JSON.stringify(viewValue).includes("private@example.test"),false);
+  const shared=await fetch(`${f.base}/api/me/walks/${created.id}/sharing`,{method:"PUT",headers:f.headers,body:JSON.stringify({revision:created.revision,enabled:true})});assert.equal(shared.status,200);const sharedValue=/** @type {any} */ (await shared.json()).walk;assert.match(sharedValue.shareToken,/^[a-f0-9-]{36}$/);
   const publicUrl=`${f.base}/api/story-walks/shared/${sharedValue.shareToken}`;
-  const publicView=await fetch(publicUrl);assert.equal(publicView.status,200);const publicValue=await publicView.json();assert.equal(publicValue.document.title,snapshot.title);assert.equal(JSON.stringify(publicValue).includes("private@example.test"),false);assert.equal(JSON.stringify(publicValue).includes("recovery"),false);
+  const publicView=await fetch(publicUrl);assert.equal(publicView.status,200);const publicValue=/** @type {any} */ (await publicView.json());assert.equal(publicValue.document.title,snapshot.title);assert.equal(JSON.stringify(publicValue).includes("private@example.test"),false);assert.equal(JSON.stringify(publicValue).includes("recovery"),false);
   const update=await fetch(`${f.base}/api/me/walks/${created.id}`,{method:"PATCH",headers:f.headers,body:JSON.stringify({title:"Обновлённая прогулка",snapshot:{...created.snapshot,title:"Обновлённая прогулка"},revision:sharedValue.revision})});assert.equal(update.status,200);
-  assert.equal((await (await fetch(publicUrl)).json()).document.title,"Обновлённая прогулка");
+  assert.equal(/** @type {any} */ (await (await fetch(publicUrl)).json()).document.title,"Обновлённая прогулка");
   assert.equal((await fetch(`${f.base}/api/me/walks/${created.id}/sharing`,{method:"PUT",headers:f.headers,body:JSON.stringify({revision:sharedValue.revision,enabled:false})})).status,409);
-  const latest=(await (await fetch(`${f.base}/api/me/walks/${created.id}`)).json()).walk;
+  const latest=/** @type {any} */ (await (await fetch(`${f.base}/api/me/walks/${created.id}`)).json()).walk;
   assert.equal((await fetch(`${f.base}/api/me/walks/${created.id}/sharing`,{method:"PUT",headers:f.headers,body:JSON.stringify({revision:latest.revision,enabled:false})})).status,200);
   assert.equal((await fetch(publicUrl)).status,404);
 });

@@ -9,10 +9,12 @@ function openAuthDatabase(path) {
   return database;
 }
 
+/** @param {{databasePath: string, baseURL: string, secret?: string, production?: boolean}} options */
 export async function createAuth({ databasePath, baseURL, secret, production = process.env.NODE_ENV === "production" }) {
   if (!baseURL) throw new Error("APP_ORIGIN is required for authentication");
   if (production && (!secret || secret.length < 32)) throw new Error("BETTER_AUTH_SECRET must contain at least 32 characters");
   const database = openAuthDatabase(databasePath);
+  /** @satisfies {import("better-auth").BetterAuthOptions} */
   const options = {
     appName: "Отголосок", baseURL, basePath: "/api/auth", database,
     secret: secret || "development-only-better-auth-secret-32",

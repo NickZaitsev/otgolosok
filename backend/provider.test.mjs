@@ -5,7 +5,7 @@ import { createProvider } from "./provider.mjs";
 test("uses the requested writer model and records the actual model used",async()=>{
   const requests=[];
   const provider=createProvider({baseUrl:"https://provider.example/v1",apiKey:"test-key",fetchImpl:async(url,options)=>{
-    requests.push({url,body:JSON.parse(options.body)});
+    requests.push({url,body:JSON.parse(/** @type {string} */ (options.body))});
     return new Response(JSON.stringify({status:"completed",output:[{type:"message",content:[{type:"output_text",text:'{"valid":true}'}]}]}),{headers:{"Content-Type":"application/json"}});
   }});
   const review=await provider.response("Review supplied evidence");
@@ -21,7 +21,7 @@ test("uses the requested writer model and records the actual model used",async()
 test("OpenAI uses each job's selected voice without changing the shared default", async () => {
   const voices = [];
   const provider = createProvider({ baseUrl: "https://provider.example/v1", apiKey: "key", fetchImpl: async (_url, options) => {
-    voices.push(JSON.parse(options.body).voice);
+    voices.push(JSON.parse(/** @type {string} */ (options.body)).voice);
     return new Response("mp3", { headers: { "Content-Type": "audio/mpeg" } });
   } });
   await Promise.all([provider.speech("Первый рассказ", { voice: "cedar" }), provider.speech("Второй рассказ", { voice: "nova" })]);

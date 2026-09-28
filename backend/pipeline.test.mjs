@@ -12,7 +12,7 @@ function fixture(t,{factCount=3}={}){
   const ids=Array.from({length:factCount},(_,index)=>`f${index+1}`),checked={approved:true,issues:[],checks:{substantive:true,subjectAligned:true,audioClear:true},paragraphFacts:[{paragraph:1,factIds:ids}],claims:[{paragraph:1,text:"Этот московский дом связан с историей города.",factIds:ids,supported:true,address:false}]};
   const queue=[{text:"Источник найден",sources:urls.map(url=>({url,title:"Источник"}))},{value:{addressConfirmed:true,identityNote:"Источник описывает этот дом",placeName:"Тестовый дом",resolvedAddress:address,facts}}, {text:paragraph},{value:checked}];
   const provider={writerModel:"writer",response:async()=>({model:"test",usage:{total_tokens:1},...queue.shift()})};
-  const options={store,provider,fetchPage:async url=>({url,contentType:"text/html",html:page}),narrate:async()=>({url:"audio",durationSec:90}),audioDirectory:"unused"};return{store,address,queue,provider,options,page,urls};
+  const options={store,provider,fetchPage:async url=>({url,contentType:"text/html",html:page}),narrate:/** @type {() => Promise<{url: string, durationSec: number} | void>} */ (async()=>({url:"audio",durationSec:90})),audioDirectory:"unused"};return{store,address,queue,provider,options,page,urls};
 }
 
 test("one substantive publisher and three facts can produce a checked story",async t=>{const f=fixture(t);const job=await runJob(f.store.claimNext(),f.options);assert.equal(job.stage,"ready");assert.equal(job.data.story.facts.length,3);assert.equal(job.data.story.paragraphs[0].factIds.length,3);});

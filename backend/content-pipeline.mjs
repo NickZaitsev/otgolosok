@@ -66,6 +66,13 @@ function reviewRound(round,review) {
   return {round,approved:review?.approved===true,issues:Array.isArray(review?.issues)?review.issues.slice(0,10).map(issue=>clip(String(issue),600)):[],unsupportedClaims};
 }
 
+/**
+ * @param {any} job
+ * @param {{store: ReturnType<typeof import("./store.mjs").createStore>,
+ *   provider: {writerModel?: string, response: (prompt: string, options?: object) => Promise<any>},
+ *   fetchPage?: (url: string, options?: {signal?: AbortSignal}) => Promise<any>, resolveLocation?: ((place: any) => any) | null,
+ *   signal?: AbortSignal, timeoutMs?: number, autoApprove?: boolean}} options
+ */
 export async function runContentJob(job,{store,provider,fetchPage=fetchSource,resolveLocation=null,signal,timeoutMs=600000,autoApprove=false}) {
   const deadline=AbortSignal.any([AbortSignal.timeout(timeoutMs),...(signal?[signal]:[])]);let checkpoint=job.checkpoint??{};
   const save=patch=>{checkpoint={...checkpoint,...patch};store.updateContentCheckpoint(job.id,checkpoint);};

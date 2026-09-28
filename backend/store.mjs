@@ -24,8 +24,25 @@ const STAGES = new Set([
 const WORKING_STAGES = ["researching", "verifying", "writing", "voicing"];
 const TERMINAL_STAGES = ["ready", "insufficient_evidence", "review_required", "failed"];
 
+/**
+ * @typedef {{id: string, input_key: string, source_job_id: string, source_revision: number, state: string, profile_id: string,
+ *   profile_version: string, priority: number, payload_json: string, attempts: number, max_attempts: number, next_attempt_at: string,
+ *   lease_generation: number, lease_token_hash: string | null, lease_expires_at: string | null, worker_id: string | null,
+ *   claim_request_id: string | null, upload_id: string | null, upload_sha256: string | null, receipt_json: string | null,
+ *   error_json: string | null, created_at: string, updated_at: string}} ExternalAudioJobRow
+ * @typedef {{id: string, name: string, token_hash: string, profiles_json: string, revoked_at: string | null, created_at: string,
+ *   last_seen_at: string | null}} WorkerCredentialRow
+ * @typedef {{credential_id: string, worker_name: string, version: string | null, profile_ids_json: string,
+ *   current_job_id: string | null, progress_json: string | null, seen_at: string}} WorkerHeartbeatRow
+ * @typedef {{id: string, place_id: string, approved_story_json: string | null, audio_target_profile: string | null}} PlaceTextStoryRow
+ * @typedef {{engine?: string, language?: string, modelSha256?: string | null, speaker?: string | null, configVersion?: string,
+ *   configSha256?: string | null, referenceSha256?: string | null, textPreparation?: {input?: string, version?: string} | null,
+ *   chunking?: string, maximumPublicationDurationSec?: number}} ExternalTtsProfile
+ * @typedef {((text: string, options?: {signal?: AbortSignal}) => Promise<string>) & {version?: string}} ExternalTextNormalizer
+ */
+
 function codedError(code, message = code) {
-  const error = new Error(message);
+  const error = /** @type {Error & {code?: string}} */ (new Error(message));
   error.code = code;
   return error;
 }
@@ -54,6 +71,11 @@ function isAddressJob(job) {
   return (job?.kind ?? "address") === "address";
 }
 
+/**
+ * @param {string} databasePath
+ * @param {{now?: () => number, random?: () => number, maxActive?: number, workerLeaseSecret?: string,
+ *   normalizeExternalText?: ExternalTextNormalizer, externalTtsProfiles?: Record<string, ExternalTtsProfile>}} [options]
+ */
 export function createStore(
   databasePath,
   { now = Date.now, random = Math.random, maxActive = 2, workerLeaseSecret = "development-worker-lease-secret", normalizeExternalText = Object.assign(async text=>text,{version:"plain-v1"}), externalTtsProfiles = {} } = {},
@@ -186,7 +208,7 @@ export function createStore(
   }
 
   function externalRow(id) {
-    return db.prepare("SELECT * FROM external_audio_jobs WHERE id = ?").get(id) ?? null;
+    return /** @type {ExternalAudioJobRow | null} */ (db.prepare("SELECT * FROM external_audio_jobs WHERE id = ?").get(id) ?? null);
   }
 
   function publicExternal(row) {
@@ -255,17 +277,18 @@ export function createStore(
     ...walkAdminStore,
     ...createWalkResearchStore({ db, now, transaction, checkCapacity }),
     ...contentStore,
+    /** @param {{profileId?: string, limit?: number, signal?: AbortSignal}} [options] */
     async enqueueMissingPlaceAudio({ profileId = "silero-ru-v1", limit = 500, signal } = {}) {
       if (typeof profileId !== "string" || !/^[a-z0-9][a-z0-9._-]{0,63}$/.test(profileId)
         || !Number.isSafeInteger(limit) || limit < 1 || limit > 500) throw codedError("BAD_REQUEST");
-      const candidates = db.prepare(`SELECT t.id, t.approved_story_json, p.id place_id, p.name, p.address
+      const candidates = /** @type {Array<{id: string, approved_story_json: string, place_id: string, name: string, address: string | null}>} */ (db.prepare(`SELECT t.id, t.approved_story_json, p.id place_id, p.name, p.address
         FROM place_texts t JOIN places p ON p.id=t.place_id
         WHERE p.archived=0 AND t.approved_story_json IS NOT NULL
           AND (t.audio_json IS NULL OR t.audio_json='null')
           AND NOT EXISTS (SELECT 1 FROM external_audio_jobs a
             WHERE a.source_job_id='place-text:'||t.id AND a.profile_id=?
               AND a.state IN ('queued','retry_wait','leased'))
-        ORDER BY t.created_at, t.rowid LIMIT ?`).all(profileId, limit + 1);
+        ORDER BY t.created_at, t.rowid LIMIT ?`).all(profileId, limit + 1));
       const rows = candidates.slice(0, limit);
       const result = { queued: 0, alreadyQueued: 0, retried: 0, skipped: 0, failed: 0 };
       for (const row of rows) {
@@ -535,6 +558,7 @@ export function createStore(
       });
     },
 
+    /** @param {{sourceJobId: string, sourceRevision: number, story: any, profileId?: string, signal?: AbortSignal}} options */
     async enqueueExternalAudio({ sourceJobId, sourceRevision, story, profileId = "silero-ru-v1", signal }) {
       if (typeof sourceJobId !== "string" || !Number.isSafeInteger(sourceRevision) || sourceRevision < 0
         || typeof profileId !== "string" || !/^[a-z0-9][a-z0-9._-]{0,63}$/.test(profileId)
@@ -572,10 +596,10 @@ export function createStore(
       db.prepare("INSERT INTO worker_credentials VALUES (?,?,?,?,NULL,?,NULL)").run(id,name.trim(),sha256(token),encode([...new Set(profiles)]),timestamp);
       return {id,name:name.trim(),profiles:[...new Set(profiles)],createdAt:timestamp,token};
     },
-    listWorkerCredentials() {return db.prepare("SELECT * FROM worker_credentials ORDER BY created_at DESC").all().map(row=>{const active=db.prepare("SELECT max(updated_at) seen FROM external_audio_jobs WHERE worker_id LIKE ?").get(`${row.id}:%`);return{id:row.id,name:row.name,profiles:JSON.parse(row.profiles_json),revokedAt:row.revoked_at,createdAt:row.created_at,lastSeenAt:active.seen??row.last_seen_at};});},
+    listWorkerCredentials() {return /** @type {WorkerCredentialRow[]} */ (db.prepare("SELECT * FROM worker_credentials ORDER BY created_at DESC").all()).map(row=>{const active=db.prepare("SELECT max(updated_at) seen FROM external_audio_jobs WHERE worker_id LIKE ?").get(`${row.id}:%`);return{id:row.id,name:row.name,profiles:JSON.parse(row.profiles_json),revokedAt:row.revoked_at,createdAt:row.created_at,lastSeenAt:active.seen??row.last_seen_at};});},
     revokeWorkerCredential(id) {const timestamp=isoNow(now),result=db.prepare("UPDATE worker_credentials SET revoked_at=? WHERE id=? AND revoked_at IS NULL").run(timestamp,id);return result.changes?{id,revokedAt:timestamp}:null;},
     authenticateWorkerToken(token) {
-      if(typeof token!=="string"||token.length<32)return null;const row=db.prepare("SELECT * FROM worker_credentials WHERE token_hash=? AND revoked_at IS NULL").get(sha256(token));
+      if(typeof token!=="string"||token.length<32)return null;const row=/** @type {WorkerCredentialRow | undefined} */ (db.prepare("SELECT * FROM worker_credentials WHERE token_hash=? AND revoked_at IS NULL").get(sha256(token)));
       if(!row)return null;db.prepare("UPDATE worker_credentials SET last_seen_at=? WHERE id=?").run(isoNow(now),row.id);return{id:row.id,name:row.name,profiles:JSON.parse(row.profiles_json)};
     },
     recordWorkerHeartbeat({credentialId="static",workerName,version=null,profileIds=[],currentJobId=null,progress=null}) {
@@ -586,7 +610,7 @@ export function createStore(
         .run(credentialId,workerName,typeof version==="string"?version.slice(0,100):null,encode(profileIds.slice(0,20)),currentJobId,progress?encode(progress):null,timestamp);
       if(credentialId!=="static")db.prepare("UPDATE worker_credentials SET last_seen_at=? WHERE id=?").run(timestamp,credentialId);
     },
-    listWorkerHeartbeats() {return db.prepare("SELECT * FROM worker_heartbeats ORDER BY seen_at DESC").all().map(row=>({credentialId:row.credential_id,workerName:row.worker_name,version:row.version,profileIds:JSON.parse(row.profile_ids_json),currentJobId:row.current_job_id,progress:row.progress_json?JSON.parse(row.progress_json):null,seenAt:row.seen_at}));},
+    listWorkerHeartbeats() {return /** @type {WorkerHeartbeatRow[]} */ (db.prepare("SELECT * FROM worker_heartbeats ORDER BY seen_at DESC").all()).map(row=>({credentialId:row.credential_id,workerName:row.worker_name,version:row.version,profileIds:JSON.parse(row.profile_ids_json),currentJobId:row.current_job_id,progress:row.progress_json?JSON.parse(row.progress_json):null,seenAt:row.seen_at}));},
     getExternalAudioStats() {
       const states=Object.fromEntries(db.prepare("SELECT state,count(*) n FROM external_audio_jobs GROUP BY state").all().map(row=>[row.state,Number(row.n)]));
       const oldest=db.prepare("SELECT min(created_at) value FROM external_audio_jobs WHERE state IN ('queued','retry_wait')").get().value;
@@ -614,7 +638,7 @@ export function createStore(
         || textPreparationVersions.some(value=>typeof value!=="string"||value.length>100)) throw codedError("BAD_REQUEST");
       return transaction(() => {
         const timestamp = isoNow(now);
-        const repeated = db.prepare("SELECT * FROM external_audio_jobs WHERE worker_id = ? AND claim_request_id = ? ORDER BY updated_at DESC LIMIT 1").get(workerId,requestId);
+        const repeated = /** @type {ExternalAudioJobRow | undefined} */ (db.prepare("SELECT * FROM external_audio_jobs WHERE worker_id = ? AND claim_request_id = ? ORDER BY updated_at DESC LIMIT 1").get(workerId,requestId));
         if (repeated?.state==="leased"&&repeated.lease_expires_at>timestamp) {
           const payload=JSON.parse(repeated.payload_json);
           return {...publicExternal(repeated),leaseToken:leaseToken(repeated.id,repeated.lease_generation,workerId),...payload};
@@ -659,6 +683,7 @@ export function createStore(
       });
     },
 
+    /** @param {string} id @param {{workerId: string, generation: number, leaseToken: string, failureId: string, code: string, message?: string}} failure */
     failExternalAudio(id,{workerId,generation,leaseToken:token,failureId,code,message}) {
       if (typeof failureId!=="string"||failureId.length<8||failureId.length>100||typeof code!=="string"||!/^[A-Z_]{1,60}$/.test(code)) throw codedError("BAD_REQUEST");
       return transaction(() => {
@@ -693,7 +718,7 @@ export function createStore(
           return publicExternal(row);
         }
         requireLease(row,workerId,generation,token);
-        const textSource=row.source_job_id.startsWith("place-text:")?db.prepare("SELECT * FROM place_texts WHERE id=?").get(row.source_job_id.slice(11)):null;
+        const textSource=row.source_job_id.startsWith("place-text:")?/** @type {PlaceTextStoryRow | undefined} */ (db.prepare("SELECT * FROM place_texts WHERE id=?").get(row.source_job_id.slice(11))):null;
         const source=textSource?null:decode(findById.get(row.source_job_id));
         const payload=JSON.parse(row.payload_json);
         if(textSource?(!textSource.approved_story_json||!hasValidStoryText({...JSON.parse(textSource.approved_story_json),address:"OSM place"})
@@ -718,7 +743,7 @@ export function createStore(
 
     close() {
       if (!closed) {
-        for (const statement of [findById,findByKey,writeJob,insertJob]) statement.finalize?.();
+        for (const statement of [findById,findByKey,writeJob,insertJob]) /** @type {typeof statement & {finalize?: () => void}} */ (statement).finalize?.();
         try { db.exec("PRAGMA optimize; PRAGMA wal_checkpoint(TRUNCATE)"); } catch { /* Another live connection may own WAL. */ }
         db.close();
         closed = true;

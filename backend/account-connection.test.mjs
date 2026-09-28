@@ -73,7 +73,7 @@ test("saved walks are capped per account", async t => {
   fill(runtime.accountDatabase, "user_walks", "u1", MAX_WALKS_PER_USER - 1);
   assert.ok(store.createWalk("u1", { title: "Последняя", snapshot: draft, idempotencyKey: "walk-at-limit" }).id);
   assert.throws(() => store.createWalk("u1", { title: "Лишняя", snapshot: draft, idempotencyKey: "walk-over-limit" }),
-    error => error.code === "STORAGE_LIMIT" && /200 прогулок/.test(error.message));
+    /** @param {Error & {code?: string}} error */ error => error.code === "STORAGE_LIMIT" && /200 прогулок/.test(error.message));
   // A replay of an already stored request is not a new walk.
   assert.ok(store.createWalk("u1", { title: "Последняя", snapshot: draft, idempotencyKey: "walk-at-limit" }).id);
   assert.ok(store.createWalk("u2", { title: "Чужой лимит", snapshot: draft, idempotencyKey: "walk-other-user" }).id);
@@ -83,7 +83,7 @@ test("favorites are capped per account, re-adding an existing one is allowed", a
   const { runtime, store } = await memoryStore(t);
   fill(runtime.accountDatabase, "user_favorites", "u1", MAX_FAVORITES_PER_USER - 1);
   store.setFavorite("u1", "walk", "last-one");
-  assert.throws(() => store.setFavorite("u1", "walk", "one-too-many"), error => error.code === "STORAGE_LIMIT" && /1000/.test(error.message));
+  assert.throws(() => store.setFavorite("u1", "walk", "one-too-many"), /** @param {Error & {code?: string}} error */ error => error.code === "STORAGE_LIMIT" && /1000/.test(error.message));
   store.setFavorite("u1", "walk", "last-one");
   store.setFavorite("u1", "story", "seed-0");
   assert.equal(runtime.accountDatabase.prepare("SELECT count(*) AS count FROM user_favorites WHERE user_id='u1'").get().count, MAX_FAVORITES_PER_USER);
@@ -93,7 +93,7 @@ test("an import that would cross a cap stores nothing", async t => {
   const { runtime, store } = await memoryStore(t);
   fill(runtime.accountDatabase, "user_favorites", "u1", MAX_FAVORITES_PER_USER - 1);
   const favorites = [{ type: "walk", id: "import-a" }, { type: "walk", id: "import-b" }];
-  assert.throws(() => store.importLocal("u1", { importId: "import-over-cap", walk: { title: "С устройства", snapshot: draft }, favorites }), error => error.code === "STORAGE_LIMIT");
+  assert.throws(() => store.importLocal("u1", { importId: "import-over-cap", walk: { title: "С устройства", snapshot: draft }, favorites }), /** @param {Error & {code?: string}} error */ error => error.code === "STORAGE_LIMIT");
   assert.equal(store.listWalks("u1").walks.length, 0);
   assert.equal(runtime.accountDatabase.prepare("SELECT count(*) AS count FROM account_imports").get().count, 0);
   const imported = store.importLocal("u1", { importId: "import-fits", walk: { title: "С устройства", snapshot: draft }, favorites: favorites.slice(0, 1) });

@@ -34,7 +34,7 @@ function fixture(t, { now = () => Date.parse("2026-09-08T12:00:00.000Z"), checkC
   const find = db.prepare("SELECT record_json FROM jobs WHERE id = ?");
   const write = db.prepare("UPDATE jobs SET stage = ?, record_json = ? WHERE id = ?");
   const generic = {
-    get(id) { const row = find.get(id); return row ? JSON.parse(row.record_json) : null; },
+    get(id) { const row = find.get(id); return row ? JSON.parse(/** @type {string} */ (row.record_json)) : null; },
     update(id, patch, expectedRevision) {
       return transaction(() => {
         const current = generic.get(id);

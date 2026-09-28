@@ -6,12 +6,16 @@ import { adminAuth, adminDetail } from "./admin.mjs";
 import { validateDraft, validateFacts, sha256 } from "./domain.mjs";
 import { runJob } from "./pipeline.mjs";
 
+/**
+ * @param {import("node:test").TestContext} t
+ * @param {{provider?: any, yandexTts?: any, maxActive?: number, adminToken?: string}} [options]
+ */
 async function fixture(t, { provider = {}, yandexTts = null, maxActive = 2, adminToken = "test-secret" } = {}) {
   const store = createStore(":memory:", { maxActive });
   const app = createApp({ store, provider, yandexTts, adminToken, origin: "https://site.test", workerEnabled: false });
-  await new Promise(done => app.server.listen(0, "127.0.0.1", done));
+  await /** @type {Promise<void>} */ (new Promise(done => app.server.listen(0, "127.0.0.1", done)));
   t.after(async () => { await app.close(); store.close(); });
-  const base = `http://127.0.0.1:${app.server.address().port}`;
+  const base = `http://127.0.0.1:${/** @type {import("node:net").AddressInfo} */ (app.server.address()).port}`;
   const request = (path = "", value, headers = {}) => fetch(base + "/api/story-admin/jobs" + path, {
     method: value === undefined ? "GET" : "POST",
     headers: { Authorization: "Bearer test-secret", Origin: "https://site.test", "Content-Type": "application/json", ...headers },
@@ -55,7 +59,7 @@ test("admin routes authenticate before lookup, never cache, and project only saf
     assert.equal(res.status, 401); assert.equal(res.headers.get("cache-control"), "no-store");
     assert.equal((await res.text()).includes(job.id), false);
   }
-  const res = await f.request(`/${job.id}`); const value = await res.json();
+  const res = await f.request(`/${job.id}`); const value = /** @type {any} */ (await res.json());
   assert.deepEqual(Object.keys(value), ["job"]);
   assert.deepEqual(Object.keys(value.job).sort(), ["id", "address", "stage", "revision", "updatedAt", "irrelevant", "ttsProvider", "ttsVoice", "error", "data", "canApprove", "canRegenerate", "canRetry", "canRevoice", "ttsProviders"].sort());
   assert.deepEqual(Object.keys(value.job.data), ["ttsProvider", "ttsVoice", "story", "audio", "revoice", "editorDraft", "draft", "draftCandidate", "evidence", "review", "factReview"]);
@@ -63,9 +67,9 @@ test("admin routes authenticate before lookup, never cache, and project only saf
   assert.equal(JSON.stringify(value).includes("PRIVATE_"), false);
   assert.equal(JSON.stringify(value).includes("<"), false);
   assert.equal(value.job.data.evidence.sources[0].text, undefined);
-  const publicValue = await (await fetch(`${f.base}/api/story-jobs/${job.id}`)).json();
+  const publicValue = /** @type {any} */ (await (await fetch(`${f.base}/api/story-jobs/${job.id}`)).json());
   assert.equal(publicValue.data, undefined);
-  const list = await (await f.request()).json();
+  const list = /** @type {any} */ (await (await f.request()).json());
   assert.deepEqual(Object.keys(list), ["jobs", "hasMore"]);
   assert.equal(list.jobs[0].data, undefined);
   assert.equal(list.hasMore, false);
@@ -74,8 +78,8 @@ test("admin routes authenticate before lookup, never cache, and project only saf
 test("pagination is deterministic and bounded to 50 with validated offsets", async t => {
   const f = await fixture(t);
   for (let i = 0; i < 51; i++) f.seed(String(i));
-  const first = await (await f.request()).json();
-  const last = await (await f.request("?offset=50")).json();
+  const first = /** @type {any} */ (await (await f.request()).json());
+  const last = /** @type {any} */ (await (await f.request("?offset=50")).json());
   assert.equal(first.jobs.length, 50); assert.equal(first.hasMore, true);
   assert.equal(last.jobs.length, 1); assert.equal(last.hasMore, false);
   assert.equal(first.jobs.some(job => job.id === last.jobs[0].id), false);
@@ -92,7 +96,7 @@ test("edits validate origin, schema, byte limit and revision, preserving all mod
   const saved = f.store.get(job.id);
   assert.deepEqual(saved.data, { ...job.data, editorDraft: f.draft });
   assert.equal(saved.revision, job.revision + 1);
-  assert.equal((await (await f.request(`/${job.id}`)).json()).job.canApprove, true);
+  assert.equal(/** @type {any} */ (await (await f.request(`/${job.id}`)).json()).job.canApprove, true);
   const moved = f.store.update(job.id, { stage: "failed" }, saved.revision);
   assert.equal((await f.request(path, { ...input, revision: moved.revision })).status, 409);
 });
@@ -106,10 +110,10 @@ test("editor draft text roundtrips exactly through editing, review and publicati
   assert.deepEqual({ title: valid.title, paragraphs: valid.paragraphs }, draft);
   const response = await f.request(`/${job.id}/edit`, { revision: job.revision, draft });
   assert.equal(response.status, 200);
-  const { job: saved } = await response.json();
+  const { job: saved } = /** @type {any} */ (await response.json());
   assert.deepEqual(saved.data.editorDraft, draft);
   assert.deepEqual(f.store.get(job.id).data.editorDraft, draft);
-  const { job: detail } = await (await f.request(`/${job.id}`)).json();
+  const { job: detail } = /** @type {any} */ (await (await f.request(`/${job.id}`)).json());
   assert.equal(detail.canApprove, true);
   assert.deepEqual(detail.data.editorDraft, draft);
   assert.equal((await f.request(`/${job.id}/approve`, { revision: detail.revision })).status, 200);
@@ -120,14 +124,14 @@ test("editor draft text roundtrips exactly through editing, review and publicati
     },
   });
   assert.equal(ready.stage, "ready");
-  const published = await (await fetch(`${f.base}/api/story-jobs/${job.id}`)).json();
+  const published = /** @type {any} */ (await (await fetch(`${f.base}/api/story-jobs/${job.id}`)).json());
   assert.deepEqual({ title: published.story.title, paragraphs: published.story.paragraphs }, draft);
 });
 
 test("provider unavailable permits reads and edits but rejects approval without state changes", async t => {
   const f = await fixture(t, { provider: null }); const job = f.seed();
   const response = await f.request(`/${job.id}/edit`, { revision: job.revision, draft: f.draft });
-  assert.equal(response.status, 200); const { job: saved } = await response.json();
+  assert.equal(response.status, 200); const { job: saved } = /** @type {any} */ (await response.json());
   assert.equal(saved.canApprove, false);
   const before = f.store.get(job.id);
   assert.equal((await f.request(`/${job.id}/approve`, { revision: saved.revision })).status, 503);
@@ -139,7 +143,7 @@ test("approval requires a saved valid draft and revalidated evidence", async t =
   assert.equal((await f.request(`/${job.id}/approve`, { revision: job.revision })).status, 400);
   let saved = f.store.editAdmin(job.id, job.revision, f.draft);
   saved = f.store.update(job.id, { data: { ...saved.data, sources: saved.data.sources.map(s => ({ ...s, text: "no matching quote" })) } }, saved.revision);
-  assert.equal((await (await f.request(`/${job.id}`)).json()).job.canApprove, false);
+  assert.equal(/** @type {any} */ (await (await f.request(`/${job.id}`)).json()).job.canApprove, false);
   assert.equal((await f.request(`/${job.id}/approve`, { revision: saved.revision })).status, 400);
   assert.deepEqual(f.store.get(job.id), saved);
 });
@@ -150,7 +154,7 @@ test("approval is atomic, audits the draft, and continues with audio only", asyn
   const path = `/${saved.id}/approve`;
   const results = await Promise.all([f.request(path, { revision: saved.revision }), f.request(path, { revision: saved.revision })]);
   assert.deepEqual(results.map(r => r.status).sort(), [200, 409]);
-  const response = await results.find(r => r.status === 200).json();
+  const response = /** @type {any} */ (await results.find(r => r.status === 200).json());
   assert.equal(response.job.stage, "queued"); assert.equal(response.job.canApprove, false);
   const approved = f.store.get(saved.id);
   assert.deepEqual(approved.data.draft, original.data.draft);
@@ -174,7 +178,7 @@ test("a full queue rolls back approval and its revision", async t => {
   const blocker = f.store.createOrGet({ key: "blocker", address: "Address 2" });
   const response = await f.request(`/${job.id}/approve`, { revision: saved.revision });
   assert.equal(response.status, 429);
-  assert.equal((await response.json()).error.code, "QUEUE_FULL");
+  assert.equal(/** @type {any} */ (await response.json()).error.code, "QUEUE_FULL");
   assert.deepEqual(f.store.get(job.id), saved);
   f.store.update(blocker.id, { stage: "failed" }, blocker.revision);
   assert.equal((await f.request(`/${job.id}/approve`, { revision: saved.revision })).status, 200);
@@ -185,7 +189,7 @@ test("malformed raw findings stay readable and unsafe source URLs are removed", 
   const job = f.seed({}.toString(), { evidence: { facts: [null, 42, { evidence: [null] }], sources: [null, { url: "javascript:alert(1)" }, { url: "https://user:secret@example.com" }] }, draftCandidate: { paragraphs: [null, false] }, factReview: { facts: [null] }, review: { issues: [null, {}] } });
   const response = await f.request(`/${job.id}`);
   assert.equal(response.status, 200);
-  const { job: detail } = await response.json();
+  const { job: detail } = /** @type {any} */ (await response.json());
   assert.equal(detail.canApprove, false);
   assert.ok(detail.data.evidence.sources.every(source => source.url === null));
   assert.equal(JSON.stringify(detail).includes("secret"), false);
@@ -227,7 +231,7 @@ test("Yandex selection is persisted, audited and reused after an audio-only retr
   const saved = f.store.editAdmin(original.id, original.revision, f.draft);
   const response = await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider: "yandex", ttsVoice: "kirill" });
   assert.equal(response.status, 200);
-  const { job } = await response.json();
+  const { job } = /** @type {any} */ (await response.json());
   assert.equal(job.data.ttsProvider, "yandex");
   assert.deepEqual(job.ttsProviders.map(({ id, label, available }) => ({ id, label, available })), [{ id: "openai", label: "OpenAI", available: true }, { id: "yandex", label: "Яндекс SpeechKit", available: true }]);
   assert.equal(job.data.ttsVoice, "kirill");
@@ -259,7 +263,7 @@ test("unavailable and invalid speech selections do not modify the job or consume
   const f = await fixture(t);
   const original = f.seed();
   const saved = f.store.editAdmin(original.id, original.revision, f.draft);
-  const detail = (await (await f.request(`/${saved.id}`)).json()).job;
+  const detail = /** @type {any} */ (await (await f.request(`/${saved.id}`)).json()).job;
   assert.equal(detail.ttsProviders.find(option => option.id === "yandex").available, false);
   for (const ttsProvider of ["invalid", "__proto__", "constructor", null, {}, 1]) {
     assert.equal((await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider })).status, 400);
@@ -301,14 +305,14 @@ test("approval without a voice freezes the configured default including custom s
     const f = await fixture(t, { yandexTts: { voice } });
     const original = f.seed();
     const saved = f.store.editAdmin(original.id, original.revision, f.draft);
-    const detail = (await (await f.request(`/${saved.id}`)).json()).job;
+    const detail = /** @type {any} */ (await (await f.request(`/${saved.id}`)).json()).job;
     const options = detail.ttsProviders.find(option => option.id === "yandex");
     assert.equal(options.defaultVoice, voice);
     assert.ok(options.voices.some(option => option.id === voice));
     assert.equal(detail.data.ttsVoice, null);
     const response = await f.request(`/${saved.id}/approve`, { revision: saved.revision, ttsProvider: "yandex" });
     assert.equal(response.status, 200);
-    assert.equal((await response.json()).job.data.ttsVoice, voice);
+    assert.equal(/** @type {any} */ (await response.json()).job.data.ttsVoice, voice);
     assert.equal(f.store.get(saved.id).data.editorialApproval.ttsVoice, voice);
   }
 });
@@ -317,9 +321,9 @@ test("legacy completed jobs show their recorded audio voice and malformed values
   const f = await fixture(t);
   const original = f.seed();
   let job = f.store.update(original.id, { stage: "ready", data: { ...original.data, audio: { voice: "ermil" }, ttsProvider: "yandex" } }, original.revision);
-  assert.equal((await (await f.request(`/${job.id}`)).json()).job.data.ttsVoice, "ermil");
+  assert.equal(/** @type {any} */ (await (await f.request(`/${job.id}`)).json()).job.data.ttsVoice, "ermil");
   job = f.store.update(job.id, { data: { ...job.data, ttsVoice: { secret: "PRIVATE_VALUE" }, audio: { voice: "<script>bad()</script>" } } }, job.revision);
-  const detail = (await (await f.request(`/${job.id}`)).json()).job;
+  const detail = /** @type {any} */ (await (await f.request(`/${job.id}`)).json()).job;
   assert.equal(detail.data.ttsVoice, null);
   assert.equal(JSON.stringify(detail).includes("PRIVATE_VALUE"), false);
 });
@@ -337,7 +341,7 @@ test("store list filters are composable, case-insensitive for Russian and valida
   assert.deepEqual(store.listAdmin({ q: "пУшКиНа", stage: "ready" }).jobs.map(job => job.id), [pushkinReady.id]);
   assert.deepEqual(store.listAdmin({ q: "улица пушкина", relevance: "irrelevant" }).jobs.map(job => job.id), [hidden.id]);
   assert.equal(store.listAdmin({ relevance: "all", limit: 2 }).hasMore, true);
-  for (const options of [{ q: 1 }, { q: "x".repeat(201) }, { stage: "unknown" }, { relevance: "hidden" }]) {
+  for (const options of /** @type {any[]} */ ([{ q: 1 }, { q: "x".repeat(201) }, { stage: "unknown" }, { relevance: "hidden" }])) {
     assert.throws(() => store.listAdmin(options), { code: "BAD_REQUEST" });
   }
 });

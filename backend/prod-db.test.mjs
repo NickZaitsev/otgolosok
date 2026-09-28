@@ -26,11 +26,11 @@ test("production import and restore keep the SQLite snapshot and its audio",()=>
     const env={...process.env,DATA_DIR:data,DUMP_DIR:dump};
     execFileSync(process.execPath,[script,"import"],{env,stdio:"pipe"});
     assert.equal(readFileSync(join(data,"audio",`${newHash}.mp3`),"utf8"),"new-audio");
-    let db=new DatabaseSync(join(data,"jobs.sqlite"),{readOnly:true});assert.equal(JSON.parse(db.prepare("SELECT record_json FROM jobs").get().record_json).address,"new");db.close();
+    let db=new DatabaseSync(join(data,"jobs.sqlite"),{readOnly:true});assert.equal(JSON.parse(/** @type {string} */ (db.prepare("SELECT record_json FROM jobs").get().record_json)).address,"new");db.close();
     const backup=readdirSync(data).find(name=>name.startsWith("backup-local-"));assert.ok(backup);
     execFileSync(process.execPath,[script,"restore"],{env:{...env,BACKUP:backup},stdio:"pipe"});
     assert.equal(readFileSync(join(data,"audio",`${oldHash}.mp3`),"utf8"),"old-audio");
     assert.equal(readdirSync(join(data,"audio")).includes(`${newHash}.mp3`),false);
-    db=new DatabaseSync(join(data,"jobs.sqlite"),{readOnly:true});assert.equal(JSON.parse(db.prepare("SELECT record_json FROM jobs").get().record_json).address,"old");db.close();
+    db=new DatabaseSync(join(data,"jobs.sqlite"),{readOnly:true});assert.equal(JSON.parse(/** @type {string} */ (db.prepare("SELECT record_json FROM jobs").get().record_json)).address,"old");db.close();
   } finally {rmSync(root,{recursive:true,force:true});}
 });

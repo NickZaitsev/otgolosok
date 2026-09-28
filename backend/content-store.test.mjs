@@ -170,7 +170,7 @@ test("batch items filter by error code and report the codes present in the curre
   assert.deepEqual(store.listBatchItems(batch.id,{status:"waiting"}).errors,[{code:null,count:1}]);
   assert.equal(store.listBatchItems(batch.id,{status:"waiting",error:"none"}).total,1);
   for(const invalid of [{error:""},{error:"lowercase"},{error:"WITH SPACE"},{error:"A".repeat(65)},{error:5}]) {
-    assert.throws(()=>store.listBatchItems(batch.id,invalid),{code:"BAD_REQUEST"});
+    assert.throws(()=>store.listBatchItems(batch.id,/** @type {any} */ (invalid)),{code:"BAD_REQUEST"});
   }
 });
 

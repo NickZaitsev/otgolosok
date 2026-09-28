@@ -38,12 +38,12 @@ function fixture(t, config = {}) {
     discoverResearch: async () => { calls.discovery++; return structuredClone(candidates); },
     planResearchWalk: async request => { calls.route++; events.push('route'); return { stops: request.stops, geometry: [request.start.location, ...request.stops.map(p => p.location)], distanceM: 500, walkingMinutes: 10, attribution: 'mock' }; },
     fetchPage: async url => ({ url, html: text }),
-    provider: { response: async (prompt, opts) => {
+    provider: { response: /** @type {(prompt: string, opts: any) => Promise<any>} */ (async (prompt, opts) => {
       if (opts.search) { calls.research++; events.push('research'); return { text:'Источники найдены',sources:urls.map(url=>({url,title:'Источник'})),model:'mock',usage:{},citedUrls:urls }; }
       if (opts.maxTokens === 5500) { calls.facts++; return { value:{ addressConfirmed: true, identityNote:'Источник описывает этот дом', placeName: 'Дом', resolvedAddress: candidates[0].place.address, facts },model:'mock',usage:{} }; }
       if (opts.maxTokens === 3200) { calls.draft++; events.push('draft'); return { text:`${paragraph}\n\n${paragraph}`,model:'mock',usage:{} }; }
       calls.review++; return { value:{ approved: true, issues: [], checks:{substantive:true,subjectAligned:true,audioClear:true},paragraphFacts:[{paragraph:1,factIds:['f1','f2','f3']},{paragraph:2,factIds:['f4','f5']}],claims:[{paragraph:1,text:'История этого дома',factIds:['f1','f2','f3'],supported:true,address:false},{paragraph:2,text:'История этого дома',factIds:['f4','f5'],supported:true,address:false}] },model:'mock',usage:{} };
-    } },
+    }) },
     narrate: async () => { calls.audio++; events.push('audio'); assert.ok(events.includes('route')); return { url: `/api/story-audio/${'a'.repeat(64)}.mp3`, durationSec: 100 }; },
   };
   const create = (request = input) => store.createWalkResearch(structuredClone(request));
@@ -248,26 +248,26 @@ async function walkerAccounts(t) {
 }
 
 test('HTTP consent, origin, lost POST lookup, provider-down GET and address/admin isolation', async t => {
-  const f = fixture(t), origin = 'http://localhost:3000', accountStore = await walkerAccounts(t), signedIn = { auth: walkerSession, accountStore };
-  const app = createApp({ store: f.store, provider: {}, origin, workerEnabled: false, adminToken: 'test-admin-token', allowLegacyAdminToken: true, audioDirectory: 'unused', ...signedIn });
-  await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
+  const f = fixture(t), origin = 'http://localhost:3000', accountStore = await walkerAccounts(t), signedIn = { auth: /** @type {any} */ (walkerSession), accountStore };
+  const app = createApp({ store: f.store, provider: /** @type {any} */ ({}), origin, workerEnabled: false, adminToken: 'test-admin-token', allowLegacyAdminToken: true, audioDirectory: 'unused', ...signedIn });
+  await new Promise(resolve => app.server.listen(0, '127.0.0.1', /** @type {() => void} */ (resolve)));
   t.after(() => app.close());
-  const base = `http://127.0.0.1:${app.server.address().port}`;
+  const base = `http://127.0.0.1:${/** @type {import('node:net').AddressInfo} */ (app.server.address()).port}`;
   const post = (value, headers = {}) => fetch(`${base}/api/walk-research-jobs`, { method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(value) });
   assert.equal((await post(input, { Origin: 'https://evil.example' })).status, 403);
   assert.equal((await post(input, { 'Sec-Fetch-Site': 'cross-site' })).status, 403);
   assert.equal((await post({ ...input, consent: false })).status, 400);
   assert.equal((await fetch(`${base}/api/walk-research-jobs?lat=55.75&lon=37.61&mode=loop&minutes=30&recoveryToken=${input.recoveryToken}`)).status, 404);
   assert.equal(f.store.lookupWalkResearch(validateWalkResearch(input), input.recoveryToken), null);
-  const job = await (await post(input)).json();
-  assert.equal((await (await post(input)).json()).id, job.id);
-  assert.equal((await (await fetch(`${base}/api/walk-research-jobs?lat=55.7500001&lon=37.61&mode=loop&minutes=30&recoveryToken=${input.recoveryToken}`)).json()).id, job.id);
+  const job = /** @type {any} */ (await (await post(input)).json());
+  assert.equal(/** @type {any} */ (await (await post(input)).json()).id, job.id);
+  assert.equal(/** @type {any} */ (await (await fetch(`${base}/api/walk-research-jobs?lat=55.7500001&lon=37.61&mode=loop&minutes=30&recoveryToken=${input.recoveryToken}`)).json()).id, job.id);
   assert.equal((await fetch(`${base}/api/walk-research-jobs?lat=55.75&lat=55.75&lon=37.61&mode=loop&minutes=30`)).status, 400);
   assert.equal((await fetch(`${base}/api/story-jobs/${job.id}`)).status, 404);
   assert.equal((await fetch(`${base}/api/story-admin/jobs/${job.id}`, { headers: { Authorization: 'Bearer test-admin-token' } })).status, 404);
   const down = createApp({ store: f.store, provider: null, origin, workerEnabled: false, audioDirectory: 'unused', ...signedIn });
-  await new Promise(resolve => down.server.listen(0, '127.0.0.1', resolve)); t.after(() => down.close());
-  const downBase = `http://127.0.0.1:${down.server.address().port}`;
+  await new Promise(resolve => down.server.listen(0, '127.0.0.1', /** @type {() => void} */ (resolve))); t.after(() => down.close());
+  const downBase = `http://127.0.0.1:${/** @type {import('node:net').AddressInfo} */ (down.server.address()).port}`;
   const revision = f.store.get(job.id).revision;
   assert.equal((await fetch(`${downBase}/api/walk-research-jobs/${job.id}`)).status, 200);
   assert.equal((await fetch(`${downBase}/api/walk-research-jobs?lat=55.75&lon=37.61&mode=loop&minutes=30&recoveryToken=${input.recoveryToken}`)).status, 200);
@@ -281,13 +281,13 @@ test('HTTP consent, origin, lost POST lookup, provider-down GET and address/admi
   }
   assert.equal((await post({ ...input, recoveryToken: undefined })).status, 400);
   assert.equal((await fetch(lookup(otherToken))).status, 404);
-  const shared = await (await post({ ...input, recoveryToken: otherToken, start: { ...input.start, address: 'Private second label' } })).json();
+  const shared = /** @type {any} */ (await (await post({ ...input, recoveryToken: otherToken, start: { ...input.start, address: 'Private second label' } })).json());
   assert.equal(shared.id, job.id);
   assert.equal(shared.request.start.address, 'Начало прогулки');
   assert.equal(JSON.stringify(shared).includes(input.start.address), false);
   assert.equal(JSON.stringify(shared).includes(otherToken), false);
-  assert.equal((await (await fetch(lookup(otherToken))).json()).id, job.id);
-  assert.equal((await (await fetch(lookup(input.recoveryToken))).json()).id, job.id);
+  assert.equal(/** @type {any} */ (await (await fetch(lookup(otherToken))).json()).id, job.id);
+  assert.equal(/** @type {any} */ (await (await fetch(lookup(input.recoveryToken))).json()).id, job.id);
   assert.equal((await fetch(lookup(otherToken).replace('lat=55.75', 'lat=55.76'))).status, 404);
   assert.equal(f.store.get(job.id).revision, revision);
 });

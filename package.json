@@ -12,7 +12,7 @@
     "build": "node scripts/build-walk-catalog.mjs && node scripts/build-map.mjs && next build && node scripts/build-content-security-policy.mjs && node scripts/build-service-worker.mjs",
     "start": "pnpm dlx serve out",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.backend.json",
     "test": "vitest run && node --test backend/*.test.mjs",
     "test:py": "uv run ruff check . && uv run pyright && uv run pytest -q",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:py && pnpm build",

@@ -35,6 +35,7 @@ function unpackAudio(bytes) {
 
 export function createYandexTts({ apiKey, voice = "marina", fetchImpl = fetch }) {
   if (typeof apiKey !== "string" || !apiKey.trim() || !/^[a-z][a-z0-9_-]{0,63}$/.test(voice)) throw failure("PROVIDER_CONFIG");
+  /** @param {string} script @param {{signal?: AbortSignal, voice?: string}} [options] */
   async function speech(script, { signal, voice: selectedVoice = voice } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(150000), ...(signal ? [signal] : [])]);
     const chunks = [];

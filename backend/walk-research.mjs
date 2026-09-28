@@ -40,8 +40,9 @@ export function publicWalkResearch(job) {
     route: job.data.route ?? null, stories: job.data.stories ?? [], error: job.error, canRetry: canRetryWalk(job) };
 }
 
+/** @param {{fetchImpl?: import('./walks.mjs').WalkFetch, endpoint?: string, timeoutMs?: number}} [options] */
 export function createResearchDiscovery({ fetchImpl = fetch, endpoint = process.env.WALK_OVERPASS_URL ?? 'https://overpass-api.de/api/interpreter', timeoutMs = 12000 } = {}) {
-  return async (request, { signal } = {}) => {
+  return async (request, /** @type {{signal?: AbortSignal}} */ { signal } = {}) => {
     const controller = new AbortController();
     const deadline = AbortSignal.any([controller.signal, ...(signal ? [signal] : [])]);
     let timer;
@@ -121,7 +122,7 @@ export async function runWalkResearchJob(initial, options, runAddressJob) {
       if (!researchOnly) throw failure('STORY_UNAVAILABLE');
       return;
     }
-    checkpoint = { id: `${job.id}:${index}`, address: c.place.address, stage: 'researching', revision: 0,
+    checkpoint = { id: `${job.id}:${index}`, address: c.place.address, revision: 0,
       createdAt: job.createdAt, attempts: job.attempts, data: {}, ...checkpoint, kind: 'address', stage: 'researching', error: null };
     const proxy = { update(id, patch, revision) {
       if (checkpoint.id !== id || checkpoint.revision !== revision) throw failure('CONFLICT');

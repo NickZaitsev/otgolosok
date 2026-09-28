@@ -15,9 +15,9 @@ const plan = { stops: [], geometry: [], distanceM: 100, walkingMinutes: 2, attri
 async function listen(t, options) {
   const store = createStore(":memory:");
   const app = createApp({ store, provider: null, origin, audioDirectory: "unused", workerEnabled: false, ...options });
-  await new Promise(done => app.server.listen(0, "127.0.0.1", done));
+  await /** @type {Promise<void>} */ (new Promise(done => app.server.listen(0, "127.0.0.1", done)));
   t.after(() => store.close());
-  const base = `http://127.0.0.1:${app.server.address().port}`;
+  const base = `http://127.0.0.1:${/** @type {import("node:net").AddressInfo} */ (app.server.address()).port}`;
   const planWalk = () => fetch(`${base}/api/walk-plan`, { method: "POST", headers: { Origin: origin, "Content-Type": "application/json" }, body: JSON.stringify(walk) });
   return { app, base, planWalk };
 }

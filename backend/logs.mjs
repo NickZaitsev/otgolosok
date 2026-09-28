@@ -1,5 +1,6 @@
 import { createAirouterLogger } from "@softmg/airouter-logs";
 
+/** @param {{token?: string, endpoint?: string, environment?: string, fetch?: typeof globalThis.fetch}} [options] */
 export function createBackendLogger({token=process.env.AIROUTER_LOGS_TOKEN,endpoint=process.env.AIROUTER_LOGS_ENDPOINT,environment=process.env.NODE_ENV??"development",fetch}={}) {
   if (!token?.trim()) return null;
   return createAirouterLogger({

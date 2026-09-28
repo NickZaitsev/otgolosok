@@ -4,22 +4,22 @@ import * as http from 'node:http';
 import * as https from 'node:https';
 
 const v4Blocked = new BlockList();
-for (const [address, prefix] of [
+for (const [address, prefix] of /** @type {Array<[string, number]>} */ ([
   ['0.0.0.0', 8], ['10.0.0.0', 8], ['100.64.0.0', 10],
   ['127.0.0.0', 8], ['169.254.0.0', 16], ['172.16.0.0', 12],
   ['192.0.0.0', 24], ['192.0.2.0', 24], ['192.168.0.0', 16],
   ['192.88.99.0', 24],
   ['198.18.0.0', 15], ['198.51.100.0', 24], ['203.0.113.0', 24],
   ['224.0.0.0', 4], ['240.0.0.0', 4],
-]) v4Blocked.addSubnet(address, prefix, 'ipv4');
+])) v4Blocked.addSubnet(address, prefix, 'ipv4');
 
 const globalV6 = new BlockList();
 globalV6.addSubnet('2000::', 3, 'ipv6');
 const v6Blocked = new BlockList();
-for (const [address, prefix] of [
+for (const [address, prefix] of /** @type {Array<[string, number]>} */ ([
   ['2001::', 23], ['2001:db8::', 32], ['2002::', 16],
   ['3fff::', 20],
-]) v6Blocked.addSubnet(address, prefix, 'ipv6');
+])) v6Blocked.addSubnet(address, prefix, 'ipv6');
 
 const codes = new Set([
   'INVALID_URL', 'DNS_REJECTED', 'TIMEOUT', 'ABORTED', 'NETWORK_ERROR',
@@ -28,7 +28,7 @@ const codes = new Set([
 const acceptedTypes = new Set(['text/html', 'application/xhtml+xml', 'text/plain', 'application/pdf']);
 
 function problem(code, details = {}) {
-  const error = new Error(code);
+  const error = /** @type {Error & {code?: string}} */ (new Error(code));
   error.code = code;
   Object.assign(error, details);
   return error;
@@ -177,7 +177,15 @@ function requestOnce(url, addresses, request, signal, limits) {
   });
 }
 
-/** Fetch one small, public text source, pinning each DNS resolution to a checked IP. */
+/** @typedef {(hostname: string, options: import('node:dns').LookupAllOptions) => Promise<import('node:dns').LookupAddress[]>} LookupImpl */
+/** @typedef {(options: import('node:https').RequestOptions, callback: (response: import('node:http').IncomingMessage) => void) => import('node:http').ClientRequest} RequestImpl */
+
+/**
+ * Fetch one small, public text source, pinning each DNS resolution to a checked IP.
+ * @param {string} input
+ * @param {{signal?: AbortSignal, timeoutMs?: number, maxBytes?: number, maxTextBytes?: number, maxPdfBytes?: number,
+ *   lookup?: LookupImpl, request?: RequestImpl}} [options]
+ */
 export async function fetchSource(input, {
   signal, timeoutMs = 30000, maxBytes, maxTextBytes = 1200000, maxPdfBytes = 25 * 1024 * 1024,
   lookup = dns.promises.lookup, request,

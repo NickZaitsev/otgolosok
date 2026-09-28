@@ -43,6 +43,7 @@ export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-med
   if (base.protocol !== "https:" || !apiKey || base.username || base.password) throw failure("PROVIDER_CONFIG");
   const endpoint = base.href.replace(/\/$/, "");
   const headers = { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" };
+  /** @param {string} prompt @param {{search?: boolean, signal?: AbortSignal, timeoutMs?: number, maxTokens?: number, model?: string}} [options] */
   async function response(prompt, { search = false, signal, timeoutMs = 90000, maxTokens = 4500, model: selectedModel = model } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(timeoutMs), ...(signal ? [signal] : [])]);
     const res = await fetchWithRetry(fetchImpl,`${endpoint}/responses`, { method: "POST", headers, signal: deadline,
@@ -65,6 +66,7 @@ export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-med
     if (search && !(payload.output ?? []).some((item) => item.type === "web_search_call")) throw failure("NO_SEARCH_EVIDENCE");
     return { text: output, sources: [...sources.values()], citedUrls: [...sources.keys()], usage: payload.usage ?? null, model: selectedModel };
   }
+  /** @param {string} script @param {{signal?: AbortSignal, voice?: string}} [options] */
   async function speech(script, { signal, voice: selectedVoice = voice } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(150000), ...(signal ? [signal] : [])]);
     const res = await fetchWithRetry(fetchImpl, `${endpoint}/audio/speech`, { method: "POST", headers, signal: deadline,

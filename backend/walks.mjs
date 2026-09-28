@@ -102,6 +102,18 @@ function decode(shape) {
   return points;
 }
 
+/**
+ * @typedef {{type?: string, id?: number, lat?: number, lon?: number, center?: {lat: number, lon: number},
+ *   tags?: Record<string, string>}} OverpassElement
+ * @typedef {(url: string, init: {method: string, body: string, redirect?: "error" | "follow" | "manual", signal: AbortSignal,
+ *   headers: Record<string, string>}) => Promise<Response>} WalkFetch
+ */
+
+/**
+ * @param {{fetchImpl?: WalkFetch, now?: () => number, routerUrl?: string, overpassUrl?: string,
+ *   discoveryElements?: OverpassElement[] | null, candidateProvider?: ((query: {lat: number, lon: number, radius: number, limit: number}) => any) | null,
+ *   timeoutMs?: number, minIntervalMs?: number, maxWaiters?: number, maxWaitMs?: number}} [options]
+ */
 export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
   routerUrl=process.env.WALK_ROUTER_URL,
   overpassUrl=process.env.WALK_OVERPASS_URL ?? 'https://overpass-api.de/api/interpreter',

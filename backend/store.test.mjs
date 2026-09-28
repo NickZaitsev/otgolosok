@@ -54,7 +54,7 @@ test("enforces quotas but lets cache hits bypass them", (t) => {
 
   assert.throws(
     () => store.createOrGet({ key: "two", address: "Адрес 2" }),
-    (error) => error.code === "QUEUE_FULL",
+    (/** @type {{code?: string}} */ error) => error.code === "QUEUE_FULL",
   );
 });
 
@@ -75,7 +75,7 @@ test("uses optimistic revision checks and replaces data", (t) => {
 
   assert.throws(
     () => store.update(created.id, { data: { stale: true } }, 0),
-    (error) => error.code === "CONFLICT",
+    (/** @type {{code?: string}} */ error) => error.code === "CONFLICT",
   );
 });
 
@@ -117,7 +117,7 @@ test("the job store has no global daily cap: only the active queue is bounded", 
     store.update(job.id, { stage: "ready" }, job.revision);
   }
   store.createOrGet({ key: "active", address: "Адрес" });
-  assert.throws(() => store.createOrGet({ key: "over-queue", address: "Другой" }), (error) => error.code === "QUEUE_FULL");
+  assert.throws(() => store.createOrGet({ key: "over-queue", address: "Другой" }), (/** @type {{code?: string}} */ error) => error.code === "QUEUE_FULL");
 });
 
 test("recovers interrupted work while preserving data", (t) => {

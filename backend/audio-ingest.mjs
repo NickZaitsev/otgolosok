@@ -28,6 +28,15 @@ export async function sweepAudioTemporaries(directory,{olderThanMs=60*60*1000,no
   return removed;
 }
 
+/** @typedef {(file: string, args: string[], options: import("node:child_process").ExecFileOptionsWithStringEncoding) => Promise<{stdout: string}>} ExecImpl */
+/** @typedef {(path: string) => Promise<{bavail: number|bigint, bsize: number|bigint}>} StatfsImpl */
+
+/**
+ * @param {import("node:stream").Readable & {headers: import("node:http").IncomingHttpHeaders}} req
+ * @param {string} directory
+ * @param {{maximumBytes?: number, timeoutMs?: number, signal?: AbortSignal, maximumConcurrent?: number, minimumFreeBytes?: number,
+ *   expectedUploadSha256?: string, execImpl?: ExecImpl, statfsImpl?: StatfsImpl}} [options]
+ */
 export async function ingestAudio(req,directory,{maximumBytes=64*1024*1024,timeoutMs=300000,signal,maximumConcurrent=2,minimumFreeBytes=128*1024*1024,expectedUploadSha256,execImpl=exec,statfsImpl=statfs}={}) {
   if(activeUploads>=maximumConcurrent)throw failure("UPLOAD_BUSY");activeUploads++;
   const nonce=`${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -63,6 +72,12 @@ export async function ingestAudio(req,directory,{maximumBytes=64*1024*1024,timeo
   } finally {activeUploads--;await Promise.all([source,output].map(path=>rm(path,{force:true})));}
 }
 
+/**
+ * @param {Buffer} bytes
+ * @param {string} directory
+ * @param {{expectedSha256?: string, maximumBytes?: number, timeoutMs?: number, signal?: AbortSignal, minimumFreeBytes?: number,
+ *   execImpl?: ExecImpl, statfsImpl?: StatfsImpl}} [options]
+ */
 export async function ingestPreparedMp3(bytes,directory,{expectedSha256,maximumBytes=64*1024*1024,timeoutMs=120000,
   signal,minimumFreeBytes=128*1024*1024,execImpl=exec,statfsImpl=statfs}={}) {
   if(!Buffer.isBuffer(bytes)||!bytes.length||bytes.length>maximumBytes)throw failure("AUDIO_TOO_LARGE");

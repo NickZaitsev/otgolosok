@@ -14,10 +14,10 @@ test("TTS API client authenticates and preserves idempotency request body",async
 test("TTS API client marks network failures transient and exposes HTTP status",async()=>{
   let networkCalls=0;
   const network=createTtsApiClient({baseUrl:"https://tts.example",token:"secret",retry:{attempts:2,baseMs:0},fetchImpl:async()=>{networkCalls++;throw new Error("offline");}});
-  await assert.rejects(network.profiles(),error=>error.transient===true);
+  await assert.rejects(network.profiles(),(/** @type {any} */ error)=>error.transient===true);
   assert.equal(networkCalls,2);
   const denied=createTtsApiClient({baseUrl:"https://tts.example",token:"secret",fetchImpl:async()=>new Response(JSON.stringify({detail:"denied"}),{status:403,headers:{"Content-Type":"application/json"}})});
-  await assert.rejects(denied.profiles(),error=>error.status===403&&error.message==="denied");
+  await assert.rejects(denied.profiles(),(/** @type {any} */ error)=>error.status===403&&error.message==="denied");
 });
 
 test("TTS API client retries a busy service with the same idempotent request",async()=>{

@@ -41,7 +41,7 @@ test("a transient poll failure does not fail the job", { timeout: 5000 }, async 
     return replies.shift();
   };
   const client = createTtsApiClient({ baseUrl: "https://tts.test", token: "secret", fetchImpl, retry: { attempts: 3, baseMs: 0 } });
-  const audioIngest = async (bytes, directory, { expectedSha256 }) => ({ artifact: { sha256: expectedSha256, bytes: bytes.length } });
+  const audioIngest = /** @type {typeof import("./audio-ingest.mjs").ingestPreparedMp3} */ (async (bytes, directory, { expectedSha256 }) => ({ artifact: { sha256: expectedSha256, bytes: bytes.length } }));
   const worker = startTtsApiWorker({ store, client, audioDirectory: "unused", profileId: "f5-ru-v1", pollMs: 5, audioIngest });
   t.after(() => worker.stop());
   assert.deepEqual(await store.outcome, { accepted: "a".repeat(64) });

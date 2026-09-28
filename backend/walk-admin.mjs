@@ -512,6 +512,11 @@ export function createWalkAdminStore({ db, now = Date.now, transaction, checkCap
   };
 }
 
+/**
+ * @param {any} initial
+ * @param {{store: any, provider?: any, speechProviders?: Record<string, any>, audioDirectory: string,
+ *   narrate?: typeof createNarration, signal?: AbortSignal, timeoutMs?: number}} options
+ */
 export async function runWalkNarrationJob(initial, {
   store,
   provider,

@@ -26,6 +26,7 @@ function route(request,time=100) {
 // One qualifying signal each: a name is never required, and most Moscow landmarks
 // carry their title in the linked Wikidata item instead of an OSM name tag.
 const signals=[{historic:'building'},{heritage:'2'},{wikidata:'Q1676676'},{architect:'Фёдор Шехтель'}];
+/** @returns {{elements: import('./walks.mjs').OverpassElement[]}} */
 const candidates=()=>({elements:[1,2,3,4].map(n=>({type:'way',center:stop(n).location,tags:{building:'yes','addr:street':'Арбат','addr:housenumber':String(n+2),...signals[n-1]}}))});
 function fixture(handler) {
   const calls=[];

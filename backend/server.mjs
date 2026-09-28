@@ -38,6 +38,7 @@ function sameSecret(expected,candidate) {
 }
 
 // Lease tokens are HMACs, so a known fallback secret would let any worker forge them.
+/** @param {{env?: NodeJS.ProcessEnv, transport?: string, randomSecret?: () => string}} [options] */
 export function workerLeaseSecret({env=process.env,transport,randomSecret=()=>randomBytes(32).toString("hex")}={}) {
   const secret=env.WORKER_LEASE_SECRET;
   const required=transport!=="http"&&(env.NODE_ENV==="production"||Boolean(env.WORKER_API_TOKEN));
@@ -84,6 +85,36 @@ export function parseUserDailyLimit(value) {
   return Number(value);
 }
 
+/**
+ * @typedef {object} CreateAppOptions
+ * @property {ReturnType<typeof createStore>} store
+ * @property {ReturnType<typeof createProvider> | null} [provider]
+ * @property {ReturnType<typeof openOsmGeocoder> | null} [osmGeocoder]
+ * @property {ReturnType<typeof createYandexTts> | null} [yandexTts]
+ * @property {string} origin
+ * @property {string} [audioDirectory]
+ * @property {string} [staticDirectory]
+ * @property {boolean} [workerEnabled]
+ * @property {ReturnType<typeof loadLocalTtsConfig>} [localTts]
+ * @property {ReturnType<typeof createTtsApiClient> | null} [ttsApiClient]
+ * @property {ReturnType<typeof createPlaceResolver>} [resolvePlace]
+ * @property {ReturnType<typeof createWalkPlanner> | null} [planWalk]
+ * @property {Function} [discoverResearch]
+ * @property {Function} [planResearchWalk]
+ * @property {string} [adminToken]
+ * @property {boolean} [allowLegacyAdminToken]
+ * @property {string} [workerToken]
+ * @property {ReturnType<typeof createBackendLogger>} [logs]
+ * @property {typeof ingestAudio} [audioIngest]
+ * @property {Awaited<ReturnType<typeof createAuth>>["auth"] | null} [auth]
+ * @property {string} [authSecret]
+ * @property {ReturnType<typeof createAccountStore> | null} [accountStore]
+ * @property {() => void | Promise<void>} [closeAuth]
+ * @property {number} [userDailyLimit]
+ * @property {number} [shutdownGraceMs]
+ */
+
+/** @param {CreateAppOptions} options */
 export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const speechProviders={openai:provider,yandex:yandexTts};
@@ -109,7 +140,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
         if(url.pathname==="/api/me"&&req.method==="PATCH"){const input=await body(req);if(Object.keys(input).some(k=>k!=="name"))throw failure("BAD_REQUEST");const name=accountStore.updateProfile(session.user.id,input.name);json(res,200,{user:{id:session.user.id,email:session.user.email,name}});return;}
         if(url.pathname==="/api/me"&&req.method==="DELETE"){const input=await body(req);if(Object.keys(input).some(key=>key!=="password")||!await verifySessionPassword(auth,req,input.password)){json(res,403,{error:{code:"PASSWORD_INVALID",message:"Неверный пароль."}});return;}store.revokeWalkResearchAccess?.(accountStore.researchJobIds(session.user.id));accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
         const accountQuery=()=>{const entries=[...url.searchParams];if(entries.some(([key,value])=>!['limit','cursor'].includes(key)||(key==='limit'&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure('BAD_REQUEST');return {limit:Number(url.searchParams.get('limit')??20),after:url.searchParams.get('cursor')};};
-        if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,...Object.values(accountQuery())));return;}
+        if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery()))));return;}
         if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
         const ownWalk=new RegExp(`^/api/me/walks/(${UUID})$`).exec(url.pathname);
         const ownWalkView=new RegExp(`^/api/me/walks/(${UUID})/view$`).exec(url.pathname);
@@ -124,8 +155,8 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
         if(ownWalk&&req.method==="GET"){const walk=accountStore.getWalk(session.user.id,ownWalk[1]);json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="PATCH"){const walk=accountStore.updateWalk(session.user.id,ownWalk[1],await body(req,100000));json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="DELETE"){json(res,accountStore.deleteWalk(session.user.id,ownWalk[1])?200:404,{success:true});return;}
-        if(url.pathname==="/api/me/requests"&&req.method==="GET"){json(res,200,accountStore.listRequests(session.user.id,...Object.values(accountQuery())));return;}
-        if(url.pathname==="/api/me/favorites"&&req.method==="GET"){const data=accountStore.listFavorites(session.user.id,...Object.values(accountQuery()));json(res,200,{...data,favorites:data.favorites.map(item=>favoriteSummary(item,{userId:session.user.id,accountStore,store,routes:builtinRoutes}))});return;}
+        if(url.pathname==="/api/me/requests"&&req.method==="GET"){json(res,200,accountStore.listRequests(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery()))));return;}
+        if(url.pathname==="/api/me/favorites"&&req.method==="GET"){const data=accountStore.listFavorites(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery())));json(res,200,{...data,favorites:data.favorites.map(item=>favoriteSummary(item,{userId:session.user.id,accountStore,store,routes:builtinRoutes}))});return;}
         if(url.pathname==="/api/me/import"&&req.method==="POST"){json(res,200,{result:accountStore.importLocal(session.user.id,await body(req,110000))});return;}
         const favorite=/^\/api\/me\/favorites\/(story|walk)\/([a-zA-Z0-9-]{1,128})$/.exec(url.pathname);
         if(favorite&&req.method==="PUT"){accountStore.setFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}

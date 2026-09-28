@@ -37,9 +37,18 @@ export function sleep(milliseconds, signal) {
 }
 
 /**
+ * @typedef {{attempts?: number, baseMs?: number, maxMs?: number, signal?: AbortSignal, isTransient?: (error: unknown) => boolean,
+ *   random?: () => number, wait?: (milliseconds: number, signal?: AbortSignal) => Promise<unknown>}} RetryOptions
+ */
+
+/**
  * Calls `fn(attempt)` until it succeeds, a failure is not transient, or
  * `attempts` calls were made. Waits use full-jitter exponential backoff, or the
  * server's Retry-After (`error.retryAfter`) capped at `maxMs`.
+ * @template T
+ * @param {(attempt: number) => Promise<T>} fn
+ * @param {RetryOptions} [options]
+ * @returns {Promise<T>}
  */
 export async function withRetry(fn, { attempts = 4, baseMs = 500, maxMs = 8000, signal, isTransient = isTransientError, random = Math.random, wait = sleep } = {}) {
   if (!Number.isInteger(attempts) || attempts < 1) throw new TypeError("attempts must be a positive integer");
@@ -60,6 +69,10 @@ export async function withRetry(fn, { attempts = 4, baseMs = 500, maxMs = 8000, 
  * fetch() with `withRetry`. A transient response is retried while attempts
  * remain; the last response is returned as is so callers keep their own
  * handling of non-2xx statuses.
+ * @param {(url: string, init: RequestInit) => Promise<Response>} fetchImpl
+ * @param {string} url
+ * @param {RequestInit} [init]
+ * @param {RetryOptions} [options]
  */
 export function fetchWithRetry(fetchImpl, url, init = {}, options = {}) {
   const attempts = options.attempts ?? 4;

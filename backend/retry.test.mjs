@@ -14,7 +14,7 @@ test("a transient response is retried and the success returned", async () => {
 });
 
 test("Retry-After is honoured and capped", async () => {
-  for (const [header, expected] of [["2", 2000], ["60", 8000], [new Date(Date.now() + 3000).toUTCString(), 3000]]) {
+  for (const [header, expected] of /** @type {Array<[string, number]>} */ ([["2", 2000], ["60", 8000], [new Date(Date.now() + 3000).toUTCString(), 3000]])) {
     const statuses = [429, 200], timer = recorder();
     await fetchWithRetry(async () => reply(statuses.shift(), { "Retry-After": header }), "https://api.test", {}, timer);
     assert.ok(Math.abs(timer.waits[0] - expected) <= 1000, `${header}: ${timer.waits[0]}`);
@@ -48,7 +48,7 @@ test("aborting the caller's signal cancels a pending backoff at once", async () 
 });
 
 test("transient errors are network failures and retryable statuses only", () => {
-  const cases = [
+  const cases = /** @type {Array<[any, boolean]>} */ ([
     [new TypeError("fetch failed"), true],
     [Object.assign(new Error("reset"), { code: "ECONNRESET" }), true],
     [Object.assign(new Error("undici"), { cause: { code: "UND_ERR_SOCKET" } }), true],
@@ -61,7 +61,7 @@ test("transient errors are network failures and retryable statuses only", () => 
     [new DOMException("stopped", "AbortError"), false],
     [new TypeError("x is not a function"), false],
     [null, false],
-  ];
+  ]);
   for (const [error, expected] of cases) assert.equal(isTransientError(error), expected, String(error?.message ?? error));
 });
 
