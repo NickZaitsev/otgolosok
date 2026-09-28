@@ -10,7 +10,7 @@ import { ingestAudio, ingestPreparedMp3 } from "./audio-ingest.mjs";
 
 const exec=promisify(execFile);
 
-function request(bytes,type="audio/wav") {const stream=Readable.from([bytes]);stream.headers={"content-type":type,"content-length":String(bytes.length)};return stream;}
+function request(bytes,type="audio/wav") {return Object.assign(Readable.from([bytes]),{headers:{"content-type":type,"content-length":String(bytes.length)}});}
 
 test("audio ingestion hashes upload, probes duration and atomically publishes MP3",async t=>{
   const directory=await mkdtemp(join(tmpdir(),"audio-ingest-"));t.after(()=>rm(directory,{recursive:true,force:true}));
@@ -38,7 +38,7 @@ test("audio ingestion checks the upload checksum before publishing shared audio"
 });
 
 test("audio ingestion bounds concurrent uploads",async t=>{
-  const directory=await mkdtemp(join(tmpdir(),"audio-ingest-busy-"));t.after(()=>rm(directory,{recursive:true,force:true}));let release;
+  const directory=await mkdtemp(join(tmpdir(),"audio-ingest-busy-"));t.after(()=>rm(directory,{recursive:true,force:true}));let /** @type {(value?: unknown) => void} */ release;
   const waiting=new Promise(resolve=>{release=resolve;});const execImpl=async(command,args)=>{if(command==="ffmpeg"){await waiting;await writeFile(args.at(-1),"x");return{stdout:""};}return{stdout:JSON.stringify({format:{duration:"10"}})};};
   const first=ingestAudio(request(Buffer.from("one")),directory,{execImpl,maximumConcurrent:1});await new Promise(resolve=>setTimeout(resolve,20));
   await assert.rejects(ingestAudio(request(Buffer.from("two")),directory,{execImpl,maximumConcurrent:1}),{code:"UPLOAD_BUSY"});release();await first;

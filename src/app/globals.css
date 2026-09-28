@@ -428,20 +428,6 @@ summary:focus-visible {
   text-underline-offset: 4px;
 }
 
-.offline-save-button {
-  border: 0;
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
-  font: inherit;
-  text-align: left;
-}
-
-.offline-save-button:disabled {
-  cursor: progress;
-  opacity: .65;
-}
-
 .update-control {
   margin-top: var(--space-sm);
   color: var(--muted);

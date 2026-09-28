@@ -1,0 +1,36 @@
+[project]
+name = "otgolosok-scripts"
+version = "0.1.0"
+description = "Python-скрипты подготовки данных Отголоска: импорт OSM, адресный индекс, озвучка встроенной прогулки."
+requires-python = ">=3.12"
+dependencies = [
+    "osmium>=4.0",
+    # Keep in sync with backend/requirements.txt, which the backend image installs.
+    "ru-normalizr==0.3.0",
+]
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.400",
+    "pytest>=8.3",
+    "ruff>=0.12",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+target-version = "py312"
+extend-exclude = ["node_modules", ".kilo", ".next", "out", "artifacts"]
+
+[tool.pyright]
+include = ["scripts", "backend/normalize-tts.py"]
+pythonVersion = "3.12"
+typeCheckingMode = "basic"
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+testpaths = ["scripts"]
+python_files = ["test-*.py"]
+addopts = ["--import-mode=importlib"]

@@ -3,6 +3,7 @@ import { applyPublishedRoute } from "./published-route";
 
 const WALK_CACHE = "walk-packs-v1";
 const MAX_AUDIO_BYTES = 25_000_000;
+const AUDIO_TIMEOUT_MS = 30_000;
 const GENERATED_AUDIO = /^\/api\/story-audio\/([a-f0-9]{64})\.mp3$/;
 
 type GeneratedAudio = {
@@ -40,20 +41,30 @@ async function fetchPublication(base: Route, url: string, signal: AbortSignal) {
   return merged;
 }
 
-async function fetchAudio(audio: GeneratedAudio, signal: AbortSignal) {
-  const response = await fetch(audio.url, { signal, cache: "no-store" });
-  const declaredLength = Number(response.headers.get("content-length"));
-  if (!response.ok || response.status !== 200 || !response.headers.get("content-type")?.startsWith("audio/")
-    || (Number.isFinite(declaredLength) && declaredLength > MAX_AUDIO_BYTES)) throw new Error("Published audio is unavailable");
-  const bytes = await response.arrayBuffer();
-  if (!bytes.byteLength || bytes.byteLength > MAX_AUDIO_BYTES || await sha256(bytes) !== audio.sha256) {
-    throw new Error("Published audio is incomplete");
+// Recordings are content-addressed, so the HTTP cache may serve them.
+async function fetchAudio(audio: GeneratedAudio, signal: AbortSignal, timeoutMs: number) {
+  const controller = new AbortController();
+  const abort = () => controller.abort(signal.reason);
+  signal.addEventListener("abort", abort, { once: true });
+  const timer = setTimeout(() => controller.abort(new DOMException("Audio download timed out", "TimeoutError")), timeoutMs);
+  try {
+    const response = await fetch(audio.url, { signal: controller.signal });
+    const declaredLength = Number(response.headers.get("content-length"));
+    if (!response.ok || response.status !== 200 || !response.headers.get("content-type")?.startsWith("audio/")
+      || (Number.isFinite(declaredLength) && declaredLength > MAX_AUDIO_BYTES)) throw new Error("Published audio is unavailable");
+    const bytes = await response.arrayBuffer();
+    if (!bytes.byteLength || bytes.byteLength > MAX_AUDIO_BYTES || await sha256(bytes) !== audio.sha256) {
+      throw new Error("Published audio is incomplete");
+    }
+    signal.throwIfAborted();
+    return new Response(bytes, { headers: {
+      "Content-Type": response.headers.get("content-type") ?? "audio/mpeg",
+      "Content-Length": String(bytes.byteLength),
+    } });
+  } finally {
+    clearTimeout(timer);
+    signal.removeEventListener("abort", abort);
   }
-  signal.throwIfAborted();
-  return new Response(bytes, { headers: {
-    "Content-Type": response.headers.get("content-type") ?? "audio/mpeg",
-    "Content-Length": String(bytes.byteLength),
-  } });
 }
 
 async function cachedPublication(cache: Cache, base: Route, url: string) {
@@ -70,7 +81,7 @@ async function cachedPublication(cache: Cache, base: Route, url: string) {
   }
 }
 
-export async function loadPublishedRoute(base: Route, signal: AbortSignal): Promise<Route> {
+export async function loadPublishedRoute(base: Route, signal: AbortSignal, { audioTimeoutMs = AUDIO_TIMEOUT_MS } = {}): Promise<Route> {
   const url = routeUrl(base);
   if (!("caches" in globalThis)) {
     try {
@@ -93,11 +104,12 @@ export async function loadPublishedRoute(base: Route, signal: AbortSignal): Prom
 
   try {
     const merged = await fetchPublication(base, url, signal);
-    const audio = generatedAudio(merged);
-    const recordings = await Promise.all(audio.map(entry => fetchAudio(entry, signal)));
-    for (let index = 0; index < audio.length; index += 1) {
+    // One recording at a time, each kept as soon as it is verified: an interrupted
+    // update resumes from the missing files instead of downloading everything again.
+    for (const entry of generatedAudio(merged)) {
       signal.throwIfAborted();
-      await cache.put(audio[index].url, recordings[index]);
+      if (await cache.match(entry.url)) continue;
+      await cache.put(entry.url, await fetchAudio(entry, signal, audioTimeoutMs));
     }
     signal.throwIfAborted();
     await cache.put(url, new Response(JSON.stringify(merged), { headers: { "Content-Type": "application/json" } }));

@@ -12,7 +12,7 @@ const story={title:"Дом",address:"Москва, дом 1",wordCount:104,parag
 
 async function fixture(t,{enqueueBase=true}={}) {
   let clock=Date.UTC(2026,8,16,12);const tick=()=>++clock;
-  const store=createStore(":memory:",{now:()=>clock,maxActive:20,maxDaily:20,workerLeaseSecret:"test-secret"});
+  const store=createStore(":memory:",{now:()=>clock,maxActive:20,workerLeaseSecret:"test-secret"});
   t.after(()=>store.close());
   const original=store.createOrGet({key:"source",address:"Москва, дом 1"});
   const source=store.update(original.id,{stage:"failed",data:{story}},original.revision);
@@ -150,8 +150,8 @@ test("only the latest requested profile publishes when engines finish out of ord
 
 test("short external audio is accepted even when a frozen legacy profile has a 30-second minimum",async t=>{
   const directory=mkdtempSync(join(tmpdir(),"short-audio-")),path=join(directory,"jobs.sqlite");
-  t.after(()=>rmSync(directory,{recursive:true,force:true}));
   const store=createStore(path,{workerLeaseSecret:"test-secret"});t.after(()=>store.close());
+  t.after(()=>rmSync(directory,{recursive:true,force:true}));
   const original=store.createOrGet({key:"legacy-duration",address:story.address}),source=store.update(original.id,{stage:"failed",data:{story}},original.revision);
   const queued=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story});
   const db=new DatabaseSync(path);
@@ -168,4 +168,37 @@ test("external audio still rejects missing, zero and overlong duration",async t=
     const f=await fixture(t),claim=f.store.claimExternalAudio({workerId:"duration-worker",requestId:`duration-boundary-${index}`,profileIds:["silero-ru-v1"]});
     assert.throws(()=>f.store.acceptExternalAudio(claim.id,{workerId:"duration-worker",generation:claim.leaseGeneration,leaseToken:claim.leaseToken,uploadId:`duration-upload-${index}`,uploadSha256:"a".repeat(64),artifact:{sha256:"b".repeat(64),durationSec}}),{code:"AUDIO_DURATION"});
   }
+});
+
+test("claims from a long queue skip incompatible jobs and keep the queue order",async t=>{
+  const version="raw-v1";
+  let clock=Date.UTC(2026,8,16,12);
+  const store=createStore(":memory:",{now:()=>clock,workerLeaseSecret:"test",
+    externalTtsProfiles:{"f5-ru-v1":{engine:"f5",modelSha256:"a",speaker:"voice",configSha256:"b",textPreparation:{input:"raw",version}}}});
+  t.after(()=>store.close());
+  // 4990 older jobs need a text preparation the first workers do not support.
+  const enqueue=async(index,profileId)=>{clock++;return store.enqueueExternalAudio({sourceJobId:`source-${index}`,sourceRevision:0,story,profileId});};
+  const raw=[],plain=[];
+  for(let index=0;index<5000;index++)(index<4990?raw:plain).push((await enqueue(index,index<4990?"f5-ru-v1":"silero-ru-v1")).id);
+  clock++;
+  const claim=(worker,versions=[])=>store.claimExternalAudio({workerId:`worker-${worker}`,requestId:`request-${worker}-0001`,profileIds:["f5-ru-v1","silero-ru-v1"],textPreparationVersions:versions});
+  assert.deepEqual([0,1,2].map(worker=>claim(worker).id),plain.slice(0,3));
+  assert.deepEqual([3,4].map(worker=>claim(worker,[version]).id),raw.slice(0,2));
+  assert.equal(claim(5,["other-v1"]).id,plain[3]);
+});
+
+test("stats aggregate attempt durations and published artifacts",async t=>{
+  const f=await fixture(t);
+  const empty=f.store.getExternalAudioStats();
+  assert.deepEqual(empty,{states:{queued:1},oldestQueuedAt:new Date(Date.UTC(2026,8,16,12)).toISOString(),averageAttemptSec:null,artifactBytes:0,artifacts:0});
+  const lease=(requestId)=>f.store.claimExternalAudio({workerId:"gpu",requestId,profileIds:["silero-ru-v1"]});
+  const first=lease("stats-request-1");f.advance(1500);
+  f.store.failExternalAudio(first.id,{workerId:"gpu",generation:first.leaseGeneration,leaseToken:first.leaseToken,failureId:"stats-failure-1",code:"TTS_FAILED",message:"boom"});
+  f.advance(60000);
+  const second=lease("stats-request-2");f.advance(500);
+  const artifact={url:`/api/story-audio/${"b".repeat(64)}.mp3`,sha256:"b".repeat(64),bytes:2048,durationSec:60,model:"silero",voice:"xenia",provider:"external",synthetic:true};
+  f.store.acceptExternalAudio(second.id,{workerId:"gpu",generation:second.leaseGeneration,leaseToken:second.leaseToken,uploadId:"stats-upload-1",uploadSha256:"a".repeat(64),artifact});
+  const stats=f.store.getExternalAudioStats();
+  assert.deepEqual(stats.states,{succeeded:1});assert.equal(stats.oldestQueuedAt,null);
+  assert.equal(stats.averageAttemptSec,1);assert.equal(stats.artifacts,1);assert.equal(stats.artifactBytes,2048);
 });

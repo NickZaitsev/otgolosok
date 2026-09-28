@@ -12,6 +12,8 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    # Leaves time for in-flight requests (20 s drain) and for requeueing an active job.
+    stop_grace_period: 30s
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
@@ -32,7 +34,6 @@ services:
       CONTENT_WORKER_CONCURRENCY: ${CONTENT_WORKER_CONCURRENCY:-1}
       YANDEX_TTS_API_KEY: ${YANDEX_TTS_API_KEY:-}
       YANDEX_TTS_VOICE: ${YANDEX_TTS_VOICE:-marina}
-      MAX_DAILY_JOBS: ${MAX_DAILY_JOBS:-6}
       WORKER_API_TOKEN: ${WORKER_API_TOKEN:-}
       WORKER_LEASE_SECRET: ${WORKER_LEASE_SECRET:-}
       LOCAL_TTS_ENGINE: ${LOCAL_TTS_ENGINE:-silero}

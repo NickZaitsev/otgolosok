@@ -45,6 +45,11 @@ function locate(geometry, point) {
   return {distance:inside||boundary?0:distance,inside,boundary};
 }
 
+/**
+ * @typedef {{osm_id: string, kind: string, name: string | null, address: string | null, geometry: string,
+ *   min_lon: number, max_lon: number, min_lat: number, max_lat: number}} OsmFeatureRow
+ */
+
 /** Offline search context only: a host building/nearby address is never assigned to the place. */
 export function openOsmGeocoder(path) {
   try { statSync(path); }
@@ -52,7 +57,7 @@ export function openOsmGeocoder(path) {
   let db;
   try {
     db=new DatabaseSync(path,{readOnly:true,timeout:5000});
-    const source=JSON.parse(db.prepare("SELECT value FROM metadata WHERE key='manifest'").get()?.value ?? "null");
+    const source=JSON.parse(/** @type {{value: string} | undefined} */ (db.prepare("SELECT value FROM metadata WHERE key='manifest'").get())?.value ?? "null");
     if(source?.schemaVersion!==1 || !/^[a-f0-9]{64}$/.test(source.sourceSha256) || !source.attribution) throw fail("OSM_ADDRESS_INDEX_INVALID");
     const select=db.prepare(`SELECT f.*,b.min_lon,b.max_lon,b.min_lat,b.max_lat FROM bounds b
       JOIN features f ON f.id=b.id WHERE b.min_lon<=? AND b.max_lon>=? AND b.min_lat<=? AND b.max_lat>=?`);
@@ -68,7 +73,7 @@ export function openOsmGeocoder(path) {
         try {
           const latDelta=RADIUS_METERS/METERS_PER_DEGREE;
           const lonDelta=latDelta/Math.max(0.001,Math.cos(point.lat*Math.PI/180));
-          const candidates=select.all(point.lon+lonDelta,point.lon-lonDelta,point.lat+latDelta,point.lat-latDelta)
+          const candidates=/** @type {OsmFeatureRow[]} */ (select.all(point.lon+lonDelta,point.lon-lonDelta,point.lat+latDelta,point.lat-latDelta))
             .filter(row=>row.osm_id!==(place.id??place.placeId)).map(row=>{
               const position=locate(JSON.parse(row.geometry),point);
               return {...row,...position,area:(row.max_lon-row.min_lon)*(row.max_lat-row.min_lat)};

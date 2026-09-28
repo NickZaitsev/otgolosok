@@ -40,6 +40,17 @@ function parseForRequestedProfile(text,requestedProfile) {
     throw error;}
 }
 
+/**
+ * @typedef {{writerModel?: string, response: (input: string, options?: {model?: string, signal?: AbortSignal, timeoutMs?: number,
+ *   maxTokens?: number, search?: boolean}) => Promise<any>}} WriterProvider
+ */
+
+/**
+ * @param {any} evidence
+ * @param {{profile?: string, provider?: WriterProvider, address?: string, placeIdentified?: boolean, signal?: AbortSignal,
+ *   onCandidate?: (candidate: {text: string, validationIssues: object[], downgradeReason?: string}) => void,
+ *   onReview?: (review: any, round?: number) => void}} [options]
+ */
 export async function writeStory(evidence,{profile="story-v1",provider,address=evidence.resolvedAddress,placeIdentified=false,signal,onCandidate=()=>{},onReview=()=>{}}={}) {
   let effectiveProfile=profile,downgradeReason,result=await provider.response(draftPrompt(evidence,effectiveProfile),{model:provider.writerModel,signal,timeoutMs:180000,maxTokens:3200});
   let parsed;

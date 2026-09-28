@@ -1,5 +1,6 @@
 import { failure } from "./domain.mjs";
 import { boundedBody } from "./provider.mjs";
+import { fetchWithRetry } from "./retry.mjs";
 
 // SpeechKit v3 accepts up to 5,000 characters with automatic utterance splitting.
 function splitText(script) {
@@ -34,18 +35,19 @@ function unpackAudio(bytes) {
 
 export function createYandexTts({ apiKey, voice = "marina", fetchImpl = fetch }) {
   if (typeof apiKey !== "string" || !apiKey.trim() || !/^[a-z][a-z0-9_-]{0,63}$/.test(voice)) throw failure("PROVIDER_CONFIG");
+  /** @param {string} script @param {{signal?: AbortSignal, voice?: string}} [options] */
   async function speech(script, { signal, voice: selectedVoice = voice } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(150000), ...(signal ? [signal] : [])]);
     const chunks = [];
     let size = 0;
     for (const text of splitText(script)) {
       deadline.throwIfAborted();
-      const res = await fetchImpl("https://tts.api.cloud.yandex.net/tts/v3/utteranceSynthesis", {
+      const res = await fetchWithRetry(fetchImpl, "https://tts.api.cloud.yandex.net/tts/v3/utteranceSynthesis", {
         method: "POST", redirect: "error", signal: deadline,
         headers: { Authorization: `Api-Key ${apiKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({ text, hints: [{ voice: selectedVoice }, { speed: 1 }], unsafeMode: true,
           outputAudioSpec: { containerAudio: { containerAudioType: "MP3" } } }),
-      });
+      }, { attempts: 3, baseMs: 1000, maxMs: 10000 });
       if (!res.ok) { await res.body?.cancel(); throw failure("TTS_FAILED"); }
       const audio = unpackAudio(await boundedBody(res, 15000000, deadline));
       size += audio.length;

@@ -9,13 +9,13 @@ import { createProvider } from "./provider.mjs";
 import { createYandexTts } from "./yandex-tts.mjs";
 import { ttsVoiceOptions } from "./tts-voices.mjs";
 import { normalizeAddress, addressKey, publicJob, failure } from "./domain.mjs";
-import { safeError, startWorker } from "./pipeline.mjs";
+import { errorMessages, safeError, startWorker } from "./pipeline.mjs";
 import { createPlaceResolver } from "./places.mjs";
 import { createWalkPlanner } from "./walks.mjs";
 import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
 import { validateWalkResearch, publicWalkResearch, walkResearchKey } from "./walk-research.mjs";
 import { createBackendLogger } from "./logs.mjs";
-import { ingestAudio } from "./audio-ingest.mjs";
+import { ingestAudio, sweepAudioTemporaries } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
 import { openOsmGeocoder } from "./osm-geocoder.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword } from "./auth.mjs";
@@ -38,6 +38,7 @@ function sameSecret(expected,candidate) {
 }
 
 // Lease tokens are HMACs, so a known fallback secret would let any worker forge them.
+/** @param {{env?: NodeJS.ProcessEnv, transport?: string, randomSecret?: () => string}} [options] */
 export function workerLeaseSecret({env=process.env,transport,randomSecret=()=>randomBytes(32).toString("hex")}={}) {
   const secret=env.WORKER_LEASE_SECRET;
   const required=transport!=="http"&&(env.NODE_ENV==="production"||Boolean(env.WORKER_API_TOKEN));
@@ -77,7 +78,44 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
+/** Paid generation units per user per rolling 24 hours; an invalid value stops startup instead of silently lifting the limit. */
+export function parseUserDailyLimit(value) {
+  if(value===undefined||value==="")return 6;
+  if(!/^\d+$/.test(value)||!Number.isSafeInteger(Number(value))||Number(value)<1)throw new Error("USER_DAILY_GENERATION_LIMIT must be a positive integer");
+  return Number(value);
+}
+
+/**
+ * @typedef {object} CreateAppOptions
+ * @property {ReturnType<typeof createStore>} store
+ * @property {ReturnType<typeof createProvider> | null} [provider]
+ * @property {ReturnType<typeof openOsmGeocoder> | null} [osmGeocoder]
+ * @property {ReturnType<typeof createYandexTts> | null} [yandexTts]
+ * @property {string} origin
+ * @property {string} [audioDirectory]
+ * @property {string} [staticDirectory]
+ * @property {boolean} [workerEnabled]
+ * @property {ReturnType<typeof loadLocalTtsConfig>} [localTts]
+ * @property {ReturnType<typeof createTtsApiClient> | null} [ttsApiClient]
+ * @property {ReturnType<typeof createPlaceResolver>} [resolvePlace]
+ * @property {ReturnType<typeof createWalkPlanner> | null} [planWalk]
+ * @property {Function} [discoverResearch]
+ * @property {Function} [planResearchWalk]
+ * @property {string} [adminToken]
+ * @property {boolean} [allowLegacyAdminToken]
+ * @property {string} [workerToken]
+ * @property {ReturnType<typeof createBackendLogger>} [logs]
+ * @property {typeof ingestAudio} [audioIngest]
+ * @property {Awaited<ReturnType<typeof createAuth>>["auth"] | null} [auth]
+ * @property {string} [authSecret]
+ * @property {ReturnType<typeof createAccountStore> | null} [accountStore]
+ * @property {() => void | Promise<void>} [closeAuth]
+ * @property {number} [userDailyLimit]
+ * @property {number} [shutdownGraceMs]
+ */
+
+/** @param {CreateAppOptions} options */
+export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
@@ -102,7 +140,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
         if(url.pathname==="/api/me"&&req.method==="PATCH"){const input=await body(req);if(Object.keys(input).some(k=>k!=="name"))throw failure("BAD_REQUEST");const name=accountStore.updateProfile(session.user.id,input.name);json(res,200,{user:{id:session.user.id,email:session.user.email,name}});return;}
         if(url.pathname==="/api/me"&&req.method==="DELETE"){const input=await body(req);if(Object.keys(input).some(key=>key!=="password")||!await verifySessionPassword(auth,req,input.password)){json(res,403,{error:{code:"PASSWORD_INVALID",message:"Неверный пароль."}});return;}store.revokeWalkResearchAccess?.(accountStore.researchJobIds(session.user.id));accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
         const accountQuery=()=>{const entries=[...url.searchParams];if(entries.some(([key,value])=>!['limit','cursor'].includes(key)||(key==='limit'&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure('BAD_REQUEST');return {limit:Number(url.searchParams.get('limit')??20),after:url.searchParams.get('cursor')};};
-        if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,...Object.values(accountQuery())));return;}
+        if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery()))));return;}
         if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
         const ownWalk=new RegExp(`^/api/me/walks/(${UUID})$`).exec(url.pathname);
         const ownWalkView=new RegExp(`^/api/me/walks/(${UUID})/view$`).exec(url.pathname);
@@ -117,8 +155,8 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
         if(ownWalk&&req.method==="GET"){const walk=accountStore.getWalk(session.user.id,ownWalk[1]);json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="PATCH"){const walk=accountStore.updateWalk(session.user.id,ownWalk[1],await body(req,100000));json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="DELETE"){json(res,accountStore.deleteWalk(session.user.id,ownWalk[1])?200:404,{success:true});return;}
-        if(url.pathname==="/api/me/requests"&&req.method==="GET"){json(res,200,accountStore.listRequests(session.user.id,...Object.values(accountQuery())));return;}
-        if(url.pathname==="/api/me/favorites"&&req.method==="GET"){const data=accountStore.listFavorites(session.user.id,...Object.values(accountQuery()));json(res,200,{...data,favorites:data.favorites.map(item=>favoriteSummary(item,{userId:session.user.id,accountStore,store,routes:builtinRoutes}))});return;}
+        if(url.pathname==="/api/me/requests"&&req.method==="GET"){json(res,200,accountStore.listRequests(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery()))));return;}
+        if(url.pathname==="/api/me/favorites"&&req.method==="GET"){const data=accountStore.listFavorites(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery())));json(res,200,{...data,favorites:data.favorites.map(item=>favoriteSummary(item,{userId:session.user.id,accountStore,store,routes:builtinRoutes}))});return;}
         if(url.pathname==="/api/me/import"&&req.method==="POST"){json(res,200,{result:accountStore.importLocal(session.user.id,await body(req,110000))});return;}
         const favorite=/^\/api\/me\/favorites\/(story|walk)\/([a-zA-Z0-9-]{1,128})$/.exec(url.pathname);
         if(favorite&&req.method==="PUT"){accountStore.setFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}
@@ -177,8 +215,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
           if(uploaded.uploadSha256!==expected)throw failure("AUDIO_CHECKSUM");
           const artifact={...uploaded.artifact,model:String(req.headers["x-tts-model"]??"external").slice(0,100),voice:String(req.headers["x-tts-voice"]??"external").slice(0,64),
             ...(preparationVersion?{preparationVersion,preparedTextSha256:String(req.headers["x-tts-prepared-text-sha256"]??"")||null}:{}),...(configSha256?{configSha256}:{})};
-          try {json(res,200,{job:store.acceptExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,uploadId,uploadSha256:expected,artifact})});}
-          catch(error){throw error;}
+          json(res,200,{job:store.acceptExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,uploadId,uploadSha256:expected,artifact})});
           return;
         }
         json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;
@@ -202,31 +239,31 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
             const request=validateWalkResearch({start:{location:{lat:Number(q.lat),lon:Number(q.lon)}},mode:q.mode,minutes:Number(q.minutes),...(q.destinationLat?{destination:{location:{lat:Number(q.destinationLat),lon:Number(q.destinationLon)}}}:{})},true);
             job=store.lookupWalkResearch(request,q.recoveryToken);
             if(auth&&job&&!accountStore.ownsRequest(session.user.id,job.id)) {
-              if(!accountStore.beginGeneration){accountStore.attachRequest(session.user.id,job.id,"walk_research",q.recoveryToken);}
-              else {
-              const intent=accountStore.beginGeneration(session.user.id,q.recoveryToken,"walk_research",walkResearchKey(request),0,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+              const intent=accountStore.beginGeneration(session.user.id,q.recoveryToken,"walk_research",walkResearchKey(request),0,userDailyLimit);
               if(intent.jobId&&intent.jobId!==job.id)throw failure("CONFLICT");
               accountStore.completeGeneration(session.user.id,q.recoveryToken,job.id);
-              }
             }
           }
         } else if(req.method==="POST"&&(!researchMatch[1]||researchMatch[2])) {
           if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           if(url.search)throw failure("BAD_REQUEST");
+          // Research spends paid model and speech calls, so it is charged to a signed-in user.
+          if(!auth){json(res,503,{error:{code:"AUTH_REQUIRED",message:errorMessages.AUTH_REQUIRED}});return;}
           const input=await body(req);
           if(researchMatch[2]) {
-            if(auth&&!accountStore.ownsRequest(session.user.id,researchMatch[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Walk research job not found."}});return;}
+            if(!accountStore.ownsRequest(session.user.id,researchMatch[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Walk research job not found."}});return;}
             if(Object.keys(input).length!==1||!Number.isSafeInteger(input.revision)||input.revision<0)throw failure("BAD_REQUEST");
             if(!provider){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
-            const quotaKey=`walk-retry-${researchMatch[1]}-${input.revision}`;if(auth)accountStore.reserveGeneration(session.user.id,quotaKey,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-            try{job=store.retryWalkResearch(researchMatch[1],input.revision);}catch(error){if(auth)accountStore.releaseGeneration(session.user.id,quotaKey);throw error;}
+            // A repeated retry of the same revision was already charged; only a charge made by this request is refunded.
+            const quotaKey=`walk-retry-${researchMatch[1]}-${input.revision}`,reserved=accountStore.reserveGeneration(session.user.id,quotaKey,3,userDailyLimit);
+            try{job=store.retryWalkResearch(researchMatch[1],input.revision);}catch(error){if(reserved)accountStore.releaseGeneration(session.user.id,quotaKey);throw error;}
+            if(!job&&reserved)accountStore.releaseGeneration(session.user.id,quotaKey);
           } else {
             const request=validateWalkResearch(input),existing=store.lookupWalkResearch(request,input.recoveryToken);
-            const intent=auth&&accountStore.beginGeneration?accountStore.beginGeneration(session.user.id,input.recoveryToken,"walk_research",walkResearchKey(request),existing?0:3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6)):null;
-            if(auth&&!accountStore.beginGeneration&&!existing)accountStore.reserveGeneration(session.user.id,input.recoveryToken,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-            try {job=intent?.jobId?store.get(intent.jobId):store.createWalkResearch(input,{allowCreate:Boolean(provider)});if(auth&&job){if(accountStore.completeGeneration)accountStore.completeGeneration(session.user.id,input.recoveryToken,job.id);else accountStore.attachRequest(session.user.id,job.id,"walk_research",input.recoveryToken);}}
+            const intent=accountStore.beginGeneration(session.user.id,input.recoveryToken,"walk_research",walkResearchKey(request),existing?0:3,userDailyLimit);
+            try {job=intent.jobId?store.get(intent.jobId):store.createWalkResearch(input,{allowCreate:Boolean(provider)});if(job)accountStore.completeGeneration(session.user.id,input.recoveryToken,job.id);}
             catch(error) {
-              if(auth&&!intent?.jobId){if(accountStore.cancelGeneration)accountStore.cancelGeneration(session.user.id,input.recoveryToken);else if(!existing)accountStore.releaseGeneration(session.user.id,input.recoveryToken);}
+              if(!intent.jobId)accountStore.cancelGeneration(session.user.id,input.recoveryToken);
               if(error.code!=="PROVIDER_UNAVAILABLE")throw error;
               json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;
             }
@@ -468,12 +505,13 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
       if(req.method==="POST") {
         if(req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {json(res,403,{error:{message:"Откройте подготовку истории на сайте."}});return;}
         if(url.pathname==="/api/walk-plan") {
-          try {json(res,200,await walkPlanner(await body(req,8192)));}
+          // X-Real-IP is overwritten by nginx, as for Better Auth rate limiting.
+          try {json(res,200,await walkPlanner(await body(req,8192),{client:String(req.headers["x-real-ip"]??req.socket.remoteAddress??"")}));}
           catch(error) {
-            const messages={WALK_INVALID:"Проверьте начало, остановки и параметры прогулки.",WALK_BUSY:"Планировщик занят. Повторите через пару секунд.",WALK_NOT_FOUND:"Не удалось построить пешеходную прогулку в выбранное время. Измените точки или длительность.",WALK_STOPS_NOT_FOUND:"Рядом со стартом недостаточно достопримечательностей в каталоге. Добавьте остановки вручную или выберите другое начало прогулки.",WALK_DISCOVERY_UNAVAILABLE:"Не удалось автоматически подобрать остановки. Попробуйте позже или добавьте остановки вручную.",WALK_UNAVAILABLE:"Пешеходный маршрутизатор временно недоступен. Попробуйте позже."};
+            const messages={WALK_INVALID:"Проверьте начало, остановки и параметры прогулки.",WALK_BUSY:"Планировщик занят. Повторите через пару секунд.",WALK_RATE_LIMITED:"Слишком частые запросы маршрута. Повторите через пару секунд.",WALK_NOT_FOUND:"Не удалось построить пешеходную прогулку в выбранное время. Измените точки или длительность.",WALK_STOPS_NOT_FOUND:"Рядом со стартом недостаточно достопримечательностей в каталоге. Добавьте остановки вручную или выберите другое начало прогулки.",WALK_DISCOVERY_UNAVAILABLE:"Не удалось автоматически подобрать остановки. Попробуйте позже или добавьте остановки вручную.",WALK_UNAVAILABLE:"Пешеходный маршрутизатор временно недоступен. Попробуйте позже."};
             const code=error.code==="BAD_REQUEST"?"WALK_INVALID":Object.hasOwn(messages,error.code)?error.code:"WALK_UNAVAILABLE";
-            if(code==="WALK_BUSY")res.setHeader("Retry-After","2");
-            json(res,{WALK_INVALID:400,WALK_BUSY:429,WALK_NOT_FOUND:404,WALK_STOPS_NOT_FOUND:404,WALK_DISCOVERY_UNAVAILABLE:503,WALK_UNAVAILABLE:503}[code],{error:{code,message:messages[code]}});
+            if(["WALK_BUSY","WALK_RATE_LIMITED"].includes(code))res.setHeader("Retry-After","2");
+            json(res,{WALK_INVALID:400,WALK_BUSY:429,WALK_RATE_LIMITED:429,WALK_NOT_FOUND:404,WALK_STOPS_NOT_FOUND:404,WALK_DISCOVERY_UNAVAILABLE:503,WALK_UNAVAILABLE:503}[code],{error:{code,message:messages[code]}});
           }
           return;
         }
@@ -485,24 +523,26 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
           json(res,200,resolveWalkView(input.document,input.revision,store));return;
         }
         if(!provider) {json(res,503,{error:{message:"Подготовка историй пока недоступна."}});return;}
+        // Story generation spends paid model and speech calls, so it is charged to a signed-in user.
+        if(!auth||!accountStore){json(res,503,{error:{code:"AUTH_REQUIRED",message:errorMessages.AUTH_REQUIRED}});return;}
         const input=await body(req);
         if(url.pathname==="/api/story-jobs") {
-          if(!session||!accountStore){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите, чтобы подготовить историю."}});return;}
+          if(!session){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите, чтобы подготовить историю."}});return;}
           if(Object.keys(input).some((key)=>!["address","idempotencyKey"].includes(key))||typeof input.idempotencyKey!=="string")throw failure("BAD_REQUEST");
           const address=normalizeAddress(input.address),key=addressKey(address),existing=store.getByKey?.(key)??null;
-          const intent=accountStore.beginGeneration?accountStore.beginGeneration(session.user.id,input.idempotencyKey,"create",key,existing?0:1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6)):{created:true,jobId:null};
-          if(!accountStore.beginGeneration&&!existing)accountStore.reserveGeneration?.(session.user.id,input.idempotencyKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-          let job;try{job=intent.jobId?store.get(intent.jobId):store.createOrGet({key,address});if(!job)throw failure("CONFLICT");if(accountStore.completeGeneration)accountStore.completeGeneration(session.user.id,input.idempotencyKey,job.id);else accountStore.attachRequest(session.user.id,job.id,"create",input.idempotencyKey);}
-          catch(error){if(!intent.jobId){if(accountStore.cancelGeneration)accountStore.cancelGeneration(session.user.id,input.idempotencyKey);else if(!existing)accountStore.releaseGeneration?.(session.user.id,input.idempotencyKey);}throw error;}
+          const intent=accountStore.beginGeneration(session.user.id,input.idempotencyKey,"create",key,existing?0:1,userDailyLimit);
+          let job;try{job=intent.jobId?store.get(intent.jobId):store.createOrGet({key,address});if(!job)throw failure("CONFLICT");accountStore.completeGeneration(session.user.id,input.idempotencyKey,job.id);}
+          catch(error){if(!intent.jobId)accountStore.cancelGeneration(session.user.id,input.idempotencyKey);throw error;}
           json(res,200,publicJob(job));worker?.wake();return;
         }
         const retry=new RegExp(`^/api/story-jobs/(${UUID})/retry$`).exec(url.pathname);
         if(retry) {
-          if(!session||!accountStore||!accountStore.ownsRequest(session.user.id,retry[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Задание не найдено."}});return;}
+          if(!session||!accountStore.ownsRequest(session.user.id,retry[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Задание не найдено."}});return;}
           if(!Number.isInteger(input.revision)||Object.keys(input).some((key)=>key!=="revision"))throw failure("BAD_REQUEST");
-          const quotaKey=`retry-${retry[1]}-${input.revision}`;accountStore.reserveGeneration?.(session.user.id,quotaKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-          let job;try{job=store.retry(retry[1],input.revision);}catch(error){accountStore.releaseGeneration?.(session.user.id,quotaKey);throw error;}
-          if(!job){json(res,404,{error:{message:"Задание не найдено."}});return;}
+          // A repeated retry of the same revision was already charged; only a charge made by this request is refunded.
+          const quotaKey=`retry-${retry[1]}-${input.revision}`,reserved=accountStore.reserveGeneration(session.user.id,quotaKey,1,userDailyLimit);
+          let job;try{job=store.retry(retry[1],input.revision);}catch(error){if(reserved)accountStore.releaseGeneration(session.user.id,quotaKey);throw error;}
+          if(!job){if(reserved)accountStore.releaseGeneration(session.user.id,quotaKey);json(res,404,{error:{message:"Задание не найдено."}});return;}
           json(res,200,publicJob(job));worker?.wake();return;
         }
       }
@@ -526,21 +566,34 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
       json(res,404,{error:{message:"Страница не найдена."}});
     } catch(error) {
       if(res.headersSent||res.destroyed)return;
-      const status=["QUEUE_FULL","DAILY_LIMIT","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:error.code==="AUDIO_STORAGE_FULL"?507:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY"].includes(error.code)?409:
+      const status=["QUEUE_FULL","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:error.code==="AUDIO_STORAGE_FULL"?507:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY","STORAGE_LIMIT"].includes(error.code)?409:
         error.code==="AUDIO_TOO_LARGE"?413:["BAD_AUDIO_TYPE","BAD_AUDIO","AUDIO_CHECKSUM","AUDIO_DURATION"].includes(error.code)?422:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?400:500;
       if(status===500) logs?.captureException(error,{operation:"API request",context:{method:req.method,status}});
-      json(res,status,{error:["BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?{code:error.code,message:"Invalid request or draft."}:safeError(error)});
+      // Account storage limits carry a user-facing message written by the account store.
+      json(res,status,{error:["BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?{code:error.code,message:"Invalid request or draft."}:error.code==="STORAGE_LIMIT"?{code:error.code,message:error.message}:safeError(error)});
     }
   });
   server.requestTimeout=310000;server.headersTimeout=10000;server.keepAliveTimeout=5000;
-  return {server,close:async()=>{await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop()]);osmGeocoder?.close();await new Promise((done)=>server.close(done));server.closeAllConnections();await closeAuth();}};
+  // Stop accepting requests, let in-flight ones finish within the grace period,
+  // then stop the workers (aborted jobs are requeued) and close the databases.
+  const close=async()=>{
+    const drained=new Promise(done=>server.close(()=>done()));
+    server.closeIdleConnections();
+    let timer;
+    await Promise.race([drained,new Promise(done=>{timer=setTimeout(done,shutdownGraceMs);timer.unref?.();})]);
+    clearTimeout(timer);server.closeAllConnections();await drained;
+    await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop()]);
+    osmGeocoder?.close();await closeAuth();
+  };
+  return {server,close};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const directory=resolve(process.env.DATA_DIR??"backend/data");
   const localTts=loadLocalTtsConfig(process.env);
+  const userDailyLimit=parseUserDailyLimit(process.env.USER_DAILY_GENERATION_LIMIT);
   const ttsApiClient=localTts.transport==="http"?createTtsApiClient({baseUrl:process.env.TTS_API_URL,token:process.env.TTS_API_TOKEN}):null;
-  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:workerLeaseSecret({transport:localTts.transport}),normalizeExternalText:normalizeForSpeech,externalTtsProfiles:localTts.profiles});
+  const store=createStore(join(directory,"jobs.sqlite"),{maxActive:2,workerLeaseSecret:workerLeaseSecret({transport:localTts.transport}),normalizeExternalText:normalizeForSpeech,externalTtsProfiles:localTts.profiles});
   store.recoverInterrupted();
   store.recoverContentJobs();
   const provider=process.env.OPENAI_API_KEY&&process.env.OPENAI_BASE_URL?createProvider({apiKey:process.env.OPENAI_API_KEY,baseUrl:process.env.OPENAI_BASE_URL,model:process.env.STORY_MODEL,writerModel:process.env.WRITER_MODEL}):null;
@@ -549,10 +602,19 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const port=Number(process.env.PORT??4175);
   const appOrigin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
   const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production"});
-  const accountStore=createAccountStore(authRuntime.database);
+  const accountStore=createAccountStore(authRuntime.accountDatabase);
   const osmGeocoder=openOsmGeocoder(join(directory,"osm-addresses.sqlite"));
-  const app=createApp({store,provider,osmGeocoder,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close});
+  try {const swept=await sweepAudioTemporaries(join(directory,"audio"));if(swept)console.log(`Removed ${swept} abandoned temporary audio files`);}
+  catch(error) {logs?.captureException(error,{operation:"sweepAudioTemporaries"});}
+  const app=createApp({store,provider,osmGeocoder,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close,userDailyLimit});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
-  for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});
+  for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{
+    // A second signal means the operator does not want to wait for the drain.
+    if(stopping){console.error("Forced shutdown");process.exit(1);}
+    stopping=true;
+    try {await app.close();} catch(error) {console.error("Graceful shutdown failed");logs?.captureException(error,{operation:"shutdown"});}
+    try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}
+    store.close();process.exit(0);
+  });
 }

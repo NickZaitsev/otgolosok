@@ -5,11 +5,11 @@ import { createApp } from "./server.mjs";
 import { runJob } from "./pipeline.mjs";
 
 async function fixture(t, options = {}) {
-  const store = createStore(":memory:", { maxDaily: 100 });
-  const app = createApp({ store, provider: {}, yandexTts: { voice: "marina" }, origin: "https://site.test", adminToken: "test-only", workerEnabled: false, ...options });
-  await new Promise(done => app.server.listen(0, "127.0.0.1", done));
+  const store = createStore(":memory:");
+  const app = createApp({ store, provider: /** @type {any} */ ({}), yandexTts: /** @type {any} */ ({ voice: "marina" }), origin: "https://site.test", adminToken: "test-only", workerEnabled: false, ...options });
+  await /** @type {Promise<void>} */ (new Promise(done => app.server.listen(0, "127.0.0.1", done)));
   t.after(async () => { await app.close(); store.close(); });
-  const base = `http://127.0.0.1:${app.server.address().port}`;
+  const base = `http://127.0.0.1:${/** @type {import("node:net").AddressInfo} */ (app.server.address()).port}`;
   const request = (path = "", input, headers = {}) => fetch(`${base}/api/story-admin/jobs${path}`, {
     method: input === undefined ? "GET" : "POST",
     headers: { Authorization: "Bearer test-only", Origin: "https://site.test", "Content-Type": "application/json", ...headers },
@@ -25,25 +25,25 @@ test("irrelevant addresses stay hidden through updates, duplicate creation and f
     const queued = store.createOrGet({ key: String(i), address: `Москва, Кожевническая улица, ${i + 1}` });
     jobs.push(store.update(queued.id, { stage: "failed" }, queued.revision));
   }
-  const ordered = (await (await request()).json()).jobs;
+  const ordered = /** @type {any} */ (await (await request()).json()).jobs;
   const hidden = jobs.find(job => job.id === ordered[0].id);
   const input = { revision: hidden.revision, irrelevant: true };
   const response = await request(`/${hidden.id}/relevance`, input);
   assert.equal(response.status, 200);
-  assert.equal((await response.json()).job.irrelevant, true);
+  assert.equal(/** @type {any} */ (await response.json()).job.irrelevant, true);
   assert.equal(store.createOrGet({ key: hidden.key, address: hidden.address }).irrelevant, true);
   store.update(hidden.id, { stage: "review_required" }, hidden.revision);
-  const first = await (await request("?limit=2&q=КОЖЕВНИЧЕСКАЯ")).json();
-  const last = await (await request("?limit=2&offset=2")).json();
+  const first = /** @type {any} */ (await (await request("?limit=2&q=КОЖЕВНИЧЕСКАЯ")).json());
+  const last = /** @type {any} */ (await (await request("?limit=2&offset=2")).json());
   assert.equal(first.jobs.length, 2);
   assert.equal(first.hasMore, true);
   assert.equal(last.jobs.length, 1);
   assert.equal(last.hasMore, false);
   assert.equal([...first.jobs, ...last.jobs].some(job => job.id === hidden.id), false);
-  const irrelevant = await (await request("?relevance=irrelevant")).json();
+  const irrelevant = /** @type {any} */ (await (await request("?relevance=irrelevant")).json());
   assert.deepEqual(irrelevant.jobs.map(job => job.id), [hidden.id]);
   assert.equal((await request(`/${hidden.id}/relevance`, { revision: store.get(hidden.id).revision, irrelevant: false })).status, 200);
-  assert.equal((await (await request()).json()).jobs.length, 4);
+  assert.equal(/** @type {any} */ (await (await request()).json()).jobs.length, 4);
 });
 
 test("relevance actions validate credentials, origin, schema and revision", async t => {
@@ -65,7 +65,7 @@ test("failed research can be resumed from admin with a new narration service and
   const { store, request } = await fixture(t);
   const queued = store.createOrGet({ key: "one", address: "Москва, Арбат, 1" });
   const failed = store.update(queued.id, { stage: "failed", attempts: 1, error: { code: "TIMEOUT" } }, queued.revision);
-  const detail = (await (await request(`/${failed.id}`)).json()).job;
+  const detail = /** @type {any} */ (await (await request(`/${failed.id}`)).json()).job;
   assert.equal(detail.canRetry, true);
   assert.equal(detail.canRevoice, false);
   const response = await request(`/${failed.id}/retry`, { revision: failed.revision, ttsProvider: "yandex", ttsVoice: "kirill" });
@@ -83,7 +83,7 @@ test("review-required research can be fully regenerated from admin", async t => 
   const reviewRequired = store.update(queued.id, { stage: "review_required", attempts: 1, error: { code: "REVIEW_REQUIRED" }, data: {
     research: { sources: [{ url: "https://example.test" }] }, evidence: { facts: [] }, draft: { title: "Старый текст", paragraphs: [] },
   } }, queued.revision);
-  const detail = (await (await request(`/${reviewRequired.id}`)).json()).job;
+  const detail = /** @type {any} */ (await (await request(`/${reviewRequired.id}`)).json()).job;
   assert.equal(detail.canRegenerate, true);
   const response = await request(`/${reviewRequired.id}/regenerate`, { revision: reviewRequired.revision, ttsProvider: "yandex", ttsVoice: "kirill" });
   assert.equal(response.status, 200);
@@ -98,7 +98,7 @@ test("review-required research cannot be regenerated without a research provider
   const { store, request } = await fixture(t, { provider: null });
   const queued = store.createOrGet({ key: "regenerate-unavailable", address: "Москва, Арбат, 1" });
   const reviewRequired = store.update(queued.id, { stage: "review_required", attempts: 1 }, queued.revision);
-  const detail = (await (await request(`/${reviewRequired.id}`)).json()).job;
+  const detail = /** @type {any} */ (await (await request(`/${reviewRequired.id}`)).json()).job;
   assert.equal(detail.canRegenerate, false);
   assert.equal((await request(`/${reviewRequired.id}/regenerate`, { revision: reviewRequired.revision, ttsProvider: "yandex", ttsVoice: "kirill" })).status, 503);
   assert.equal(store.get(reviewRequired.id).stage, "review_required");
@@ -115,7 +115,7 @@ test("revoicing preserves public audio on failure and publishes the selected new
   assert.equal((await request(path, { ...input, ttsVoice: "marin" })).status, 400);
   assert.equal((await request(path, input)).status, 200);
   assert.equal((await request(path, input)).status, 409);
-  const readPublic = async () => (await fetch(`${base}/api/story-jobs/${ready.id}`)).json();
+  const readPublic = async () => /** @type {any} */ ((await fetch(`${base}/api/story-jobs/${ready.id}`)).json());
   assert.deepEqual((await readPublic()).audio, oldAudio);
   const provider = { response: async () => assert.fail("Revoice must not repeat research") };
   const failed = await runJob(store.claimNext(), { store, provider, speechProviders: { yandex: { ttsProvider: "yandex" } }, narrate: async () => { throw new Error("Synthesis failed"); } });
@@ -138,12 +138,12 @@ test("walk admin endpoints protect drafts and publish only completed narration w
     body: input === undefined ? undefined : JSON.stringify(input),
   });
   assert.equal((await call("", undefined, { Authorization: "Bearer wrong" })).status, 401);
-  const list = await (await call("")).json();
+  const list = /** @type {any} */ (await (await call("")).json());
   assert.ok(list.walks.length > 0);
   const id = list.walks[0].id;
   const publicUrl = `${base}/api/story-walks/${id}`;
-  const initial = await (await fetch(publicUrl)).json();
-  const detail = (await (await call(`/${id}`)).json()).walk;
+  const initial = /** @type {any} */ (await (await fetch(publicUrl)).json());
+  const detail = /** @type {any} */ (await (await call(`/${id}`)).json()).walk;
   assert.ok(detail.ttsProviders.find(provider => provider.id === "yandex").voices.some(voice => voice.id === "kirill"));
   const chapter = detail.chapters[0];
   const editPath = `/${id}/chapters/${chapter.id}/edit`;
@@ -153,7 +153,7 @@ test("walk admin endpoints protect drafts and publish only completed narration w
   assert.equal((await call(editPath, { ...input, unknown: true })).status, 400);
   const edited = await call(editPath, input);
   assert.equal(edited.status, 200);
-  const saved = (await edited.json()).walk.chapters[0];
+  const saved = /** @type {any} */ (await edited.json()).walk.chapters[0];
   assert.equal(saved.draft.transition, draft.transition);
   assert.deepEqual(await (await fetch(publicUrl)).json(), initial);
   assert.equal((await call(editPath, input)).status, 409);
@@ -172,7 +172,7 @@ test("walk admin endpoints protect drafts and publish only completed narration w
     assert.equal(provider.voice, "kirill");
     return { url: `/api/story-audio/${"c".repeat(64)}.mp3`, sha256: "c".repeat(64), durationSec: 65, model: "speechkit-v3", voice: "kirill", provider: "yandex", synthetic: true };
   } });
-  const published = await (await fetch(publicUrl)).json();
+  const published = /** @type {any} */ (await (await fetch(publicUrl)).json());
   assert.equal(published.walk.steps[0].transition, draft.transition);
   assert.equal(published.walk.steps[0].audio.voice, "kirill");
   assert.deepEqual(published.walk.path, initial.walk.path);
@@ -185,7 +185,7 @@ test("Yandex can revoice ready text without an OpenAI provider and leaves queued
   const ready = store.update(queued.id, { stage: "ready", data: { story: {
     title: "Готовый рассказ", paragraphs: [{ text: "word ".repeat(55), factIds: [] }, { text: "word ".repeat(55), factIds: [] }],
   } } }, queued.revision);
-  const detail = (await (await request(`/${ready.id}`)).json()).job;
+  const detail = /** @type {any} */ (await (await request(`/${ready.id}`)).json()).job;
   assert.equal(detail.canRevoice, true);
   assert.equal(detail.ttsProviders.find(option => option.id === "yandex").available, true);
   assert.equal((await request(`/${ready.id}/revoice`, { revision: ready.revision, ttsProvider: "yandex", ttsVoice: "kirill" })).status, 200);
@@ -201,18 +201,18 @@ test("walk admin regenerates every chapter atomically with the selected voice", 
     headers: { Authorization: "Bearer test-only", Origin: "https://site.test", "Content-Type": "application/json", ...extraHeaders },
     body: JSON.stringify(input),
   });
-  const list = await (await fetch(`${base}/api/story-admin/walks`, {
+  const list = /** @type {any} */ (await (await fetch(`${base}/api/story-admin/walks`, {
     headers: { Authorization: "Bearer test-only" },
-  })).json();
+  })).json());
   const routeId = list.walks[0].id;
-  const before = (await (await fetch(`${base}/api/story-admin/walks/${routeId}`, {
+  const before = /** @type {any} */ (await (await fetch(`${base}/api/story-admin/walks/${routeId}`, {
     headers: { Authorization: "Bearer test-only" },
   })).json()).walk;
 
   assert.equal((await call(`/${routeId}/regenerate`, { ttsProvider: "yandex", ttsVoice: "kirill" }, { Origin: "https://other.test" })).status, 403);
   const response = await call(`/${routeId}/regenerate`, { ttsProvider: "yandex", ttsVoice: "kirill" });
   assert.equal(response.status, 200);
-  const updated = (await response.json()).walk;
+  const updated = /** @type {any} */ (await response.json()).walk;
   assert.ok(updated.chapters.every(chapter => chapter.status === "queued"));
   assert.ok(updated.chapters.every(chapter => chapter.revision === 1));
   assert.equal(store.claimNext().kind, "walk_chapter");

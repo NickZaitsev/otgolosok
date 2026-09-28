@@ -18,7 +18,7 @@ FIELDS = ("name", "name:ru", "alt_name", "old_name", "tourism", "historic", "her
           "addr:street", "addr:housenumber", "wikidata", "wikipedia", "architect")
 TOURISM = {"attraction", "museum", "gallery", "artwork", "viewpoint", "zoo", "theme_park"}
 LEISURE = {"park", "garden"}
-TOKEN = re.compile(r"[\wа-яё]+", re.I)
+TOKEN = re.compile(r"[\wа-яё]+", re.IGNORECASE)
 
 
 def distance(a, b):
@@ -97,7 +97,11 @@ def selected(tags):
     return values if eligible and named else None
 
 
-class Attractions(osmium.SimpleHandler if osmium else object):
+# Pure helper tests import this module without pyosmium installed.
+_HandlerBase: type = osmium.SimpleHandler if osmium else object
+
+
+class Attractions(_HandlerBase):
     def __init__(self, boundary_relation_id=None):
         super().__init__(); self.items = []; self.latest = ""; self.skipped = 0; self.boundary_relation_id = boundary_relation_id; self.boundary_version = None
 

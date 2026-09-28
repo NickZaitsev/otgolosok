@@ -318,6 +318,47 @@ test("карточка выбранного дома не оставляет п�
   await expect(title).toHaveCount(0);
 });
 
+test("длинная история прокручивается внутри карточки, закрытие и плеер остаются на месте", async ({ page }, info) => {
+  const text = "Корпус имеет сложную, отдалённо Т-образную форму, а главный фасад построен как трёхчастная композиция. ".repeat(5);
+  await page.route("**/api/content/places?*", route => route.fulfill({ json: { places: [{ id: "long-story", name: "Длинная история", address: "Москва, Дербеневская, 1", location: { lat: 55.7249, lon: 37.6507 }, story: { title: "Длинная история", paragraphs: [{ text }, { text }, { text }], sources: [], facts: [] }, audio: { url: "/api/story-audio/long-story.mp3", durationSec: 120 } }] } }));
+  await page.goto("/");
+  await page.locator('[title="Длинная история"]').click();
+  const story = page.getByRole("region", { name: "Текст истории", exact: true });
+  await expect(story).toBeVisible();
+  const card = page.locator(".around-story-card");
+  const close = page.getByRole("button", { name: "Закрыть карточку", exact: true });
+  const audio = card.locator("audio");
+  const state = () => story.evaluate(el => {
+    const style = getComputedStyle(el);
+    return { fadeTop: style.getPropertyValue("--around-fade-top"), fadeBottom: style.getPropertyValue("--around-fade-bottom"), rest: el.scrollHeight - el.clientHeight - el.scrollTop };
+  });
+  const before = { close: await close.boundingBox(), audio: await audio.boundingBox(), card: await card.boundingBox() };
+  expect(await card.evaluate(el => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(1);
+  expect(before.audio!.y + before.audio!.height).toBeLessThanOrEqual(before.card!.y + before.card!.height);
+  expect(await state()).toMatchObject({ fadeTop: "0px", fadeBottom: "28px" });
+  expect((await state()).rest).toBeGreaterThan(100);
+
+  await close.focus();
+  await page.keyboard.press("Tab");
+  await expect(story).toBeFocused();
+  await page.keyboard.press("End");
+  await expect.poll(async () => (await state()).rest).toBeLessThanOrEqual(1);
+  expect(await state()).toMatchObject({ fadeTop: "28px", fadeBottom: "0px" });
+  expect(await close.boundingBox()).toEqual(before.close);
+  expect(await audio.boundingBox()).toEqual(before.audio);
+  await page.screenshot({ path: info.outputPath("story-card-scrolled.png") });
+});
+
+test("часть прогулки без текста не добавляет область прокрутки в порядок фокуса", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".explore-pin", { hasText: "1" }).first().click();
+  await expect(page.getByRole("button", { name: "Слушать эту часть" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Текст истории", exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Закрыть карточку", exact: true }).focus();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Слушать эту часть" })).toBeFocused();
+});
+
 test("подпись карты размером 11 пикселей без подчёркивания", async ({ page }) => {
   await page.goto("/");
   const attribution = page.getByRole("link", { name: "© OpenStreetMap", exact: true });

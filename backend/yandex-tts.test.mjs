@@ -8,11 +8,11 @@ test("Yandex sends Russian text and MP3 options with server-side API-key auth an
   const script = "История московского дома.\n\nЗдесь жил архитектор.";
   const provider = createYandexTts({ apiKey: "private-key", fetchImpl: async (url, options) => {
     assert.equal(url, "https://tts.api.cloud.yandex.net/tts/v3/utteranceSynthesis");
-    assert.equal(options.headers.Authorization, "Api-Key private-key");
+    assert.equal(/** @type {Record<string, string>} */ (options.headers).Authorization, "Api-Key private-key");
     assert.equal(options.headers["x-folder-id"], undefined);
     assert.equal(options.redirect, "error");
     assert.equal(options.method, "POST");
-    assert.deepEqual(JSON.parse(options.body), { text: script, hints: [{ voice: "marina" }, { speed: 1 }],
+    assert.deepEqual(JSON.parse(/** @type {string} */ (options.body)), { text: script, hints: [{ voice: "marina" }, { speed: 1 }],
       unsafeMode: true, outputAudioSpec: { containerAudio: { containerAudioType: "MP3" } } });
     // Transport chunks need not align with JSON records.
     const bytes = Buffer.from(frame("first") + "\r\n" + frame("second") + "\n");
@@ -30,7 +30,7 @@ test("long texts split at whitespace within the 5000-character limit without los
   const texts = [];
   const script = ("Первый абзац. ".repeat(360) + "\n\n" + "Второй абзац. ".repeat(420)).trim();
   const provider = createYandexTts({ apiKey: "key", voice: "ermil", fetchImpl: async (_url, options) => {
-    const body = JSON.parse(options.body);
+    const body = JSON.parse(/** @type {string} */ (options.body));
     texts.push(body.text);
     assert.equal(body.hints[0].voice, "ermil");
     return new Response(frame(String(texts.length)));
@@ -53,7 +53,7 @@ test("provider failures, malformed streams and partial audio are rejected withou
     () => new Response(frame("partial") + "\n{truncated"),
   ]) {
     const provider = createYandexTts({ apiKey: "key", fetchImpl: async () => response() });
-    await assert.rejects(provider.speech("Текст"), error => error.code === "TTS_FAILED" && !error.message.includes("private"));
+    await assert.rejects(provider.speech("Текст"), (/** @type {any} */ error) => error.code === "TTS_FAILED" && !error.message.includes("private"));
   }
 });
 
@@ -78,11 +78,25 @@ test("invalid config and empty text never issue requests", async () => {
 test("Yandex uses each job's selected voice without changing the shared default", async () => {
   const voices = [];
   const provider = createYandexTts({ apiKey: "key", voice: "ermil", fetchImpl: async (_url, options) => {
-    voices.push(JSON.parse(options.body).hints[0].voice);
+    voices.push(JSON.parse(/** @type {string} */ (options.body)).hints[0].voice);
     return new Response(frame("audio"));
   } });
   await Promise.all([provider.speech("Первый рассказ", { voice: "kirill" }), provider.speech("Второй рассказ", { voice: "dasha" })]);
   await provider.speech("Рассказ с голосом по умолчанию");
   assert.deepEqual(voices, ["kirill", "dasha", "ermil"]);
   assert.equal(provider.voice, "ermil");
+});
+
+test("Yandex retries a throttled chunk without repeating finished ones", async () => {
+  const texts = [];
+  const statuses = [200, 429, 200];
+  const provider = createYandexTts({ apiKey: "key", fetchImpl: async (_url, options) => {
+    texts.push(JSON.parse(/** @type {string} */ (options.body)).text.slice(0, 10));
+    const status = statuses.shift();
+    return status === 200 ? new Response(frame(`part-${texts.length}`)) : new Response("slow down", { status, headers: { "Retry-After": "0" } });
+  } });
+  const long = `${"первое ".repeat(700)}\n${"второе ".repeat(300)}`;
+  const audio = await provider.speech(long);
+  assert.deepEqual(texts.map(text => text.split(" ")[0]), ["первое", "второе", "второе"]);
+  assert.equal(audio.toString(), "part-1part-3");
 });

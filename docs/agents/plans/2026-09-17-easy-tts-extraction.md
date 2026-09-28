@@ -1,6 +1,6 @@
 # Перенос TTS-воркера в just-tts
 
-Статус: план реализации. Сам перенос ещё не выполнен.
+Status: implemented 2026-09-17 in the separate repository `just-tts`; the worker no longer lives in otgolosok.
 
 ## Результат
 
