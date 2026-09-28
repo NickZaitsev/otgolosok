@@ -212,7 +212,7 @@ const ask = (() => {
   const wave = el("svg:svg", {cls: "abs", parent: root, attrs: {viewBox: "0 0 1080 300", width: 1080, height: 300}, style: {left: "0", top: "1380px"}});
   const waves = [0.9, 0.55, 0.3].map((opacity, index) => el("svg:path", {parent: wave, attrs: {fill: "none", stroke: index ? COLORS.peach : COLORS.cream, "stroke-width": 7 - index * 2, "stroke-linecap": "round", opacity}}));
 
-  return {root, start, end, tail: 0, update(time) {
+  return {root, start, end, tail: 0.5, update(time) {
     const local = time - start;
     const radius = progress(local, 0, 0.55, ease.swing) * 2300;
     css(root, {clipPath: local < 0.55 ? `circle(${radius.toFixed(1)}px at ${DOME_POINT.x}px ${DOME_POINT.y}px)` : "none"});
@@ -269,10 +269,10 @@ const facts = (() => {
     const lines = fact.caption.map((text) => charLine(caption, text));
     const pager = el("div", {cls: "abs pager", parent: card, style: {left: "0", right: "0", top: "1700px", justifyContent: "center"}});
     const bars = FACTS.map(() => el("i", {parent: pager, style: {background: palette.fg}}));
-    return {card, blob, dash, kicker, tag, digits, unit, lines, bars, palette, index};
+    return {card, blob, dash, kicker, tag, odometer, digits, unit, lines, bars, palette, index};
   });
 
-  return {root, start, end, tail: 0.5, update(time) {
+  return {root, start, end, tail: 0.6, update(time) {
     cards.forEach((item, index) => {
       const from = start + index * FACT_LENGTH;
       const local = time - from;
@@ -281,7 +281,7 @@ const facts = (() => {
       css(item.card, {visibility: visible ? "visible" : "hidden", zIndex: index});
       if (!visible) return;
       // Диагональная шторка: треугольник от левого нижнего угла накрывает прошлую карточку.
-      const wipe = index === 0 ? 1 : progress(local, 0, 0.32, ease.swing);
+      const wipe = progress(local, 0, 0.32, ease.swing);
       const reach = (wipe * 260).toFixed(2);
       css(item.card, {clipPath: wipe < 1 ? `polygon(0% 100%, 0% ${(100 - Number(reach)).toFixed(2)}%, ${reach}% 100%)` : "none"});
       const grow = spring(local - 0.05, {frequency: 1.6, damping: 6});
@@ -289,12 +289,14 @@ const facts = (() => {
       attr(item.dash, {transform: `rotate(${(local * 40).toFixed(2)} 540 860)`, r: (430 + 30 * progress(local, 0, 1.5)).toFixed(1)});
       css(item.kicker, {transform: `translateY(${((1 - progress(local, 0.05, 0.5)) * -30).toFixed(1)}px)`});
       css(item.tag, {transform: `translateX(${((1 - progress(local, 0.08, 0.6)) * -700).toFixed(1)}px)`});
+      // Медленный наезд на число, пока карточка на экране.
+      css(item.odometer, {transform: `scale(${(1 + 0.06 * progress(local, 0.2, FACT_LENGTH, ease.outCubic)).toFixed(4)})`});
       item.digits.forEach(({strip, target}, order) => {
-        const roll = target * progress(local, 0.05 + order * 0.07, 0.85 + order * 0.07);
+        const roll = target * progress(local, 0.15 + order * 0.1, 1.45 + order * 0.1);
         css(strip, {transform: `translateY(${(-roll).toFixed(4)}em)`});
       });
-      if (item.unit) css(item.unit, {transform: `scale(${spring(local - 0.55, {frequency: 2.2, damping: 6.5}).toFixed(4)})`, transformOrigin: "0 100%"});
-      item.lines.forEach(({chars}, order) => revealChars(chars, local, 0.35 + order * 0.12, {step: 0.012, length: 0.45}));
+      if (item.unit) css(item.unit, {transform: `scale(${spring(local - 1.2, {frequency: 2.2, damping: 6.5}).toFixed(4)})`, transformOrigin: "0 100%"});
+      item.lines.forEach(({chars}, order) => revealChars(chars, local, 0.7 + order * 0.2, {step: 0.018, length: 0.55}));
       item.bars.forEach((bar, order) => css(bar, {opacity: order === index ? 1 : order < index ? 0.55 : 0.2, transform: `scaleX(${order === index ? progress(local, 0, FACT_LENGTH, ease.linear) * 0.6 + 0.4 : 1})`, transformOrigin: "0 50%"}));
     });
   }};
@@ -398,9 +400,9 @@ const map = (() => {
   }
 
   let housesSettled = false;
-  return {root, start, end, tail: 0.6, update(time) {
+  return {root, start, end, tail: 0.4, update(time) {
     const local = time - start;
-    // Вход полосами-жалюзи поверх последней карточки фактов.
+    // Вход полосами-жалюзи поверх вопроса.
     const wipe = Array.from({length: 12}, (_, band) => progress(local, band * 0.025, 0.36 + band * 0.025, ease.swing));
     css(root, {clipPath: wipe.every((value) => value >= 1) ? "none" : stripesPolygon(wipe)});
     const view3d = camera(local);
@@ -625,7 +627,8 @@ const brand = (() => {
 
 // ---------- Общие слои ----------
 
-const timeline = [hook, ask, facts, map, player, board, brand];
+// Порядок слоёв — по времени сцен: следующая сцена ложится поверх хвоста предыдущей.
+const timeline = [hook, ask, map, facts, player, board, brand].sort((a, b) => a.start - b.start);
 const flash = el("div", {parent: stage, attrs: {id: "flash"}});
 el("div", {parent: stage, attrs: {id: "vignette"}});
 const drawGrain = grainLayer(stage, FPS);

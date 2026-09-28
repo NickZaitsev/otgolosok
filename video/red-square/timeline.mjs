@@ -9,17 +9,17 @@ export const BEAT = 0.5;
 
 /**
  * Сцены в секундах. Меняйте хронометраж только здесь: музыка строится по нему.
- * hook — собор собирается из фигур; ask — вопрос; facts — четыре факта с маршрута;
- * map — маршрут по карте; player — экран истории; board — табло обещаний; brand — знак.
+ * hook — собор собирается из фигур; ask — вопрос; map — маршрут по карте; facts —
+ * четыре факта с этого маршрута; player — экран истории; board — табло обещаний; brand — знак.
  */
 export const SCENES = Object.freeze([
   {id: "hook", start: 0, end: 4},
   {id: "ask", start: 4, end: 6},
-  {id: "facts", start: 6, end: 12},
-  {id: "map", start: 12, end: 19},
-  {id: "player", start: 19, end: 24.5},
-  {id: "board", start: 24.5, end: 27.5},
-  {id: "brand", start: 27.5, end: 31.5},
+  {id: "map", start: 6, end: 13},
+  {id: "facts", start: 13, end: 23},
+  {id: "player", start: 23, end: 28.5},
+  {id: "board", start: 28.5, end: 31.5},
+  {id: "brand", start: 31.5, end: 35.5},
 ]);
 
 export const DURATION = SCENES.at(-1).end;
@@ -72,7 +72,7 @@ export function musicScore() {
     seconds: DURATION,
     beat: BEAT,
     groove: scene("ask").start,
-    drive: [scene("facts").start, scene("player").start],
+    drive: [scene("map").start, scene("player").start],
     cuts: SCENES.slice(1).map(({start}) => start),
     hits: FACTS.slice(1).map((_, index) => facts.start + (index + 1) * FACT_LENGTH),
     // Колокола — на куполах собора, которые появляются в первой сцене.
