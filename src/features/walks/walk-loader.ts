@@ -1,6 +1,5 @@
-import { validateWalkView, type WalkDocument, type WalkStory, type WalkView } from "./model";
+import { validateWalkView, type WalkDocument, type WalkView } from "./model";
 import { loadOfflineWalk } from "./offline";
-import { terminalStages, type GenerationJob } from "../generator/types";
 
 export type WalkCard = {
   id: string;
@@ -44,14 +43,17 @@ async function readJson(response: Response) {
   return value;
 }
 
-export async function loadJson<T>(url: string, signal: AbortSignal, validate: (value: unknown) => T, attempts = 3): Promise<T> {
+/** payload, если задан, отправляется POST-запросом в JSON; запрос должен быть идемпотентным. */
+export async function loadJson<T>(url: string, signal: AbortSignal, validate: (value: unknown) => T, attempts = 3, payload?: unknown): Promise<T> {
   if (!Number.isSafeInteger(attempts) || attempts < 1 || attempts > 3) throw new RangeError("Количество попыток должно быть от 1 до 3.");
   let last: unknown = null;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     if (signal.aborted) throw signal.reason ?? new DOMException("Aborted", "AbortError");
     const timeout = withTimeout(signal, 20_000);
     try {
-      const response = await fetch(url, { signal: timeout.signal, credentials: "same-origin", cache: "no-store" });
+      const response = await fetch(url, payload === undefined
+        ? { signal: timeout.signal, credentials: "same-origin", cache: "no-store" }
+        : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: timeout.signal, credentials: "same-origin", cache: "no-store" });
       const value = await readJson(response);
       try {
         return validate(value);
@@ -91,50 +93,23 @@ export function localWalkView(document: WalkDocument, revision: number): WalkVie
   });
 }
 
-function publicJob(value: unknown): GenerationJob {
-  if (!value || typeof value !== "object" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(String((value as { id?: unknown }).id)) || typeof (value as { stage?: unknown }).stage !== "string") throw new WalkLoadError("Сервис вернул повреждённую историю.");
-  return value as GenerationJob;
-}
-
-function storyFromJob(job: GenerationJob): WalkStory | null {
-  const story = job.story;
-  const address = typeof story?.address === "string" ? story.address : job.address;
-  if (!story || typeof story.title !== "string" || story.title.length > 180 || typeof address !== "string" || address.length > 180 || !Array.isArray(story.paragraphs) || !story.paragraphs.length) return null;
-  const paragraphs = story.paragraphs.filter(item => typeof item.text === "string" && item.text.trim().length > 0).map(item => ({ text: item.text, factIds: Array.isArray(item.factIds) ? item.factIds.filter(id => typeof id === "string") : [] }));
-  const sources = Array.isArray(story.sources) ? story.sources.filter(source => typeof source.id === "string" && typeof source.title === "string" && /^https:\/\/[^\s<>]+$/i.test(source.url)).map(source => ({ id: source.id, title: source.title, url: source.url, publisher: source.publisher })) : [];
-  const sourceIds = new Set(sources.map(source => source.id));
-  const facts = Array.isArray(story.facts) ? story.facts.filter(fact => typeof fact.id === "string" && typeof fact.claim === "string").map(fact => ({ id: fact.id, claim: fact.claim, sourceIds: Array.isArray(fact.sourceIds) ? fact.sourceIds.filter(id => sourceIds.has(id)) : [] })) : [];
-  if (!paragraphs.length) return null;
-  return {
-    title: story.title,
-    address,
-    paragraphs,
-    sources,
-    facts,
-  };
-}
-
+// Гостевая прогулка хранится только в браузере, поэтому опубликованные истории
+// её остановок сервер подставляет по присланному документу. Без сети прогулка
+// всё равно открывается: остановки остаются в статусе «готовится».
 export async function loadLocalWalkView(document: WalkDocument, revision: number, signal: AbortSignal) {
   const base = localWalkView(document, revision);
-  const chapters = await Promise.all(base.chapters.map(async chapter => {
-    const stop = document.stops.find(item => item.id === chapter.id);
-    if (stop?.storyRef?.kind !== "job") return chapter;
-    try {
-      const job = await loadJson(`/api/story-jobs/${encodeURIComponent(stop.storyRef.id)}`, signal, publicJob);
-      const story = job.stage === "ready" ? storyFromJob(job) : null;
-      const audio = story && job.audio && /^\/api\/story-audio\/[a-f0-9]{64}\.mp3$/.test(job.audio.url) && job.audio.sha256 === job.audio.url.slice(-68, -4) ? {
-        url: job.audio.url, sha256: job.audio.sha256, durationSec: job.audio.durationSec,
-      } : null;
-      const status = story ? audio ? "ready" : "text_ready" : job.stage === "ready" ? "unavailable" : terminalStages.has(job.stage) ? job.stage === "failed" ? "failed" : job.stage : "preparing";
-      return { id: chapter.id, status, story, audio };
-    } catch (error) {
-      if (signal.aborted) throw error;
-      return chapter;
-    }
-  }));
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(chapters)));
-  const contentHash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
-  return validateWalkView({ ...base, contentVersion: `local:${revision}:${contentHash}`, chapters });
+  if (!document.stops.some(stop => stop.storyRef)) return base;
+  try {
+    const resolved = await loadJson("/api/story-walks/resolve", signal, (value): WalkView => {
+      const view: WalkView = validateWalkView(value);
+      if (view.revision !== revision || view.chapters.some((chapter, index) => chapter.id !== base.chapters[index].id)) throw new Error();
+      return view;
+    }, 3, { document, revision });
+    return validateWalkView({ ...base, contentVersion: `local:${revision}:${resolved.contentVersion}`, chapters: resolved.chapters });
+  } catch (error) {
+    if (signal.aborted) throw error;
+    return base;
+  }
 }
 
 export function loadCatalogWalk(id: string, signal: AbortSignal) {

@@ -6,6 +6,11 @@ export const DRAFT_KEY = "otgolosok:walk:v1";
 export const MAX_WALK_STOPS = 10;
 export type Place = { address: string; location: Coordinates; contentId?: string };
 export type Plan = { stops: Place[]; geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string };
+// Mirrors MIN_BUDGET_SHARE in backend/walks.mjs: automatic walks aim for at least this share of the chosen time.
+export const MIN_BUDGET_SHARE = 0.75;
+/** Walking minutes of an automatic walk that fell short of the chosen time, otherwise null. */
+export const routeShortfall = (route: Pick<Plan, "walkingMinutes">, minutes: number): number | null =>
+  route.walkingMinutes < MIN_BUDGET_SHARE * minutes ? route.walkingMinutes : null;
 export type StoryRef = { place: Place; id: string; stage: GenerationStage };
 export type ResearchRequest = { start: Place; destination?: Place | null; mode: "loop" | "open"; minutes: 30 | 60 | 90 };
 export type ResearchRef = { request: ResearchRequest; id: string | null; stops: Place[]; recoveryToken: string };
