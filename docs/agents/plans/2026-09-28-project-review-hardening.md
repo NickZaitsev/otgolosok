@@ -1,6 +1,6 @@
 # Plan: Project review round 2 — reliability, offline, quotas and tooling
 
-Status: in progress since 2026-09-28, phase 0 (merge of origin/main) done.
+Status: in progress since 2026-09-28, phases 0–2 (merge, security, backend reliability) done; phase 3 next.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
