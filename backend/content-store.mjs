@@ -26,6 +26,21 @@ const FACTS_STAGE_KEYS = ["evidence","editorialVersion","factsRejection","draft"
 const factsCheckpoint = json => {if(!json)return null;const checkpoint=JSON.parse(json);for(const key of FACTS_STAGE_KEYS)delete checkpoint[key];return encode(checkpoint);};
 const contentInputKey = (place,profile) => sha256(encode({placeId:place.id,contentHash:place.content_hash,profile,profileVersion:CONTENT_PROFILE_VERSION}));
 
+/**
+ * The pipeline numbers fetched pages by their position in the search results (`s1` is the first found link)
+ * and records the failures of the rest in the same order, so both lists line up with what search returned.
+ */
+function diagnosisSources(found,fetched,failures) {
+  const byId=new Map(fetched.map(source=>[source.id,source]));
+  if(!found.length)return fetched.map(source=>({url:source.url,title:source.title,sourceId:source.id,publisher:source.publisher,chars:Number(source.chars??0),failure:null}));
+  let failed=0;
+  return found.map((source,index)=>{
+    const page=byId.get(`s${index+1}`);
+    if(page)return {url:page.url,title:source.title,sourceId:page.id,publisher:page.publisher,chars:Number(page.chars??0),failure:null};
+    return {url:source.url,title:source.title,sourceId:null,publisher:null,chars:0,failure:typeof failures[failed]==="string"?failures[failed++]:null};
+  });
+}
+
 function addressOf(place) {
   return osmPostalAddress(place.tags);
 }
@@ -292,6 +307,41 @@ export function createContentStore({db,now,transaction}) {
       const errors=db.prepare(`SELECT ${ERROR_CODE_SQL} code,count(*) n FROM batch_items i WHERE i.batch_id=?${byStatus}
         GROUP BY code ORDER BY n DESC,code`).all(batchId,...statusParams).map(row=>({code:row.code??null,count:Number(row.n)}));
       return {items,total,hasMore:offset+items.length<total,errors};
+    },
+    /**
+     * What the editor needs to judge a stopped item: where the object is, which pages were found and read,
+     * and what the model took the object to be. Source page texts stay in SQLite; only their length leaves it.
+     */
+    getBatchItemDetail(batchId,placeId) {
+      const row=db.prepare(`SELECT i.state,i.error_json,i.text_job_id,p.id,p.name,p.address,p.lat,p.lon,p.tags_json,
+          j.state job_state,j.attempts,j.max_attempts,j.updated_at job_updated_at,
+          json_extract(j.checkpoint_json,'$.factsRejection') rejection_json,
+          json_extract(j.checkpoint_json,'$.evidence.placeName') evidence_place_name,
+          json_extract(j.checkpoint_json,'$.evidence.resolvedAddress') evidence_resolved_address,
+          json_extract(j.checkpoint_json,'$.evidence.identityNote') evidence_identity_note,
+          json_extract(j.checkpoint_json,'$.evidence.addressConfirmed') evidence_address_confirmed,
+          json_extract(j.checkpoint_json,'$.evidence.facts') evidence_facts_json,
+          json_extract(j.checkpoint_json,'$.sourceFailures') source_failures_json
+        FROM batch_items i JOIN places p ON p.id=i.place_id JOIN content_jobs j ON j.id=i.text_job_id
+        WHERE i.batch_id=? AND i.place_id=?`).get(batchId,placeId);
+      if(!row)return null;
+      const jobId=row.text_job_id;
+      const found=db.prepare(`SELECT json_extract(s.value,'$.url') url,json_extract(s.value,'$.title') title
+        FROM content_jobs j,json_each(j.checkpoint_json,'$.research.sources') s WHERE j.id=? ORDER BY s.key`).all(jobId);
+      const fetched=db.prepare(`SELECT json_extract(s.value,'$.id') id,json_extract(s.value,'$.url') url,json_extract(s.value,'$.title') title,
+          json_extract(s.value,'$.publisher') publisher,length(json_extract(s.value,'$.text')) chars
+        FROM content_jobs j,json_each(j.checkpoint_json,'$.sources') s WHERE j.id=? ORDER BY s.key`).all(jobId);
+      const rejection=decode(row.rejection_json);
+      const model=rejection?{outcome:"rejected",identityConfirmed:rejection.identityConfirmed??null,addressConfirmed:rejection.addressConfirmed===true,
+          placeName:rejection.placeName??null,resolvedAddress:rejection.resolvedAddress??null,identityNote:rejection.identityNote??null,facts:rejection.facts??[]}
+        :row.evidence_place_name!=null?{outcome:"accepted",identityConfirmed:true,addressConfirmed:row.evidence_address_confirmed!==0,
+          placeName:row.evidence_place_name,resolvedAddress:row.evidence_resolved_address,identityNote:row.evidence_identity_note??null,
+          facts:(decode(row.evidence_facts_json)??[]).map(fact=>({claim:fact.claim,kind:fact.kind??null,subjectRelation:fact.subjectRelation??null,evidence:fact.evidence}))}
+        :null;
+      return {placeId:row.id,name:row.name,address:row.address,location:{lat:row.lat,lon:row.lon},tags:decode(row.tags_json)??{},
+        state:row.state,error:decode(row.error_json),
+        job:{state:row.job_state,attempts:Number(row.attempts),maxAttempts:Number(row.max_attempts),updatedAt:row.job_updated_at},
+        sources:diagnosisSources(found,fetched,decode(row.source_failures_json)??[]),model};
     },
     getBatch(id) {const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
       const items=db.prepare(`SELECT i.*,p.name,p.address FROM batch_items i JOIN places p ON p.id=i.place_id WHERE i.batch_id=? ORDER BY p.name,p.id`).all(id)

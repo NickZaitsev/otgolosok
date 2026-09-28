@@ -182,6 +182,10 @@ test("admin manages content batches and revocable worker credentials",async t=>{
   assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?status=unknown`)).status,400);
   assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items?page=1`)).status,400);
   assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/11111111-1111-4111-8111-111111111111/items`)).status,404);
+  const detail=await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items/osm:node:8`);assert.equal(detail.status,200);
+  assert.deepEqual(/** @type {any} */ (await detail.json()).item.location,{lat:55.75,lon:37.61});
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items/osm:node:9`)).status,404);
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}/items/osm:node:8?full=1`)).status,400);
   const places=/** @type {any} */ (await (await fetch(`${f.base}/api/story-admin/content/places?limit=1&offset=0&status=all`)).json());
   assert.equal(places.total,1);assert.equal(places.places[0].textStatus,"none");
 });
