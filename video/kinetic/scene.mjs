@@ -1,6 +1,6 @@
 // Кинетический рекламный ролик Отголоска: вся анимация — чистая функция времени
 // `seek(t)`, без CSS-переходов и таймеров, поэтому любой кадр воспроизводим.
-// Скрипт scripts/render-kinetic-video.mjs листает кадры и снимает их Playwright.
+// Скрипт scripts/render-kinetic-video.mjs (через scripts/lib/frame-render.mjs) листает кадры и снимает их Playwright.
 import {
   FPS, HEIGHT, SCENES, VOICE, WIDTH,
   clamp, ease, hash, lerp, parsePolyline, polyline, progress, scene, spring, stripesPolygon,
@@ -515,13 +515,13 @@ async function ready() {
   seek(0);
 }
 
-window.kinetic = {ready: ready(), seek, width: WIDTH, height: HEIGHT};
+window.motionScene = {ready: ready(), seek, width: WIDTH, height: HEIGHT};
 
 if (new URLSearchParams(location.search).has("preview")) {
   document.body.classList.add("preview");
   document.documentElement.style.setProperty("--fit", String(Math.min(innerWidth / WIDTH, innerHeight / HEIGHT) * 0.96));
   const from = Number(new URLSearchParams(location.search).get("t") ?? 0);
-  await window.kinetic.ready;
+  await window.motionScene.ready;
   const began = performance.now();
   const loop = (now) => {
     seek((from + (now - began) / 1000) % SCENES.at(-1).end);

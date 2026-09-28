@@ -9,16 +9,18 @@
 
 ## Как устроено
 
-- `video/kinetic/timeline.mjs` — хронометраж сцен, фрагмент голоса и чистая
-  математика (кривые, пружина, полосы для clip-path, ломаная маршрута). Общий
-  для страницы и Node; тест — `src/video/kinetic-timeline.test.ts`.
+- `video/kinetic/timeline.mjs` — хронометраж сцен и фрагмент голоса; чистая
+  математика (кривые, пружина, полосы для clip-path, ломаная маршрута) живёт в
+  `video/shared/motion.mjs` и реэкспортируется отсюда. Тест —
+  `src/video/kinetic-timeline.test.ts`.
 - `video/kinetic/scene.mjs` — сцена на обычном DOM/SVG. Всё движение задаётся
   только в `seek(t)`: никаких CSS-transition, `@keyframes`, таймеров и
   `Math.random`, иначе кадры перестанут быть воспроизводимыми.
-- `scripts/render-kinetic-video.mjs` — локальный HTTP-сервер (страница, шрифты
-  `@fontsource`, подготовленные материалы), Playwright Chromium снимает PNG
-  каждого кадра и передаёт их в stdin FFmpeg. Любая ошибка страницы, 4xx/5xx
-  ресурса или незагруженный шрифт останавливают рендер.
+- `scripts/render-kinetic-video.mjs` — готовит данные и звук, а кадры снимает
+  общий `scripts/lib/frame-render.mjs`: локальный HTTP-сервер (страница, шрифты
+  `@fontsource`, `video/shared/`), Playwright Chromium, PNG в stdin FFmpeg. Страница
+  выставляет `window.motionScene`. Любая ошибка страницы, 4xx/5xx ресурса или
+  незагруженный шрифт останавливают рендер.
 
 ## Данные
 
