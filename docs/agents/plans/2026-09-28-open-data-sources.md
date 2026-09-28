@@ -1,7 +1,9 @@
 # План: открытые данные data.mos.ru как источник для текстов
 
-Status: in progress since 2026-09-28.
+Status: implemented 2026-09-28 in branch `main`. Pilot 30/30 ready (+3/3 retries); texts await editor approval.
 
+> Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
+>
 > Заметка для агентов: план — снимок на дату выше. Факты о коде ниже проверены 28.09.2026,
 > но перед правкой перепроверьте их по актуальному коду.
 
@@ -195,3 +197,11 @@ Status: in progress since 2026-09-28.
   уже готовые тексты не пересчитываются автоматически.
 - Связь с планом ансамблей (`2026-09-28-ensemble-context.md`): «Мишка с мячом» может пройти здесь фактами
   об объекте без правила ансамбля. Планы независимы, порядок выполнения выбирает пользователь.
+
+## Итог реализации (28.09.2026)
+
+- Условия портала подтверждены пользователем: использование разрешено со ссылкой на первоисточник.
+- Атрибуция для слушателя — строка «Источник: Портал открытых данных Правительства Москвы» в карточке истории на карте
+  (`src/features/explore/source-attribution.ts`); в прогулках источники со ссылками показывались и раньше.
+- Пилоту выставлен приоритет 5: перед ним в очереди стояло 377 заданий.
+- Результаты пилота — `docs/agents/data-mos-open-data.md`, раздел «Пилот 28.09.2026».
