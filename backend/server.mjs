@@ -526,10 +526,11 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
       json(res,404,{error:{message:"Страница не найдена."}});
     } catch(error) {
       if(res.headersSent||res.destroyed)return;
-      const status=["QUEUE_FULL","DAILY_LIMIT","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:error.code==="AUDIO_STORAGE_FULL"?507:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY"].includes(error.code)?409:
+      const status=["QUEUE_FULL","DAILY_LIMIT","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:error.code==="AUDIO_STORAGE_FULL"?507:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY","STORAGE_LIMIT"].includes(error.code)?409:
         error.code==="AUDIO_TOO_LARGE"?413:["BAD_AUDIO_TYPE","BAD_AUDIO","AUDIO_CHECKSUM","AUDIO_DURATION"].includes(error.code)?422:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?400:500;
       if(status===500) logs?.captureException(error,{operation:"API request",context:{method:req.method,status}});
-      json(res,status,{error:["BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?{code:error.code,message:"Invalid request or draft."}:safeError(error)});
+      // Account storage limits carry a user-facing message written by the account store.
+      json(res,status,{error:["BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?{code:error.code,message:"Invalid request or draft."}:error.code==="STORAGE_LIMIT"?{code:error.code,message:error.message}:safeError(error)});
     }
   });
   server.requestTimeout=310000;server.headersTimeout=10000;server.keepAliveTimeout=5000;
@@ -549,7 +550,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const port=Number(process.env.PORT??4175);
   const appOrigin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
   const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production"});
-  const accountStore=createAccountStore(authRuntime.database);
+  const accountStore=createAccountStore(authRuntime.accountDatabase);
   const osmGeocoder=openOsmGeocoder(join(directory,"osm-addresses.sqlite"));
   const app=createApp({store,provider,osmGeocoder,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));

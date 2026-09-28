@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { createApp } from "./server.mjs";
 import { createStore } from "./store.mjs";
 import { createAuth } from "./auth.mjs";
-import { createAccountStore } from "./account-store.mjs";
+import { createAccountStore, MAX_FAVORITES_PER_USER } from "./account-store.mjs";
 import { sessionCsrfToken } from "./auth.mjs";
 
 const origin="https://account.test",secret="account-api-test-secret",sessionId="session-1";
@@ -25,9 +25,9 @@ async function realAccountFixture(t) {
   const runtime=await createAuth({databasePath:":memory:",baseURL:origin,secret:"account-http-walk-secret-longer-than-32-characters",production:false});
   const now=new Date().toISOString();
   runtime.database.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("user-1","Пользователь","private@example.test",1,now,now);
-  const accountStore=createAccountStore(runtime.database);
+  const accountStore=createAccountStore(runtime.accountDatabase);
   t.after(()=>runtime.close());
-  return listen(t,{accountStore});
+  return {...await listen(t,{accountStore}),runtime};
 }
 
 test("ordinary users cannot use editor API while an editor session can",async t=>{
@@ -62,7 +62,7 @@ test("generation idempotency is bound to the normalized request and quota",async
   const runtime=await createAuth({databasePath:":memory:",baseURL:origin,secret:"account-idempotency-secret-longer-than-32-characters",production:false});
   t.after(()=>runtime.close());const now=new Date().toISOString();
   runtime.database.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("user-1","user","user@example.test",1,now,now);
-  const accountStore=createAccountStore(runtime.database),f=await listen(t,{accountStore});
+  const accountStore=createAccountStore(runtime.accountDatabase),f=await listen(t,{accountStore});
   const post=(address,key)=>fetch(f.base+"/api/story-jobs",{method:"POST",headers:f.headers,body:JSON.stringify({address,idempotencyKey:key})});
   const key="same-request-key",first=await post("Arbat street, 1",key),firstValue=await first.json();
   assert.equal(first.status,200);const repeated=await post("Arbat street, 1",key);
@@ -77,13 +77,24 @@ test("generation idempotency is bound to the normalized request and quota",async
 test("generation intent survives a lost response and rejects legacy keys",async t=>{
   const runtime=await createAuth({databasePath:":memory:",baseURL:origin,secret:"account-intent-secret-longer-than-32-characters",production:false});t.after(()=>runtime.close());
   const now=new Date().toISOString();runtime.database.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("u1","User","u1@example.test",1,now,now);
-  const accountStore=createAccountStore(runtime.database);
+  const accountStore=createAccountStore(runtime.accountDatabase);
   assert.deepEqual(accountStore.beginGeneration("u1","durable-key","create","fingerprint",1,6),{created:true,jobId:null});
   accountStore.completeGeneration("u1","durable-key","job-1");
   assert.deepEqual(accountStore.beginGeneration("u1","durable-key","create","fingerprint",1,6),{created:false,jobId:"job-1"});
   assert.throws(()=>accountStore.beginGeneration("u1","durable-key","create","different",1,6),{code:"CONFLICT"});
   runtime.database.prepare("INSERT INTO user_generation_requests VALUES(?,?,?,?,?,?)").run("old","u1","old-job","create","legacy-key",now);
   assert.throws(()=>accountStore.beginGeneration("u1","legacy-key","create","fingerprint",1,6),{code:"CONFLICT"});
+});
+
+test("account storage limits reach the client as 409 with a readable message, a personal quota as 429", async t => {
+  const f=await realAccountFixture(t);
+  const insert=f.runtime.accountDatabase.prepare("INSERT INTO user_favorites VALUES(?,?,?,?)"),time=new Date().toISOString();
+  f.runtime.accountDatabase.exec("BEGIN");for(let index=0;index<MAX_FAVORITES_PER_USER;index++)insert.run("user-1","story",`seed-${index}`,time);f.runtime.accountDatabase.exec("COMMIT");
+  const full=await fetch(`${f.base}/api/me/favorites/walk/one-too-many`,{method:"PUT",headers:f.headers});
+  assert.equal(full.status,409);
+  assert.deepEqual((await full.json()).error,{code:"STORAGE_LIMIT",message:`В избранном может быть не больше ${MAX_FAVORITES_PER_USER} записей.`});
+  const existing=await fetch(`${f.base}/api/me/favorites/story/seed-0`,{method:"PUT",headers:f.headers});
+  assert.equal(existing.status,200);
 });
 
 test("account walk API returns cards, a safe view and a revocable current shared revision", async t => {

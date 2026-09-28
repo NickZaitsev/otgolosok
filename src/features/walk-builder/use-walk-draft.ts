@@ -313,6 +313,8 @@ export function useWalkDraft() {
         accountOperationKey.current = key;
         localStorage.setItem(keyName, key);
         const data = await accountApi("/api/me/walks",{method:"POST",body:JSON.stringify({title,snapshot,idempotencyKey:key})});
+        // The server assigns a fresh ID when the document's ID belongs to another account.
+        if (data.walk.snapshot) documentRef.current = data.walk.snapshot;
         setServerWalk({id:data.walk.id,revision:data.walk.revision});
         localStorage.setItem("otgolosok:walk:active-account",data.walk.id);
         localStorage.setItem("otgolosok:walk:active-revision",String(data.walk.revision));
