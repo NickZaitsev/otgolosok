@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { batchItemStates, contentErrorOptions, contentStatusOptions, contentStatusStates, draftCheck, initialDraft, pageCount, pageRange, safeSourceLink, type Draft, type Fact, type Job } from "./model";
+import { audioBackfillNotice, batchItemStates, contentErrorOptions, contentStatusOptions, contentStatusStates, draftCheck, initialDraft, pageCount, pageRange, safeSourceLink, type Draft, type Fact, type Job } from "./model";
 
 const facts: Fact[] = Array.from({ length: 5 }, (_, index) => ({
   id: `f${index + 1}`, claim: "Verified claim", interesting: true, evidence: [],
@@ -90,4 +90,17 @@ describe("подписи постраничной навигации", () => {
   it.each([[0, 1], [1, 1], [50, 1], [51, 2], [6107, 123]] as const)("считает страницы для %i записей", (total, pages) => {
     expect(pageCount(total, 50)).toBe(pages);
   });
+});
+
+describe("bulk voicing notice", () => {
+  const base = { queued: 0, retried: 0, alreadyQueued: 0, failed: 0, inspected: 0, hasMore: false, awaitingApproval: 0 };
+  it.each([
+    ["nothing to voice", base, "Утверждённых текстов без аудио нет — ставить в очередь нечего."],
+    ["nothing approved, some waiting for an editor", { ...base, awaitingApproval: 95 },
+      "Утверждённых текстов без аудио нет — ставить в очередь нечего. Ждут утверждения, в очередь не ставятся: 95."],
+    ["queued with more pages", { ...base, queued: 500, inspected: 500, hasMore: true },
+      "В очередь поставлено: 500. Повторено: 0. Проверено: 500 — нажмите ещё раз для продолжения."],
+    ["partial failures and waiting texts", { ...base, queued: 2, retried: 1, failed: 1, inspected: 4, awaitingApproval: 3 },
+      "В очередь поставлено: 2. Повторено: 1. Проверено: 4. Ошибок: 1. Ждут утверждения, в очередь не ставятся: 3."],
+  ])("%s", (_name, result, expected) => { expect(audioBackfillNotice(result)).toBe(expected); });
 });

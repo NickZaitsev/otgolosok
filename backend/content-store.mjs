@@ -384,7 +384,12 @@ export function createContentStore({db,now,transaction}) {
       // Aggregate inside SQLite: checkpoints hold fetched sources and together exceed the service heap.
       const usage=Number(db.prepare(`SELECT total(json_extract(checkpoint_json,'$.usageTokens')) n FROM content_jobs
         WHERE json_valid(checkpoint_json) AND json_type(checkpoint_json,'$.usageTokens') IN ('integer','real')`).get().n);
-      return {places,texts,audio,jobs,external,oldestTextQueuedAt:oldest,textUsageTokens:usage};
+      return {places,texts,audio,awaitingApproval:this.countTextsAwaitingApproval(),jobs,external,oldestTextQueuedAt:oldest,textUsageTokens:usage};
+    },
+    /** Texts the bulk voicing skips until an editor approves them: no approved story and no audio yet. */
+    countTextsAwaitingApproval() {
+      return Number(db.prepare(`SELECT count(*) n FROM place_texts t JOIN places p ON p.id=t.place_id
+        WHERE p.archived=0 AND t.approved_story_json IS NULL AND (t.audio_json IS NULL OR t.audio_json='null')`).get().n);
     },
     setBatchPriority(id,priority) {if(!Number.isSafeInteger(priority)||priority<0||priority>1000)throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
       const timestamp=iso(now);db.prepare(`UPDATE content_jobs SET priority=?,updated_at=? WHERE id IN

@@ -91,7 +91,8 @@ const api: AdminApi = async <T,>(path: string): Promise<T> => {
   }
   const responses: Record<string, unknown> = {
     "/content/batches": { batches: [batch] },
-    "/content/stats": { places: 2, texts: 1, audio: 0 },
+    "/content/stats": { places: 2, texts: 1, audio: 0, awaitingApproval: 1 },
+    "/content/audio/bulk": { queued: 0, retried: 0, alreadyQueued: 0, failed: 0, skipped: 0, inspected: 0, hasMore: false, awaitingApproval: 1 },
     "/content/workers": { transport, workers: configuredWorkers, heartbeats: [] },
     "/content/audio": { audioJobs: [] },
   };
@@ -206,6 +207,18 @@ describe("подключение TTS", () => {
     await click(buttons("Открыть")[0]);
     expect(container.textContent).toContain("нет online-воркера TTS");
     expect(buttons("Выпустить ключ")).toHaveLength(1);
+  });
+});
+
+describe("массовая озвучка", () => {
+  it("показывает неутверждённые тексты и объясняет, почему очередь не пополнилась", async () => {
+    transport = "http";
+    await click(buttons("Обновить")[0]);
+    const audioStat = [...container.querySelectorAll(".content-stats > div")].find(item => item.querySelector("dt")?.textContent === "Аудио")!;
+    expect(audioStat.textContent).toContain("ждут утверждения 1");
+    await click(buttons("Озвучить тексты без аудио")[0]);
+    expect(container.querySelector('[role="status"]')?.textContent)
+      .toBe("Утверждённых текстов без аудио нет — ставить в очередь нечего. Ждут утверждения, в очередь не ставятся: 1.");
   });
 });
 

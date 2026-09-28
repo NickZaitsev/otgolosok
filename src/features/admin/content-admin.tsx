@@ -2,9 +2,9 @@
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import {
-  batchItemStates, batchStates, contentErrorOptions, contentStatusOptions, pageCount, pageRange,
+  audioBackfillNotice, batchItemStates, batchStates, contentErrorOptions, contentStatusOptions, pageCount, pageRange,
   placeStatusOptions, placeTextStatuses, retryableItemStates,
-  type AdminApi, type AdminRun, type ContentAudioJob, type ContentBatch, type ContentBatchItemDetail, type ContentBatchItemPage,
+  type AdminApi, type AdminRun, type AudioBackfillResult, type ContentAudioJob, type ContentBatch, type ContentBatchItemDetail, type ContentBatchItemPage,
   type ContentErrorFilter, type ContentHeartbeat, type ContentPlace, type ContentPlaceStatusFilter,
   type ContentPlaceSummary, type ContentStatusFilter, type ContentWorker, type Draft,
 } from "./model";
@@ -15,7 +15,7 @@ import "./content-admin.css";
 
 type ContentAdminProps = { api: AdminApi; busy: string; run: AdminRun; onDirtyChange: (dirty: boolean) => void };
 type Stats = {
-  places: number; texts: number; audio: number;
+  places: number; texts: number; audio: number; awaitingApproval?: number;
   jobs?: Record<string, number>; external?: Record<string, number>;
   textUsageTokens?: number; oldestTextQueuedAt?: string | null;
   audioQueue?: { oldestQueuedAt: string | null; averageAttemptSec: number | null; artifactBytes: number; artifacts: number };
@@ -232,7 +232,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
       {stats ? <dl className="content-stats">
         <div><dt>Мест в каталоге</dt><dd>{numbers.format(stats.places)}</dd></div>
         <div><dt>Текстов</dt><dd>{numbers.format(stats.texts)}</dd></div>
-        <div><dt>Аудио</dt><dd>{numbers.format(stats.audio)}</dd></div>
+        <div><dt>Аудио</dt><dd>{numbers.format(stats.audio)}</dd>{stats.awaitingApproval ? <span>ждут утверждения {numbers.format(stats.awaitingApproval)}</span> : null}</div>
         <div><dt>Очередь текстов</dt><dd>{numbers.format(stats.jobs?.queued ?? 0)}</dd><span>в работе {numbers.format(stats.jobs?.working ?? 0)}</span></div>
         <div><dt>Очередь аудио</dt><dd>{numbers.format(stats.external?.queued ?? 0)}</dd><span>у воркеров {numbers.format(stats.external?.leased ?? 0)}</span></div>
         <div><dt>Средняя попытка TTS</dt><dd>{stats.audioQueue?.averageAttemptSec == null ? "—" : <>{stats.audioQueue.averageAttemptSec.toFixed(1)}<small> с</small></>}</dd></div>
@@ -245,12 +245,12 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
       <section className="admin-review content-audio-backfill" aria-labelledby="content-audio-backfill-title">
         <div className="admin-section-head"><div>
           <h3 id="content-audio-backfill-title">Массовая озвучка</h3>
-          <p className="admin-meta">Поставляет в очередь утверждённые тексты без готового аудио. Повторный запуск не создаёт дубликаты.</p>
+          <p className="admin-meta">Поставляет в очередь утверждённые тексты без готового аудио. Неутверждённые тексты ждут редактора и не озвучиваются. Повторный запуск не создаёт дубликаты.</p>
         </div>
           <button className="admin-primary" disabled={disabled || ttsTransport === "worker" && !workerOnline} onClick={() => void run("Постановка озвучки…", async signal => {
-            const result = await api<{ queued: number; retried: number; alreadyQueued: number; failed: number; inspected: number; hasMore: boolean }>("/content/audio/bulk", signal, { limit: 500 });
+            const result = await api<AudioBackfillResult>("/content/audio/bulk", signal, { limit: 500 });
             await loadOverview(signal);
-            setNotice(`В очередь поставлено: ${result.queued}. Повторено: ${result.retried}. Проверено: ${result.inspected}${result.hasMore ? " — нажмите ещё раз для продолжения" : ""}.`);
+            setNotice(audioBackfillNotice(result));
           })}>Озвучить тексты без аудио</button>
         </div>
         {workerStatusLoaded && ttsTransport === "worker" && !workerOnline && <p className="admin-callout">Нет online-воркера TTS. Сначала подключите воркер.</p>}
