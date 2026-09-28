@@ -7,7 +7,7 @@ RUN corepack enable && pnpm install --prod --frozen-lockfile
 COPY backend/requirements.txt ./
 RUN python3 -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
 RUN mkdir -p /data && chown node:node /data
-COPY --chown=node:node backend/*.mjs ./
+COPY --chown=node:node backend/*.mjs backend/*.json ./
 COPY --chown=node:node backend/normalize-tts.py ./
 USER node
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3000 DATA_DIR=/data PATH=/opt/venv/bin:$PATH

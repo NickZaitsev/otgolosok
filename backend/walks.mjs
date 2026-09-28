@@ -1,4 +1,4 @@
-import discoveryCatalog from './walk-discovery-catalog.mjs';
+import discoveryCatalog from './walk-discovery-catalog.json' with { type: 'json' };
 
 const fail = (code) => Object.assign(new Error(code), {code});
 const inBox = (p) => p && typeof p.lat === 'number' && typeof p.lon === 'number' && Number.isFinite(p.lat) && Number.isFinite(p.lon) && p.lat >= 55.48 && p.lat <= 55.98 && p.lon >= 37.30 && p.lon <= 37.95;

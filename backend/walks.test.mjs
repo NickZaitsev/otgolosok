@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createWalkPlanner, selectChain } from './walks.mjs';
-import discoveryCatalog from './walk-discovery-catalog.mjs';
+import discoveryCatalog from './walk-discovery-catalog.json' with { type: 'json' };
 
 const start={address:'Москва, Арбат, 1',location:{lat:55.75,lon:37.60}};
 const stop=n=>({address:`Москва, Арбат, ${n+2}`,location:{lat:55.75+n*0.001,lon:37.60}});

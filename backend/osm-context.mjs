@@ -1,4 +1,4 @@
-import discoveryCatalog from "./walk-discovery-catalog.mjs";
+import discoveryCatalog from "./walk-discovery-catalog.json" with { type: "json" };
 
 const text = value => typeof value === "string" ? value.trim() : "";
 const unique = values => [...new Set(values.filter(Boolean))];
