@@ -1,6 +1,6 @@
 # Plan: Automatic walks fill the chosen duration
 
-Status: in progress since 2026-09-28.
+Status: implemented 2026-09-28 in branch `feat/auth-account-osm-pipeline`. End-to-end check used a Valhalla-like mock router and Playwright with a mocked `/api/walk-plan`; a run against real Valhalla (Docker) was not possible locally.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -58,12 +58,12 @@ Add a pure function (exported for tests or tested through `planWalk`):
 - Choice among eligible: those within `distance(current,c) <= max(spacingM*1.5, spacingM+150)` are ordered by `contentRank` desc, `catalogRank` desc, distance asc; if that window is empty, take the nearest eligible. With `spacingM = 0` this degrades to today's nearest-neighbour plus rank priority inside a 150 m window.
 - Stop when `stopLimit` reached or nothing eligible.
 
-In `run()`, replace the no-destination branch (nearest-neighbour + trim loop) with a bounded search:
-- `budget = minutes*60`, `floor = MIN_BUDGET_SHARE*budget`, `straightBudgetM = minutes*WALK_METERS_PER_MINUTE/STRAIGHT_TO_WALK`.
-- Start `spacingM = straightBudgetM/(stopLimit + (loop?1:0))`; search interval `[0, straightBudgetM/2]`.
-- Each attempt: `selectChain` → if <2 stops, treat as "too short" (lower spacing); else `measureRoute`. `fits && seconds >= floor` → return immediately. `fits && seconds < floor` → remember as best if longer than current best, raise spacing (`lo = spacingM`). Not `fits` (over budget or detour) or `null` → lower spacing (`hi = spacingM`). Next `spacingM = (lo+hi)/2`. Skip an attempt whose chain equals an already measured chain (no duplicate router calls).
-- At most `MAX_AUTO_ROUTE_ATTEMPTS` router calls in total, all inside the existing `timeoutMs` deadline.
-- If no fitting route after the search: fall back to the existing "drop last stop" trimming on the `spacingM = 0` chain, counting against the same attempt cap; if the best-so-far exists, return it instead of trimming.
+In `run()`, replace the no-destination branch (nearest-neighbour + trim loop) with `fillBudget(candidates, stopLimit)` (as built):
+- `budget = minutes*60`, `floor = MIN_BUDGET_SHARE*budget`, initial `straightBudgetM = minutes*WALK_METERS_PER_MINUTE/STRAIGHT_TO_WALK`.
+- First measure the `spacingM = 0` chain (today's nearest-neighbour plus rank priority), so the result is never shorter than before. If `selectChain` yields <2 stops under the straight-line estimate, rebuild that chain with `straightBudgetM = Infinity` and let the router decide (sparse areas keep the old behaviour instead of failing without a router call).
+- That chain fits and reaches the floor → return. It is over budget or unusable → the old "drop last stop" trimming (natural bound: `stopLimit - 2` extra calls), then `WALK_NOT_FOUND`.
+- Otherwise bisection on spacing: start `spacingM = straightBudgetM/(stopLimit + (loop?1:0))`, interval `[0, straightBudgetM/2]`. Each step: `selectChain`; <2 stops or `null` or detour/distance rejection → `hi = spacingM`; over the time budget → **recalibrate** `straightBudgetM = min(0.97*straightBudgetM, 0.97*straightLength(chain)*budget/seconds)` and retry at the same spacing; fits and reaches the floor → return; fits but short → keep as best if longer, `lo = spacingM`. Every usable measurement also raises `straightBudgetM` to the calibrated value when streets prove straighter than assumed (without this, chains capped by the estimate stayed just above or well below the budget).
+- Measured chains are cached by their address list (no duplicate router calls); at most `MAX_AUTO_ROUTE_ATTEMPTS` (8) distinct routes including the first, at most `MAX_SPACING_STEPS` (16) steps, stop when `hi - lo < 20 m`. Return the best fitting walk.
 - Errors unchanged: `WALK_STOPS_NOT_FOUND` when fewer than 2 candidates survive discovery filters; `WALK_NOT_FOUND` when nothing fits within the budget.
 - Keep `discovering=false` set before routing so router failures report `WALK_UNAVAILABLE`.
 
@@ -71,8 +71,9 @@ Destination and manual branches are untouched.
 
 ### 3. Frontend shortfall note
 - `src/features/walk-builder/model.ts`: add `MIN_BUDGET_SHARE = 0.75` (comment that it mirrors the backend constant in `backend/walks.mjs`) and a pure helper `routeShortfall(route: Plan, minutes: number): number | null` returning `route.walkingMinutes` when `< MIN_BUDGET_SHARE*minutes`, else `null`.
-- `walk-creation-panel.tsx`: under `.creation-summary`, when `selection === "auto"`, `!draft.destination` and `routeShortfall(...)` is not null, render a muted note: «Рядом нашлось мест только на {N} мин из {minutes}. Выберите другое начало или добавьте остановки вручную.» Use existing classes / design tokens (`ui-muted` or the panel's existing note style); no new component.
-- Known limitation: `selection` is not persisted, so after reload a manual route defaults to `auto`; the note may then appear for a short manual loop. Acceptable; mention in the doc update rather than persisting new state.
+- `use-walk-draft.ts`: `selection` cannot be used — `plan()` switches it to `"manual"` right after a successful build to pin the stops (the original plan missed this). Added non-persisted `autoRoute` state: set to `selection === "auto"` after a successful build, reset on `edit()` and at the start of `plan()`; exported from the hook.
+- `walk-creation-panel.tsx`: under `.creation-summary`, when `autoRoute`, `!draft.destination` and `routeShortfall(...)` is not null, render `<p className="ui-muted creation-shortfall">` «Рядом нашлось мест только на {N} мин из {minutes}. Выберите другое начало или добавьте остановки вручную.» (`.creation-shortfall` spacing added to `walk-creation-panel.css`).
+- Since `autoRoute` is not persisted, a restored route shows no note (no false positives for manual routes).
 
 ### 4. Docs
 Update `docs/agents/walk-routing-selection.md` (Russian): the chosen time is walking time; automatic routes without a destination aim for ≥75 % of it by spacing stops, with a bounded number of Valhalla attempts; ready content wins within the spacing window; a shorter route is returned with a UI note when the area is sparse.
@@ -88,6 +89,9 @@ Backend (`node --test backend/*.test.mjs`), in `backend/walks.test.mjs`, with a 
 - Update pinned tests (`over-budget routes shorten` call count, `stop-cap` expectations) only where the new algorithm legitimately changes them; keep their intent (no fabricated fallback, cap respected).
 
 Frontend (`vitest`): `routeShortfall` table tests — boundary at exactly 75 %, below, above, `walkingMinutes === minutes`.
+Playwright (`e2e/interface.spec.ts`): an automatic 60-minute loop with a mocked `/api/walk-plan` shows the note at 18 min and hides it at 52 min.
+
+As built, backend tests also cover: dense grid × `{loop,open}` × `{30,60,90}` × detour `{1.3,1.6}`, table-driven `selectChain` rank/spacing/budget cases, sparse area returns the longest fitting walk, bounded router calls, an unusable spaced walk not aborting the search, and far landmarks still checked by the router.
 
 Run `npm run check` (or the project's lint + type-check + tests) before committing.
 
