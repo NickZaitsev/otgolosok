@@ -231,6 +231,16 @@ export function createStore(
     });
   }
 
+  // A job aborted by a graceful shutdown goes back to the queue without using up
+  // an attempt, so it resumes from its checkpoints after the restart for free.
+  function requeueInterrupted(id) {
+    return transaction(() => {
+      const job = decode(findById.get(id));
+      if (!job || job.stage !== "failed") return null;
+      return save({ ...job, stage: "queued", error: null, attempts: Math.max(0, job.attempts - 1), revision: job.revision + 1, updatedAt: isoNow(now) });
+    });
+  }
+
   // Paid generation is limited per user by the account store; the job store only
   // bounds how much work is queued or running at once.
   function checkCapacity() {
@@ -703,6 +713,7 @@ export function createStore(
     },
 
     recoverInterrupted,
+    requeueInterrupted,
 
     close() {
       if (!closed) {

@@ -160,6 +160,8 @@ export function startWorker(options) {
     const job = options.store.claimNext({ audioOnly: !options.provider });
     if (!job) return;
     running = runJob(job,{...options,signal:controller.signal}).then(result => {
+      // stop() aborted the job: it is resumed after the restart, not failed.
+      if(stopped&&result.stage==="failed"){options.store.requeueInterrupted(result.id);return;}
       if(result.stage==="failed") options.logs?.captureMessage(result.error?.code??"Job failed","error",{operation:"runJob",context:{jobId:result.id,kind:result.kind,code:result.error?.code}});
     }).catch(error => {
       // Only infrastructure/store failure escapes runJob; startup recovery handles it.

@@ -15,7 +15,7 @@ import { createWalkPlanner } from "./walks.mjs";
 import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
 import { validateWalkResearch, publicWalkResearch, walkResearchKey } from "./walk-research.mjs";
 import { createBackendLogger } from "./logs.mjs";
-import { ingestAudio } from "./audio-ingest.mjs";
+import { ingestAudio, sweepAudioTemporaries } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
 import { openOsmGeocoder } from "./osm-geocoder.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword } from "./auth.mjs";
@@ -84,7 +84,7 @@ export function parseUserDailyLimit(value) {
   return Number(value);
 }
 
-export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6}) {
+export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
@@ -543,7 +543,18 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
     }
   });
   server.requestTimeout=310000;server.headersTimeout=10000;server.keepAliveTimeout=5000;
-  return {server,close:async()=>{await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop()]);osmGeocoder?.close();await new Promise((done)=>server.close(done));server.closeAllConnections();await closeAuth();}};
+  // Stop accepting requests, let in-flight ones finish within the grace period,
+  // then stop the workers (aborted jobs are requeued) and close the databases.
+  const close=async()=>{
+    const drained=new Promise(done=>server.close(()=>done()));
+    server.closeIdleConnections();
+    let timer;
+    await Promise.race([drained,new Promise(done=>{timer=setTimeout(done,shutdownGraceMs);timer.unref?.();})]);
+    clearTimeout(timer);server.closeAllConnections();await drained;
+    await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop()]);
+    osmGeocoder?.close();await closeAuth();
+  };
+  return {server,close};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
@@ -562,8 +573,17 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production"});
   const accountStore=createAccountStore(authRuntime.accountDatabase);
   const osmGeocoder=openOsmGeocoder(join(directory,"osm-addresses.sqlite"));
+  try {const swept=await sweepAudioTemporaries(join(directory,"audio"));if(swept)console.log(`Removed ${swept} abandoned temporary audio files`);}
+  catch(error) {logs?.captureException(error,{operation:"sweepAudioTemporaries"});}
   const app=createApp({store,provider,osmGeocoder,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close,userDailyLimit});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
-  for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});
+  for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{
+    // A second signal means the operator does not want to wait for the drain.
+    if(stopping){console.error("Forced shutdown");process.exit(1);}
+    stopping=true;
+    try {await app.close();} catch(error) {console.error("Graceful shutdown failed");logs?.captureException(error,{operation:"shutdown"});}
+    try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}
+    store.close();process.exit(0);
+  });
 }

@@ -12,6 +12,8 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    # Leaves time for in-flight requests (20 s drain) and for requeueing an active job.
+    stop_grace_period: 30s
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0

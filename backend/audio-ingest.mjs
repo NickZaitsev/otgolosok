@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { createWriteStream } from "node:fs";
-import { mkdir, readFile, rename, rm, stat, statfs } from "node:fs/promises";
+import { mkdir, readdir, readFile, rename, rm, stat, statfs } from "node:fs/promises";
 import { join } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { promisify } from "node:util";
@@ -9,6 +9,24 @@ import { failure, sha256 } from "./domain.mjs";
 
 const exec=promisify(execFile);
 let activeUploads=0;
+
+// Temporary files of uploads and encodings that a crash or kill left behind.
+const TEMPORARY=/^(\.upload-.+|\.encoded-.+\.mp3|.+\.source\.tmp|.+\.encoded\.tmp\.mp3|.+\.json\.tmp)$/;
+
+/** Removes abandoned temporary audio files older than `olderThanMs`; returns how many were removed. */
+export async function sweepAudioTemporaries(directory,{olderThanMs=60*60*1000,now=Date.now()}={}) {
+  let names;
+  try {names=await readdir(directory);} catch(error) {if(error.code==="ENOENT")return 0;throw error;}
+  let removed=0;
+  for(const name of names.filter(name=>TEMPORARY.test(name))) {
+    const path=join(directory,name);
+    try {
+      if(now-(await stat(path)).mtimeMs<olderThanMs)continue;
+      await rm(path,{force:true});removed++;
+    } catch(error) {if(error.code!=="ENOENT")throw error;}
+  }
+  return removed;
+}
 
 export async function ingestAudio(req,directory,{maximumBytes=64*1024*1024,timeoutMs=300000,signal,maximumConcurrent=2,minimumFreeBytes=128*1024*1024,expectedUploadSha256,execImpl=exec,statfsImpl=statfs}={}) {
   if(activeUploads>=maximumConcurrent)throw failure("UPLOAD_BUSY");activeUploads++;
