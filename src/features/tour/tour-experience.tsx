@@ -43,6 +43,8 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const [wakeStatus, setWakeStatus] = useState<WakeLockStatus>("idle");
   const [showSources, setShowSources] = useState(false);
   const [chapterIndex, setChapterIndex] = useState(0);
+  // The chapter the last walk stopped at: the map reopens with its card.
+  const [stoppedChapter, setStoppedChapter] = useState<number>();
   const [isReplay, setIsReplay] = useState(false);
   // Diagnostics are for field testing only: ?replay=… or ?debug=1.
   const [showDiagnostics, setShowDiagnostics] = useState(false);
@@ -209,6 +211,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     setWakeStatus("idle");
     setIsReplay(false);
     setShowSources(false);
+    setStoppedChapter(chapterIndex);
     restoreFocusRef.current = true;
     setPhase("reading");
   }
@@ -280,7 +283,8 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
           debug={{ show: showDiagnostics, replay: isReplay }}
           onToggle={audio.toggle} onSeek={audio.seek} onSelect={selectChapter} onStop={stopTour} />
       ) : (
-        <AroundScreen route={route} onStart={(index) => startTour(false, index)} updateAvailable={updateAvailable} />
+        <AroundScreen route={route} openChapter={stoppedChapter} startRef={startButtonRef}
+          onStart={(index) => startTour(false, index)} updateAvailable={updateAvailable} />
       )}
 
       <audio ref={audioRef} preload="auto" aria-label="Аудиогид" {...audioHandlers} />
