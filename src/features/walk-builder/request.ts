@@ -27,7 +27,8 @@ export async function request(path: string, signal: AbortSignal, body?: object):
     } catch (error) {
       last = error;
       if (controller.signal.aborted && signal.aborted) throw signal.reason ?? error;
-      if (error instanceof RejectedRequest && error.status !== 429) throw error;
+      // A spent personal daily quota does not recover within seconds, unlike a busy queue.
+      if (error instanceof RejectedRequest && (error.status !== 429 || error.code === "QUOTA_EXCEEDED")) throw error;
       const retryable = timedOut || error instanceof RequestError && (error.status === 429 || error.status >= 500) || !(error instanceof RequestError) && !(error instanceof DOMException && error.name === "AbortError");
       if (!retryable || attempt === 2) {
         if (timedOut) throw new Error("Время ожидания истекло. Проверьте соединение.");

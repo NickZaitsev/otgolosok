@@ -1,5 +1,6 @@
 import { EDITORIAL_EVIDENCE_VERSION, failure, validateFacts } from "./domain.mjs";
 import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
+import { withRetry } from "./retry.mjs";
 import { sourceText } from "./source-text.mjs";
 import { researchPrompt, factsPrompt } from "./prompts.mjs";
 import { requestStructured } from "./model-output.mjs";
@@ -32,10 +33,15 @@ function invalidateEditorialCheckpoint(data) {
   return retained;
 }
 
+// Third-party source sites get one more try after a network error or a 429/5xx.
+export const SOURCE_RETRY = signal => ({ attempts: 2, baseMs: 1000, maxMs: 5000, signal,
+  isTransient: error => error?.retryable === true || error?.code === "NETWORK_ERROR" });
+
 export const errorMessages = {
   INVALID_ADDRESS: "Укажите улицу и номер дома в Москве, включая строение, если оно есть.",
   QUEUE_FULL: "Сейчас готовятся другие истории. Попробуйте через несколько минут.",
-  DAILY_LIMIT: "На сегодня лимит новых историй исчерпан. Готовые записи доступны.",
+  AUTH_REQUIRED: "Генерация доступна только после входа.",
+  QUOTA_EXCEEDED: "Ваш суточный лимит новых историй исчерпан. Готовые записи доступны, новые можно заказать завтра.",
   RETRY_LIMIT: "Попытки подготовки закончились. Готовый текст остаётся доступным.",
   CONFLICT: "Задание уже изменилось. Обновите его состояние.",
   ADDRESS_UNCLEAR: "Источники не позволяют однозначно определить дом. Уточните адрес и строение.",
@@ -87,7 +93,7 @@ export async function runJob(initial, options) {
     if (!job.data.story && !job.data.evidence && !job.data.sources) {
       const loadPages = async (candidates, offset=0) => {
       const results = await Promise.allSettled(candidates.map(async (source,index) => {
-        const page = await fetchPage(source.url,{signal:deadline});
+        const page = await withRetry(() => fetchPage(source.url,{signal:deadline}), SOURCE_RETRY(deadline));
         const text = await sourceText(page,{keywords:[job.address]});
         if (text.length < 300) throw failure("SOURCE_EMPTY");
         return {id:`s${index+offset+1}`,url:canonicalUrl(page.url),title:source.title,
@@ -154,6 +160,8 @@ export function startWorker(options) {
     const job = options.store.claimNext({ audioOnly: !options.provider });
     if (!job) return;
     running = runJob(job,{...options,signal:controller.signal}).then(result => {
+      // stop() aborted the job: it is resumed after the restart, not failed.
+      if(stopped&&result.stage==="failed"){options.store.requeueInterrupted(result.id);return;}
       if(result.stage==="failed") options.logs?.captureMessage(result.error?.code??"Job failed","error",{operation:"runJob",context:{jobId:result.id,kind:result.kind,code:result.error?.code}});
     }).catch(error => {
       // Only infrastructure/store failure escapes runJob; startup recovery handles it.

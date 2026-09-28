@@ -104,15 +104,16 @@ describe("browser position source", () => {
     expect(updates.at(-1)).toMatchObject({
       type: "status",
       status: "unavailable",
-      error: { code: "position-unavailable" },
+      error: { code: "position-unavailable", message: "Геолокация недоступна в этом браузере." },
     });
   });
 
   it.each([
-    [1, "permission-denied", "permission-denied"],
-    [2, "unavailable", "position-unavailable"],
-    [3, "error", "timeout"],
-  ] as const)("maps geolocation error %s to %s", (code, status, errorCode) => {
+    [1, "permission-denied", "permission-denied", "Доступ к геолокации запрещён. Разрешите его в настройках браузера."],
+    [2, "unavailable", "position-unavailable", "Не удалось определить местоположение."],
+    [3, "error", "timeout", "Геолокация долго не отвечает."],
+    [9, "error", "unknown", "Ошибка геолокации."],
+  ] as const)("maps geolocation error %s to %s with a Russian message", (code, status, errorCode, message) => {
     const mock = createGeolocationMock();
     const updates: PositionSourceUpdate[] = [];
     createBrowserPositionSource({ geolocation: mock.geolocation }).subscribe((update) =>
@@ -130,7 +131,7 @@ describe("browser position source", () => {
     expect(updates.at(-1)).toMatchObject({
       type: "status",
       status,
-      error: { code: errorCode, message: "Location failed" },
+      error: { code: errorCode, message },
     });
   });
 

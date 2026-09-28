@@ -21,3 +21,14 @@ backend/*
 **/.ssh
 **/.DS_Store
 .vercel
+# Not needed to build the site: local tooling, agent state, test output and docs.
+.venv
+**/__pycache__
+.kilo
+.agents
+.claude
+artifacts
+docs
+e2e
+test-results
+playwright-report

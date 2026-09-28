@@ -33,13 +33,13 @@ function toFix(position: GeolocationPosition): PositionFix {
 function toSourceError(error: GeolocationPositionError): PositionSourceError {
   switch (error.code) {
     case error.PERMISSION_DENIED:
-      return { code: "permission-denied", message: error.message };
+      return { code: "permission-denied", message: "Доступ к геолокации запрещён. Разрешите его в настройках браузера." };
     case error.POSITION_UNAVAILABLE:
-      return { code: "position-unavailable", message: error.message };
+      return { code: "position-unavailable", message: "Не удалось определить местоположение." };
     case error.TIMEOUT:
-      return { code: "timeout", message: error.message };
+      return { code: "timeout", message: "Геолокация долго не отвечает." };
     default:
-      return { code: "unknown", message: error.message };
+      return { code: "unknown", message: "Ошибка геолокации." };
   }
 }
 
@@ -74,7 +74,7 @@ export function createBrowserPositionSource(
           status: "unavailable",
           error: {
             code: "position-unavailable",
-            message: "Geolocation API is not available in this browser.",
+            message: "Геолокация недоступна в этом браузере.",
           },
         });
         stopped = true;
@@ -116,10 +116,10 @@ export function createBrowserPositionSource(
           onError,
           options.positionOptions ?? DEFAULT_POSITION_OPTIONS,
         );
-      } catch (error) {
+      } catch {
         const sourceError: PositionSourceError = {
           code: "unknown",
-          message: error instanceof Error ? error.message : "Unable to start geolocation.",
+          message: "Не удалось запустить геолокацию.",
         };
         listener({
           type: "status",

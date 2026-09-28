@@ -6,12 +6,14 @@ import { TourExperience } from "../tour/tour-experience";
 import { creationLocation } from "../walk-builder/creation-location";
 import { getLastUserId, getSession } from "../auth/client";
 import { getLocalWalk, migrateLocalWalks } from "./local-store";
-import { loadAccountWalkWithOfflineCopy, loadCatalogWalk, loadLocalWalkView, loadSharedWalk, WalkLoadError } from "./walk-loader";
+import { loadAccountWalk, loadCatalogWalk, loadSharedWalk, loadWalkWithOfflineCopy, localWalkView, resolveLocalWalkView, WalkLoadError, type LoadedWalk } from "./walk-loader";
+import { offlineWalkRef, type OfflineWalkRef } from "./offline";
 import type { WalkView } from "./model";
 import "./walks.css";
+import { toUserMessage } from "@/lib/errors/user-message";
 
 const keys = ["new", "resume", "local", "id", "catalog", "share"] as const;
-type Loaded = { key: string; view: WalkView | null; error: string; offlineNotice: string };
+type Loaded = { key: string; view: WalkView | null; error: string; offlineNotice: string; offlineRef: OfflineWalkRef | null };
 
 export function WalkScreen() {
   const search = useSearchParams();
@@ -19,7 +21,7 @@ export function WalkScreen() {
   const redirect = creationLocation(search);
   useEffect(() => { if (redirect) router.replace(redirect); }, [redirect, router]);
   const queryKey = search.toString();
-  const [loaded, setLoaded] = useState<Loaded>({ key: "", view: null, error: "", offlineNotice: "" });
+  const [loaded, setLoaded] = useState<Loaded>({ key: "", view: null, error: "", offlineNotice: "", offlineRef: null });
   const query = Object.fromEntries(keys.flatMap(key => { const value = search.get(key); return value ? [[key, value]] : []; }));
   const selected = keys.filter(key => query[key] !== undefined && !["new", "resume"].includes(key));
   const selectedKind = selected[0];
@@ -36,23 +38,32 @@ export function WalkScreen() {
     const controller = new AbortController();
     void (async () => {
       try {
-        let view: WalkView;
-        let offlineNotice = "";
+        const signal = controller.signal;
+        let result: LoadedWalk;
+        let offlineRef: OfflineWalkRef | null;
         if (selectedKind === "local") {
           migrateLocalWalks(localStorage);
           const item = getLocalWalk(localStorage, localId);
           if (!item) throw new WalkLoadError("Локальная прогулка не найдена.", 404);
-          view = await loadLocalWalkView(item.document, item.revision, controller.signal);
+          offlineRef = offlineWalkRef("local", localId, null);
+          // A copy of an older revision would hide the local edits; the walk then opens without stories.
+          result = await loadWalkWithOfflineCopy(inner => resolveLocalWalkView(item.document, item.revision, inner), offlineRef, signal, saved => saved.revision === item.revision)
+            .catch((error: unknown) => { if (signal.aborted) throw error; return { view: localWalkView(item.document, item.revision), offline: false as const }; });
         } else if (selectedKind === "id") {
           const user = await getSession().catch(() => null);
-          const result = await loadAccountWalkWithOfflineCopy(accountId, user?.id ?? getLastUserId(), controller.signal);
-          view = result.view;
-          if (result.offline) offlineNotice = `Офлайн-копия от ${new Date(result.savedAt).toLocaleDateString("ru-RU")}. Последняя редакция может быть новее.`;
-        } else if (selectedKind === "catalog") view = await loadCatalogWalk(catalogId, controller.signal);
-        else view = await loadSharedWalk(shareToken, controller.signal);
-        if (!controller.signal.aborted) setLoaded({ key: queryKey, view, error: "", offlineNotice });
+          offlineRef = offlineWalkRef("id", accountId, user?.id ?? getLastUserId());
+          result = await loadWalkWithOfflineCopy(inner => loadAccountWalk(accountId, inner), offlineRef, signal);
+        } else if (selectedKind === "catalog") {
+          offlineRef = offlineWalkRef("catalog", catalogId, null);
+          result = await loadWalkWithOfflineCopy(inner => loadCatalogWalk(catalogId, inner), offlineRef, signal);
+        } else {
+          offlineRef = offlineWalkRef("share", shareToken, null);
+          result = await loadWalkWithOfflineCopy(inner => loadSharedWalk(shareToken, inner), offlineRef, signal);
+        }
+        const offlineNotice = result.offline ? `Офлайн-копия от ${new Date(result.savedAt).toLocaleDateString("ru-RU")}. Последняя редакция может быть новее.` : "";
+        if (!signal.aborted) setLoaded({ key: queryKey, view: result.view, error: "", offlineNotice, offlineRef });
       } catch (caught) {
-        if (!controller.signal.aborted) setLoaded({ key: queryKey, view: null, error: caught instanceof Error ? caught.message : "Не удалось открыть прогулку.", offlineNotice: "" });
+        if (!controller.signal.aborted) setLoaded({ key: queryKey, view: null, error: toUserMessage(caught, "Не удалось открыть прогулку."), offlineNotice: "", offlineRef: null });
       }
     })();
     return () => controller.abort();
@@ -66,7 +77,7 @@ export function WalkScreen() {
   const current = loaded.key === queryKey ? loaded : null;
   if (current?.error) return <WalkError message={current.error} />;
   if (!current?.view) return <main className="walk-screen"><p role="status">Открываем прогулку…</p></main>;
-  return <>{current.offlineNotice ? <p className="walk-offline-notice walk-offline-notice--map" role="status">{current.offlineNotice}</p> : null}<TourExperience key={queryKey} walk={current.view} /></>;
+  return <>{current.offlineNotice ? <p className="walk-offline-notice walk-offline-notice--map" role="status">{current.offlineNotice}</p> : null}<TourExperience key={queryKey} walk={current.view} offline={current.offlineRef} /></>;
 }
 
 function WalkError({ message }: { message: string }) {

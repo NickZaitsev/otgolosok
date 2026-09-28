@@ -3,6 +3,7 @@ import json
 import sqlite3
 import tempfile
 import unittest
+from contextlib import closing
 from pathlib import Path
 
 SPEC = importlib.util.spec_from_file_location(
@@ -33,7 +34,7 @@ class AddressIndexTest(unittest.TestCase):
             self.assertEqual(
                 result["counts"], {"address": 1, "street": 1, "building": 1}
             )
-            with sqlite3.connect(output) as db:
+            with closing(sqlite3.connect(output)) as db:
                 self.assertEqual(
                     db.execute("SELECT count(*) FROM bounds").fetchone()[0], 3
                 )
@@ -84,7 +85,7 @@ class AddressIndexTest(unittest.TestCase):
                 encoding="utf-8",
             )
             MODULE.build(source, output)
-            with sqlite3.connect(output) as db:
+            with closing(sqlite3.connect(output)) as db:
                 osm_id, geometry = db.execute(
                     "SELECT osm_id,geometry FROM features"
                 ).fetchone()

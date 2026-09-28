@@ -4,6 +4,7 @@ import { useEffect, useEffectEvent, useRef, useState, type RefObject } from "rea
 import { terminalStages } from "../generator/types";
 import { applyResearch, readResearchJob, researchKey, researchLookup, researchMatches, type Draft, type ResearchJob, type ResearchRef } from "./model";
 import { request, RequestError } from "./request";
+import { toUserMessage } from "@/lib/errors/user-message";
 
 const phases = { discovery: "Ищем адреса поблизости", research: "Проверяем источники об адресах", routing: "Соединяем подтверждённые остановки", narration: "Готовим тексты и аудио", complete: "Прогулка готова" };
 
@@ -54,7 +55,7 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
           setMissing(true); setError(expected.id ? "Сохранённая задача не найдена. Её ID остаётся в черновике." : "Сервер не нашёл задачу для сохранённой отправки. Можно явно попробовать снова.");
           return;
         }
-        setError(`${caught instanceof Error ? caught.message : "Связь прервалась."} Продолжим проверять статус; работа на сервере не отменена.`);
+        setError(`${toUserMessage(caught, "Связь прервалась.")} Продолжим проверять статус; работа на сервере не отменена.`);
         timer = setTimeout(() => void poll(), Math.min(60000, 3000 * 2 ** Math.min(++failures, 5)));
       }
     };
@@ -86,7 +87,7 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
         const rejected = caught instanceof RequestError && (caught.status < 500 || caught.status === 503);
         // An explicit HTTP rejection did not create a new job. Unknown transport outcomes retain intent.
         if (!retry && rejected) setMissing(true);
-        setError(`${caught instanceof Error ? caught.message : "Ответ не получен."}${rejected ? "" : " Результат отправки неизвестен. Нажмите «Проверить статус» или вернитесь позже: новой отправки не будет."}`);
+        setError(`${toUserMessage(caught, "Ответ не получен.")}${rejected ? "" : " Результат отправки неизвестен. Нажмите «Проверить статус» или вернитесь позже: новой отправки не будет."}`);
         if (retry) setRestore(n => n + 1);
       }
     } finally {
@@ -119,7 +120,7 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
     </> : null}
     {visibleJob?.stage === "ready" && !draft.researchApplied ? <><p>Применение сохранит готовый маршрут и ссылки на истории. Новые исследования, тексты или аудио при этом не заказываются.</p><button className="walk-primary" disabled={disabled || !matches} onClick={() => {
       try { if (persist(applyResearch(current.current, visibleJob))) onApply(); }
-      catch (caught) { setError(caught instanceof Error ? caught.message : "Не удалось применить прогулку."); }
+      catch (caught) { setError(toUserMessage(caught, "Не удалось применить прогулку.")); }
     }}>Использовать прогулку</button></> : null}
     {draft.researchApplied ? <p role="status">Исследованная прогулка применена. Готовые истории находятся ниже; дополнительных заказов нет.</p> : null}
     <button disabled={chooseStartDisabled} onClick={onChooseStart}>Выбрать другое начало</button>

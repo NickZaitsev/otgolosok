@@ -29,4 +29,12 @@ describe("ограниченный транспорт конструктора",
     await expect(request("/api/walk-research-jobs", new AbortController().signal, { recoveryToken: "stable-key" })).rejects.toBeInstanceOf(RejectedRequest);
     expect(fetcher).toHaveBeenCalledOnce();
   });
+
+  it("не повторяет исчерпанную суточную квоту и показывает сообщение сервера", async () => {
+    const message = "Ваш суточный лимит новых историй исчерпан.";
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: { code: "QUOTA_EXCEEDED", message } }), { status: 429 }));
+    vi.stubGlobal("fetch", fetcher);
+    await expect(request("/api/walk-research-jobs", new AbortController().signal, { recoveryToken: "stable-key" })).rejects.toMatchObject({ code: "QUOTA_EXCEEDED", message });
+    expect(fetcher).toHaveBeenCalledOnce();
+  });
 });

@@ -9,9 +9,11 @@ const edge = { ...inside, containingBuilding: { ...inside.containingBuilding, re
 const streetOnly = { status: "matched", containingBuilding: null, nearbyAddresses: [{ address: "Москва, Тверская улица, 1", distanceMeters: 180 }],
   street: { name: "Тверская улица", distanceMeters: 40 }, district: { name: "Тверской район" } };
 const polygon = { type: "Polygon", coordinates: [[[37.6, 55.7], [37.61, 55.7], [37.61, 55.71], [37.6, 55.7]]] };
+/** @param {string} name @param {Record<string, string>} [tags] @param {object} [extra] */
 const place = (name, tags = { tourism: "museum" }, extra = {}) => ({ name, location: point, tags: { name, ...tags }, address: null, ...extra });
 
 test("tiers follow identity strength", () => {
+  /** @type {Array<[string, any, any, string]>} */
   const cases = [
     ["unique museum inside an addressed building", place("Музей-квартира Александра Солженицына"), { locationContext: inside }, "auto"],
     ["named plaque on a building edge", place("Василий Прокофьевич Ефанов", { historic: "memorial" }), { locationContext: edge }, "auto"],

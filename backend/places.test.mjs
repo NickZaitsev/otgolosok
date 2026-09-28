@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createPlaceResolver } from './places.mjs';
 
 const enc = new TextEncoder();
+/** @returns {any} */
 function response(payload, { status = 200, stream = true } = {}) {
   const bytes = enc.encode(typeof payload === 'string' ? payload : JSON.stringify(payload));
   return {
@@ -20,7 +21,7 @@ function fake(payload, options) {
   return { calls, fetch: async (url, init) => { calls.push({ url, init }); return response(payload, options); } };
 }
 async function rejectsCode(promise, code) {
-  await assert.rejects(promise, error => error?.code === code);
+  await assert.rejects(promise, (/** @type {{code?: string}} */ error) => error?.code === code);
 }
 
 test('validates exact input shapes, values, and URL-like queries', async () => {
@@ -82,7 +83,7 @@ test('caches successes, rate limits misses, and rejects concurrent upstream work
   const slow = createPlaceResolver({ fetchImpl: async () => { await pending; return response(item()); }, now: () => 0 });
   const first = slow({ lat: 55.75, lon: 37.61 });
   await rejectsCode(slow({ q: 'Арбат 1' }), 'PLACE_BUSY');
-  release(); await first;
+  /** @type {() => void} */ (release)(); await first;
 });
 
 test('empty search is not found, HTTP failures are sanitized, and cache expires', async () => {
@@ -97,6 +98,6 @@ test('empty search is not found, HTTP failures are sanitized, and cache expires'
 test('oversized streaming response cancels the reader', async () => {
   let cancelled=false;
   const body=new ReadableStream({pull(c){c.enqueue(new Uint8Array(256*1024+1));},cancel(){cancelled=true;}});
-  const r=createPlaceResolver({fetchImpl:async()=>({ok:true,body})});
+  const r=createPlaceResolver({fetchImpl:async()=>/** @type {any} */ ({ok:true,body})});
   await rejectsCode(r({q:'Арбат 10'}),'PLACE_UNAVAILABLE');assert.equal(cancelled,true);
 });

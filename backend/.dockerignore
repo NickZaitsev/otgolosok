@@ -1,4 +1,0 @@
-data
-*.test.mjs
-.env*
-node_modules
