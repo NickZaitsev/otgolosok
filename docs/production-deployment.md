@@ -114,6 +114,21 @@ waits at most ten minutes for existing jobs to become idle, stops the single
 generator, archives its data/configuration, then recreates it. Never use
 `down -v`, prune, or launch another worker on the same SQLite database.
 
+## Служебный API промо-прогулок
+
+- Добавьте в `.generator.env` новое случайное значение `PROMO_WALKS_TOKEN`
+  (64 hex-символа, например `openssl rand -hex 32`), предварительно сохранив
+  копию файла в `backups/env-<время>/`. Значение не печатайте и не коммитьте.
+- Если `deploy-scripts/otgolosok-generator-compose.yml` перечисляет переменные
+  backend явно, добавьте туда `PROMO_WALKS_TOKEN: ${PROMO_WALKS_TOKEN:-}` (как в
+  `compose.yaml` этого репозитория), иначе эндпоинт останется выключенным (404).
+- Выкладка — штатным `make deploy-otgolosok-generator`. При старте backend
+  создаёт пользователя `promo-walks` (роль `service`, без учётных данных).
+- Пользователя `promo-walks` нельзя удалять: `ON DELETE CASCADE` удалит все
+  промо-прогулки и сломает ссылки во всех опубликованных роликах Shorts.
+- То же значение передаётся Shorts-воркеру как `OTGOLOSOK_SERVICE_TOKEN` —
+  только по закрытому каналу, не через чат и не через git.
+
 ## Verification on 2026-09-08
 
 - `make deploy-otgolosok-prod`: lint, TypeScript, 138 frontend tests, 68 backend

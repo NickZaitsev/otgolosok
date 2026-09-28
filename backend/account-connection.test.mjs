@@ -79,6 +79,17 @@ test("saved walks are capped per account", async t => {
   assert.ok(store.createWalk("u2", { title: "Чужой лимит", snapshot: draft, idempotencyKey: "walk-other-user" }).id);
 });
 
+test("a raised cap lets the service account store more walks", async t => {
+  const { runtime, store } = await memoryStore(t, ["u1", "u2"]);
+  fill(runtime.accountDatabase, "user_walks", "u1", MAX_WALKS_PER_USER);
+  assert.throws(() => store.createWalk("u1", { title: "Лишняя", snapshot: draft, idempotencyKey: "walk-default-cap" }),
+    /** @param {Error & {code?: string}} error */ error => error.code === "STORAGE_LIMIT");
+  const walk = store.createWalk("u1", { title: "Промо", snapshot: draft, idempotencyKey: "walk-raised-cap" }, { maxWalks: Infinity });
+  assert.equal(store.findWalkByIdempotencyKey("u1", "walk-raised-cap")?.id, walk.id);
+  assert.equal(store.findWalkByIdempotencyKey("u2", "walk-raised-cap"), null);
+  assert.equal(store.findWalkByIdempotencyKey("u1", "walk-missing-key"), null);
+});
+
 test("favorites are capped per account, re-adding an existing one is allowed", async t => {
   const { runtime, store } = await memoryStore(t);
   fill(runtime.accountDatabase, "user_favorites", "u1", MAX_FAVORITES_PER_USER - 1);

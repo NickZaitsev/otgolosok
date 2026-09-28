@@ -107,7 +107,8 @@ export function createAccountStore(db, now = Date.now) {
     updateProfile(userId, name) { const value=cleanName(name),time=timestamp();db.prepare("UPDATE user SET name=?,updatedAt=? WHERE id=?").run(value,time,userId);return value; },
     listWalks(userId, limit=20,after=null) { limit=Math.min(50,Math.max(1,limit));const c=cursor(after),rows=c?db.prepare("SELECT * FROM user_walks WHERE user_id=? AND (updated_at<? OR (updated_at=? AND id<?)) ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT * FROM user_walks WHERE user_id=? ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,listItem);return {walks:result.items,nextCursor:result.nextCursor,hasMore:Boolean(result.nextCursor)}; },
     getWalk(userId,id) { return viewWalk(db.prepare("SELECT * FROM user_walks WHERE id=? AND user_id=?").get(id,userId)) ?? null; },
-    createWalk(userId,{title,snapshot,idempotencyKey}) {
+    // Only the promo-walks service account raises maxWalks; every person keeps the default cap.
+    createWalk(userId,{title,snapshot,idempotencyKey},{maxWalks=MAX_WALKS_PER_USER}={}) {
       if(typeof idempotencyKey!=="string"||!/^[\w.-]{8,100}$/.test(idempotencyKey))throw Object.assign(new Error(),{code:"BAD_REQUEST"});
       const clean=cleanTitle(title);
       const prior=db.prepare("SELECT w.* FROM user_walk_idempotency i JOIN user_walks w ON w.id=i.walk_id WHERE i.user_id=? AND i.idempotency_key=?").get(userId,idempotencyKey);
@@ -117,7 +118,7 @@ export function createAccountStore(db, now = Date.now) {
         return viewWalk(prior);
       }
       const id=transaction(()=>{
-        if(count("user_walks",userId)>=MAX_WALKS_PER_USER)throw storageLimit(`Можно сохранить не больше ${MAX_WALKS_PER_USER} прогулок. Удалите ненужные.`);
+        if(count("user_walks",userId)>=maxWalks)throw storageLimit(`Можно сохранить не больше ${maxWalks} прогулок. Удалите ненужные.`);
         // Catalog slugs are valid document IDs for read-only views, but an
         // account record must remain addressable by the UUID-only account API.
         // Walk IDs are global keys: a document copied from another account (for
@@ -137,6 +138,10 @@ export function createAccountStore(db, now = Date.now) {
         return id;
       });
       return this.getWalk(userId,id);
+    },
+    findWalkByIdempotencyKey(userId,key) {
+      if(typeof key!=="string")return null;
+      return viewWalk(db.prepare("SELECT w.* FROM user_walk_idempotency i JOIN user_walks w ON w.id=i.walk_id WHERE i.user_id=? AND i.idempotency_key=?").get(userId,key))??null;
     },
     updateWalk(userId,id,{title,snapshot,revision}) {
       if(!uuid(id)||!Number.isSafeInteger(revision)||revision<0)throw Object.assign(new Error("Invalid walk revision"),{code:"BAD_REQUEST"});

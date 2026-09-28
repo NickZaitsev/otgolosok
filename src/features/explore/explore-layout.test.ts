@@ -25,8 +25,14 @@ describe("раскладка карточки места", () => {
       /^\.around-shell\{[^}]*--around-nav-height:[^}]*position:relative[^}]*height:100dvh/,
     );
     expect(css).toMatch(
-      /\.around-bottom\{[^}]*bottom:calc\(var\(--around-nav-height\) \+ 16px\)[^}]*max-height:calc\(100% - var\(--around-sheet-top\) - var\(--around-nav-height\) - 16px\)/,
+      /\.around-bottom\{[^}]*bottom:var\(--around-sheet-bottom\)[^}]*max-height:calc\(100% - var\(--around-sheet-top\) - var\(--around-sheet-bottom\)\)/,
     );
+    // Раскладки меняют переменные, а не сами отступ и высоту: иначе при правке
+    // одного числа второе расходится с ним и карточка заходит на кнопки карты.
+    const sizing = [...css.matchAll(/\.around-bottom\{([^}]*)\}/g)]
+      .map(([, rule]) => rule)
+      .filter(rule => /(?:^|;)(?:bottom|max-height):/.test(rule));
+    expect(sizing).toHaveLength(1);
     expect(css).not.toMatch(
       /\.around-bottom\{[^}]*;height:calc/,
     );

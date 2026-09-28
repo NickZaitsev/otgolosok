@@ -7,6 +7,7 @@ import { createStore } from "./store.mjs";
 import { createApp, workerLeaseSecret } from "./server.mjs";
 import { createAuth, sessionCsrfToken } from "./auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
+import { ensurePromoWalksUser } from "./promo-walks.mjs";
 
 async function testAccounts(t,users=["test-user"]) {
   const runtime=await createAuth({databasePath:":memory:",baseURL:"https://otgolosok.test",secret:"server-test-secret-longer-than-32-characters",production:false});
@@ -344,4 +345,41 @@ test("weak identity candidates are editor-only",async t=>{
   const f=await fixture(t,{auth:{api:{getSession:async()=>null}}});
   assert.equal((await fetch(`${f.base}/api/story-admin/content/identity-candidates`)).status,401);
   assert.equal((await f.post("/api/story-admin/content/identity-candidates/pilot",{requestKey:"identity-http-3",limit:1})).status,401);
+});
+
+test("promo walks service API authenticates by token and needs no browser origin",async t=>{
+  const token="p".repeat(40),start={address:"метро «Чистые пруды»",location:{lat:55.765,lon:37.6386}};
+  const plan={stops:[{address:"Мясницкая, 17",location:{lat:55.764,lon:37.636}}],geometry:[start.location,{lat:55.766,lon:37.64}],distanceM:2400,walkingMinutes:55,attribution:"© OpenStreetMap contributors"};
+  const {runtime,accountStore}=await testAccounts(t,[]);
+  ensurePromoWalksUser(runtime.accountDatabase);
+  const f=await fixture(t,{accountStore,promoWalksToken:token,planWalk:async()=>plan});
+  const call=(authorization,{method="POST",value={idempotencyKey:"shorts-run-0001",title:"Прогулка",walk:{start,mode:"loop",minutes:60}},path="/api/service/promo-walks"}={})=>
+    fetch(f.base+path,{method,headers:{"Content-Type":"application/json",...(authorization?{Authorization:authorization}:{})},...(method==="POST"?{body:JSON.stringify(value)}:{})});
+  for(const authorization of [null,"Bearer wrong-token",`Basic ${token}`]){const res=await call(authorization);assert.equal(res.status,401);assert.equal(res.headers.get("www-authenticate"),"Bearer");}
+  const wrongMethod=await call(`Bearer ${token}`,{method:"GET"});assert.equal(wrongMethod.status,405);assert.equal(wrongMethod.headers.get("allow"),"POST");
+  assert.equal((await call(`Bearer ${token}`,{path:"/api/service/promo-walks?x=1"})).status,400);
+  const created=await call(`Bearer ${token}`);
+  assert.equal(created.status,201);
+  const body=/** @type {any} */ (await created.json());
+  assert.equal(body.walk.shareUrl,`https://otgolosok.test/walk?share=${body.walk.shareToken}`);
+  const shared=await fetch(`${f.base}/api/story-walks/shared/${body.walk.shareToken}`);
+  assert.equal(shared.status,200);assert.equal(/** @type {any} */ (await shared.json()).document.id,body.walk.id);
+  assert.equal((await call(`Bearer ${token}`)).status,200);
+  assert.equal((await call(`Bearer ${token}`,{value:{idempotencyKey:"shorts-run-0001",title:"Прогулка",walk:{start,mode:"loop",minutes:90}}})).status,409);
+  // The public planner keeps its same-origin gate.
+  assert.equal((await fetch(f.base+"/api/walk-plan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({start,mode:"loop",minutes:60})})).status,403);
+});
+
+test("promo walks endpoint is hidden without a token and rate limits failed attempts",async t=>{
+  const hidden=await fixture(t,{promoWalksToken:""});
+  assert.equal((await fetch(hidden.base+"/api/service/promo-walks",{method:"POST",headers:{Authorization:"Bearer anything"}})).status,404);
+  const f=await fixture(t,{promoWalksToken:"q".repeat(40)});
+  const statuses=[];
+  for(let attempt=0;attempt<21;attempt++)statuses.push((await fetch(f.base+"/api/service/promo-walks",{method:"POST",headers:{Authorization:"Bearer wrong"}})).status);
+  assert.deepEqual(statuses,[...Array(20).fill(401),429]);
+});
+
+test("a short promo walks token stops the server from starting",t=>{
+  const store=createStore(":memory:",{maxActive:1});t.after(()=>store.close());
+  assert.throws(()=>createApp({store,provider:null,origin:"https://otgolosok.test",audioDirectory:tmpdir(),workerEnabled:false,promoWalksToken:"short"}),/PROMO_WALKS_TOKEN must contain at least 32 characters/);
 });
