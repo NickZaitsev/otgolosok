@@ -12,6 +12,7 @@ import { accountApi, getSession } from "../auth/client";
 import { draftToWalkDocument, walkDocumentToDraft } from "../walks/adapters";
 import { getLocalWalk, migrateLocalWalks, saveLocalWalk } from "../walks/local-store";
 import { creationInputError } from "./creation-location";
+import { toUserMessage } from "@/lib/errors/user-message";
 
 function readJob(value: unknown): GenerationJob {
   if (!value || typeof value !== "object" || !("id" in value) || !("stage" in value) || !isJobId(value.id) || !isStage(value.stage)) throw new Error("Не удалось прочитать состояние истории.");
@@ -113,7 +114,7 @@ export function useWalkDraft() {
         setSelection(restored.stops.length ? "manual" : "auto");
         setFocus(restored.start?.location ?? null); setLocalIdForView(localWalkId.current);
         if (!hasSaved && isPlace(incoming)) persist(restored);
-      } catch (caught) { if (active) { setDraft(current.current); setStorageError(caught instanceof Error ? caught.message : "Не удалось открыть черновик."); } }
+      } catch (caught) { if (active) { setDraft(current.current); setStorageError(toUserMessage(caught, "Не удалось открыть черновик.")); } }
       finally { if (active) setLoaded(true); }
     }
     void restore();
@@ -139,7 +140,7 @@ export function useWalkDraft() {
       setStorageError(""); return true;
     } catch (caught) {
       writable.current = false;
-      setStorageError(caught instanceof Error ? caught.message : "Не удалось сохранить. Не закрывайте страницу; скачайте копию.");
+      setStorageError(toUserMessage(caught, "Не удалось сохранить. Не закрывайте страницу; скачайте копию."));
       return false;
     }
   }
@@ -196,7 +197,7 @@ export function useWalkDraft() {
         if (!job || terminalStages.has(job.stage)) { setPollId(null); return; }
         timer = setTimeout(() => void poll(), 3000);
       } catch (caught) {
-        if (!controller.signal.aborted) { setError(caught instanceof Error ? caught.message : "Связь прервалась. Обновите статус кнопкой."); setPollId(null); }
+        if (!controller.signal.aborted) { setError(toUserMessage(caught, "Связь прервалась. Обновите статус кнопкой.")); setPollId(null); }
       }
     };
     void poll();
@@ -215,7 +216,7 @@ export function useWalkDraft() {
       const place = { address: found.address, location: { lat: found.location.lat, lon: found.location.lon } };
       setCandidate(place); setFocus(place.location);
       return place;
-    } catch (caught) { if (!controller.signal.aborted) setError(caught instanceof Error ? caught.message : "Не удалось найти адрес."); }
+    } catch (caught) { if (!controller.signal.aborted) setError(toUserMessage(caught, "Не удалось найти адрес.")); }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
   }
   function confirmPlace() {
@@ -243,7 +244,7 @@ export function useWalkDraft() {
     } catch (caught) { if (!controller.signal.aborted) {
       const insufficient = shouldOfferResearch(selection, caught);
       setResearchOffered(insufficient);
-      setError(insufficient ? "Рядом пока недостаточно готовых остановок для этой прогулки." : caught instanceof Error ? caught.message : "Маршрут недоступен.");
+      setError(insufficient ? "Рядом пока недостаточно готовых остановок для этой прогулки." : toUserMessage(caught, "Маршрут недоступен."));
     } }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
   }
@@ -272,7 +273,7 @@ export function useWalkDraft() {
         if (caught instanceof RejectedRequest) {
           persist({ ...current.current, submitting: null });
           setError(caught.message);
-        } else setError(`${caught instanceof Error ? caught.message : "Запрос прервался."} ${current.current.submitting ? "Результат отправки неизвестен. Не повторяем её автоматически." : "Новая история не отправлена. Обновите статусы и повторите действие."}`);
+        } else setError(`${toUserMessage(caught, "Запрос прервался.")} ${current.current.submitting ? "Результат отправки неизвестен. Не повторяем её автоматически." : "Новая история не отправлена. Обновите статусы и повторите действие."}`);
       }
     }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
@@ -287,7 +288,7 @@ export function useWalkDraft() {
       if (controller.signal.aborted) return;
       if (job.id !== recoveryId || typeof job.address !== "string" || storyAddressKey(job.address) !== storyAddressKey(draft.submitting.address)) throw new Error("История относится к другому адресу.");
       persist({ ...current.current, submitting: null, jobs: rememberStory(current.current.jobs, { place: draft.submitting, id: job.id, stage: job.stage }) });
-    } catch (caught) { if (!controller.signal.aborted) setError(caught instanceof Error ? caught.message : "Не удалось проверить историю."); }
+    } catch (caught) { if (!controller.signal.aborted) setError(toUserMessage(caught, "Не удалось проверить историю.")); }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
   }
   function download() {
@@ -322,7 +323,7 @@ export function useWalkDraft() {
       }
       localWalkId.current = null;
       setMessage("Прогулка сохранена в личном кабинете.");
-    } catch(caught) { setError(caught instanceof Error?caught.message:"Не удалось сохранить прогулку."); }
+    } catch(caught) { setError(toUserMessage(caught, "Не удалось сохранить прогулку.")); }
     finally {setBusy("");}
   }
   const openHref = serverWalk ? `/walk?id=${serverWalk.id}` : localIdForView ? `/walk?local=${localIdForView}` : null;

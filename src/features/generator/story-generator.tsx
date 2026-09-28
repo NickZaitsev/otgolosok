@@ -8,6 +8,7 @@ import { formatPlaybackTime } from "@/lib/audio/playback-progress";
 import { jobUrl, isStorySaved, saveStoryOffline, removeSavedStory, savedStories } from "./offline";
 import { placeFromQuery, rememberMapJob } from "../explore/map-jobs";
 import { stageLabels, terminalStages, type GenerationJob } from "./types";
+import { toUserMessage } from "@/lib/errors/user-message";
 
 const LAST_JOB = "otgolosok:generated-job";
 const idPattern = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -18,13 +19,14 @@ async function requestJob(path: string, body?: object, signal?: AbortSignal): Pr
   const relay = () => controller.abort();
   signal?.addEventListener("abort",relay,{once:true});
   if (signal?.aborted) relay();
-  const timer = setTimeout(relay,15000);
+  const timer = setTimeout(() => controller.abort(new DOMException("Request timed out", "TimeoutError")),15000);
   try {
     const response = await fetch(path,{method:body?"POST":"GET",signal:controller.signal,
       ...(body?{headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}:{})});
-    const value = await response.json();
-    if (!response.ok) throw new Error(value.error?.message ?? "Сервис пока недоступен. Попробуйте позже.");
-    if (!idPattern.test(value.id) || !(value.stage in stageLabels)) throw new Error("Не удалось прочитать состояние истории.");
+    // A proxy error page is HTML, not our JSON error.
+    const value = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(value?.error?.message ?? "Сервис пока недоступен. Попробуйте позже.");
+    if (!value || !idPattern.test(value.id) || !(value.stage in stageLabels)) throw new Error("Не удалось прочитать состояние истории.");
     return value;
   } finally {clearTimeout(timer);signal?.removeEventListener("abort",relay);}
 }
@@ -101,7 +103,7 @@ export function StoryGenerator() {
     activeRequest.current?.abort();const controller=new AbortController();activeRequest.current=controller;
     audioRef.current?.pause();setBusy(true);setError("");setSaveMessage("");setSaved(false);setJob(null);
     try {const value=await requestJob("/api/story-jobs",{address,idempotencyKey:crypto.randomUUID()},controller.signal);if(version===requestVersion.current){setJob(value);remember(value);}}
-    catch(caught){if(version===requestVersion.current&&!controller.signal.aborted){const message=caught instanceof Error?caught.message:"Не удалось создать историю.";setError(message);if(message.includes("Войдите"))setTimeout(()=>router.push(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`),700);}}
+    catch(caught){if(version===requestVersion.current&&!controller.signal.aborted){const message=toUserMessage(caught, "Не удалось создать историю.");setError(message);if(message.includes("Войдите"))setTimeout(()=>router.push(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`),700);}}
     finally {if(version===requestVersion.current)setBusy(false);}
   }
 
@@ -109,7 +111,7 @@ export function StoryGenerator() {
     if(!job||busy)return;setBusy(true);setError("");
     const version=requestVersion.current;
     try {const value=await requestJob(`${jobUrl(job.id)}/retry`,{revision:job.revision});if(version===requestVersion.current)setJob(value);}
-    catch(caught){if(version===requestVersion.current)setError(caught instanceof Error?caught.message:"Не удалось повторить.");}
+    catch(caught){if(version===requestVersion.current)setError(toUserMessage(caught, "Не удалось повторить."));}
     finally {if(version===requestVersion.current)setBusy(false);}
   }
 
@@ -120,7 +122,7 @@ export function StoryGenerator() {
       if(saved)await removeSavedStory(job);else await saveStoryOffline(job);
       const next=await isStorySaved(job);setLibrary(await savedStories());
       if(version===requestVersion.current){setSaved(next);setSaveMessage(next?"Текст и запись сохранены. Источники открываются при наличии интернета.":"Офлайн-копия удалена.");}
-    } catch(caught){if(version===requestVersion.current)setSaveMessage(caught instanceof Error?caught.message:"Не удалось сохранить историю. Проверьте свободное место.");}
+    } catch(caught){if(version===requestVersion.current)setSaveMessage(toUserMessage(caught, "Не удалось сохранить историю. Проверьте свободное место."));}
     finally {setSaving(false);}
   }
 

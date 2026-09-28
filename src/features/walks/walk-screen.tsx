@@ -10,6 +10,7 @@ import { loadAccountWalk, loadCatalogWalk, loadSharedWalk, loadWalkWithOfflineCo
 import { offlineWalkRef, type OfflineWalkRef } from "./offline";
 import type { WalkView } from "./model";
 import "./walks.css";
+import { toUserMessage } from "@/lib/errors/user-message";
 
 const keys = ["new", "resume", "local", "id", "catalog", "share"] as const;
 type Loaded = { key: string; view: WalkView | null; error: string; offlineNotice: string; offlineRef: OfflineWalkRef | null };
@@ -62,7 +63,7 @@ export function WalkScreen() {
         const offlineNotice = result.offline ? `Офлайн-копия от ${new Date(result.savedAt).toLocaleDateString("ru-RU")}. Последняя редакция может быть новее.` : "";
         if (!signal.aborted) setLoaded({ key: queryKey, view: result.view, error: "", offlineNotice, offlineRef });
       } catch (caught) {
-        if (!controller.signal.aborted) setLoaded({ key: queryKey, view: null, error: caught instanceof Error ? caught.message : "Не удалось открыть прогулку.", offlineNotice: "", offlineRef: null });
+        if (!controller.signal.aborted) setLoaded({ key: queryKey, view: null, error: toUserMessage(caught, "Не удалось открыть прогулку."), offlineNotice: "", offlineRef: null });
       }
     })();
     return () => controller.abort();

@@ -18,6 +18,7 @@ import { nearbyRadii, nearbyStoryCatalog, recommendNearbyStories, type NearbyRad
 import { selectExplorePanel } from "./panel-state";
 import { rememberGeoPromptDismissal, shouldShowGeoPrompt } from "./geo-prompt";
 import "./explore.css";
+import { toUserMessage } from "@/lib/errors/user-message";
 
 type Place = {label:string; address:string|null; location:Coordinates};
 type StoryPin = MapItem & {address:string; duration?:number; chapter?:number; jobId?:string; placeId?:string; audioUrl?:string; status?:string; paragraphs?:string[]};
@@ -146,7 +147,7 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
       if(lookup.current!==controller||controller.signal.aborted)return;
       setPlace(result);setFocus(result.location);setNearbyCenter(result.location);setSearch(false);
     }catch(error){
-      if(lookup.current===controller&&(!controller.signal.aborted||controller.signal.reason==="timeout"))setPlaceError(controller.signal.aborted?"Поиск занял слишком много времени. Введите адрес вручную.":error instanceof Error?error.message:"Не удалось определить адрес.");
+      if(lookup.current===controller&&(!controller.signal.aborted||controller.signal.reason==="timeout"))setPlaceError(controller.signal.aborted?"Поиск занял слишком много времени. Введите адрес вручную.":toUserMessage(error,"Не удалось определить адрес."));
     }finally{clearTimeout(timer);if(lookup.current===controller)setPlaceBusy(false);}
   }
   function submitSearch(event:FormEvent){event.preventDefault();if(query.trim().length>=3)void findPlace(query.trim());}

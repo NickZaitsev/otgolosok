@@ -55,6 +55,7 @@ import { formatPlaybackTime, type PlaybackCheckpoint } from "@/lib/audio/playbac
 import { loadOfflineWalk, removeOfflineWalk, saveWalkOffline, type OfflineWalkRef } from "../walks/offline";
 import { WalkSession } from "./walk-session";
 import { playbackRates } from "./walk-settings";
+import { toUserMessage } from "@/lib/errors/user-message";
 
 type SessionPhase = "reading" | "walking";
 type AudioStatus = "locked" | "unlocking" | "ready" | "loading" | "playing" | "paused" | "ended" | "blocked" | "error";
@@ -295,7 +296,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
       const result = await saveWalkOffline(view, offlineRef);
       setSavedCopy(result.availableAudio);
     } catch (caught) {
-      setCopyMessage(caught instanceof Error ? caught.message : "Не удалось сохранить офлайн-копию.");
+      setCopyMessage(toUserMessage(caught, "Не удалось сохранить офлайн-копию."));
     } finally {
       setOfflineBusy(false);
     }
