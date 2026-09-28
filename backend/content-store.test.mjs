@@ -260,3 +260,15 @@ test("a refund does not turn a non-retryable failure into a retry", t => {
   const job = store.claimContentJob();
   assert.equal(store.failContentJob(job.id, { code: "INVALID_DRAFT", message: "Черновик" }, "failed", { countAttempt: false }).state, "failed");
 });
+
+test("content stats sum model tokens across checkpoints and ignore jobs without usage", t => {
+  const store = createStore(":memory:", { maxDaily: 100, maxActive: 100 }); t.after(() => store.close()); store.importPlaces(catalog);
+  store.createBatch({ requestKey: "usage-stats", placeIds: ["osm:node:1", "osm:way:2"], limit: 2 });
+  assert.equal(store.getContentStats().textUsageTokens, 0);
+  const first = store.claimContentJob(), second = store.claimContentJob();
+  store.updateContentCheckpoint(first.id, { usageTokens: 1200, sources: [{ id: "s1", text: "Текст ".repeat(1000) }] });
+  store.updateContentCheckpoint(second.id, { sources: [] });
+  assert.equal(store.getContentStats().textUsageTokens, 1200);
+  store.updateContentCheckpoint(second.id, { usageTokens: 35.5 });
+  assert.equal(store.getContentStats().textUsageTokens, 1235.5);
+});

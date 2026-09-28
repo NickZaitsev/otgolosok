@@ -301,7 +301,9 @@ export function createContentStore({db,now,transaction}) {
       const jobs=Object.fromEntries(db.prepare("SELECT state,count(*) n FROM content_jobs GROUP BY state").all().map(row=>[row.state,Number(row.n)]));
       const external=Object.fromEntries(db.prepare("SELECT state,count(*) n FROM external_audio_jobs GROUP BY state").all().map(row=>[row.state,Number(row.n)]));
       const oldest=db.prepare("SELECT min(created_at) value FROM content_jobs WHERE state IN ('queued','retry_wait')").get().value;
-      const usage=db.prepare("SELECT checkpoint_json FROM content_jobs WHERE checkpoint_json IS NOT NULL").all().reduce((sum,row)=>{const checkpoint=decode(row.checkpoint_json);return sum+Number(checkpoint?.usageTokens??0);},0);
+      // Aggregate inside SQLite: checkpoints hold fetched sources and together exceed the service heap.
+      const usage=Number(db.prepare(`SELECT total(json_extract(checkpoint_json,'$.usageTokens')) n FROM content_jobs
+        WHERE json_valid(checkpoint_json) AND json_type(checkpoint_json,'$.usageTokens') IN ('integer','real')`).get().n);
       return {places,texts,audio,jobs,external,oldestTextQueuedAt:oldest,textUsageTokens:usage};
     },
     setBatchPriority(id,priority) {if(!Number.isSafeInteger(priority)||priority<0||priority>1000)throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
