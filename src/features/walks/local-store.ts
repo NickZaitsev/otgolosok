@@ -61,14 +61,3 @@ export function saveLocalWalk(storage: StoragePort, document: WalkDocument, expe
   return item;
 }
 
-export function deleteLocalWalk(storage: StoragePort, id: string, expectedRevision: number): void {
-  const { value, raw } = read(storage);
-  if (!value.items[id] || value.items[id].revision !== expectedRevision) throw conflict();
-  const items = { ...value.items };
-  delete items[id];
-  write(storage, raw, { ...value, items, legacyId: value.legacyId === id ? null : value.legacyId });
-}
-
-export function exportLocalWalks(storage: StoragePort): string {
-  return JSON.stringify({ library: read(storage).value, legacy: storage.getItem(LEGACY_WALK_KEY) }, null, 2);
-}

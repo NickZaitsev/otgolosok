@@ -3,13 +3,13 @@ import { ExploreMap } from "../explore/explore-map";
 import type { Route } from "./types";
 import "./route-map.css";
 
-export function RouteMap({ route, universal = false }: { route: Route; universal?: boolean }) {
+export function RouteMap({ route }: { route: Route }) {
   const steps = route.walk?.steps ?? [];
   const geometry = route.walk?.path.coordinates.map(([lon, lat]) => ({ lat, lon })) ?? [];
   const items = steps.map((step, index) => ({ id: step.id, title: `${index + 1}. ${step.title}`, location: step.location, number: index + 1 }));
   const start = route.walk?.start.address ?? route.pois[0]?.eyebrow ?? "Начало маршрута";
   const finish = (route.walk?.finish.address ?? route.pois.at(-1)?.eyebrow ?? "Финиш маршрута").replace(/^Финиш:\s*/i, "");
-  const isBundledMap = !universal && route.id === "msk-kozhevniki-zindel-short";
+  const isBundledMap = route.id === "msk-kozhevniki-zindel-short";
   if (!isBundledMap) return <figure className="route-visual" aria-labelledby="route-map-title">
     <div className="route-map-heading">
       <h2 id="route-map-title">Карта прогулки</h2>

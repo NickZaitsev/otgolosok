@@ -323,10 +323,10 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     }
   }
 
-  const offlineCopy = (statusClassName: string, buttonClassName?: string) => offlineRef ? <>
+  const offlineCopy = (statusClassName: string) => offlineRef ? <>
     <p className={statusClassName} role="status">{copyMessage || (savedCopy === null ? "Офлайн-копия ещё не сохранена" : `Офлайн-копия сохранена · ${savedCopy} ${audioWord(savedCopy)}`)}</p>
-    <button className={buttonClassName} type="button" disabled={offlineBusy} onClick={() => void saveOffline()}>{offlineBusy ? "Сохраняем…" : savedCopy === null ? "Сохранить прогулку без сети" : "Обновить офлайн-копию"}</button>
-    {savedCopy !== null ? <button className={buttonClassName} type="button" disabled={offlineBusy} onClick={() => void removeOffline()}>Удалить офлайн-копию</button> : null}
+    <button type="button" disabled={offlineBusy} onClick={() => void saveOffline()}>{offlineBusy ? "Сохраняем…" : savedCopy === null ? "Сохранить прогулку без сети" : "Обновить офлайн-копию"}</button>
+    {savedCopy !== null ? <button type="button" disabled={offlineBusy} onClick={() => void removeOffline()}>Удалить офлайн-копию</button> : null}
   </> : null;
 
   useEffect(() => {
@@ -830,7 +830,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
           </details> : null}
         </section>
       ) : (
-        <AroundScreen route={route} onStart={(index) => startTour(index === undefined, index)} updateAvailable={updateAvailable} initialTab={universal ? "walk" : undefined}>
+        <AroundScreen route={route} onStart={(index) => startTour(index === undefined, index)} updateAvailable={updateAvailable}>
           <section className="hero" id="top">
             <div className="hero-copy">
               <p className="kicker">{route.status === "draft" ? "Маршрут в подготовке" : `Аудиопрогулка · ${route.city}`}</p>
@@ -848,20 +848,19 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
                 <p className="start-note">Часть {savedChapterIndex + 1} · {chapters[savedChapterIndex].title} · {formatPlaybackTime(savedCheckpoint.positionSec)}</p>
                 <button type="button" className="restart-walk" onClick={() => startTour(false)}>Начать сначала</button>
               </> : null}
-              <p className="start-note">{route.walk ? hasWalkAudio ? `Около ${route.duration_min} минут ходьбы без остановок. Первая запись включится при старте, следующие по кнопке «Дальше». Озвучка доступна.` : universal && !hasStoryText ? `Около ${route.duration_min} минут ходьбы. Истории и аудио для этого маршрута пока не подготовлены.` : `Около ${route.duration_min} минут ходьбы без остановок. Рассказы переключаются вручную; озвучка готовится.` : usesTestAudio ? "Проверка геолокации и звука на одной точке. Запись аудио готовится." : "Разрешите звук и геолокацию после нажатия."}</p>
+              <p className="start-note">{route.walk ? hasWalkAudio ? `Около ${route.duration_min} минут ходьбы без остановок. Первая запись включится при старте, следующие по кнопке «Дальше». Озвучка доступна.` : `Около ${route.duration_min} минут ходьбы без остановок. Рассказы переключаются вручную; озвучка готовится.` : usesTestAudio ? "Проверка геолокации и звука на одной точке. Запись аудио готовится." : "Разрешите звук и геолокацию после нажатия."}</p>
               {chapters.length > 0 ? <a className="read-story-link" href="#walk-plan">Как пойдём · {chapters.length} {chapterWord(chapters.length)} <span aria-hidden="true">↓</span></a> : null}
               <a className="read-story-link" href="/create">Подготовить историю другого дома <span aria-hidden="true">→</span></a>
               {hasStoryText ? <a className="read-story-link" href="#story">Читать первую историю · около {storyMinutes} мин <span aria-hidden="true">↓</span></a> : null}
               {readyNotes.length > 0 ? <div><a className="read-story-link" href="#along-the-way">По дороге · короткие заметки ({readyNotes.length}) <span aria-hidden="true">↓</span></a></div> : null}
               {shellStatus ? <p className="start-note" role="status">{shellStatus}</p> : null}
-              {offlineCopy("start-note", "read-story-link offline-save-button")}
               <div className="update-control">
                 {updateAvailable ? <p role="status">Доступна новая версия сайта.</p> : null}
                 <a href="/update.html">{updateAvailable ? "Обновить прогулку" : "Проверить обновление"}</a>
               </div>
             </div>
 
-            <RouteMap route={route} universal={universal} />
+            <RouteMap route={route} />
           </section>
 
           <WalkPlanPreview chapters={chapters} />

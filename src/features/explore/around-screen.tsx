@@ -33,7 +33,7 @@ function distance(a:Coordinates,b:Coordinates){
 }
 const distanceLabel=(meters:number)=>meters<1000?`≈ ${Math.round(meters/50)*50 || 50} м`:`≈ ${(meters/1000).toFixed(1).replace(".",",")} км`;
 
-export function AroundScreen({route,onStart,children,updateAvailable,initialTab}: {route:Route;onStart:(chapter?:number)=>void;children:ReactNode;updateAvailable:boolean;initialTab?:Tab}) {
+export function AroundScreen({route,onStart,children,updateAvailable}: {route:Route;onStart:(chapter?:number)=>void;children:ReactNode;updateAvailable:boolean}) {
   const router = useRouter();
   const params = useSearchParams();
   const creating = params.get("walk") === "create" || params.get("tab") === "walk";
@@ -43,7 +43,7 @@ export function AroundScreen({route,onStart,children,updateAvailable,initialTab}
   const closeCreation = useCallback(() => { router.replace("/", {scroll:false}); setPicked(null); setTimeout(() => opener.current?.focus(), 0); }, [router]);
   const rememberOpener = () => { opener.current = document.activeElement as HTMLElement; };
   const pathname=usePathname();
-  const [tab,setTab]=useState<Tab>(initialTab ?? "nearby");
+  const [tab,setTab]=useState<Tab>("nearby");
   const [search,setSearch]=useState(false),[query,setQuery]=useState("");
   const [selected,setSelected]=useState<string>();
   const [place,setPlace]=useState<Place|null>(null),[placeBusy,setPlaceBusy]=useState(false),[placeError,setPlaceError]=useState("");

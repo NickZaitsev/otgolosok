@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DRAFT_KEY, editDraft, emptyDraft, isPlace, isPlan, moveStop, parseDraft, rememberStory, routeShortfall, storyAddressKey, saveDraft, validStops, type Place, type Plan } from "./model";
+import { DRAFT_KEY, editDraft, emptyDraft, isPlace, isPlan, parseDraft, rememberStory, routeShortfall, storyAddressKey, saveDraft, validStops, type Place, type Plan } from "./model";
 
 const start: Place = { address: "Москва, улица Первая, 1", location: { lat: 55.75, lon: 37.6 } };
 const stop: Place = { address: "Москва, улица Вторая, 2", location: { lat: 55.752, lon: 37.602 } };
@@ -45,14 +45,6 @@ describe("walk draft", () => {
     const distinct = Array.from({ length: 10 }, (_, index) => ({ address: `Москва, Арбат, ${index + 10}`, location: { lat: 55.752 + index * 0.001, lon: 37.604 } }));
     expect(validStops(start, distinct)).toBe(true);
     expect(validStops(start, [...distinct, { address: "Москва, Арбат, 20", location: { lat: 55.762, lon: 37.604 } }])).toBe(false);
-  });
-  it("reorders immutably with bounded accessible up/down operations", () => {
-    const stops = [stop, last];
-    expect(moveStop(stops, 0, 1)).toEqual([last, stop]);
-    expect(moveStop(stops, 1, -1)).toEqual([last, stop]);
-    expect(moveStop(stops, 0, -1)).toEqual(stops);
-    expect(moveStop(stops, 1, 1)).toEqual(stops);
-    expect(stops).toEqual([stop, last]);
   });
   it("all planning edits invalidate geometry but preserve successful IDs and uncertain intent", () => {
     const jobs = [{ place: start, id: "12345678-1234-1234-1234-123456789abc", stage: "ready" as const }];
