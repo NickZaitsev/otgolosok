@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { draftToWalkDocument, routeToWalkView } from "../src/features/walks/adapters";
 import routeData from "../public/data/routes/paveletskaya.json" with { type: "json" };
 import type { Route } from "../src/features/tour/types";
@@ -128,4 +128,121 @@ test("гостевая прогулка показывает опубликов�
   // В режиме разработки React дважды запускает эффект; каждый запрос несёт тот же документ.
   expect(requests.length).toBeGreaterThan(0);
   for (const request of requests) expect(request).toEqual({ document, revision: 0 });
+});
+
+// Одна остановка с длинной историей и аудио: панель прогулки становится самой высокой.
+const catalog = routeData as Route;
+const longStop = routeToWalkView({ ...catalog, walk: { ...catalog.walk!, steps: catalog.walk!.steps.slice(-1) } });
+const mapControls = { "крестик": ".walk-session-back", "плюс": ".leaflet-control-zoom-in", "минус": ".leaflet-control-zoom-out",
+  "геопозиция": ".walk-session-locate", "подпись OSM": ".map-attribution" };
+
+// Кнопка свободна, если она целиком в окне, на неё не заходят панель и навигация, а в её центре — она сама.
+function controlsState(page: Page) {
+  return page.evaluate(controls => {
+    const covers = { "панель": ".walk-session-panel", "навигация": ".app-navigation" };
+    return Object.fromEntries(Object.entries(controls).flatMap(([name, selector]) => {
+      const control = document.querySelector(selector);
+      if (!control) return [];
+      const box = control.getBoundingClientRect();
+      if (box.left < 0 || box.top < 0 || box.right > innerWidth || box.bottom > innerHeight) return [[name, "за краем окна"]];
+      for (const [cover, coverSelector] of Object.entries(covers)) {
+        const other = document.querySelector(coverSelector)!.getBoundingClientRect();
+        if (box.left < other.right && box.right > other.left && box.top < other.bottom && box.bottom > other.top) return [[name, `под: ${cover}`]];
+      }
+      const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+      return [[name, hit && control.contains(hit) ? "свободна" : `в центре: ${hit?.closest("[class]")?.getAttribute("class")}`]];
+    }));
+  }, mapControls);
+}
+
+// Отступы элемента от краёв окна.
+function edges(page: Page, selector: string) {
+  return page.locator(selector).first().evaluate(element => {
+    const box = element.getBoundingClientRect();
+    return { top: Math.round(box.top), left: Math.round(box.left), right: Math.round(innerWidth - box.right), bottom: Math.round(innerHeight - box.bottom) };
+  });
+}
+
+// Карта вписывает линию маршрута в видимую часть: она не уходит под панель, навигацию и за край окна.
+function routeIsVisible(page: Page) {
+  return page.evaluate(() => {
+    const path = document.querySelector('.leaflet-overlay-pane path[stroke="#203e38"]');
+    if (!path) return false;
+    const route = path.getBoundingClientRect();
+    const inside = route.left >= 0 && route.top >= 0 && route.right <= innerWidth && route.bottom <= innerHeight;
+    return inside && [".walk-session-panel", ".app-navigation"].every(selector => {
+      const other = document.querySelector(selector)!.getBoundingClientRect();
+      return route.right <= other.left || route.left >= other.right || route.bottom <= other.top || route.top >= other.bottom;
+    });
+  });
+}
+
+// Проверка в трёх состояниях панели: маршрут до старта, остановка с плеером и открытый текст истории.
+async function checkPanelStates(page: Page, check: (state: string) => Promise<void>) {
+  await page.context().grantPermissions(["geolocation"]);
+  await page.context().setGeolocation({ latitude: 55.7232, longitude: 37.653, accuracy: 12 });
+  await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: longStop }));
+  await page.goto("/walk?catalog=paveletskaya");
+  await expect(page.getByRole("button", { name: "Начать прогулку", exact: true })).toBeVisible();
+  await expect(page.locator(".walk-session-map .leaflet-control-zoom")).toBeAttached();
+  await check("до старта");
+  await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Моё местоположение", exact: true })).toBeVisible();
+  await check("после старта");
+  await page.getByRole("button", { name: "Читать историю", exact: true }).click();
+  await expect(page.locator(".walk-session-drawer .story-text")).toBeVisible();
+  await check("с текстом истории");
+}
+
+// Кнопки карты свободны, а линия маршрута видна.
+async function expectMapUsable(page: Page, state: string) {
+  const controls = await controlsState(page);
+  expect(Object.keys(controls), state).toEqual(expect.arrayContaining(["крестик", "плюс", "минус", "подпись OSM"]));
+  expect(controls, state).toEqual(Object.fromEntries(Object.keys(controls).map(name => [name, "свободна"])));
+  await expect.poll(() => routeIsVisible(page), { message: `маршрут виден: ${state}` }).toBe(true);
+}
+
+// Прежняя раскладка: панель над навигацией, крестик слева вверху, кнопки масштаба и геопозиции и подпись OSM справа вверху.
+async function expectBottomPanel(page: Page, panel: { left: number; right: number; bottom: number }) {
+  await checkPanelStates(page, async state => {
+    await expectMapUsable(page, state);
+    expect(await edges(page, ".walk-session-panel"), state).toMatchObject(panel);
+    expect(await edges(page, ".walk-session-back"), state).toMatchObject({ top: 16, left: 16 });
+    expect(await edges(page, ".leaflet-control-zoom"), state).toMatchObject({ top: 72, right: 22 });
+    expect(await edges(page, ".map-attribution"), state).toMatchObject({ top: 12, right: 12 });
+  });
+  expect(await edges(page, ".walk-session-locate")).toMatchObject({ top: 156, right: 18 });
+}
+
+test.describe("панель прогулки на телефоне", () => {
+  // Сенсорный экран: на горизонтальном телефоне навигация тогда островок во всю ширину окна.
+  test.use({ hasTouch: true, isMobile: true });
+
+  // Во всю ширину (уже 700 px) панель поднималась до 20 px от верха и закрывала крестик и кнопки масштаба,
+  // а по центру (шире) карта вписывала маршрут над панелью, где места не было, и линия пропадала.
+  // Теперь панель — колонкой справа, как карточка на стартовой карте, а кнопки карты — в левой колонке.
+  for (const [width, height] of [[667, 375], [568, 320], [844, 390]]) {
+    test(`не закрывает кнопки карты и маршрут на горизонтальном телефоне ${width}×${height}`, async ({ page }, info) => {
+      await page.setViewportSize({ width, height });
+      await checkPanelStates(page, async state => {
+        await expectMapUsable(page, state);
+        const panel = await edges(page, ".walk-session-panel");
+        const navigation = await edges(page, ".app-navigation");
+        expect(panel.right, state).toBe(12);
+        expect(panel.top, state).toBeGreaterThanOrEqual(12);
+        expect(panel.bottom, state).toBeGreaterThanOrEqual(height - navigation.top);
+      });
+      await page.screenshot({ path: info.outputPath("walk-landscape.png") });
+    });
+  }
+
+  test("сохраняет раскладку на вертикальном телефоне 390×844", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expectBottomPanel(page, { left: 12, right: 12, bottom: 104 });
+  });
+});
+
+test("панель прогулки сохраняет раскладку на компьютере 1440×900", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expectBottomPanel(page, { left: 510, right: 510, bottom: 108 });
 });
