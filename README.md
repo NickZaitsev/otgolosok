@@ -44,6 +44,12 @@ pnpm start
 
 ## Видео Remotion
 
+Видео — отдельный пакет pnpm workspace `@otgolosok/video` в каталоге `video/`:
+композиции в `video/src/`, скрипты подготовки и рендера в `video/scripts/`,
+материалы в `video/assets/`. Remotion и шрифты ставятся только в этот пакет,
+сборка сайта и Docker-образы их не устанавливают. Команды `pnpm video:*` из
+корня вызывают скрипты пакета; тесты видео входят в `pnpm test`.
+
 `OtgolosokGuide` — горизонтальная видеоинструкция 1920×1080, 30 кадров/с,
 около 100 секунд, с дикторской озвучкой. Восемь шагов на реальном интерфейсе:
 раздел «История», готовый маршрут, старт, пауза, чтение, настройки, список
@@ -67,10 +73,10 @@ pnpm video:render:create-guide
 
 Результаты: `artifacts/video/otgolosok-guide.mp4` и
 `artifacts/video/otgolosok-create-guide.mp4`. Исходные кадры и координаты
-кнопок хранятся в `video/assets/guide/` и `video/assets/guide/create/`. Подробности съёмки и обновления:
+кнопок относятся к `video/assets/guide/` и `video/assets/guide/create/` (PNG в Git не хранятся, их снимают тесты Playwright). Подробности съёмки и обновления:
 [видеоинструкция](docs/agents/video-guide.md).
 
-В `src/video/` находятся две вертикальные композиции 1080×1920:
+В `video/src/` находятся две вертикальные композиции 1080×1920:
 `OtgolosokAd` — рекламный ролик на 24 секунды с городскими кадрами, анимированной
 линией маршрута, оригинальной фоновой дорожкой и фрагментом истории;
 `OtgolosokPromo` — короткий типографический ролик на 18 секунд. Городские кадры
@@ -88,8 +94,8 @@ pnpm video:render
 
 Команды рендера создают `artifacts/video/otgolosok-ad.mp4` и
 `artifacts/video/otgolosok-promo.mp4`. Это локальные результаты, каталог исключён
-из Git. Рекламный монтаж находится в `src/video/otgolosok-ad.tsx`, хронометраж —
-в `src/video/ad-timeline.ts`. Фоновую дорожку синтезирует `pnpm video:prepare`.
+из Git. Рекламный монтаж находится в `video/src/otgolosok-ad.tsx`, хронометраж —
+в `video/src/ad-timeline.ts`. Фоновую дорожку синтезирует `pnpm video:prepare`.
 
 Снимки экранов для роликов не хранятся в Git. Перед первым рендером и после
 изменений интерфейса снимите их тестами Playwright — команды описаны в
@@ -123,7 +129,7 @@ pnpm video:render:motion-centre
 ```
 
 Результат — `artifacts/video/otgolosok-motion-centre.mp4`. Данные ролика лежат в
-`src/video/centre-walk.json`; обновляет их `pnpm video:centre:data` (нужна сеть).
+`video/src/centre-walk.json`; обновляет их `pnpm video:centre:data` (нужна сеть).
 
 Кинетический ролик 1080×1920 на 24 секунды собирается без Remotion: страница
 `video/kinetic/` рисует любой кадр функцией времени, Playwright снимает кадры,

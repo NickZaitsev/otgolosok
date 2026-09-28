@@ -2,6 +2,7 @@ import {readFileSync} from "node:fs";
 import {describe, expect, it} from "vitest";
 import {AD_DURATION_IN_FRAMES, AD_FPS, AD_SCENES, getAdSceneAt} from "./ad-timeline";
 import {MAP_STOPS, pointOnRoute, routeProgressNear, ROUTE_LENGTH, ROUTE_PATH} from "./route-geometry";
+import {repoPath} from "../scripts/lib/paths.mjs";
 
 describe("рекламный ролик", () => {
   it("покрывает 24 секунды без дыр между сценами", () => {
@@ -16,7 +17,7 @@ describe("рекламный ролик", () => {
   });
 
   it("ведёт маркер по фактической линии встроенной карты", () => {
-    const map = readFileSync("public/data/maps/paveletskaya.svg", "utf8");
+    const map = readFileSync(repoPath("public/data/maps/paveletskaya.svg"), "utf8");
     expect(map).toContain(`<path id="walking-path" d="${ROUTE_PATH}"`);
     expect(ROUTE_LENGTH).toBeGreaterThan(200);
     expect(pointOnRoute(0)).toEqual({x: 83.71, y: 94.04});
@@ -28,7 +29,7 @@ describe("рекламный ролик", () => {
   });
 
   it("находит остановки встроенной карты на маршруте по порядку", () => {
-    const map = readFileSync("public/data/maps/paveletskaya.svg", "utf8");
+    const map = readFileSync(repoPath("public/data/maps/paveletskaya.svg"), "utf8");
     for (const {x, y} of MAP_STOPS) expect(map).toContain(`transform="translate(${x} ${y})"`);
     const progress = MAP_STOPS.map(routeProgressNear);
     expect(progress[0]).toBe(0);

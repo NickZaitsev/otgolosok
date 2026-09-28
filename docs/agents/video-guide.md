@@ -60,9 +60,9 @@ Remove-Item Env:CAPTURE_VIDEO_GUIDE
 
 ## Озвучка
 
-Текст — `src/video/guide-narration.json` и `src/video/create-guide-narration.json`
+Текст — `video/src/guide-narration.json` и `video/src/create-guide-narration.json`
 (`<шаг>-do`, `<шаг>-done`, `intro`, `outro`); список инструкций — `GUIDE_VOICES`
-в `scripts/build-guide-voice.mjs`. `pnpm video:voice` отправляет изменённые фрагменты в just-tts
+в `video/scripts/build-guide-voice.mjs`. `pnpm video:voice` отправляет изменённые фрагменты в just-tts
 (`POST /v1/jobs`, профиль `f5-ru-v1`). Скрипт проверяет SHA-256, пишет MP3 и
 `manifest.json` с длительностью в `video/assets/guide/voice/` (вторая инструкция —
 `video/assets/guide/create/voice/`) и подтверждает
@@ -85,7 +85,7 @@ ffmpeg -i video/assets/guide/voice/next-do.mp3 -af volumedetect -f null -
 курсор — `guide-browser.tsx`, шаг — `guide-step.tsx`, вступление и финал —
 `otgolosok-guide.tsx`. Шрифты Manrope и Cormorant Garamond берутся из
 `@fontsource` и копируются в public при подготовке; для рендера сеть не нужна.
-Фон и щелчок синтезирует `scripts/build-guide-audio.mjs` при `video:prepare`.
+Фон и щелчок синтезирует `video/scripts/build-guide-audio.mjs` при `video:prepare`.
 
 ```bash
 pnpm video:studio

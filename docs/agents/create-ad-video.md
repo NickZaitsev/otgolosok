@@ -21,13 +21,13 @@
 ## Звук
 
 Музыку синтезирует `motionBedWav` при `video:prepare` по
-`src/video/create-ad-scenes.json`: удары на склейках и щелчки в кадрах `taps`.
+`video/src/create-ad-scenes.json`: удары на склейках и щелчки в кадрах `taps`.
 Нажатие на экране и щелчок берутся из одного поля, поэтому меняйте кадр нажатия
 только там. Контрольная громкость: mean около −22 дБ, max около −7 дБ.
 
 С 20-й секунды (поле `voice` в кадрах) звучит фрагмент истории Старого Английского
 двора, музыка под ним приглушена до конца ролика. Текст — в
-`src/video/create-ad-narration.json`, готовый клип и `manifest.json` — в
+`video/src/create-ad-narration.json`, готовый клип и `manifest.json` — в
 `video/assets/guide/create-ad/voice/`, озвучка через `pnpm video:voice` (F5, нужны
 `TTS_API_URL` и `TTS_API_TOKEN` в `.env`). До конца ролика остаётся 5,5 с: тест
 `create-ad-timeline.test.ts` падает, если клип длиннее или озвучен по старому тексту.

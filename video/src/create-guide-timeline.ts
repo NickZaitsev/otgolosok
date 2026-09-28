@@ -1,5 +1,5 @@
-import voiceManifest from "../../video/assets/guide/create/voice/manifest.json";
-import targets from "../../video/assets/guide/create/targets.json";
+import voiceManifest from "../assets/guide/create/voice/manifest.json";
+import targets from "../assets/guide/create/targets.json";
 import type {Rect} from "./guide-camera";
 import {guideTimeline, type GuideSpec, type GuideStepSpec, type VoiceManifest} from "./guide-timeline";
 

@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {clickWav, guideBedWav} from "../../scripts/build-guide-audio.mjs";
+import {clickWav, guideBedWav} from "../scripts/build-guide-audio.mjs";
 
 function samples(wav: Buffer) {
   expect(wav.toString("ascii", 0, 4)).toBe("RIFF");

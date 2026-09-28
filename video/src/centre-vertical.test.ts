@@ -2,7 +2,7 @@ import {mkdtemp, readFile, rm} from "node:fs/promises";
 import {tmpdir} from "node:os";
 import {join} from "node:path";
 import {afterEach, describe, expect, it} from "vitest";
-import {centreVerticalScore, prepareCentreVerticalVideo} from "../../scripts/prepare-centre-vertical-video.mjs";
+import {centreVerticalScore, prepareCentreVerticalVideo} from "../scripts/prepare-centre-vertical-video.mjs";
 import {CENTRE_STOPS} from "./centre-geometry";
 import {
   CENTRE_VERTICAL_DURATION_IN_FRAMES,

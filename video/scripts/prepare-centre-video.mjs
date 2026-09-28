@@ -2,7 +2,7 @@ import {createHash} from "node:crypto";
 import {mkdir, readFile, writeFile} from "node:fs/promises";
 import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
-import walk from "../src/video/centre-walk.json" with {type: "json"};
+import walk from "../src/centre-walk.json" with {type: "json"};
 import {motionBedWav} from "./build-motion-audio.mjs";
 import {centreMotionScore} from "./motion-centre-score.mjs";
 
@@ -34,6 +34,6 @@ export async function prepareCentreVideo(publicDir, {download = fetch} = {}) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
   await prepareCentreVideo(join(root, "artifacts/video/public"));
 }

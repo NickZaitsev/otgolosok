@@ -12,12 +12,12 @@
 - `video/kinetic/timeline.mjs` — хронометраж сцен и фрагмент голоса; чистая
   математика (кривые, пружина, полосы для clip-path, ломаная маршрута) живёт в
   `video/shared/motion.mjs` и реэкспортируется отсюда. Тест —
-  `src/video/kinetic-timeline.test.ts`.
+  `video/src/kinetic-timeline.test.ts`.
 - `video/kinetic/scene.mjs` — сцена на обычном DOM/SVG. Всё движение задаётся
   только в `seek(t)`: никаких CSS-transition, `@keyframes`, таймеров и
   `Math.random`, иначе кадры перестанут быть воспроизводимыми.
-- `scripts/render-kinetic-video.mjs` — готовит данные и звук, а кадры снимает
-  общий `scripts/lib/frame-render.mjs`: локальный HTTP-сервер (страница, шрифты
+- `video/scripts/render-kinetic-video.mjs` — готовит данные и звук, а кадры снимает
+  общий `video/scripts/lib/frame-render.mjs`: локальный HTTP-сервер (страница, шрифты
   `@fontsource`, `video/shared/`), Playwright Chromium, PNG в stdin FFmpeg. Страница
   выставляет `window.motionScene`. Любая ошибка страницы, 4xx/5xx ресурса или
   незагруженный шрифт останавливают рендер.
@@ -45,7 +45,7 @@
 ```bash
 pnpm video:render:kinetic                                 # около 2,5 мин, ~16 МБ
 pnpm video:preview:kinetic                                # живой просмотр, ?preview&t=7
-node scripts/render-kinetic-video.mjs --stills 1.5,9.5,22 # PNG в artifacts/video/kinetic-stills/
+node video/scripts/render-kinetic-video.mjs --stills 1.5,9.5,22 # PNG в artifacts/video/kinetic-stills/
 ```
 
 Проверено 28 сентября 2026: полный рендер 720 кадров за 133 с на Windows,

@@ -1,3 +1,5 @@
+packages:
+  - video
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver

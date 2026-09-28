@@ -1,17 +1,18 @@
 import {readFileSync} from "node:fs";
-import {join, resolve} from "node:path";
+import {join} from "node:path";
 import {beforeAll, describe, expect, it} from "vitest";
-import {redSquareSamples, SAMPLE_RATE} from "../../scripts/red-square-music.mjs";
-import {decodePolyline6, mapLayers, pickStops, projection, simplify, STOPS, VIEW} from "../../scripts/fetch-red-square-walk.mjs";
-import {parseRenderArgs, resolveScenePath} from "../../scripts/lib/frame-render.mjs";
-import {fadeOut, normalizeSpeech, speechBounds} from "../../scripts/lib/voice-audio.mjs";
-import {checkScript, checkVoice, loadVoice, voiceTrack} from "../../scripts/render-red-square-video.mjs";
+import {redSquareSamples, SAMPLE_RATE} from "../scripts/red-square-music.mjs";
+import {decodePolyline6, mapLayers, pickStops, projection, simplify, STOPS, VIEW} from "../scripts/fetch-red-square-walk.mjs";
+import {parseRenderArgs, resolveScenePath} from "../scripts/lib/frame-render.mjs";
+import {fadeOut, normalizeSpeech, speechBounds} from "../scripts/lib/voice-audio.mjs";
+import {checkScript, checkVoice, loadVoice, voiceTrack} from "../scripts/render-red-square-video.mjs";
 import {
   BEAT, BOARD, DURATION, FACTS, FACT_LENGTH, FPS, FRAME_COUNT, PLAYER, SCENES,
   MAP_DRAW, VOICE_AT, VOICE_FADE, VOICE_GAP, cameraProject, cameraTransform, musicScore, scene, spokenLength, voiceSchedule, wordTimes,
-} from "../../video/red-square/timeline.mjs";
+} from "../red-square/timeline.mjs";
+import {repoPath} from "../scripts/lib/paths.mjs";
 
-const walk = JSON.parse(readFileSync(resolve("video/red-square/walk.json"), "utf8"));
+const walk = JSON.parse(readFileSync(repoPath("video/red-square/walk.json"), "utf8"));
 
 describe("хронометраж ролика «Красная площадь и Варварка»", () => {
   it("сцены идут встык от нуля, склейки стоят на ударах", () => {
@@ -347,13 +348,13 @@ describe("данные прогулки из OSM и Valhalla", () => {
 });
 
 describe("раздача сцены и аргументы рендера", () => {
-  const sceneDir = resolve("video/red-square");
+  const sceneDir = repoPath("video/red-square");
 
   it.each([
     ["/", join(sceneDir, "index.html")],
     ["/scene.mjs", join(sceneDir, "scene.mjs")],
-    ["/shared/motion.mjs", resolve("video/shared/motion.mjs")],
-    ["/fonts/manrope/400.css", resolve("node_modules/@fontsource/manrope/400.css")],
+    ["/shared/motion.mjs", repoPath("video/shared/motion.mjs")],
+    ["/fonts/manrope/400.css", repoPath("video/node_modules/@fontsource/manrope/400.css")],
   ])("%s → файл сцены", (path, file) => {
     expect(resolveScenePath(sceneDir, path)).toBe(file);
   });

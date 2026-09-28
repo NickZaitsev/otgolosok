@@ -32,9 +32,6 @@ docs
 e2e
 test-results
 playwright-report
-# Video media; src/video still imports the JSON manifests next to it.
-video/**/*.png
-video/**/*.wav
-video/**/*.mp3
-video/**/*.webp
-video/**/*.mp4
+# The video workspace package is not part of the site; only its manifest is needed for pnpm install.
+video
+!video/package.json

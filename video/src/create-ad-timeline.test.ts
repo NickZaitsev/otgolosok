@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import manifest from "../../video/assets/guide/create-ad/voice/manifest.json";
+import manifest from "../assets/guide/create-ad/voice/manifest.json";
 import narration from "./create-ad-narration.json";
 import {CREATE_AD_DURATION_IN_FRAMES, CREATE_AD_FPS, CREATE_AD_SCENES, CREATE_AD_TAPS, CREATE_AD_TRANSITION_FRAMES, CREATE_AD_VOICE_FRAME, getCreateAdFrameState, tapAt} from "./create-ad-timeline";
 

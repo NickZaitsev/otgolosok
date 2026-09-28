@@ -1,11 +1,12 @@
 import {readFileSync} from "node:fs";
 import {describe, expect, it} from "vitest";
-import {sceneData} from "../../scripts/render-kinetic-video.mjs";
-import {voiceLevels} from "../../scripts/lib/voice-audio.mjs";
+import {sceneData} from "../scripts/render-kinetic-video.mjs";
+import {voiceLevels} from "../scripts/lib/voice-audio.mjs";
 import {
   BEAT, DURATION, FPS, FRAME_COUNT, SCENES, VOICE,
   bezier, frameTime, musicScore, parsePolyline, polyline, progress, scene, stripesPolygon,
-} from "../../video/kinetic/timeline.mjs";
+} from "../kinetic/timeline.mjs";
+import {repoPath} from "../scripts/lib/paths.mjs";
 
 describe("хронометраж кинетического ролика", () => {
   it("сцены идут встык от нуля, склейки стоят на ударах", () => {
@@ -79,8 +80,8 @@ describe("анимационная математика", () => {
 });
 
 describe("данные сцены", () => {
-  const route = JSON.parse(readFileSync("public/data/routes/paveletskaya.json", "utf8"));
-  const map = readFileSync("public/data/maps/paveletskaya.svg", "utf8");
+  const route = JSON.parse(readFileSync(repoPath("public/data/routes/paveletskaya.json"), "utf8"));
+  const map = readFileSync(repoPath("public/data/maps/paveletskaya.svg"), "utf8");
 
   it("берёт путь, метки и подписи из карты и маршрута", () => {
     const data = sceneData(route, map);

@@ -1,0 +1,46 @@
+{
+  "name": "@otgolosok/video",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "assets": "node scripts/prepare-video-assets.mjs",
+    "studio": "pnpm assets && remotion studio src/index.ts --public-dir ../artifacts/video/public",
+    "render": "pnpm assets && remotion render src/index.ts OtgolosokPromo ../artifacts/video/otgolosok-promo.mp4 --public-dir ../artifacts/video/public",
+    "render:ad": "pnpm assets && remotion render src/index.ts OtgolosokAd ../artifacts/video/otgolosok-ad.mp4 --public-dir ../artifacts/video/public",
+    "render:motion": "pnpm assets && remotion render src/index.ts OtgolosokMotion ../artifacts/video/otgolosok-motion.mp4 --public-dir ../artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "render:create-ad": "pnpm assets && remotion render src/index.ts OtgolosokCreateAd ../artifacts/video/otgolosok-create-ad.mp4 --public-dir ../artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "render:motion-wide": "pnpm assets && remotion render src/index.ts OtgolosokMotionWide ../artifacts/video/otgolosok-motion-wide.mp4 --public-dir ../artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "render:motion-centre": "pnpm assets && node scripts/prepare-centre-video.mjs && remotion render src/index.ts OtgolosokMotionCentre ../artifacts/video/otgolosok-motion-centre.mp4 --public-dir ../artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "render:centre-vertical": "pnpm assets && node scripts/prepare-centre-vertical-video.mjs && remotion render src/index.ts OtgolosokCentreVertical ../artifacts/video/otgolosok-centre-vertical.mp4 --public-dir ../artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "render:guide": "pnpm assets && remotion render src/index.ts OtgolosokGuide ../artifacts/video/otgolosok-guide.mp4 --public-dir ../artifacts/video/public --image-format=png --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "render:create-guide": "pnpm assets && remotion render src/index.ts OtgolosokCreateGuide ../artifacts/video/otgolosok-create-guide.mp4 --public-dir ../artifacts/video/public --image-format=png --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "centre:data": "node scripts/build-centre-walk-video.mjs",
+    "render:kinetic": "node scripts/render-kinetic-video.mjs",
+    "preview:kinetic": "node scripts/render-kinetic-video.mjs --preview",
+    "data:red-square": "node scripts/fetch-red-square-walk.mjs",
+    "render:red-square": "node scripts/render-red-square-video.mjs",
+    "preview:red-square": "node scripts/render-red-square-video.mjs --preview",
+    "voice": "node --env-file-if-exists=../.env scripts/build-guide-voice.mjs",
+    "voice:red-square": "node --env-file-if-exists=../.env scripts/build-red-square-voice.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
+    "@remotion/cli": "4.0.529",
+    "@remotion/fonts": "4.0.529",
+    "@remotion/transitions": "4.0.529",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "remotion": "4.0.529"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19",
+    "typescript": "^5",
+    "vitest": "^5.0.0"
+  }
+}

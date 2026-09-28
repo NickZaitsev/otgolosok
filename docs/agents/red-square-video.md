@@ -19,9 +19,9 @@
 - `video/red-square/scene.mjs` — сцена на DOM/SVG. Движение только в `seek(t)`.
 - `video/shared/` — общая математика (`motion.mjs`, её же реэкспортирует
   `video/kinetic/timeline.mjs`) и DOM-помощники (`dom.mjs`).
-- `scripts/lib/frame-render.mjs` — общий покадровый рендер: HTTP-сервер сцены,
+- `video/scripts/lib/frame-render.mjs` — общий покадровый рендер: HTTP-сервер сцены,
   Playwright Chromium, FFmpeg. Им пользуются этот ролик и кинетический.
-- `scripts/red-square-music.mjs` — свой синтез: колокола на куполах и в финале,
+- `video/scripts/red-square-music.mjs` — свой синтез: колокола на куполах и в финале,
   бочка 120 уд/мин, арпеджио, подъём шума перед склейками, стук табло.
 
 ## Данные
@@ -48,7 +48,7 @@
 весит по девять букв на цифру (`spokenLength`).
 
 `pnpm video:voice:red-square` начитывает клипы через HTTP API just-tts (профиль `f5-ru-v1`,
-переиспользует `scripts/build-guide-voice.mjs`: повторы, проверка sha256, ack) и кладёт MP3
+переиспользует `video/scripts/build-guide-voice.mjs`: повторы, проверка sha256, ack) и кладёт MP3
 и `manifest.json` в `video/red-square/voice/` — они в git, рендер от TTS-сервера не зависит.
 Нужны `TTS_API_URL` и `TTS_API_TOKEN` в `.env`. Три клипа синтезируются около минуты.
 
@@ -75,7 +75,7 @@
 pnpm video:render:red-square                                  # около 3,5 мин
 pnpm video:voice:red-square                                   # переозвучка, нужен just-tts
 pnpm video:preview:red-square                                 # живой просмотр, ?preview&t=12
-node scripts/render-red-square-video.mjs --stills 2,9,16,22   # PNG в artifacts/video/red-square-stills/
+node video/scripts/render-red-square-video.mjs --stills 2,9,16,22   # PNG в artifacts/video/red-square-stills/
 ```
 
 Проверено 28 сентября 2026 на Windows: полный рендер 1500 кадров за 195 с, h264 + AAC,

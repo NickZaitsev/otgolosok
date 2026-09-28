@@ -12,9 +12,9 @@ import {motionBedWav} from "./build-motion-audio.mjs";
 import {parseRenderArgs, renderStills, renderVideo, run, serveScene} from "./lib/frame-render.mjs";
 import {stripRouteLayer} from "./prepare-video-assets.mjs";
 import {voiceLevels} from "./lib/voice-audio.mjs";
-import {DURATION, FPS, FRAME_COUNT, HEIGHT, VOICE, WIDTH, musicScore} from "../video/kinetic/timeline.mjs";
+import {DURATION, FPS, FRAME_COUNT, HEIGHT, VOICE, WIDTH, musicScore} from "../kinetic/timeline.mjs";
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const OUTPUT = join(root, "artifacts/video/otgolosok-kinetic.mp4");
 const STILLS = join(root, "artifacts/video/kinetic-stills");
 const VOICE_FILE = join(root, "public/audio/walk/kozhevniki-d2ccb2df8e45.mp3");

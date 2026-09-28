@@ -7,7 +7,7 @@ import {writeFile} from "node:fs/promises";
 import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const OUTPUT = join(root, "video/red-square/walk.json");
 const SITE = "https://otgolosok.online";
 const ROUTER = "https://valhalla1.openstreetmap.de/route";

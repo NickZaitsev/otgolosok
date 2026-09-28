@@ -6,7 +6,7 @@ import {mkdir, readFile, rename, rm, writeFile} from "node:fs/promises";
 import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 import {promisify} from "node:util";
-import {createTtsApiClient} from "../backend/tts-api-client.mjs";
+import {createTtsApiClient} from "../../backend/tts-api-client.mjs";
 
 const run = promisify(execFile);
 const wait = milliseconds => new Promise(done => setTimeout(done, milliseconds));
@@ -15,9 +15,9 @@ export const DEFAULT_PROFILE = "f5-ru-v1";
 
 /** Видеоинструкции с озвучкой: текст дикторов и каталог готовых клипов. */
 export const GUIDE_VOICES = [
-  {name: "guide", narration: "src/video/guide-narration.json", voiceDir: "video/assets/guide/voice"},
-  {name: "create", narration: "src/video/create-guide-narration.json", voiceDir: "video/assets/guide/create/voice"},
-  {name: "create-ad", narration: "src/video/create-ad-narration.json", voiceDir: "video/assets/guide/create-ad/voice"},
+  {name: "guide", narration: "video/src/guide-narration.json", voiceDir: "video/assets/guide/voice"},
+  {name: "create", narration: "video/src/create-guide-narration.json", voiceDir: "video/assets/guide/create/voice"},
+  {name: "create-ad", narration: "video/src/create-ad-narration.json", voiceDir: "video/assets/guide/create-ad/voice"},
 ];
 
 /** Ключ клипа меняется при смене текста или любой части голосового профиля. */
@@ -63,9 +63,11 @@ async function synthesize(client, profile, requestId, id, text, {pollMs = 2000, 
   return {jobId: created.id, bytes: download.bytes, sha256: actual};
 }
 
-async function mediaDuration(root, path) {
-  // ffprobe из поставки Remotion: отдельный FFmpeg в системе не нужен.
-  const cli = join(root, "node_modules/@remotion/cli/remotion-cli.js");
+// ffprobe из поставки Remotion: отдельный FFmpeg в системе не нужен.
+const REMOTION_CLI = fileURLToPath(new URL("../node_modules/@remotion/cli/remotion-cli.js", import.meta.url));
+
+async function mediaDuration(path) {
+  const cli = REMOTION_CLI;
   const {stdout} = await run(process.execPath, [cli, "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=nw=1:nk=1", path]);
   const seconds = Number.parseFloat(stdout.trim());
   if (!Number.isFinite(seconds) || seconds <= 0) throw new Error(`Не удалось определить длительность ${path}`);
@@ -113,7 +115,7 @@ export async function buildGuideVoice({root, client, profileId = DEFAULT_PROFILE
     const result = await synthesize(client, profile, requestId, id, text);
     await writeFile(`${path}.part`, result.bytes);
     await rename(`${path}.part`, path);
-    next[id] = {key, text, sha256: result.sha256, durationSeconds: await mediaDuration(root, path), profile: profile.id, voice: profile.voice};
+    next[id] = {key, text, sha256: result.sha256, durationSeconds: await mediaDuration(path), profile: profile.id, voice: profile.voice};
     // Подтверждаем приём только после надёжной записи файла.
     await withRetry(() => client.ack(result.jobId, result.sha256));
     await writeFile(manifestPath, JSON.stringify({...manifest, ...next}, null, 2) + "\n");
@@ -130,7 +132,7 @@ if (process.argv[1] && resolve(process.argv[1]) === scriptPath) {
   try {
     const client = createTtsApiClient({baseUrl: process.env.TTS_API_URL, token: process.env.TTS_API_TOKEN});
     for (const guide of GUIDE_VOICES) {
-      await buildGuideVoice({root: resolve(dirname(scriptPath), ".."), client, profileId: process.env.GUIDE_TTS_PROFILE || DEFAULT_PROFILE, guide});
+      await buildGuideVoice({root: resolve(dirname(scriptPath), "../.."), client, profileId: process.env.GUIDE_TTS_PROFILE || DEFAULT_PROFILE, guide});
     }
   } catch (error) {
     console.error("Не удалось озвучить видеоинструкцию:", error instanceof Error ? error.message : String(error));

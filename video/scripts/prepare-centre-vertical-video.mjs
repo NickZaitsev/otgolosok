@@ -1,7 +1,7 @@
 import {mkdir, writeFile} from "node:fs/promises";
 import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
-import config from "../src/video/centre-vertical-scenes.json" with {type: "json"};
+import config from "../src/centre-vertical-scenes.json" with {type: "json"};
 import {motionBedWav} from "./build-motion-audio.mjs";
 import {prepareCentreVideo} from "./prepare-centre-video.mjs";
 import {sceneScore} from "./prepare-video-assets.mjs";
@@ -22,7 +22,7 @@ export async function prepareCentreVerticalVideo(publicDir, {prepareStory = prep
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
   try {
     await prepareCentreVerticalVideo(join(root, "artifacts/video/public"));
   } catch (error) {

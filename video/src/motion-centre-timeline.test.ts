@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
-import {dropLoops, publishedStop, shortestWalk, walkGraph} from "../../scripts/build-centre-walk-video.mjs";
-import {centreMotionScore} from "../../scripts/motion-centre-score.mjs";
+import {dropLoops, publishedStop, shortestWalk, walkGraph} from "../scripts/build-centre-walk-video.mjs";
+import {centreMotionScore} from "../scripts/motion-centre-score.mjs";
 import {CENTRE_STOP_PROGRESS, CENTRE_STOPS, CENTRE_WALK, centrePointAt} from "./centre-geometry";
 import {CENTRE_DURATION_IN_FRAMES, CENTRE_FIRE_START, CENTRE_FPS, CENTRE_ITEM_FRAMES, CENTRE_LOCKUP_FRAME, CENTRE_SCENES, centreScene} from "./motion-centre-timeline";
 import {plural} from "./russian-plural";

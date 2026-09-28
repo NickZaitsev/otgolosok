@@ -4,12 +4,13 @@ import {readFile} from "node:fs/promises";
 import {describe, expect, it} from "vitest";
 import narration from "./guide-narration.json";
 import createNarration from "./create-guide-narration.json";
-import voice from "../../video/assets/guide/voice/manifest.json";
-import createVoice from "../../video/assets/guide/create/voice/manifest.json";
-import {GUIDE_BED_SECONDS} from "../../scripts/prepare-video-assets.mjs";
+import voice from "../assets/guide/voice/manifest.json";
+import createVoice from "../assets/guide/create/voice/manifest.json";
+import {GUIDE_BED_SECONDS} from "../scripts/prepare-video-assets.mjs";
 import {PAGE_HEIGHT, PAGE_WIDTH} from "./guide-camera";
 import {GUIDE, GUIDE_DURATION_IN_FRAMES, GUIDE_FPS, GUIDE_TRANSITION_FRAMES, guideTimeline, stepTiming, type GuideSpec} from "./guide-timeline";
 import {CREATE_GUIDE, CREATE_GUIDE_DURATION_IN_FRAMES} from "./create-guide-timeline";
+import {repoPath} from "../scripts/lib/paths.mjs";
 
 const guides: [string, GuideSpec, Record<string, string>, Record<string, {text: string; sha256: string; durationSeconds: number}>, string, number][] = [
   ["как пользоваться сайтом", GUIDE, narration, voice, "video/assets/guide/voice", GUIDE_DURATION_IN_FRAMES],
@@ -51,11 +52,11 @@ describe("хронометраж видеоинструкции", () => {
 describe.each(guides)("материалы инструкции «%s»", (_, guide, text, clips, voiceDir) => {
   const screens = [...new Set(guide.steps.flatMap(step => [step.before, step.after]))];
   // Снимки не хранятся в git и появляются только после съёмки (docs/agents/video-guide.md).
-  const captured = screens.every(name => existsSync(`video/assets/guide/${name}.png`));
+  const captured = screens.every(name => existsSync(repoPath(`video/assets/guide/${name}.png`)));
 
   it.skipIf(!captured)("каждое состояние снято в 2×", async () => {
     for (const name of screens) {
-      const png = await readFile(`video/assets/guide/${name}.png`);
+      const png = await readFile(repoPath(`video/assets/guide/${name}.png`));
       expect(png.subarray(1, 4).toString()).toBe("PNG");
       expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([PAGE_WIDTH * 2, PAGE_HEIGHT * 2]);
     }
@@ -79,7 +80,7 @@ describe.each(guides)("материалы инструкции «%s»", (_, guid
     for (const [id, phrase] of Object.entries(text)) {
       const clip = clips[id];
       expect(clip?.text, `${id}: перегенерируйте pnpm video:voice`).toBe(phrase);
-      const bytes = await readFile(`${voiceDir}/${id}.mp3`);
+      const bytes = await readFile(repoPath(`${voiceDir}/${id}.mp3`));
       expect(createHash("sha256").update(bytes).digest("hex")).toBe(clip.sha256);
       expect(clip.durationSeconds).toBeGreaterThan(0.5);
     }

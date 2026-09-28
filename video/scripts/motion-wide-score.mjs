@@ -1,4 +1,4 @@
-import wide from "../src/video/motion-wide-scenes.json" with {type: "json"};
+import wide from "../src/motion-wide-scenes.json" with {type: "json"};
 
 /**
  * Партитура музыки горизонтального моушн-ролика, в секундах. Склейки считаются

@@ -1,9 +1,10 @@
 import {mkdir, mkdtemp, readFile, rm, writeFile} from "node:fs/promises";
 import {tmpdir} from "node:os";
-import {join, resolve} from "node:path";
+import {join} from "node:path";
 import {createHash} from "node:crypto";
 import {afterEach, describe, expect, it, vi} from "vitest";
-import {GUIDE_VOICES, buildGuideVoice, clipKey, isTransient, withRetry} from "../../scripts/build-guide-voice.mjs";
+import {GUIDE_VOICES, buildGuideVoice, clipKey, isTransient, withRetry} from "../scripts/build-guide-voice.mjs";
+import {repoPath} from "../scripts/lib/paths.mjs";
 
 const profile = {id: "f5-ru-v1", voice: "obrazec6", modelSha256: "m", configSha256: "c", referenceSha256: "r", preparationVersion: "p"};
 const tempDirs: string[] = [];
@@ -49,13 +50,11 @@ describe("озвучка видеоинструкции", () => {
   it("сохраняет MP3 и manifest, подтверждает приём и не синтезирует повторно", async () => {
     const root = await mkdtemp(join(tmpdir(), "otgolosok-voice-"));
     tempDirs.push(root);
-    await mkdir(join(root, "src/video"), {recursive: true});
-    await writeFile(join(root, "src/video/guide-narration.json"), JSON.stringify({intro: "Привет."}));
+    await mkdir(join(root, "video/src"), {recursive: true});
+    await writeFile(join(root, "video/src/guide-narration.json"), JSON.stringify({intro: "Привет."}));
     // Реальный MP3 нужен ffprobe для измерения длительности.
-    const bytes = await readFile("video/assets/guide/voice/intro.mp3");
+    const bytes = await readFile(repoPath("video/assets/guide/voice/intro.mp3"));
     const sha256 = createHash("sha256").update(bytes).digest("hex");
-    await mkdir(join(root, "node_modules/@remotion"), {recursive: true});
-    await import("node:fs/promises").then(fs => fs.symlink(resolve("node_modules/@remotion/cli"), join(root, "node_modules/@remotion/cli"), "junction"));
     const client = {
       profiles: vi.fn(async () => [profile]),
       create: vi.fn<(request: unknown) => Promise<{id: string; state: string}>>(async () => ({id: "job-1", state: "succeeded"})),
@@ -74,7 +73,7 @@ describe("озвучка видеоинструкции", () => {
     expect(client.create).toHaveBeenCalledTimes(1);
 
     // Вторая инструкция пишет в свой каталог и не трогает клипы первой.
-    await writeFile(join(root, "src/video/create-guide-narration.json"), JSON.stringify({intro: "Привет."}));
+    await writeFile(join(root, "video/src/create-guide-narration.json"), JSON.stringify({intro: "Привет."}));
     const created = await buildGuideVoice({root, client, log: () => {}, guide: GUIDE_VOICES[1]});
     expect(created.intro.sha256).toBe(sha256);
     expect(await readFile(join(root, "video/assets/guide/create/voice/intro.mp3"))).toEqual(bytes);
@@ -92,8 +91,8 @@ describe("озвучка видеоинструкции", () => {
   it("отклоняет аудио с неверной контрольной суммой и не подтверждает его", async () => {
     const root = await mkdtemp(join(tmpdir(), "otgolosok-voice-"));
     tempDirs.push(root);
-    await mkdir(join(root, "src/video"), {recursive: true});
-    await writeFile(join(root, "src/video/guide-narration.json"), JSON.stringify({intro: "Привет."}));
+    await mkdir(join(root, "video/src"), {recursive: true});
+    await writeFile(join(root, "video/src/guide-narration.json"), JSON.stringify({intro: "Привет."}));
     const bytes = Buffer.from("не mp3");
     const client = {
       profiles: vi.fn(async () => [profile]),
@@ -109,8 +108,8 @@ describe("озвучка видеоинструкции", () => {
   it("сообщает об отсутствующем профиле", async () => {
     const root = await mkdtemp(join(tmpdir(), "otgolosok-voice-"));
     tempDirs.push(root);
-    await mkdir(join(root, "src/video"), {recursive: true});
-    await writeFile(join(root, "src/video/guide-narration.json"), "{}");
+    await mkdir(join(root, "video/src"), {recursive: true});
+    await writeFile(join(root, "video/src/guide-narration.json"), "{}");
     const client = {profiles: vi.fn(async () => []), create: vi.fn(), get: vi.fn(), audio: vi.fn(), ack: vi.fn()};
     await expect(buildGuideVoice({root, client, log: () => {}})).rejects.toThrow("f5-ru-v1");
   });

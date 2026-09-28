@@ -1,7 +1,7 @@
 import {readFile, writeFile} from "node:fs/promises";
 import {resolve} from "node:path";
 import {fileURLToPath} from "node:url";
-import {createProjection} from "./build-map.mjs";
+import {createProjection} from "../../scripts/build-map.mjs";
 
 /**
  * Данные ролика «Прогулка по центру»: подложка карты, пешеходный путь и остановки.
@@ -271,6 +271,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     if (!page.hasMore) break;
   }
   const walk = {fetchedAt: new Date().toISOString().slice(0, 10), ...buildCentreWalk(overpass, places)};
-  await writeFile(new URL("../src/video/centre-walk.json", import.meta.url), `${JSON.stringify(walk)}\n`);
+  await writeFile(new URL("../src/centre-walk.json", import.meta.url), `${JSON.stringify(walk)}\n`);
   console.log(`Centre walk: ${walk.stops.length} stops, ${walk.distanceM} m (${walk.legsM.join(" + ")}), OSM base ${walk.osmBase}`);
 }

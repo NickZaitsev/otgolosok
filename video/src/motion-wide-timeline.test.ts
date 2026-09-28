@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {wideMotionScore} from "../../scripts/motion-wide-score.mjs";
+import {wideMotionScore} from "../scripts/motion-wide-score.mjs";
 import {WIDE_DURATION_IN_FRAMES, WIDE_FPS, WIDE_LOCKUP_FRAME, WIDE_SCENES, layoutWideScenes, wideScene} from "./motion-wide-timeline";
 
 describe("горизонтальный моушн-ролик", () => {

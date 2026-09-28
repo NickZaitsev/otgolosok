@@ -1,5 +1,5 @@
-import centre from "../src/video/motion-centre-scenes.json" with {type: "json"};
-import walk from "../src/video/centre-walk.json" with {type: "json"};
+import centre from "../src/motion-centre-scenes.json" with {type: "json"};
+import walk from "../src/centre-walk.json" with {type: "json"};
 import {wideMotionScore} from "./motion-wide-score.mjs";
 
 /**

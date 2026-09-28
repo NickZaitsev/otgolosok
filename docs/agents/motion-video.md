@@ -28,10 +28,10 @@
 
 ## Музыка
 
-`scripts/build-motion-audio.mjs` синтезирует фон при `video:prepare`: 120 уд/мин
+`video/scripts/build-motion-audio.mjs` синтезирует фон при `video:prepare`: 120 уд/мин
 (удар — ровно 15 кадров), эхо-сигнал в начале и финале, шелест и удар на каждой
 склейке, приглушение под голосом истории. Склейки берутся из
-`src/video/motion-scenes.json` — меняйте хронометраж только там.
+`video/src/motion-scenes.json` — меняйте хронометраж только там.
 Контрольная громкость рендера: mean около −21 дБ, max около −6 дБ.
 
 ## Рендер
@@ -46,16 +46,16 @@ pnpm video:render:motion
 
 ## Горизонтальная версия
 
-`OtgolosokMotionWide` (`src/video/otgolosok-motion-wide.tsx`, сцены в
-`src/video/motion-wide/`): 1920×1080, 30 кадров/с, 914 кадров. Семь сцен на
+`OtgolosokMotionWide` (`video/src/otgolosok-motion-wide.tsx`, сцены в
+`video/src/motion-wide/`): 1920×1080, 30 кадров/с, 914 кадров. Семь сцен на
 `TransitionSeries`: хук с названиями остановок → знак «Отголосок.» → «Город
 говорит там, где случилась история» → три шага на снимках `guide/home`,
 `guide/route`, `guide/listen` → карта с маршрутом и счётчиками → светлая
 карточка первой остановки с источниками и датой проверки → финал с адресом.
 
-Хронометраж — `src/video/motion-wide-scenes.json`: длительности сцен и переходов.
+Хронометраж — `video/src/motion-wide-scenes.json`: длительности сцен и переходов.
 Переход накладывает соседние сцены, поэтому начало сцены — сумма предыдущих
-длительностей минус переходы. `scripts/motion-wide-score.mjs` считает склейки
+длительностей минус переходы. `video/scripts/motion-wide-score.mjs` считает склейки
 так же и передаёт их тому же синтезатору `motionBedWav`; тест сверяет удары
 музыки со стартами сцен. Меняйте хронометраж только в JSON.
 
@@ -63,8 +63,8 @@ pnpm video:render:motion
 
 ## «Прогулка по центру» (V2)
 
-`OtgolosokMotionCentre` (`src/video/otgolosok-motion-centre.tsx`, свои сцены в
-`src/video/motion-centre/`): 1920×1080, 30 кадров/с, 1118 кадров. Сюжет одной
+`OtgolosokMotionCentre` (`video/src/otgolosok-motion-centre.tsx`, свои сцены в
+`video/src/motion-centre/`): 1920×1080, 30 кадров/с, 1118 кадров. Сюжет одной
 нитью, нумерация мест везде одна:
 
 1. хук — восемь мест, мимо которых проходят, по 36 кадров (15 кадров первой
@@ -83,10 +83,10 @@ pnpm video:render:motion
 `Words` скрывает слово до появления и после ухода: повёрнутое на 6° слово
 выступает углами из-под маски, и в первой сборке V2 на экране оставались
 обрезки букв ещё не показанных подписей. Хронометраж и длина одного названия — в
-`src/video/motion-centre-scenes.json`.
+`video/src/motion-centre-scenes.json`.
 
-Все данные ролика — `src/video/centre-walk.json`, его собирает
-`scripts/build-centre-walk-video.mjs`:
+Все данные ролика — `video/src/centre-walk.json`, его собирает
+`video/scripts/build-centre-walk-video.mjs`:
 
 - остановки — опубликованные истории `/api/content/places` на otgolosok.online
   (`textStatus: approved`, есть источники); скрипт падает, если история снята;
@@ -101,7 +101,7 @@ Overpass часто отвечает «server is too busy»: работает з
 `OVERPASS_URL=https://overpass.kumi.systems/api/interpreter`, либо передайте
 скрипту сохранённые JSON-выгрузки аргументами.
 
-Карточка — история Собора Василия Блаженного. `scripts/prepare-centre-video.mjs`
+Карточка — история Собора Василия Блаженного. `video/scripts/prepare-centre-video.mjs`
 скачивает её опубликованную озвучку и сверяет SHA-256 из адреса файла. В ролике
 звучит первая фраза до паузы на 5,3 с; подсветка слов на карточке идёт с ней.
 Проверка этих историй автоматическая (`verification: automatic`), поэтому
@@ -109,7 +109,7 @@ Overpass часто отвечает «server is too busy»: работает з
 
 ## Вертикальная версия о центре
 
-`OtgolosokCentreVertical` (`src/video/otgolosok-centre-vertical.tsx`): 1080×1920,
+`OtgolosokCentreVertical` (`video/src/otgolosok-centre-vertical.tsx`): 1080×1920,
 30 с. Сюжет тот же, что у `OtgolosokMotion`: Echo и Brand переиспользуются из
 `otgolosok-motion.tsx`. Остальные сцены построены на данных `centre-walk.json`:
 
@@ -126,7 +126,7 @@ Overpass часто отвечает «server is too busy»: работает з
 Слова подсвечиваются пропорционально длине текста. Если озвучку перезапишут,
 границы в `centre-vertical-scenes.json` нужно найти заново.
 
-Материалы: `node scripts/prepare-centre-vertical-video.mjs`. Скрипт вызывает
+Материалы: `node video/scripts/prepare-centre-vertical-video.mjs`. Скрипт вызывает
 `prepareCentreVideo` и пишет `centre/vertical-bed.wav`. Рендер:
 `pnpm video:render:centre-vertical`. Громкость: mean −21,4 дБ, max −4,2 дБ.
 Слова «проверено» в ролике нет по той же причине, что в V2.

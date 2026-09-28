@@ -1,6 +1,6 @@
-import voiceManifest from "../../video/assets/guide/voice/manifest.json";
+import voiceManifest from "../assets/guide/voice/manifest.json";
 import narration from "./guide-narration.json";
-import targets from "../../video/assets/guide/targets.json";
+import targets from "../assets/guide/targets.json";
 import type {Rect} from "./guide-camera";
 
 export const GUIDE_FPS = 30;

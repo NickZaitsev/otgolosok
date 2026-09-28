@@ -11,7 +11,7 @@ import {dirname, extname, isAbsolute, join, relative, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 import {chromium} from "@playwright/test";
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 const TYPES = {".html": "text/html; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp", ".woff2": "font/woff2", ".woff": "font/woff"};
 
@@ -38,7 +38,7 @@ export function run(command, args, {input} = {}) {
  * @returns {string | null}
  */
 export function resolveScenePath(sceneDir, path) {
-  const bases = [["/fonts/", join(root, "node_modules/@fontsource")], ["/shared/", join(root, "video/shared")]];
+  const bases = [["/fonts/", join(root, "video/node_modules/@fontsource")], ["/shared/", join(root, "video/shared")]];
   const [prefix, base] = bases.find(([start]) => path.startsWith(start)) ?? ["/", sceneDir];
   const rest = path === "/" ? "index.html" : path.slice(prefix.length);
   const file = resolve(base, rest);

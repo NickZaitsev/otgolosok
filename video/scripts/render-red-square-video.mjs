@@ -13,9 +13,9 @@ import {fileURLToPath} from "node:url";
 import {redSquareWav} from "./red-square-music.mjs";
 import {parseRenderArgs, renderStills, renderVideo, run, serveScene} from "./lib/frame-render.mjs";
 import {fadeOut, normalizeSpeech, speechBounds, voiceLevels} from "./lib/voice-audio.mjs";
-import {DURATION, FACTS, FPS, FRAME_COUNT, HEIGHT, PLAYER, VOICE_FADE, WIDTH, musicScore, scene, voiceSchedule} from "../video/red-square/timeline.mjs";
+import {DURATION, FACTS, FPS, FRAME_COUNT, HEIGHT, PLAYER, VOICE_FADE, WIDTH, musicScore, scene, voiceSchedule} from "../red-square/timeline.mjs";
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const SCENE_DIR = join(root, "video/red-square");
 const OUTPUT = join(root, "artifacts/video/otgolosok-red-square.mp4");
 const STILLS = join(root, "artifacts/video/red-square-stills");

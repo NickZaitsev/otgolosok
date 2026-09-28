@@ -2,8 +2,9 @@ import {copyFile, mkdtemp, mkdir, readFile, rm, writeFile} from "node:fs/promise
 import {tmpdir} from "node:os";
 import {dirname, join} from "node:path";
 import {afterEach, describe, expect, it} from "vitest";
-import {createAdScore, motionScore, prepareVideoAssets, sceneScore, stripRouteLayer, videoAssets} from "../../scripts/prepare-video-assets.mjs";
-import {motionBedWav} from "../../scripts/build-motion-audio.mjs";
+import {createAdScore, motionScore, prepareVideoAssets, sceneScore, stripRouteLayer, videoAssets} from "../scripts/prepare-video-assets.mjs";
+import {motionBedWav} from "../scripts/build-motion-audio.mjs";
+import {repoPath} from "../scripts/lib/paths.mjs";
 
 const MAP = "public/data/maps/paveletskaya.svg";
 
@@ -22,7 +23,7 @@ async function fixture() {
     await writeFile(path, source);
   }
   // Подложку моушн-ролика строим из настоящей карты.
-  await copyFile(MAP, join(root, MAP));
+  await copyFile(repoPath(MAP), join(root, MAP));
   return {root, publicDir: join(root, "staged-public")};
 }
 
@@ -57,7 +58,7 @@ describe("подготовка материалов Remotion", () => {
 
 describe("материалы моушн-ролика", () => {
   it("убирает с подложки карты маршрут и метки, сохраняя сам город", async () => {
-    const map = await readFile(MAP, "utf8");
+    const map = await readFile(repoPath(MAP), "utf8");
     const base = stripRouteLayer(map);
     expect(base).not.toMatch(/walking-path"|walk-path-halo"|data-step=|class="poi-label"/);
     expect(base).toContain('class="water"');
@@ -65,7 +66,7 @@ describe("материалы моушн-ролика", () => {
   });
 
   it("падает, если разметка маршрута на карте изменилась", async () => {
-    const map = await readFile(MAP, "utf8");
+    const map = await readFile(repoPath(MAP), "utf8");
     expect(() => stripRouteLayer(map.replace(/<g data-step="zindel".*?<\/g>/, ""))).toThrow(/ожидалось 4/);
   });
 
