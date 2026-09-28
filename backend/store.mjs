@@ -590,11 +590,10 @@ export function createStore(
     getExternalAudioStats() {
       const states=Object.fromEntries(db.prepare("SELECT state,count(*) n FROM external_audio_jobs GROUP BY state").all().map(row=>[row.state,Number(row.n)]));
       const oldest=db.prepare("SELECT min(created_at) value FROM external_audio_jobs WHERE state IN ('queued','retry_wait')").get().value;
-      const attempts=db.prepare("SELECT started_at,finished_at,state FROM job_attempts WHERE finished_at IS NOT NULL").all();
-      const durations=attempts.map(row=>(new Date(row.finished_at)-new Date(row.started_at))/1000).filter(Number.isFinite);
-      const artifacts=db.prepare("SELECT metadata_json FROM audio_artifacts").all().map(row=>JSON.parse(row.metadata_json));
-      return{states,oldestQueuedAt:oldest,averageAttemptSec:durations.length?durations.reduce((sum,value)=>sum+value,0)/durations.length:null,
-        artifactBytes:artifacts.reduce((sum,item)=>sum+Number(item.bytes??0),0),artifacts:artifacts.length};
+      const average=db.prepare(`SELECT avg(unixepoch(finished_at,'subsec')-unixepoch(started_at,'subsec')) value
+        FROM job_attempts WHERE finished_at IS NOT NULL`).get().value;
+      const artifacts=db.prepare("SELECT count(*) n,total(json_extract(metadata_json,'$.bytes')) bytes FROM audio_artifacts").get();
+      return{states,oldestQueuedAt:oldest,averageAttemptSec:average??null,artifactBytes:Number(artifacts.bytes),artifacts:Number(artifacts.n)};
     },
     listExternalAudio({states=["failed"],limit=50}={}) {
       if(!Array.isArray(states)||!states.length||states.length>10||states.some(state=>!["queued","retry_wait","leased","failed","cancelled","succeeded"].includes(state))
@@ -627,11 +626,13 @@ export function createStore(
           next_attempt_at = ?, lease_token_hash = NULL, lease_expires_at = NULL, worker_id = NULL, claim_request_id = NULL,
           error_json = ?, updated_at = ? WHERE state = 'leased' AND lease_expires_at <= ?`)
           .run(timestamp,encode({code:"LEASE_EXPIRED",message:"Worker lease expired."}),timestamp,timestamp);
-        const placeholders=profileIds.map(()=>"?").join(",");
-        const candidates=db.prepare(`SELECT * FROM external_audio_jobs WHERE state IN ('queued','retry_wait')
-          AND next_attempt_at <= ? AND attempts < max_attempts AND profile_id IN (${placeholders})
-          ORDER BY priority DESC,created_at,id`).all(timestamp,...profileIds);
-        const row=candidates.find(candidate=>{const preparation=JSON.parse(candidate.payload_json).profile?.textPreparation;return !preparation||textPreparationVersions.includes(preparation.version);});
+        // Only a job whose text preparation the worker supports (or that needs none) is claimable.
+        const profiles=profileIds.map(()=>"?").join(","),versions=textPreparationVersions.map(()=>"?").join(",");
+        const row=db.prepare(`SELECT * FROM external_audio_jobs WHERE state IN ('queued','retry_wait')
+          AND next_attempt_at <= ? AND attempts < max_attempts AND profile_id IN (${profiles})
+          AND (json_extract(payload_json,'$.profile.textPreparation') IS NULL
+            OR json_extract(payload_json,'$.profile.textPreparation.version') IN (${versions}))
+          ORDER BY priority DESC,created_at,id LIMIT 1`).get(timestamp,...profileIds,...textPreparationVersions);
         if (!row) return null;
         const generation=Number(row.lease_generation)+1, expiresAt=isoNow(()=>now()+leaseMs);
         const token=leaseToken(row.id,generation,workerId);
