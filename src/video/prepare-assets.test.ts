@@ -38,7 +38,8 @@ describe("подготовка материалов Remotion", () => {
     for (const generated of ["guide/bed.wav", "guide/click.wav", "motion/bed.wav", "motion/create-bed.wav"]) {
       expect((await readFile(join(publicDir, generated))).toString("ascii", 0, 4)).toBe("RIFF");
     }
-  });
+    // Синтез трёх полноразмерных музыкальных подложек занимает несколько секунд процессора.
+  }, 30_000);
 
   it("явно сообщает об отсутствующем источнике", async () => {
     const {root, publicDir} = await fixture();
