@@ -25,6 +25,7 @@
     "video:render:create-ad": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokCreateAd artifacts/video/otgolosok-create-ad.mp4 --public-dir artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
     "video:render:motion-wide": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokMotionWide artifacts/video/otgolosok-motion-wide.mp4 --public-dir artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
     "video:render:motion-centre": "pnpm video:prepare && node scripts/prepare-centre-video.mjs && remotion render src/video/index.ts OtgolosokMotionCentre artifacts/video/otgolosok-motion-centre.mp4 --public-dir artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "video:render:centre-vertical": "pnpm video:prepare && node scripts/prepare-centre-vertical-video.mjs && remotion render src/video/index.ts OtgolosokCentreVertical artifacts/video/otgolosok-centre-vertical.mp4 --public-dir artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
     "video:centre:data": "node scripts/build-centre-walk-video.mjs",
     "video:render:kinetic": "node scripts/render-kinetic-video.mjs",
     "video:preview:kinetic": "node scripts/render-kinetic-video.mjs --preview",
