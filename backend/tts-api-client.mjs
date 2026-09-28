@@ -1,9 +1,15 @@
+import { isTransientStatus, withRetry } from "./retry.mjs";
+
 function apiError(status,message,retryAfter) {const error=new Error(message);error.status=status;error.retryAfter=retryAfter;return error;}
 
-export function createTtsApiClient({baseUrl,token,fetchImpl=fetch,timeoutMs=30000}) {
+// Every call is safe to repeat: job creation is idempotent by requestId.
+const transient=error=>error?.transient===true||isTransientStatus(error?.status);
+
+export function createTtsApiClient({baseUrl,token,fetchImpl=fetch,timeoutMs=30000,retry={attempts:3,baseMs:1000,maxMs:10000}}) {
   if(!baseUrl||!token)throw new Error("TTS_API_URL and TTS_API_TOKEN are required");
   const endpoint=baseUrl.replace(/\/$/,"");
-  const request=async(path,{method="GET",body,timeout=timeoutMs}={})=>{
+  const request=(path,options)=>withRetry(()=>requestOnce(path,options),{...retry,isTransient:transient});
+  const requestOnce=async(path,{method="GET",body,timeout=timeoutMs}={})=>{
     let response;
     try {response=await fetchImpl(`${endpoint}${path}`,{method,headers:{Authorization:`Bearer ${token}`,...(body?{"Content-Type":"application/json"}:{})},
       body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(timeout)});} catch(error) {error.transient=true;throw error;}

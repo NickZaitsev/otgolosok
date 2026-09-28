@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createStore } from "./store.mjs";
 import { addressKey, normalizeAddress, publicJob, validateFacts } from "./domain.mjs";
-import { runJob } from "./pipeline.mjs";
+import { runJob, SOURCE_RETRY } from "./pipeline.mjs";
 
 const paragraph=("Этот московский дом связан с историей города. Архивный источник подтверждает его назначение и важную роль в жизни улицы. ".repeat(3)+"Дом стал заметной частью городской среды, а его история отражает перемены района. Эти сведения позволяют рассказать о месте точно и без вымышленных деталей.").trim();
 function fixture(t,{factCount=3}={}){
@@ -30,4 +30,11 @@ test("unfinished legacy evidence and draft are revalidated while fetched sources
   f.queue.shift();
   const job=await runJob(initial,f.options);
   assert.equal(job.stage,"ready");assert.equal(job.data.evidence.version,2);assert.equal(job.data.story.title,"Тестовый дом");assert.equal(f.queue.length,0);
+});
+
+test("source pages are retried only after network errors and busy or failing servers",()=>{
+  const {isTransient,attempts}=SOURCE_RETRY(undefined);
+  assert.equal(attempts,2);
+  for(const [error,expected] of [[{code:"NETWORK_ERROR"},true],[{code:"BAD_STATUS",status:503,retryable:true},true],[{code:"BAD_STATUS",status:404,retryable:false},false],
+    [{code:"TIMEOUT"},false],[{code:"DNS_REJECTED"},false],[{code:"BAD_CONTENT_TYPE"},false]])assert.equal(isTransient(error),expected,JSON.stringify(error));
 });

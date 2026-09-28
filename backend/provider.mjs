@@ -1,4 +1,5 @@
 import { failure } from "./domain.mjs";
+import { fetchWithRetry } from "./retry.mjs";
 
 export async function boundedBody(response, maximum, signal) {
   if (Number(response.headers.get("content-length")) > maximum) {
@@ -22,19 +23,8 @@ export async function boundedBody(response, maximum, signal) {
   return Buffer.concat(chunks);
 }
 
-const transient = status => status === 429 || status >= 500;
-async function fetchWithRetry(fetchImpl,url,options,signal) {
-  let response;
-  for(let attempt=0;attempt<3;attempt++){
-    try{response=await fetchImpl(url,options);}catch(error){if(attempt===2||signal?.aborted)throw error;response=null;}
-    if(response&&!transient(response.status))return response;
-    if(response&&attempt===2)return response;
-    if(response?.body)await response.body.cancel().catch(()=>{});
-    const delay=Math.min(10000,1000*(2**attempt));
-    await new Promise((resolve,reject)=>{const timer=setTimeout(resolve,delay);const abort=()=>{clearTimeout(timer);reject(signal.reason);};if(signal?.aborted)return abort();signal?.addEventListener('abort',abort,{once:true});});
-  }
-  return response;
-}
+// Model and speech calls are expensive: three attempts within the caller's deadline.
+const RETRY = { attempts: 3, baseMs: 1000, maxMs: 10000 };
 
 export function unpackResponse(bytes, contentType) {
   const text = bytes.toString("utf8");
@@ -57,7 +47,7 @@ export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-med
     const deadline = AbortSignal.any([AbortSignal.timeout(timeoutMs), ...(signal ? [signal] : [])]);
     const res = await fetchWithRetry(fetchImpl,`${endpoint}/responses`, { method: "POST", headers, signal: deadline,
       body: JSON.stringify({ model: selectedModel, store: false, stream: false, input: prompt, max_output_tokens: maxTokens,
-        ...(search ? { tools: [{type:"web_search"}], include:["web_search_call.action.sources"] } : {}) }) },deadline);
+        ...(search ? { tools: [{type:"web_search"}], include:["web_search_call.action.sources"] } : {}) }) }, RETRY);
     if (!res.ok) { await res.body?.cancel(); throw failure(res.status === 429 ? "PROVIDER_BUSY" : "PROVIDER_FAILED"); }
     const payload = unpackResponse(await boundedBody(res, 2000000, deadline), res.headers.get("content-type") ?? "");
     if (payload.status !== "completed") throw failure("PROVIDER_INCOMPLETE");
@@ -77,9 +67,9 @@ export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-med
   }
   async function speech(script, { signal, voice: selectedVoice = voice } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(150000), ...(signal ? [signal] : [])]);
-    const res = await fetchImpl(`${endpoint}/audio/speech`, { method: "POST", headers, signal: deadline,
+    const res = await fetchWithRetry(fetchImpl, `${endpoint}/audio/speech`, { method: "POST", headers, signal: deadline,
       body: JSON.stringify({model: ttsModel, voice:selectedVoice, input: script, response_format:"mp3", speed:1,
-        instructions:"Read the supplied Russian text exactly, with no additions. Warm clear conversational Russian walking-tour narration, about 140 words per minute, brief pauses between paragraphs. No music or sound effects. Read dates and addresses naturally."}) });
+        instructions:"Read the supplied Russian text exactly, with no additions. Warm clear conversational Russian walking-tour narration, about 140 words per minute, brief pauses between paragraphs. No music or sound effects. Read dates and addresses naturally."}) }, RETRY);
     if (!res.ok || !res.headers.get("content-type")?.startsWith("audio/")) { await res.body?.cancel(); throw failure("TTS_FAILED"); }
     return boundedBody(res, 10000000, deadline);
   }

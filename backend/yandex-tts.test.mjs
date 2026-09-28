@@ -86,3 +86,17 @@ test("Yandex uses each job's selected voice without changing the shared default"
   assert.deepEqual(voices, ["kirill", "dasha", "ermil"]);
   assert.equal(provider.voice, "ermil");
 });
+
+test("Yandex retries a throttled chunk without repeating finished ones", async () => {
+  const texts = [];
+  const statuses = [200, 429, 200];
+  const provider = createYandexTts({ apiKey: "key", fetchImpl: async (_url, options) => {
+    texts.push(JSON.parse(options.body).text.slice(0, 10));
+    const status = statuses.shift();
+    return status === 200 ? new Response(frame(`part-${texts.length}`)) : new Response("slow down", { status, headers: { "Retry-After": "0" } });
+  } });
+  const long = `${"первое ".repeat(700)}\n${"второе ".repeat(300)}`;
+  const audio = await provider.speech(long);
+  assert.deepEqual(texts.map(text => text.split(" ")[0]), ["первое", "второе", "второе"]);
+  assert.equal(audio.toString(), "part-1part-3");
+});

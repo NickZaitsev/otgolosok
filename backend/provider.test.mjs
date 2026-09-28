@@ -29,3 +29,19 @@ test("OpenAI uses each job's selected voice without changing the shared default"
   assert.deepEqual(voices, ["cedar", "nova", "marin"]);
   assert.equal(provider.voice, "marin");
 });
+
+test("speech retries a busy provider and stops at a deterministic refusal", async () => {
+  const statuses = [503, 200];
+  let calls = 0;
+  const busy = createProvider({ baseUrl: "https://provider.example/v1", apiKey: "key", fetchImpl: async () => {
+    calls++;
+    const status = statuses.shift();
+    return status === 200 ? new Response("mp3", { headers: { "Content-Type": "audio/mpeg" } }) : new Response("busy", { status, headers: { "Retry-After": "0" } });
+  } });
+  assert.equal((await busy.speech("Рассказ")).toString(), "mp3");
+  assert.equal(calls, 2);
+  calls = 0;
+  const refused = createProvider({ baseUrl: "https://provider.example/v1", apiKey: "key", fetchImpl: async () => { calls++; return new Response("bad voice", { status: 400 }); } });
+  await assert.rejects(refused.speech("Рассказ"), { code: "TTS_FAILED" });
+  assert.equal(calls, 1);
+});

@@ -1,10 +1,11 @@
 import { EDITORIAL_EVIDENCE_VERSION, failure, validateFacts } from "./domain.mjs";
 import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
+import { withRetry } from "./retry.mjs";
 import { sourceText } from "./source-text.mjs";
 import { researchPrompt, factsPrompt } from "./prompts.mjs";
 import { requestStructured, usageTokens } from "./model-output.mjs";
 import { writeStory } from "./story-writing.mjs";
-import { errorMessages } from "./pipeline.mjs";
+import { errorMessages, SOURCE_RETRY } from "./pipeline.mjs";
 import { restrictWeakIdentityEvidence } from "./identity-triage.mjs";
 
 /** Codes only this pipeline raises; the shared errorMessages cover the rest. The editor reads these in the batch list. */
@@ -76,7 +77,7 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,re
     const weakEvidenceMissing=job.identityPolicy==="weak_identity"&&checkpoint.evidence&&checkpoint.evidence.identityPolicy!=="weak_identity";
     if(checkpoint.evidence?.version!==EDITORIAL_EVIDENCE_VERSION||weakEvidenceMissing){checkpoint=invalidateEditorialCheckpoint(checkpoint);store.updateContentCheckpoint(job.id,checkpoint);}
     if(!checkpoint.research&&!checkpoint.sources){const research=await call(researchPrompt(job.place.address,context),{search:true,timeoutMs:180000,maxTokens:3000});const sources=sourcesFrom(research);if(!sources.length)throw failure("INSUFFICIENT_EVIDENCE");save({research:{sources}});}
-    if(!checkpoint.sources){const results=await Promise.allSettled(checkpoint.research.sources.map(async(source,index)=>{const page=await fetchPage(source.url,{signal:deadline});const text=await sourceText(page,{keywords:[job.place.name,job.place.address]});if(text.length<300)throw failure("SOURCE_EMPTY");return{id:`s${index+1}`,url:page.url,title:source.title,publisher:new URL(page.url).hostname.split(".").slice(-2).join("."),text};}));
+    if(!checkpoint.sources){const results=await Promise.allSettled(checkpoint.research.sources.map(async(source,index)=>{const page=await withRetry(()=>fetchPage(source.url,{signal:deadline}),SOURCE_RETRY(deadline));const text=await sourceText(page,{keywords:[job.place.name,job.place.address]});if(text.length<300)throw failure("SOURCE_EMPTY");return{id:`s${index+1}`,url:page.url,title:source.title,publisher:new URL(page.url).hostname.split(".").slice(-2).join("."),text};}));
       const sources=results.filter(result=>result.status==="fulfilled").map(result=>result.value);if(!sources.length)throw failure("SOURCE_ACCESS_FAILED");save({sources,sourceFailures:results.filter(result=>result.status==="rejected").map(result=>result.reason?.code??"SOURCE_FAILED")});}
     if(!checkpoint.evidence){
       // A rejection from an earlier attempt must not be mistaken for the outcome of this one.

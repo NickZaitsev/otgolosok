@@ -1,5 +1,6 @@
 import { EDITORIAL_EVIDENCE_VERSION, failure, validateFacts } from "./domain.mjs";
 import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
+import { withRetry } from "./retry.mjs";
 import { sourceText } from "./source-text.mjs";
 import { researchPrompt, factsPrompt } from "./prompts.mjs";
 import { requestStructured } from "./model-output.mjs";
@@ -31,6 +32,10 @@ function invalidateEditorialCheckpoint(data) {
   for(const key of ["evidence","draft","review","draftCandidateRaw","factReview","editorialVersion"])delete retained[key];
   return retained;
 }
+
+// Third-party source sites get one more try after a network error or a 429/5xx.
+export const SOURCE_RETRY = signal => ({ attempts: 2, baseMs: 1000, maxMs: 5000, signal,
+  isTransient: error => error?.retryable === true || error?.code === "NETWORK_ERROR" });
 
 export const errorMessages = {
   INVALID_ADDRESS: "Укажите улицу и номер дома в Москве, включая строение, если оно есть.",
@@ -88,7 +93,7 @@ export async function runJob(initial, options) {
     if (!job.data.story && !job.data.evidence && !job.data.sources) {
       const loadPages = async (candidates, offset=0) => {
       const results = await Promise.allSettled(candidates.map(async (source,index) => {
-        const page = await fetchPage(source.url,{signal:deadline});
+        const page = await withRetry(() => fetchPage(source.url,{signal:deadline}), SOURCE_RETRY(deadline));
         const text = await sourceText(page,{keywords:[job.address]});
         if (text.length < 300) throw failure("SOURCE_EMPTY");
         return {id:`s${index+offset+1}`,url:canonicalUrl(page.url),title:source.title,
