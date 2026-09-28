@@ -498,3 +498,18 @@ increasing graph coverage or concurrency.
   `/api/story-service` — 200. `provider.mjs` и `content-store.mjs` в контейнере
   совпадают с локальными по SHA-256, `/admin` совпал с локальной сборкой байт в байт,
   `sw.js` версии `5fbd97574eb30167`. Диск после выкладки занят на 49%.
+
+## Служебный API промо-прогулок (PR #6) — 2026-09-28, 14:57 UTC
+
+- Развёрнута ревизия `bdc63d0`: генератор, затем фронтенд, оба с
+  `VPS=services@93.189.230.19`. Перед публикацией `pnpm check` прошёл.
+- `PROMO_WALKS_TOKEN` (64 символа) перенесён из локального `.env` в
+  `.generator.env` без вывода значения; копия прежнего файла —
+  `backups/env-20260928T145454Z-promo/`. Production-compose подключает
+  `.generator.env` через `env_file`, правка compose не понадобилась.
+  Резервная копия генератора: `backups/generator-20260928T145702Z/generator.tar.gz`.
+- Проверка: `/`, `/admin`, `/walk`, `/api/story-service` — 200.
+  `POST /api/service/promo-walks` без токена и с чужим токеном — 401, с верным
+  токеном и пустым телом — 400 (прогулка не создавалась). Пользователь
+  `promo-walks@service.invalid` с ролью `service` создан в `auth.sqlite`.
+- Кэш сборки после выкладки — 0 Б (`docker builder prune -af` в скрипте), диск — 53%.
