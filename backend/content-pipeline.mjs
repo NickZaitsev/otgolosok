@@ -8,6 +8,7 @@ import { writeStory } from "./story-writing.mjs";
 import { errorMessages, SOURCE_RETRY } from "./pipeline.mjs";
 import { restrictWeakIdentityEvidence } from "./identity-triage.mjs";
 import { PROVIDER_OUTAGE_CODES } from "./provider.mjs";
+import { openDataSource } from "./open-data.mjs";
 
 /** Codes only this pipeline raises; the shared errorMessages cover the rest. The editor reads these in the batch list. */
 const CONTENT_FAILURES = {
@@ -85,9 +86,15 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,re
     // A job moved to weak_identity after its evidence was saved must be re-checked under the stricter rules.
     const weakEvidenceMissing=job.identityPolicy==="weak_identity"&&checkpoint.evidence&&checkpoint.evidence.identityPolicy!=="weak_identity";
     if(checkpoint.evidence?.version!==EDITORIAL_EVIDENCE_VERSION||weakEvidenceMissing){checkpoint=invalidateEditorialCheckpoint(checkpoint);store.updateContentCheckpoint(job.id,checkpoint);}
-    if(!checkpoint.research&&!checkpoint.sources){const research=await call(researchPrompt(job.place.address,context),{search:true,timeoutMs:180000,maxTokens:3000});const sources=sourcesFrom(research);if(!sources.length)throw failure("INSUFFICIENT_EVIDENCE");save({research:{sources}});}
+    // Open-data records matched offline to this place (data.mos.ru) are sources like fetched pages, listed first.
+    const openSources=(store.getOpenDataSources?.(job.place.id)??[]).map((item,index)=>openDataSource(item,`d${index+1}`));
+    const openKey=source=>`${source.openData.datasetId}:${source.openData.recordId}`;
+    // A job stopped before the import picks the record up on retry; facts and the story must be redone with it.
+    if(checkpoint.sources&&openSources.some(source=>!checkpoint.sources.some(saved=>saved.openData&&openKey(saved)===openKey(source)))){
+      checkpoint={...invalidateEditorialCheckpoint(checkpoint),sources:[...openSources,...checkpoint.sources.filter(saved=>!saved.openData)]};store.updateContentCheckpoint(job.id,checkpoint);}
+    if(!checkpoint.research&&!checkpoint.sources){const research=await call(researchPrompt(job.place.address,context),{search:true,timeoutMs:180000,maxTokens:3000});const sources=sourcesFrom(research);if(!sources.length&&!openSources.length)throw failure("INSUFFICIENT_EVIDENCE");save({research:{sources}});}
     if(!checkpoint.sources){const results=await Promise.allSettled(checkpoint.research.sources.map(async(source,index)=>{const page=await withRetry(()=>fetchPage(source.url,{signal:deadline}),SOURCE_RETRY(deadline));const text=await sourceText(page,{keywords:[job.place.name,job.place.address]});if(text.length<300)throw failure("SOURCE_EMPTY");return{id:`s${index+1}`,url:page.url,title:source.title,publisher:new URL(page.url).hostname.split(".").slice(-2).join("."),text};}));
-      const sources=results.filter(result=>result.status==="fulfilled").map(result=>result.value);if(!sources.length)throw failure("SOURCE_ACCESS_FAILED");save({sources,sourceFailures:results.filter(result=>result.status==="rejected").map(result=>result.reason?.code??"SOURCE_FAILED")});}
+      const sources=[...openSources,...results.filter(result=>result.status==="fulfilled").map(result=>result.value)];if(!sources.length)throw failure("SOURCE_ACCESS_FAILED");save({sources,sourceFailures:results.filter(result=>result.status==="rejected").map(result=>result.reason?.code??"SOURCE_FAILED")});}
     if(!checkpoint.evidence){
       // A rejection from an earlier attempt must not be mistaken for the outcome of this one.
       if(checkpoint.factsRejection){checkpoint={...checkpoint};delete checkpoint.factsRejection;store.updateContentCheckpoint(job.id,checkpoint);}

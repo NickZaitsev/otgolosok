@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { createStore } from "./store.mjs";
 import { contentFailureMessage, runContentJob, startContentWorker } from "./content-pipeline.mjs";
 import { errorMessages, startWorker } from "./pipeline.mjs";
+import { normalizeOpenDataRecord } from "./open-data.mjs";
 
 const catalog={source:"fixture",sourceSha256:"a".repeat(64),rulesVersion:"v1",coverage:"fixture",places:[{placeId:"osm:node:1",osmType:"node",osmId:1,name:"Памятник без адреса",location:{lat:55.75,lon:37.61},tags:{historic:"memorial",wikidata:"Q1"}}]};
 function fixture(t,{audio=false}={}){const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);store.createBatch({requestKey:`pipeline-${audio?"audio":"text"}`,limit:1,mode:audio?"text-and-audio":"text-only",ttsProfile:audio?"silero-ru-v1":null});const url="https://one.example/place",page="Памятник установлен в Москве и создан известным архитектором. ".repeat(12);const facts=[1,2,3].map(index=>({claim:`Факт ${index}`,kind:"content",subjectRelation:"object",contentReason:"Раскрывает историю памятника",topic:"place_history",scope:"building",location:"Памятник",distanceMeters:null,evidence:[{sourceId:"s1",quote:"Памятник установлен в Москве и создан известным архитектором."}]}));const part="Памятник установлен в Москве и связан с историей города. Источник рассказывает о его создании и работе архитектора. ".repeat(3).trim(),text=`${part}\n\n${part}`;const queue=[{text:"Найден официальный источник",sources:[{url,title:"Источник"}]},{value:{identityConfirmed:true,addressConfirmed:true,identityNote:"Источник описывает памятник",placeName:"Памятник",resolvedAddress:"Памятник, Москва",facts}},{text},{value:{approved:true,issues:[],checks:{substantive:true,subjectAligned:true,audioClear:true},paragraphFacts:[{paragraph:1,factIds:["f1","f2"]},{paragraph:2,factIds:["f2","f3"]}],claims:[{paragraph:1,text:"Памятник установлен в Москве",factIds:["f1","f2"],supported:true,address:false},{paragraph:2,text:"Памятник установлен в Москве",factIds:["f2","f3"],supported:true,address:false}]}}];const provider={writerModel:"writer",response:/** @type {(prompt?: string, options?: object) => Promise<any>} */ (async()=>({usage:{total_tokens:1},...queue.shift()}))};return{store,provider,url,page,queue};}
@@ -251,4 +252,66 @@ test("a locked database while claiming is logged and does not crash either worke
   await content.stop(); await story.stop();
   assert.ok(captured.includes("contentWorker.claim"));
   assert.ok(captured.includes("claimNext"));
+});
+
+// data.mos.ru records matched offline become the first sources of a job.
+const plaqueCells = { Name: "Мемориальная доска Клечковскому Всеволоду Маврикиевичу", Text: "В этом здании с 1929 по 1972 год работал академик В.М. Клечковский",
+  Location: "САО, муниципальный округ Тимирязевский, улица Прянишникова, дом 6", InstallationDate: "06.06.1978",
+  Authors: [{ AuthorsName: "Смирнов С.И.", Profession: "архитектор" }, { AuthorsName: "Шакаров Г.А.", Profession: "скульптор" }] };
+const plaqueFact = (kind, quote, sourceId = "d1") => ({ claim: `Факт: ${quote}`, kind, subjectRelation: "object", ...(kind === "content" ? { contentReason: "Раскрывает историю доски" } : {}),
+  topic: "place_history", scope: "building", location: "Мемориальная доска", distanceMeters: null, evidence: [{ sourceId, quote }] });
+function openDataFixture(t, { searchSources = [], imported = true } = {}) {
+  const store = createStore(":memory:", { maxActive: 100 }); t.after(() => store.close());
+  store.importPlaces({ ...catalog, places: [{ ...catalog.places[0], name: "В. М. Клечковскому", tags: { historic: "memorial" } }] });
+  const batch = store.createBatch({ requestKey: "open-data", placeIds: ["osm:node:1"], limit: 1, identityPolicy: "weak_identity" });
+  const importPlaque = () => store.replaceOpenDataMatches([{ placeId: "osm:node:1", record: normalizeOpenDataRecord(2801, { global_id: 42, Cells: plaqueCells },
+    { geometry: { type: "Point", coordinates: [37.61, 55.75] } }), match: { rule: "plaque-name-80m", distanceM: 13 } }], { datasetId: 2801, datasetVersion: "3.86" });
+  if (imported) importPlaque();
+  const facts = [plaqueFact("identity", "Мемориальная доска Клечковскому Всеволоду Маврикиевичу"), plaqueFact("content", "Дата установки: 06.06.1978."), plaqueFact("content", "Шакаров Г.А. (скульптор)")];
+  const part = "Мемориальная доска напоминает о работе академика в этом здании. Её создали архитектор и скульптор. ".repeat(3).trim(), text = `${part}\n\n${part}`;
+  const review = { value: { approved: true, issues: [], checks: { substantive: true, subjectAligned: true, audioClear: true }, paragraphFacts: [{ paragraph: 1, factIds: ["f1", "f2"] }, { paragraph: 2, factIds: ["f2", "f3"] }],
+    claims: [{ paragraph: 1, text: "Мемориальная доска напоминает", factIds: ["f1", "f2"], supported: true, address: false }, { paragraph: 2, text: "Мемориальная доска напоминает", factIds: ["f2", "f3"], supported: true, address: false }] } };
+  const factsAnswer = { value: { identityConfirmed: true, addressConfirmed: false, identityNote: "Запись открытых данных называет доску", placeName: "Мемориальная доска В. М. Клечковскому", resolvedAddress: "Москва, Тимирязевский район", facts } };
+  const queue = [{ text: "Поиск", sources: searchSources }, factsAnswer, { text }, review], prompts = [];
+  const provider = { writerModel: "writer", response: /** @type {(prompt?: string, options?: object) => Promise<any>} */ (async prompt => { prompts.push(prompt); return { usage: { total_tokens: 1 }, ...queue.shift() }; }) };
+  return { store, provider, queue, prompts, batch, importPlaque, factsAnswer, text, review };
+}
+
+test("an open-data record alone is enough when the search finds nothing", async t => {
+  const f = openDataFixture(t), last = recordCheckpoints(f.store);
+  const result = await runContentJob(f.store.claimContentJob(), { store: f.store, provider: f.provider, fetchPage: async () => { throw new Error("no page expected"); } });
+  assert.ok(result.story, JSON.stringify(result.error));
+  assert.deepEqual(last().sources.map(source => source.id), ["d1"]);
+  assert.equal(last().sources[0].url, "https://data.mos.ru/opendata/2801");
+  assert.deepEqual(last().evidence.sources.map(source => source.publisher), ["data.mos.ru"]);
+  assert.match(f.prompts[1], /Sources d1 are official records of the Moscow open data portal/);
+  assert.doesNotMatch(f.prompts[0], /open data portal/);
+});
+
+test("an open-data record goes before fetched pages", async t => {
+  const f = openDataFixture(t, { searchSources: [{ url: "https://one.example/plaque", title: "Страница" }] }), last = recordCheckpoints(f.store);
+  const page = "Мемориальная доска академику установлена на здании академии. ".repeat(12);
+  await runContentJob(f.store.claimContentJob(), { store: f.store, provider: f.provider, fetchPage: readPage(page) });
+  assert.deepEqual(last().sources.map(source => source.id), ["d1", "s1"]);
+});
+
+test("a job stopped before the import gets the record on retry and redoes the facts", async t => {
+  const f = openDataFixture(t, { searchSources: [{ url: "https://one.example/plaque", title: "Страница" }], imported: false }), last = recordCheckpoints(f.store);
+  const page = "Мемориальная доска академику установлена на здании академии. ".repeat(12);
+  f.queue.splice(1, 3, { value: { ...f.factsAnswer.value, identityConfirmed: false, facts: [] } });
+  const stopped = await runContentJob(f.store.claimContentJob(), { store: f.store, provider: f.provider, fetchPage: readPage(page) });
+  assert.equal(stopped.error.code, "PLACE_UNCLEAR");
+  f.importPlaque();
+  f.store.retryBatchItem(f.batch.id, "osm:node:1", { restartFrom: "auto" });
+  f.queue.push(f.factsAnswer, { text: f.text }, f.review);
+  const result = await runContentJob(f.store.claimContentJob(), { store: f.store, provider: f.provider, fetchPage: async () => { throw new Error("saved pages must not be refetched"); } });
+  assert.ok(result.story, JSON.stringify(result.error));
+  assert.deepEqual(last().sources.map(source => source.id), ["d1", "s1"]);
+  assert.equal(last().factsRejection, undefined);
+});
+
+test("a place without open data keeps the search-only behaviour", async t => {
+  const f = openDataFixture(t, { imported: false });
+  const result = await runContentJob(f.store.claimContentJob(), { store: f.store, provider: f.provider, fetchPage: readPage("") });
+  assert.equal(result.error.code, "INSUFFICIENT_EVIDENCE");
 });
