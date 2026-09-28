@@ -1,6 +1,6 @@
 # Plan: Project review round 2 — reliability, offline, quotas and tooling
 
-Status: plan, 2026-09-28.
+Status: in progress since 2026-09-28, phase 0 (merge of origin/main) done.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -34,6 +34,7 @@ No paid external API is called by anything in this plan.
 11. `backend/admin-make.test.mjs`: skip with an explicit reason when `make` or `/bin/sh` is unavailable (Windows). Makefiles stay POSIX-only.
 12. Hard-coded production host (`services@93.189.230.19`) and personal paths in Makefile/scripts/docs **stay as is**.
 13. Python: add `pyproject.toml` with ruff, pyright and pytest run through `uv`; a `test:py` script is part of `pnpm check`.
+14. (Added at implementation start) Everything that makes `pnpm check` fail on the developer machine (Windows) must be fixed within this plan, including pre-existing failures unrelated to the review findings (e.g. Windows `EPERM` temp-dir cleanup in tests that came from `origin/main`).
 
 ## Key codebase facts
 
@@ -87,6 +88,7 @@ Each numbered phase ends with `pnpm check` green and an atomic commit (`type(sco
 - Run lint, typecheck, full tests, `pnpm build`.
 - Re-verify each finding below against the merged tree. Mark anything main already fixed as "dropped — fixed in main by <sha>" directly in this plan.
 - Commit: merge commit (`chore(merge): синхронизировать ветку с main`).
+- Done 2026-09-28 (`e4cba19` + `94283a0`, two merge commits because a concurrent video session committed in between). Conflicts were additive (`backend/server.test.mjs`, `docs/agents/README.md`); the guest-walk test fixture now passes explicit `placeIds` because main tightened batch eligibility. Re-verification: 2.11 constant-time token compare and `profileIds` validation are already fixed in main (only the rethrow-only `catch` remains); nginx security headers come from main (`docker/security-headers.conf`), the caching issues of 2.12 remain; all other items still reproduce.
 
 ### 1. Test baseline and `check`
 
