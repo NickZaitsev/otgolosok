@@ -31,14 +31,18 @@ const contentInputKey = (place,profile) => sha256(encode({placeId:place.id,conte
  * and records the failures of the rest in the same order, so both lists line up with what search returned.
  */
 function diagnosisSources(found,fetched,failures) {
-  const byId=new Map(fetched.map(source=>[source.id,source]));
-  if(!found.length)return fetched.map(source=>({url:source.url,title:source.title,sourceId:source.id,publisher:source.publisher,chars:Number(source.chars??0),failure:null}));
+  const view=source=>({url:source.url,title:source.title,sourceId:source.id,publisher:source.publisher,chars:Number(source.chars??0),failure:null,
+    openData:source.open_data?decode(source.open_data):null});
+  // Open-data records (d1, d2…) are not search results: they come first, whatever the search found.
+  const open=fetched.filter(source=>source.open_data).map(view),pages=fetched.filter(source=>!source.open_data);
+  const byId=new Map(pages.map(source=>[source.id,source]));
+  if(!found.length)return [...open,...pages.map(view)];
   let failed=0;
-  return found.map((source,index)=>{
+  return [...open,...found.map((source,index)=>{
     const page=byId.get(`s${index+1}`);
-    if(page)return {url:page.url,title:source.title,sourceId:page.id,publisher:page.publisher,chars:Number(page.chars??0),failure:null};
-    return {url:source.url,title:source.title,sourceId:null,publisher:null,chars:0,failure:typeof failures[failed]==="string"?failures[failed++]:null};
-  });
+    if(page)return {...view(page),title:source.title};
+    return {url:source.url,title:source.title,sourceId:null,publisher:null,chars:0,failure:typeof failures[failed]==="string"?failures[failed++]:null,openData:null};
+  })];
 }
 
 function addressOf(place) {
@@ -353,7 +357,7 @@ export function createContentStore({db,now,transaction}) {
       const found=db.prepare(`SELECT json_extract(s.value,'$.url') url,json_extract(s.value,'$.title') title
         FROM content_jobs j,json_each(j.checkpoint_json,'$.research.sources') s WHERE j.id=? ORDER BY s.key`).all(jobId);
       const fetched=db.prepare(`SELECT json_extract(s.value,'$.id') id,json_extract(s.value,'$.url') url,json_extract(s.value,'$.title') title,
-          json_extract(s.value,'$.publisher') publisher,length(json_extract(s.value,'$.text')) chars
+          json_extract(s.value,'$.publisher') publisher,length(json_extract(s.value,'$.text')) chars,json_extract(s.value,'$.openData') open_data
         FROM content_jobs j,json_each(j.checkpoint_json,'$.sources') s WHERE j.id=? ORDER BY s.key`).all(jobId);
       const rejection=decode(row.rejection_json);
       const model=rejection?{outcome:"rejected",identityConfirmed:rejection.identityConfirmed??null,addressConfirmed:rejection.addressConfirmed===true,

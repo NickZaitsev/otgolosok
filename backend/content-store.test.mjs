@@ -170,9 +170,9 @@ test("a stopped batch item explains itself: coordinates, found pages lined up wi
   const item=store.getBatchItemDetail(batch.id,"osm:node:1");
   assert.equal(item.state,"review_required");assert.equal(item.error.code,"PLACE_UNCLEAR");
   assert.deepEqual(item.sources,[
-    {url:"https://a.example/1",title:"Первый",sourceId:null,publisher:null,chars:0,failure:"SOURCE_EMPTY"},
-    {url:"https://b.example/2?r=1",title:"Второй",sourceId:"s2",publisher:"b.example",chars:1200,failure:null},
-    {url:"https://c.example/3",title:"Третий",sourceId:null,publisher:null,chars:0,failure:"FETCH_TIMEOUT"},
+    {url:"https://a.example/1",title:"Первый",sourceId:null,publisher:null,chars:0,failure:"SOURCE_EMPTY",openData:null},
+    {url:"https://b.example/2?r=1",title:"Второй",sourceId:"s2",publisher:"b.example",chars:1200,failure:null,openData:null},
+    {url:"https://c.example/3",title:"Третий",sourceId:null,publisher:null,chars:0,failure:"FETCH_TIMEOUT",openData:null},
   ]);
   assert.equal(JSON.stringify(item).includes("x".repeat(100)),false);
   assert.equal(item.model.outcome,"rejected");assert.equal(item.model.identityConfirmed,false);
@@ -189,7 +189,7 @@ test("a batch item past the facts step reports the accepted identification",t=>{
   store.failContentJob(job.id,{code:"REVIEW_REQUIRED",message:"REVIEW_REQUIRED"},"review_required");
   const item=store.getBatchItemDetail(batch.id,"osm:node:1");
   // Without a search step on record the fetched pages are listed as they are.
-  assert.deepEqual(item.sources,[{url:"https://a.example/1",title:"Первый",sourceId:"s1",publisher:"a.example",chars:5,failure:null}]);
+  assert.deepEqual(item.sources,[{url:"https://a.example/1",title:"Первый",sourceId:"s1",publisher:"a.example",chars:5,failure:null,openData:null}]);
   assert.deepEqual(item.model,{outcome:"accepted",identityConfirmed:true,addressConfirmed:true,placeName:"Памятник",resolvedAddress:"Москва, Тверская",
     identityNote:"Совпадают название и место",facts:[{claim:"Открыт в 1950 году",kind:"identity",subjectRelation:"object",evidence:[{sourceId:"s1",quote:"открыт в 1950 году"}]}]});
 });
@@ -331,4 +331,18 @@ test("open-data matches are replaced per dataset and go stale when the place cha
   // The place changed in a later catalog import: the stored record no longer applies.
   store.importPlaces({...catalog,sourceSha256:"d".repeat(64),places:[{...catalog.places[0],name:"Памятник героям"},catalog.places[1]]},{complete:true});
   assert.deepEqual(store.getOpenDataSources("osm:node:1"),[]);
+});
+
+test("open-data records head the item's sources with their dataset, before the search results",t=>{
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const batch=store.createBatch({requestKey:"item-detail-open",name:"Detail",placeIds:["osm:node:1"],limit:1});
+  const job=store.claimContentJob();
+  store.updateContentCheckpoint(job.id,{research:{sources:[{url:"https://a.example/1",title:"Первый"}]},
+    sources:[{id:"d1",url:"https://data.mos.ru/opendata/2801",title:"Портал открытых данных",publisher:"data.mos.ru",text:"доска",openData:{datasetId:2801,recordId:"42",datasetVersion:"3.86"}},
+      {id:"s1",url:"https://a.example/1",title:"Первый",publisher:"a.example",text:"страница"}],sourceFailures:[]});
+  store.failContentJob(job.id,{code:"REVIEW_REQUIRED",message:"REVIEW_REQUIRED"},"review_required");
+  assert.deepEqual(store.getBatchItemDetail(batch.id,"osm:node:1").sources,[
+    {url:"https://data.mos.ru/opendata/2801",title:"Портал открытых данных",sourceId:"d1",publisher:"data.mos.ru",chars:5,failure:null,openData:{datasetId:2801,recordId:"42",datasetVersion:"3.86"}},
+    {url:"https://a.example/1",title:"Первый",sourceId:"s1",publisher:"a.example",chars:8,failure:null,openData:null},
+  ]);
 });

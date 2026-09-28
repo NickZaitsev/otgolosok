@@ -25,6 +25,8 @@ export type ContentBatchItem = {
 /** One found page: `sourceId` is set once it was fetched, `failure` holds the fetch error code otherwise. */
 export type ContentItemSource = {
   url: string; title: string | null; sourceId: string | null; publisher: string | null; chars: number; failure: string | null;
+  /** A data.mos.ru record matched to the place offline, not a search result. */
+  openData?: { datasetId: number; recordId: string; datasetVersion: string } | null;
 };
 export type ContentItemFact = {
   claim: string; kind: string | null; subjectRelation: string | null; evidence: { sourceId: string; quote: string }[];
