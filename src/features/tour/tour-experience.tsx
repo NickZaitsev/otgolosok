@@ -271,6 +271,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
             }
           };
           worker.addEventListener("statechange", check);
+          cleanups.push(() => worker.removeEventListener("statechange", check));
           check();
         });
       }
