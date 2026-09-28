@@ -92,3 +92,23 @@
 @media (max-width: 45rem) {
   .content-admin .identity-filters { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* The opened batch item unfolds under its row: location, the model's verdict and the pages it read. */
+.content-admin .admin-table tr.content-item-detail-row > td { padding-top: 0; background: var(--raised); }
+.content-item-detail { display: grid; grid-template-columns: minmax(14rem, .8fr) minmax(18rem, 1.2fr) minmax(16rem, 1fr); gap: 1rem 1.5rem; padding: .75rem 0 .5rem; }
+.content-item-detail > .admin-meta { grid-column: 1 / -1; margin: 0; }
+.content-item-detail h4 { margin: 0 0 .4rem; color: var(--muted); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+.content-item-detail p { margin: 0 0 .4rem; }
+.content-item-detail blockquote { margin: .4rem 0; padding-left: .75rem; border-left: 3px solid var(--admin-orange); }
+.content-item-detail a { overflow-wrap: anywhere; }
+.content-coords { font-variant-numeric: tabular-nums; }
+.content-item-detail ol { margin: 0; padding-left: 1.25rem; }
+.content-item-detail li + li { margin-top: .5rem; }
+.content-facts q { display: block; margin-top: .2rem; color: var(--muted); font-size: .85rem; }
+.content-tags { display: grid; gap: .15rem; margin: .4rem 0 0; font-size: .8rem; }
+.content-tags > div { display: grid; grid-template-columns: minmax(6rem, auto) 1fr; gap: .5rem; }
+.content-tags dt { color: var(--muted); }
+.content-tags dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 60rem) {
+  .content-item-detail { grid-template-columns: minmax(0, 1fr); }
+}

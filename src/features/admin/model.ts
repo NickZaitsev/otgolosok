@@ -22,6 +22,23 @@ export type ContentBatch = {
 export type ContentBatchItem = {
   placeId: string; name: string; address: string | null; state: string; error: { code?: string; message?: string } | null;
 };
+/** One found page: `sourceId` is set once it was fetched, `failure` holds the fetch error code otherwise. */
+export type ContentItemSource = {
+  url: string; title: string | null; sourceId: string | null; publisher: string | null; chars: number; failure: string | null;
+};
+export type ContentItemFact = {
+  claim: string; kind: string | null; subjectRelation: string | null; evidence: { sourceId: string; quote: string }[];
+};
+/** Why a batch item stopped: where the object is, what was read, and what the model took it to be. */
+export type ContentBatchItemDetail = ContentBatchItem & {
+  location: { lat: number; lon: number }; tags: Record<string, string>;
+  job: { state: string; attempts: number; maxAttempts: number; updatedAt: string };
+  sources: ContentItemSource[];
+  model: {
+    outcome: "rejected" | "accepted"; identityConfirmed: boolean | null; addressConfirmed: boolean;
+    placeName: string | null; resolvedAddress: string | null; identityNote: string | null; facts: ContentItemFact[];
+  } | null;
+};
 /** `errors` counts the codes present under the status filter alone, so the error filter can list them without reloading. */
 export type ContentBatchItemPage = {
   items: ContentBatchItem[]; total: number; hasMore: boolean; errors: { code: string | null; count: number }[];

@@ -348,6 +348,9 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
         const prioritizeBatch=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/priority$/.exec(url.pathname);
         if(prioritizeBatch&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const input=await body(req,4096),batch=store.setBatchPriority(prioritizeBatch[1],input?.priority);json(res,batch?200:404,batch?{batch}:{error:{code:"NOT_FOUND",message:"Batch not found."}});contentWorker?.wake();return;}
+        const itemDetail=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/items\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
+        if(itemDetail&&req.method==="GET"){if(url.search)throw failure("BAD_REQUEST");const item=store.getBatchItemDetail(itemDetail[1],itemDetail[2]);
+          json(res,item?200:404,item?{item}:{error:{code:"NOT_FOUND",message:"Batch item not found."}});return;}
         const retryContent=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/items\/(osm:(?:node|way|relation):\d+)\/retry$/.exec(url.pathname);
         if(retryContent&&req.method==="POST"){if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const input=await body(req,1024),restartFrom=input.restartFrom??"auto";if(Object.keys(input).some(key=>key!=="restartFrom"))throw failure("BAD_REQUEST");

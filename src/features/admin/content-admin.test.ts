@@ -69,6 +69,19 @@ const api: AdminApi = async <T,>(path: string): Promise<T> => {
     retried.state = "queued"; retried.error = null;
     return {} as T;
   }
+  if (path.startsWith(`/content/batches/${batch.id}/items/osm:`) && !path.endsWith("/retry")) {
+    const item = items.find(entry => path.endsWith(entry.placeId))!;
+    return { item: {
+      ...item, location: { lat: 55.7512345, lon: 37.6198765 }, tags: { historic: "memorial", "memorial:type": "plaque" },
+      job: { state: item.state, attempts: 1, maxAttempts: 3, updatedAt: "2026-09-25T10:00:00Z" },
+      sources: [
+        { url: "https://example.org/person", title: "Биография", sourceId: "s1", publisher: "example.org", chars: 4200, failure: null },
+        { url: "https://example.net/down", title: "Недоступная", sourceId: null, publisher: null, chars: 0, failure: "TIMEOUT" },
+      ],
+      model: { outcome: "rejected", identityConfirmed: false, addressConfirmed: false, placeName: "Левон Айрапетян", resolvedAddress: "Москва",
+        identityNote: "Источники о человеке, а не о мемориальной доске.", facts: [] },
+    } } as T;
+  }
   if (path.startsWith(`/content/batches/${batch.id}/items?`)) {
     const query = new URLSearchParams(path.split("?")[1]);
     itemQueries.push(query);
@@ -392,5 +405,32 @@ describe("прелоадеры таблиц", () => {
     await openGate();
     expect(skeletons("content-items-title")).toBe(0);
     expect(itemNames()).toEqual(["1 корпус", "8й корпус", "Готовое место"]);
+  });
+});
+
+describe("подробности задания партии", () => {
+  it("показывает координаты, ссылки на карты, вывод модели и источники, а повторный клик сворачивает", async () => {
+    await click(buttons("Все задания")[0]);
+    await click(buttons("Подробности")[0]);
+    const detail = container.querySelector(".content-item-detail")!;
+    expect(detail.textContent).toContain("55.7512345, 37.6198765");
+    const links = [...detail.querySelectorAll("a")].map(link => link.getAttribute("href"));
+    expect(links).toContain("https://www.openstreetmap.org/node/1");
+    expect(links).toContain("https://yandex.ru/maps/?pt=37.6198765,55.7512345&z=18&l=map");
+    expect(detail.textContent).toContain("Модель не подтвердила, что источники о нём");
+    expect(detail.textContent).toContain("Источники о человеке, а не о мемориальной доске.");
+    expect(detail.textContent).toMatch(/4\s200 знаков/);
+    expect(detail.textContent).toContain("не прочитан: страница не ответила вовремя");
+    expect(buttons("Скрыть")[0].getAttribute("aria-expanded")).toBe("true");
+
+    await click(buttons("Скрыть")[0]);
+    expect(container.querySelector(".content-item-detail")).toBeNull();
+  });
+
+  it("закрывает подробности, когда список заданий перезагружается", async () => {
+    await click(buttons("Все задания")[0]);
+    await click(buttons("Подробности")[0]);
+    await click(buttons("Повторить")[0]);
+    expect(container.querySelector(".content-item-detail")).toBeNull();
   });
 });
