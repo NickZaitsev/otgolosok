@@ -73,10 +73,16 @@ export function Account() {
   async function confirm(event: FormEvent) {
     event.preventDefault(); if (!confirmAction || busy) return; setBusy("settings");
     try {
-      if (confirmAction === "delete") await accountApi("/api/me", { method: "DELETE", body: JSON.stringify({ password }) });
-      else await (confirmAction === "all" ? signOutEverywhere() : signOut());
       // Private offline copies are removed best-effort: an unavailable Cache Storage must not block leaving the account.
-      if (user) await clearOfflineScope(user.id).catch(() => {});
+      const clearPrivateCopies = () => user ? clearOfflineScope(user.id).catch(() => {}) : Promise.resolve();
+      if (confirmAction === "delete") {
+        await accountApi("/api/me", { method: "DELETE", body: JSON.stringify({ password }) });
+        await clearPrivateCopies();
+      } else {
+        // signOut() also signs out locally when the server is unreachable, then reports it.
+        try { await (confirmAction === "all" ? signOutEverywhere() : signOut()); }
+        finally { await clearPrivateCopies(); }
+      }
       setPassword(""); location.replace("/");
     } catch (caught) { setErrors(current => ({ ...current, settings: caught instanceof Error ? caught.message : "Не удалось выполнить действие." })); }
     finally { setBusy(null); setPassword(""); }
