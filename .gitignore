@@ -61,3 +61,6 @@ next-env.d.ts
 /.venv/
 .ruff_cache/
 .pytest_cache/
+
+# data.mos.ru snapshots from backend/import-open-data.mjs --fetch
+/open-data/

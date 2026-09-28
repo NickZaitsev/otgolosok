@@ -316,3 +316,19 @@ test("content stats sum model tokens across checkpoints and ignore jobs without 
   store.updateContentCheckpoint(second.id, { usageTokens: 35.5 });
   assert.equal(store.getContentStats().textUsageTokens, 1235.5);
 });
+
+test("open-data matches are replaced per dataset and go stale when the place changes",t=>{
+  const store=createStore(":memory:");t.after(()=>store.close());store.importPlaces(catalog,{complete:true});
+  const item=(placeId,datasetId,recordId)=>({placeId,record:{datasetId,recordId,kind:datasetId===2801?"plaque":"sculpture",name:"Доска",fields:{Name:"Доска"}},match:{rule:"test",distanceM:5}});
+  assert.throws(()=>store.replaceOpenDataMatches([item("osm:node:1",60869,"1")],{datasetId:2801,datasetVersion:"1"}),{code:"BAD_REQUEST"});
+  assert.deepEqual(store.replaceOpenDataMatches([item("osm:node:1",2801,"10"),item("osm:node:404",2801,"11")],{datasetId:2801,datasetVersion:"3.14"}),
+    {datasetId:2801,datasetVersion:"3.14",stored:1,skipped:1,importedAt:store.getOpenDataSources("osm:node:1")[0].importedAt});
+  store.replaceOpenDataMatches([item("osm:node:1",60869,"20")],{datasetId:60869,datasetVersion:"1.16"});
+  assert.deepEqual(store.getOpenDataSources("osm:node:1").map(row=>[row.datasetId,row.record.recordId]),[[2801,"10"],[60869,"20"]]);
+  // A new import of one dataset leaves the other dataset's matches alone.
+  store.replaceOpenDataMatches([],{datasetId:2801,datasetVersion:"3.15"});
+  assert.deepEqual(store.getOpenDataSources("osm:node:1").map(row=>row.datasetId),[60869]);
+  // The place changed in a later catalog import: the stored record no longer applies.
+  store.importPlaces({...catalog,sourceSha256:"d".repeat(64),places:[{...catalog.places[0],name:"Памятник героям"},catalog.places[1]]},{complete:true});
+  assert.deepEqual(store.getOpenDataSources("osm:node:1"),[]);
+});

@@ -83,6 +83,8 @@ export function createContentStore({db,now,transaction}) {
       tier TEXT NOT NULL,score INTEGER NOT NULL,category TEXT NOT NULL,reasons_json TEXT NOT NULL,signals_json TEXT NOT NULL,
       location_json TEXT NOT NULL,assessed_at TEXT NOT NULL);
     CREATE INDEX IF NOT EXISTS place_identity_candidates_tier_idx ON place_identity_candidates(tier,score DESC);
+    CREATE TABLE IF NOT EXISTS place_open_data (place_id TEXT NOT NULL,dataset_id INTEGER NOT NULL,record_id TEXT NOT NULL,dataset_version TEXT NOT NULL,
+      match_json TEXT NOT NULL,record_json TEXT NOT NULL,content_hash TEXT NOT NULL,imported_at TEXT NOT NULL,PRIMARY KEY(place_id,dataset_id));
   `);
   const columns=new Set(db.prepare("PRAGMA table_info(places)").all().map(column=>column.name));
   if(!columns.has("geometry_json"))db.exec("ALTER TABLE places ADD COLUMN geometry_json TEXT");
@@ -243,6 +245,28 @@ export function createContentStore({db,now,transaction}) {
         for(const item of candidates)insert.run(item.placeId,item.contentHash,rulesVersion,item.tier,item.score,item.category.slice(0,64),encode(item.reasons),encode(item.signals),encode(item.location),timestamp);
         return {assessedAt:timestamp,total:candidates.length,tiers:Object.fromEntries(IDENTITY_TIERS.map(tier=>[tier,candidates.filter(item=>item.tier===tier).length]))};
       });
+    },
+    /**
+     * Replaces every match of one data.mos.ru dataset. The place's content hash is stored with the match:
+     * a place changed by a later catalog import no longer gets the record until the import is repeated.
+     */
+    replaceOpenDataMatches(matches,{datasetId,datasetVersion}) {
+      if(!Array.isArray(matches)||!Number.isSafeInteger(datasetId)||typeof datasetVersion!=="string"||!datasetVersion)throw fail("BAD_REQUEST");
+      for(const item of matches)if(typeof item?.placeId!=="string"||item.record?.datasetId!==datasetId||typeof item.record?.recordId!=="string"||!item.match)throw fail("BAD_REQUEST");
+      return transaction(()=>{
+        const timestamp=iso(now),place=db.prepare("SELECT content_hash FROM places WHERE id=? AND archived=0");
+        db.prepare("DELETE FROM place_open_data WHERE dataset_id=?").run(datasetId);
+        const insert=db.prepare("INSERT INTO place_open_data VALUES (?,?,?,?,?,?,?,?)");let stored=0,skipped=0;
+        for(const item of matches){const row=place.get(item.placeId);if(!row){skipped++;continue;}
+          insert.run(item.placeId,datasetId,item.record.recordId,datasetVersion,encode(item.match),encode(item.record),row.content_hash,timestamp);stored++;}
+        return {datasetId,datasetVersion,stored,skipped,importedAt:timestamp};
+      });
+    },
+    /** Current open-data records of a place; a record imported for an older version of the place is ignored. */
+    getOpenDataSources(placeId) {
+      return db.prepare(`SELECT o.* FROM place_open_data o JOIN places p ON p.id=o.place_id AND p.archived=0 AND p.content_hash=o.content_hash
+        WHERE o.place_id=? ORDER BY o.dataset_id`).all(placeId).map(row=>({datasetId:Number(row.dataset_id),datasetVersion:row.dataset_version,
+        record:decode(row.record_json),match:decode(row.match_json),importedAt:row.imported_at}));
     },
     listIdentityCandidates({tier="all",category="all",q="",queue="all",limit=50,offset=0}={}) {
       if(!["all",...IDENTITY_TIERS].includes(tier)||typeof category!=="string"||!(category==="all"||/^[a-z_]+(?::[a-z0-9_;:-]{1,60})?$/.test(category))
