@@ -5,13 +5,16 @@ import hashlib
 import json
 import math
 import os
-from pathlib import Path
+import random
 import subprocess
 import tempfile
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
+import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, datetime
+from pathlib import Path
+
 from ru_normalizr import NormalizeOptions, Normalizer
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,6 +31,45 @@ INSTRUCTIONS = (
     "Pronounce Кожевнический with stress on the second syllable: Коже́внический."
 )
 NORMALIZER = Normalizer(NormalizeOptions.tts())
+TRANSIENT_HTTP = {408, 425, 429, 500, 502, 503, 504}
+MAX_ATTEMPTS = 4
+BASE_DELAY_SEC = 2.0
+MAX_DELAY_SEC = 30.0
+
+
+class TransientSpeechError(RuntimeError):
+    pass
+
+
+def retry_after_seconds(value):
+    try:
+        return max(0.0, float(value)) if value is not None else None
+    except ValueError:
+        return None
+
+
+def speech_audio(request, *, opener=urllib.request.urlopen, sleep=time.sleep, attempts=MAX_ATTEMPTS):
+    """POST a speech request, retrying only transient failures with bounded exponential backoff."""
+    for attempt in range(1, attempts + 1):
+        wait = None
+        try:
+            with opener(request, timeout=180) as response:
+                if not response.headers.get("Content-Type", "").startswith("audio/"):
+                    raise RuntimeError("The speech service did not return audio")
+                return response.read()
+        except urllib.error.HTTPError as error:
+            # Never echo a provider response, URL or credentials to build logs.
+            if error.code not in TRANSIENT_HTTP:
+                raise RuntimeError(f"Speech request failed with HTTP {error.code}") from None
+            failure = TransientSpeechError(f"Speech request failed with HTTP {error.code}")
+            wait = retry_after_seconds(error.headers.get("Retry-After") if error.headers else None)
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+            failure = TransientSpeechError(f"Speech request failed: {type(error).__name__}")
+        if attempt == attempts:
+            raise failure from None
+        backoff = min(MAX_DELAY_SEC, BASE_DELAY_SEC * 2 ** (attempt - 1))
+        sleep(min(MAX_DELAY_SEC, wait) if wait is not None else random.uniform(0, backoff))
+    raise AssertionError("unreachable")
 
 
 def sha256(value):
@@ -68,14 +110,7 @@ def generate(step, content, limit):
             data=body,
             headers={"Authorization": "Bearer " + os.environ["OPENAI_API_KEY"], "Content-Type": "application/json"},
         )
-        try:
-            with urllib.request.urlopen(request, timeout=180) as response:
-                if not response.headers.get("Content-Type", "").startswith("audio/"):
-                    raise RuntimeError("The speech service did not return audio")
-                audio = response.read()
-        except urllib.error.HTTPError as error:
-            # Never echo a provider response, URL or credentials to build logs.
-            raise RuntimeError(f"Speech request failed with HTTP {error.code}") from None
+        audio = speech_audio(request)
         with tempfile.TemporaryDirectory(prefix="otgolosok-tts-") as directory:
             source = Path(directory) / "source.mp3"
             encoded = Path(directory) / "chapter.mp3"
@@ -110,7 +145,7 @@ def generate(step, content, limit):
         "voice": VOICE,
         "script_sha256": sha256(script.encode()),
         "audio_sha256": sha256(target.read_bytes()),
-        "generated_at": datetime.fromtimestamp(target.stat().st_mtime, tz=timezone.utc).isoformat(),
+        "generated_at": datetime.fromtimestamp(target.stat().st_mtime, tz=UTC).isoformat(),
     }
 
 

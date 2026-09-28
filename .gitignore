@@ -55,3 +55,8 @@ next-env.d.ts
 /playwright-report/
 /test-results/
 /artifacts/video/
+
+# Python tooling (uv)
+/.venv/
+.ruff_cache/
+.pytest_cache/
