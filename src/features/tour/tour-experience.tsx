@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
   pauseAudioElement,
   playAudioSource,
@@ -195,7 +195,8 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const hasStoryText = firstPoi.story.text_status === "ready" && firstPoi.story.paragraphs.length > 0;
   const storyMinutes = Math.ceil(firstPoi.story.duration_sec / 60);
   const readyNotes = (route.notes ?? []).filter((note) => note.story.text_status === "ready" && note.story.paragraphs.length > 0);
-  const chapters = getWalkChapters(route, universal);
+  // Stable between playback updates, so the map and plan do not rebuild on every tick.
+  const chapters = useMemo(() => getWalkChapters(route, universal), [route, universal]);
   const chapter = chapters[chapterIndex];
   const walkContent = chapter?.content ?? firstPoi;
   const walkAudioUrl = chapter?.audio?.url ?? walkContent.story.audio_url;

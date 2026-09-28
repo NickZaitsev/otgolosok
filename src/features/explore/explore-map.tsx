@@ -15,7 +15,7 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
   geometry?: Coordinates[]; mapLabel?: string; viewState?: MapViewState; routePadding?: {top:number;right:number;bottom:number;left:number};
 }) {
   const container = useRef<HTMLDivElement>(null);
-  const runtime = useRef<{L:typeof Leaflet; map:Leaflet.Map; markers:Leaflet.LayerGroup; position:Leaflet.LayerGroup; route:Leaflet.LayerGroup}|null>(null);
+  const runtime = useRef<{L:typeof Leaflet; map:Leaflet.Map; markers:Leaflet.LayerGroup; markerById:Map<string,{marker:Leaflet.Marker; look:string}>; position:Leaflet.LayerGroup; route:Leaflet.LayerGroup}|null>(null);
   const handlers = useRef({onSelect,onPoint});
   const appliedFocus = useRef<Coordinates|null>(null);
   const [ready,setReady] = useState(false);
@@ -42,7 +42,7 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,updateWhenIdle:true,keepBuffer:1}).on("tileerror",()=>setTileError(true)).on("tileload",()=>setTileError(false)).addTo(map);
       L.control.zoom({position:"bottomright",zoomInTitle:"Приблизить",zoomOutTitle:"Отдалить"}).addTo(map);
       map.on("click",(event:Leaflet.LeafletMouseEvent)=>handlers.current.onPoint({lat:event.latlng.lat,lon:event.latlng.lng}));
-      runtime.current={L,map,markers:L.layerGroup().addTo(map),position:L.layerGroup().addTo(map),route:L.layerGroup().addTo(map)};
+      runtime.current={L,map,markers:L.layerGroup().addTo(map),markerById:new Map(),position:L.layerGroup().addTo(map),route:L.layerGroup().addTo(map)};
       observer=new ResizeObserver(()=>{if(!disposed)map.invalidateSize();});observer.observe(container.current);
       setReady(true);
     }).catch(()=>{if(!disposed)setMapError(true);});
@@ -60,17 +60,36 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     };
   },[viewState]);
 
+  // Markers are updated by id instead of being rebuilt: playback re-renders the
+  // map often, and a rebuilt marker would drop keyboard focus.
   useEffect(()=>{
     const rt=runtime.current;if(!rt||!ready)return;
-    rt.markers.clearLayers();
+    const wanted=new Set(items.map(item=>item.id));
+    for(const [id,entry] of rt.markerById)if(!wanted.has(id)){entry.marker.remove();rt.markerById.delete(id);}
     for(const item of items) {
       const active=item.id===selectedId;
       // Marker contents are fixed symbols/numbers, never upstream HTML.
       const label=item.number ? String(item.number) : item.pending ? "…" : "♪";
+      const look=JSON.stringify([item.title,label,item.compact??false,item.pending??false,active]);
+      const position:[number,number]=[item.location.lat,item.location.lon];
+      const existing=rt.markerById.get(item.id);
+      if(existing) {
+        const current=existing.marker.getLatLng();
+        if(current.lat!==position[0]||current.lng!==position[1])existing.marker.setLatLng(position);
+        if(existing.look===look)continue;
+      }
       const icon=item.compact ? rt.L.divIcon({className:"explore-dot",html:"<span></span>",iconSize:[32,32],iconAnchor:[16,16]}) : rt.L.divIcon({className:`explore-pin${active?" selected":""}${item.pending?" pending":""}`,html:`<span><b>${label}</b></span>`,iconSize:[44,52],iconAnchor:[22,48]});
-      const marker=rt.L.marker([item.location.lat,item.location.lon],{icon,title:item.title,alt:item.title,keyboard:true,zIndexOffset:item.compact?-1000:0,bubblingMouseEvents:false}).addTo(rt.markers);
-      marker.on("click",()=>handlers.current.onSelect(item.id));
+      let marker=existing?.marker;
+      if(marker) {
+        // A div icon reuses its element, so focus and listeners survive the update.
+        Object.assign(marker.options,{title:item.title,alt:item.title});
+        marker.setIcon(icon).setZIndexOffset(item.compact?-1000:0);
+      } else {
+        marker=rt.L.marker(position,{icon,title:item.title,alt:item.title,keyboard:true,zIndexOffset:item.compact?-1000:0,bubblingMouseEvents:false}).addTo(rt.markers);
+        marker.on("click",()=>handlers.current.onSelect(item.id));
+      }
       marker.getElement()?.setAttribute("aria-pressed",String(active));
+      rt.markerById.set(item.id,{marker,look});
     }
   },[items,selectedId,ready]);
 
