@@ -142,8 +142,8 @@ test("only the latest requested profile publishes when engines finish out of ord
 
 test("short external audio is accepted even when a frozen legacy profile has a 30-second minimum",async t=>{
   const directory=mkdtempSync(join(tmpdir(),"short-audio-")),path=join(directory,"jobs.sqlite");
-  t.after(()=>rmSync(directory,{recursive:true,force:true}));
   const store=createStore(path,{workerLeaseSecret:"test-secret"});t.after(()=>store.close());
+  t.after(()=>rmSync(directory,{recursive:true,force:true}));
   const original=store.createOrGet({key:"legacy-duration",address:story.address}),source=store.update(original.id,{stage:"failed",data:{story}},original.revision);
   const queued=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story});
   const db=new DatabaseSync(path);

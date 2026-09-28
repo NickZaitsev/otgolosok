@@ -12,7 +12,6 @@ const place = { id:"osm:node:99", location:{lat:55.75,lon:37.61} };
 
 function fixture(t, features) {
   const directory = mkdtempSync(join(tmpdir(), "osm-geocoder-"));
-  t.after(() => rmSync(directory, {recursive:true,force:true}));
   const path = join(directory, "addresses.sqlite");
   const db = new DatabaseSync(path);
   db.exec(`CREATE TABLE metadata(key TEXT PRIMARY KEY,value TEXT NOT NULL);
@@ -27,7 +26,9 @@ function fixture(t, features) {
   }
   db.close();
   const resolver=openOsmGeocoder(path);
+  // node:test runs after-hooks in registration order; SQLite must close before Windows can delete the file.
   t.after(()=>resolver.close());
+  t.after(() => rmSync(directory, {recursive:true,force:true}));
   return {resolver,path,directory};
 }
 
