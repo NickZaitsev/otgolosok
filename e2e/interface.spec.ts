@@ -424,3 +424,59 @@ test("прогулка из Александровского сада с чет�
   await expect.poll(() => overlay.evaluate(el => Math.abs(el.getBoundingClientRect().width - Number(el.getAttribute("width"))))).toBeLessThan(2);
   await page.screenshot({ path: info.outputPath("alexander-garden-track.png") });
 });
+
+for (const [walkingMinutes, note] of [[18, true], [52, false]] as const) test(`прогулка по времени ${note ? "честно сообщает о нехватке мест" : "без пометки, если время заполнено"}`, async ({ page }, info) => {
+  const start = { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } };
+  const stops = [{ address: "Москва, Арбат, 10", location: { lat: 55.751, lon: 37.6 } }, { address: "Москва, Арбат, 20", location: { lat: 55.752, lon: 37.6 } }];
+  await page.route("**/api/story-place?*", route => route.fulfill({ json: start }));
+  await page.route("**/api/walk-plan", async route => {
+    const request = route.request().postDataJSON();
+    expect(request).toMatchObject({ minutes: 60, mode: "loop" });
+    expect(request).not.toHaveProperty("stops");
+    expect(request).not.toHaveProperty("destination");
+    await route.fulfill({ json: { stops, geometry: [start.location, ...stops.map(stop => stop.location), start.location], walkingMinutes, distanceM: walkingMinutes * 80, attribution: "OSM" } });
+  });
+  await page.goto("/");
+  await page.getByRole("link", { name: "Прогулка", exact: true }).click();
+  await page.getByRole("button", { name: "Откуда", exact: true }).click();
+  await page.getByRole("button", { name: "Ввести адрес", exact: false }).click();
+  await page.getByRole("textbox", { name: "Откуда", exact: true }).fill(start.address);
+  await page.getByRole("textbox").press("Enter");
+  await page.getByRole("button", { name: "Куда", exact: true }).click();
+  await page.getByRole("button", { name: "По времени" }).click();
+  await page.getByRole("button", { name: "60 мин" }).click();
+  await page.getByRole("button", { name: "Готово" }).click();
+  await page.getByRole("button", { name: "Построить прогулку" }).click();
+  await expect(page.getByRole("heading", { name: "Ваш маршрут" })).toBeVisible();
+  const shortfall = page.getByText(`Рядом нашлось мест только на ${walkingMinutes} мин из 60.`, { exact: false });
+  await expect(shortfall).toHaveCount(note ? 1 : 0);
+  await page.screenshot({ path: info.outputPath("time-preview.png") });
+});
+
+for (const [width, height] of [[390, 844], [1280, 800], [1440, 900]]) {
+  test(`выбранная на карте точка не прячется под панелью ${width}×${height}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    const place = { address: "Москва, Павелецкая площадь, 1А", location: { lat: 55.729754, lon: 37.639359 } };
+    await page.route("**/api/story-place?*", route => route.fulfill({ json: place }));
+    await page.goto("/?walk=create");
+    await expect(page.locator(".map-loading")).toHaveCount(0);
+    const panel = page.locator(".creation-panel");
+    const before = (await panel.boundingBox())!;
+    // Точка вне панели и навигации: слева сверху от центра карты.
+    await page.mouse.click(Math.max(24, before.x - 40), before.y > 200 ? 160 : before.y + before.height + 40);
+    await expect(page.getByRole("button", { name: "Откуда", exact: true })).toContainText(place.address);
+    // Leaflet пересоздаёт отметки при обновлении слоя: меряем всё в одном кадре.
+    const layout = () => page.evaluate(address => {
+      const box = (element: Element | null) => element ? element.getBoundingClientRect().toJSON() as { x: number; y: number; width: number; height: number } : null;
+      return { marker: box(document.querySelector(`.leaflet-marker-icon[title="${address}"]`)), panel: box(document.querySelector(".creation-panel")), nav: box(document.querySelector('nav[aria-label="Основная навигация"]')) };
+    }, place.address);
+    const overlaps = (a: { x: number; y: number; width: number; height: number }, b: typeof a) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+    await expect.poll(async () => {
+      const { marker, panel: covered, nav } = await layout();
+      if (!marker || !covered || !nav) return "нет элементов";
+      if (overlaps(marker, covered)) return "под панелью";
+      if (overlaps(marker, nav)) return "под навигацией";
+      return marker.x >= 0 && marker.y >= 0 && marker.x + marker.width <= width ? "видна" : "за краем";
+    }).toBe("видна");
+  });
+}

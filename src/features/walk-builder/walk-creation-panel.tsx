@@ -8,7 +8,7 @@ import { ExploreIcon } from "../explore/icons";
 import { useWalkDraft } from "./use-walk-draft";
 import { creationReducer } from "./creation-state";
 import { AddressInput } from "./address-input";
-import { validStops, type Place } from "./model";
+import { routeShortfall, validStops, type Place } from "./model";
 import { ResearchPanel } from "./research-panel";
 import "../ui/surfaces.css";
 import "./walk-creation-panel.css";
@@ -67,6 +67,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
   }
   async function build() { await w.plan(); if (w.current.current.route) dispatch({ type: "step", step: "preview" }); }
   const preview = Boolean(w.draft.route) && !state.picking;
+  const shortfall = w.draft.route && w.autoRoute && !w.draft.destination ? routeShortfall(w.draft.route, w.draft.minutes) : null;
 
   function selectAddress(place: Place, target = w.target) {
     if (target === "start") w.edit({ start: place });
@@ -112,6 +113,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
         {state.picking && <div className="creation-map-pick"><p>Нажмите на карту в нужном месте.</p><button className="ui-button quiet creation-map-cancel" onClick={() => dispatch({ type: "return" })}>Отменить</button></div>}
         {preview && <>
           <div className="creation-summary"><strong>{w.draft.route!.walkingMinutes} <small>мин пешком</small></strong><strong>{(w.draft.route!.distanceM / 1000).toFixed(1).replace(".", ",")} <small>км</small></strong></div>
+          {shortfall !== null && <p className="ui-muted creation-shortfall">Рядом нашлось мест только на {shortfall} мин из {w.draft.minutes}. Выберите другое начало или добавьте остановки вручную.</p>}
           <div className="creation-route-points"><p><small>Откуда</small>{w.draft.start?.address}</p><p><small>Куда</small>{w.draft.destination?.address ?? (w.draft.mode === "loop" ? w.draft.start?.address : w.draft.stops.at(-1)?.address)}</p></div>
           <button className="creation-text" disabled={busy} onClick={() => w.edit({})}>Изменить маршрут</button>
           {w.draft.stops.length > 0 && <details className="creation-details"><summary>Остановки · {w.draft.stops.length}</summary><ol className="creation-stops">{w.draft.stops.map((stop, i) => <li key={`${stop.address}-${i}`}>{stop.address}</li>)}</ol>
