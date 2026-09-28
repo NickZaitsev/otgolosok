@@ -6,6 +6,7 @@ import createNarration from "../src/video/create-guide-narration.json" with {typ
 import motion from "../src/video/motion-scenes.json" with {type: "json"};
 import {clickWav, guideBedWav} from "./build-guide-audio.mjs";
 import {motionBedWav} from "./build-motion-audio.mjs";
+import {wideMotionScore} from "./motion-wide-score.mjs";
 
 /** Фон видеоинструкции с запасом; тест проверяет, что ролик короче. */
 export const GUIDE_BED_SECONDS = 180;
@@ -49,6 +50,7 @@ export async function prepareVideoAssets(root, publicDir, {bedSeconds = GUIDE_BE
   const map = await readFile(join(root, "public/data/maps/paveletskaya.svg"), "utf8");
   await writeFile(join(publicDir, "motion/map-base.svg"), stripRouteLayer(map));
   await writeFile(join(publicDir, "motion/bed.wav"), motionBedWav(motionScore()));
+  await writeFile(join(publicDir, "motion/wide-bed.wav"), motionBedWav(wideMotionScore()));
 }
 
 /**

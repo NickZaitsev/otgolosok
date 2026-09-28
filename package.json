@@ -22,6 +22,7 @@
     "video:render": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokPromo artifacts/video/otgolosok-promo.mp4 --public-dir artifacts/video/public",
     "video:render:ad": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokAd artifacts/video/otgolosok-ad.mp4 --public-dir artifacts/video/public",
     "video:render:motion": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokMotion artifacts/video/otgolosok-motion.mp4 --public-dir artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
+    "video:render:motion-wide": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokMotionWide artifacts/video/otgolosok-motion-wide.mp4 --public-dir artifacts/video/public --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
     "video:render:guide": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokGuide artifacts/video/otgolosok-guide.mp4 --public-dir artifacts/video/public --image-format=png --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
     "video:render:create-guide": "pnpm video:prepare && remotion render src/video/index.ts OtgolosokCreateGuide artifacts/video/otgolosok-create-guide.mp4 --public-dir artifacts/video/public --image-format=png --crf=16 --x264-preset=slow --color-space=bt709 --audio-bitrate=192k",
     "video:bed": "node scripts/build-video-bed.mjs",
