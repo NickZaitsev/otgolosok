@@ -7,11 +7,14 @@ import {OtgolosokGuide} from "./otgolosok-guide";
 import {OtgolosokMotion} from "./otgolosok-motion";
 import {MOTION_DURATION_IN_FRAMES, MOTION_FPS} from "./motion-timeline";
 import {GUIDE_DURATION_IN_FRAMES, GUIDE_FPS, GUIDE_WIDTH, GUIDE_HEIGHT} from "./guide-timeline";
+import {OtgolosokCreateGuide} from "./otgolosok-create-guide";
+import {CREATE_GUIDE_DURATION_IN_FRAMES} from "./create-guide-timeline";
 
 export function VideoRoot() {
   return (
     <>
       <Composition id="OtgolosokGuide" component={OtgolosokGuide} durationInFrames={GUIDE_DURATION_IN_FRAMES} fps={GUIDE_FPS} width={GUIDE_WIDTH} height={GUIDE_HEIGHT} />
+      <Composition id="OtgolosokCreateGuide" component={OtgolosokCreateGuide} durationInFrames={CREATE_GUIDE_DURATION_IN_FRAMES} fps={GUIDE_FPS} width={GUIDE_WIDTH} height={GUIDE_HEIGHT} />
       <Composition
         id="OtgolosokMotion"
         component={OtgolosokMotion}

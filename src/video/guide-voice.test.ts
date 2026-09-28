@@ -3,7 +3,7 @@ import {tmpdir} from "node:os";
 import {join, resolve} from "node:path";
 import {createHash} from "node:crypto";
 import {afterEach, describe, expect, it, vi} from "vitest";
-import {buildGuideVoice, clipKey, isTransient, withRetry} from "../../scripts/build-guide-voice.mjs";
+import {GUIDE_VOICES, buildGuideVoice, clipKey, isTransient, withRetry} from "../../scripts/build-guide-voice.mjs";
 
 const profile = {id: "f5-ru-v1", voice: "obrazec6", modelSha256: "m", configSha256: "c", referenceSha256: "r", preparationVersion: "p"};
 const tempDirs: string[] = [];
@@ -71,6 +71,16 @@ describe("озвучка видеоинструкции", () => {
 
     await buildGuideVoice({root, client, log: () => {}});
     expect(client.create).toHaveBeenCalledTimes(1);
+
+    // Вторая инструкция пишет в свой каталог и не трогает клипы первой.
+    await writeFile(join(root, "src/video/create-guide-narration.json"), JSON.stringify({intro: "Привет."}));
+    const created = await buildGuideVoice({root, client, log: () => {}, guide: GUIDE_VOICES[1]});
+    expect(created.intro.sha256).toBe(sha256);
+    expect(await readFile(join(root, "video/assets/guide/create/voice/intro.mp3"))).toEqual(bytes);
+    expect(JSON.parse(await readFile(join(root, "video/assets/guide/voice/manifest.json"), "utf8")).intro.sha256).toBe(sha256);
+    const [first, second] = client.create.mock.calls.map(call => (call[0] as {requestId: string}).requestId);
+    expect(first).toMatch(/^otgolosok-guide-intro-/);
+    expect(second).toMatch(/^otgolosok-create-guide-intro-/);
   });
 
   it("отклоняет аудио с неверной контрольной суммой и не подтверждает его", async () => {

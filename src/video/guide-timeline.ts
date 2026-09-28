@@ -8,9 +8,20 @@ export const GUIDE_WIDTH = 1920;
 export const GUIDE_HEIGHT = 1080;
 export const GUIDE_TRANSITION_FRAMES = 15;
 
-type GuideStepSpec = {
-  id: string; before: keyof typeof targets; after: string; page: string; resultPage: string;
+/**
+ * Шаг инструкции. gesture "look" — действие без нажатия (например, идти по маршруту):
+ * курсора и щелчка нет, подсказка показывает tip.
+ */
+export type GuideStepSpec = {
+  id: string; before: string; after: string; page: string; resultPage: string;
   title: string; description: string; result: string; action: string; focus: Rect; resultFocus: Rect;
+  gesture?: "click" | "look"; tip?: string;
+};
+export type VoiceManifest = Partial<Record<string, {durationSeconds: number}>>;
+/** Всё, что отличает одну видеоинструкцию от другой. */
+export type GuideSpec = {
+  label: string; voiceDir: string; steps: readonly GuideStepSpec[];
+  targets: Record<string, Rect>; voice: VoiceManifest;
 };
 
 // Области камеры в CSS-пикселях снимка 1280×800.
@@ -34,12 +45,12 @@ export const GUIDE_STEPS = [
     focus: PANEL, resultFocus: PANEL_TALL},
   {id: "next", before: "stops", after: "next", page: "Прогулка", resultPage: "Прогулка", title: "Продолжайте путь", description: "Выберите следующую историю в списке.", result: "«Дальше» тоже переключает. Без геопозиции — вручную.", action: "Следующая история",
     focus: PANEL_TALL, resultFocus: {x: 405, y: 290, width: 470, height: 420}},
-] as const satisfies readonly GuideStepSpec[];
+] as const satisfies readonly (GuideStepSpec & {before: keyof typeof targets})[];
 
-export type GuideStep = (typeof GUIDE_STEPS)[number];
+export type GuideStep = GuideStepSpec;
 export type VoiceClip = keyof typeof narration;
 // Manifest создаётся скриптом озвучки; отсутствие клипа — ошибка сборки ролика, а не тихая пауза.
-const voice: Partial<Record<string, {durationSeconds: number}>> = voiceManifest;
+const voice: VoiceManifest = voiceManifest;
 
 const LEAD_FRAMES = 15;
 const MIN_CLICK_FRAME = 80;
@@ -47,7 +58,11 @@ const AFTER_CLICK_FRAMES = 18;
 const TAIL_FRAMES = 30;
 
 export function voiceFrames(id: VoiceClip) {
-  const seconds = voice[id]?.durationSeconds;
+  return voiceFramesIn(voice, id);
+}
+
+export function voiceFramesIn(manifest: VoiceManifest, id: string) {
+  const seconds = manifest[id]?.durationSeconds;
   if (!(typeof seconds === "number" && seconds > 0)) throw new Error(`Нет озвучки «${id}»: запустите pnpm video:voice`);
   return Math.ceil(seconds * GUIDE_FPS);
 }
@@ -63,11 +78,21 @@ export function stepTiming(doFrames: number, doneFrames: number) {
   return {doFrom: LEAD_FRAMES, clickFrame, doneFrom, duration: doneFrom + doneFrames + TAIL_FRAMES};
 }
 
-export const GUIDE_TIMINGS = GUIDE_STEPS.map(step => stepTiming(voiceFrames(`${step.id}-do`), voiceFrames(`${step.id}-done`)));
-
 export const BOOKEND_VOICE_FROM = 24;
-export const GUIDE_INTRO_FRAMES = Math.max(165, BOOKEND_VOICE_FROM + voiceFrames("intro") + 45);
-export const GUIDE_OUTRO_FRAMES = Math.max(195, BOOKEND_VOICE_FROM + voiceFrames("outro") + 75);
 
-const sceneFrames = [GUIDE_INTRO_FRAMES, ...GUIDE_TIMINGS.map(timing => timing.duration), GUIDE_OUTRO_FRAMES];
-export const GUIDE_DURATION_IN_FRAMES = sceneFrames.reduce((total, frames) => total + frames, 0) - (sceneFrames.length - 1) * GUIDE_TRANSITION_FRAMES;
+/** Хронометраж всего ролика: вступление, шаги с переходами и финал. */
+export function guideTimeline(steps: readonly GuideStepSpec[], manifest: VoiceManifest) {
+  const timings = steps.map(step => stepTiming(voiceFramesIn(manifest, `${step.id}-do`), voiceFramesIn(manifest, `${step.id}-done`)));
+  const introFrames = Math.max(165, BOOKEND_VOICE_FROM + voiceFramesIn(manifest, "intro") + 45);
+  const outroFrames = Math.max(195, BOOKEND_VOICE_FROM + voiceFramesIn(manifest, "outro") + 75);
+  const scenes = [introFrames, ...timings.map(timing => timing.duration), outroFrames];
+  const duration = scenes.reduce((total, frames) => total + frames, 0) - (scenes.length - 1) * GUIDE_TRANSITION_FRAMES;
+  return {timings, introFrames, outroFrames, duration};
+}
+
+const guideTimelineValue = guideTimeline(GUIDE_STEPS, voice);
+export const GUIDE_TIMINGS = guideTimelineValue.timings;
+export const GUIDE_INTRO_FRAMES = guideTimelineValue.introFrames;
+export const GUIDE_OUTRO_FRAMES = guideTimelineValue.outroFrames;
+export const GUIDE_DURATION_IN_FRAMES = guideTimelineValue.duration;
+export const GUIDE: GuideSpec = {label: "Как пользоваться сайтом", voiceDir: "guide/voice", steps: GUIDE_STEPS, targets, voice};

@@ -1,0 +1,226 @@
+{
+  "intro": {
+    "key": "7a9144fdcfb70c59d059f550e5b8ec6c66f49f4e5546b19c58c1e311aa8fc9fd",
+    "text": "Соберём собственную прогулку по Москве и пройдём её: от первой точки до последней истории.",
+    "sha256": "827b562fb11920e4fd8cc6fe0d5f571554be2e60593907968fa9a7645ded1ccb",
+    "durationSeconds": 6.936,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "tab-do": {
+    "key": "2abb16f2bcb5a7a03807f27153ceeeea5f129ff913b4a13a5b66af886346b359",
+    "text": "Нажмите «Прогулка» в нижнем меню.",
+    "sha256": "e58a77b52470c63258977a8df2ce61d7f0aa811f94ffd3dc1c4d7eb0f86b1b84",
+    "durationSeconds": 2.688,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "tab-done": {
+    "key": "1738ee9cd2b2a9e913670b8ea4632643046fd78bcb6439db5aa58021acafa238",
+    "text": "Поверх карты откроется панель новой прогулки.",
+    "sha256": "429af9984dcc8ed447f82aefa09a26448d540952c2ac6170aff103a7eb5b3c32",
+    "durationSeconds": 3.672,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "map-do": {
+    "key": "ff6f3e3f9e06d1a9f550b920370de2e349239ea566166706ce2c3654e71a7bdd",
+    "text": "Нажмите на место на карте, откуда хотите начать прогулку.",
+    "sha256": "636cccc6c28e7618afe20cffbaee99d8f195009d4ce9e9583977c21a35f68e83",
+    "durationSeconds": 4.512,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "map-done": {
+    "key": "e2661681380d8a18e9d47638103883bdd3230afd3d89a9fea1a50b82ecf12efc",
+    "text": "Отголосок найдёт ближайший дом, и адрес появится в строке «Откуда».",
+    "sha256": "aa2c2f10224d8b6e597c8b32c02b45de22d174726c0fb9819747fade2f2a3c72",
+    "durationSeconds": 5.136,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "where-do": {
+    "key": "b5e41eb9eb742e0d9664bd21d98885303dfec0514499e9071f7e401c2d57c728",
+    "text": "Теперь выберите вторую точку или прогулку по времени. Нажмите «Куда».",
+    "sha256": "87c8ee0ca76541b727aea5a39d305240e4c8f31cc918076567b9d61ad1150979",
+    "durationSeconds": 5.304,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "where-done": {
+    "key": "ce2b795098eff86a84d529342c8b4e3b79775ef4b35c7fdd57862b638b2bb7fd",
+    "text": "Можно ввести адрес, отметить место на карте или выбрать время.",
+    "sha256": "b3bf18b2282124d56879060a8eecae310f6bba44488c85d908af69ecc9ee1952",
+    "durationSeconds": 4.872,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "time-do": {
+    "key": "4059a678c655e58333cc7b774bdc4cc359867e0a2135fce8668e2f01b80be123",
+    "text": "Мы покажем прогулку по времени: нажмите «По времени».",
+    "sha256": "9645d556fa9ce8d73a0ed20f5f1e484ada118404af85d09c302cd70e5a5fc3e5",
+    "durationSeconds": 4.152,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "time-done": {
+    "key": "6e93eb86b2137f58f977d55f4c6072f9d3bbb846b68d6375098bb04abf2d5107",
+    "text": "Маршрут подберётся под то время, которое у вас есть.",
+    "sha256": "7fdf54f44d56b17d4cf5a8536115e1372efb1dc5c7f0c802946347ff8550f65c",
+    "durationSeconds": 4.152,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "minutes-do": {
+    "key": "2ae885a0a4e5847883323952a48a84e2a3ad735e3a20669188a83c639ad70815",
+    "text": "Выберите, сколько минут хотите гулять. Например, шестьдесят.",
+    "sha256": "72974c28d1f8d1854a75d4ec2a41988f19fd4e1f0411100e15d809063bbde3a3",
+    "durationSeconds": 4.656,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "minutes-done": {
+    "key": "e88e2b9448a2a6f09cf596822cf04f3bea07e7dc144b8ee3b98e09952cb1a287",
+    "text": "С флажком «Вернуться к началу» маршрут получится кольцом и приведёт обратно.",
+    "sha256": "75f8210e4ec007c32e9c4229f20f04b674c95d1c4c0aa6182e6bee22a41637f1",
+    "durationSeconds": 5.784,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "done-do": {
+    "key": "affd48b4e2677eb9ebbb9f4a2dd24f767c8a63de0856b8067b24c5be3586ae42",
+    "text": "Когда всё выбрано, нажмите кнопку «Готово».",
+    "sha256": "3a71f6271276b29d9a79f7bf00eceb64148d6cde1362a896bbdab30131b9cdff",
+    "durationSeconds": 3.408,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "done-done": {
+    "key": "183b8a28f29597a3265624aa7df0ee9c4d89a4c3e95d708c0c0dfb8241a4a850",
+    "text": "В строке «Куда» появится время прогулки с возвращением.",
+    "sha256": "2d481f2358f8888160d64c498db4459b8feaf2e70bfbcce4875c862b7d279d69",
+    "durationSeconds": 4.248,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "build-do": {
+    "key": "af0688f8547ec7310fa5129c9f0a147c1042c986b96b2ddebe7254ca6edc1eee",
+    "text": "Когда всё заполнено, нажмите кнопку «Построить прогулку».",
+    "sha256": "39f0cb6096ebd2760fd3a78d9c346f5a4e3f4544541c2c7c0eeee5035929693b",
+    "durationSeconds": 4.44,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "build-done": {
+    "key": "28a01533f2f012a3678aa9ce94121738618cdebe732c49251dd3271985a61d37",
+    "text": "Появится пешеходный путь с остановками, временем и расстоянием.",
+    "sha256": "d1c3d6d40eb153eadbfdb462bb6ad7ebb6a859ef2717fb550ac57de2968fb512",
+    "durationSeconds": 4.92,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "stops-do": {
+    "key": "5f1aec06c9733f5979b90d2520449d55466e3a7084186ed15e0528c175bbbc36",
+    "text": "Раскройте список «Остановки», чтобы увидеть адреса по порядку.",
+    "sha256": "54de3f0ef671aba602e3bde06169c06cf37695c5c93e7ad31930d6f40f8977b5",
+    "durationSeconds": 4.8,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "stops-done": {
+    "key": "838289c4c0400e6f2d76c0fbda6895199ad4155c9f67374aa8c4bb2d9284c151",
+    "text": "Если что-то не нравится, нажмите «Изменить маршрут» и постройте заново.",
+    "sha256": "4085a5a2af4482503fd2f5e994fa646f5cbe12e05010a0147d393244e0ee00a5",
+    "durationSeconds": 5.424,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "open-do": {
+    "key": "e826e501b37383441eef87f72508438c5b7053ba76724eca3cfd298fcbacbb51",
+    "text": "Если маршрут подходит, нажмите кнопку «Начать прогулку».",
+    "sha256": "dae2c440261343c454678b9ac35a51198a787cc8ae3893911da0d60da3ca46b1",
+    "durationSeconds": 4.368,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "open-done": {
+    "key": "3d936dbd4a122e5e86951c688d8e5abea581ef6817694a42f094cc001989bf8c",
+    "text": "Маршрут откроется в режиме прогулки, с картой и списком остановок.",
+    "sha256": "60c21e20f86a8abc77fd11a846f7b76ceffba03ed2782b16cd15800ee17d0b4e",
+    "durationSeconds": 5.112,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "start-do": {
+    "key": "26e0b5e01a414c3e15c10c935c913ce61e80d9320bbfb2ea8615a6d1882e0cae",
+    "text": "Когда будете у первой точки, ещё раз нажмите «Начать прогулку».",
+    "sha256": "406322de3c437841f5e63f722161ff987dfb127932d8a424254441b6169d3bb8",
+    "durationSeconds": 4.872,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "start-done": {
+    "key": "ee694a593c563792bb84fef88d035e926c087859794be720a4e9214ee5a2f9a2",
+    "text": "Сайт спросит доступ к геопозиции, и зазвучит первая история.",
+    "sha256": "dee4445bf7dae371a8b56920101424b998e99b41e119016cf6703575fd803e15",
+    "durationSeconds": 4.704,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "place-do": {
+    "key": "4bd169fd33c3ad6278990e6dd8045d857f6cff5812c98bbeb07ea6fa561c9ae1",
+    "text": "Откройте настройки кнопкой с ползунками и в переключении остановок выберите «По месту».",
+    "sha256": "36d79e5c65f138e5b09ff937535a29fa370053e5d80f789db0c4b252267b36db",
+    "durationSeconds": 6.6,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "place-done": {
+    "key": "074ed0664914b2f0a0b715f433bc4e43b48ac826e999de956c3279c5f36d4730",
+    "text": "Теперь истории будут сменяться сами, когда вы подходите к дому.",
+    "sha256": "9014f2a50ad9941ce25160ba335275958fa30602e25926b5485013ef0be1e801",
+    "durationSeconds": 4.92,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "walk-do": {
+    "key": "f22a9c4b13d2b54b97800a22733ba2000d108e2924f613013269eac5dafb35ba",
+    "text": "Идите по линии маршрута. Синяя точка показывает, где вы сейчас.",
+    "sha256": "cbd2211f8e26d0cd2705a5d2571507c6667ba22c9dc5cb9dad69851912bcbc39",
+    "durationSeconds": 4.92,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "walk-done": {
+    "key": "f4d48f233e5b76ed6044a0176400b1fc1331d96c4b2001a7d9db03599174abca",
+    "text": "У следующего дома зазвучит новая история. Если геопозиция недоступна, нажмите «Дальше».",
+    "sha256": "a78c2d1e976e8e155a7cc51d62bd0196274bd613c99ce7e7899a4a833c555216",
+    "durationSeconds": 6.6,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "finish-do": {
+    "key": "12a4a2a692f49d7bed59c8868bee16fb851b2a9cd7395548dbcfc3d5f1897d99",
+    "text": "На последней остановке нажмите «Завершить».",
+    "sha256": "6a4f41cf04b45ec820c601177dc3def8e9c1381441fa61cee89a66af42893b3a",
+    "durationSeconds": 3.456,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "finish-done": {
+    "key": "309cc9a7fbb7416892401921f6cf8cf7382c71b040c0461bf796f3ff42f92ce9",
+    "text": "Прогулка завершена. Она останется в разделе «История», и её можно пройти снова.",
+    "sha256": "8b35ebbc4f245cfeea2fa142abcac2e8e0465727bf14997d925220349b05cc54",
+    "durationSeconds": 5.976,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  },
+  "outro": {
+    "key": "271fe246efa013a5cae12cdbcf08e23b8ab2a3eb152506a47678317e67fd1886",
+    "text": "Отметьте начало, выберите время — и город начнёт рассказывать свои истории.",
+    "sha256": "10b210cf9ae94b77ab96c9acc44aed6d85a9a599c734060d718dda7f38f54bf0",
+    "durationSeconds": 5.76,
+    "profile": "f5-ru-v1",
+    "voice": "obrazec6"
+  }
+}

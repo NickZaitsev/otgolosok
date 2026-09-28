@@ -1,0 +1,104 @@
+{
+  "create/home": {
+    "x": 538,
+    "y": 712,
+    "width": 102,
+    "height": 62
+  },
+  "create/empty": {
+    "x": 205,
+    "y": 285,
+    "width": 60,
+    "height": 60
+  },
+  "create/start": {
+    "x": 456,
+    "y": 225.390625,
+    "width": 368,
+    "height": 66.390625
+  },
+  "create/choices": {
+    "x": 473,
+    "y": 396.78125,
+    "width": 334,
+    "height": 48
+  },
+  "create/time": {
+    "x": 587,
+    "y": 339.171875,
+    "width": 106,
+    "height": 48
+  },
+  "create/time-60": {
+    "x": 473,
+    "y": 443.171875,
+    "width": 334,
+    "height": 55.6875
+  },
+  "create/ready": {
+    "x": 455,
+    "y": 329.78125,
+    "width": 370,
+    "height": 56
+  },
+  "create/preview": {
+    "x": 455,
+    "y": 403.859375,
+    "width": 370,
+    "height": 48
+  },
+  "create/stops": {
+    "x": 455,
+    "y": 616.234375,
+    "width": 370,
+    "height": 48.390625
+  },
+  "create/walk": {
+    "x": 451,
+    "y": 620.609375,
+    "width": 378,
+    "height": 50.390625
+  },
+  "create/listen": {
+    "x": 789,
+    "y": 422.765625,
+    "width": 40,
+    "height": 40
+  },
+  "create/settings": {
+    "x": 451,
+    "y": 438,
+    "width": 378,
+    "height": 44
+  },
+  "create/settings-place": {
+    "x": 451,
+    "y": 438,
+    "width": 378,
+    "height": 44
+  },
+  "create/walking": {
+    "x": 574,
+    "y": 79,
+    "width": 30,
+    "height": 30
+  },
+  "create/arrived": {
+    "x": 637,
+    "y": 206,
+    "width": 30,
+    "height": 30
+  },
+  "create/last": {
+    "x": 511,
+    "y": 620.609375,
+    "width": 318,
+    "height": 50.390625
+  },
+  "create/done": {
+    "x": 451,
+    "y": 620.609375,
+    "width": 378,
+    "height": 50.390625
+  }
+}

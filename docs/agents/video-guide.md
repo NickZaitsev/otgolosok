@@ -1,4 +1,9 @@
-# Видеоинструкция по Отголоску
+# Видеоинструкции по Отголоску
+
+Две композиции на общем движке: `OtgolosokGuide` (как гулять по готовому
+маршруту) и `OtgolosokCreateGuide` (своя прогулка по времени). Инструкция
+описывается `GuideSpec`: шаги, цели нажатий, каталог озвучки и подпись в шапке.
+Общий ролик — `GuideVideo` в `otgolosok-guide.tsx`.
 
 Композиция `OtgolosokGuide`: 1920×1080, 30 кадров/с, около 100 секунд, голос
 F5-TTS, тихий синтезированный фон и щелчки. Восемь шагов: у каждого есть
@@ -25,12 +30,31 @@ Remove-Item Env:CAPTURE_VIDEO_GUIDE
 интерфейса обновляйте PNG и `targets.json` вместе; тест `guide-timeline.test.ts`
 проверяет, что каждая цель попадает в область камеры своего шага.
 
+### Своя прогулка
+
+`e2e/video-create-guide.spec.ts` снимает `video/assets/guide/create/` (ключи целей
+`create/<снимок>`). Маршрут и адреса — настоящие ответы, сохранённые в
+`e2e/fixtures/video-create-walk.json`: пешеходное кольцо Valhalla
+(valhalla1.openstreetmap.de, 4,2 км, 52 мин) и адреса Nominatim у Павелецкой.
+Истории остановок берутся из маршрута `paveletskaya`. Кольцо должно занимать не
+меньше 75 % выбранного времени, иначе панель покажет «Рядом нашлось мест только
+на …». Шаг «Идите по маршруту» — без нажатия (`gesture: "look"`): смена остановки
+«По месту» снимается подменой геопозиции у второй остановки при паузе рассказа.
+
+```powershell
+$env:CAPTURE_VIDEO_GUIDE='1'
+pnpm exec playwright test e2e/video-create-guide.spec.ts --workers=1
+Remove-Item Env:CAPTURE_VIDEO_GUIDE
+```
+
 ## Озвучка
 
-Текст — `src/video/guide-narration.json` (`<шаг>-do`, `<шаг>-done`, `intro`,
-`outro`). `pnpm video:voice` отправляет изменённые фрагменты в just-tts
+Текст — `src/video/guide-narration.json` и `src/video/create-guide-narration.json`
+(`<шаг>-do`, `<шаг>-done`, `intro`, `outro`); список инструкций — `GUIDE_VOICES`
+в `scripts/build-guide-voice.mjs`. `pnpm video:voice` отправляет изменённые фрагменты в just-tts
 (`POST /v1/jobs`, профиль `f5-ru-v1`). Скрипт проверяет SHA-256, пишет MP3 и
-`manifest.json` с длительностью в `video/assets/guide/voice/` и подтверждает
+`manifest.json` с длительностью в `video/assets/guide/voice/` (вторая инструкция —
+`video/assets/guide/create/voice/`) и подтверждает
 приём. Ключ фрагмента учитывает текст и контрольные суммы профиля. Повторный
 запуск пропускает готовые фрагменты. Длительности шагов считаются по manifest,
 поэтому нажатие совпадает с концом инструкции.
@@ -55,6 +79,7 @@ ffmpeg -i video/assets/guide/voice/next-do.mp3 -af volumedetect -f null -
 ```bash
 pnpm video:studio
 pnpm video:render:guide
+pnpm video:render:create-guide
 ```
 
 Рендер использует PNG-кадры, CRF 16, x264 `slow` и bt709: так текст интерфейса

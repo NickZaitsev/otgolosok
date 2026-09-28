@@ -1,10 +1,9 @@
 import type {ReactNode} from "react";
 import {AbsoluteFill, Easing, Html5Audio, Sequence, interpolate, staticFile, useCurrentFrame} from "remotion";
-import targets from "../../video/assets/guide/targets.json";
 import {cameraFor, mixCamera, project, screenScale, type Camera} from "./guide-camera";
 import {Attribution, BrowserWindow, Cursor, Screen, VIEWPORT} from "./guide-browser";
 import {SANS, SERIF} from "./guide-fonts";
-import {GUIDE_STEPS, type GuideStep, type stepTiming} from "./guide-timeline";
+import type {GuideSpec, GuideStep, stepTiming} from "./guide-timeline";
 
 export const GREEN = "#203e38";
 export const RUST = "#b64b28";
@@ -37,12 +36,15 @@ export function stepCamera(step: GuideStep, from: Camera, clickFrame: number, fr
   return mixCamera(toTarget, cameraFor(step.resultFocus), progress(frame, clickFrame + 10, clickFrame + 55));
 }
 
-export function GuideStepScene({step, index, timing, from}: {step: GuideStep; index: number; timing: ReturnType<typeof stepTiming>; from: Camera}) {
+export function GuideStepScene({guide, step, index, timing, from}: {guide: GuideSpec; step: GuideStep; index: number; timing: ReturnType<typeof stepTiming>; from: Camera}) {
   const frame = useCurrentFrame();
   const {clickFrame: click, doFrom, doneFrom, duration} = timing;
   const camera = stepCamera(step, from, click, frame);
   const scale = screenScale(camera, VIEWPORT);
-  const box = targets[step.before];
+  const box = guide.targets[step.before];
+  if (!box) throw new Error(`Нет цели для снимка «${step.before}»: переснимите материалы инструкции`);
+  // Шаг без нажатия (идти по маршруту): только подсветка цели и подсказка.
+  const clicks = step.gesture !== "look";
   const center = {x: box.x + box.width / 2, y: box.y + box.height / 2};
 
   // Курсор движется по странице и поэтому едет вместе с камерой, как при записи экрана.
@@ -54,7 +56,7 @@ export function GuideStepScene({step, index, timing, from}: {step: GuideStep; in
   const ring = {left: topLeft.x - 9, top: topLeft.y - 9, width: box.width * scale + 18, height: box.height * scale + 18};
   const spotlight = progress(frame, 32, 48) * (1 - progress(frame, click + 2, click + 14));
   const pulse = 0.5 + 0.5 * Math.sin((frame / 30) * Math.PI * 1.6);
-  const ripple = progress(frame, click, click + 22, easeOut);
+  const ripple = clicks ? progress(frame, click, click + 22, easeOut) : 0;
   const tipShown = progress(frame, 42, 54, easeOut) * (1 - progress(frame, click, click + 8));
   const tipAbove = ring.top > 90;
 
@@ -62,7 +64,7 @@ export function GuideStepScene({step, index, timing, from}: {step: GuideStep; in
   const resultShown = progress(frame, click + 14, click + 32, easeOut);
 
   return <AbsoluteFill style={{background: `radial-gradient(1200px 800px at 12% 8%, #fbf8f2 0%, ${PAPER} 60%)`, fontFamily: SANS, color: GREEN}}>
-    <Header label="Как пользоваться сайтом" />
+    <Header label={guide.label} />
 
     <div style={{position: "absolute", left: 96, top: 212, width: 450}}>
       <Rise frame={frame} at={2}><div style={{fontFamily: SERIF, fontWeight: 600, fontSize: 132, lineHeight: 0.9, color: RUST, fontVariantNumeric: "lining-nums"}}>{String(index + 1).padStart(2, "0")}</div></Rise>
@@ -85,21 +87,21 @@ export function GuideStepScene({step, index, timing, from}: {step: GuideStep; in
       {tipShown > 0 && <div style={{position: "absolute", left: Math.min(Math.max(ring.left + ring.width / 2, 170), VIEWPORT.width - 170), top: tipAbove ? ring.top - 16 : ring.top + ring.height + 16,
         translate: `-50% ${tipAbove ? "-100%" : "0"}`, opacity: tipShown, scale: String(0.94 + 0.06 * tipShown), background: GREEN, color: "#fffefa",
         padding: "10px 18px", borderRadius: 12, fontSize: 22, fontWeight: 600, whiteSpace: "nowrap", boxShadow: "0 10px 24px #0003"}}>
-        Нажмите «{step.action}»
+        {step.tip ?? `Нажмите «${step.action}»`}
       </div>}
-      <Cursor x={pointer.x} y={pointer.y} scale={press} opacity={progress(frame, 16, 26) * (1 - progress(frame, click + 22, click + 36))} />
+      {clicks && <Cursor x={pointer.x} y={pointer.y} scale={press} opacity={progress(frame, 16, 26) * (1 - progress(frame, click + 22, click + 36))} />}
       <Attribution screens={[step.before, step.after]} />
     </BrowserWindow>
 
     <div style={{position: "absolute", left: 96, bottom: 70, width: 450}}>
-      <div style={{fontSize: 20, fontWeight: 600, color: MUTED, marginBottom: 14}}>Шаг {index + 1} из {GUIDE_STEPS.length}</div>
-      <div style={{display: "flex", gap: 8}}>{GUIDE_STEPS.map((item, i) => <div key={item.id} style={{flex: 1, height: 6, borderRadius: 3, background: "#dcd9cd", overflow: "hidden"}}>
+      <div style={{fontSize: 20, fontWeight: 600, color: MUTED, marginBottom: 14}}>Шаг {index + 1} из {guide.steps.length}</div>
+      <div style={{display: "flex", gap: 8}}>{guide.steps.map((item, i) => <div key={item.id} style={{flex: 1, height: 6, borderRadius: 3, background: "#dcd9cd", overflow: "hidden"}}>
         <div style={{height: "100%", background: RUST, width: `${i < index ? 100 : i > index ? 0 : progress(frame, 0, duration, Easing.linear) * 100}%`}} />
       </div>)}</div>
     </div>
 
-    <Sequence from={doFrom} name="Голос: инструкция"><Html5Audio src={staticFile(`guide/voice/${step.id}-do.mp3`)} /></Sequence>
-    <Sequence from={click} durationInFrames={15} name="Щелчок"><Html5Audio src={staticFile("guide/click.wav")} volume={0.55} /></Sequence>
-    <Sequence from={doneFrom} name="Голос: результат"><Html5Audio src={staticFile(`guide/voice/${step.id}-done.mp3`)} /></Sequence>
+    <Sequence from={doFrom} name="Голос: инструкция"><Html5Audio src={staticFile(`${guide.voiceDir}/${step.id}-do.mp3`)} /></Sequence>
+    {clicks && <Sequence from={click} durationInFrames={15} name="Щелчок"><Html5Audio src={staticFile("guide/click.wav")} volume={0.55} /></Sequence>}
+    <Sequence from={doneFrom} name="Голос: результат"><Html5Audio src={staticFile(`${guide.voiceDir}/${step.id}-done.mp3`)} /></Sequence>
   </AbsoluteFill>;
 }

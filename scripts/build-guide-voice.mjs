@@ -13,6 +13,12 @@ const wait = milliseconds => new Promise(done => setTimeout(done, milliseconds))
 
 export const DEFAULT_PROFILE = "f5-ru-v1";
 
+/** Видеоинструкции с озвучкой: текст дикторов и каталог готовых клипов. */
+export const GUIDE_VOICES = [
+  {name: "guide", narration: "src/video/guide-narration.json", voiceDir: "video/assets/guide/voice"},
+  {name: "create", narration: "src/video/create-guide-narration.json", voiceDir: "video/assets/guide/create/voice"},
+];
+
 /** Ключ клипа меняется при смене текста или любой части голосового профиля. */
 export function clipKey(text, profile) {
   const identity = [profile.id, profile.modelSha256, profile.configSha256, profile.referenceSha256, profile.preparationVersion, text];
@@ -38,10 +44,10 @@ export async function withRetry(operation, {attempts = 5, baseDelayMs = 1000, sl
   }
 }
 
-async function synthesize(client, profile, id, text, key, {pollMs = 2000, timeoutMs = 15 * 60_000} = {}) {
+async function synthesize(client, profile, requestId, id, text, {pollMs = 2000, timeoutMs = 15 * 60_000} = {}) {
   const expected = {modelSha256: profile.modelSha256, configSha256: profile.configSha256, referenceSha256: profile.referenceSha256, preparationVersion: profile.preparationVersion};
   // Одинаковый requestId и тело возвращают то же задание — перезапуск скрипта безопасен.
-  const created = await withRetry(() => client.create({requestId: `otgolosok-guide-${id}-${key.slice(0, 16)}`, profileId: profile.id, text, expected}));
+  const created = await withRetry(() => client.create({requestId, profileId: profile.id, text, expected}));
   const deadline = Date.now() + timeoutMs;
   let job = await withRetry(() => client.get(created.id));
   while (!["succeeded", "failed", "expired"].includes(job.state)) {
@@ -69,9 +75,9 @@ async function mediaDuration(root, path) {
  * @typedef {{key: string, text: string, sha256: string, durationSeconds: number, profile: string, voice: string}} VoiceClip
  * @returns {Promise<Record<string, VoiceClip>>}
  */
-export async function buildGuideVoice({root, client, profileId = DEFAULT_PROFILE, log = console.log}) {
-  const narration = JSON.parse(await readFile(join(root, "src/video/guide-narration.json"), "utf8"));
-  const voiceDir = join(root, "video/assets/guide/voice");
+export async function buildGuideVoice({root, client, profileId = DEFAULT_PROFILE, log = console.log, guide = GUIDE_VOICES[0]}) {
+  const narration = JSON.parse(await readFile(join(root, guide.narration), "utf8"));
+  const voiceDir = join(root, guide.voiceDir);
   const manifestPath = join(voiceDir, "manifest.json");
   let manifest = {};
   try {
@@ -98,8 +104,10 @@ export async function buildGuideVoice({root, client, profileId = DEFAULT_PROFILE
         if (error?.code !== "ENOENT") throw error;
       }
     }
-    log(`Озвучиваю «${id}»…`);
-    const result = await synthesize(client, profile, id, text, key);
+    log(`Озвучиваю «${guide.name}/${id}»…`);
+    // Первая инструкция сохраняет прежний requestId, чтобы перезапуск не порождал новые задания.
+    const requestId = `otgolosok-${guide.name === "guide" ? "" : `${guide.name}-`}guide-${id}-${key.slice(0, 16)}`;
+    const result = await synthesize(client, profile, requestId, id, text);
     await writeFile(`${path}.part`, result.bytes);
     await rename(`${path}.part`, path);
     next[id] = {key, text, sha256: result.sha256, durationSeconds: await mediaDuration(root, path), profile: profile.id, voice: profile.voice};
@@ -118,7 +126,9 @@ const scriptPath = fileURLToPath(import.meta.url);
 if (process.argv[1] && resolve(process.argv[1]) === scriptPath) {
   try {
     const client = createTtsApiClient({baseUrl: process.env.TTS_API_URL, token: process.env.TTS_API_TOKEN});
-    await buildGuideVoice({root: resolve(dirname(scriptPath), ".."), client, profileId: process.env.GUIDE_TTS_PROFILE || DEFAULT_PROFILE});
+    for (const guide of GUIDE_VOICES) {
+      await buildGuideVoice({root: resolve(dirname(scriptPath), ".."), client, profileId: process.env.GUIDE_TTS_PROFILE || DEFAULT_PROFILE, guide});
+    }
   } catch (error) {
     console.error("Не удалось озвучить видеоинструкцию:", error instanceof Error ? error.message : String(error));
     process.exitCode = 1;

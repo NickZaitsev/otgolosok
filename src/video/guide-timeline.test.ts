@@ -2,11 +2,18 @@ import {createHash} from "node:crypto";
 import {readFile} from "node:fs/promises";
 import {describe, expect, it} from "vitest";
 import narration from "./guide-narration.json";
+import createNarration from "./create-guide-narration.json";
 import voice from "../../video/assets/guide/voice/manifest.json";
-import targets from "../../video/assets/guide/targets.json";
+import createVoice from "../../video/assets/guide/create/voice/manifest.json";
 import {GUIDE_BED_SECONDS} from "../../scripts/prepare-video-assets.mjs";
 import {PAGE_HEIGHT, PAGE_WIDTH} from "./guide-camera";
-import {GUIDE_DURATION_IN_FRAMES, GUIDE_FPS, GUIDE_STEPS, GUIDE_TIMINGS, GUIDE_TRANSITION_FRAMES, stepTiming} from "./guide-timeline";
+import {GUIDE, GUIDE_DURATION_IN_FRAMES, GUIDE_FPS, GUIDE_TRANSITION_FRAMES, guideTimeline, stepTiming, type GuideSpec} from "./guide-timeline";
+import {CREATE_GUIDE, CREATE_GUIDE_DURATION_IN_FRAMES} from "./create-guide-timeline";
+
+const guides: [string, GuideSpec, Record<string, string>, Record<string, {text: string; sha256: string; durationSeconds: number}>, string, number][] = [
+  ["как пользоваться сайтом", GUIDE, narration, voice, "video/assets/guide/voice", GUIDE_DURATION_IN_FRAMES],
+  ["своя прогулка", CREATE_GUIDE, createNarration, createVoice, "video/assets/guide/create/voice", CREATE_GUIDE_DURATION_IN_FRAMES],
+];
 
 const inside = (box: {x: number; y: number; width: number; height: number}) =>
   box.x >= 0 && box.y >= 0 && box.width > 0 && box.height > 0 && box.x + box.width <= PAGE_WIDTH && box.y + box.height <= PAGE_HEIGHT;
@@ -29,38 +36,42 @@ describe("хронометраж видеоинструкции", () => {
     expect(() => stepTiming(doFrames, doneFrames)).toThrow(RangeError);
   });
 
-  it("ролик длится от одной до трёх минут и короче фоновой музыки", () => {
-    expect(GUIDE_TIMINGS).toHaveLength(GUIDE_STEPS.length);
-    expect(GUIDE_DURATION_IN_FRAMES / GUIDE_FPS).toBeGreaterThan(60);
-    expect(GUIDE_DURATION_IN_FRAMES / GUIDE_FPS).toBeLessThan(Math.min(180, GUIDE_BED_SECONDS));
+  it.each(guides)("ролик «%s» длится от одной до трёх минут и короче фоновой музыки", (_, guide, _narration, _voice, _dir, duration) => {
+    expect(guideTimeline(guide.steps, guide.voice).timings).toHaveLength(guide.steps.length);
+    expect(duration / GUIDE_FPS).toBeGreaterThan(60);
+    expect(duration / GUIDE_FPS).toBeLessThan(Math.min(180, GUIDE_BED_SECONDS));
+  });
+
+  it("сообщает об отсутствующей озвучке, а не молчит", () => {
+    expect(() => guideTimeline(GUIDE.steps, {})).toThrow("pnpm video:voice");
   });
 });
 
-describe("материалы видеоинструкции", () => {
+describe.each(guides)("материалы инструкции «%s»", (_, guide, text, clips, voiceDir) => {
   it("каждое состояние снято в 2× и цели лежат внутри снимка", async () => {
-    for (const name of new Set(GUIDE_STEPS.flatMap(step => [step.before, step.after]))) {
+    for (const name of new Set(guide.steps.flatMap(step => [step.before, step.after]))) {
       const png = await readFile(`video/assets/guide/${name}.png`);
       expect(png.subarray(1, 4).toString()).toBe("PNG");
       expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([PAGE_WIDTH * 2, PAGE_HEIGHT * 2]);
-      expect(inside(targets[name as keyof typeof targets]), name).toBe(true);
     }
+    for (const step of guide.steps) expect(inside(guide.targets[step.before]), step.before).toBe(true);
   });
 
   it("камера каждого шага видит цель нажатия", () => {
-    for (const step of GUIDE_STEPS) {
-      const target = targets[step.before];
+    for (const step of guide.steps) {
+      const target = guide.targets[step.before];
       const focus = step.focus;
       expect(target.x >= focus.x && target.y >= focus.y && target.x + target.width <= focus.x + focus.width && target.y + target.height <= focus.y + focus.height, step.id).toBe(true);
     }
   });
 
   it("озвучка соответствует текущему тексту и файлам", async () => {
-    const needed = ["intro", "outro", ...GUIDE_STEPS.flatMap(step => [`${step.id}-do`, `${step.id}-done`])];
-    expect(Object.keys(narration).sort()).toEqual([...needed].sort());
-    for (const [id, text] of Object.entries(narration)) {
-      const clip = voice[id as keyof typeof voice];
-      expect(clip?.text, `${id}: перегенерируйте pnpm video:voice`).toBe(text);
-      const bytes = await readFile(`video/assets/guide/voice/${id}.mp3`);
+    const needed = ["intro", "outro", ...guide.steps.flatMap(step => [`${step.id}-do`, `${step.id}-done`])];
+    expect(Object.keys(text).sort()).toEqual([...needed].sort());
+    for (const [id, phrase] of Object.entries(text)) {
+      const clip = clips[id];
+      expect(clip?.text, `${id}: перегенерируйте pnpm video:voice`).toBe(phrase);
+      const bytes = await readFile(`${voiceDir}/${id}.mp3`);
       expect(createHash("sha256").update(bytes).digest("hex")).toBe(clip.sha256);
       expect(clip.durationSeconds).toBeGreaterThan(0.5);
     }

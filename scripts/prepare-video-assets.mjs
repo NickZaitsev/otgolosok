@@ -2,6 +2,7 @@ import {copyFile, mkdir, readFile, stat, writeFile} from "node:fs/promises";
 import {dirname, join, resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 import narration from "../src/video/guide-narration.json" with {type: "json"};
+import createNarration from "../src/video/create-guide-narration.json" with {type: "json"};
 import motion from "../src/video/motion-scenes.json" with {type: "json"};
 import {clickWav, guideBedWav} from "./build-guide-audio.mjs";
 import {motionBedWav} from "./build-motion-audio.mjs";
@@ -10,6 +11,7 @@ import {motionBedWav} from "./build-motion-audio.mjs";
 export const GUIDE_BED_SECONDS = 180;
 
 const guideScreens = ["home", "history", "catalog", "route", "listen", "read-button", "text", "settings-button", "settings", "stops-button", "stops", "next"];
+const createScreens = ["home", "empty", "start", "choices", "time", "time-60", "ready", "preview", "stops", "walk", "listen", "settings", "settings-place", "walking", "arrived", "last", "done"];
 const fonts = [
   ...["400", "600", "700"].flatMap(weight => ["cyrillic", "latin"].map(subset => `manrope/files/manrope-${subset}-${weight}-normal.woff2`)),
   ...["500", "600"].flatMap(weight => ["cyrillic", "latin"].map(subset => `cormorant-garamond/files/cormorant-garamond-${subset}-${weight}-normal.woff2`)),
@@ -24,6 +26,8 @@ export const videoAssets = [
   ["video/assets/video/ad-bed.wav", "video/ad-bed.wav"],
   ...guideScreens.map(name => [`video/assets/guide/${name}.png`, `guide/${name}.png`]),
   ...Object.keys(narration).map(id => [`video/assets/guide/voice/${id}.mp3`, `guide/voice/${id}.mp3`]),
+  ...createScreens.map(name => [`video/assets/guide/create/${name}.png`, `guide/create/${name}.png`]),
+  ...Object.keys(createNarration).map(id => [`video/assets/guide/create/voice/${id}.mp3`, `guide/create/voice/${id}.mp3`]),
   ...fonts.map(path => [`node_modules/@fontsource/${path}`, `fonts/${path.split("/").at(-1)}`]),
 ];
 
