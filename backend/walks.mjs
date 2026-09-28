@@ -1,4 +1,4 @@
-import discoveryCatalog from './walk-discovery-catalog.mjs';
+import discoveryCatalog from './walk-discovery-catalog.json' with { type: 'json' };
 
 const fail = (code) => Object.assign(new Error(code), {code});
 const inBox = (p) => p && typeof p.lat === 'number' && typeof p.lon === 'number' && Number.isFinite(p.lat) && Number.isFinite(p.lon) && p.lat >= 55.48 && p.lat <= 55.98 && p.lon >= 37.30 && p.lon <= 37.95;
@@ -102,13 +102,52 @@ function decode(shape) {
   return points;
 }
 
+/**
+ * @typedef {{type?: string, id?: number, lat?: number, lon?: number, center?: {lat: number, lon: number},
+ *   tags?: Record<string, string>}} OverpassElement
+ * @typedef {(url: string, init: {method: string, body: string, redirect?: "error" | "follow" | "manual", signal: AbortSignal,
+ *   headers: Record<string, string>}) => Promise<Response>} WalkFetch
+ */
+
+/**
+ * @param {{fetchImpl?: WalkFetch, now?: () => number, routerUrl?: string, overpassUrl?: string,
+ *   discoveryElements?: OverpassElement[] | null, candidateProvider?: ((query: {lat: number, lon: number, radius: number, limit: number}) => any) | null,
+ *   timeoutMs?: number, minIntervalMs?: number, maxWaiters?: number, maxWaitMs?: number}} [options]
+ */
 export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
   routerUrl=process.env.WALK_ROUTER_URL,
   overpassUrl=process.env.WALK_OVERPASS_URL ?? 'https://overpass-api.de/api/interpreter',
   discoveryElements=process.env.WALK_DISCOVERY_SOURCE==='overpass'?null:discoveryCatalog.elements,candidateProvider=null,
-  timeoutMs=12000, minIntervalMs=2000}={}) {
-  let active=false,lastStart=-Infinity;
-  return async function planWalk(input) {
+  timeoutMs=12000, minIntervalMs=2000, maxWaiters=8, maxWaitMs=10000}={}) {
+  // One plan at a time, started at least minIntervalMs apart, keeps the router
+  // and Overpass load bounded. Other requests wait in a short FIFO queue; one
+  // client may start at most one plan per interval.
+  let active=false,lastStart=-Infinity,pumpTimer=null;
+  const waiters=[],recentByClient=new Map();
+  const pump=()=>{
+    if(active||!waiters.length||pumpTimer)return;
+    const delay=lastStart+minIntervalMs-now();
+    if(delay>0){pumpTimer=setTimeout(()=>{pumpTimer=null;pump();},delay);return;}
+    const next=waiters.shift();clearTimeout(next.timer);
+    active=true;lastStart=now();next.resolve();
+  };
+  const acquire=()=>{
+    if(!active&&!waiters.length&&now()-lastStart>=minIntervalMs){active=true;lastStart=now();return;}
+    if(waiters.length>=maxWaiters)throw fail('WALK_BUSY');
+    return new Promise((resolve,reject)=>{
+      const waiter={resolve,timer:setTimeout(()=>{waiters.splice(waiters.indexOf(waiter),1);reject(fail('WALK_BUSY'));},maxWaitMs)};
+      waiters.push(waiter);pump();
+    });
+  };
+  const release=()=>{active=false;pump();};
+  const limitClient=client=>{
+    if(!client)return;
+    const time=now(),last=recentByClient.get(client);
+    if(last!==undefined&&time-last<minIntervalMs)throw fail('WALK_RATE_LIMITED');
+    if(recentByClient.size>=1024)for(const [key,value] of recentByClient)if(time-value>=minIntervalMs)recentByClient.delete(key);
+    recentByClient.set(client,time);
+  };
+  return async function planWalk(input,{client=null}={}) {
     if(!keys(input,['start','mode','minutes','stops','destination']) || !['loop','open'].includes(input.mode) || ![30,60,90].includes(input.minutes))throw fail('WALK_INVALID');
     const stopLimit=AUTO_STOP_LIMITS[input.minutes];
     const destination=input.destination==null?null:place(input.destination);
@@ -119,8 +158,8 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
     const distinct=[start,...stops,...(destination?[destination]:[])];
     if(distinct.some((p,i)=>distinct.slice(0,i).some(q=>distance(p.location,q.location)<5)))throw fail('WALK_INVALID');
     if(!routerUrl)throw fail('WALK_UNAVAILABLE');
-    if(active||now()-lastStart<minIntervalMs)throw fail('WALK_BUSY');
-    active=true;lastStart=now();
+    limitClient(client);
+    await acquire();
     const controller=new AbortController();let timer,discovering=false;
     const unavailable=()=>fail(discovering?'WALK_DISCOVERY_UNAVAILABLE':'WALK_UNAVAILABLE');
     const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(unavailable());},timeoutMs);});
@@ -309,6 +348,6 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
 
     try {return await Promise.race([run(),deadline]);}
     catch(error) {if(['WALK_NOT_FOUND','WALK_STOPS_NOT_FOUND','WALK_DISCOVERY_UNAVAILABLE'].includes(error?.code))throw error;throw unavailable();}
-    finally {clearTimeout(timer);controller.abort();active=false;}
+    finally {clearTimeout(timer);controller.abort();release();}
   };
 }

@@ -16,3 +16,17 @@
 **/.ssh
 **/.DS_Store
 .vercel
+# The backend image copies only package metadata and backend sources; keep the
+# context small and tests out of the image.
+backend/*.test.mjs
+backend/**/*.test.mjs
+.venv
+**/__pycache__
+.kilo
+.agents
+.claude
+artifacts
+docs
+e2e
+test-results
+playwright-report

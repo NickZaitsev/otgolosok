@@ -66,7 +66,7 @@ test("missing or partial address never invents a street or a house number", () =
 
 test("nearby OSM addresses are bounded search landmarks, never the object's address", () => {
   const place = { id: "osm:node:1", name: "Г. Галилею", location: { lat: 55.75, lon: 37.61 }, tags: { historic: "memorial" } };
-  const element = (id, lat, street) => ({ type: "node", id, center: { lat, lon: 37.61 }, tags: { "addr:street": street, "addr:housenumber": "1" } });
+  const element = (id, lat, street) => /** @type {any} */ ({ type: "node", id, center: { lat, lon: 37.61 }, tags: { "addr:street": street, "addr:housenumber": "1" } });
   const context = enrichOsmContext(place, { nearbyElements: [
     element(1, 55.75, "Сам объект"), element(2, 55.7505, "Ближняя улица"),
     element(3, 55.7506, "Ближняя улица"), element(4, 55.751, "Вторая улица"),

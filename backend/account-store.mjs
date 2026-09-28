@@ -22,6 +22,9 @@ const validateSnapshot = snapshot => {
 };
 const fingerprint = value => createHash("sha256").update(encode(value)).digest("hex");
 const conflict = () => Object.assign(new Error("Walk revision or idempotency conflict"), {code:"CONFLICT"});
+const storageLimit = message => Object.assign(new Error(message), { code: "STORAGE_LIMIT" });
+export const MAX_WALKS_PER_USER = 200;
+export const MAX_FAVORITES_PER_USER = 1000;
 const uuid = value => typeof value === "string" && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(value);
 
 export function createAccountStore(db, now = Date.now) {
@@ -66,6 +69,18 @@ export function createAccountStore(db, now = Date.now) {
   if(!columns.includes("share_token"))db.exec("ALTER TABLE user_walks ADD COLUMN share_token TEXT");
   db.exec("CREATE UNIQUE INDEX IF NOT EXISTS user_walks_share_token ON user_walks(share_token) WHERE share_token IS NOT NULL");
   const timestamp = () => new Date(now()).toISOString();
+  // The outermost call owns BEGIN IMMEDIATE/COMMIT; nested calls join it, so a
+  // composite operation such as importLocal commits or rolls back as a whole.
+  let depth = 0;
+  const transaction = fn => {
+    if (depth) return fn();
+    db.exec("BEGIN IMMEDIATE");
+    depth++;
+    try { const result = fn(); db.exec("COMMIT"); return result; }
+    catch (error) { if (db.isTransaction) db.exec("ROLLBACK"); throw error; }
+    finally { depth--; }
+  };
+  const count = (table, userId) => Number(db.prepare(`SELECT count(*) AS count FROM ${table} WHERE user_id=?`).get(userId).count);
   const cursor = value => { if(!value)return null;try{const parsed=decode(Buffer.from(value,"base64url").toString());if(typeof parsed.time!=="string"||typeof parsed.id!=="string")throw new Error();return parsed;}catch{throw Object.assign(new Error("Invalid cursor"),{code:"BAD_REQUEST"});} };
   const page = (rows,limit,map) => ({items:rows.slice(0,limit).map(map),nextCursor:rows.length>limit?Buffer.from(encode({time:rows[limit-1].updated_at??rows[limit-1].created_at,id:rows[limit-1].id??`${rows[limit-1].object_type}:${rows[limit-1].object_id}`})).toString("base64url"):null});
   const normalizeWalk = (snapshot,id) => snapshot?.version===2?validateWalkDocument(snapshot):migrateLegacyDraft(validateSnapshot(snapshot),id);
@@ -101,20 +116,26 @@ export function createAccountStore(db, now = Date.now) {
         if(fingerprint({title:clean,snapshot:normalized})!==fingerprint({title:prior.title,snapshot:normalizeWalk(decode(prior.snapshot_json),prior.id)}))throw conflict();
         return viewWalk(prior);
       }
-      // Catalog slugs are valid document IDs for read-only views, but an
-      // account record must remain addressable by the UUID-only account API.
-      const id=snapshot?.version===2&&uuid(snapshot.id)?snapshot.id:randomUUID();
-      const time=timestamp(),normalized=normalizeWalk(snapshot,id);
-      db.exec("BEGIN IMMEDIATE");
-      try {
-        db.prepare("INSERT INTO user_walks(id,user_id,title,snapshot_json,revision,created_at,updated_at,visibility,share_token) VALUES(?,?,?,?,0,?,?,?,?)").run(id,userId,clean,encode(normalized),time,time,"private",null);
-        db.prepare("INSERT INTO user_walk_idempotency VALUES(?,?,?)").run(userId,idempotencyKey,id);
-        db.exec("COMMIT");
-      } catch(error) {
-        db.exec("ROLLBACK");
-        if(String(error?.code??"").startsWith("SQLITE_CONSTRAINT")) throw conflict();
-        throw error;
-      }
+      const id=transaction(()=>{
+        if(count("user_walks",userId)>=MAX_WALKS_PER_USER)throw storageLimit(`Можно сохранить не больше ${MAX_WALKS_PER_USER} прогулок. Удалите ненужные.`);
+        // Catalog slugs are valid document IDs for read-only views, but an
+        // account record must remain addressable by the UUID-only account API.
+        // Walk IDs are global keys: a document copied from another account (for
+        // example a shared walk) gets a fresh ID instead of a conflict that would
+        // also reveal that the ID exists.
+        const requested=snapshot?.version===2&&uuid(snapshot.id)?snapshot.id:null;
+        const owner=requested?db.prepare("SELECT user_id FROM user_walks WHERE id=?").get(requested)?.user_id:undefined;
+        const id=requested&&(owner===undefined||owner===userId)?requested:randomUUID();
+        const time=timestamp(),normalized=normalizeWalk(snapshot?.version===2&&snapshot.id!==id?{...snapshot,id}:snapshot,id);
+        try {
+          db.prepare("INSERT INTO user_walks(id,user_id,title,snapshot_json,revision,created_at,updated_at,visibility,share_token) VALUES(?,?,?,?,0,?,?,?,?)").run(id,userId,clean,encode(normalized),time,time,"private",null);
+          db.prepare("INSERT INTO user_walk_idempotency VALUES(?,?,?)").run(userId,idempotencyKey,id);
+        } catch(error) {
+          if(String(error?.code??"").startsWith("SQLITE_CONSTRAINT")) throw conflict();
+          throw error;
+        }
+        return id;
+      });
       return this.getWalk(userId,id);
     },
     updateWalk(userId,id,{title,snapshot,revision}) {
@@ -136,18 +157,24 @@ export function createAccountStore(db, now = Date.now) {
     },
     deleteWalk(userId,id) { return db.prepare("DELETE FROM user_walks WHERE id=? AND user_id=?").run(id,userId).changes>0; },
     listFavorites(userId,limit=50,after=null) { limit=Math.min(50,Math.max(1,limit));const c=cursor(after);const rows=c?db.prepare("SELECT object_type,object_id,created_at FROM user_favorites WHERE user_id=? AND (created_at<? OR (created_at=? AND (object_type||':'||object_id)<?)) ORDER BY created_at DESC,object_type||':'||object_id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT object_type,object_id,created_at FROM user_favorites WHERE user_id=? ORDER BY created_at DESC,object_type||':'||object_id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,row=>({type:row.object_type,id:row.object_id,createdAt:row.created_at}));return {favorites:result.items,nextCursor:result.nextCursor}; },
-    setFavorite(userId,type,id) { if(!["story","walk"].includes(type)||typeof id!=="string"||id.length>128)throw Object.assign(new Error(),{code:"BAD_REQUEST"});db.prepare("INSERT OR IGNORE INTO user_favorites VALUES(?,?,?,?)").run(userId,type,id,timestamp()); },
+    setFavorite(userId,type,id) {
+      if(!["story","walk"].includes(type)||typeof id!=="string"||id.length>128)throw Object.assign(new Error(),{code:"BAD_REQUEST"});
+      transaction(()=>{
+        if(db.prepare("SELECT 1 FROM user_favorites WHERE user_id=? AND object_type=? AND object_id=?").get(userId,type,id))return;
+        if(count("user_favorites",userId)>=MAX_FAVORITES_PER_USER)throw storageLimit(`В избранном может быть не больше ${MAX_FAVORITES_PER_USER} записей.`);
+        db.prepare("INSERT INTO user_favorites VALUES(?,?,?,?)").run(userId,type,id,timestamp());
+      });
+    },
     deleteFavorite(userId,type,id) { db.prepare("DELETE FROM user_favorites WHERE user_id=? AND object_type=? AND object_id=?").run(userId,type,id); },
     reserveGeneration(userId,requestId,units=1,limit=6) {if(typeof requestId!=="string"||requestId.length<8||!Number.isSafeInteger(units)||units<1)throw Object.assign(new Error(),{code:"BAD_REQUEST"});const existing=db.prepare("SELECT units FROM user_generation_quota WHERE user_id=? AND request_id=?").get(userId,requestId);if(existing)return false;const since=new Date(now()-86400000).toISOString(),used=db.prepare("SELECT COALESCE(SUM(units),0) AS value FROM user_generation_quota WHERE user_id=? AND created_at>=?").get(userId,since).value;if(used+units>limit)throw Object.assign(new Error("Personal daily quota exceeded"),{code:"QUOTA_EXCEEDED"});db.prepare("INSERT INTO user_generation_quota VALUES(?,?,?,?)").run(userId,requestId,units,timestamp());return true; },
     releaseGeneration(userId,requestId) {db.prepare("DELETE FROM user_generation_quota WHERE user_id=? AND request_id=?").run(userId,requestId);},
     beginGeneration(userId,idempotencyKey,operation,requestFingerprint,units=1,limit=6) {
       if(typeof idempotencyKey!=="string"||idempotencyKey.length<8||idempotencyKey.length>100||typeof operation!=="string"||!operation||typeof requestFingerprint!=="string"||!requestFingerprint||!Number.isSafeInteger(units)||units<0)throw Object.assign(new Error(),{code:"BAD_REQUEST"});
-      db.exec("BEGIN IMMEDIATE");
-      try {
+      return transaction(()=>{
         const existing=db.prepare("SELECT operation,request_fingerprint,job_id FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey);
         if(existing) {
           if(existing.operation!==operation||existing.request_fingerprint!==requestFingerprint)throw Object.assign(new Error("Idempotency key belongs to another request"),{code:"CONFLICT"});
-          db.exec("COMMIT");return {created:false,jobId:existing.job_id??null};
+          return {created:false,jobId:existing.job_id??null};
         }
         // Requests created before request fingerprints were introduced cannot be
         // safely proved equivalent, so their keys fail closed.
@@ -158,30 +185,27 @@ export function createAccountStore(db, now = Date.now) {
           db.prepare("INSERT INTO user_generation_quota VALUES(?,?,?,?)").run(userId,idempotencyKey,units,timestamp());
         }
         db.prepare("INSERT INTO user_generation_intents VALUES(?,?,?,?,NULL,?)").run(userId,idempotencyKey,operation,requestFingerprint,timestamp());
-        db.exec("COMMIT");return {created:true,jobId:null};
-      } catch(error) {db.exec("ROLLBACK");throw error;}
+        return {created:true,jobId:null};
+      });
     },
     completeGeneration(userId,idempotencyKey,jobId) {
       if(typeof jobId!=="string"||!jobId)throw Object.assign(new Error(),{code:"BAD_REQUEST"});
-      db.exec("BEGIN IMMEDIATE");
-      try {
+      return transaction(()=>{
         const intent=db.prepare("SELECT operation,job_id FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey);
         if(!intent||(intent.job_id&&intent.job_id!==jobId))throw Object.assign(new Error(),{code:"CONFLICT"});
         db.prepare("UPDATE user_generation_intents SET job_id=? WHERE user_id=? AND idempotency_key=?").run(jobId,userId,idempotencyKey);
         db.prepare("INSERT OR IGNORE INTO user_generation_requests VALUES(?,?,?,?,?,?)").run(randomUUID(),userId,jobId,intent.operation,idempotencyKey,timestamp());
-        db.exec("COMMIT");return jobId;
-      } catch(error) {db.exec("ROLLBACK");throw error;}
+        return jobId;
+      });
     },
     cancelGeneration(userId,idempotencyKey) {
-      db.exec("BEGIN IMMEDIATE");
-      try {const intent=db.prepare("SELECT job_id FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey);if(intent&&!intent.job_id){db.prepare("DELETE FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").run(userId,idempotencyKey);db.prepare("DELETE FROM user_generation_quota WHERE user_id=? AND request_id=?").run(userId,idempotencyKey);}db.exec("COMMIT");}
-      catch(error){db.exec("ROLLBACK");throw error;}
+      transaction(()=>{const intent=db.prepare("SELECT job_id FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey);if(intent&&!intent.job_id){db.prepare("DELETE FROM user_generation_intents WHERE user_id=? AND idempotency_key=?").run(userId,idempotencyKey);db.prepare("DELETE FROM user_generation_quota WHERE user_id=? AND request_id=?").run(userId,idempotencyKey);}});
     },
     attachRequest(userId,jobId,operation,idempotencyKey) { const existing=db.prepare("SELECT job_id FROM user_generation_requests WHERE user_id=? AND idempotency_key=?").get(userId,idempotencyKey);if(existing)return existing.job_id;db.prepare("INSERT INTO user_generation_requests VALUES(?,?,?,?,?,?)").run(randomUUID(),userId,jobId,operation,idempotencyKey,timestamp());return jobId; },
     ownsRequest(userId,jobId) { return Boolean(db.prepare("SELECT 1 FROM user_generation_requests WHERE user_id=? AND job_id=?").get(userId,jobId)); },
     listRequests(userId,limit=50,after=null) {limit=Math.min(50,Math.max(1,limit));const c=cursor(after);const rows=c?db.prepare("SELECT id,job_id,operation,created_at FROM user_generation_requests WHERE user_id=? AND (created_at<? OR (created_at=? AND id<?)) ORDER BY created_at DESC,id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT id,job_id,operation,created_at FROM user_generation_requests WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,row=>({jobId:row.job_id,operation:row.operation,createdAt:row.created_at}));return {requests:result.items,nextCursor:result.nextCursor}; },
     researchJobIds(userId) {return db.prepare("SELECT job_id FROM user_generation_requests WHERE user_id=? AND operation='walk_research'").all(userId).map(row=>row.job_id);},
-    importLocal(userId,{importId,walk=null,favorites=[]}) { if(typeof importId!=="string"||!/^[\w.-]{8,100}$/.test(importId)||!Array.isArray(favorites)||favorites.length>100)throw Object.assign(new Error(),{code:"BAD_REQUEST"});const existing=db.prepare("SELECT result_json FROM account_imports WHERE user_id=? AND import_id=?").get(userId,importId);if(existing)return decode(existing.result_json);const result={walk:null,favorites:0};if(walk)result.walk=this.createWalk(userId,{...walk,idempotencyKey:`import-${importId}`});for(const item of favorites){this.setFavorite(userId,item.type,item.id);result.favorites++;}db.prepare("INSERT INTO account_imports VALUES(?,?,?,?)").run(userId,importId,encode(result),timestamp());return result; },
-    deleteAccountData(userId) { db.exec("BEGIN IMMEDIATE");try{db.prepare("DELETE FROM user WHERE id=?").run(userId);db.exec("COMMIT");}catch(error){db.exec("ROLLBACK");throw error;} },
+    importLocal(userId,{importId,walk=null,favorites=[]}) { if(typeof importId!=="string"||!/^[\w.-]{8,100}$/.test(importId)||!Array.isArray(favorites)||favorites.length>100)throw Object.assign(new Error(),{code:"BAD_REQUEST"});return transaction(()=>{const existing=db.prepare("SELECT result_json FROM account_imports WHERE user_id=? AND import_id=?").get(userId,importId);if(existing)return decode(existing.result_json);const result={walk:null,favorites:0};if(walk)result.walk=this.createWalk(userId,{...walk,idempotencyKey:`import-${importId}`});for(const item of favorites){this.setFavorite(userId,item.type,item.id);result.favorites++;}db.prepare("INSERT INTO account_imports VALUES(?,?,?,?)").run(userId,importId,encode(result),timestamp());return result;}); },
+    deleteAccountData(userId) { transaction(()=>{db.prepare("DELETE FROM user WHERE id=?").run(userId);}); },
   };
 }

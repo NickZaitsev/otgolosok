@@ -1,6 +1,6 @@
 import { pageText } from './domain.mjs';
 
-function problem(code) {const error=new Error(code);error.code=code;return error;}
+function problem(code) {const error=/** @type {Error & {code?: string}} */ (new Error(code));error.code=code;return error;}
 
 export function classifySourceText(text, html='') {
   const normalized=text.toLocaleLowerCase('en-US');
@@ -25,7 +25,8 @@ export async function sourceText(page,{maximumCharacters=14000,keywords=[]}={}) 
   let document;
   try {
     const {getDocument}=await import('pdfjs-dist/legacy/build/pdf.mjs');
-    document=await getDocument({data:new Uint8Array(page.bytes),disableWorker:true,isEvalSupported:false,useSystemFonts:true}).promise;
+    // pdfjs 5.x does not declare or read `disableWorker`: in Node.js it always parses in-process without a worker.
+    document=await getDocument(/** @type {Parameters<typeof getDocument>[0]} */ ({data:new Uint8Array(page.bytes),disableWorker:true,isEvalSupported:false,useSystemFonts:true})).promise;
     const pages=[];
     for(let number=1;number<=document.numPages&&number<=500;number++) {
       const pdfPage=await document.getPage(number);

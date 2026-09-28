@@ -6,7 +6,6 @@ const uiStyles = [
   "../features/explore/explore.css",
   "../features/navigation/app-navigation.css",
   "../features/auth/auth.css",
-  "../features/walk-builder/walk-builder.css",
   "../features/admin/admin.css",
   "../features/admin/walk-admin.css",
 ].map((file) => readFileSync(new URL(file, import.meta.url), "utf8"));

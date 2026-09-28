@@ -4,6 +4,11 @@ import { spawnSync } from "node:child_process";
 import { mkdtemp, writeFile, readFile, access, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { existsSync } from "node:fs";
+
+// The Makefiles are POSIX-only (make + /bin/sh); on Windows developer machines these checks are skipped, not failed.
+const posix = process.platform !== "win32" && existsSync("/bin/sh") && spawnSync("make", ["--version"]).status === 0;
+const posixOnly = { skip: posix ? false : "requires make and /bin/sh (POSIX)" };
 
 async function fixture(t) {
   const dir = await mkdtemp(join(tmpdir(), "otg-admin-make-"));
@@ -29,7 +34,7 @@ process.exit(Number(process.env.TEST_EXIT??0));
   return { dir, capture, run };
 }
 
-test("deployed Makefile runs on the server without a checkout or SSH back to itself", async t => {
+test("deployed Makefile runs on the server without a checkout or SSH back to itself", posixOnly, async t => {
   const f = await fixture(t);
   const { copyFile } = await import("node:fs/promises");
   await copyFile(resolve(import.meta.dirname, "../docker/production.Makefile"), join(f.dir, "Makefile"));
@@ -50,7 +55,7 @@ test("deployed Makefile runs on the server without a checkout or SSH back to its
   assert.notEqual(run("admin-create-prod", ["EMAIL=admin@example.com"], { TEST_EXIT: "17" }).status, 0);
 });
 
-test("Makefile editor commands reject missing email before opening SSH or a database", async t => {
+test("Makefile editor commands reject missing email before opening SSH or a database", posixOnly, async t => {
   const f = await fixture(t);
   for (const target of ["admin-create", "admin-create-prod"]) {
     const result = f.run(target);
@@ -60,7 +65,7 @@ test("Makefile editor commands reject missing email before opening SSH or a data
   await assert.rejects(access(f.capture), { code: "ENOENT" });
 });
 
-test("production Makefile command preserves argument boundaries across both shells", async t => {
+test("production Makefile command preserves argument boundaries across both shells", posixOnly, async t => {
   const f = await fixture(t);
   for (const email of ["admin@example.com", "o'brien@example.com", `admin; touch ${f.dir}/injected; #`, `admin\`touch ${f.dir}/injected\`@example.com`]) {
     const result = f.run("admin-create-prod", [`EMAIL=${email}`, "GENERATOR_CONTAINER=generator-test"]);
@@ -71,7 +76,7 @@ test("production Makefile command preserves argument boundaries across both shel
   assert.notEqual(f.run("admin-create-prod", ["EMAIL=admin@example.com"], { TEST_EXIT: "17" }).status, 0);
 });
 
-test("local Makefile command passes an explicit database path including spaces", async t => {
+test("local Makefile command passes an explicit database path including spaces", posixOnly, async t => {
   const f = await fixture(t);
   const result = f.run("admin-create", ["EMAIL=admin@example.com", `AUTH_DB_PATH=${f.dir}/missing database.sqlite`]);
   assert.notEqual(result.status, 0);

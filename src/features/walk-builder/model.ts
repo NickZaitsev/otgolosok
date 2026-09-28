@@ -95,12 +95,6 @@ export function parseDraft(raw: string | null): Draft {
 export function editDraft(draft: Draft, change: Partial<Pick<Draft,"start"|"destination"|"mode"|"minutes"|"stops">>): Draft {
   return { ...draft, ...change, route: null, ...(draft.researchApplied ? { researchApplied: false } : {}) };
 }
-export function moveStop(stops: Place[], index: number, delta: -1 | 1): Place[] {
-  const next = [...stops], target = index + delta;
-  if (index < 0 || index >= next.length || target < 0 || target >= next.length) return next;
-  [next[index],next[target]] = [next[target],next[index]];
-  return next;
-}
 export function saveDraft(storage: Pick<Storage,"getItem"|"setItem">, draft: Draft, previous: string | null) {
   if (storage.getItem(DRAFT_KEY) !== previous) throw new Error("Черновик изменён в другой вкладке. Обновите страницу перед продолжением; эта версия не записана.");
   const raw = JSON.stringify(draft);

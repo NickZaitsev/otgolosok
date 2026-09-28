@@ -9,12 +9,9 @@ export function createWalkResearchStore({ db, now, transaction, checkCapacity })
   const get = id => decode(db.prepare('SELECT record_json FROM jobs WHERE id = ?').get(id));
   const byKey = key => decode(db.prepare('SELECT record_json FROM jobs WHERE job_key = ?').get(key));
   const insert = job => db.prepare('INSERT INTO jobs VALUES (?, ?, ?, ?, ?)').run(job.id, job.key, job.stage, job.createdAt, JSON.stringify(job));
-  const reserve = units => {
-    checkCapacity(units);
-    const timestamp = new Date(now()).toISOString();
-    return { timestamp, ledger: count => {
-      for (let i = 0; i < count; i++) db.prepare('INSERT INTO retries VALUES (?)').run(timestamp);
-    } };
+  const reserve = () => {
+    checkCapacity();
+    return new Date(now()).toISOString();
   };
   return {
     lookupWalkResearch(request, recoveryToken) {
@@ -38,8 +35,7 @@ export function createWalkResearchStore({ db, now, transaction, checkCapacity })
           return existing;
         }
         if (!allowCreate) throw failure('PROVIDER_UNAVAILABLE');
-        const { timestamp, ledger } = reserve(3);
-        ledger(2); // The parent row accounts for the first unit.
+        const timestamp = reserve();
         const job = { id: randomUUID(), key, kind: 'walk_research', request, stage: 'queued',
           revision: 0, attempts: 0, createdAt: timestamp, updatedAt: timestamp, error: null,
           data: { phase: 'discovery', candidates: null, route: null, stories: [] } };
@@ -54,8 +50,7 @@ export function createWalkResearchStore({ db, now, transaction, checkCapacity })
         if (!job || job.kind !== 'walk_research') return null;
         if (job.revision !== revision) throw failure('CONFLICT');
         if (!canRetryWalk(job)) throw failure('RETRY_LIMIT');
-        const { timestamp, ledger } = reserve(3);
-        ledger(3); // Conservatively reserve all candidates even for audio-only continuation.
+        const timestamp = reserve();
         const next = { ...job, stage: 'queued', error: null, revision: job.revision + 1, updatedAt: timestamp };
         db.prepare('UPDATE jobs SET stage = ?, record_json = ? WHERE id = ?').run(next.stage, JSON.stringify(next), id);
         return next;
@@ -99,7 +94,7 @@ export function createWalkResearchStore({ db, now, transaction, checkCapacity })
         }
         const timestamp = new Date(now()).toISOString();
         const job = { ...checkpoint, id: randomUUID(), key: publicationKey, kind: 'address', address,
-          quotaExempt: true, stage: 'ready', revision: 0, attempts: 1, error: null, createdAt: timestamp, updatedAt: timestamp };
+          stage: 'ready', revision: 0, attempts: 1, error: null, createdAt: timestamp, updatedAt: timestamp };
         insert(job);
         db.prepare('INSERT INTO walk_research_cache VALUES (?, ?) ON CONFLICT(cache_key) DO UPDATE SET record_json = excluded.record_json')
           .run(key, JSON.stringify({ ...checkpoint, publicId: job.id }));

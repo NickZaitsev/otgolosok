@@ -24,7 +24,7 @@ describe("единый логотип", () => {
     expect(styles).toContain("color: var(--brand-accent);");
     expect(styles).toMatch(/\.brand-mark\s*\{[^}]*line-height:\s*1;/);
     expect(styles).not.toContain('.shell[data-mode="walk"] .brand-mark > span');
-    for (const path of ["../explore/explore.css", "../walk-builder/walk-builder.css", "../admin/admin.css"]) {
+    for (const path of ["../explore/explore.css", "../admin/admin.css"]) {
       expect(read(path), path).not.toMatch(/\.(?:around-brand|admin-wordmark) span\s*\{|\.walk-builder header span\s*\{/);
     }
   });

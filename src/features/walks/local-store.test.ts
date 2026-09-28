@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deleteLocalWalk, exportLocalWalks, getLocalWalk, listLocalWalks, migrateLocalWalks, saveLocalWalk, WALK_LIBRARY_KEY } from "./local-store";
+import { getLocalWalk, listLocalWalks, migrateLocalWalks, saveLocalWalk, WALK_LIBRARY_KEY } from "./local-store";
 import type { WalkDocument } from "./model";
 
 const start = { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.60 } };
@@ -28,21 +28,20 @@ describe("локальная библиотека прогулок", () => {
     expect(migrateLocalWalks(store, () => second)).toBe(first);
     expect(listLocalWalks(store)).toHaveLength(1);
   });
-  it("хранит независимые документы, проверяет ревизию и удаляет только выбранный", () => {
+  it("хранит независимые документы и проверяет ревизию", () => {
     const store = storage();
     expect(saveLocalWalk(store, document(first), null).revision).toBe(0);
     saveLocalWalk(store, document(second), null);
     expect(saveLocalWalk(store, { ...document(first), title: "Новый Арбат" }, 0).revision).toBe(1);
     expect(() => saveLocalWalk(store, document(first), 0)).toThrow(/другой вкладке/);
-    deleteLocalWalk(store, first, 1);
-    expect(getLocalWalk(store, first)).toBeNull();
+    expect(getLocalWalk(store, first)?.document.title).toBe("Новый Арбат");
     expect(getLocalWalk(store, second)?.document.id).toBe(second);
   });
   it("сохраняет исходные данные при ошибках схемы и записи", () => {
     const store = storage(); store.setItem("otgolosok:walk:v1", "{broken");
     expect(() => migrateLocalWalks(store, () => first)).toThrow(/исходная запись сохранена/);
     expect(store.getItem(WALK_LIBRARY_KEY)).toBeNull();
-    expect(exportLocalWalks(store)).toContain("{broken");
+    expect(store.getItem("otgolosok:walk:v1")).toBe("{broken");
     const unavailable = { ...store, setItem: (...args: [string, string]): void => { void args; throw new Error("Квота превышена"); } };
     expect(() => saveLocalWalk(unavailable, document(first), null)).toThrow(/Квота/);
     expect(store.getItem(WALK_LIBRARY_KEY)).toBeNull();

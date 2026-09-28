@@ -25,7 +25,7 @@ function command(args, password = "") {
     child.stderr.on("data", chunk => { output += chunk; });
     child.on("error", reject);
     child.on("close", code => resolveResult({ code, output }));
-    child.stdin.on("error", error => { if (error.code !== "EPIPE") reject(error); });
+    child.stdin.on("error", /** @param {NodeJS.ErrnoException} error */ error => { if (error.code !== "EPIPE") reject(error); });
     child.stdin.end(password);
   });
 }
@@ -44,9 +44,9 @@ test("editor command creates a new account that can sign in with editor access",
   await assert.rejects(f.auth.api.signInEmail({ body: { email: "admin@example.com", password: "wrong-password" } }));
   const store = createStore(":memory:");
   const app = createApp({ store, origin: "http://localhost", auth: f.auth, workerEnabled: false });
-  await new Promise(done => app.server.listen(0, "127.0.0.1", done));
+  await /** @type {Promise<void>} */ (new Promise(done => app.server.listen(0, "127.0.0.1", done)));
   t.after(async () => { await app.close(); store.close(); });
-  const base = `http://127.0.0.1:${app.server.address().port}`;
+  const base = `http://127.0.0.1:${/** @type {import("node:net").AddressInfo} */ (app.server.address()).port}`;
   const response = await fetch(base + "/api/auth/sign-in/email", { method: "POST", headers: { Origin: "http://localhost", "Content-Type": "application/json" }, body: JSON.stringify({ email: "admin@example.com", password }) });
   assert.equal(response.status, 200);
   const cookie = response.headers.getSetCookie().map(value => value.split(";", 1)[0]).join("; ");

@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local tool state, not project sources: the uv virtualenv ships bundled JS
+    // (pyright), and agent tools keep separate git worktrees inside the checkout.
+    ".venv/**",
+    ".kilo/**",
+    ".claude/worktrees/**",
+    "artifacts/**",
   ]),
 ]);
 
