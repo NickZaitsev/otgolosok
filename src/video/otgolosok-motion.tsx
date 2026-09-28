@@ -131,8 +131,10 @@ function Badge({text, frame, size, color, delay}: {text: string; frame: number; 
   );
 }
 
-// Остановки маршрута по порядку: три заметки, затем главная точка.
-const stopTitles = [...route.notes.map(({story: text}) => text.opening), ...route.pois.map(({story: text}) => text.opening)];
+// Остановки маршрута: заметки и главная точка.
+const stopCount = route.notes.length + route.pois.length;
+// Вопросы, на которые отвечают истории прогулки, — без привязки к конкретному маршруту.
+const placeQuestions = ["Что здесь было раньше", "Кто здесь жил", "Почему такое название"];
 // Озвучка kozhevniki-*.mp3 — история первой остановки, она же на снимке listen.png.
 const firstStop = route.notes[0].story;
 const firstSentence = firstStop.paragraphs[0].text.split(/(?<=[.!?])\s/)[0];
@@ -161,14 +163,13 @@ function Place({frame}: {frame: number}) {
         <div><Chars text="У каждого дома —" frame={frame} at={8} step={1.1} /></div>
         <div style={{color: rust, fontStyle: "italic"}}><Chars text="своя история" frame={frame} at={22} step={1.3} /></div>
       </div>
-      {stopTitles.slice(0, chipSlots.length).map((title, index) => {
+      {placeQuestions.map((title, index) => {
         const shown = pop(frame, 40 + index * 10, 12);
         const slot = chipSlots[index];
         const float = Math.sin((frame + index * 20) / 18) * 8;
         return (
-          <div key={title} style={{position: "absolute", left: slot.left, top: slot.top + float, transform: `scale(${shown}) rotate(${slot.rotate}deg)`, transformOrigin: "left center", background: index === 1 ? green : cream, color: index === 1 ? cream : green, borderRadius: 999, padding: "22px 34px", boxShadow: "0 18px 50px #2a1d1030", display: "flex", gap: 16, alignItems: "baseline"}}>
-            <span style={{font: `700 22px ${SANS}`, letterSpacing: 2, color: index === 1 ? peach : rust}}>{String(index + 1).padStart(2, "0")}</span>
-            <span style={{font: `700 32px ${SANS}`}}>{title}</span>
+          <div key={title} style={{position: "absolute", left: slot.left, top: slot.top + float, transform: `scale(${shown}) rotate(${slot.rotate}deg)`, transformOrigin: "left center", background: index === 1 ? green : cream, color: index === 1 ? cream : green, borderRadius: 999, padding: "22px 34px", boxShadow: "0 18px 50px #2a1d1030", display: "flex", alignItems: "baseline"}}>
+            <span style={{font: `700 32px ${SANS}`}}>{title}<span style={{color: index === 1 ? peach : rust}}>?</span></span>
           </div>
         );
       })}
@@ -234,7 +235,7 @@ function Route({frame}: {frame: number}) {
         </div>
       </div>
       <div style={{position: "absolute", left: 80, right: 80, bottom: 130, display: "flex", justifyContent: "space-between"}}>
-        <Counter value={stopTitles.length} frame={frame} at={60} label="истории" />
+        <Counter value={stopCount} frame={frame} at={60} label="истории" />
         <Counter value={route.walk.distance_m} frame={frame} at={72} label="метра пути" />
         <Counter value={route.duration_min} frame={frame} at={84} label="минут прогулки" />
       </div>
@@ -244,6 +245,14 @@ function Route({frame}: {frame: number}) {
 
 // Панель прослушивания на снимке listen.png (2560×1600), в пикселях снимка.
 const PANEL = {x: 860, y: 700, width: 840, height: 680};
+// Полоса панели со служебным «Геопозиция недоступна…» (снимок сделан без GPS):
+// в рекламе её вырезаем, а части выше и ниже ставим стык в стык.
+const PANEL_CUT = {from: 325, to: 435};
+const PANEL_SLICES = [
+  {from: 0, to: PANEL_CUT.from},
+  {from: PANEL_CUT.to, to: PANEL.height},
+];
+const PANEL_VISIBLE_HEIGHT = PANEL.height - (PANEL_CUT.to - PANEL_CUT.from);
 
 function Waveform({frame, radius, bars}: {frame: number; radius: number; bars: number}) {
   return (
@@ -281,9 +290,13 @@ function Listen({frame}: {frame: number}) {
       <div style={{position: "absolute", left: 540, top: 1010, transform: "translate(-50%, -50%)", opacity: progress(frame, 10, 40)}}>
         <Waveform frame={frame} radius={330} bars={72} />
       </div>
-      <div style={{position: "absolute", left: 20, top: 700, width: 1040, height: PANEL.height * scale, perspective: 1800}}>
+      <div style={{position: "absolute", left: 20, top: 700, width: 1040, height: PANEL_VISIBLE_HEIGHT * scale, perspective: 1800}}>
         <div style={{width: "100%", height: "100%", borderRadius: 48, overflow: "hidden", transform: `translateY(${(1 - card) * 500}px) rotateY(${sway}deg) rotateX(${(1 - card) * 30 + 4}deg)`, boxShadow: "0 60px 140px #000c", background: "#fdf8ee"}}>
-          <Img src={listenScreen} style={{position: "absolute", width: 2560 * scale, height: 1600 * scale, left: -PANEL.x * scale, top: -PANEL.y * scale, maxWidth: "none"}} />
+          {PANEL_SLICES.map((slice, index) => (
+            <div key={slice.from} style={{position: "absolute", left: 0, right: 0, top: (index === 0 ? 0 : PANEL_SLICES[0].to) * scale, height: (slice.to - slice.from) * scale, overflow: "hidden"}}>
+              <Img src={listenScreen} style={{position: "absolute", width: 2560 * scale, height: 1600 * scale, left: -PANEL.x * scale, top: -(PANEL.y + slice.from) * scale, maxWidth: "none"}} />
+            </div>
+          ))}
         </div>
       </div>
       <div style={{position: "absolute", left: 80, right: 80, bottom: 150, textAlign: "center", fontFamily: SERIF, fontStyle: "italic", fontSize: 64, lineHeight: 1.15, color: "#f2ede4"}}>
@@ -365,7 +378,7 @@ function Brand({frame}: {frame: number}) {
       </div>
       <div style={{position: "absolute", left: 0, right: 0, top: 1260, display: "flex", justifyContent: "center"}}>
         <div style={{position: "relative", overflow: "hidden", transform: `scale(${cta})`, background: cream, color: green, borderRadius: 999, padding: "34px 64px", font: `700 36px ${SANS}`, boxShadow: "0 24px 70px #0007"}}>
-          otgolosok.softmg.tech
+          otgolosok.online
           <div style={{position: "absolute", top: 0, bottom: 0, width: 120, left: `${-30 + shine * 140}%`, background: "linear-gradient(90deg, transparent, #f5b29688, transparent)", transform: "skewX(-20deg)"}} />
         </div>
       </div>
