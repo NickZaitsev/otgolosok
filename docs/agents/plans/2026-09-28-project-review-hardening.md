@@ -1,6 +1,6 @@
 # Plan: Project review round 2 — reliability, offline, quotas and tooling
 
-Status: implemented 2026-09-28 in branch `feat/auth-account-osm-pipeline`. Docker could not run on the dev machine: `nginx -t`, `docker compose build/up` and the nginx/valhalla image pins (4.4) are not done; 1.4 `engine-strict` skipped.
+Status: implemented 2026-09-28 in branch `feat/auth-account-osm-pipeline`. Docker could not run on the dev machine: `nginx -t`, `docker compose build/up` and the nginx/valhalla image pins (4.4) are not done; 1.4 `engine-strict` skipped. After 5.2 the whole video package was removed from the repository at the user's request (archived in tag `video-archive-2026-09-28` on the fork).
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -224,6 +224,8 @@ Do this phase last and only when no other session is actively changing `src/vide
 - Update `docs/agents/video-guide.md` paths and README.
 
 Commits: `chore(repo): убрать тестовые WAV и скриншоты видео из git`, `refactor(video): вынести видео в отдельный workspace-пакет`.
+
+**After implementation:** the user decided the site repository should not carry the video code at all. `video/`, the capture specs `e2e/video-*.spec.ts`, `e2e/fixtures/` and the video docs were deleted; the workspace, Docker filter and root `video:*` scripts were reverted. The last state lives in the fork tag `video-archive-2026-09-28`.
 
 ### 6. Documentation
 

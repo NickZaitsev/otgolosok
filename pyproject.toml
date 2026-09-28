@@ -21,7 +21,7 @@ package = false
 
 [tool.ruff]
 target-version = "py312"
-extend-exclude = ["node_modules", ".kilo", ".next", "out", "video", "artifacts"]
+extend-exclude = ["node_modules", ".kilo", ".next", "out", "artifacts"]
 
 [tool.pyright]
 include = ["scripts", "backend/normalize-tts.py"]

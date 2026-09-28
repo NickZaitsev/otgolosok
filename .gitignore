@@ -54,11 +54,8 @@ next-env.d.ts
 
 /playwright-report/
 /test-results/
-# Local renders, TTS samples and generated video media; video:prepare rebuilds
-# the music bed, screenshots come from the capture specs (see docs/agents/video-guide.md).
+# Local TTS samples and other experiment output.
 /artifacts/
-/video/assets/guide/**/*.png
-/video/assets/video/ad-bed.wav
 
 # Python tooling (uv)
 /.venv/

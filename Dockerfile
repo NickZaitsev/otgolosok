@@ -4,10 +4,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # pnpm comes from the packageManager field in package.json, as in the backend image.
 RUN corepack enable pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-# The lockfile covers the video workspace package; its manifest is needed, its dependencies are not.
-COPY video/package.json ./video/
 COPY vendor/softmg-airouter-logs-0.1.0.tgz ./vendor/
-RUN pnpm install --frozen-lockfile --filter otgolosok
+RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build
 

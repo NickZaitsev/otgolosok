@@ -32,6 +32,3 @@ docs
 e2e
 test-results
 playwright-report
-# The video workspace package is not part of the site; only its manifest is needed for pnpm install.
-video
-!video/package.json

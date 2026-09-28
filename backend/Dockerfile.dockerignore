@@ -26,7 +26,6 @@ backend/**/*.test.mjs
 .agents
 .claude
 artifacts
-video
 docs
 e2e
 test-results
