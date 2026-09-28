@@ -106,6 +106,19 @@ pnpm video:render:motion-wide
 Результат — `artifacts/video/otgolosok-motion-wide.mp4`. Подробности:
 [моушн-ролик](docs/agents/motion-video.md).
 
+Кинетический ролик 1080×1920 на 24 секунды собирается без Remotion: страница
+`video/kinetic/` рисует любой кадр функцией времени, Playwright снимает кадры,
+FFmpeg (нужен в `PATH`) кодирует MP4 с синтезированной музыкой и фрагментом
+озвучки первой истории.
+
+```bash
+pnpm video:render:kinetic
+pnpm video:preview:kinetic
+```
+
+Результат — `artifacts/video/otgolosok-kinetic.mp4`. Подробности:
+[кинетический ролик](docs/agents/kinetic-video.md).
+
 ## Docker Compose
 
 Нужны Docker Engine / Docker Desktop с Compose v2, доступ в интернет для загрузки
