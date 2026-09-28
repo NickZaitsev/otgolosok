@@ -112,13 +112,14 @@ export type ContentPlace = {
 export type ContentPlaceSummary = {
   id: string; name: string; address: string | null; textStatus: "none" | "draft" | "approved"; audio: Audio | null;
 };
-export type ContentPlaceStatusFilter = "all" | "ready" | "missing";
+export type ContentPlaceStatusFilter = "all" | "ready" | "draft" | "missing";
 export const placeTextStatuses: Record<ContentPlaceSummary["textStatus"], string> = {
   none: "Нет текста", draft: "Черновик", approved: "Утверждён",
 };
 export const placeStatusOptions: { value: ContentPlaceStatusFilter; label: string }[] = [
   { value: "all", label: "Все места" },
   { value: "ready", label: "Только с утверждённым текстом" },
+  { value: "draft", label: "Только черновики" },
   { value: "missing", label: "Только без текста" },
 ];
 export type AudioBackfillResult = {

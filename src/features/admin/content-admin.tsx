@@ -472,7 +472,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
                 }));
                 pendingNavigation.current = "catalog";
                 setPlace(null); setDraft(null); setBaseline("");
-                setNotice("Текст утверждён; нужная озвучка поставлена в очередь.");
+                setNotice("Текст утверждён.");
               })}>Утвердить текст</button>
               {place.text?.verification === "editorial" && <button disabled={disabled || dirty} onClick={() => void run("Постановка аудио…", async signal => {
                 await api(`/content/places/${place.id}/audio`, signal, {});

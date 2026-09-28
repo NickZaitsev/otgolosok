@@ -183,11 +183,12 @@ export function createContentStore({db,now,transaction}) {
       });
     },
     listPlaces({limit=50,offset=0,q="",status="all",lat=null,lon=null,radius=null}={}) {
-      if(!Number.isSafeInteger(limit)||limit<1||limit>100||!Number.isSafeInteger(offset)||offset<0||typeof q!=="string"||q.length>200||!["all","ready","missing"].includes(status)
+      if(!Number.isSafeInteger(limit)||limit<1||limit>100||!Number.isSafeInteger(offset)||offset<0||typeof q!=="string"||q.length>200||!["all","ready","draft","missing"].includes(status)
         ||([lat,lon,radius].some(value=>value!==null)&&(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||lat<55.05||lat>56.05||lon<36.75||lon>38.25||radius<50||radius>5000)))throw fail("BAD_REQUEST");
       const filters=["p.archived=0"],params=[];
       if(q.trim()){filters.push("(instr(casefold(p.name),casefold(?))>0 OR instr(casefold(COALESCE(p.address,'')),casefold(?))>0)");params.push(q.trim(),q.trim());}
       if(status==="ready")filters.push("EXISTS(SELECT 1 FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL)");
+      if(status==="draft")filters.push("EXISTS(SELECT 1 FROM place_texts t WHERE t.place_id=p.id) AND NOT EXISTS(SELECT 1 FROM place_texts t WHERE t.place_id=p.id AND t.approved_story_json IS NOT NULL)");
       if(status==="missing")filters.push("NOT EXISTS(SELECT 1 FROM place_texts t WHERE t.place_id=p.id)");
       if(lat!==null){const latDelta=radius/111320,lonDelta=radius/(111320*Math.cos(lat*Math.PI/180));filters.push("p.lat BETWEEN ? AND ? AND p.lon BETWEEN ? AND ?");params.push(lat-latDelta,lat+latDelta,lon-lonDelta,lon+lonDelta);}
       const distanceSql=lat===null?"NULL":`6371000*2*asin(min(1,sqrt(pow(sin(radians(p.lat-?)/2),2)+cos(radians(?))*cos(radians(p.lat))*pow(sin(radians(p.lon-?)/2),2))))`;
