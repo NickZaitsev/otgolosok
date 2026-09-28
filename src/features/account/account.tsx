@@ -74,11 +74,9 @@ export function Account() {
     event.preventDefault(); if (!confirmAction || busy) return; setBusy("settings");
     try {
       if (confirmAction === "delete") await accountApi("/api/me", { method: "DELETE", body: JSON.stringify({ password }) });
-      else {
-        if (user) await clearOfflineScope(user.id);
-        await (confirmAction === "all" ? signOutEverywhere() : signOut());
-      }
-      if (user && confirmAction === "delete") await clearOfflineScope(user.id);
+      else await (confirmAction === "all" ? signOutEverywhere() : signOut());
+      // Private offline copies are removed best-effort: an unavailable Cache Storage must not block leaving the account.
+      if (user) await clearOfflineScope(user.id).catch(() => {});
       setPassword(""); location.replace("/");
     } catch (caught) { setErrors(current => ({ ...current, settings: caught instanceof Error ? caught.message : "Не удалось выполнить действие." })); }
     finally { setBusy(null); setPassword(""); }

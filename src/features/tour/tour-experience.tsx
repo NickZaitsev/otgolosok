@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   pauseAudioElement,
   playAudioSource,
@@ -52,8 +52,7 @@ import { AudioPlayerControls } from "./audio-player-controls";
 import { loadPublishedRoute } from "./published-route-cache";
 import { usePlaybackProgress } from "./use-playback-progress";
 import { formatPlaybackTime, type PlaybackCheckpoint } from "@/lib/audio/playback-progress";
-import { getLastUserId, getSession } from "../auth/client";
-import { saveWalkOffline } from "../walks/offline";
+import { loadOfflineWalk, removeOfflineWalk, saveWalkOffline, type OfflineWalkRef } from "../walks/offline";
 import { WalkSession } from "./walk-session";
 import { playbackRates } from "./walk-settings";
 
@@ -116,13 +115,13 @@ function applyPlaybackRate(audio: HTMLAudioElement, rate: number) {
   catch { /* Some engines reject a rate change while the source loads. */ }
 }
 
-export function TourExperience({ route, walk }: { route?: Route; walk?: WalkView }) {
+export function TourExperience({ route, walk, offline = null }: { route?: Route; walk?: WalkView; offline?: OfflineWalkRef | null }) {
   const resolvedRoute = walk ? walkViewToRoute(walk) : route;
   if (!resolvedRoute) return <main className="shell"><section className="hero-copy"><h1>Прогулка не найдена</h1><p className="dek">Откройте ссылку ещё раз или вернитесь к списку прогулок.</p></section></main>;
-  return <AvailableTour route={resolvedRoute} universal={Boolean(walk)} view={walk} />;
+  return <AvailableTour route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} />;
 }
 
-function AvailableTour({ route: initialRoute, universal = false, view }: { route: Route; universal?: boolean; view?: WalkView }) {
+function AvailableTour({ route: initialRoute, universal = false, view, offlineRef }: { route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null }) {
   const [route, setRoute] = useState(initialRoute);
   const firstPoi = route.pois[0];
   const [phase, setPhase] = useState<SessionPhase>("reading");
@@ -136,8 +135,14 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
   const [playbackTime, setPlaybackTime] = useState(0);
   const [mediaDuration, setMediaDuration] = useState(0);
   const [isReplay, setIsReplay] = useState(false);
-  const [offlineStatus, setOfflineStatus] = useState("Офлайн-копия ещё не сохранена");
+  const [offlineStatus, setOfflineStatus] = useState("");
+  // The static HTML assumes support; the client snapshot reveals browsers without Service Worker.
+  const serviceWorkerMissing = useSyncExternalStore(subscribeNever, () => process.env.NODE_ENV === "production" && !("serviceWorker" in navigator), () => false);
+  const shellStatus = serviceWorkerMissing ? "Офлайн-режим недоступен в этом браузере." : offlineStatus;
   const [offlineBusy, setOfflineBusy] = useState(false);
+  // Number of recordings in the saved offline copy; null while there is none.
+  const [savedCopy, setSavedCopy] = useState<number | null>(null);
+  const [copyMessage, setCopyMessage] = useState("");
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const startButtonRef = useRef<HTMLButtonElement>(null);
@@ -215,9 +220,7 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
   const chapterPlace = chapter?.place ?? null;
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) {
-      return;
-    }
+    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
 
     let cancelled = false;
     const cleanups: Array<() => void> = [];
@@ -263,9 +266,9 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
           check();
         });
       }
-      if (!cancelled) setOfflineStatus("Оболочка офлайн готова; сохраните прогулку для записей");
+      if (!cancelled) setOfflineStatus("");
     }).catch(() => {
-      if (!cancelled) setOfflineStatus("Оболочка офлайн готова; записи сохраняются отдельно");
+      if (!cancelled) setOfflineStatus("Офлайн-режим недоступен в этом браузере.");
     });
     return () => {
       cancelled = true;
@@ -273,20 +276,49 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
     };
   }, []);
 
+  useEffect(() => {
+    if (!offlineRef) return;
+    let cancelled = false;
+    loadOfflineWalk(offlineRef).then(
+      saved => { if (!cancelled) setSavedCopy(saved ? saved.manifest.audio.length : null); },
+      () => { /* Without Cache Storage there is no saved copy to show. */ },
+    );
+    return () => { cancelled = true; };
+  }, [offlineRef]);
+
   async function saveOffline() {
-    if (!view || offlineBusy) return;
+    if (!view || !offlineRef || offlineBusy) return;
     setOfflineBusy(true);
+    setCopyMessage("");
     try {
-      const user = await getSession().catch(() => null);
-      const scope = user?.id ?? getLastUserId() ?? `public:${view.document.id}`;
-      const result = await saveWalkOffline(view, scope);
-      setOfflineStatus(`Офлайн-комплект сохранён · ${result.availableAudio} ${audioWord(result.availableAudio)}`);
+      const result = await saveWalkOffline(view, offlineRef);
+      setSavedCopy(result.availableAudio);
     } catch (caught) {
-      setOfflineStatus(caught instanceof Error ? caught.message : "Не удалось сохранить офлайн-комплект.");
+      setCopyMessage(caught instanceof Error ? caught.message : "Не удалось сохранить офлайн-копию.");
     } finally {
       setOfflineBusy(false);
     }
   }
+
+  async function removeOffline() {
+    if (!offlineRef || offlineBusy) return;
+    setOfflineBusy(true);
+    setCopyMessage("");
+    try {
+      await removeOfflineWalk(offlineRef);
+      setSavedCopy(null);
+    } catch {
+      setCopyMessage("Не удалось удалить офлайн-копию.");
+    } finally {
+      setOfflineBusy(false);
+    }
+  }
+
+  const offlineCopy = (statusClassName: string, buttonClassName?: string) => offlineRef ? <>
+    <p className={statusClassName} role="status">{copyMessage || (savedCopy === null ? "Офлайн-копия ещё не сохранена" : `Офлайн-копия сохранена · ${savedCopy} ${audioWord(savedCopy)}`)}</p>
+    <button className={buttonClassName} type="button" disabled={offlineBusy} onClick={() => void saveOffline()}>{offlineBusy ? "Сохраняем…" : savedCopy === null ? "Сохранить прогулку без сети" : "Обновить офлайн-копию"}</button>
+    {savedCopy !== null ? <button className={buttonClassName} type="button" disabled={offlineBusy} onClick={() => void removeOffline()}>Удалить офлайн-копию</button> : null}
+  </> : null;
 
   useEffect(() => {
     const audioElement = audioRef.current;
@@ -678,8 +710,8 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
         settings={<div className="walk-session-settings">
           <label>Переключение остановок<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{advanceModeLabels[mode]}</option>)}</select></label>
           <label>Скорость аудио<select value={settings.rate} onChange={event => updateSettings({ rate: Number(event.target.value) as PlaybackRate })}>{playbackRates.map(rate => <option key={rate} value={rate}>{String(rate).replace(".", ",")}×</option>)}</select></label>
-          <button type="button" disabled={offlineBusy} onClick={() => void saveOffline()}>{offlineBusy ? "Сохраняем…" : "Скачать для прогулки без сети"}</button>
-          <p className="walk-session-muted" role="status">{offlineStatus}</p>
+          {offlineCopy("walk-session-muted")}
+          {shellStatus ? <p className="walk-session-muted" role="status">{shellStatus}</p> : null}
           {isWalking ? <button type="button" onClick={() => stopTour()}>Остановить прогулку</button> : null}
         </div>} /> : isWalking ? (
         <section className="walk-view" id="top" aria-labelledby="walk-title">
@@ -811,8 +843,8 @@ function AvailableTour({ route: initialRoute, universal = false, view }: { route
               <a className="read-story-link" href="/create">Подготовить историю другого дома <span aria-hidden="true">→</span></a>
               {hasStoryText ? <a className="read-story-link" href="#story">Читать первую историю · около {storyMinutes} мин <span aria-hidden="true">↓</span></a> : null}
               {readyNotes.length > 0 ? <div><a className="read-story-link" href="#along-the-way">По дороге · короткие заметки ({readyNotes.length}) <span aria-hidden="true">↓</span></a></div> : null}
-              <p className="start-note" role="status">{offlineStatus}</p>
-              {view ? <button className="read-story-link offline-save-button" type="button" disabled={offlineBusy} onClick={() => void saveOffline()}>{offlineBusy ? "Сохраняем без сети…" : "Сохранить прогулку без сети ↓"}</button> : null}
+              {shellStatus ? <p className="start-note" role="status">{shellStatus}</p> : null}
+              {offlineCopy("start-note", "read-story-link offline-save-button")}
               <div className="update-control">
                 {updateAvailable ? <p role="status">Доступна новая версия сайта.</p> : null}
                 <a href="/update.html">{updateAvailable ? "Обновить прогулку" : "Проверить обновление"}</a>
@@ -896,6 +928,8 @@ function walkStatusLabel(status: NonNullable<import("./types").WalkStep["status"
     ready: "История готова.",
   }[status];
 }
+
+const subscribeNever = () => () => {};
 
 function audioWord(value: number) {
   const remainder = value % 10;
