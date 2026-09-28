@@ -9,7 +9,7 @@ import { createProvider } from "./provider.mjs";
 import { createYandexTts } from "./yandex-tts.mjs";
 import { ttsVoiceOptions } from "./tts-voices.mjs";
 import { normalizeAddress, addressKey, publicJob, failure } from "./domain.mjs";
-import { safeError, startWorker } from "./pipeline.mjs";
+import { errorMessages, safeError, startWorker } from "./pipeline.mjs";
 import { createPlaceResolver } from "./places.mjs";
 import { createWalkPlanner } from "./walks.mjs";
 import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
@@ -77,7 +77,14 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
+/** Paid generation units per user per rolling 24 hours; an invalid value stops startup instead of silently lifting the limit. */
+export function parseUserDailyLimit(value) {
+  if(value===undefined||value==="")return 6;
+  if(!/^\d+$/.test(value)||!Number.isSafeInteger(Number(value))||Number(value)<1)throw new Error("USER_DAILY_GENERATION_LIMIT must be a positive integer");
+  return Number(value);
+}
+
+export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
@@ -202,31 +209,31 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
             const request=validateWalkResearch({start:{location:{lat:Number(q.lat),lon:Number(q.lon)}},mode:q.mode,minutes:Number(q.minutes),...(q.destinationLat?{destination:{location:{lat:Number(q.destinationLat),lon:Number(q.destinationLon)}}}:{})},true);
             job=store.lookupWalkResearch(request,q.recoveryToken);
             if(auth&&job&&!accountStore.ownsRequest(session.user.id,job.id)) {
-              if(!accountStore.beginGeneration){accountStore.attachRequest(session.user.id,job.id,"walk_research",q.recoveryToken);}
-              else {
-              const intent=accountStore.beginGeneration(session.user.id,q.recoveryToken,"walk_research",walkResearchKey(request),0,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
+              const intent=accountStore.beginGeneration(session.user.id,q.recoveryToken,"walk_research",walkResearchKey(request),0,userDailyLimit);
               if(intent.jobId&&intent.jobId!==job.id)throw failure("CONFLICT");
               accountStore.completeGeneration(session.user.id,q.recoveryToken,job.id);
-              }
             }
           }
         } else if(req.method==="POST"&&(!researchMatch[1]||researchMatch[2])) {
           if(!origin||req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           if(url.search)throw failure("BAD_REQUEST");
+          // Research spends paid model and speech calls, so it is charged to a signed-in user.
+          if(!auth){json(res,503,{error:{code:"AUTH_REQUIRED",message:errorMessages.AUTH_REQUIRED}});return;}
           const input=await body(req);
           if(researchMatch[2]) {
-            if(auth&&!accountStore.ownsRequest(session.user.id,researchMatch[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Walk research job not found."}});return;}
+            if(!accountStore.ownsRequest(session.user.id,researchMatch[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Walk research job not found."}});return;}
             if(Object.keys(input).length!==1||!Number.isSafeInteger(input.revision)||input.revision<0)throw failure("BAD_REQUEST");
             if(!provider){json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;}
-            const quotaKey=`walk-retry-${researchMatch[1]}-${input.revision}`;if(auth)accountStore.reserveGeneration(session.user.id,quotaKey,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-            try{job=store.retryWalkResearch(researchMatch[1],input.revision);}catch(error){if(auth)accountStore.releaseGeneration(session.user.id,quotaKey);throw error;}
+            // A repeated retry of the same revision was already charged; only a charge made by this request is refunded.
+            const quotaKey=`walk-retry-${researchMatch[1]}-${input.revision}`,reserved=accountStore.reserveGeneration(session.user.id,quotaKey,3,userDailyLimit);
+            try{job=store.retryWalkResearch(researchMatch[1],input.revision);}catch(error){if(reserved)accountStore.releaseGeneration(session.user.id,quotaKey);throw error;}
+            if(!job&&reserved)accountStore.releaseGeneration(session.user.id,quotaKey);
           } else {
             const request=validateWalkResearch(input),existing=store.lookupWalkResearch(request,input.recoveryToken);
-            const intent=auth&&accountStore.beginGeneration?accountStore.beginGeneration(session.user.id,input.recoveryToken,"walk_research",walkResearchKey(request),existing?0:3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6)):null;
-            if(auth&&!accountStore.beginGeneration&&!existing)accountStore.reserveGeneration(session.user.id,input.recoveryToken,3,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-            try {job=intent?.jobId?store.get(intent.jobId):store.createWalkResearch(input,{allowCreate:Boolean(provider)});if(auth&&job){if(accountStore.completeGeneration)accountStore.completeGeneration(session.user.id,input.recoveryToken,job.id);else accountStore.attachRequest(session.user.id,job.id,"walk_research",input.recoveryToken);}}
+            const intent=accountStore.beginGeneration(session.user.id,input.recoveryToken,"walk_research",walkResearchKey(request),existing?0:3,userDailyLimit);
+            try {job=intent.jobId?store.get(intent.jobId):store.createWalkResearch(input,{allowCreate:Boolean(provider)});if(job)accountStore.completeGeneration(session.user.id,input.recoveryToken,job.id);}
             catch(error) {
-              if(auth&&!intent?.jobId){if(accountStore.cancelGeneration)accountStore.cancelGeneration(session.user.id,input.recoveryToken);else if(!existing)accountStore.releaseGeneration(session.user.id,input.recoveryToken);}
+              if(!intent.jobId)accountStore.cancelGeneration(session.user.id,input.recoveryToken);
               if(error.code!=="PROVIDER_UNAVAILABLE")throw error;
               json(res,503,{error:{code:"PROVIDER_UNAVAILABLE",message:"Story provider unavailable."}});return;
             }
@@ -485,24 +492,26 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
           json(res,200,resolveWalkView(input.document,input.revision,store));return;
         }
         if(!provider) {json(res,503,{error:{message:"Подготовка историй пока недоступна."}});return;}
+        // Story generation spends paid model and speech calls, so it is charged to a signed-in user.
+        if(!auth||!accountStore){json(res,503,{error:{code:"AUTH_REQUIRED",message:errorMessages.AUTH_REQUIRED}});return;}
         const input=await body(req);
         if(url.pathname==="/api/story-jobs") {
-          if(!session||!accountStore){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите, чтобы подготовить историю."}});return;}
+          if(!session){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите, чтобы подготовить историю."}});return;}
           if(Object.keys(input).some((key)=>!["address","idempotencyKey"].includes(key))||typeof input.idempotencyKey!=="string")throw failure("BAD_REQUEST");
           const address=normalizeAddress(input.address),key=addressKey(address),existing=store.getByKey?.(key)??null;
-          const intent=accountStore.beginGeneration?accountStore.beginGeneration(session.user.id,input.idempotencyKey,"create",key,existing?0:1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6)):{created:true,jobId:null};
-          if(!accountStore.beginGeneration&&!existing)accountStore.reserveGeneration?.(session.user.id,input.idempotencyKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-          let job;try{job=intent.jobId?store.get(intent.jobId):store.createOrGet({key,address});if(!job)throw failure("CONFLICT");if(accountStore.completeGeneration)accountStore.completeGeneration(session.user.id,input.idempotencyKey,job.id);else accountStore.attachRequest(session.user.id,job.id,"create",input.idempotencyKey);}
-          catch(error){if(!intent.jobId){if(accountStore.cancelGeneration)accountStore.cancelGeneration(session.user.id,input.idempotencyKey);else if(!existing)accountStore.releaseGeneration?.(session.user.id,input.idempotencyKey);}throw error;}
+          const intent=accountStore.beginGeneration(session.user.id,input.idempotencyKey,"create",key,existing?0:1,userDailyLimit);
+          let job;try{job=intent.jobId?store.get(intent.jobId):store.createOrGet({key,address});if(!job)throw failure("CONFLICT");accountStore.completeGeneration(session.user.id,input.idempotencyKey,job.id);}
+          catch(error){if(!intent.jobId)accountStore.cancelGeneration(session.user.id,input.idempotencyKey);throw error;}
           json(res,200,publicJob(job));worker?.wake();return;
         }
         const retry=new RegExp(`^/api/story-jobs/(${UUID})/retry$`).exec(url.pathname);
         if(retry) {
-          if(!session||!accountStore||!accountStore.ownsRequest(session.user.id,retry[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Задание не найдено."}});return;}
+          if(!session||!accountStore.ownsRequest(session.user.id,retry[1])){json(res,404,{error:{code:"NOT_FOUND",message:"Задание не найдено."}});return;}
           if(!Number.isInteger(input.revision)||Object.keys(input).some((key)=>key!=="revision"))throw failure("BAD_REQUEST");
-          const quotaKey=`retry-${retry[1]}-${input.revision}`;accountStore.reserveGeneration?.(session.user.id,quotaKey,1,Number(process.env.USER_DAILY_GENERATION_LIMIT??6));
-          let job;try{job=store.retry(retry[1],input.revision);}catch(error){accountStore.releaseGeneration?.(session.user.id,quotaKey);throw error;}
-          if(!job){json(res,404,{error:{message:"Задание не найдено."}});return;}
+          // A repeated retry of the same revision was already charged; only a charge made by this request is refunded.
+          const quotaKey=`retry-${retry[1]}-${input.revision}`,reserved=accountStore.reserveGeneration(session.user.id,quotaKey,1,userDailyLimit);
+          let job;try{job=store.retry(retry[1],input.revision);}catch(error){if(reserved)accountStore.releaseGeneration(session.user.id,quotaKey);throw error;}
+          if(!job){if(reserved)accountStore.releaseGeneration(session.user.id,quotaKey);json(res,404,{error:{message:"Задание не найдено."}});return;}
           json(res,200,publicJob(job));worker?.wake();return;
         }
       }
@@ -526,7 +535,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
       json(res,404,{error:{message:"Страница не найдена."}});
     } catch(error) {
       if(res.headersSent||res.destroyed)return;
-      const status=["QUEUE_FULL","DAILY_LIMIT","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:error.code==="AUDIO_STORAGE_FULL"?507:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY","STORAGE_LIMIT"].includes(error.code)?409:
+      const status=["QUEUE_FULL","QUOTA_EXCEEDED","UPLOAD_BUSY"].includes(error.code)?429:error.code==="AUDIO_STORAGE_FULL"?507:["CONFLICT","RETRY_LIMIT","LEASE_LOST","CLAIM_EXPIRED","WORKER_BUSY","STORAGE_LIMIT"].includes(error.code)?409:
         error.code==="AUDIO_TOO_LARGE"?413:["BAD_AUDIO_TYPE","BAD_AUDIO","AUDIO_CHECKSUM","AUDIO_DURATION"].includes(error.code)?422:["INVALID_ADDRESS","BAD_REQUEST","INVALID_DRAFT"].includes(error.code)?400:500;
       if(status===500) logs?.captureException(error,{operation:"API request",context:{method:req.method,status}});
       // Account storage limits carry a user-facing message written by the account store.
@@ -540,8 +549,9 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const directory=resolve(process.env.DATA_DIR??"backend/data");
   const localTts=loadLocalTtsConfig(process.env);
+  const userDailyLimit=parseUserDailyLimit(process.env.USER_DAILY_GENERATION_LIMIT);
   const ttsApiClient=localTts.transport==="http"?createTtsApiClient({baseUrl:process.env.TTS_API_URL,token:process.env.TTS_API_TOKEN}):null;
-  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:workerLeaseSecret({transport:localTts.transport}),normalizeExternalText:normalizeForSpeech,externalTtsProfiles:localTts.profiles});
+  const store=createStore(join(directory,"jobs.sqlite"),{maxActive:2,workerLeaseSecret:workerLeaseSecret({transport:localTts.transport}),normalizeExternalText:normalizeForSpeech,externalTtsProfiles:localTts.profiles});
   store.recoverInterrupted();
   store.recoverContentJobs();
   const provider=process.env.OPENAI_API_KEY&&process.env.OPENAI_BASE_URL?createProvider({apiKey:process.env.OPENAI_API_KEY,baseUrl:process.env.OPENAI_BASE_URL,model:process.env.STORY_MODEL,writerModel:process.env.WRITER_MODEL}):null;
@@ -552,7 +562,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production"});
   const accountStore=createAccountStore(authRuntime.accountDatabase);
   const osmGeocoder=openOsmGeocoder(join(directory,"osm-addresses.sqlite"));
-  const app=createApp({store,provider,osmGeocoder,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close});
+  const app=createApp({store,provider,osmGeocoder,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close,userDailyLimit});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});

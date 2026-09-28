@@ -6,8 +6,8 @@ import { adminAuth, adminDetail } from "./admin.mjs";
 import { validateDraft, validateFacts, sha256 } from "./domain.mjs";
 import { runJob } from "./pipeline.mjs";
 
-async function fixture(t, { provider = {}, yandexTts = null, maxDaily = 100, maxActive = 2, adminToken = "test-secret" } = {}) {
-  const store = createStore(":memory:", { maxDaily, maxActive });
+async function fixture(t, { provider = {}, yandexTts = null, maxActive = 2, adminToken = "test-secret" } = {}) {
+  const store = createStore(":memory:", { maxActive });
   const app = createApp({ store, provider, yandexTts, adminToken, origin: "https://site.test", workerEnabled: false });
   await new Promise(done => app.server.listen(0, "127.0.0.1", done));
   t.after(async () => { await app.close(); store.close(); });
@@ -144,8 +144,8 @@ test("approval requires a saved valid draft and revalidated evidence", async t =
   assert.deepEqual(f.store.get(job.id), saved);
 });
 
-test("approval is atomic, consumes retry quota, audits the draft, and continues with audio only", async t => {
-  const f = await fixture(t, { maxDaily: 2 }); const original = f.seed();
+test("approval is atomic, audits the draft, and continues with audio only", async t => {
+  const f = await fixture(t); const original = f.seed();
   const saved = f.store.editAdmin(original.id, original.revision, f.draft);
   const path = `/${saved.id}/approve`;
   const results = await Promise.all([f.request(path, { revision: saved.revision }), f.request(path, { revision: saved.revision })]);
@@ -166,23 +166,18 @@ test("approval is atomic, consumes retry quota, audits the draft, and continues 
     narrate: async story => { voices++; assert.equal(story.verification, "editorial"); return { url: "audio", durationSec: 100 }; },
   });
   assert.equal(ready.stage, "ready"); assert.equal(modelCalls, 0); assert.equal(fetches, 0); assert.equal(voices, 1);
-  assert.throws(() => f.store.createOrGet({ key: "next", address: "Address 2" }), { code: "DAILY_LIMIT" });
 });
 
-test("queue and daily quota failures roll back approval and its revision", async t => {
-  for (const daily of [true, false]) {
-    const f = await fixture(t, { maxDaily: daily ? 1 : 10, maxActive: 1 });
-    const job = f.seed(); const saved = f.store.editAdmin(job.id, job.revision, f.draft);
-    const blocker = daily ? null : f.store.createOrGet({ key: "blocker", address: "Address 2" });
-    const response = await f.request(`/${job.id}/approve`, { revision: saved.revision });
-    assert.equal(response.status, 429);
-    assert.equal((await response.json()).error.code, daily ? "DAILY_LIMIT" : "QUEUE_FULL");
-    assert.deepEqual(f.store.get(job.id), saved);
-    if (blocker) {
-      f.store.update(blocker.id, { stage: "failed" }, blocker.revision);
-      assert.equal((await f.request(`/${job.id}/approve`, { revision: saved.revision })).status, 200);
-    }
-  }
+test("a full queue rolls back approval and its revision", async t => {
+  const f = await fixture(t, { maxActive: 1 });
+  const job = f.seed(); const saved = f.store.editAdmin(job.id, job.revision, f.draft);
+  const blocker = f.store.createOrGet({ key: "blocker", address: "Address 2" });
+  const response = await f.request(`/${job.id}/approve`, { revision: saved.revision });
+  assert.equal(response.status, 429);
+  assert.equal((await response.json()).error.code, "QUEUE_FULL");
+  assert.deepEqual(f.store.get(job.id), saved);
+  f.store.update(blocker.id, { stage: "failed" }, blocker.revision);
+  assert.equal((await f.request(`/${job.id}/approve`, { revision: saved.revision })).status, 200);
 });
 
 test("malformed raw findings stay readable and unsafe source URLs are removed", async t => {
@@ -261,7 +256,7 @@ test("Yandex selection is persisted, audited and reused after an audio-only retr
 });
 
 test("unavailable and invalid speech selections do not modify the job or consume quota", async t => {
-  const f = await fixture(t, { maxDaily: 2 });
+  const f = await fixture(t);
   const original = f.seed();
   const saved = f.store.editAdmin(original.id, original.revision, f.draft);
   const detail = (await (await f.request(`/${saved.id}`)).json()).job;
@@ -288,7 +283,7 @@ test("a missing Yandex provider after restart never falls back to OpenAI", async
 });
 
 test("approval rejects voices from another service and malformed values without consuming quota", async t => {
-  const f = await fixture(t, { maxDaily: 2, yandexTts: { voice: "marina" } });
+  const f = await fixture(t, { yandexTts: { voice: "marina" } });
   const original = f.seed();
   const saved = f.store.editAdmin(original.id, original.revision, f.draft);
   for (const ttsProvider of ["openai", "yandex"]) {
@@ -330,7 +325,7 @@ test("legacy completed jobs show their recorded audio voice and malformed values
 });
 
 test("store list filters are composable, case-insensitive for Russian and validate inputs", t => {
-  const store = createStore(":memory:", { maxDaily: 20, maxActive: 20 });
+  const store = createStore(":memory:", { maxActive: 20 });
   t.after(() => store.close());
   const pushkin = store.createOrGet({ key: "pushkin", address: "Москва, улица Пушкина, 10" });
   const pushkinReady = store.update(pushkin.id, { stage: "ready" }, pushkin.revision);
@@ -347,9 +342,9 @@ test("store list filters are composable, case-insensitive for Russian and valida
   }
 });
 
-test("revoice queues only the existing story, preserves published audio and consumes quota atomically", t => {
+test("revoice queues only the existing story, preserves published audio and occupies a queue slot", t => {
   let clock = Date.parse("2026-09-08T10:00:00.000Z");
-  const store = createStore(":memory:", { now: () => clock, maxDaily: 2, maxActive: 2 });
+  const store = createStore(":memory:", { now: () => clock, maxActive: 1 });
   t.after(() => store.close());
   let job = store.createOrGet({ key: "ready", address: "Address 1" });
   const story = { title: "House", paragraphs: [
@@ -373,11 +368,11 @@ test("revoice queues only the existing story, preserves published audio and cons
   assert.equal(queued.data.ttsProvider, "yandex");
   assert.equal(queued.data.ttsVoice, "marina");
   assert.equal(queued.data.privateCheckpoint, "kept");
-  assert.throws(() => store.createOrGet({ key: "quota", address: "Address 2" }), { code: "DAILY_LIMIT" });
+  assert.throws(() => store.createOrGet({ key: "queued-behind", address: "Address 2" }), { code: "QUEUE_FULL" });
 });
 
 test("revoice and selected retry failures roll back state and reject invalid jobs", t => {
-  const store = createStore(":memory:", { maxDaily: 1, maxActive: 1 });
+  const store = createStore(":memory:", { maxActive: 1 });
   t.after(() => store.close());
   const created = store.createOrGet({ key: "failed", address: "Address 1" });
   let failed = store.update(created.id, { stage: "failed", attempts: 1, data: { story: null, checkpoint: "kept" } }, created.revision);
@@ -385,13 +380,15 @@ test("revoice and selected retry failures roll back state and reject invalid job
   failed = store.update(failed.id, { data: { ...failed.data, story: { title: "House", paragraphs: [
     { text: "word ".repeat(55).trim() }, { text: "word ".repeat(55).trim() },
   ] } } }, failed.revision);
-  assert.throws(() => store.revoiceAdmin(failed.id, failed.revision, "openai", "alloy"), { code: "DAILY_LIMIT" });
-  assert.throws(() => store.retryAdmin(failed.id, failed.revision, "yandex", "kirill"), { code: "DAILY_LIMIT" });
+  const blocker = store.createOrGet({ key: "blocker", address: "Address 2" });
+  assert.throws(() => store.revoiceAdmin(failed.id, failed.revision, "openai", "alloy"), { code: "QUEUE_FULL" });
+  assert.throws(() => store.retryAdmin(failed.id, failed.revision, "yandex", "kirill"), { code: "QUEUE_FULL" });
+  assert.equal(store.get(blocker.id).stage, "queued");
   assert.deepEqual(store.get(failed.id), failed);
 });
 
 test("selected admin retry persists speech choice and detail exposes safe retry and revoice state", t => {
-  const store = createStore(":memory:", { maxDaily: 3, maxActive: 2 });
+  const store = createStore(":memory:", { maxActive: 2 });
   t.after(() => store.close());
   let job = store.createOrGet({ key: "failed", address: "Address 1" });
   job = store.update(job.id, { stage: "failed", attempts: 1, data: { story: null, checkpoint: "kept" } }, job.revision);
@@ -422,7 +419,7 @@ test("selected admin retry persists speech choice and detail exposes safe retry 
 });
 
 test("address admin mutations cannot operate on queued walk chapters", t => {
-  const store = createStore(":memory:", { maxDaily: 10, maxActive: 2 });
+  const store = createStore(":memory:", { maxActive: 2 });
   t.after(() => store.close());
   const walk = store.getWalkAdmin(store.listWalksAdmin().walks[0].id);
   const chapter = walk.chapters[0];

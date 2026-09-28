@@ -12,7 +12,7 @@ const story={title:"Дом",address:"Москва, дом 1",wordCount:104,parag
 
 async function fixture(t,{enqueueBase=true}={}) {
   let clock=Date.UTC(2026,8,16,12);const tick=()=>++clock;
-  const store=createStore(":memory:",{now:()=>clock,maxActive:20,maxDaily:20,workerLeaseSecret:"test-secret"});
+  const store=createStore(":memory:",{now:()=>clock,maxActive:20,workerLeaseSecret:"test-secret"});
   t.after(()=>store.close());
   const original=store.createOrGet({key:"source",address:"Москва, дом 1"});
   const source=store.update(original.id,{stage:"failed",data:{story}},original.revision);

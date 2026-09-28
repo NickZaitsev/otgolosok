@@ -5,12 +5,22 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createStore } from "./store.mjs";
 import { createApp, workerLeaseSecret } from "./server.mjs";
-import { sessionCsrfToken } from "./auth.mjs";
+import { createAuth, sessionCsrfToken } from "./auth.mjs";
+import { createAccountStore } from "./account-store.mjs";
+
+async function testAccounts(t,users=["test-user"]) {
+  const runtime=await createAuth({databasePath:":memory:",baseURL:"https://otgolosok.test",secret:"server-test-secret-longer-than-32-characters",production:false});
+  t.after(()=>runtime.close());
+  const time=new Date().toISOString();
+  for(const id of users)runtime.database.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run(id,id,`${id}@example.test`,1,time,time);
+  return {runtime,accountStore:createAccountStore(runtime.accountDatabase)};
+}
 
 async function fixture(t,options={}) {
   const directory=await mkdtemp(join(tmpdir(),"story-api-"));
-  const store=createStore(":memory:",{maxDaily:1});
-  const accountStore=options.accountStore??{attachRequest(){},ownsRequest(){return true;},reserveGeneration(){},releaseGeneration(){}};
+  // One active job keeps queue-capacity behaviour observable with a couple of requests.
+  const store=createStore(":memory:",{maxActive:1});
+  const accountStore=options.accountStore??(await testAccounts(t)).accountStore;
   const auth=options.auth??{api:{getSession:async()=>({user:{id:"test-user",email:"test@example.test",name:"Test",role:"editor"},session:{id:"test-session",createdAt:new Date()}})}};
   const app=createApp({store,provider:{},origin:"https://otgolosok.test",audioDirectory:directory,workerEnabled:false,auth,accountStore,...options});
   await new Promise(done=>app.server.listen(0,"127.0.0.1",done));
@@ -35,7 +45,9 @@ test("duplicate POST reuses an ID and GET exposes no internal research or creden
   const record=f.store.get(first.id);f.store.update(record.id,{stage:"ready",data:{sources:[{text:"internal"}],usage:[{tokens:100}]}},record.revision);
   const response=await fetch(`${f.base}/api/story-jobs/${first.id}`);const publicValue=await response.json();
   assert.equal(publicValue.data,undefined);assert.equal(publicValue.sources,undefined);assert.equal(response.headers.get("cache-control"),"no-store");
-  assert.equal((await f.post("/api/story-jobs",{address:"Кожевническая улица, 18"})).status,429);
+  // No global daily cap: once the queue slot is free, the next address is accepted.
+  assert.equal((await f.post("/api/story-jobs",{address:"Кожевническая улица, 18"})).status,200);
+  assert.equal((await f.post("/api/story-jobs",{address:"Кожевническая улица, 20"})).status,429);
 });
 
 test("serves complete and partial audio and rejects traversal or invalid range",async(t)=>{
@@ -218,7 +230,7 @@ test("place lookup has no generation side effect and reports bounded errors",asy
   assert.equal(response.status,200);assert.deepEqual(inputs[0],{lat:55.75,lon:37.6});
   const busy=await fetch(f.base+'/api/story-place?q=busy');assert.equal(busy.status,429);assert.equal(busy.headers.get('retry-after'),'2');assert.equal((await busy.text()).includes('private'),false);
   assert.equal((await fetch(f.base+'/api/story-place?q=one&q=two')).status,400);
-  // The one-job daily allowance is untouched by address lookup.
+  // Address lookup allocates no job, so the single queue slot is still free.
   assert.equal((await f.post('/api/story-jobs',{address:'Москва, Арбат, 10'})).status,200);
 });
 

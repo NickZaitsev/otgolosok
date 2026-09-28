@@ -25,7 +25,7 @@ test("import retains full and locality addresses without treating a street alone
 });
 
 test("catalog imports idempotently and batches deduplicate text jobs",t=>{
-  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());
   assert.equal(store.importPlaces(catalog).count,2);store.importPlaces(catalog);
   assert.equal(store.listPlaces().places.length,2);assert.equal(store.getPlace("osm:node:1").address,null);
   assert.deepEqual(store.getPlace("osm:node:1").geometry,{type:"Point",coordinates:[37.61,55.75]});
@@ -42,7 +42,7 @@ test("catalog imports idempotently and batches deduplicate text jobs",t=>{
 });
 
 test("paused batches are not claimed and interrupted jobs recover",t=>{
-  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
   const batch=store.createBatch({requestKey:"request-0003",name:"Paused",placeIds:["osm:node:1"],limit:1});
   store.setBatchState(batch.id,"paused");assert.equal(store.claimContentJob(),null);
   store.setBatchState(batch.id,"running");const job=store.claimContentJob();assert.ok(job);
@@ -51,7 +51,7 @@ test("paused batches are not claimed and interrupted jobs recover",t=>{
 });
 
 test("batch priority changes claim order without touching active jobs",t=>{
-  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
   const low=store.createBatch({requestKey:"priority-low",placeIds:["osm:node:1"],limit:1}),high=store.createBatch({requestKey:"priority-high",placeIds:["osm:way:2"],limit:1});
   assert.ok(store.setBatchPriority(high.id,100));assert.equal(store.claimContentJob().place.id,"osm:way:2");assert.equal(store.setBatchPriority("missing",1),null);assert.throws(()=>store.setBatchPriority(low.id,-1),{code:"BAD_REQUEST"});
 });
@@ -63,7 +63,7 @@ test("a complete import archives absent places while partial imports preserve th
 });
 
 test("catalog nearby query returns approved cards ordered by distance",t=>{
-  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
   const batch=store.createBatch({requestKey:"nearby-query",placeIds:["osm:node:1"],limit:1});const job=store.claimContentJob();const story={title:"Готовая история",paragraphs:[{text:"Проверенный текст",factIds:["f1"]}]};
   store.completeContentJob(job.id,{story,evidence:{}});store.approvePlaceText("osm:node:1");
   const nearby=store.listPlaces({status:"ready",lat:55.7501,lon:37.6101,radius:1000});assert.equal(nearby.places[0].id,"osm:node:1");assert.ok(nearby.places[0].distanceM<20);
@@ -113,7 +113,7 @@ test("job migrations add profile versions and priorities to existing databases",
 });
 
 test("catalog pages report totals and whether a text exists for each place",t=>{
-  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
   const first=store.listPlaces({limit:1,offset:0});
   assert.equal(first.total,2);assert.equal(first.places.length,1);assert.equal(first.hasMore,true);
   assert.deepEqual(first.places.map(place=>place.textStatus),["none"]);
@@ -131,7 +131,7 @@ test("catalog pages report totals and whether a text exists for each place",t=>{
 });
 
 test("batch items are paged and filtered by the same status buckets the editor offers",t=>{
-  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
   const batch=store.createBatch({requestKey:"items-page-1",name:"Items",limit:2});
   assert.equal(store.listBatchItems("00000000-0000-4000-8000-000000000000"),null);
   const all=store.listBatchItems(batch.id,{limit:1,offset:0});
@@ -151,7 +151,7 @@ test("batch items are paged and filtered by the same status buckets the editor o
 });
 
 test("batch items filter by error code and report the codes present in the current status bucket",t=>{
-  const store=createStore(":memory:",{maxDaily:100,maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
   const batch=store.createBatch({requestKey:"items-error-1",name:"Errors",limit:2});
   const unclear=store.claimContentJob();store.failContentJob(unclear.id,{code:"ADDRESS_UNCLEAR",message:"ADDRESS_UNCLEAR"},"review_required");
   const review=store.claimContentJob();store.failContentJob(review.id,{code:"REVIEW_REQUIRED",message:"REVIEW_REQUIRED"},"review_required");
@@ -192,7 +192,7 @@ test("a batch without an explicit list takes only the next eligible places witho
 });
 
 test("restart from facts keeps fetched sources and drops everything derived from them", t => {
-  const store = createStore(":memory:", { maxDaily: 100, maxActive: 100 }); t.after(() => store.close()); store.importPlaces(catalog);
+  const store = createStore(":memory:", { maxActive: 100 }); t.after(() => store.close()); store.importPlaces(catalog);
   const batch = store.createBatch({ requestKey: "restart-facts", placeIds: ["osm:node:1"], limit: 1 });
   const job = store.claimContentJob();
   const checkpoint = { research: { sources: [{ url: "https://one.example" }] }, sources: [{ id: "s1", text: "Текст" }], sourceFailures: [], locationContext: { status: "matched" },
@@ -207,7 +207,7 @@ test("restart from facts keeps fetched sources and drops everything derived from
 });
 
 test("a queued item can be reset to an earlier stage, but auto retry leaves it alone", t => {
-  const store = createStore(":memory:", { maxDaily: 100, maxActive: 100 }); t.after(() => store.close()); store.importPlaces(catalog);
+  const store = createStore(":memory:", { maxActive: 100 }); t.after(() => store.close()); store.importPlaces(catalog);
   const batch = store.createBatch({ requestKey: "restart-queued", placeIds: ["osm:node:1"], limit: 1 });
   const job = store.claimContentJob();
   store.updateContentCheckpoint(job.id, { sources: [{ id: "s1" }], evidence: { facts: [] } });
@@ -220,7 +220,7 @@ test("a queued item can be reset to an earlier stage, but auto retry leaves it a
 });
 
 test("restart from facts on a job without a checkpoint starts clean", t => {
-  const store = createStore(":memory:", { maxDaily: 100, maxActive: 100 }); t.after(() => store.close()); store.importPlaces(catalog);
+  const store = createStore(":memory:", { maxActive: 100 }); t.after(() => store.close()); store.importPlaces(catalog);
   const batch = store.createBatch({ requestKey: "restart-empty", placeIds: ["osm:node:1"], limit: 1 });
   assert.ok(store.retryBatchItem(batch.id, "osm:node:1", { restartFrom: "facts" }));
   assert.equal(store.claimContentJob().checkpoint, null);

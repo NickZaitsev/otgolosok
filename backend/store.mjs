@@ -34,19 +34,6 @@ function isoNow(now) {
   return new Date(now()).toISOString();
 }
 
-function utcDayBounds(now) {
-  const date = new Date(now());
-  const start = Date.UTC(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-  );
-  return [
-    new Date(start).toISOString(),
-    new Date(start + 86_400_000).toISOString(),
-  ];
-}
-
 function has(object, key) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
@@ -69,13 +56,10 @@ function isAddressJob(job) {
 
 export function createStore(
   databasePath,
-  { now = Date.now, random = Math.random, maxActive = 2, maxDaily = 6, workerLeaseSecret = "development-worker-lease-secret", normalizeExternalText = Object.assign(async text=>text,{version:"plain-v1"}), externalTtsProfiles = {} } = {},
+  { now = Date.now, random = Math.random, maxActive = 2, workerLeaseSecret = "development-worker-lease-secret", normalizeExternalText = Object.assign(async text=>text,{version:"plain-v1"}), externalTtsProfiles = {} } = {},
 ) {
   if (!Number.isInteger(maxActive) || maxActive < 0) {
     throw new TypeError("maxActive must be a non-negative integer");
-  }
-  if (!Number.isInteger(maxDaily) || maxDaily < 0) {
-    throw new TypeError("maxDaily must be a non-negative integer");
   }
 
   if (databasePath !== ":memory:") {
@@ -101,7 +85,8 @@ export function createStore(
     );
     CREATE INDEX IF NOT EXISTS jobs_stage_idx ON jobs(stage);
     CREATE INDEX IF NOT EXISTS jobs_created_at_idx ON jobs(created_at);
-    CREATE TABLE IF NOT EXISTS retries (created_at TEXT NOT NULL);
+    -- The global daily cap was replaced by per-user quotas in the account store.
+    DROP TABLE IF EXISTS retries;
     CREATE TABLE IF NOT EXISTS external_audio_jobs (
       id TEXT PRIMARY KEY,
       input_key TEXT NOT NULL UNIQUE,
@@ -246,13 +231,11 @@ export function createStore(
     });
   }
 
-  function checkCapacity(units = 1) {
+  // Paid generation is limited per user by the account store; the job store only
+  // bounds how much work is queued or running at once.
+  function checkCapacity() {
     const active = db.prepare(`SELECT count(*) AS count FROM jobs WHERE stage NOT IN (${TERMINAL_STAGES.map(() => "?").join(",")})`).get(...TERMINAL_STAGES).count;
     if (Number(active) >= maxActive) throw codedError("QUEUE_FULL");
-    const [start, end] = utcDayBounds(now);
-    const created = db.prepare("SELECT count(*) AS count FROM jobs WHERE created_at >= ? AND created_at < ? AND COALESCE(json_extract(record_json, '$.quotaExempt'), 0) != 1").get(start, end).count;
-    const retries = db.prepare("SELECT count(*) AS count FROM retries WHERE created_at >= ? AND created_at < ?").get(start, end).count;
-    if (Number(created) + Number(retries) + units > maxDaily) throw codedError("DAILY_LIMIT");
   }
 
   const walkAdminStore = createWalkAdminStore({ db, now, transaction, checkCapacity });
@@ -401,7 +384,6 @@ export function createStore(
         const story = { ...editorialDraft(job.data), verification: "editorial" };
         checkCapacity();
         const timestamp = isoNow(now);
-        db.prepare("INSERT INTO retries (created_at) VALUES (?)").run(timestamp);
         return save({ ...job, stage: "queued", error: null, revision: job.revision + 1, updatedAt: timestamp,
           data: { ...job.data, story, audio: null, ttsProvider, ttsVoice, textReadyAt: timestamp,
             editorialApproval: { approvedAt: timestamp, revision: job.revision, ttsProvider, ttsVoice, draftHash: sha256(JSON.stringify(job.data.editorDraft)), storyHash: sha256(JSON.stringify(story)) } } });
@@ -419,7 +401,6 @@ export function createStore(
         checkCapacity();
         const timestamp = isoNow(now);
         const previousAudio = job.data.audio ?? job.data.revoice?.previousAudio ?? null;
-        db.prepare("INSERT INTO retries (created_at) VALUES (?)").run(timestamp);
         return save({ ...job, stage: "queued", error: null, revision: job.revision + 1, updatedAt: timestamp,
           data: { ...job.data, audio: null, ttsProvider, ttsVoice,
             revoice: { requestedAt: timestamp, previousAudio } } });
@@ -436,7 +417,6 @@ export function createStore(
         if (job.stage !== "failed" || job.attempts >= 3) throw codedError("RETRY_LIMIT");
         checkCapacity();
         const timestamp = isoNow(now);
-        db.prepare("INSERT INTO retries (created_at) VALUES (?)").run(timestamp);
         return save({ ...job, stage: "queued", error: null, updatedAt: timestamp, revision: job.revision + 1,
           data: { ...job.data, ttsProvider, ttsVoice } });
       });
@@ -452,7 +432,6 @@ export function createStore(
         if (job.stage !== "review_required" || job.attempts >= 3) throw codedError("RETRY_LIMIT");
         checkCapacity();
         const timestamp = isoNow(now);
-        db.prepare("INSERT INTO retries (created_at) VALUES (?)").run(timestamp);
         return save({ ...job, stage: "queued", error: null, updatedAt: timestamp, revision: job.revision + 1,
           data: { ttsProvider, ttsVoice } });
       });
@@ -469,7 +448,6 @@ export function createStore(
         if (job.stage !== "failed" || job.attempts >= 3) throw codedError("RETRY_LIMIT");
         checkCapacity();
         const timestamp = isoNow(now);
-        db.prepare("INSERT INTO retries (created_at) VALUES (?)").run(timestamp);
         return save({...job,stage:"queued",error:null,updatedAt:timestamp,revision:job.revision+1});
       });
     },

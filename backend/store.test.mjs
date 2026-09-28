@@ -44,7 +44,7 @@ test("deduplicates by key across reopening", (t) => {
 });
 
 test("enforces quotas but lets cache hits bypass them", (t) => {
-  const { store } = fixture(t, { maxActive: 1, maxDaily: 1 });
+  const { store } = fixture(t, { maxActive: 1 });
   const first = store.createOrGet({ key: "one", address: "Адрес 1" });
 
   assert.equal(
@@ -110,19 +110,14 @@ test("rejects invalid stages", (t) => {
   );
 });
 
-test("resets daily quota at the UTC date boundary", (t) => {
-  let clock = Date.UTC(2025, 4, 1, 23, 59, 59);
-  const { store } = fixture(t, {
-    maxActive: 5,
-    maxDaily: 1,
-    now: () => clock,
-  });
-
-  store.createOrGet({ key: "day-one", address: "Адрес 1" });
-  clock = Date.UTC(2025, 4, 2, 0, 0, 0);
-  const nextDay = store.createOrGet({ key: "day-two", address: "Адрес 2" });
-
-  assert.equal(nextDay.key, "day-two");
+test("the job store has no global daily cap: only the active queue is bounded", (t) => {
+  const { store } = fixture(t, { maxActive: 1 });
+  for (let index = 0; index < 20; index++) {
+    const job = store.createOrGet({ key: `daily-${index}`, address: `Адрес ${index}` });
+    store.update(job.id, { stage: "ready" }, job.revision);
+  }
+  store.createOrGet({ key: "active", address: "Адрес" });
+  assert.throws(() => store.createOrGet({ key: "over-queue", address: "Другой" }), (error) => error.code === "QUEUE_FULL");
 });
 
 test("recovers interrupted work while preserving data", (t) => {
@@ -176,8 +171,8 @@ test("a second connection does not interrupt a live worker", (t) => {
   assert.equal(other.claimNext(), null);
 });
 
-test("retries preserve checkpoints, deduplicate clicks and consume daily capacity", (t) => {
-  const { store } = fixture(t, { maxDaily:2 });
+test("retries preserve checkpoints and deduplicate clicks", (t) => {
+  const { store } = fixture(t);
   const job = store.createOrGet({key:"retry",address:"Адрес"});
   const working = store.claimNext();
   const failed = store.update(job.id,{stage:"failed",data:{story:{title:"Ready text"}}},working.revision);
@@ -186,6 +181,5 @@ test("retries preserve checkpoints, deduplicate clicks and consume daily capacit
   assert.equal(retry.data.story.title,"Ready text");
   const resumed = store.claimNext();
   const failedAgain = store.update(job.id,{stage:"failed"},resumed.revision);
-  assert.throws(() => store.retry(job.id,failedAgain.revision),error=>error.code==="DAILY_LIMIT");
-  assert.throws(() => store.createOrGet({key:"new",address:"Другой"}),error=>error.code==="DAILY_LIMIT");
+  assert.equal(store.retry(job.id,failedAgain.revision).stage,"queued");
 });

@@ -426,7 +426,7 @@ export function createWalkAdminStore({ db, now = Date.now, transaction, checkCap
           if (previous && WORKING_STAGES.has(previous.stage)) throw codedError("CONFLICT");
           return { chapter, row, draft: decode(row.draft_json) };
         });
-        checkCapacity(chapters.length);
+        checkCapacity();
         const timestamp = isoNow(now);
         for (const { chapter, row, draft } of chapters) {
           const id = randomUUID();

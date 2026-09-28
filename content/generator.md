@@ -128,7 +128,7 @@ pnpm generator:dev
 # http://127.0.0.1:4175/create
 ```
 
-`DATA_DIR` по умолчанию `backend/data` (игнорируется Git), `MAX_DAILY_JOBS=6`,
+`DATA_DIR` по умолчанию `backend/data` (игнорируется Git), `USER_DAILY_GENERATION_LIMIT=6`,
 `APP_ORIGIN=http://127.0.0.1:4175`, `PORT=4175`. `STORY_MODEL` меняет модель
 исследования/проверки, `WRITER_MODEL` — написания. `STATIC_DIR=out` используется только для локальной
 проверки готовой сборки. Не используйте простой Python HTTP preview для

@@ -5,7 +5,7 @@ import { createApp } from "./server.mjs";
 import { runJob } from "./pipeline.mjs";
 
 async function fixture(t, options = {}) {
-  const store = createStore(":memory:", { maxDaily: 100 });
+  const store = createStore(":memory:");
   const app = createApp({ store, provider: {}, yandexTts: { voice: "marina" }, origin: "https://site.test", adminToken: "test-only", workerEnabled: false, ...options });
   await new Promise(done => app.server.listen(0, "127.0.0.1", done));
   t.after(async () => { await app.close(); store.close(); });

@@ -12,7 +12,7 @@ import { sessionCsrfToken } from "./auth.mjs";
 const origin="https://account.test",secret="account-api-test-secret",sessionId="session-1";
 const authFor=role=>({api:{getSession:async()=>({user:{id:`${role}-1`,email:`${role}@example.test`,name:role,role},session:{id:sessionId,createdAt:new Date()}})},handler:async request=>{const valid=JSON.parse(await request.text()).password==="correct-password";return new Response(valid?'{"status":true}':'{"message":"Invalid password"}',{status:valid?200:400,headers:{"Content-Type":"application/json"}});}});
 
-async function listen(t,{role="user",accountStore={},store=createStore(":memory:",{maxDaily:20,maxActive:20})}={}){
+async function listen(t,{role="user",accountStore={},store=createStore(":memory:",{maxActive:20})}={}){
   const directory=await mkdtemp(join(tmpdir(),"otg-account-api-"));
   const app=createApp({store,provider:{},origin,audioDirectory:directory,workerEnabled:false,auth:authFor(role),authSecret:secret,accountStore});
   await new Promise(done=>app.server.listen(0,"127.0.0.1",done));
@@ -21,13 +21,13 @@ async function listen(t,{role="user",accountStore={},store=createStore(":memory:
   return {base,store,headers:{Origin:origin,"Content-Type":"application/json","X-CSRF-Token":sessionCsrfToken(secret,sessionId)}};
 }
 
-async function realAccountFixture(t) {
+async function realAccountFixture(t,options={}) {
   const runtime=await createAuth({databasePath:":memory:",baseURL:origin,secret:"account-http-walk-secret-longer-than-32-characters",production:false});
   const now=new Date().toISOString();
   runtime.database.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("user-1","Пользователь","private@example.test",1,now,now);
   const accountStore=createAccountStore(runtime.accountDatabase);
   t.after(()=>runtime.close());
-  return {...await listen(t,{accountStore}),runtime};
+  return {...await listen(t,{accountStore,...options}),runtime,accountStore};
 }
 
 test("ordinary users cannot use editor API while an editor session can",async t=>{
@@ -40,7 +40,7 @@ test("ordinary users cannot use editor API while an editor session can",async t=
 test("account deletion requires the current password and cancels private research",async t=>{
   let deleted=false,revoked=null;
   const accountStore={researchJobIds:()=>["research-1"],deleteAccountData:()=>{deleted=true;}};
-  const store=createStore(":memory:",{maxDaily:20,maxActive:20});store.revokeWalkResearchAccess=ids=>{revoked=ids;};
+  const store=createStore(":memory:",{maxActive:20});store.revokeWalkResearchAccess=ids=>{revoked=ids;};
   const f=await listen(t,{accountStore,store});
   assert.equal((await fetch(f.base+"/api/me",{method:"DELETE",headers:f.headers,body:JSON.stringify({password:"wrong-password"})})).status,403);assert.equal(deleted,false);
   assert.equal((await fetch(f.base+"/api/me",{method:"DELETE",headers:f.headers,body:JSON.stringify({password:"correct-password"})})).status,200);
@@ -48,14 +48,16 @@ test("account deletion requires the current password and cancels private researc
 });
 
 test("a valid legacy recovery token claims a research job for the signed-in user",async t=>{
-  const store=createStore(":memory:",{maxDaily:20,maxActive:20}),token="11111111-1111-4111-8111-111111111111";
+  const store=createStore(":memory:",{maxActive:20}),token="11111111-1111-4111-8111-111111111111";
   const job=store.createWalkResearch({start:{address:"Москва, Арбат, 1",location:{lat:55.75,lon:37.61}},mode:"loop",minutes:30,consent:true,recoveryToken:token});
-  let owned=false,attached=null;
-  const accountStore={ownsRequest:()=>owned,attachRequest:(userId,jobId,operation,key)=>{owned=true;attached={userId,jobId,operation,key};}};
-  const f=await listen(t,{accountStore,store});
+  const f=await realAccountFixture(t,{store});
+  assert.equal(f.accountStore.ownsRequest("user-1",job.id),false);
   const response=await fetch(`${f.base}/api/walk-research-jobs?lat=55.75&lon=37.61&mode=loop&minutes=30&recoveryToken=${token}`);
   assert.equal(response.status,200);assert.equal((await response.json()).id,job.id);
-  assert.deepEqual(attached,{userId:"user-1",jobId:job.id,operation:"walk_research",key:token});
+  assert.equal(f.accountStore.ownsRequest("user-1",job.id),true);
+  assert.deepEqual(f.accountStore.listRequests("user-1").requests.map(item=>[item.jobId,item.operation]),[[job.id,"walk_research"]]);
+  // Claiming a job that already exists costs nothing.
+  assert.equal(f.runtime.accountDatabase.prepare("SELECT COALESCE(SUM(units),0) AS value FROM user_generation_quota").get().value,0);
 });
 
 test("generation idempotency is bound to the normalized request and quota",async t=>{

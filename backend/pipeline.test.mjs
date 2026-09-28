@@ -6,7 +6,7 @@ import { runJob } from "./pipeline.mjs";
 
 const paragraph=("Этот московский дом связан с историей города. Архивный источник подтверждает его назначение и важную роль в жизни улицы. ".repeat(3)+"Дом стал заметной частью городской среды, а его история отражает перемены района. Эти сведения позволяют рассказать о месте точно и без вымышленных деталей.").trim();
 function fixture(t,{factCount=3}={}){
-  const store=createStore(":memory:",{maxDaily:10});t.after(()=>store.close());const address=normalizeAddress("Кожевническая улица, 16");store.createOrGet({key:addressKey(address),address});
+  const store=createStore(":memory:");t.after(()=>store.close());const address=normalizeAddress("Кожевническая улица, 16");store.createOrGet({key:addressKey(address),address});
   const page="Тестовый дом построен в Москве и связан с городской историей. ".repeat(12),urls=["https://one.example/page"];
   const facts=Array.from({length:factCount},(_,index)=>({claim:`Подтверждённый факт ${index+1}`,kind:"content",subjectRelation:"object",contentReason:"Раскрывает историю дома",topic:"place_history",scope:"building",location:address,distanceMeters:null,evidence:[{sourceId:"s1",quote:"Тестовый дом построен в Москве и связан с городской историей."}]}));
   const ids=Array.from({length:factCount},(_,index)=>`f${index+1}`),checked={approved:true,issues:[],checks:{substantive:true,subjectAligned:true,audioClear:true},paragraphFacts:[{paragraph:1,factIds:ids}],claims:[{paragraph:1,text:"Этот московский дом связан с историей города.",factIds:ids,supported:true,address:false}]};

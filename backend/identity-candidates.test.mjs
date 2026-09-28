@@ -28,7 +28,7 @@ function assessed(store) {
 }
 
 function fixture(t) {
-  const store = createStore(":memory:", { maxDaily: 100, maxActive: 100 });
+  const store = createStore(":memory:", { maxActive: 100 });
   t.after(() => store.close());
   store.importPlaces(catalog);
   return store;
