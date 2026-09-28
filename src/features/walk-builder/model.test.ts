@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DRAFT_KEY, editDraft, emptyDraft, isPlace, isPlan, moveStop, parseDraft, rememberStory, storyAddressKey, saveDraft, validStops, type Place, type Plan } from "./model";
+import { DRAFT_KEY, editDraft, emptyDraft, isPlace, isPlan, moveStop, parseDraft, rememberStory, routeShortfall, storyAddressKey, saveDraft, validStops, type Place, type Plan } from "./model";
 
 const start: Place = { address: "Москва, улица Первая, 1", location: { lat: 55.75, lon: 37.6 } };
 const stop: Place = { address: "Москва, улица Вторая, 2", location: { lat: 55.752, lon: 37.602 } };
@@ -71,5 +71,20 @@ describe("walk draft", () => {
     expect(() => saveDraft(storage, emptyDraft(), raw)).toThrow();
     expect(values.get(DRAFT_KEY)).toBe("corrupted original");
     expect(() => saveDraft({ getItem: () => null, setItem: () => { throw new Error("quota"); } }, emptyDraft(), null)).toThrow("quota");
+  });
+});
+
+describe("route shortfall", () => {
+  it.each([
+    [10, 60, 10],
+    [44, 60, 44],
+    [45, 60, null],
+    [60, 60, null],
+    [22, 30, 22],
+    [23, 30, null],
+    [67, 90, 67],
+    [68, 90, null],
+  ])("%i of %i walking minutes reports %s", (walkingMinutes, minutes, expected) => {
+    expect(routeShortfall({ walkingMinutes }, minutes)).toBe(expected);
   });
 });
