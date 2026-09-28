@@ -14,6 +14,8 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run && node --test backend/*.test.mjs",
+    "test:py": "uv run ruff check . && uv run pyright && uv run pytest -q",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm test:py && pnpm build",
     "generator:dev": "STATIC_DIR=out node backend/server.mjs",
     "auth:set-editor": "node scripts/set-editor.mjs",
     "test:e2e": "playwright test",
