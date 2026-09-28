@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createProvider } from "./provider.mjs";
+import { createProvider, providerStatusCode, PROVIDER_OUTAGE_CODES } from "./provider.mjs";
 
 test("uses the requested writer model and records the actual model used",async()=>{
   const requests=[];
@@ -28,6 +28,31 @@ test("OpenAI uses each job's selected voice without changing the shared default"
   await provider.speech("Рассказ с голосом по умолчанию");
   assert.deepEqual(voices, ["cedar", "nova", "marin"]);
   assert.equal(provider.voice, "marin");
+});
+
+test("provider HTTP statuses separate an outage from a rejected request", async () => {
+  for (const [status, code] of [[429, "PROVIDER_BUSY"], [401, "PROVIDER_AUTH"], [403, "PROVIDER_AUTH"], [500, "PROVIDER_UNAVAILABLE"], [503, "PROVIDER_UNAVAILABLE"], [400, "PROVIDER_REJECTED"], [422, "PROVIDER_REJECTED"]]) {
+    assert.equal(providerStatusCode(status), code, String(status));
+  }
+  for (const code of ["PROVIDER_BUSY", "PROVIDER_AUTH", "PROVIDER_UNAVAILABLE", "PROVIDER_UNREACHABLE"]) assert.ok(PROVIDER_OUTAGE_CODES.has(code), code);
+  assert.equal(PROVIDER_OUTAGE_CODES.has("PROVIDER_REJECTED"), false);
+  const provider = createProvider({ baseUrl: "https://provider.example/v1", apiKey: "key", fetchImpl: async () => new Response("{}", { status: 401 }) });
+  await assert.rejects(provider.response("Проверка"), { code: "PROVIDER_AUTH" });
+});
+
+test("a DNS or network failure becomes PROVIDER_UNREACHABLE instead of an untyped error", async () => {
+  let calls = 0;
+  const provider = createProvider({ baseUrl: "https://provider.example/v1", apiKey: "key", fetchImpl: async () => {
+    calls++; throw Object.assign(new TypeError("fetch failed"), { cause: { code: "EAI_AGAIN" } });
+  } });
+  await assert.rejects(provider.response("Проверка"), (/** @type {any} */ error) => error.code === "PROVIDER_UNREACHABLE" && error.cause?.cause?.code === "EAI_AGAIN");
+  assert.equal(calls, 3);
+});
+
+test("an aborted request stays an abort, not an outage", async () => {
+  const controller = new AbortController();
+  const provider = createProvider({ baseUrl: "https://provider.example/v1", apiKey: "key", fetchImpl: async () => { controller.abort(); throw new DOMException("aborted", "AbortError"); } });
+  await assert.rejects(provider.response("Проверка", { signal: controller.signal }), { name: "AbortError" });
 });
 
 test("speech retries a busy provider and stops at a deterministic refusal", async () => {

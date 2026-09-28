@@ -26,6 +26,21 @@ const FACTS_STAGE_KEYS = ["evidence","editorialVersion","factsRejection","draft"
 const factsCheckpoint = json => {if(!json)return null;const checkpoint=JSON.parse(json);for(const key of FACTS_STAGE_KEYS)delete checkpoint[key];return encode(checkpoint);};
 const contentInputKey = (place,profile) => sha256(encode({placeId:place.id,contentHash:place.content_hash,profile,profileVersion:CONTENT_PROFILE_VERSION}));
 
+/**
+ * The pipeline numbers fetched pages by their position in the search results (`s1` is the first found link)
+ * and records the failures of the rest in the same order, so both lists line up with what search returned.
+ */
+function diagnosisSources(found,fetched,failures) {
+  const byId=new Map(fetched.map(source=>[source.id,source]));
+  if(!found.length)return fetched.map(source=>({url:source.url,title:source.title,sourceId:source.id,publisher:source.publisher,chars:Number(source.chars??0),failure:null}));
+  let failed=0;
+  return found.map((source,index)=>{
+    const page=byId.get(`s${index+1}`);
+    if(page)return {url:page.url,title:source.title,sourceId:page.id,publisher:page.publisher,chars:Number(page.chars??0),failure:null};
+    return {url:source.url,title:source.title,sourceId:null,publisher:null,chars:0,failure:typeof failures[failed]==="string"?failures[failed++]:null};
+  });
+}
+
 function addressOf(place) {
   return osmPostalAddress(place.tags);
 }
@@ -293,6 +308,41 @@ export function createContentStore({db,now,transaction}) {
         GROUP BY code ORDER BY n DESC,code`).all(batchId,...statusParams).map(row=>({code:row.code??null,count:Number(row.n)}));
       return {items,total,hasMore:offset+items.length<total,errors};
     },
+    /**
+     * What the editor needs to judge a stopped item: where the object is, which pages were found and read,
+     * and what the model took the object to be. Source page texts stay in SQLite; only their length leaves it.
+     */
+    getBatchItemDetail(batchId,placeId) {
+      const row=db.prepare(`SELECT i.state,i.error_json,i.text_job_id,p.id,p.name,p.address,p.lat,p.lon,p.tags_json,
+          j.state job_state,j.attempts,j.max_attempts,j.updated_at job_updated_at,
+          json_extract(j.checkpoint_json,'$.factsRejection') rejection_json,
+          json_extract(j.checkpoint_json,'$.evidence.placeName') evidence_place_name,
+          json_extract(j.checkpoint_json,'$.evidence.resolvedAddress') evidence_resolved_address,
+          json_extract(j.checkpoint_json,'$.evidence.identityNote') evidence_identity_note,
+          json_extract(j.checkpoint_json,'$.evidence.addressConfirmed') evidence_address_confirmed,
+          json_extract(j.checkpoint_json,'$.evidence.facts') evidence_facts_json,
+          json_extract(j.checkpoint_json,'$.sourceFailures') source_failures_json
+        FROM batch_items i JOIN places p ON p.id=i.place_id JOIN content_jobs j ON j.id=i.text_job_id
+        WHERE i.batch_id=? AND i.place_id=?`).get(batchId,placeId);
+      if(!row)return null;
+      const jobId=row.text_job_id;
+      const found=db.prepare(`SELECT json_extract(s.value,'$.url') url,json_extract(s.value,'$.title') title
+        FROM content_jobs j,json_each(j.checkpoint_json,'$.research.sources') s WHERE j.id=? ORDER BY s.key`).all(jobId);
+      const fetched=db.prepare(`SELECT json_extract(s.value,'$.id') id,json_extract(s.value,'$.url') url,json_extract(s.value,'$.title') title,
+          json_extract(s.value,'$.publisher') publisher,length(json_extract(s.value,'$.text')) chars
+        FROM content_jobs j,json_each(j.checkpoint_json,'$.sources') s WHERE j.id=? ORDER BY s.key`).all(jobId);
+      const rejection=decode(row.rejection_json);
+      const model=rejection?{outcome:"rejected",identityConfirmed:rejection.identityConfirmed??null,addressConfirmed:rejection.addressConfirmed===true,
+          placeName:rejection.placeName??null,resolvedAddress:rejection.resolvedAddress??null,identityNote:rejection.identityNote??null,facts:rejection.facts??[]}
+        :row.evidence_place_name!=null?{outcome:"accepted",identityConfirmed:true,addressConfirmed:row.evidence_address_confirmed!==0,
+          placeName:row.evidence_place_name,resolvedAddress:row.evidence_resolved_address,identityNote:row.evidence_identity_note??null,
+          facts:(decode(row.evidence_facts_json)??[]).map(fact=>({claim:fact.claim,kind:fact.kind??null,subjectRelation:fact.subjectRelation??null,evidence:fact.evidence}))}
+        :null;
+      return {placeId:row.id,name:row.name,address:row.address,location:{lat:row.lat,lon:row.lon},tags:decode(row.tags_json)??{},
+        state:row.state,error:decode(row.error_json),
+        job:{state:row.job_state,attempts:Number(row.attempts),maxAttempts:Number(row.max_attempts),updatedAt:row.job_updated_at},
+        sources:diagnosisSources(found,fetched,decode(row.source_failures_json)??[]),model};
+    },
     getBatch(id) {const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
       const items=db.prepare(`SELECT i.*,p.name,p.address FROM batch_items i JOIN places p ON p.id=i.place_id WHERE i.batch_id=? ORDER BY p.name,p.id`).all(id)
       .map(item=>({placeId:item.place_id,name:item.name,address:item.address,state:item.state,error:decode(item.error_json)}));return {...viewBatch(row,batchCounts(id)),items};},
@@ -303,7 +353,9 @@ export function createContentStore({db,now,transaction}) {
       const jobs=Object.fromEntries(db.prepare("SELECT state,count(*) n FROM content_jobs GROUP BY state").all().map(row=>[row.state,Number(row.n)]));
       const external=Object.fromEntries(db.prepare("SELECT state,count(*) n FROM external_audio_jobs GROUP BY state").all().map(row=>[row.state,Number(row.n)]));
       const oldest=db.prepare("SELECT min(created_at) value FROM content_jobs WHERE state IN ('queued','retry_wait')").get().value;
-      const usage=db.prepare("SELECT checkpoint_json FROM content_jobs WHERE checkpoint_json IS NOT NULL").all().reduce((sum,row)=>{const checkpoint=decode(row.checkpoint_json);return sum+Number(checkpoint?.usageTokens??0);},0);
+      // Aggregate inside SQLite: checkpoints hold fetched sources and together exceed the service heap.
+      const usage=Number(db.prepare(`SELECT total(json_extract(checkpoint_json,'$.usageTokens')) n FROM content_jobs
+        WHERE json_valid(checkpoint_json) AND json_type(checkpoint_json,'$.usageTokens') IN ('integer','real')`).get().n);
       return {places,texts,audio,jobs,external,oldestTextQueuedAt:oldest,textUsageTokens:usage};
     },
     setBatchPriority(id,priority) {if(!Number.isSafeInteger(priority)||priority<0||priority>1000)throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_batches WHERE id=?").get(id);if(!row)return null;
@@ -345,9 +397,11 @@ export function createContentStore({db,now,transaction}) {
         .run(textId,row.place_id,row.input_key,row.profile,sha256(encode(story)),encode(story),encode(evidence),verification,null,autoApprove||verification==="editorial"?encode(story):null,timestamp);
       db.prepare("UPDATE content_jobs SET state='ready',error_json=NULL,updated_at=? WHERE id=?").run(timestamp,id);db.prepare("UPDATE content_job_attempts SET state='ready',finished_at=? WHERE job_id=? AND generation=?").run(timestamp,id,row.attempts);syncItems(id,"ready");
       return {id:textId,placeId:row.place_id,story,sourceRevision:0,audioProfiles:audioProfiles()};});},
-    failContentJob(id,error,state="failed") {if(!["failed","review_required","insufficient_evidence"].includes(state))throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_jobs WHERE id=?").get(id);if(!row)return null;
-      const retryable=new Set(["TIMEOUT","PROVIDER_BUSY","PROVIDER_FAILED","NETWORK_ERROR","SOURCE_ACCESS_FAILED","INTERRUPTED"]);const timestamp=iso(now),retry=state==="failed"&&retryable.has(error?.code)&&Number(row.attempts)<Number(row.max_attempts),next=retry?"retry_wait":state;
-      db.prepare("UPDATE content_jobs SET state=?,next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(next,new Date(now()+(row.attempts<=1?30000:120000)).toISOString(),encode(error),timestamp,id);db.prepare("UPDATE content_job_attempts SET state=?,finished_at=?,error_json=? WHERE job_id=? AND generation=?").run(next,timestamp,encode(error),id,row.attempts);syncItems(id,next,error);return {id,state:next,error};});},
+    /** countAttempt=false: the failure was the provider's, not the job's (outage), so the attempt is given back and the job always waits for another try. */
+    failContentJob(id,error,state="failed",{countAttempt=true}={}) {if(!["failed","review_required","insufficient_evidence"].includes(state))throw fail("BAD_REQUEST");return transaction(()=>{const row=db.prepare("SELECT * FROM content_jobs WHERE id=?").get(id);if(!row)return null;
+      const retryable=new Set(["TIMEOUT","PROVIDER_BUSY","PROVIDER_FAILED","PROVIDER_UNAVAILABLE","PROVIDER_UNREACHABLE","PROVIDER_AUTH","NETWORK_ERROR","SOURCE_ACCESS_FAILED","INTERRUPTED"]);const timestamp=iso(now),refund=!countAttempt&&state==="failed",retry=state==="failed"&&retryable.has(error?.code)&&(refund||Number(row.attempts)<Number(row.max_attempts)),next=retry?"retry_wait":state;
+      // The generation number keeps growing (attempt rows stay unique); raising the cap is what returns the attempt.
+      db.prepare("UPDATE content_jobs SET state=?,next_attempt_at=?,error_json=?,max_attempts=max_attempts+?,updated_at=? WHERE id=?").run(next,new Date(now()+(row.attempts<=1?30000:120000)).toISOString(),encode(error),refund&&retry?1:0,timestamp,id);db.prepare("UPDATE content_job_attempts SET state=?,finished_at=?,error_json=? WHERE job_id=? AND generation=?").run(next,timestamp,encode(error),id,row.attempts);syncItems(id,next,error);return {id,state:next,error};});},
     recoverContentJobs() {const timestamp=iso(now),error={code:"INTERRUPTED",message:"Подготовка прервана. Задание можно повторить."};const rows=db.prepare("SELECT id,attempts FROM content_jobs WHERE state='working'").all();for(const row of rows){db.prepare("UPDATE content_jobs SET state='retry_wait',next_attempt_at=?,error_json=?,updated_at=? WHERE id=?").run(timestamp,encode(error),timestamp,row.id);db.prepare("UPDATE content_job_attempts SET state='retry_wait',finished_at=?,error_json=? WHERE job_id=? AND generation=?").run(timestamp,encode(error),row.id,row.attempts);syncItems(row.id,"retry_wait",error);}return rows.length;},
     approvePlaceText(placeId,story=null) {return transaction(()=>{let row=db.prepare(`SELECT * FROM place_texts WHERE place_id=? ORDER BY
         CASE WHEN approved_story_json IS NOT NULL THEN 1 ELSE 0 END DESC,created_at DESC,rowid DESC LIMIT 1`).get(placeId);if(!row)return null;

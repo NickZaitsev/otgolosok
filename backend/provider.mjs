@@ -1,5 +1,5 @@
 import { failure } from "./domain.mjs";
-import { fetchWithRetry } from "./retry.mjs";
+import { fetchWithRetry, isTransientError } from "./retry.mjs";
 
 export async function boundedBody(response, maximum, signal) {
   if (Number(response.headers.get("content-length")) > maximum) {
@@ -23,8 +23,29 @@ export async function boundedBody(response, maximum, signal) {
   return Buffer.concat(chunks);
 }
 
+/**
+ * 429, 5xx and a rejected key mean the provider is unavailable for every job; another 4xx concerns this request only.
+ * Callers pause on the first group instead of burning job attempts (see PROVIDER_OUTAGE_CODES).
+ */
+export function providerStatusCode(status) {
+  if (status === 429) return "PROVIDER_BUSY";
+  if (status === 401 || status === 403) return "PROVIDER_AUTH";
+  if (status >= 500) return "PROVIDER_UNAVAILABLE";
+  return "PROVIDER_REJECTED";
+}
+export const PROVIDER_OUTAGE_CODES = new Set(["PROVIDER_BUSY", "PROVIDER_AUTH", "PROVIDER_UNAVAILABLE", "PROVIDER_UNREACHABLE"]);
+
 // Model and speech calls are expensive: three attempts within the caller's deadline.
 const RETRY = { attempts: 3, baseMs: 1000, maxMs: 10000 };
+
+/** A network or DNS failure is not the request's fault: report it as an unreachable provider, not a bare TypeError. */
+async function providerFetch(fetchImpl, url, init) {
+  try { return await fetchWithRetry(fetchImpl, url, init, RETRY); }
+  catch (error) {
+    if (init.signal?.aborted || !isTransientError(error)) throw error;
+    throw Object.assign(failure("PROVIDER_UNREACHABLE"), { cause: error });
+  }
+}
 
 export function unpackResponse(bytes, contentType) {
   const text = bytes.toString("utf8");
@@ -46,10 +67,10 @@ export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-med
   /** @param {string} prompt @param {{search?: boolean, signal?: AbortSignal, timeoutMs?: number, maxTokens?: number, model?: string}} [options] */
   async function response(prompt, { search = false, signal, timeoutMs = 90000, maxTokens = 4500, model: selectedModel = model } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(timeoutMs), ...(signal ? [signal] : [])]);
-    const res = await fetchWithRetry(fetchImpl,`${endpoint}/responses`, { method: "POST", headers, signal: deadline,
+    const res = await providerFetch(fetchImpl,`${endpoint}/responses`, { method: "POST", headers, signal: deadline,
       body: JSON.stringify({ model: selectedModel, store: false, stream: false, input: prompt, max_output_tokens: maxTokens,
-        ...(search ? { tools: [{type:"web_search"}], include:["web_search_call.action.sources"] } : {}) }) }, RETRY);
-    if (!res.ok) { await res.body?.cancel(); throw failure(res.status === 429 ? "PROVIDER_BUSY" : "PROVIDER_FAILED"); }
+        ...(search ? { tools: [{type:"web_search"}], include:["web_search_call.action.sources"] } : {}) }) });
+    if (!res.ok) { await res.body?.cancel(); throw failure(providerStatusCode(res.status)); }
     const payload = unpackResponse(await boundedBody(res, 2000000, deadline), res.headers.get("content-type") ?? "");
     if (payload.status !== "completed") throw failure("PROVIDER_INCOMPLETE");
     const parts = (payload.output ?? []).filter((item) => item.type === "message").flatMap((item) => item.content ?? []);
@@ -69,9 +90,9 @@ export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-med
   /** @param {string} script @param {{signal?: AbortSignal, voice?: string}} [options] */
   async function speech(script, { signal, voice: selectedVoice = voice } = {}) {
     const deadline = AbortSignal.any([AbortSignal.timeout(150000), ...(signal ? [signal] : [])]);
-    const res = await fetchWithRetry(fetchImpl, `${endpoint}/audio/speech`, { method: "POST", headers, signal: deadline,
+    const res = await providerFetch(fetchImpl, `${endpoint}/audio/speech`, { method: "POST", headers, signal: deadline,
       body: JSON.stringify({model: ttsModel, voice:selectedVoice, input: script, response_format:"mp3", speed:1,
-        instructions:"Read the supplied Russian text exactly, with no additions. Warm clear conversational Russian walking-tour narration, about 140 words per minute, brief pauses between paragraphs. No music or sound effects. Read dates and addresses naturally."}) }, RETRY);
+        instructions:"Read the supplied Russian text exactly, with no additions. Warm clear conversational Russian walking-tour narration, about 140 words per minute, brief pauses between paragraphs. No music or sound effects. Read dates and addresses naturally."}) });
     if (!res.ok || !res.headers.get("content-type")?.startsWith("audio/")) { await res.body?.cancel(); throw failure("TTS_FAILED"); }
     return boundedBody(res, 10000000, deadline);
   }

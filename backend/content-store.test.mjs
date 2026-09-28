@@ -150,6 +150,50 @@ test("batch items are paged and filtered by the same status buckets the editor o
   }
 });
 
+test("a stopped batch item explains itself: coordinates, found pages lined up with fetch failures, and the model's verdict",t=>{
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const batch=store.createBatch({requestKey:"item-detail-1",name:"Detail",placeIds:["osm:node:1"],limit:1});
+  assert.equal(store.getBatchItemDetail(batch.id,"osm:way:2"),null);
+  assert.equal(store.getBatchItemDetail("00000000-0000-4000-8000-000000000000","osm:node:1"),null);
+  const fresh=store.getBatchItemDetail(batch.id,"osm:node:1");
+  assert.deepEqual(fresh.location,{lat:55.75,lon:37.61});assert.equal(fresh.tags.historic,"memorial");
+  assert.deepEqual(fresh.sources,[]);assert.equal(fresh.model,null);
+  const job=store.claimContentJob();
+  store.updateContentCheckpoint(job.id,{
+    research:{sources:[{url:"https://a.example/1",title:"Первый"},{url:"https://b.example/2",title:"Второй"},{url:"https://c.example/3",title:"Третий"}]},
+    sources:[{id:"s2",url:"https://b.example/2?r=1",title:"Второй",publisher:"b.example",text:"x".repeat(1200)}],
+    sourceFailures:["SOURCE_EMPTY","FETCH_TIMEOUT"],
+    factsRejection:{code:"PLACE_UNCLEAR",addressConfirmed:false,identityConfirmed:false,identityNote:"Источники о человеке, а не о доске",
+      placeName:"Левон Айрапетян",resolvedAddress:"Москва",facts:[{claim:"Родился в 1911 году",kind:"content",subjectRelation:"site_context",evidence:[{sourceId:"s2",quote:"родился в 1911 году"}]}]},
+  });
+  store.failContentJob(job.id,{code:"PLACE_UNCLEAR",message:"PLACE_UNCLEAR"},"review_required");
+  const item=store.getBatchItemDetail(batch.id,"osm:node:1");
+  assert.equal(item.state,"review_required");assert.equal(item.error.code,"PLACE_UNCLEAR");
+  assert.deepEqual(item.sources,[
+    {url:"https://a.example/1",title:"Первый",sourceId:null,publisher:null,chars:0,failure:"SOURCE_EMPTY"},
+    {url:"https://b.example/2?r=1",title:"Второй",sourceId:"s2",publisher:"b.example",chars:1200,failure:null},
+    {url:"https://c.example/3",title:"Третий",sourceId:null,publisher:null,chars:0,failure:"FETCH_TIMEOUT"},
+  ]);
+  assert.equal(JSON.stringify(item).includes("x".repeat(100)),false);
+  assert.equal(item.model.outcome,"rejected");assert.equal(item.model.identityConfirmed,false);
+  assert.equal(item.model.identityNote,"Источники о человеке, а не о доске");assert.equal(item.model.facts[0].evidence[0].sourceId,"s2");
+});
+
+test("a batch item past the facts step reports the accepted identification",t=>{
+  const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
+  const batch=store.createBatch({requestKey:"item-detail-2",name:"Detail",placeIds:["osm:node:1"],limit:1});
+  const job=store.claimContentJob();
+  store.updateContentCheckpoint(job.id,{sources:[{id:"s1",url:"https://a.example/1",title:"Первый",publisher:"a.example",text:"текст"}],
+    evidence:{placeName:"Памятник",resolvedAddress:"Москва, Тверская",addressConfirmed:true,identityNote:"Совпадают название и место",
+      facts:[{id:"f1",claim:"Открыт в 1950 году",kind:"identity",subjectRelation:"object",topic:"place_history",evidence:[{sourceId:"s1",quote:"открыт в 1950 году"}]}]}});
+  store.failContentJob(job.id,{code:"REVIEW_REQUIRED",message:"REVIEW_REQUIRED"},"review_required");
+  const item=store.getBatchItemDetail(batch.id,"osm:node:1");
+  // Without a search step on record the fetched pages are listed as they are.
+  assert.deepEqual(item.sources,[{url:"https://a.example/1",title:"Первый",sourceId:"s1",publisher:"a.example",chars:5,failure:null}]);
+  assert.deepEqual(item.model,{outcome:"accepted",identityConfirmed:true,addressConfirmed:true,placeName:"Памятник",resolvedAddress:"Москва, Тверская",
+    identityNote:"Совпадают название и место",facts:[{claim:"Открыт в 1950 году",kind:"identity",subjectRelation:"object",evidence:[{sourceId:"s1",quote:"открыт в 1950 году"}]}]});
+});
+
 test("batch items filter by error code and report the codes present in the current status bucket",t=>{
   const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);
   const batch=store.createBatch({requestKey:"items-error-1",name:"Errors",limit:2});
@@ -224,4 +268,51 @@ test("restart from facts on a job without a checkpoint starts clean", t => {
   const batch = store.createBatch({ requestKey: "restart-empty", placeIds: ["osm:node:1"], limit: 1 });
   assert.ok(store.retryBatchItem(batch.id, "osm:node:1", { restartFrom: "facts" }));
   assert.equal(store.claimContentJob().checkpoint, null);
+});
+
+function clockedStore(t, requestKey) {
+  let time = Date.parse("2026-09-27T12:00:00Z");
+  const store = createStore(":memory:", { maxActive: 100, now: () => time }); t.after(() => store.close()); store.importPlaces(catalog);
+  store.createBatch({ requestKey, placeIds: ["osm:node:1"], limit: 1 });
+  return { store, later: () => { time += 10 * 60000; } };
+}
+
+test("a provider outage gives the attempt back, while the job's own failure still counts", t => {
+  const { store, later } = clockedStore(t, "outage-refund");
+  // Far more outages than max_attempts (3): the job must keep waiting, not fail.
+  for (let round = 0; round < 5; round++) {
+    const job = store.claimContentJob();
+    assert.ok(job, `round ${round}: the job is claimable again`);
+    assert.equal(store.failContentJob(job.id, { code: "PROVIDER_BUSY", message: "Занят" }, "failed", { countAttempt: false }).state, "retry_wait");
+    later();
+  }
+  const job = store.claimContentJob();
+  assert.equal(job.attempts, 6);
+  assert.equal(store.failContentJob(job.id, { code: "INVALID_DRAFT", message: "Черновик" }, "failed").state, "failed");
+});
+
+test("a counted retryable failure stops at max_attempts", t => {
+  const { store, later } = clockedStore(t, "outage-counted");
+  const states = [];
+  for (let round = 0; round < 3; round++) { const job = store.claimContentJob(); states.push(store.failContentJob(job.id, { code: "TIMEOUT", message: "Долго" }).state); later(); }
+  assert.deepEqual(states, ["retry_wait", "retry_wait", "failed"]);
+  assert.equal(store.claimContentJob(), null);
+});
+
+test("a refund does not turn a non-retryable failure into a retry", t => {
+  const { store } = clockedStore(t, "outage-nonretry");
+  const job = store.claimContentJob();
+  assert.equal(store.failContentJob(job.id, { code: "INVALID_DRAFT", message: "Черновик" }, "failed", { countAttempt: false }).state, "failed");
+});
+
+test("content stats sum model tokens across checkpoints and ignore jobs without usage", t => {
+  const store = createStore(":memory:", { maxActive: 100 }); t.after(() => store.close()); store.importPlaces(catalog);
+  store.createBatch({ requestKey: "usage-stats", placeIds: ["osm:node:1", "osm:way:2"], limit: 2 });
+  assert.equal(store.getContentStats().textUsageTokens, 0);
+  const first = store.claimContentJob(), second = store.claimContentJob();
+  store.updateContentCheckpoint(first.id, { usageTokens: 1200, sources: [{ id: "s1", text: "Текст ".repeat(1000) }] });
+  store.updateContentCheckpoint(second.id, { sources: [] });
+  assert.equal(store.getContentStats().textUsageTokens, 1200);
+  store.updateContentCheckpoint(second.id, { usageTokens: 35.5 });
+  assert.equal(store.getContentStats().textUsageTokens, 1235.5);
 });

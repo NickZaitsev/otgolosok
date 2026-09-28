@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createStore } from "./store.mjs";
 import { contentFailureMessage, runContentJob, startContentWorker } from "./content-pipeline.mjs";
-import { errorMessages } from "./pipeline.mjs";
+import { errorMessages, startWorker } from "./pipeline.mjs";
 
 const catalog={source:"fixture",sourceSha256:"a".repeat(64),rulesVersion:"v1",coverage:"fixture",places:[{placeId:"osm:node:1",osmType:"node",osmId:1,name:"Памятник без адреса",location:{lat:55.75,lon:37.61},tags:{historic:"memorial",wikidata:"Q1"}}]};
 function fixture(t,{audio=false}={}){const store=createStore(":memory:",{maxActive:100});t.after(()=>store.close());store.importPlaces(catalog);store.createBatch({requestKey:`pipeline-${audio?"audio":"text"}`,limit:1,mode:audio?"text-and-audio":"text-only",ttsProfile:audio?"silero-ru-v1":null});const url="https://one.example/place",page="Памятник установлен в Москве и создан известным архитектором. ".repeat(12);const facts=[1,2,3].map(index=>({claim:`Факт ${index}`,kind:"content",subjectRelation:"object",contentReason:"Раскрывает историю памятника",topic:"place_history",scope:"building",location:"Памятник",distanceMeters:null,evidence:[{sourceId:"s1",quote:"Памятник установлен в Москве и создан известным архитектором."}]}));const part="Памятник установлен в Москве и связан с историей города. Источник рассказывает о его создании и работе архитектора. ".repeat(3).trim(),text=`${part}\n\n${part}`;const queue=[{text:"Найден официальный источник",sources:[{url,title:"Источник"}]},{value:{identityConfirmed:true,addressConfirmed:true,identityNote:"Источник описывает памятник",placeName:"Памятник",resolvedAddress:"Памятник, Москва",facts}},{text},{value:{approved:true,issues:[],checks:{substantive:true,subjectAligned:true,audioClear:true},paragraphFacts:[{paragraph:1,factIds:["f1","f2"]},{paragraph:2,factIds:["f2","f3"]}],claims:[{paragraph:1,text:"Памятник установлен в Москве",factIds:["f1","f2"],supported:true,address:false},{paragraph:2,text:"Памятник установлен в Москве",factIds:["f2","f3"],supported:true,address:false}]}}];const provider={writerModel:"writer",response:/** @type {(prompt?: string, options?: object) => Promise<any>} */ (async()=>({usage:{total_tokens:1},...queue.shift()}))};return{store,provider,url,page,queue};}
@@ -211,4 +211,44 @@ test("a place with a confirmed address keeps the address-based review", async t 
   assert.doesNotMatch(review, /identified by its name and type/);
   const facts = prompts.find(prompt => prompt.startsWith("You are a careful Russian urban-history researcher"));
   assert.match(facts, /"identityConfirmed":true\|false/);
+});
+
+test("a provider outage pauses the queue, probes with one job and resumes without losing attempts", async t => {
+  let time = Date.parse("2026-09-27T12:00:00Z"), outage = true;
+  const now = () => time;
+  const places = Array.from({ length: 3 }, (_, index) => ({ ...catalog.places[0], placeId: `osm:node:${index + 1}`, osmId: index + 1, name: `Место ${index + 1}` }));
+  const store = createStore(":memory:", { maxActive: 100, now }); t.after(() => store.close());
+  store.importPlaces({ ...catalog, places }); store.createBatch({ requestKey: "pipeline-outage", limit: 3 });
+  let calls = 0, probing = false, probeStarted = 0, probeDone = false;
+  const provider = { writerModel: "writer", response: async () => {
+    calls++; if (probing && !probeDone) probeStarted++;
+    await new Promise(resolve => setTimeout(resolve, 5)); if (probing) probeDone = true;
+    throw Object.assign(new Error(), { code: outage ? "PROVIDER_BUSY" : "INSUFFICIENT_EVIDENCE" });
+  } };
+  const warnings = [], warn = console.warn; console.warn = message => warnings.push(message); t.after(() => { console.warn = warn; });
+  const worker = startContentWorker({ store, provider, concurrency: 3, now });
+  t.after(() => worker.stop());
+  await new Promise(resolve => setTimeout(resolve, 50));
+  const states = () => places.map(place => store.getBatch(store.listBatches()[0].id).items.find(item => item.placeId === place.placeId).state);
+  assert.deepEqual(states(), ["retry_wait", "retry_wait", "retry_wait"], "outage failures wait instead of failing");
+  assert.equal(calls, 3);
+  assert.ok(warnings.some(message => message.includes("PROVIDER_BUSY")));
+  time += 60000; worker.wake(); await new Promise(resolve => setTimeout(resolve, 30));
+  assert.equal(calls, 3, "no job is claimed while the queue is paused");
+  time += 10 * 60000; outage = false; probing = true; worker.wake(); await new Promise(resolve => setTimeout(resolve, 80));
+  assert.equal(probeStarted, 1, "after the pause a single job probes the provider first");
+  assert.deepEqual(states(), ["insufficient_evidence", "insufficient_evidence", "insufficient_evidence"]);
+  assert.ok(warnings.some(message => message.includes("available again")));
+});
+
+test("a locked database while claiming is logged and does not crash either worker", async t => {
+  const locked = () => { throw Object.assign(new Error("database is locked"), { code: "ERR_SQLITE_ERROR" }); };
+  const captured = [], logs = { captureException: (_error, context) => captured.push(context.operation), captureMessage: () => {} };
+  const error = console.error; console.error = () => {}; t.after(() => { console.error = error; });
+  const content = startContentWorker({ store: { claimContentJob: locked }, provider: { response: async () => ({}) }, logs });
+  const story = startWorker({ store: { claimNext: locked }, provider: {}, logs });
+  content.wake(); story.wake();
+  await content.stop(); await story.stop();
+  assert.ok(captured.includes("contentWorker.claim"));
+  assert.ok(captured.includes("claimNext"));
 });

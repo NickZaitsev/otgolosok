@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   batchItemStates, batchStates, contentErrorOptions, contentStatusOptions, pageCount, pageRange,
   placeStatusOptions, placeTextStatuses, retryableItemStates,
-  type AdminApi, type AdminRun, type ContentAudioJob, type ContentBatch, type ContentBatchItemPage,
+  type AdminApi, type AdminRun, type ContentAudioJob, type ContentBatch, type ContentBatchItemDetail, type ContentBatchItemPage,
   type ContentErrorFilter, type ContentHeartbeat, type ContentPlace, type ContentPlaceStatusFilter,
   type ContentPlaceSummary, type ContentStatusFilter, type ContentWorker, type Draft,
 } from "./model";
 import { skeletonRows } from "./table-skeleton";
 import { IdentityCandidates } from "./identity-candidates";
+import { BatchItemDetail } from "./batch-item-detail";
 import "./content-admin.css";
 
 type ContentAdminProps = { api: AdminApi; busy: string; run: AdminRun; onDirtyChange: (dirty: boolean) => void };
@@ -64,6 +65,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
   const [itemStatus, setItemStatus] = useState<ContentStatusFilter>("all");
   const [itemError, setItemError] = useState<ContentErrorFilter>("all");
   const [itemOffset, setItemOffset] = useState(0);
+  const [itemDetail, setItemDetail] = useState<ContentBatchItemDetail | null>(null);
 
   const [placePage, setPlacePage] = useState<PlacePage>({ places: [], total: 0, hasMore: false });
   const [placeOffset, setPlaceOffset] = useState(0);
@@ -156,6 +158,8 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
     const result = await api<ContentBatchItemPage>(`/content/batches/${id}/items?${params}`, signal);
     if (!result.items.length && offset > 0) { await fetchItems(id, Math.max(0, offset - ITEM_PAGE), signal, next); return; }
     setItemPage(result); setItemOffset(offset);
+    // A reloaded page may no longer hold the opened item, or hold it in a newer state.
+    setItemDetail(null);
   }
 
   useEffect(() => {
@@ -326,7 +330,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
         <div className="admin-section-head">
           <div><h3 id="content-items-title">Состав партии «{batch.name}»</h3>
             <p className="admin-meta">Всего заданий {batch.counts.total}. Фильтры ниже меняют только этот список и не влияют на таблицу партий.</p></div>
-          <button disabled={disabled} onClick={() => { setBatch(null); setItemPage(null); setItemOffset(0); setItemError("all"); }}>Закрыть</button>
+          <button disabled={disabled} onClick={() => { setBatch(null); setItemPage(null); setItemDetail(null); setItemOffset(0); setItemError("all"); }}>Закрыть</button>
         </div>
         <div className="content-toolbar">
           <label htmlFor="content-item-status">Статус задания</label>
@@ -348,7 +352,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
         <div className="admin-table-wrap" aria-busy={loading.items}><table className="admin-table">
           <caption className="admin-sr-only">Задания партии</caption>
           <thead><tr><th scope="col">Место</th><th scope="col">Состояние</th><th scope="col">Ошибка</th><th scope="col">Действие</th></tr></thead>
-          <tbody>{loading.items ? skeletonRows(4, itemPage?.items.length ?? 0) : (itemPage?.items ?? []).map(item => <tr key={item.placeId}>
+          <tbody>{loading.items ? skeletonRows(4, itemPage?.items.length ?? 0) : (itemPage?.items ?? []).map(item => <Fragment key={item.placeId}><tr data-current={itemDetail?.placeId === item.placeId || undefined}>
             <th scope="row">{item.name}<span className="admin-row-id">{item.address ?? item.placeId}</span></th>
             <td><span className={`admin-stage admin-stage-${item.state}`}>{batchItemStates[item.state] ?? item.state}</span></td>
             {/* Older failures stored the code in `message`; then the code alone is shown instead of repeating it twice. */}
@@ -356,13 +360,22 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
               ? <>{item.error.message && item.error.message !== item.error.code ? item.error.message : null}
                 {item.error.code && <span className="admin-row-id">{item.error.code}</span>}</>
               : "—"}</td>
-            <td>{retryableItemStates.includes(item.state) && <button disabled={disabled} onClick={() => void run("Повтор задания…", async signal => {
-              await api(`/content/batches/${batch.id}/items/${item.placeId}/retry`, signal, {});
-              await loadItems(batch.id, itemOffset, signal);
-              await loadOverview(signal);
-              setNotice(`Задание «${item.name}» снова поставлено в очередь.`);
-            })}>Повторить</button>}</td>
-          </tr>)}</tbody>
+            <td><div className="admin-row-actions">
+              <button disabled={disabled} aria-expanded={itemDetail?.placeId === item.placeId} aria-controls={itemDetail?.placeId === item.placeId ? `content-item-detail-${item.placeId}` : undefined}
+                onClick={() => itemDetail?.placeId === item.placeId ? setItemDetail(null) : void run("Загрузка подробностей…", async signal => {
+                  setItemDetail((await api<{ item: ContentBatchItemDetail }>(`/content/batches/${batch.id}/items/${item.placeId}`, signal)).item);
+                })}>{itemDetail?.placeId === item.placeId ? "Скрыть" : "Подробности"}</button>
+              {retryableItemStates.includes(item.state) && <button disabled={disabled} onClick={() => void run("Повтор задания…", async signal => {
+                await api(`/content/batches/${batch.id}/items/${item.placeId}/retry`, signal, {});
+                await loadItems(batch.id, itemOffset, signal);
+                await loadOverview(signal);
+                setNotice(`Задание «${item.name}» снова поставлено в очередь.`);
+              })}>Повторить</button>}
+            </div></td>
+          </tr>
+          {itemDetail?.placeId === item.placeId && <tr className="content-item-detail-row" id={`content-item-detail-${item.placeId}`}>
+            <td colSpan={4}><BatchItemDetail item={itemDetail} /></td>
+          </tr>}</Fragment>)}</tbody>
         </table></div>
         {!loading.items && !itemPage?.items.length && <p className="admin-empty-row" role="status">Заданий с выбранными фильтрами в партии нет.</p>}
         <nav className="admin-pagination" aria-label="Страницы заданий партии">

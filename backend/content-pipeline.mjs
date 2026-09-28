@@ -7,12 +7,14 @@ import { requestStructured, usageTokens } from "./model-output.mjs";
 import { writeStory } from "./story-writing.mjs";
 import { errorMessages, SOURCE_RETRY } from "./pipeline.mjs";
 import { restrictWeakIdentityEvidence } from "./identity-triage.mjs";
+import { PROVIDER_OUTAGE_CODES } from "./provider.mjs";
 
 /** Codes only this pipeline raises; the shared errorMessages cover the rest. The editor reads these in the batch list. */
 const CONTENT_FAILURES = {
   SOURCE_EMPTY: "Источник открылся, но полезного текста о месте в нём не нашлось.",
   SOURCE_FAILED: "Источник не удалось прочитать.",
   PROVIDER_FAILED: "Сервис подготовки вернул ошибку. Можно повторить попытку.",
+  PROVIDER_REJECTED: "Сервис подготовки отклонил запрос. Можно повторить попытку.",
   INVALID_MODEL_OUTPUT: "Ответ модели не удалось разобрать. Можно повторить попытку.",
   INVALID_DRAFT: "Черновик не прошёл проверку формата. Можно повторить попытку.",
   INTERRUPTED: "Подготовка прервана. Задание можно повторить.",
@@ -106,13 +108,31 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,re
   } catch(error) {
     const code=["TimeoutError","AbortError"].includes(error?.name)?"TIMEOUT":error?.code??"PREPARATION_FAILED";
     const state=code==="INSUFFICIENT_EVIDENCE"?"insufficient_evidence":["REVIEW_REQUIRED","ADDRESS_UNCLEAR","PLACE_UNCLEAR","IDENTITY_QUOTE_INVALID","IDENTITY_UNCONFIRMED"].includes(code)?"review_required":"failed";
-    return store.failContentJob(job.id,{code,message:contentFailureMessage(code)},state);
+    return store.failContentJob(job.id,{code,message:contentFailureMessage(code)},state,{countAttempt:!PROVIDER_OUTAGE_CODES.has(code)});
   }
 }
 
+const OUTAGE_PAUSE_MS = 60000, OUTAGE_PAUSE_MAX_MS = 30*60000;
+
+/**
+ * While the provider is unavailable (429, 5xx, rejected key, network/DNS) the worker stops claiming jobs, pausing
+ * 1, 2, 4… up to 30 minutes, and then probes with a single job; one result from the provider resumes full concurrency.
+ * A store error (e.g. SQLITE_BUSY while another process holds the write lock) is logged and retried on the next tick.
+ */
 export function startContentWorker(options) {
-  let stopped=false;const running=new Set(),controller=new AbortController(),concurrency=Math.max(1,Math.min(32,Number(options.concurrency??1)||1));
-  const wake=()=>{if(stopped||!options.provider)return;while(running.size<concurrency){const job=options.store.claimContentJob();if(!job)break;
-    const task=runContentJob(job,{...options,signal:controller.signal}).catch(error=>options.logs?.captureException(error,{operation:"contentJob",context:{jobId:job.id}})).finally(()=>{running.delete(task);if(!stopped)queueMicrotask(wake);});running.add(task);}};
+  let stopped=false,outages=0,pausedUntil=0;const running=new Set(),controller=new AbortController(),concurrency=Math.max(1,Math.min(32,Number(options.concurrency??1)||1)),now=options.now??Date.now;
+  const settle=result=>{
+    // Remote logs may go through the same unavailable provider, so the container log gets these events too.
+    if(!PROVIDER_OUTAGE_CODES.has(result?.error?.code)){if(outages)console.warn(`Content provider is available again after ${outages} failed probe(s)`);outages=0;pausedUntil=0;return;}
+    outages++;const pause=Math.min(OUTAGE_PAUSE_MAX_MS,OUTAGE_PAUSE_MS*2**(outages-1));pausedUntil=now()+pause;
+    console.warn(`Content provider unavailable (${result.error.code}); queue paused for ${Math.round(pause/1000)} s`);
+    if(outages===1)options.logs?.captureMessage("Content provider unavailable; queue paused","warn",{operation:"contentWorker",context:{code:result.error.code}});
+  };
+  const wake=()=>{if(stopped||!options.provider||now()<pausedUntil)return;
+    const limit=outages?1:concurrency;
+    try{while(running.size<limit){const job=options.store.claimContentJob();if(!job)break;
+      const task=runContentJob(job,{...options,signal:controller.signal}).then(settle,error=>options.logs?.captureException(error,{operation:"contentJob",context:{jobId:job.id}})).finally(()=>{running.delete(task);if(!stopped)queueMicrotask(wake);});running.add(task);}}
+    catch(error){options.logs?.captureException(error,{operation:"contentWorker.claim"});if(!options.logs)console.error("Content worker could not claim a job",error?.code??error);}};
   const timer=setInterval(wake,2000);wake();return{wake,stop:async()=>{stopped=true;clearInterval(timer);controller.abort();await Promise.allSettled(running);}};
 }
+
