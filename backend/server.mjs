@@ -433,6 +433,13 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           }
           return;
         }
+        // A guest walk lives only in the browser; resolving it reads published
+        // content synchronously and never queues research or narration.
+        if(url.pathname==="/api/story-walks/resolve") {
+          const input=await body(req,100000);
+          if(Object.keys(input).some(key=>!["document","revision"].includes(key))||!Number.isSafeInteger(input.revision)||input.revision<0)throw failure("BAD_REQUEST");
+          json(res,200,resolveWalkView(input.document,input.revision,store));return;
+        }
         if(!provider) {json(res,503,{error:{message:"Подготовка историй пока недоступна."}});return;}
         const input=await body(req);
         if(url.pathname==="/api/story-jobs") {
