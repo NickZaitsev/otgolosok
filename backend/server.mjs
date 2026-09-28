@@ -3,6 +3,7 @@ import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { resolve, join, extname, sep } from "node:path";
 import { pathToFileURL } from "node:url";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { createStore } from "./store.mjs";
 import { createProvider } from "./provider.mjs";
 import { createYandexTts } from "./yandex-tts.mjs";
@@ -16,6 +17,7 @@ import { validateWalkResearch, publicWalkResearch, walkResearchKey } from "./wal
 import { createBackendLogger } from "./logs.mjs";
 import { ingestAudio } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
+import { openOsmGeocoder } from "./osm-geocoder.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword } from "./auth.mjs";
 import { favoriteSummary } from "./favorite-summary.mjs";
 import { createAccountStore } from "./account-store.mjs";
@@ -28,6 +30,20 @@ import { createTtsApiClient } from "./tts-api-client.mjs";
 import { startTtsApiWorker } from "./tts-api-worker.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+// Digests keep the comparison constant-time regardless of the candidate length.
+function sameSecret(expected,candidate) {
+  if(typeof expected!=="string"||!expected||typeof candidate!=="string")return false;
+  const digest=value=>createHash("sha256").update(value).digest();
+  return timingSafeEqual(digest(expected),digest(candidate));
+}
+
+// Lease tokens are HMACs, so a known fallback secret would let any worker forge them.
+export function workerLeaseSecret({env=process.env,transport,randomSecret=()=>randomBytes(32).toString("hex")}={}) {
+  const secret=env.WORKER_LEASE_SECRET;
+  const required=transport!=="http"&&(env.NODE_ENV==="production"||Boolean(env.WORKER_API_TOKEN));
+  if(required&&(typeof secret!=="string"||secret.length<32))throw new Error("WORKER_LEASE_SECRET must contain at least 32 characters when external TTS workers are enabled");
+  return secret||randomSecret();
+}
 function json(res,status,value) {
   res.writeHead(status,{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff"});
   res.end(JSON.stringify(value));
@@ -61,13 +77,13 @@ export async function sendFile(req,res,path,type,immutable=false) {
   res.once("close",()=>stream.destroy());stream.once("error",()=>res.destroy());stream.pipe(res);
 }
 
-export function createApp({store,provider,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
+export function createApp({store,provider,osmGeocoder=null,yandexTts=null,origin,audioDirectory,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{}}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const speechProviders={openai:provider,yandex:yandexTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)}];
   const worker=(provider||yandexTts)&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory,discoverResearch,planResearchWalk,logs}):null;
-  const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,logs,concurrency:Number(process.env.CONTENT_WORKER_CONCURRENCY??1),autoApprove:process.env.CONTENT_AUTO_APPROVE==="true"}):null;
+  const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,logs,resolveLocation:osmGeocoder ? place=>osmGeocoder.resolve(place) : null,concurrency:Number(process.env.CONTENT_WORKER_CONCURRENCY??1),autoApprove:process.env.CONTENT_AUTO_APPROVE==="true"}):null;
   const ttsApiWorker=workerEnabled&&localTts.transport==="http"&&ttsApiClient?startTtsApiWorker({store,client:ttsApiClient,audioDirectory,profileId:localTts.defaultProfile,logs}):null;
   const authorizeAdmin=adminAuth(adminToken);
   const legacyAdminEnabled=allowLegacyAdminToken??(!auth||process.env.ALLOW_LEGACY_ADMIN_TOKEN==="true");
@@ -113,13 +129,14 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(localTts.transport==="http"){json(res,503,{error:{code:"WORKER_DISABLED",message:"HTTP TTS transport is active."}});return;}
         const rawToken=typeof req.headers.authorization==="string"&&req.headers.authorization.startsWith("Bearer ")?req.headers.authorization.slice(7):"";
         const credential=store.authenticateWorkerToken(rawToken);
-        if((!workerToken||req.headers.authorization!==`Bearer ${workerToken}`)&&!credential){res.setHeader("WWW-Authenticate","Bearer");json(res,401,{error:{code:"UNAUTHORIZED",message:"Worker authentication required."}});return;}
+        if(!sameSecret(workerToken,rawToken)&&!credential){res.setHeader("WWW-Authenticate","Bearer");json(res,401,{error:{code:"UNAUTHORIZED",message:"Worker authentication required."}});return;}
         if(url.search)throw failure("BAD_REQUEST");
         const workerId=String(req.headers["x-worker-id"]??"");
         if(!workerId||workerId.length>100)throw failure("BAD_REQUEST");
         if(req.method==="POST"&&url.pathname==="/api/worker/v1/claim") {
           const input=await body(req,4096);
-          if(Object.keys(input).some(key=>!["requestId","profileIds","textPreparationVersions","version"].includes(key)))throw failure("BAD_REQUEST");
+          if(Object.keys(input).some(key=>!["requestId","profileIds","textPreparationVersions","version"].includes(key))
+            ||!Array.isArray(input.profileIds)||!input.profileIds.length||input.profileIds.length>20||input.profileIds.some(profile=>typeof profile!=="string"))throw failure("BAD_REQUEST");
           const profileIds=credential?input.profileIds.filter(profile=>credential.profiles.includes(profile)):input.profileIds;
           if(!profileIds.length){json(res,403,{error:{code:"FORBIDDEN",message:"Worker profile not permitted."}});return;}
           store.recordWorkerHeartbeat({credentialId:credential?.id??"static",workerName:workerId,version:input.version,profileIds});
@@ -142,7 +159,8 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         }
         if(req.method==="POST"&&workerMatch[2]==="fail") {
           const input=await body(req,2048);
-          json(res,200,{job:store.failExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,...input})});return;
+          if(Object.keys(input).some(key=>!["failureId","code","message"].includes(key)))throw failure("BAD_REQUEST");
+          json(res,200,{job:store.failExternalAudio(workerMatch[1],{workerId:effectiveWorkerId,generation,leaseToken,failureId:input.failureId,code:input.code,message:input.message})});return;
         }
         if(req.method==="PUT"&&workerMatch[2]==="result") {
           const uploadId=String(req.headers["x-upload-id"]??""),expected=String(req.headers["x-content-sha256"]??"");
@@ -228,8 +246,9 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         }
         if(roleAuthorized&&!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Refresh the editor and retry."}});return;}
         if(req.method==="GET"&&url.pathname==="/api/story-admin/walks") {
-          if(url.search)throw failure("BAD_REQUEST");
-          json(res,200,store.listWalksAdmin());return;
+          const entries=[...url.searchParams];
+          if(entries.some(([key,value])=>!["limit","offset"].includes(key)||!/^\d+$/.test(value))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
+          json(res,200,store.listWalksAdmin({limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0)}));return;
         }
         if(req.method==="GET"&&url.pathname==="/api/story-admin/content/places") {
           const entries=[...url.searchParams];if(entries.some(([key,value])=>!["limit","offset","q","status"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value))))throw failure("BAD_REQUEST");
@@ -241,6 +260,13 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
           const entries=[...url.searchParams];if(entries.some(([key,value])=>key!=="state"||!value)||entries.length>1)throw failure("BAD_REQUEST");
           const states=(url.searchParams.get("state")??"failed,cancelled").split(",");json(res,200,{audioJobs:store.listExternalAudio({states})});return;
         }
+        if(req.method==="POST"&&url.pathname==="/api/story-admin/content/audio/bulk") {
+          if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const input=await body(req,4096);
+          if(Object.keys(input).some(key=>!["profileId","limit"].includes(key)))throw failure("BAD_REQUEST");
+          const result=await store.enqueueMissingPlaceAudio({profileId:input.profileId??localTts.defaultProfile,limit:input.limit??500});
+          json(res,200,result);return;
+        }
         if(req.method==="GET"&&url.pathname==="/api/story-admin/content/workers") {if(url.search)throw failure("BAD_REQUEST");json(res,200,{transport:localTts.transport,workers:store.listWorkerCredentials(),heartbeats:store.listWorkerHeartbeats()});return;}
         if(req.method==="POST"&&url.pathname==="/api/story-admin/content/workers") {if(localTts.transport==="http"){json(res,503,{error:{code:"WORKER_DISABLED",message:"HTTP TTS transport is active."}});return;}if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           json(res,201,{worker:store.createWorkerCredential(await body(req,4096))});return;}
@@ -250,7 +276,25 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
         if(req.method==="POST"&&url.pathname==="/api/story-admin/content/batches") {
           if(!origin||req.headers.origin!==origin) {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
           const input=await body(req,65536);if(input.mode==="text-and-audio"&&!input.ttsProfile)input.ttsProfile=localTts.defaultProfile;
-          const batch=store.createBatch(input);json(res,200,{batch});contentWorker?.wake();return;
+          let batch;
+          try{batch=store.createBatch(input);}
+          catch(error){if(error.code!=="NO_ELIGIBLE_PLACES")throw error;
+            json(res,409,{error:{code:error.code,message:"Все места, прошедшие проверку пригодности, уже поставлены в очередь."}});return;}
+          json(res,200,{batch});contentWorker?.wake();return;
+        }
+        if(req.method==="GET"&&url.pathname==="/api/story-admin/content/identity-candidates") {
+          const entries=[...url.searchParams];
+          if(entries.some(([key,value])=>!["tier","category","q","queue","limit","offset"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
+          json(res,200,store.listIdentityCandidates({tier:url.searchParams.get("tier")??"all",category:url.searchParams.get("category")??"all",q:url.searchParams.get("q")??"",
+            queue:url.searchParams.get("queue")??"all",limit:Number(url.searchParams.get("limit")??50),offset:Number(url.searchParams.get("offset")??0)}));return;
+        }
+        if(req.method==="POST"&&url.pathname==="/api/story-admin/content/identity-candidates/pilot") {
+          if(!origin||req.headers.origin!==origin){json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
+          const input=await body(req,4096);if(Object.keys(input).some(key=>!["requestKey","limit","mode"].includes(key)))throw failure("BAD_REQUEST");
+          try{json(res,200,store.createIdentityPilot({requestKey:input.requestKey,limit:input.limit,mode:input.mode??"text-only",ttsProfile:localTts.defaultProfile}));}
+          catch(error){if(error.code!=="NO_IDENTITY_CANDIDATES")throw error;
+            json(res,409,{error:{code:error.code,message:"Нет кандидатов уровня «авто» без заданий. Пересчитайте оценку после обновления каталога."}});}
+          return;
         }
         const batchItems=/^\/api\/story-admin\/content\/batches\/([a-f0-9-]+)\/items$/.exec(url.pathname);
         if(batchItems&&req.method==="GET"){
@@ -489,15 +533,14 @@ export function createApp({store,provider,yandexTts=null,origin,audioDirectory,s
     }
   });
   server.requestTimeout=310000;server.headersTimeout=10000;server.keepAliveTimeout=5000;
-  return {server,close:async()=>{await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop()]);await new Promise((done)=>server.close(done));server.closeAllConnections();await closeAuth();}};
+  return {server,close:async()=>{await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop()]);osmGeocoder?.close();await new Promise((done)=>server.close(done));server.closeAllConnections();await closeAuth();}};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href) {
   const directory=resolve(process.env.DATA_DIR??"backend/data");
-  if(process.env.WORKER_API_TOKEN&&!process.env.WORKER_LEASE_SECRET)throw new Error("WORKER_LEASE_SECRET is required when WORKER_API_TOKEN is configured");
   const localTts=loadLocalTtsConfig(process.env);
   const ttsApiClient=localTts.transport==="http"?createTtsApiClient({baseUrl:process.env.TTS_API_URL,token:process.env.TTS_API_TOKEN}):null;
-  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:process.env.WORKER_LEASE_SECRET,normalizeExternalText:normalizeForSpeech,externalTtsProfiles:localTts.profiles});
+  const store=createStore(join(directory,"jobs.sqlite"),{maxDaily:Number(process.env.MAX_DAILY_JOBS??6),maxActive:2,workerLeaseSecret:workerLeaseSecret({transport:localTts.transport}),normalizeExternalText:normalizeForSpeech,externalTtsProfiles:localTts.profiles});
   store.recoverInterrupted();
   store.recoverContentJobs();
   const provider=process.env.OPENAI_API_KEY&&process.env.OPENAI_BASE_URL?createProvider({apiKey:process.env.OPENAI_API_KEY,baseUrl:process.env.OPENAI_BASE_URL,model:process.env.STORY_MODEL,writerModel:process.env.WRITER_MODEL}):null;
@@ -507,7 +550,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const appOrigin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
   const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production"});
   const accountStore=createAccountStore(authRuntime.database);
-  const app=createApp({store,provider,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close});
+  const osmGeocoder=openOsmGeocoder(join(directory,"osm-addresses.sqlite"));
+  const app=createApp({store,provider,osmGeocoder,yandexTts,origin:appOrigin,audioDirectory:join(directory,"audio"),staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{if(stopping)return;stopping=true;await app.close();try {await logs?.close();} catch {console.error("Airouter logs delivery failed");}store.close();});

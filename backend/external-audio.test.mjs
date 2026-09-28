@@ -1,5 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { DatabaseSync } from "node:sqlite";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { createStore } from "./store.mjs";
 
 const story={title:"Дом",address:"Москва, дом 1",wordCount:104,paragraphs:[
@@ -90,7 +94,7 @@ test("external audio stores the immutable normalized script and profile contract
   const source=store.createOrGet({key:"normalized-source",address:story.address});const ready=store.update(source.id,{stage:"failed",data:{story}},source.revision);
   await store.enqueueExternalAudio({sourceJobId:ready.id,sourceRevision:ready.revision,story,profileId:"silero-ru-v1"});
   const claim=store.claimExternalAudio({workerId:"gpu",requestId:"normalized-0001",profileIds:["silero-ru-v1"]});
-  assert.match(claim.spokenText,/^НОРМАЛИЗОВАНО:/);assert.equal(claim.normalizerVersion,"test-normalizer");assert.equal(claim.profile.chunking,"sentence-v1");assert.equal(claim.profile.maximumBytes,64*1024*1024);assert.equal(claim.profile.minimumPublicationDurationSec,30);
+  assert.match(claim.spokenText,/^НОРМАЛИЗОВАНО:/);assert.equal(claim.normalizerVersion,"test-normalizer");assert.equal(claim.profile.chunking,"sentence-v1");assert.equal(claim.profile.maximumBytes,64*1024*1024);assert.equal(claim.profile.maximumPublicationDurationSec,150);
 });
 
 test("raw profile bypasses server normalization and requires a capable worker",async t=>{
@@ -106,7 +110,7 @@ test("raw profile bypasses server normalization and requires a capable worker",a
 
 test("editing approved place text invalidates a leased older audio version",async t=>{
   const f=await fixture(t,{enqueueBase:false});f.tick();f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:1",osmType:"node",osmId:1,name:"Дом",location:{lat:55.7,lon:37.6},tags:{historic:"yes"}}]});
-  const batch=f.store.createBatch({requestKey:"place-audio",limit:1,mode:"text-and-audio",ttsProfile:"silero-ru-v1"});const content=f.store.claimContentJob();f.store.completeContentJob(content.id,{story,evidence:{}});const approved=f.store.approvePlaceText("osm:node:1",story);
+  const batch=f.store.createBatch({requestKey:"place-audio",placeIds:["osm:node:1"],limit:1,mode:"text-and-audio",ttsProfile:"silero-ru-v1"});const content=f.store.claimContentJob();f.store.completeContentJob(content.id,{story,evidence:{}});const approved=f.store.approvePlaceText("osm:node:1",story);
   assert.equal(approved.text.story.title,story.title);
   await f.store.enqueueExternalAudio({sourceJobId:`place-text:${approved.text.id}`,sourceRevision:0,story,profileId:"silero-ru-v1"});const claim=f.store.claimExternalAudio({workerId:"unique-edit-worker",requestId:"unique-edit-lease-0001",profileIds:["silero-ru-v1"]});
   f.tick();f.store.approvePlaceText("osm:node:1",{...story,title:"Новая версия",paragraphs:story.paragraphs.map((p,i)=>i? p:{...p,text:p.text+" Дополнение."})});
@@ -128,7 +132,7 @@ test("a new approved place text keeps old audio until its replacement succeeds",
 
 test("only the latest requested profile publishes when engines finish out of order",async t=>{
   const f=await fixture(t,{enqueueBase:false});f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:12",osmType:"node",osmId:12,name:"Дом",location:{lat:55.7,lon:37.6},tags:{historic:"yes"}}]});
-  f.store.createBatch({requestKey:"target-profile",limit:1});const content=f.store.claimContentJob();f.store.completeContentJob(content.id,{story,evidence:{}});const approved=f.store.approvePlaceText("osm:node:12",story);
+  f.store.createBatch({requestKey:"target-profile",placeIds:["osm:node:12"],limit:1});const content=f.store.claimContentJob();f.store.completeContentJob(content.id,{story,evidence:{}});const approved=f.store.approvePlaceText("osm:node:12",story);
   const sourceJobId=`place-text:${approved.text.id}`;await f.store.enqueueExternalAudio({sourceJobId,sourceRevision:0,story,profileId:"silero-ru-v1"});await f.store.enqueueExternalAudio({sourceJobId,sourceRevision:0,story,profileId:"f5-ru-v1"});
   const silero=f.store.claimExternalAudio({workerId:"silero",requestId:"target-silero-1",profileIds:["silero-ru-v1"]});const f5=f.store.claimExternalAudio({workerId:"f5",requestId:"target-f5-0001",profileIds:["f5-ru-v1"]});
   const artifact=(engine,char)=>({url:`/api/story-audio/${char.repeat(64)}.mp3`,sha256:char.repeat(64),bytes:100,durationSec:60,model:engine,voice:"voice",provider:"external",synthetic:true});
@@ -136,7 +140,24 @@ test("only the latest requested profile publishes when engines finish out of ord
   f.store.acceptExternalAudio(f5.id,{workerId:"f5",generation:f5.leaseGeneration,leaseToken:f5.leaseToken,uploadId:"f5-upload-01",uploadSha256:"d".repeat(64),artifact:artifact("f5","d")});assert.equal(f.store.getPlace("osm:node:12").text.audio.model,"f5");
 });
 
-test("publication duration is enforced by the frozen TTS profile",async t=>{
-  const f=await fixture(t),claim=f.store.claimExternalAudio({workerId:"duration-worker",requestId:"duration-claim",profileIds:["silero-ru-v1"]});
-  assert.throws(()=>f.store.acceptExternalAudio(claim.id,{workerId:"duration-worker",generation:claim.leaseGeneration,leaseToken:claim.leaseToken,uploadId:"duration-upload",uploadSha256:"a".repeat(64),artifact:{sha256:"b".repeat(64),durationSec:10}}),{code:"AUDIO_DURATION"});
+test("short external audio is accepted even when a frozen legacy profile has a 30-second minimum",async t=>{
+  const directory=mkdtempSync(join(tmpdir(),"short-audio-")),path=join(directory,"jobs.sqlite");
+  t.after(()=>rmSync(directory,{recursive:true,force:true}));
+  const store=createStore(path,{workerLeaseSecret:"test-secret"});t.after(()=>store.close());
+  const original=store.createOrGet({key:"legacy-duration",address:story.address}),source=store.update(original.id,{stage:"failed",data:{story}},original.revision);
+  const queued=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story});
+  const db=new DatabaseSync(path);
+  db.prepare("UPDATE external_audio_jobs SET payload_json=json_set(payload_json,'$.profile.minimumPublicationDurationSec',30) WHERE id=?").run(queued.id);
+  db.close();
+  const claim=store.claimExternalAudio({workerId:"duration-worker",requestId:"duration-claim",profileIds:["silero-ru-v1"]});
+  assert.equal(claim.profile.minimumPublicationDurationSec,30);
+  const accepted=store.acceptExternalAudio(claim.id,{workerId:"duration-worker",generation:claim.leaseGeneration,leaseToken:claim.leaseToken,uploadId:"duration-upload",uploadSha256:"a".repeat(64),artifact:{sha256:"b".repeat(64),durationSec:10}});
+  assert.equal(accepted.state,"succeeded");
+});
+
+test("external audio still rejects missing, zero and overlong duration",async t=>{
+  for(const [index,durationSec] of [undefined,0,151].entries()) {
+    const f=await fixture(t),claim=f.store.claimExternalAudio({workerId:"duration-worker",requestId:`duration-boundary-${index}`,profileIds:["silero-ru-v1"]});
+    assert.throws(()=>f.store.acceptExternalAudio(claim.id,{workerId:"duration-worker",generation:claim.leaseGeneration,leaseToken:claim.leaseToken,uploadId:`duration-upload-${index}`,uploadSha256:"a".repeat(64),artifact:{sha256:"b".repeat(64),durationSec}}),{code:"AUDIO_DURATION"});
+  }
 });

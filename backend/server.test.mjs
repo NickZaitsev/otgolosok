@@ -4,7 +4,7 @@ import { mkdtemp,writeFile,rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createStore } from "./store.mjs";
-import { createApp } from "./server.mjs";
+import { createApp, workerLeaseSecret } from "./server.mjs";
 import { sessionCsrfToken } from "./auth.mjs";
 
 async function fixture(t,options={}) {
@@ -67,6 +67,19 @@ test("worker transport still exposes credentials and allows issuing keys",async(
   assert.equal((await f.post("/api/story-admin/content/workers",{name:"GPU",profiles:["silero-ru-v1"]})).status,201);
 });
 
+test("admin walk catalog accepts pagination and rejects invalid parameters",async(t)=>{
+  const f=await fixture(t);
+  const response=await fetch(`${f.base}/api/story-admin/walks?limit=1&offset=0`);
+  assert.equal(response.status,200);
+  const page=await response.json();
+  assert.equal(page.walks.length,1);
+  assert.equal(page.total>=page.walks.length,true);
+  assert.equal(typeof page.hasMore,"boolean");
+  assert.equal((await fetch(`${f.base}/api/story-admin/walks?limit=0&offset=0`)).status,400);
+  assert.equal((await fetch(`${f.base}/api/story-admin/walks?limit=1&offset=-1`)).status,400);
+  assert.equal((await fetch(`${f.base}/api/story-admin/walks?limit=1&limit=2`)).status,400);
+});
+
 test("external worker API authenticates, leases and accepts an idempotent upload",async(t)=>{
   const artifact={url:`/api/story-audio/${"b".repeat(64)}.mp3`,sha256:"b".repeat(64),bytes:100,durationSec:60,model:"external",voice:"external",provider:"external",synthetic:true};
   const f=await fixture(t,{workerToken:"worker-secret",audioIngest:async req=>{
@@ -115,7 +128,7 @@ test("OSM text stays private until approval and approved audio attaches to the p
   const artifact={url:`/api/story-audio/${"c".repeat(64)}.mp3`,sha256:"c".repeat(64),bytes:100,durationSec:60,model:"external",voice:"xenia",provider:"external",synthetic:true};
   const f=await fixture(t,{workerToken:"worker-secret",audioIngest:async req=>{for await(const chunk of req){void chunk;}return{uploadSha256:"d".repeat(64),artifact};}});
   f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),rulesVersion:"v1",coverage:"fixture",places:[{placeId:"osm:node:7",osmType:"node",osmId:7,name:"Парк",location:{lat:55.75,lon:37.61},tags:{leisure:"park"}}]});
-  f.store.createBatch({requestKey:"content-api-1",limit:1,mode:"text-and-audio",ttsProfile:"silero-ru-v1"});
+  f.store.createBatch({requestKey:"content-api-1",placeIds:["osm:node:7"],limit:1,mode:"text-and-audio",ttsProfile:"silero-ru-v1"});
   const paragraph=("Проверенный рассказ о московском парке, его истории, архитектуре и людях. ").repeat(9).trim();
   const job=f.store.claimContentJob(),story={title:"Парк",paragraphs:[{text:paragraph,factIds:["f1","f2","f3"]},{text:paragraph,factIds:["f4","f5"]}]};
   f.store.completeContentJob(job.id,{story,evidence:{facts:[]}});
@@ -131,14 +144,17 @@ test("OSM text stays private until approval and approved audio attaches to the p
 
 test("public OSM catalog validates and serves nearby approved places",async t=>{
   const f=await fixture(t);f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:8",osmType:"node",osmId:8,name:"Сад",location:{lat:55.75,lon:37.61},tags:{leisure:"garden"}}]});
-  f.store.createBatch({requestKey:"nearby-http",limit:1});const job=f.store.claimContentJob(),story={title:"История сада",paragraphs:[{text:"Проверенный текст сада",factIds:["f1"]}]};f.store.completeContentJob(job.id,{story,evidence:{}});f.store.approvePlaceText("osm:node:8");
+  f.store.createBatch({requestKey:"nearby-http",placeIds:["osm:node:8"],limit:1});const job=f.store.claimContentJob(),story={title:"История сада",paragraphs:[{text:"Проверенный текст сада",factIds:["f1"]}]};f.store.completeContentJob(job.id,{story,evidence:{}});f.store.approvePlaceText("osm:node:8");
   const response=await fetch(`${f.base}/api/content/places?status=ready&lat=55.75&lon=37.61&radius=500`);assert.equal(response.status,200);const result=await response.json();assert.equal(result.places[0].id,"osm:node:8");assert.ok(result.places[0].distanceM<1);
   assert.equal((await fetch(`${f.base}/api/content/places?lat=55.75&lon=37.61`)).status,400);
 });
 
 test("admin manages content batches and revocable worker credentials",async t=>{
   const f=await fixture(t);f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),rulesVersion:"v1",coverage:"fixture",places:[{placeId:"osm:node:8",osmType:"node",osmId:8,name:"Музей",location:{lat:55.75,lon:37.61},tags:{tourism:"museum"}}]});
-  const created=await f.post("/api/story-admin/content/batches",{requestKey:"content-api-2",name:"API",limit:1,textProfile:"story-v1",mode:"text-only"});assert.equal(created.status,200);
+  // The place has no address or identifier, so the default selection finds nothing; an explicit list is the editor's choice.
+  const none=await f.post("/api/story-admin/content/batches",{requestKey:"content-api-0",name:"API",limit:1,textProfile:"story-v1",mode:"text-only"});
+  assert.equal(none.status,409);assert.equal((await none.json()).error.code,"NO_ELIGIBLE_PLACES");
+  const created=await f.post("/api/story-admin/content/batches",{requestKey:"content-api-2",name:"API",placeIds:["osm:node:8"],limit:1,textProfile:"story-v1",mode:"text-only"});assert.equal(created.status,200);
   const batch=(await created.json()).batch;assert.equal((await fetch(`${f.base}/api/story-admin/content/batches/${batch.id}`)).status,200);
   const issued=await f.post("/api/story-admin/content/workers",{name:"GPU",profiles:["silero-ru-v1"]});assert.equal(issued.status,201);
   const worker=(await issued.json()).worker;assert.equal(worker.token.length,64);
@@ -167,6 +183,32 @@ test("the audio retry route matches a job id instead of falling through to the a
   const unmatched=await f.post("/api/story-admin/content/audio/not-a-uuid/retry",{});
   assert.equal(unmatched.status,404);
   assert.equal((await unmatched.json()).error.message,"Admin endpoint not found.");
+});
+
+test("admin can start a bounded bulk audio backfill", async t => {
+  const f = await fixture(t, {
+    localTts: { transport: "http", defaultProfile: "f5-ru-v1", profiles: { "f5-ru-v1": { engine: "f5" } } },
+  });
+  f.store.importPlaces({ source: "fixture", sourceSha256: "a".repeat(64), rulesVersion: "v1", coverage: "fixture", places: [
+    { placeId: "osm:node:8", osmType: "node", osmId: 8, name: "Музей", location: { lat: 55.75, lon: 37.61 }, tags: { tourism: "museum" } },
+  ] });
+  const batch = f.store.createBatch({ requestKey: "bulk-audio-api", name: "Audio", placeIds: ["osm:node:8"], limit: 1, mode: "text-only" });
+  const job = f.store.claimContentJob();
+  const story = {
+    title: "История музея",
+    paragraphs: [
+      { text: ("Это подтверждённый рассказ о музее для проверки административной постановки озвучки. ").repeat(12), factIds: [] },
+      { text: ("Дополнительный абзац содержит достаточно текста для валидного аудиозадания. ").repeat(12), factIds: [] },
+    ],
+  };
+  f.store.completeContentJob(job.id, { story, evidence: {}, autoApprove: false });
+  f.store.approvePlaceText("osm:node:8");
+
+  const response = await f.post("/api/story-admin/content/audio/bulk", { profileId: "f5-ru-v1", limit: 1 });
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { queued: 1, alreadyQueued: 0, retried: 0, skipped: 0, failed: 0, inspected: 1, hasMore: false });
+  assert.equal(f.store.getContentStats().external.queued, 1);
+  assert.equal(f.store.getBatch(batch.id).counts.ready, 1);
 });
 
 test("place lookup has no generation side effect and reports bounded errors",async(t)=>{
@@ -209,7 +251,7 @@ test('walk errors are sanitized and walk-only body allowance is bounded',async(t
 
 test("guest walk resolves published OSM stories without an account",async t=>{
   const f=await fixture(t);f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[{placeId:"osm:node:9",osmType:"node",osmId:9,name:"Дом",location:{lat:55.75,lon:37.61},tags:{building:"yes"}}]});
-  f.store.createBatch({requestKey:"guest-walk",limit:1});const job=f.store.claimContentJob(),story={title:"История дома",paragraphs:[{text:"Проверенный текст о доме",factIds:["f1"]}]};f.store.completeContentJob(job.id,{story,evidence:{}});f.store.approvePlaceText("osm:node:9");
+  f.store.createBatch({requestKey:"guest-walk",placeIds:["osm:node:9"],limit:1});const job=f.store.claimContentJob(),story={title:"История дома",paragraphs:[{text:"Проверенный текст о доме",factIds:["f1"]}]};f.store.completeContentJob(job.id,{story,evidence:{}});f.store.approvePlaceText("osm:node:9");
   const stop=(id,placeId,lat)=>({id,place:{address:"Москва, дом",location:{lat,lon:37.61}},storyRef:{kind:"osm",id:placeId},transition:"",nextHint:""});
   const document={version:2,id:"22222222-2222-4222-8222-222222222222",title:"Моя прогулка",description:"",city:"Москва",mode:"loop",minutes:30,start:{address:"Старт",location:{lat:55.749,lon:37.61}},destination:null,
     stops:[stop("33333333-3333-4333-8333-000000000001","osm:node:9",55.75),stop("33333333-3333-4333-8333-000000000002","osm:node:404",55.751),stop("33333333-3333-4333-8333-000000000003","osm:node:9",55.76)],route:null,fieldChecked:false};
@@ -222,4 +264,68 @@ test("guest walk resolves published OSM stories without an account",async t=>{
   assert.equal((await resolve({document:{...document,description:"я".repeat(60000)},revision:0})).status,400);
   assert.equal((await resolve({document,revision:0},"https://other.test")).status,403);
   assert.equal((await fetch(f.base+"/api/story-walks/resolve",{method:"POST",headers:{Origin:"https://otgolosok.test","Content-Type":"text/plain"},body:JSON.stringify({document,revision:0})})).status,400);
+});
+
+test("worker failure body cannot replace the authenticated lease identity",async t=>{
+  const f=await fixture(t);
+  const story={title:"Дом",address:"Москва, дом 1",paragraphs:[{text:("История московского дома. ").repeat(30),factIds:["f1"]},{text:("Архитектура и судьба места. ").repeat(30),factIds:["f2"]}]};
+  const source=f.store.createOrGet({key:"lease-identity",address:story.address}),ready=f.store.update(source.id,{stage:"failed",data:{story}},source.revision);
+  await f.store.enqueueExternalAudio({sourceJobId:ready.id,sourceRevision:ready.revision,story,profileId:"silero-ru-v1"});
+  const owner=f.store.createWorkerCredential({name:"Owner",profiles:["silero-ru-v1"]}),other=f.store.createWorkerCredential({name:"Other",profiles:["silero-ru-v1"]});
+  const ownerHeaders={Authorization:`Bearer ${owner.token}`,"X-Worker-Id":"gpu","Content-Type":"application/json"};
+  const claim=await fetch(f.base+"/api/worker/v1/claim",{method:"POST",headers:ownerHeaders,body:JSON.stringify({requestId:"lease-identity-1",profileIds:["silero-ru-v1"]})}).then(value=>value.json());
+  const otherHeaders={Authorization:`Bearer ${other.token}`,"X-Worker-Id":"gpu","Content-Type":"application/json","X-Lease-Generation":"1","X-Lease-Token":"forged"};
+  const response=await fetch(`${f.base}/api/worker/v1/jobs/${claim.job.id}/fail`,{method:"POST",headers:otherHeaders,
+    body:JSON.stringify({failureId:"failure-0001",code:"CRASHED",workerId:`${owner.id}:gpu`,generation:claim.job.leaseGeneration,leaseToken:claim.job.leaseToken})});
+  assert.equal(response.status,400);
+  assert.equal(f.store.getExternalAudio(claim.job.id).state,"leased");
+});
+
+test("worker claim rejects malformed profile lists as a client error",async t=>{
+  const f=await fixture(t,{workerToken:"worker-secret"});
+  const headers={Authorization:"Bearer worker-secret","X-Worker-Id":"gpu","Content-Type":"application/json"};
+  for(const profileIds of [undefined,"silero-ru-v1",{0:"silero-ru-v1"},[1]]) {
+    const response=await fetch(f.base+"/api/worker/v1/claim",{method:"POST",headers,body:JSON.stringify({requestId:"malformed-1",profileIds})});
+    assert.equal(response.status,400,JSON.stringify(profileIds));
+  }
+  assert.equal((await fetch(f.base+"/api/worker/v1/claim",{method:"POST",headers:{...headers,Authorization:"Bearer worker-secreT"},body:JSON.stringify({requestId:"malformed-2",profileIds:["silero-ru-v1"]})})).status,401);
+});
+
+test("worker lease secret is mandatory wherever worker leases can be issued",()=>{
+  const strong="s".repeat(32),random=()=>"random-development-secret";
+  for(const [name,env,transport,expected] of [
+    ["production worker transport without secret",{NODE_ENV:"production"},"worker",Error],
+    ["production worker transport with short secret",{NODE_ENV:"production",WORKER_LEASE_SECRET:"short"},"worker",Error],
+    ["static worker token without secret",{WORKER_API_TOKEN:"token"},"worker",Error],
+    ["production worker transport with strong secret",{NODE_ENV:"production",WORKER_LEASE_SECRET:strong},"worker",strong],
+    ["production HTTP transport does not lease jobs",{NODE_ENV:"production"},"http","random-development-secret"],
+    ["development without secret gets a process-local secret",{},"worker","random-development-secret"],
+  ]) {
+    if(expected===Error)assert.throws(()=>workerLeaseSecret({env,transport,randomSecret:random}),/WORKER_LEASE_SECRET/,name);
+    else assert.equal(workerLeaseSecret({env,transport,randomSecret:random}),expected,name);
+  }
+});
+
+test("admin lists weak identity candidates and starts only a bounded paused pilot",async t=>{
+  const f=await fixture(t),name="Музей-квартира Александра Солженицына";
+  f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),rulesVersion:"v1",coverage:"fixture",places:[{placeId:"osm:node:9",osmType:"node",osmId:9,name,location:{lat:55.75,lon:37.61},tags:{name,tourism:"museum"}}]});
+  const contentHash=f.store.listPlaces().places[0].contentHash;
+  f.store.replaceIdentityCandidates([{placeId:"osm:node:9",contentHash,tier:"auto",score:95,category:"tourism:museum",reasons:[],signals:["inside_address_building"],location:{status:"matched"}}]);
+  const list=await fetch(`${f.base}/api/story-admin/content/identity-candidates?tier=auto&limit=10&offset=0`);assert.equal(list.status,200);
+  const page=await list.json();assert.equal(page.total,1);assert.equal(page.items[0].placeId,"osm:node:9");assert.deepEqual(page.tiers,{auto:1,enrich:0,manual:0});assert.equal(page.pilotLimit,50);
+  for(const query of ["tier=maybe","limit=-1","page=2","tier=auto&tier=manual","category=%D0%BC"])assert.equal((await fetch(`${f.base}/api/story-admin/content/identity-candidates?${query}`)).status,400,query);
+  assert.equal((await f.post("/api/story-admin/content/identity-candidates/pilot",{requestKey:"identity-http-1",limit:1},"https://other.test")).status,403);
+  assert.equal((await f.post("/api/story-admin/content/identity-candidates/pilot",{requestKey:"identity-http-1",limit:51})).status,400);
+  assert.equal((await f.post("/api/story-admin/content/identity-candidates/pilot",{requestKey:"identity-http-1",limit:1,tier:"enrich"})).status,400);
+  const created=await f.post("/api/story-admin/content/identity-candidates/pilot",{requestKey:"identity-http-1",limit:1,mode:"text-only"});assert.equal(created.status,200);
+  const pilot=await created.json();assert.equal(pilot.created,true);assert.equal(pilot.batch.state,"paused");assert.equal(pilot.batch.identityPolicy,"weak_identity");
+  const again=await (await f.post("/api/story-admin/content/identity-candidates/pilot",{requestKey:"identity-http-1",limit:1})).json();assert.equal(again.batch.id,pilot.batch.id);assert.equal(again.created,false);
+  const empty=await f.post("/api/story-admin/content/identity-candidates/pilot",{requestKey:"identity-http-2",limit:1});assert.equal(empty.status,409);
+  assert.match((await empty.json()).error.message,/Пересчитайте оценку/);
+});
+
+test("weak identity candidates are editor-only",async t=>{
+  const f=await fixture(t,{auth:{api:{getSession:async()=>null}}});
+  assert.equal((await fetch(`${f.base}/api/story-admin/content/identity-candidates`)).status,401);
+  assert.equal((await f.post("/api/story-admin/content/identity-candidates/pilot",{requestKey:"identity-http-3",limit:1})).status,401);
 });

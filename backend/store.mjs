@@ -262,6 +262,43 @@ export function createStore(
     ...walkAdminStore,
     ...createWalkResearchStore({ db, now, transaction, checkCapacity }),
     ...contentStore,
+    async enqueueMissingPlaceAudio({ profileId = "silero-ru-v1", limit = 500, signal } = {}) {
+      if (typeof profileId !== "string" || !/^[a-z0-9][a-z0-9._-]{0,63}$/.test(profileId)
+        || !Number.isSafeInteger(limit) || limit < 1 || limit > 500) throw codedError("BAD_REQUEST");
+      const candidates = db.prepare(`SELECT t.id, t.approved_story_json, p.id place_id, p.name, p.address
+        FROM place_texts t JOIN places p ON p.id=t.place_id
+        WHERE p.archived=0 AND t.approved_story_json IS NOT NULL
+          AND (t.audio_json IS NULL OR t.audio_json='null')
+          AND NOT EXISTS (SELECT 1 FROM external_audio_jobs a
+            WHERE a.source_job_id='place-text:'||t.id AND a.profile_id=?
+              AND a.state IN ('queued','retry_wait','leased'))
+        ORDER BY t.created_at, t.rowid LIMIT ?`).all(profileId, limit + 1);
+      const rows = candidates.slice(0, limit);
+      const result = { queued: 0, alreadyQueued: 0, retried: 0, skipped: 0, failed: 0 };
+      for (const row of rows) {
+        try {
+          const job = await this.enqueueExternalAudio({
+            sourceJobId: `place-text:${row.id}`,
+            sourceRevision: 0,
+            story: { ...JSON.parse(row.approved_story_json), address: row.address ?? row.name },
+            profileId,
+            signal,
+          });
+          if (job.state === "failed" || job.state === "cancelled") {
+            const retried = this.retryExternalAudio(job.id);
+            if (retried) result.retried++;
+            else result.skipped++;
+          } else if (job.state === "queued" || job.state === "retry_wait") {
+            result.queued++;
+          } else {
+            result.alreadyQueued++;
+          }
+        } catch {
+          result.failed++;
+        }
+      }
+      return { ...result, inspected: rows.length, hasMore: candidates.length > limit };
+    },
     createOrGet({ key, address }) {
       if (typeof key !== "string" || key.length === 0) {
         throw new TypeError("key must be a non-empty string");
@@ -524,7 +561,6 @@ export function createStore(
         modelSha256:configured.modelSha256??null,speaker:configured.speaker??null,configVersion:configured.configVersion??"1",
         configSha256:configured.configSha256??null,referenceSha256:configured.referenceSha256??null,textPreparation:configured.textPreparation??null,
         chunking:configured.chunking??"sentence-v1",maximumBytes:64*1024*1024,maximumDurationSec:600,
-        minimumPublicationDurationSec:configured.minimumPublicationDurationSec??30,
         maximumPublicationDurationSec:configured.maximumPublicationDurationSec??150};
       const inputKey = sha256(JSON.stringify({version:rawContract?"external-audio-v2":"external-audio-v1",sourceJobId,sourceRevision,spokenTextHash,profileId,normalizer:normalizerVersion,profile}));
       return transaction(() => {
@@ -674,8 +710,8 @@ export function createStore(
         if(textSource?(!textSource.approved_story_json||!hasValidStoryText({...JSON.parse(textSource.approved_story_json),address:"OSM place"})
           ||sha256(JSON.parse(textSource.approved_story_json).paragraphs.map(paragraph=>paragraph.text).join("\n\n"))!==payload.sourceTextHash)
           :(!source||source.revision!==Number(row.source_revision)||!hasValidStoryText(source.data?.story)))throw codedError("CONFLICT");
-        const duration=Number(artifact.durationSec),minimum=Number(payload.profile?.minimumPublicationDurationSec??0),maximum=Number(payload.profile?.maximumPublicationDurationSec??600);
-        if(!Number.isFinite(duration)||duration<minimum||duration>maximum)throw codedError("AUDIO_DURATION");
+        const duration=artifact.durationSec,maximum=Number(payload.profile?.maximumPublicationDurationSec??600);
+        if(typeof duration!=="number"||!Number.isFinite(duration)||duration<=0||duration>maximum)throw codedError("AUDIO_DURATION");
         const timestamp=isoNow(now),receipt={jobId:id,uploadId,uploadSha256,artifact,acceptedAt:timestamp};
         db.prepare(`UPDATE external_audio_jobs SET state='succeeded',upload_id=?,upload_sha256=?,receipt_json=?,
           lease_token_hash=NULL,lease_expires_at=NULL,claim_request_id=NULL,error_json=NULL,updated_at=? WHERE id=?`)

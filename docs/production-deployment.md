@@ -1,6 +1,25 @@
 # Production deployment
 
-Production: https://otgolosok.softmg.tech
+Production: https://otgolosok.online
+
+## Домен
+
+Основной адрес — `otgolosok.online` (регистратор reg.ru, DNS в Cloudflare:
+`A @` и `A www` → `93.189.230.19`). `www.otgolosok.online` и старый
+`otgolosok.softmg.tech` отвечают 301 на `https://otgolosok.online` с сохранением
+пути и query: это отдельный Traefik router `otgolosok-softmg-tech-redirect`,
+который `deploy-otgolosok-prod` создаёт через `PUBLIC_HOST` и `REDIRECT_HOSTS`
+в `deploy-static.sh`. Каталог `/srv/sites/otgolosok.softmg.tech`, сеть
+`otgolosoksoftmgtech-net` и имена Compose-проектов сохранили старый домен — это
+внутренние идентификаторы, переименовывать их не нужно.
+
+Backend принимает только один origin (`APP_ORIGIN=https://otgolosok.online`):
+Better Auth и проверки same-origin отклоняют запросы с других хостов. Поэтому
+старые хосты перенаправляются целиком, а не обслуживают сайт параллельно.
+Сертификаты выпускает Traefik через Let's Encrypt HTTP-01. Если в Cloudflare
+включить проксирование (оранжевое облако), нужен режим SSL «Full (strict)», а
+лимиты по IP в backend начнут видеть адреса Cloudflare вместо клиентов, пока
+Traefik не настроен доверять `X-Forwarded-For` от диапазонов Cloudflare.
 
 Infrastructure scripts live in `/Users/fenix007/projects/utils/services` (not a
 Git repository). Use its `deploy-otgolosok-prod` and
@@ -10,10 +29,26 @@ The generator target uses `deploy-scripts/otgolosok-generator-compose.yml`.
 Do not deploy the root development Compose file over production. Nginx remains
 in its existing project; the single generator and Valhalla share the
 `otgolosok-generator` project and external `otgolosoksoftmgtech-net` network.
-Traefik routes `/api/story-*`, exactly `/api/walk-plan`, exactly
-`/api/walk-research-jobs`, and `/api/walk-research-jobs/` descendants (including
-`/:id/retry`) to the generator with priority 100.
+Traefik routes the whole `/api/` prefix on `otgolosok.online` to the
+generator with priority 100, so new API paths need no ingress change; the
+authoritative rule is the `traefik.http.routers.otgolosok-generator.rule` label
+in `deploy-scripts/otgolosok-generator-compose.yml`. Production Nginx serves
+only the static export and does not proxy the API.
 Admin API authentication remains in the backend.
+
+## Заголовки безопасности
+
+CSP страниц собирается вместе со статикой: `scripts/build-content-security-policy.mjs`
+после `next build` вставляет в каждый HTML `<meta http-equiv="Content-Security-Policy">`
+с SHA-256 хешами inline-скриптов этой страницы. `'unsafe-inline'` для скриптов не
+используется. Новый внешний источник (другой сервер тайлов, шрифты, API в браузере)
+нужно добавить в `scripts/content-security-policy.mjs`, иначе браузер его заблокирует.
+
+`frame-ancestors`, HSTS, `X-Frame-Options`, `Referrer-Policy` и `Permissions-Policy`
+в `<meta>` не работают и отдаются ingress: в production это Traefik middleware, которое
+`deploy-otgolosok-prod` включает через `SECURITY_HEADERS=1` в `deploy-static.sh`,
+а в Docker Compose этого репозитория — `docker/security-headers.conf`, подключённый в
+каждом `location` (`add_header` уровня location отменяет унаследованные).
 
 Универсальная прогулка использует существующие static export и API-прокси:
 прямые `/walk`, `/walk/` и `/walk.html` открывают одну оболочку, а query-параметры
@@ -49,6 +84,11 @@ The site directory is `/srv/sites/otgolosok.softmg.tech`:
 - `generator-data`: existing SQLite database and audio; preserve this directory.
 - `valhalla-data`: persistent Moscow graph, built from BBBike Moscow.osm.pbf.
 - `backups`: private deployment archives including credentials and stopped SQLite.
+  После успешной выкладки `deploy-otgolosok-generator` оставляет три последних
+  `backups/generator-*` и образы `otgolosok-generator:rollback-*` только к ним; остальные
+  удаляются (архив ≈ 0,8 ГБ, диск VPS — 38 ГБ). Ссылки на более старые архивы ниже —
+  история выкладок, самих файлов уже нет (24 архива удалены 25.09.2026). Бэкапы
+  `ingress-*`, `env-*` и каталоги внутри `generator-data` ротация не трогает.
 
 Valhalla is pinned to
 `ghcr.io/valhalla/valhalla-scripted@sha256:64b8f444a39521a8409ae39c8c1f5a80ec8d7167af906d9767c0bbea704fadc7`.
@@ -354,3 +394,70 @@ increasing graph coverage or concurrency.
 - Интерактивная проверка под редактором на проде не выполнялась: учётных
   данных редактора в сессии не было. Генерация историй и синтез речи при
   проверке не запускались.
+
+## Прогулки на карте и личный кабинет — 2026-09-22, 14:31 UTC
+
+- Развёрнута ревизия `3932067` (merge PR #3,
+  `feat/auth-account-osm-pipeline`): сначала генератор
+  (`make deploy-otgolosok-generator`), затем фронтенд
+  (`make deploy-otgolosok-prod`), оба с `VPS=services@93.189.230.19`.
+  Локальная `main` отставала на 81 коммит; перед публикацией выполнен
+  fast-forward до `origin/main`.
+- Проверки перед публикацией: `pnpm install --frozen-lockfile`,
+  `next typegen`, `build-walk-catalog.mjs`, `build-map.mjs`, lint, TypeScript,
+  305 frontend-тестов, 276 backend-тестов, статическая сборка.
+- Перед заменой все 15 записей `jobs` были в терминальных состояниях, поэтому
+  проверка простоя прошла сразу. Valhalla не перезапускалась (uptime 2 недели).
+  Резервная копия: `backups/generator-20260922T142808Z/generator.tar.gz`.
+- Миграции применились на живой базе: `user_walks` получила колонки
+  `visibility` (по умолчанию `private`) и `share_token`, создана пустая таблица
+  `user_generation_intents`. Новых обязательных переменных окружения нет:
+  `USER_DAILY_GENERATION_LIMIT` имеет значение по умолчанию 6.
+- Маршрутизация не менялась: Traefik отдаёт генератору весь `PathPrefix(/api/)`,
+  поэтому новые `/api/me/*` и `/api/story-walks/*` работают без правок ingress.
+  Nginx отдаёт новую страницу `/history` общим правилом `try_files $uri $uri.html`.
+- Проверка прода: `/`, `/admin`, `/create`, `/walk`, `/history`, `/login`,
+  `/api/story-service` — 200 (`enabled: true`). HTML всех шести страниц совпал
+  с локальной сборкой байт в байт. `sw.js` совпадает по версии
+  `2e0cbf9b5daf8e84`, в precache добавлены `/walk`, `/history`, `/account`.
+- Границы доступа: `/api/me`, `/api/me/walks`, `/api/story-admin/jobs`,
+  `/api/story-admin/content/places`, `/api/story-admin/content/batches` без
+  авторизации — 401; межсайтовый POST `/api/walk-plan` — 403; ссылка на чужую
+  прогулку со случайным идентификатором — 404. Публичная
+  `/api/story-walks/msk-kozhevniki-zindel-short` — 200.
+- `server.mjs`, `walks.mjs`, `account-store.mjs`, `walk-document.mjs`,
+  `walk-view.mjs`, `walk-catalog.mjs`, `user-walks.mjs` и
+  `favorite-summary.mjs` в контейнере совпадают с локальными по SHA-256.
+- Данные сохранены: `PRAGMA quick_check` — `ok` в `jobs.sqlite` и `auth.sqlite`,
+  6107 мест, 1019 текстов, 15 записей `jobs` в прежних состояниях, 1 аккаунт.
+- Браузерная проверка на 390×844 без авторизации: главная открывается картой с
+  метками и нижней навигацией «Рядом / Прогулка / История / Профиль», `/walk`
+  без сохранённой прогулки переводит на `/history`, `/login` показывает форму
+  входа. В консоли ошибок нет, два предупреждения о неиспользованном
+  `link preload` для CSS-чанков.
+- Генерация историй и синтез речи при проверке не запускались.
+
+## Триаж weak_identity и фильтр пригодности партий — 2026-09-23, 16:26 UTC
+
+- Развёрнута ревизия `8b743e2` (вместе с `bb9e705` и `323b6b2`): генератор
+  (`make deploy-otgolosok-generator`), затем фронтенд (`make deploy-otgolosok-prod`),
+  оба с `VPS=services@93.189.230.19`. Перед фронтендом `make check` прошёл,
+  310 backend-тестов без ошибок. Резервная копия генератора:
+  `backups/generator-20260923T162600Z/generator.tar.gz`.
+- Причина остановки прироста текстов (1102 из 6107): единственная партия
+  `OSM снимок · 18.09.2026` на 1743 места полностью дошла до конечных состояний
+  (1102 готово, 617 на редактуре, 14 без источников, 10 ошибок), очередь пуста.
+  Остальные 4364 места — weak_identity, обычный фильтр пригодности их не пропускает.
+- Проверка прода: `/`, `/admin`, `/login`, `/api/story-service` — 200;
+  `/api/story-admin/content/identity-candidates` без авторизации — 401.
+- Оценка кандидатов записана в production-базу. `scripts/` в образ не входит,
+  поэтому скрипт передан в контейнер через stdin с импортами из `/app/`.
+  Перед записью снимок `VACUUM INTO` в
+  `/data/ops-backups/identity-assess-2026-09-23T162919742Z/`. Итог
+  `identity-triage-v1`: 4364 кандидата, `auto` — 526, `enrich` — 2894,
+  `manual` — 944.
+- Создан и запущен пилот `81fa6d3f-115f-4ff9-bf32-0dc548a231be` на 20 мест
+  уровня `auto`, только текст, без автоутверждения. Вызваны те же методы
+  хранилища, что и в API (`createIdentityPilot`, `setBatchState`), потому что
+  учётных данных редактора в сессии не было. Воркер подхватил задания в течение
+  нескольких секунд.
