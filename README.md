@@ -132,6 +132,20 @@ pnpm video:preview:kinetic
 Результат — `artifacts/video/otgolosok-kinetic.mp4`. Подробности:
 [кинетический ролик](docs/agents/kinetic-video.md).
 
+Ролик «Красная площадь и Варварка» 1080×1920 на 31,5 секунды — тоже без Remotion:
+собор из геометрических фигур, факты с маршрута на счётчиках, маршрут на 3D-карте
+центра по данным OpenStreetMap, экран истории, табло и знак. Остановки и подписи
+берутся из десяти опубликованных историй otgolosok.online, маршрут — из Valhalla.
+
+```bash
+pnpm video:render:red-square
+pnpm video:preview:red-square
+pnpm video:data:red-square   # обновить данные прогулки, нужна сеть
+```
+
+Результат — `artifacts/video/otgolosok-red-square.mp4`. Подробности:
+[ролик «Красная площадь и Варварка»](docs/agents/red-square-video.md).
+
 ## Docker Compose
 
 Нужны Docker Engine / Docker Desktop с Compose v2, доступ в интернет для загрузки
