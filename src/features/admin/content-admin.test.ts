@@ -31,6 +31,7 @@ let failDetail: boolean;
 let gate: { promise: Promise<void>; open: () => void } | null;
 let scrolled: Element[];
 let itemQueries: URLSearchParams[];
+let placeQueries: URLSearchParams[];
 let items: ContentBatchItem[];
 let transport: "worker" | "http";
 let configuredWorkers: ContentWorker[];
@@ -63,7 +64,12 @@ const api: AdminApi = async <T,>(path: string): Promise<T> => {
     if (failDetail) throw new Error("Не удалось загрузить место");
     return { place: structuredClone(places.find(place => path.endsWith(place.id))) } as T;
   }
-  if (path.startsWith("/content/places?")) return { places: places.map(place => ({ ...place, textStatus: place.text ? "approved" : "none", audio: null })), total: 2, hasMore: false } as T;
+  if (path.startsWith("/content/places?")) {
+    const query = new URLSearchParams(path.split("?")[1]);
+    placeQueries.push(query);
+    if (query.get("status") === "draft") return { places: [{ ...places[0], textStatus: "draft", audio: null }], total: 1, hasMore: false } as T;
+    return { places: places.map(place => ({ ...place, textStatus: place.text ? "approved" : "none", audio: null })), total: 2, hasMore: false } as T;
+  }
   if (path.endsWith("/retry")) {
     const retried = items.find(item => path.includes(item.placeId))!;
     retried.state = "queued"; retried.error = null;
@@ -154,6 +160,7 @@ beforeEach(async () => {
   gate = null;
   scrolled = [];
   itemQueries = [];
+  placeQueries = [];
   items = structuredClone(batchItems);
   transport = "worker";
   configuredWorkers = [];
@@ -207,6 +214,23 @@ describe("подключение TTS", () => {
     await click(buttons("Открыть")[0]);
     expect(container.textContent).toContain("нет online-воркера TTS");
     expect(buttons("Выпустить ключ")).toHaveLength(1);
+  });
+});
+
+describe("редактура черновиков", () => {
+  it("показывает отдельный фильтр и открывает ожидающий утверждения текст", async () => {
+    const filter = [...container.querySelectorAll<HTMLSelectElement>("select")]
+      .find(select => select.closest("label")?.textContent?.includes("Состояние текста"));
+    expect(filter).toBeDefined();
+    expect([...filter!.options].map(option => option.textContent)).toContain("Только черновики");
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value")!.set!.call(filter, "draft");
+      filter!.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    expect(placeQueries.at(-1)?.get("status")).toBe("draft");
+    expect(container.querySelector('[aria-labelledby="content-catalog-title"] tbody')?.textContent).toContain("Черновик");
+    await click(buttons("Открыть")[0]);
+    expect(buttons("Утвердить текст")).toHaveLength(1);
   });
 });
 
@@ -291,7 +315,7 @@ describe("переход из каталога к редактору места"
 
     expect(container.querySelector("article")).toBeNull();
     expect(container.querySelector('[role="status"]')?.textContent)
-      .toBe("Текст утверждён; нужная озвучка поставлена в очередь.");
+      .toBe("Текст утверждён.");
     expect(document.activeElement?.textContent).toBe("Открыть");
     expect(scrolled.at(-1)).toBe(document.activeElement);
   });

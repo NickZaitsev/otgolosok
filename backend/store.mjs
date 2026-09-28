@@ -284,6 +284,7 @@ export function createStore(
       const candidates = /** @type {Array<{id: string, approved_story_json: string, place_id: string, name: string, address: string | null}>} */ (db.prepare(`SELECT t.id, t.approved_story_json, p.id place_id, p.name, p.address
         FROM place_texts t JOIN places p ON p.id=t.place_id
         WHERE p.archived=0 AND t.approved_story_json IS NOT NULL
+          AND COALESCE(json_extract(t.approved_story_json,'$.audioDisposition'),'')<>'not_applicable_short_text'
           AND (t.audio_json IS NULL OR t.audio_json='null')
           AND NOT EXISTS (SELECT 1 FROM external_audio_jobs a
             WHERE a.source_job_id='place-text:'||t.id AND a.profile_id=?

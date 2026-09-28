@@ -109,6 +109,27 @@ test("bulk audio backfill queues only approved texts without audio, reports unap
   assert.equal(store.getBatch(batch.id).counts.ready, 2);
 });
 
+test("bulk audio backfill skips approved short references without planned narration", async t => {
+  const store = createStore(":memory:", {
+    externalTtsProfiles: { "f5-ru-v1": { engine: "f5", language: "ru" } },
+    normalizeExternalText: Object.assign(async text => text, { version: "plain-v1" }),
+  });
+  t.after(() => store.close());
+  store.importPlaces(catalog);
+  store.createBatch({ requestKey: "short-reference", placeIds: ["osm:node:1"], limit: 1, mode: "text-only" });
+  const job = store.claimContentJob();
+  store.completeContentJob(job.id, {
+    story: { title: "Короткая справка", audioDisposition: "not_applicable_short_text",
+      paragraphs: [{ text: "Подтверждённых сведений достаточно только для короткой справки.", factIds: [] }] },
+    evidence: {}, autoApprove: false,
+  });
+  store.approvePlaceText(job.place.id);
+  const result = await store.enqueueMissingPlaceAudio({ profileId: "f5-ru-v1" });
+  assert.equal(result.inspected, 0);
+  assert.equal(result.queued, 0);
+  assert.deepEqual(store.getContentStats().external, {});
+});
+
 test("job migrations add profile versions and priorities to existing databases",t=>{
   const directory=mkdtempSync(join(tmpdir(),"content-migration-")),file=join(directory,"jobs.sqlite");t.after(()=>rmSync(directory,{recursive:true,force:true}));
   const db=new DatabaseSync(file);db.exec(`CREATE TABLE content_jobs (id TEXT PRIMARY KEY,input_key TEXT NOT NULL UNIQUE,place_id TEXT NOT NULL,state TEXT NOT NULL,
@@ -131,8 +152,11 @@ test("catalog pages report totals and whether a text exists for each place",t=>{
   const job=store.claimContentJob();
   store.completeContentJob(job.id,{story:{title:"Текст",paragraphs:[{text:"Абзац",factIds:["f1"]}]},evidence:{facts:[]}});
   assert.equal(store.listPlaces().places.find(place=>place.id===job.place.id).textStatus,"draft");
+  assert.deepEqual(store.listPlaces({status:"draft"}).places.map(place=>place.id),[job.place.id]);
+  assert.equal(store.listPlaces({status:"draft",q:"несуществующее место"}).total,0);
   store.approvePlaceText(job.place.id);
   assert.equal(store.listPlaces().places.find(place=>place.id===job.place.id).textStatus,"approved");
+  assert.equal(store.listPlaces({status:"draft"}).total,0);
   assert.equal(store.listPlaces({status:"ready"}).total,1);
   assert.equal(store.listPlaces({status:"missing"}).total,1);
 });
