@@ -24,7 +24,7 @@ const mapBase = staticFile("motion/map-base.svg");
 const listenScreen = staticFile("guide/listen.png");
 const story = staticFile("audio/walk/kozhevniki-d2ccb2df8e45.mp3");
 
-function Echo({frame}: {frame: number}) {
+export function Echo({frame}: {frame: number}) {
   const dot = pop(frame, 2, 9);
   const lift = progress(frame, 70, 120, swing);
   const spin = frame * 0.9;
@@ -53,7 +53,7 @@ function Echo({frame}: {frame: number}) {
 }
 
 /** Круговая надпись, медленно вращается вокруг центра. */
-function Badge({text, frame, size, color, delay}: {text: string; frame: number; size: number; color: string; delay: number}) {
+export function Badge({text, frame, size, color, delay}: {text: string; frame: number; size: number; color: string; delay: number}) {
   const shown = pop(frame, delay, 14);
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" style={{transform: `scale(${shown}) rotate(${frame * 0.8 - 40 * (1 - shown)}deg)`}} aria-hidden="true">
@@ -120,12 +120,12 @@ function Place({frame}: {frame: number}) {
 
 const stopProgress = MAP_STOPS.map(routeProgressNear);
 
-function Counter({value, frame, at, label}: {value: number; frame: number; at: number; label: string}) {
+export function Counter({value, frame, at, label, decimals = 0}: {value: number; frame: number; at: number; label: string; decimals?: number}) {
   const count = value * progress(frame, at, at + 40, Easing.out(Easing.cubic));
   const shown = progress(frame, at, at + 16);
   return (
     <div style={{opacity: shown, transform: `translateY(${(1 - shown) * 40}px)`}}>
-      <div style={{font: `600 118px ${SERIF}`, lineHeight: 1, fontVariantNumeric: "tabular-nums"}}>{Math.round(count)}</div>
+      <div style={{font: `600 118px ${SERIF}`, lineHeight: 1, fontVariantNumeric: "tabular-nums"}}>{count.toFixed(decimals).replace(".", ",")}</div>
       <div style={{font: `600 26px ${SANS}`, color: sage, marginTop: 8}}>{label}</div>
     </div>
   );
@@ -192,7 +192,7 @@ const PANEL_SLICES = [
 ];
 const PANEL_VISIBLE_HEIGHT = PANEL.height - (PANEL_CUT.to - PANEL_CUT.from);
 
-function Waveform({frame, radius, bars}: {frame: number; radius: number; bars: number}) {
+export function Waveform({frame, radius, bars}: {frame: number; radius: number; bars: number}) {
   return (
     <svg width={radius * 2 + 260} height={radius * 2 + 260} viewBox={`${-radius - 130} ${-radius - 130} ${radius * 2 + 260} ${radius * 2 + 260}`} aria-hidden="true">
       {Array.from({length: bars}, (_, index) => {
@@ -248,17 +248,21 @@ function Listen({frame}: {frame: number}) {
   );
 }
 
-const promises = [
+export type IconKind = "check" | "link" | "pin" | "wave";
+export type PromiseCard = {text: readonly [string, string]; background: string; color: string; accent: string; icon: IconKind};
+
+const promises: readonly PromiseCard[] = [
   {text: ["Проверенные", "факты"], background: cream, color: green, accent: rust, icon: "check"},
   {text: ["Источники —", "рядом"], background: rust, color: cream, accent: peach, icon: "link"},
   {text: ["Слушайте", "на ходу"], background: green, color: cream, accent: peach, icon: "pin"},
-] as const;
+];
 
-function Icon({kind, color, draw}: {kind: (typeof promises)[number]["icon"]; color: string; draw: number}) {
-  const paths = {
+function Icon({kind, color, draw}: {kind: IconKind; color: string; draw: number}) {
+  const paths: Record<IconKind, string> = {
     check: "M30 82 L68 118 L140 40",
     link: "M60 120 L130 50 M80 48 L132 48 L132 100",
     pin: "M85 150 C85 150 35 98 35 68 A50 50 0 0 1 135 68 C135 98 85 150 85 150 Z M85 50 A18 18 0 1 0 85.1 50",
+    wave: "M15 85 L40 85 L55 55 L75 120 L95 30 L115 110 L130 85 L155 85",
   };
   return (
     <svg width={170} height={170} viewBox="0 0 170 170" aria-hidden="true">
@@ -267,10 +271,12 @@ function Icon({kind, color, draw}: {kind: (typeof promises)[number]["icon"]; col
   );
 }
 
-function Trust({frame}: {frame: number}) {
-  const index = Math.min(promises.length - 1, Math.floor(frame / 30));
+/** Три коротких тезиса по 30 кадров; кегль уменьшается под самую длинную строку. */
+export function Promises({frame, items}: {frame: number; items: readonly PromiseCard[]}) {
+  const index = Math.min(items.length - 1, Math.floor(frame / 30));
   const local = frame - index * 30;
-  const item = promises[index];
+  const item = items[index];
+  const fontSize = Math.min(138, Math.floor(1560 / Math.max(...item.text.map((line) => line.length))));
   const slam = spring({frame: local, fps: MOTION_FPS, config: {damping: 12, stiffness: 260, mass: 0.6}});
   const shake = local < 8 ? (random(`shake-${frame}`) - 0.5) * 14 * (1 - local / 8) : 0;
   return (
@@ -280,14 +286,14 @@ function Trust({frame}: {frame: number}) {
         <div style={{transform: `scale(${0.6 + slam * 0.4})`, transformOrigin: "left center", opacity: Math.min(1, slam * 2)}}>
           <Icon kind={item.icon} color={item.accent} draw={progress(local, 4, 22)} />
         </div>
-        <div style={{marginTop: 50, font: `700 138px ${SANS}`, lineHeight: 1.02, letterSpacing: -4 + (1 - slam) * 20}}>
+        <div style={{marginTop: 50, font: `700 ${fontSize}px ${SANS}`, lineHeight: 1.02, letterSpacing: -4 + (1 - slam) * 20}}>
           {item.text.map((line, lineIndex) => (
             <div key={line} style={{transform: `translateX(${(1 - pop(local, lineIndex * 3, 14)) * 700 * (lineIndex % 2 ? -1 : 1)}px)`, color: lineIndex === 1 ? item.accent : item.color}}>{line}</div>
           ))}
         </div>
       </div>
       <div style={{position: "absolute", left: 80, right: 80, bottom: 150, display: "flex", gap: 14}}>
-        {promises.map((_, dot) => (
+        {items.map((_, dot) => (
           <div key={dot} style={{flex: 1, height: 8, borderRadius: 8, background: `${item.color}33`, overflow: "hidden"}}>
             <div style={{height: "100%", width: `${dot < index ? 100 : dot === index ? progress(local, 0, 30, Easing.linear) * 100 : 0}%`, background: item.color}} />
           </div>
@@ -297,7 +303,11 @@ function Trust({frame}: {frame: number}) {
   );
 }
 
-function Brand({frame}: {frame: number}) {
+export function Trust({frame}: {frame: number}) {
+  return <Promises frame={frame} items={promises} />;
+}
+
+export function Brand({frame}: {frame: number}) {
   const drop = spring({frame: frame - 22, fps: MOTION_FPS, config: {damping: 7, stiffness: 180, mass: 0.8}});
   const landed = frame >= 30;
   const cta = pop(frame, 58, 12);
@@ -337,7 +347,7 @@ const scenes: Record<MotionSceneId, (props: {frame: number}) => ReactNode> = {
 };
 
 /** Как входящая сцена открывается поверх уходящей. */
-const reveals: Record<MotionSceneId, (t: number) => {clipPath: string; transform?: string}> = {
+export const reveals: Record<MotionSceneId, (t: number) => {clipPath: string; transform?: string}> = {
   echo: () => ({clipPath: "none"}),
   // Круг расходится от точки, как волна «отголоска».
   place: (t) => ({clipPath: `circle(${t * 125}% at 50% 36%)`}),

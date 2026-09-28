@@ -9,6 +9,8 @@ import {OtgolosokCreateAd} from "./otgolosok-create-ad";
 import {CREATE_AD_DURATION_IN_FRAMES, CREATE_AD_FPS} from "./create-ad-timeline";
 import {OtgolosokMotionWide} from "./otgolosok-motion-wide";
 import {OtgolosokMotionCentre} from "./otgolosok-motion-centre";
+import {OtgolosokCentreVertical} from "./otgolosok-centre-vertical";
+import {CENTRE_VERTICAL_DURATION_IN_FRAMES, CENTRE_VERTICAL_FPS} from "./centre-vertical-timeline";
 import {CENTRE_DURATION_IN_FRAMES, CENTRE_FPS} from "./motion-centre-timeline";
 import {WIDE_DURATION_IN_FRAMES, WIDE_FPS} from "./motion-wide-timeline";
 import {MOTION_DURATION_IN_FRAMES, MOTION_FPS} from "./motion-timeline";
@@ -34,6 +36,14 @@ export function VideoRoot() {
         component={OtgolosokMotion}
         durationInFrames={MOTION_DURATION_IN_FRAMES}
         fps={MOTION_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="OtgolosokCentreVertical"
+        component={OtgolosokCentreVertical}
+        durationInFrames={CENTRE_VERTICAL_DURATION_IN_FRAMES}
+        fps={CENTRE_VERTICAL_FPS}
         width={1080}
         height={1920}
       />
