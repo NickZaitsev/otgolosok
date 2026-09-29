@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { ExploreMap, type MapFocus } from "../explore/explore-map";
 import { ExploreIcon } from "../explore/icons";
+import { BrandMark } from "../brand/brand-mark";
 import type { Coordinates, Route } from "./types";
 import type { WalkChapter } from "./walk-plan";
 import "../explore/explore.css";
@@ -20,8 +21,10 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
   player: ReactNode; story: ReactNode; settings: ReactNode; audioError: string;
 }) {
   const panelRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   // The panel covers the bottom of the map or, on a low landscape screen, a column on the right.
-  const [cover, setCover] = useState<{ side: "bottom" | "right"; size: number }>({ side: "bottom", size: 250 });
+  // The header covers the top of the map; its bottom edge is measured from the top of the screen.
+  const [cover, setCover] = useState<{ side: "bottom" | "right"; size: number; top: number }>({ side: "bottom", size: 250, top: 74 });
   const [focus, setFocus] = useState<MapFocus | null>(null);
   const [drawer, setDrawer] = useState<"stops" | "story" | "settings" | null>(null);
   const chapter = chapters[index];
@@ -32,9 +35,10 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
     ...(route.walk ? [{ id: "walk-finish", title: `Финиш: ${route.walk.finish.address}`, location: route.walk.finish.location, compact: true }] : []),
   ], [chapters, route.walk]);
   // Beside the panel the route also keeps clear of the map buttons above the navigation.
+  // Below the header it leaves room for a stop pin, which rises about 48 px above its point.
   const padding = useMemo(() => cover.side === "right"
-    ? { top: 70, right: cover.size + 24, bottom: 160, left: 45 }
-    : { top: 70, right: 45, bottom: cover.size + 125, left: 45 }, [cover]);
+    ? { top: cover.top + 48, right: cover.size + 24, bottom: 160, left: 45 }
+    : { top: cover.top + 48, right: 45, bottom: cover.size + 125, left: 45 }, [cover]);
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
@@ -43,10 +47,12 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
       // walk-session.css docks the panel to the right on a low landscape screen.
       const side = getComputedStyle(panel).getPropertyValue("--walk-panel-dock").trim() === "right" ? "right" : "bottom";
       const size = Math.ceil(side === "right" ? (panel.parentElement?.getBoundingClientRect().right ?? innerWidth) - box.left : box.height);
-      setCover(current => current.side === side && current.size === size ? current : { side, size });
+      const top = Math.ceil(headerRef.current?.getBoundingClientRect().bottom ?? 0);
+      setCover(current => current.side === side && current.size === size && current.top === top ? current : { side, size, top });
     };
     const observer = new ResizeObserver(measure);
     observer.observe(panel);
+    if (headerRef.current) observer.observe(headerRef.current);
     // Turning the phone may keep the panel's size while its dock changes.
     addEventListener("resize", measure);
     return () => { observer.disconnect(); removeEventListener("resize", measure); };
@@ -64,7 +70,11 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
           if (position >= 0) { if (active) select(position); else setDrawer("stops"); }
         }} mapLabel="Карта прогулки: пешеходный маршрут и остановки" />
     </div>
-    <Link className="walk-session-back" href="/" aria-label="Закрыть прогулку" onClick={() => onStop()}><ExploreIcon name="close" /></Link>
+    <header ref={headerRef} className="walk-session-header">
+      <Link href="/" prefetch={false} className="walk-session-brand" aria-label="Отголосок, на главную" onClick={() => onStop()}><BrandMark /></Link>
+      <Link className="walk-session-search" href="/?search=1" prefetch={false} aria-label="Найти адрес" onClick={() => onStop()}><ExploreIcon name="search" /></Link>
+      <Link className="walk-session-back" href="/" prefetch={false} aria-label="Закрыть прогулку" onClick={() => onStop()}><ExploreIcon name="close" /></Link>
+    </header>
     {active && user ? <button type="button" className="walk-session-locate" aria-label="Моё местоположение" onClick={() => setFocus({ lat: user.lat, lon: user.lon, zoom: 16 })}><ExploreIcon name="locate" /></button> : null}
     <section ref={panelRef} className="walk-session-panel" aria-labelledby="walk-session-title">
       <header className="walk-session-heading">
