@@ -10,7 +10,7 @@ import { fetchOpenDataset, matchOpenData, OPEN_DATA_DATASETS } from "./open-data
 //   --fetch <datasetId> --out <file>   downloads a dataset where DATA_MOS_API_KEY is set (a workstation);
 //   --apply <file> [--dry-run]         matches the snapshot to the catalog in DATA_DIR/jobs.sqlite and stores matches.
 const argv=process.argv.slice(2),has=flag=>argv.includes(flag),valueAfter=flag=>{const index=argv.indexOf(flag);return index>=0?argv[index+1]:undefined;};
-const usage="Usage: node backend/import-open-data.mjs --fetch <2801|60869> --out <file> | --apply <file> [--dry-run]";
+const usage="Usage: node backend/import-open-data.mjs --fetch <2801|60869|530> --out <file> | --apply <file> [--dry-run]";
 const fetchId=valueAfter("--fetch"),applyFile=valueAfter("--apply");
 if(Boolean(fetchId)===Boolean(applyFile))throw new Error(usage);
 
