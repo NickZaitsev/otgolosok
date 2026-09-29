@@ -96,6 +96,18 @@ const PATRONYMIC = /(?:ович|евич|ич|овна|евна|ична|ини�
 const tokens = value => identityNameKey(value).split(/[\s,.:;!?()«»—–-]+/u).filter(token => token.length >= 3 && !stopWords.has(token));
 // A stem tolerates Russian case endings: "сквере Бунина" names "Сквер Бунина".
 const stem = token => token.slice(0, Math.max(4, token.length - 2));
+// A short word ending in a vowel or a soft sign ("Мень", "Леся") is too short for a stem: without its last
+// letter it accepts only a case ending, so "Меню" and "Леси" match and "меньше" does not.
+const SHORT_ENDINGS = new Set(["", "а", "я", "у", "ю", "е", "и", "ы", "о", "ь", "й", "ой", "ей", "ем", "ём", "ом", "ам", "ям", "ами", "ями", "ах", "ях", "ою", "ею"]);
+const wordMatches = (candidate, token) => {
+  if (token.length > 4 || !/[аеиоуыэюяьй]$/u.test(token)) return candidate.startsWith(stem(token));
+  const base = token.slice(0, -1);
+  return candidate.startsWith(base) && SHORT_ENDINGS.has(candidate.slice(base.length));
+};
+// The dedication formula of war memorials; sources write "1941-1945" or "павшим в боях" instead.
+const WAR_FORMULA = /\s*(?:в\s+)?Велик\S*\s+Отечествен\S*\s+войн\S*/giu;
+const ACRONYM = /^[«"]?[А-ЯЁA-Z]{2,5}[»"]?$/u;
+const properWords = words => words.slice(1).filter(word => /^[«"]?[А-ЯЁA-Z]/u.test(word));
 
 /**
  * A name variant is found in a quote when every proper-name token is there and at least
@@ -103,14 +115,24 @@ const stem = token => token.slice(0, Math.max(4, token.length - 2));
  */
 export function quoteNamesPlace(quote, place) {
   const quoteTokens = tokens(quote);
-  const present = token => quoteTokens.some(candidate => candidate.startsWith(stem(token)));
-  return nameVariants(place).some(variant => {
+  const present = token => quoteTokens.some(candidate => wordMatches(candidate, token));
+  // A war memorial is also checked without the formula, if a proper name remains: otherwise the formula is the name.
+  const variants = nameVariants(place).flatMap(name => {
+    const stripped = name.replace(WAR_FORMULA, "").trim();
+    return stripped !== name && properWords(stripped.split(/\s+/u)).length ? [name, stripped] : [name];
+  });
+  return variants.some(variant => {
+    const formula = new Set((variant.match(WAR_FORMULA) ?? []).join(" ").split(/\s+/u));
     const words = variant.split(/\s+/u);
     // "Василий Семёнович Лановой": sources about a mural or plaque usually drop the patronymic, so first name and surname suffice.
     const fullName = words.length === 3 && words.every(word => /^[А-ЯЁ][а-яё-]+$/u.test(word)) && PATRONYMIC.test(words[1]);
     const all = tokens(fullName ? `${words[0]} ${words[2]}` : variant);
     if (!all.length) return false;
-    const proper = fullName ? all : words.slice(1).filter(word => /^[«"]?[А-ЯЁA-Z]/u.test(word)).flatMap(tokens);
+    // An acronym ("МОЖД") and the war formula still count towards the 60 %, but are not required
+    // next to another proper name.
+    const capitalised = properWords(words).filter(word => !formula.has(word));
+    const named = capitalised.filter(word => !ACRONYM.test(word));
+    const proper = fullName ? all : (named.length ? named : capitalised).flatMap(tokens);
     const required = proper.length ? proper : all.length <= 2 ? all : [];
     return required.every(present) && all.filter(present).length / all.length >= 0.6;
   });
