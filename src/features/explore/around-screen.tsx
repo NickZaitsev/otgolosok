@@ -65,6 +65,16 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     return ()=>{lookup.current?.abort();cancelLocation();};
   },[]);
   useEffect(()=>{if(search)input.current?.focus();},[search]);
+  // Кнопка поиска в шапке прогулки ведёт на /?search=1: открываем поле адреса и убираем параметр из адреса.
+  useEffect(()=>{
+    if(params.get("search")!=="1")return;
+    const timer=setTimeout(()=>{
+      setSearch(true);setPrompt(false);
+      const rest=new URLSearchParams(params.toString());rest.delete("search");
+      router.replace(rest.size?`${pathname}?${rest}`:pathname,{scroll:false});
+    },0);
+    return()=>clearTimeout(timer);
+  },[params,pathname,router]);
   useEffect(()=>{
     const timer=setTimeout(()=>setPrompt(shouldShowGeoPrompt(localStorage)),0);
     return()=>clearTimeout(timer);
