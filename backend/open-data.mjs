@@ -8,14 +8,20 @@ export const OPEN_DATA_PORTAL = Object.freeze({ name: "Портал открыт
 export const OPEN_DATA_DATASETS = Object.freeze({
   2801: Object.freeze({ kind: "plaque", title: "Мемориальные доски города Москвы" }),
   60869: Object.freeze({ kind: "sculpture", title: "Перечень скульптур под открытым небом, расположенных на территории учреждений, подведомственных Департаменту культуры города Москвы" }),
+  530: Object.freeze({ kind: "heritage", title: "Объекты культурного наследия" }),
 });
 export const OPEN_DATA_API = "https://apidata.mos.ru/v1";
 export const PLAQUE_RADIUS_M = 80;
 export const SCULPTURE_RADIUS_M = 1500;
+// A heritage record carries the object's outline: a plaque on a listed wall or a monument in a listed park sits on
+// or next to it, while the next building along the street is usually farther.
+export const HERITAGE_RADIUS_M = 25;
 
 const EMPTY = /^(?:не\s+установлен[аоы]?|нет\s+данных|отсутству\S*|[-—–])$/iu;
 const PLAQUE_NOISE = /^(?:мемориальн|памятн|доска|доск)/u;
 const SCULPTURE_PREFIX = /^(?:скульптурная композиция|скульптура|композиция|памятник|монумент|бюст)\s+/u;
+const HERITAGE_NOISE = /^(?:мемориальн|памятн|доска|доск|памятник)/u;
+const AUTHOR_MARK = /(?<![а-я])(?:арх|ск|скульп|скульпт|скульптор|скульпторы|архитектор|архитекторы|арх-ры|инж|инженер|инженеры|худ|художник|художники)(?:[.:]|\s)/u;
 const PAGE = 500;
 
 const clean = value => {
@@ -34,6 +40,39 @@ export function distanceMeters(a, b) {
   return 2 * 6371000 * Math.asin(Math.sqrt(Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2));
 }
 
+/** Outline rings and points of a GeoJSON geometry, as [lon, lat] pairs. */
+function shape(geometry) {
+  if (!geometry) return { rings: [], points: [] };
+  if (geometry.type === "Point") return { rings: [], points: [geometry.coordinates] };
+  if (geometry.type === "Polygon") return { rings: geometry.coordinates, points: [] };
+  if (geometry.type === "MultiPolygon") return { rings: geometry.coordinates.flat(), points: [] };
+  if (geometry.type === "GeometryCollection") {
+    const parts = (geometry.geometries ?? []).map(shape);
+    return { rings: parts.flatMap(part => part.rings), points: parts.flatMap(part => part.points) };
+  }
+  return { rings: [], points: [] };
+}
+const inMoscow = ({ lat, lon }) => Number.isFinite(lat) && Number.isFinite(lon) && lat > 55 && lat < 56.2 && lon > 36.7 && lon < 38.3;
+
+/** Distance in metres from a point to an outline: 0 inside a ring. Local flat projection, fine at tens of metres. */
+export function distanceToShape(location, { rings, points }) {
+  const kx = 111320 * Math.cos(location.lat * Math.PI / 180), ky = 111320;
+  const xy = ([lon, lat]) => [(lon - location.lon) * kx, (lat - location.lat) * ky];
+  let best = Infinity;
+  for (const ring of rings) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = xy(ring[i]), [xj, yj] = xy(ring[j]);
+      if ((yi > 0) !== (yj > 0) && 0 < (xj - xi) * (0 - yi) / (yj - yi) + xi) inside = !inside;
+      const dx = xj - xi, dy = yj - yi, t = dx || dy ? Math.max(0, Math.min(1, -(xi * dx + yi * dy) / (dx * dx + dy * dy))) : 0;
+      best = Math.min(best, Math.hypot(xi + t * dx, yi + t * dy));
+    }
+    if (inside) return 0;
+  }
+  for (const item of points) best = Math.min(best, Math.hypot(...xy(item)));
+  return best;
+}
+
 function point(feature, cells) {
   const coordinates = feature?.geometry?.type === "Point" ? feature.geometry.coordinates : null;
   const [lon, lat] = Array.isArray(coordinates) ? coordinates : [Number(cells.Longitude_WGS84), Number(cells.Latitude_WGS84)];
@@ -49,11 +88,19 @@ export function normalizeOpenDataRecord(datasetId, row, feature = null) {
   if (!dataset || !row?.Cells || row.global_id == null) return null;
   const cells = row.Cells, fields = {};
   for (const [name, value] of Object.entries(cells)) {
-    if (["Photo", "global_id", "geoData", "geodata_center", "Longitude_WGS84", "Latitude_WGS84", "ID"].includes(name)) continue;
+    if (["Photo", "global_id", "geoData", "geodata_center", "Longitude_WGS84", "Latitude_WGS84", "ID", "AISID"].includes(name)) continue;
     if (name === "Authors" && Array.isArray(value)) {
       const authors = value.map(item => ({ name: clean(item?.AuthorsName), profession: clean(item?.Profession) })).filter(item => item.name);
       if (authors.length) fields.Authors = authors;
     } else if (clean(value)) fields[name] = clean(value);
+  }
+  if (dataset.kind === "heritage") {
+    const name = fields.ObjectName || fields.ObjectNameOnDoc, outline = shape(feature?.geometry);
+    const vertices = [...outline.rings.flat(), ...outline.points];
+    const center = vertices.length ? { lon: vertices.reduce((sum, item) => sum + item[0], 0) / vertices.length, lat: vertices.reduce((sum, item) => sum + item[1], 0) / vertices.length } : null;
+    if (!name) return null;
+    // The outline is only for matching: matchOpenData drops it, so the stored record stays small.
+    return { datasetId: Number(datasetId), recordId: String(row.global_id), kind: dataset.kind, name, location: center && inMoscow(center) ? center : null, fields, outline };
   }
   const name = dataset.kind === "plaque" ? fields.Name : fields.SculpName;
   if (!name) return null;
@@ -83,6 +130,40 @@ export function plaqueNamesPlace(record, place) {
   return initials.every((letter, index) => letter === letters[index]);
 }
 
+/**
+ * A heritage record names the place by its own title (not the ensemble's): every significant word of the OSM name
+ * starts a word of the title. A one-word name without initials must open the title or stand in quotes, since «Охотник»
+ * also starts «охотничье хозяйство». Initials must be in the title, before the surname («Бюст М.И.Авербаха») or as the
+ * given name and patronymic after it («Могила Доватора Льва Михайловича»); without them the match is refused.
+ */
+export function heritageNamesPlace(record, place) {
+  const tokens = words(place.name).filter(token => token.length >= 3 && !HERITAGE_NOISE.test(token) && !/^[а-яё]$/u.test(token));
+  if (!tokens.length) return false;
+  const titles = [record.fields.ObjectName, record.fields.ObjectNameOnDoc].filter(Boolean);
+  const titleWords = titles.flatMap(words);
+  if (!tokens.every(token => titleWords.some(word => word.startsWith(stem(token))))) return false;
+  const initials = [...place.name.matchAll(/(?<![А-Яа-яЁё])([А-ЯЁ])\./gu)].map(match => match[1]);
+  if (tokens.length === 1 && !initials.length) {
+    const [token] = tokens;
+    const opens = titles.some(title => words(title)[0]?.startsWith(stem(token)));
+    const quoted = titles.some(title => [...comparable(title).matchAll(/"([^"]+)"/gu)].some(match => words(match[1])[0]?.startsWith(stem(token))));
+    if (!opens && !quoted) return false;
+  }
+  if (!initials.length) return true;
+  const surname = stem(tokens.at(-1));
+  return titles.some(title => {
+    const lower = title.toLocaleLowerCase("ru").replace(/ё/g, "е");
+    // Authors follow the subject: «Надгробие Я.Н.Федоренко, 1949 г., ск. Е.В.Вучетич» is not Vuchetich's grave.
+    const authors = lower.search(AUTHOR_MARK), subject = authors < 0 ? title : title.slice(0, authors);
+    const compact = subject.toLocaleLowerCase("ru").replace(/ё/g, "е").replace(/\s+/gu, "");
+    // «Театр им. Е.Б.Вахтангова» is a building named after the person, not a monument or a plaque to him.
+    const named = `${initials.map(letter => `${letter.toLocaleLowerCase("ru")}\\.`).join("")}${surname}`;
+    const before = new RegExp(`(?<!им\\.|имени)${named}`, "u").test(compact);
+    const after = lettersAfter(subject, surname);
+    return before || (after.length >= initials.length && initials.every((letter, index) => letter === after[index]));
+  });
+}
+
 /** A sculpture names the place when titles match without quotes and generic prefixes such as «Памятник». */
 export function sculptureNamesPlace(record, place) {
   const title = value => key(value).replace(SCULPTURE_PREFIX, "");
@@ -103,14 +184,28 @@ export function matchOpenData(records, places) {
   let unmatched = 0, ambiguousRecords = 0;
   for (const record of records) {
     if (!record?.location) { unmatched++; continue; }
-    const plaque = record.kind === "plaque";
-    const radius = plaque ? PLAQUE_RADIUS_M : SCULPTURE_RADIUS_M;
-    const candidates = (plaque ? memorials : artworks).map(place => ({ place, distanceM: distanceMeters(record.location, place.location) }))
-      .filter(item => item.distanceM <= radius && (plaque ? plaqueNamesPlace(record, item.place) : sculptureNamesPlace(record, item.place)));
+    const { outline, ...stored } = record;
+    let candidates, rule;
+    if (record.kind === "heritage") {
+      // The outline's bounding box widened by the radius first: the exact distance walks every outline edge.
+      const vertices = [...outline.rings.flat(), ...outline.points], lats = vertices.map(item => item[1]), lons = vertices.map(item => item[0]);
+      const dLat = HERITAGE_RADIUS_M / 111320, dLon = dLat / Math.cos(record.location.lat * Math.PI / 180);
+      const [south, north, west, east] = [Math.min(...lats) - dLat, Math.max(...lats) + dLat, Math.min(...lons) - dLon, Math.max(...lons) + dLon];
+      candidates = places.filter(({ location: { lat, lon } }) => lat >= south && lat <= north && lon >= west && lon <= east)
+        .map(place => ({ place, distanceM: distanceToShape(place.location, outline) }))
+        .filter(item => item.distanceM <= HERITAGE_RADIUS_M && heritageNamesPlace(record, item.place));
+      rule = "heritage-title-25m";
+    } else {
+      const plaque = record.kind === "plaque";
+      const radius = plaque ? PLAQUE_RADIUS_M : SCULPTURE_RADIUS_M;
+      candidates = (plaque ? memorials : artworks).map(place => ({ place, distanceM: distanceMeters(record.location, place.location) }))
+        .filter(item => item.distanceM <= radius && (plaque ? plaqueNamesPlace(record, item.place) : sculptureNamesPlace(record, item.place)));
+      rule = plaque ? "plaque-name-80m" : "sculpture-title-1500m";
+    }
     if (!candidates.length) { unmatched++; continue; }
     if (candidates.length > 1) { ambiguousRecords++; continue; }
     const [{ place, distanceM }] = candidates;
-    byPlace.set(place.id, [...(byPlace.get(place.id) ?? []), { placeId: place.id, record, match: { rule: plaque ? "plaque-name-80m" : "sculpture-title-1500m", distanceM: Math.round(distanceM) } }]);
+    byPlace.set(place.id, [...(byPlace.get(place.id) ?? []), { placeId: place.id, record: stored, match: { rule, distanceM: Math.round(distanceM) } }]);
   }
   const matches = [], ambiguousPlaces = [];
   for (const [placeId, items] of byPlace) {
@@ -136,6 +231,14 @@ export function renderOpenDataSource(record) {
     add("Описание внешнего вида", f.Details);
     add("Материал изготовления", f.Material);
     add("Авторы", (f.Authors ?? []).map(item => item.profession ? `${item.name} (${item.profession})` : item.name).join(", "));
+  } else if (record.kind === "heritage") {
+    add("Наименование объекта культурного наследия по документам", f.ObjectNameOnDoc);
+    add("Общепринятое наименование", f.ObjectName);
+    add("Входит в ансамбль", f.EnsembleNameOnDoc || f.EnsembleName);
+    add("Местоположение", f.Addresses);
+    add("Вид объекта", f.ObjectType);
+    add("Охранный статус", [f.SecurityStatus, f.Category].filter(Boolean).join(", "));
+    add("Номер в едином государственном реестре объектов культурного наследия", f.USRCHONumber);
   } else {
     add("Наименование скульптуры", f.SculpName);
     add("Автор", f.Author);
