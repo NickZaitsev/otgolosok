@@ -744,25 +744,6 @@
   overflow: hidden;
 }
 
-/* The explore map positions its controls for a full-screen sheet; this is an inset. */
-.walk-map-canvas .explore-map .leaflet-bottom.leaflet-right {
-  top: auto;
-  bottom: 4px;
-  right: 4px;
-}
-
-.walk-map-canvas .map-attribution {
-  bottom: 12px;
-  right: 64px;
-}
-
-.walk-map-canvas .map-loading,
-.walk-map-canvas .map-network-note {
-  top: var(--space-md);
-  left: var(--space-md);
-  right: var(--space-md);
-}
-
 .walk-map-next {
   margin-top: var(--space-sm);
   color: var(--walk-muted);

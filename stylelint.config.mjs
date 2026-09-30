@@ -12,9 +12,7 @@ export const legacyUnmigrated = [
   "src/features/admin/walk-admin.css",
   "src/features/auth/auth.css",
   "src/features/explore/explore.css",
-  "src/features/explore/map-dots.css",
   "src/features/explore/place-heading.css",
-  "src/features/navigation/app-navigation.css",
   "src/features/tour/walk-session.css",
   "src/features/walk-builder/walk-creation-panel.css",
   "src/features/walks/history.css",
@@ -75,7 +73,10 @@ const config = {
     },
     {
       files: ["src/features/explore/explore-map.module.css"],
-      rules: { "selector-disallowed-list": null },
+      rules: {
+        "selector-disallowed-list": null,
+        "selector-class-pattern": ["^([a-z][a-zA-Z0-9]*|leaflet-[a-z-]+)$", { message: "camelCase, or a Leaflet class inside :global()" }],
+      },
     },
   ],
 };
