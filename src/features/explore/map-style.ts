@@ -1,4 +1,5 @@
-import type { ExpressionSpecification, LayerSpecification, LineLayerSpecification, StyleSpecification } from "maplibre-gl";
+import type { ExpressionSpecification, FilterSpecification, LayerSpecification, LineLayerSpecification, StyleSpecification } from "maplibre-gl";
+import { mapIconId } from "./map-icons";
 
 /** Tiles, glyphs: the only origin the basemap talks to (see the CSP connect-src). */
 export const MAP_TILES_ORIGIN = "https://tiles.versatiles.org";
@@ -6,7 +7,7 @@ export const MAP_TILES_ORIGIN = "https://tiles.versatiles.org";
 // VersaTiles serves OSM in the Shortbread schema (CC0), so only © OpenStreetMap is owed.
 // At low zooms VersaTiles fills the "land" layer with ESA WorldCover classes, which need their own credit.
 // Each green layer starts above the zooms where ESA emits any of its kinds, so only OSM landuse is drawn.
-// No sprite: the map carries no POI icons, only streets, water, buildings and names.
+// No sprite: the few icons (stations, sights, toilets) are drawn in the browser, see map-icons.ts.
 // Colours follow Yandex Maps: neutral light ground, bright blue water, fresh green parks,
 // white side streets and grey-blue main roads, grey buildings.
 const ground = "#f4f3f0";
@@ -71,6 +72,23 @@ const streetName = (id: string, kinds: string[], minzoom: number): LayerSpecific
 
 const waterText = "#2f78b0";
 
+// Zooms here are MapLibre's, one below Leaflet's: 13 is a neighbourhood, 16.5 the closest walking view.
+const orthodox = ["russian_orthodox", "orthodox", "old_believers"];
+const worship: ExpressionSpecification = ["all", ["==", ["get", "amenity"], "place_of_worship"],
+  ["in", ["get", "religion"], ["literal", ["christian", "jewish", "muslim"]]]];
+
+const poiLayer = (id: string, sourceLayer: string, minzoom: number, labelZoom: number,
+  filter: FilterSpecification, icon: ExpressionSpecification | string): LayerSpecification => ({
+  id, type: "symbol", source: "osm", "source-layer": sourceLayer, minzoom, filter,
+  layout: {
+    "icon-image": icon,
+    // Names only once the view is close enough to read them; the icon stays even if its name does not fit.
+    "text-field": ["step", ["zoom"], "", labelZoom, ["get", "name"]], "text-font": ["noto_sans_regular"],
+    "text-size": 11, "text-anchor": "top", "text-offset": [0, 1.1], "text-max-width": 8, "text-optional": true,
+  },
+  paint: { "text-color": "#4d4d4d", "text-halo-color": "#ffffff", "text-halo-width": 1.5 },
+});
+
 export const mapStyle = {
   version: 8,
   name: "Отголосок",
@@ -130,6 +148,23 @@ export const mapStyle = {
       paint: { "text-color": waterText, "text-halo-color": water, "text-halo-width": 1 } },
     streetName("main-street-name", main, 12),
     streetName("side-street-name", side, 14),
+    // Icons come after street names so they win the space; within them, higher layers are placed first.
+    poiLayer("poi-amenity", "pois", 15.5, 17, ["in", ["get", "amenity"], ["literal", ["toilets", "drinking_water"]]],
+      ["match", ["get", "amenity"], "toilets", mapIconId("toilets"), mapIconId("water")]),
+    // Memorials are mostly wall plaques, hundreds per district: only in the closest view.
+    poiLayer("poi-memorial", "pois", 16.5, 17, ["any", ["in", ["get", "historic"], ["literal", ["memorial", "monument"]]],
+      ["==", ["get", "tourism"], "artwork"]],
+      ["case", ["==", ["get", "historic"], "memorial"], mapIconId("memorial"), mapIconId("monument")]),
+    poiLayer("poi-sight", "pois", 14.5, 16, ["any", worship, ["==", ["get", "amenity"], "theatre"], ["==", ["get", "tourism"], "viewpoint"]],
+      ["case",
+        ["==", ["get", "amenity"], "theatre"], mapIconId("theatre"),
+        ["==", ["get", "tourism"], "viewpoint"], mapIconId("viewpoint"),
+        ["==", ["get", "religion"], "jewish"], mapIconId("synagogue"),
+        ["==", ["get", "religion"], "muslim"], mapIconId("mosque"),
+        ["in", ["get", "denomination"], ["literal", orthodox]], mapIconId("orthodox"),
+        mapIconId("church")]),
+    // Metro and rail stations share the "station" kind in the tiles, so they share an icon.
+    poiLayer("station", "public_transport", 13, 14, ["==", ["get", "kind"], "station"], mapIconId("station")),
     // District names orient at city scale and give way to street names up close.
     { id: "district-name", type: "symbol", source: "osm", "source-layer": "place_labels", minzoom: 10, maxzoom: 14,
       filter: ["==", ["get", "kind"], "suburb"],
