@@ -96,7 +96,7 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     void import("leaflet").then(async(L)=>{
       // The vector engine is large and useless without WebGL, so only those browsers download it.
       // If its chunk fails to load, the raster fallback still gives a working map.
-      const vector=supportsWebGL()?await Promise.all([import("@maplibre/maplibre-gl-leaflet"),import("./map-style")]).catch(()=>null):null;
+      const vector=supportsWebGL()?await Promise.all([import("@maplibre/maplibre-gl-leaflet"),import("./map-style"),import("./map-icons")]).catch(()=>null):null;
       if(disposed||!container.current)return;
       const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
       const saved=viewState?.current;
@@ -109,11 +109,13 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
         map.on("moveend zoomend",saveView);
       }
       if(vector){
-        const [plugin,{mapStyle}]=vector;
+        const [plugin,{mapStyle},{drawMapIcon,MAP_ICON_PIXEL_RATIO}]=vector;
         // Leaflet keeps markers, route and controls; MapLibre only draws the basemap underneath.
         const Basemap=safeBasemapLayer(L,plugin);
         const basemap=new Basemap({style:mapStyle,attributionControl:false}).addTo(map).getMaplibreMap();
         basemap.on("error",()=>setTileError(true));
+        // The style has no sprite: its icons are drawn the first time a visible symbol needs one.
+        basemap.on("styleimagemissing",({id})=>{const image=drawMapIcon(id);if(image&&!basemap.hasImage(id))basemap.addImage(id,image,{pixelRatio:MAP_ICON_PIXEL_RATIO});});
         basemap.on("data",(event)=>{if(event.dataType==="source"&&"tile" in event&&event.tile)setTileError(false);});
       } else {
         L.tileLayer(FALLBACK_TILE_URL,{maxZoom:19,updateWhenIdle:true,keepBuffer:1}).on("tileerror",()=>setTileError(true)).on("tileload",()=>setTileError(false)).addTo(map);
