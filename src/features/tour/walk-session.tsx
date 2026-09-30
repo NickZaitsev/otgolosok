@@ -7,7 +7,6 @@ import { ExploreIcon } from "../explore/icons";
 import { BrandMark } from "../brand/brand-mark";
 import type { Coordinates, Route } from "./types";
 import type { WalkChapter } from "./walk-plan";
-import "../explore/explore.css";
 import "./walk-session.css";
 
 const noop = () => {};

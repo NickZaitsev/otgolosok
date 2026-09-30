@@ -6,6 +6,7 @@
 .shell {
   --sheet-pad: 1.25rem;
   --sheet-gap: 0.75rem;
+  --sheet-action-h: var(--control-primary-min);
 
   position: fixed;
   inset: 0;
@@ -113,6 +114,9 @@
   .shell {
     --sheet-pad: 0.75rem;
     --sheet-gap: 0.5rem;
+    --sheet-action-h: var(--control-min);
+    --text-sheet-title: var(--text-body);
+    --sheet-action-pad: 0.375rem;
   }
 }
 

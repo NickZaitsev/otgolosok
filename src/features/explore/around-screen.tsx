@@ -1,32 +1,31 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type Ref } from "react";
-import Link from "next/link";
-import "./place-heading.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { WalkCreationPanel, type CreationMap } from "../walk-builder/walk-creation-panel";
-import { BrandMark } from "../brand/brand-mark";
 import type { Coordinates, Route } from "../tour/types";
 import { getWalkChapters } from "../tour/walk-plan";
 import { jobUrl } from "../generator/offline";
 import { stageLabels, terminalStages, type GenerationJob } from "../generator/types";
-import { ExploreMap, type MapFocus, type MapItem, type MapViewState } from "./explore-map";
+import type { MapFocus, MapViewState } from "./explore-map";
 import { ExploreIcon } from "./icons";
 import { AppNavigation } from "../navigation/app-navigation";
 import { isMoscowPoint, MOSCOW_CENTER, readMapJobs, type MapJob } from "./map-jobs";
-import { nearbyRadii, nearbyRadiusForAccuracy, nearbyStoryCatalog, recommendNearbyStories, type NearbyRadius } from "./nearby-stories";
+import { nearbyRadiusForAccuracy, nearbyStoryCatalog, recommendNearbyStories, type NearbyRadius } from "./nearby-stories";
 import { selectExplorePanel } from "./panel-state";
-import { openDataAttribution, type SourceAttribution, type StorySourceRef } from "./source-attribution";
+import { openDataAttribution, type StorySourceRef } from "./source-attribution";
 import { rememberGeoPromptDismissal, shouldShowGeoPrompt } from "./geo-prompt";
-import "./explore.css";
+import { MapShell } from "../shell/map-shell";
+import { MapControlButton } from "../shell/map-controls";
+import { AroundHeader } from "./around-header";
+import { GeoNotice, LocationPromptSheet, MapHintNotice, NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
+import type { StoryPin } from "./story-pin";
+import a from "./around.module.css";
 import { toUserMessage } from "@/lib/errors/user-message";
 import { describeLocateError, locateOnce } from "@/lib/position/locate";
 
 type Place = {label:string; address:string|null; location:Coordinates};
-type StoryPin = MapItem & {address:string; duration?:number; chapter?:number; jobId?:string; placeId?:string; audioUrl?:string; status?:string; paragraphs?:string[]; attribution?:SourceAttribution};
 type CatalogPlace = {id:string;name:string;address:string|null;location:Coordinates;story:{title:string;paragraphs:Array<{text:string}>;sources?:StorySourceRef[];facts?:unknown[]}|null;audio:{url:string;durationSec:number}|null;distanceM:number|null};
-// Transitional until this screen moves to MapShell: keeps a selected place above the bottom card, as panBy(0, 80) did.
-const LEGACY_CARD_INSETS = {top:0,right:0,bottom:160,left:0};
 // Keep the nearby viewport across client-side navigation, independently of walk maps.
 const nearbyMapView: MapViewState = {current:null};
 const MELNIKOV: StoryPin = {id:"4c76cc5f-0fcd-41db-a36e-e63cce9b3f09",jobId:"4c76cc5f-0fcd-41db-a36e-e63cce9b3f09",title:"Воздушные телефоны Дома Мельникова",address:"Кривоарбатский переулок, 10",location:{lat:55.74805556,lon:37.58944444},duration:56};
@@ -196,42 +195,33 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const createHref=place?.address?`/create?${new URLSearchParams({address:place.address,lat:String(place.location.lat),lon:String(place.location.lon)})}`:"/create?new=1";
   const walkStart=place?.address?place:active;
   const walkHref=walkStart?.address?`/?${new URLSearchParams({walk:"create",address:walkStart.address,lat:String(walkStart.location.lat),lon:String(walkStart.location.lon)})}`:"/?walk=create";
-  // Текст истории прокручивается отдельно от метки и плеера; фокус позволяет листать его с клавиатуры.
-  const storyScroll=active?.paragraphs?.length?{tabIndex:0,role:"region","aria-label":"Текст истории"}:undefined;
+  function closePlace(){lookup.current?.abort();setPlace(null);setPlaceBusy(false);setPlaceError("");setNearbyCenter(null);}
+
+  const sheet = creating
+    ? <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />
+    : search ? null
+    : prompt&&!active&&!place&&!placeBusy&&!placeError ? <LocationPromptSheet geo={geo} onLocate={locate} onDismiss={dismissGeoPrompt} />
+    : active ? <StorySheet story={active} metadata={metadata(active)} walkHref={active.address&&!placeBusy?walkHref:null} startRef={startRef} onStart={onStart} onClose={()=>setSelected(undefined)} onWalk={rememberOpener} />
+    : explorePanel==="place" ? <PlaceSheet address={place?.address??null} busy={placeBusy} error={placeError} createHref={createHref} walkHref={place?.address?walkHref:null} onClose={closePlace} onWalk={rememberOpener} />
+    : explorePanel==="nearby" ? <NearbySheet radius={nearbyRadius} recommendations={recommendations} onRadius={setNearbyRadius} onSelect={selectRecommendation} onReset={()=>{setNearbyCenter(null);setPlace(null);setPrompt(false);}} />
+    : null;
+  // An empty slot must stay null: the shell gives the dock room only when there is something to show.
+  const noticeList = creating ? [] : [
+    geoMessage&&!search?<GeoNotice key="geo" message={geoMessage} outside={geoOutside} denied={geo==="denied"} onMoscow={showMoscow} onRetry={locate} onClose={()=>{setGeoMessage("");setGeoOutside(false);}} />:null,
+    !sheet&&!search&&mapHintVisible?<MapHintNotice key="hint" onClose={()=>setMapHintVisible(false)} />:null,
+    updateAvailable?<a key="update" className={a.notice} href="/update.html">Доступна новая версия · обновить</a>:null,
+  ].filter(Boolean);
+  const notices = noticeList.length ? noticeList : null;
 
   return <>
-    {creating && <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />}
-    <ExploreMap viewState={nearbyMapView} items={creating ? creationItems : mapItems} geometry={creating ? creationMap.geometry : undefined} insets={creating ? creationMap.padding : LEGACY_CARD_INSETS} legacyChrome selectedId={selected??(place?"picked-place":undefined)} focus={creating ? creationMap.focus : focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}}} onPoint={point=>creating ? setPicked(point) : void findPlace(point)} />
-    <div className={`around-content${creating?" creation-open":""}${search?" searching":""}`}>
-      <header className="around-header" data-region="header">
-        <div className="around-topline"><Link href="/" prefetch={false} className="around-brand"><BrandMark /></Link><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>
-        {search?<form className="around-search" onSubmit={submitSearch}><label htmlFor="map-address">Какой дом вас интересует?</label><div><input id="map-address" ref={input} value={query} onChange={event=>setQuery(event.target.value)} minLength={3} maxLength={180} required placeholder="Улица и номер дома в Москве" autoComplete="off"/><button type="submit" disabled={placeBusy||query.trim().length<3} aria-label="Найти дом"><ExploreIcon name="arrow"/></button></div><Link href={`/create?${new URLSearchParams(query.trim()?{address:query.trim()}:{new:"1"})}`} prefetch={false}>Ввести адрес для истории вручную →</Link></form>:null}
-      </header>
-    </div>
-
-    {!search?<button className="around-locate around-icon" data-region="controls" type="button" aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></button>:null}
-    <div className="around-bottom" data-region="sheet">
-      {geoMessage&&!search?<div className="around-geo-message"><div><p role="status">{geoMessage}{geoOutside?<> Пока доступны истории <span className="around-geo-nowrap"><button type="button" className="around-geo-link" onClick={showMoscow}>Москвы</button>.</span></>:null}</p>{geo==="denied"?<details className="around-geo-help">
-        <summary>Как разрешить геолокацию</summary>
-        <p><strong>На iPhone и iPad</strong></p>
-        <ol>
-          <li>В Safari нажмите значок меню страницы слева от адреса, затем «Ещё» (…) → «Настройки сайта» → «Геопозиция» → «Разрешить».</li>
-          <li>Если доступ всё ещё закрыт, откройте «Настройки» телефона → «Конфиденциальность и безопасность» → «Службы геолокации». Включите их и разрешите доступ для «Веб-сайты Safari» или вашего браузера при использовании.</li>
-          <li>Вернитесь на сайт и повторите попытку.</li>
-        </ol>
-        <p>Если открыли сайт с экрана «Домой», проверьте его разрешение в «Службах геолокации». Если его нет в списке, откройте сайт в Safari.</p>
-        <p>В другом браузере откройте настройки разрешений этого сайта и разрешите доступ к местоположению. Также проверьте геолокацию на устройстве.</p>
-        <a href="https://support.apple.com/ru-ru/102515" target="_blank" rel="noopener noreferrer">Инструкция Apple ↗</a>
-        <button className="around-text-button" type="button" onClick={locate}>Проверить снова</button>
-      </details>:null}</div><button type="button" aria-label="Скрыть сообщение" onClick={()=>{setGeoMessage("");setGeoOutside(false);}}><ExploreIcon name="close"/></button></div>:null}
-      {prompt&&!active&&!place&&!placeBusy&&!placeError&&!search?<section className="around-location-card" aria-labelledby="location-title"><button type="button" className="around-icon around-location-close" aria-label="Закрыть карточку" onClick={dismissGeoPrompt}><ExploreIcon name="close"/></button><h2 id="location-title">Смотрите истории рядом с вами</h2><button type="button" className="around-primary" onClick={locate} disabled={geo==="loading"}>{geo==="loading"?"Определяем положение…":geo==="denied"||geo==="error"?"Проверить снова":"Включить геолокацию"}<ExploreIcon name="locate"/></button></section>
-      :active?<section className="around-place-card around-story-card" aria-labelledby="selected-place-title"><div className="around-card-label"><span>{active.pending?"Готовим для вас":active.chapter!==undefined?`По дороге · часть ${active.chapter+1}`:"История места"}</span><button type="button" className="around-icon" aria-label="Закрыть карточку" onClick={()=>setSelected(undefined)}><ExploreIcon name="close"/></button></div><div className="around-story-scroll" data-sheet-part="body" {...storyScroll}><h2 id="selected-place-title">{active.title}</h2>{active.title!==active.address?<p>{active.address}</p>:null}<small>{metadata(active)}</small>{active.paragraphs?.length?<div className="around-story-text">{active.paragraphs.map((paragraph,index)=><p key={index}>{paragraph}</p>)}</div>:null}{active.attribution?<p className="around-story-source">Источник: <a href={active.attribution.url} target="_blank" rel="noopener noreferrer">{active.attribution.label}</a></p>:null}</div>{active.audioUrl?<audio controls preload="metadata" src={active.audioUrl}>Ваш браузер не поддерживает аудио.</audio>:null}{active.chapter!==undefined?<button type="button" className="around-primary" data-sheet-part="footer" ref={startRef} onClick={()=>onStart(active.chapter)}>Слушать эту часть <ExploreIcon name="headphones"/></button>:active.jobId?<Link className="around-primary" href={`/create?job=${active.jobId}`} prefetch={false}>{active.duration?"Открыть и слушать":"Открыть подготовку"}<ExploreIcon name={active.duration?"headphones":"arrow"}/></Link>:active.placeId&&!active.paragraphs?.length?<p>Проверенный текст доступен в карточке места{active.audioUrl?"; запись можно слушать здесь.":"; озвучивание ещё не готово."}</p>:null}</section>
-      :explorePanel==="place"?<section className="around-place-card" aria-labelledby="new-place-title"><header className="around-place-heading"><h2 id="new-place-title">{placeBusy?"Определяем адрес…":place?.address??"О чём расскажет этот дом?"}</h2><button type="button" className="around-icon" aria-label="Закрыть выбранное место" onClick={()=>{lookup.current?.abort();setPlace(null);setPlaceBusy(false);setPlaceError("");setNearbyCenter(null);}}><ExploreIcon name="close"/></button></header>{placeError?<p role="status">{placeError}</p>:placeBusy?<p role="status">Смотрим, какой дом находится рядом с выбранной точкой.</p>:!place?.address?<p>У этой точки нет точного номера дома. Введите адрес, чтобы мы искали историю нужного здания.</p>:null}{!placeBusy?<Link className="around-primary" href={createHref} prefetch={false}>{place?.address?"Подготовить историю этого дома":"Ввести адрес вручную"}<ExploreIcon name="plus"/></Link>:null}{place?.address?<Link className="around-secondary" href={walkHref} onClick={rememberOpener} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk"/></Link>:null}</section>
-      :explorePanel==="nearby"?<section className="around-place-card nearby-recommendations" aria-labelledby="nearby-title"><div className="around-card-label"><span>Готовые истории рядом</span></div><h2 id="nearby-title">В радиусе {nearbyRadius} м</h2><div className="nearby-radius" aria-label="Радиус поиска">{nearbyRadii.map(radius=><button key={radius} type="button" aria-pressed={nearbyRadius===radius} onClick={()=>setNearbyRadius(radius)}>{radius} м</button>)}</div>{recommendations.length?<ol className="nearby-story-list">{recommendations.map((story,index)=><li key={story.id}><div><strong>{story.title}</strong><span>{story.address} · {Math.round(story.distanceM)} м по прямой</span>{index===0?<small>{story.reason}</small>:null}</div><button type="button" className={index===0?"around-primary":"around-secondary"} onClick={()=>selectRecommendation(story.id)}>{index===0?"Слушать":"Альтернатива"}<ExploreIcon name={index===0?"headphones":"arrow"}/></button></li>)}</ol>:<div className="nearby-empty"><p>В этом радиусе пока нет готовой проверенной истории.</p>{nearbyRadius<300?<button type="button" className="around-secondary" onClick={()=>setNearbyRadius(nearbyRadii[nearbyRadii.indexOf(nearbyRadius)+1])}>Искать в большем радиусе <ExploreIcon name="arrow"/></button>:<button type="button" className="around-secondary" onClick={()=>{setNearbyCenter(null);setPlace(null);setPrompt(false);}}>Выбрать другую точку <ExploreIcon name="map"/></button>}</div>}</section>
-      :!search&&mapHintVisible?<div className="around-map-hint"><span><strong>Какой дом вам интересен?</strong>Нажмите на карту — найдём его историю.</span><button className="around-icon" type="button" aria-label="Закрыть подсказку" onClick={()=>setMapHintVisible(false)}><ExploreIcon name="close"/></button></div>:null}
-      {active?.address&&!placeBusy?<Link className="around-secondary" href={walkHref} onClick={rememberOpener} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk"/></Link>:null}
-      {updateAvailable?<a className="around-update" href="/update.html">Доступна новая версия · обновить</a>:null}
-    </div>
+    <MapShell
+      map={{viewState:nearbyMapView,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,selectedId:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
+        onSelect:id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
+        onPoint:point=>creating?setPicked(point):void findPlace(point)}}
+      header={<AroundHeader search={search&&!creating} query={query} busy={placeBusy} inputRef={input} onToggle={()=>search?setSearch(false):openSearch()} onQuery={setQuery} onSubmit={submitSearch} />}
+      controls={search||creating?null:<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton>}
+      notices={notices}
+      sheet={sheet} />
     {pathname === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();setSearch(false);}} />}
   </>;
 }

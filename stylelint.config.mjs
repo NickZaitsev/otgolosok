@@ -11,10 +11,7 @@ export const legacyUnmigrated = [
   "src/features/admin/content-admin.css",
   "src/features/admin/walk-admin.css",
   "src/features/auth/auth.css",
-  "src/features/explore/explore.css",
-  "src/features/explore/place-heading.css",
   "src/features/tour/walk-session.css",
-  "src/features/walk-builder/walk-creation-panel.css",
   "src/features/walks/history.css",
   "src/features/walks/walks.css",
 ];

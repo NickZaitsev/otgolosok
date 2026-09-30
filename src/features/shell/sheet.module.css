@@ -24,6 +24,7 @@
 
 .footer {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-xs);
   align-items: stretch;
 }

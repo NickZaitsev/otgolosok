@@ -16,13 +16,16 @@ type Props = {
   bodyLabel?: string;
   className?: string;
   sheetRef?: Ref<HTMLElement>;
+  /** Stable hooks for tests and styles: which sheet this is and its current step. */
+  name?: string;
+  state?: string;
 };
 
 /**
  * A panel of a map screen: fixed header, one scrolling body, fixed footer. It takes at most the
  * height its container gives it, so a long body scrolls inside instead of pushing anything away.
  */
-export function Sheet({ label, labelledBy, header, footer, children, bodyLabel, className, sheetRef }: Props) {
+export function Sheet({ label, labelledBy, header, footer, children, bodyLabel, className, sheetRef, name, state }: Props) {
   const body = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const [scrollable, setScrollable] = useState(false);
@@ -39,7 +42,7 @@ export function Sheet({ label, labelledBy, header, footer, children, bodyLabel, 
     return () => observer.disconnect();
   }, [hasBody]);
 
-  return <section ref={sheetRef} className={cx(styles.sheet, className)} data-region="sheet" aria-label={labelledBy ? undefined : label} aria-labelledby={labelledBy}>
+  return <section ref={sheetRef} className={cx(styles.sheet, className)} data-region="sheet" data-sheet={name} data-state={state} aria-label={labelledBy ? undefined : label} aria-labelledby={labelledBy}>
     {header ? <div className={styles.header} data-sheet-part="header">{header}</div> : null}
     {children ? <div ref={body} className={styles.body} data-sheet-part="body"
       role={bodyLabel ? "region" : undefined} aria-label={bodyLabel}

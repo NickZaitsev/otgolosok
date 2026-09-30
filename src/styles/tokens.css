@@ -24,6 +24,9 @@
   --text-control: 1rem;
   --text-body: 1.125rem;
   --text-section: 1.375rem;
+
+  /* Sheet headings; map screens make it smaller on short screens. */
+  --text-sheet-title: var(--text-section);
   --text-subtitle: 1.5rem;
   --text-page: 2rem;
   --leading-tight: 1.2;
@@ -76,6 +79,7 @@
   /* Controls and notices. */
   --on-dark: #fff;
   --control-soft: #eef1ed;
+  --control-selected: rgb(32 62 56 / 12%);
   --control-border: #d5ddd6;
   --field-border: #cbd4cd;
   --field-surface: #fff;
