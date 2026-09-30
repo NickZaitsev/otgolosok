@@ -14,12 +14,13 @@ import { ExploreMap, type MapFocus, type MapItem, type MapViewState } from "./ex
 import { ExploreIcon } from "./icons";
 import { AppNavigation } from "../navigation/app-navigation";
 import { isMoscowPoint, MOSCOW_CENTER, readMapJobs, type MapJob } from "./map-jobs";
-import { nearbyRadii, nearbyStoryCatalog, recommendNearbyStories, type NearbyRadius } from "./nearby-stories";
+import { nearbyRadii, nearbyRadiusForAccuracy, nearbyStoryCatalog, recommendNearbyStories, type NearbyRadius } from "./nearby-stories";
 import { selectExplorePanel } from "./panel-state";
 import { openDataAttribution, type SourceAttribution, type StorySourceRef } from "./source-attribution";
 import { rememberGeoPromptDismissal, shouldShowGeoPrompt } from "./geo-prompt";
 import "./explore.css";
 import { toUserMessage } from "@/lib/errors/user-message";
+import { describeLocateError, locateOnce } from "@/lib/position/locate";
 
 type Place = {label:string; address:string|null; location:Coordinates};
 type StoryPin = MapItem & {address:string; duration?:number; chapter?:number; jobId?:string; placeId?:string; audioUrl?:string; status?:string; paragraphs?:string[]; attribution?:SourceAttribution};
@@ -57,13 +58,11 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const [mapHintVisible,setMapHintVisible]=useState(true);
   const [tracked]=useState<MapJob[]>(()=>typeof window==="undefined"?[]:readMapJobs()),[jobs,setJobs]=useState<Record<string,GenerationJob>>({});
   const [catalog,setCatalog]=useState<CatalogPlace[]>([]);
-  const lookup=useRef<AbortController|null>(null),geoVersion=useRef(0),geoTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
+  const lookup=useRef<AbortController|null>(null),locating=useRef<(()=>void)|null>(null);
   const input=useRef<HTMLInputElement>(null);
 
-  useEffect(()=>{
-    const cancelLocation=()=>{geoVersion.current++;if(geoTimer.current)clearTimeout(geoTimer.current);};
-    return ()=>{lookup.current?.abort();cancelLocation();};
-  },[]);
+  // Отменённый поиск позиции не должен оставить кнопку в «Определяем положение…»: в StrictMode очистка срабатывает и без размонтирования.
+  useEffect(()=>()=>{lookup.current?.abort();if(locating.current){locating.current();locating.current=null;setGeo("idle");}},[]);
   useEffect(()=>{if(search)input.current?.focus();},[search]);
   // Кнопка поиска в шапке прогулки ведёт на /?search=1: открываем поле адреса и убираем параметр из адреса.
   useEffect(()=>{
@@ -163,20 +162,32 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     }finally{clearTimeout(timer);if(lookup.current===controller)setPlaceBusy(false);}
   }
   function submitSearch(event:FormEvent){event.preventDefault();if(query.trim().length>=3)void findPlace(query.trim());}
+  // Сначала показываем грубую точку, затем уточняем её; поиск рядом запускаем по итоговой.
   function locate(){
-    const version=++geoVersion.current;setGeo("loading");setGeoMessage("");setGeoOutside(false);
-    if(geoTimer.current)clearTimeout(geoTimer.current);
-    const fail=(message:string,denied=false)=>{if(version!==geoVersion.current)return;geoVersion.current++;if(geoTimer.current)clearTimeout(geoTimer.current);setGeo(denied?"denied":"error");setGeoMessage(message);if(denied)setPrompt(false);};
-    if(!navigator.geolocation){fail("Геолокация недоступна. Выберите дом на карте или найдите адрес.");return;}
-    geoTimer.current=setTimeout(()=>fail("Не удалось определить положение. Попробуйте ещё раз или выберите дом на карте."),13000);
-    navigator.geolocation.getCurrentPosition(position=>{
-      if(version!==geoVersion.current)return;if(geoTimer.current)clearTimeout(geoTimer.current);
-      const point={lat:position.coords.latitude,lon:position.coords.longitude,accuracyM:position.coords.accuracy};
-      setUser(point);setFocus(point);setGeo("ready");setPrompt(false);
-      setNearbyCenter(point.accuracyM<=50&&isMoscowPoint(point)?point:null);
-      setGeoOutside(!isMoscowPoint(point));
-      setGeoMessage(!isMoscowPoint(point)?"Вы сейчас за пределами нашего каталога.":point.accuracyM>50?`Положение приблизительное: точность около ${Math.round(point.accuracyM)} м. Выберите точку на карте, чтобы точно искать рядом.`:"");
-    },error=>fail(error.code===1?"Нет доступа к геолокации. Можно разрешить его в настройках или выбрать место на карте.":"Не удалось определить положение. Выберите дом на карте или повторите попытку.",error.code===1),{enableHighAccuracy:true,timeout:12000,maximumAge:30000});
+    locating.current?.();
+    setGeo("loading");setGeoMessage("");setGeoOutside(false);
+    let first=true;
+    locating.current=locateOnce(update=>{
+      if(update.type==="error"){
+        locating.current=null;
+        const denied=update.code==="permission-denied";
+        setGeo(denied?"denied":"error");
+        setGeoMessage(`${describeLocateError(update.code)} ${denied?"Можно разрешить его в настройках или выбрать место на карте.":"Выберите дом на карте или повторите попытку."}`);
+        if(denied)setPrompt(false);
+        return;
+      }
+      const point={lat:update.fix.lat,lon:update.fix.lon,accuracyM:update.fix.accuracyM};
+      setUser(point);
+      if(first||update.final)setFocus(point);
+      first=false;
+      if(!update.final)return;
+      locating.current=null;
+      const inMoscow=isMoscowPoint(point),radius=nearbyRadiusForAccuracy(point.accuracyM);
+      setGeo("ready");setPrompt(false);setGeoOutside(!inMoscow);
+      if(inMoscow&&radius){setNearbyRadius(current=>current>=radius?current:radius);setNearbyCenter(point);}
+      else setNearbyCenter(null);
+      setGeoMessage(!inMoscow?"Вы сейчас за пределами нашего каталога.":radius?"":`Положение приблизительное${Number.isFinite(point.accuracyM)?`: точность около ${Math.round(point.accuracyM)} м`:""}. Выберите точку на карте, чтобы точно искать рядом.`);
+    });
   }
   function showMoscow(){setFocus({...MOSCOW_CENTER,zoom:12});setGeoMessage("");setGeoOutside(false);}
   function metadata(pin:StoryPin){return [pin.duration?`${Math.ceil(pin.duration/60)} мин · аудио`:pin.status,user?`${distanceLabel(distance(user,pin.location))} по прямой`:null].filter(Boolean).join(" · ");}
