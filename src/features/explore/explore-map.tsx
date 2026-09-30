@@ -7,8 +7,6 @@ import "leaflet/dist/leaflet.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./map-dots.css";
 
-/** Vector basemap; its tiles, glyphs and sprites are all served by tiles.openfreemap.org (see the CSP). */
-export const MAP_STYLE_URL="https://tiles.openfreemap.org/styles/bright";
 /** Raster basemap for browsers without WebGL, which the vector basemap requires. */
 export const FALLBACK_TILE_URL="https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
@@ -68,7 +66,7 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     void import("leaflet").then(async(L)=>{
       // The vector engine is large and useless without WebGL, so only those browsers download it.
       // If its chunk fails to load, the raster fallback still gives a working map.
-      const vector=supportsWebGL()?await import("@maplibre/maplibre-gl-leaflet").catch(()=>null):null;
+      const vector=supportsWebGL()?await Promise.all([import("@maplibre/maplibre-gl-leaflet"),import("./map-style")]).catch(()=>null):null;
       if(disposed||!container.current)return;
       const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
       const saved=viewState?.current;
@@ -81,11 +79,10 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
         map.on("moveend zoomend",saveView);
       }
       if(vector){
+        const [plugin,{mapStyle}]=vector;
         // Leaflet keeps markers, route and controls; MapLibre only draws the basemap underneath.
-        const Basemap=safeBasemapLayer(L,vector);
-        const basemap=new Basemap({style:MAP_STYLE_URL,attributionControl:false}).addTo(map).getMaplibreMap();
-        // The Bright sprite lacks a few POI icons (office, gate, atm…); draw nothing instead of warning per tile.
-        basemap.on("styleimagemissing",({id})=>{if(!basemap.hasImage(id))basemap.addImage(id,{width:1,height:1,data:new Uint8Array(4)});});
+        const Basemap=safeBasemapLayer(L,plugin);
+        const basemap=new Basemap({style:mapStyle,attributionControl:false}).addTo(map).getMaplibreMap();
         basemap.on("error",()=>setTileError(true));
         basemap.on("data",(event)=>{if(event.dataType==="source"&&"tile" in event&&event.tile)setTileError(false);});
       } else {
@@ -182,6 +179,6 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     <div ref={container} className="explore-map" role="region" aria-label={mapLabel??"Карта историй. Выберите отметку или нажмите на дом, чтобы подготовить историю."} />
     {!ready?<p className="map-loading" role="status">{mapError?"Карта не загрузилась. Откройте список историй.":"Загружаем карту…"}</p>:null}
     {tileError?<p className="map-network-note" role="status">Карта требует интернета. Сохранённые истории доступны в разделе «Сохранено».</p>:null}
-    <p className="map-attribution"><a href="https://openfreemap.org" target="_blank" rel="noreferrer">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank" rel="noreferrer">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a></p>
+    <a className="map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>
   </div>;
 }
