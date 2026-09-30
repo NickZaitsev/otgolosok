@@ -26,3 +26,9 @@ it("fetches tiles and glyphs only from the origin the CSP allows", () => {
   for (const url of urls) expect(new URL(url.replace(/[{}]/g, "")).origin).toBe(MAP_TILES_ORIGIN);
   expect(contentSecurityPolicy([])).toContain(`connect-src 'self' ${MAP_TILES_ORIGIN};`);
 });
+
+it("names only sizeable water bodies, not streams and ditches", () => {
+  const sourceLayers = mapStyle.layers.map(layer => "source-layer" in layer ? layer["source-layer"] : undefined);
+  expect(sourceLayers).not.toContain("water_lines_labels");
+  expect(sourceLayers).toContain("water_polygons_labels");
+});
