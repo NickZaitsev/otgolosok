@@ -1,4 +1,4 @@
-import { validateStyleMin } from "@maplibre/maplibre-gl-style-spec";
+import { featureFilter, validateStyleMin } from "@maplibre/maplibre-gl-style-spec";
 import { expect, it } from "vitest";
 import { contentSecurityPolicy } from "../../../scripts/content-security-policy.mjs";
 import { LAND_MIN_ZOOM, MAP_TILES_ORIGIN, mapStyle } from "./map-style";
@@ -27,8 +27,16 @@ it("fetches tiles and glyphs only from the origin the CSP allows", () => {
   expect(contentSecurityPolicy([])).toContain(`connect-src 'self' ${MAP_TILES_ORIGIN};`);
 });
 
-it("names only sizeable water bodies, not streams and ditches", () => {
-  const sourceLayers = mapStyle.layers.map(layer => "source-layer" in layer ? layer["source-layer"] : undefined);
-  expect(sourceLayers).not.toContain("water_lines_labels");
-  expect(sourceLayers).toContain("water_polygons_labels");
+it.each([
+  ["river", "Москва", true],
+  ["canal", "канал имени Москвы", true],
+  ["stream", "Кожевнический вражек", false],
+  ["ditch", "Канава", false],
+  ["drain", "Сток", false],
+])("names a waterway of kind %s only if it is a river or canal", (kind, name, named) => {
+  const labels = mapStyle.layers.filter(layer => "source-layer" in layer && layer["source-layer"] === "water_lines_labels");
+  expect(labels.length).toBeGreaterThan(0);
+  const feature = { type: 2 as const, properties: { kind, name } };
+  const shown = labels.some(layer => "filter" in layer && featureFilter(layer.filter).filter({ zoom: 16 }, feature));
+  expect(shown).toBe(named);
 });
