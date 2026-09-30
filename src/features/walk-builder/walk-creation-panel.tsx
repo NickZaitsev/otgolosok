@@ -10,6 +10,7 @@ import { creationReducer } from "./creation-state";
 import { AddressInput } from "./address-input";
 import { routeShortfall, validStops, type Place } from "./model";
 import { ResearchPanel } from "./research-panel";
+import { describeLocateError, locateOnce } from "@/lib/position/locate";
 import "../ui/surfaces.css";
 import "./walk-creation-panel.css";
 
@@ -21,8 +22,9 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
   const mode = chosenMode ?? w.initialMode;
   const [picker, setPicker] = useState<"choices" | "address" | "time" | null>(null);
   const [geoBusy, setGeoBusy] = useState(false);
-  const mounted = useRef(false);
-  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  const locating = useRef<(() => void) | null>(null);
+  // В StrictMode очистка срабатывает и без размонтирования: отменённый поиск не должен оставить панель занятой.
+  useEffect(() => () => { if (locating.current) { locating.current(); locating.current = null; setGeoBusy(false); } }, []);
   const panel = useRef<HTMLElement>(null);
   const [padding, setPadding] = useState({top:100,right:24,bottom:110,left:24});
   const title = useRef<HTMLHeadingElement>(null);
@@ -58,10 +60,16 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     onMap({ items: places.map((p, i) => ({ id: `creation-${i}`, title: p.address, location: p.location, number: i + 1 })), geometry: w.draft.route?.geometry, focus: w.focus, picking: state.picking, padding });
   }, [w.draft.start, w.draft.stops, w.draft.destination, w.draft.route, w.focus, state.picking, padding, onMap]);
 
+  // Адрес ищем один раз — по итоговой, самой точной точке.
   function locate() {
-    if (!navigator.geolocation) { w.setError("Геолокация недоступна. Найдите адрес или выберите точку на карте."); return; }
+    locating.current?.();
     setGeoBusy(true);
-    navigator.geolocation.getCurrentPosition(p => { if (!mounted.current) return; setGeoBusy(false); void w.resolve({ lat: p.coords.latitude, lon: p.coords.longitude }); }, () => { if (!mounted.current) return; setGeoBusy(false); w.setError("Не удалось определить место. Выберите точку на карте или введите адрес."); }, { timeout: 12000, maximumAge: 30000, enableHighAccuracy: true });
+    locating.current = locateOnce(update => {
+      if (update.type === "fix" && !update.final) return;
+      locating.current = null; setGeoBusy(false);
+      if (update.type === "error") { w.setError(`${describeLocateError(update.code)} Выберите точку на карте или введите адрес.`); return; }
+      void w.resolve({ lat: update.fix.lat, lon: update.fix.lon });
+    });
   }
   function changeMode(next: "destination" | "time") {
     setMode(next); w.edit({ destination: null, mode: next === "time" ? "loop" : "open" });
