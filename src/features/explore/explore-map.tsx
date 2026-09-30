@@ -16,6 +16,7 @@ export const FALLBACK_TILE_URL="https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 /**
  * The whole city fits at z10. Further out the basemap tiles carry greenery only as ESA WorldCover landcover,
  * which the style leaves out (it needs its own credit), so the map would turn grey; a city walk never needs that view.
+ * Leaflet zooms are one above MapLibre's (512 px tiles): z10 here draws the style at z9.
  */
 export const MAP_MIN_ZOOM=10;
 
