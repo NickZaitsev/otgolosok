@@ -107,10 +107,10 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
             {picker === "time" && <><fieldset className="creation-time" disabled={busy}><legend>Время пешком</legend><div>{([30, 60, 90] as const).map(minutes => <button type="button" key={minutes} aria-pressed={w.draft.minutes === minutes} onClick={() => w.edit({ minutes })}>{minutes} мин</button>)}</div></fieldset><label className="creation-switch"><span>Вернуться к началу</span><input type="checkbox" checked={w.draft.mode === "loop"} onChange={e => w.edit({ mode: e.target.checked ? "loop" : "open" })} /></label><button className="ui-button creation-time-done" onClick={() => setPicker(null)}>Готово</button></>}
           </div>;
 
-  return <section ref={panel} className={`creation-panel${state.picking ? " is-picking" : preview ? " is-preview" : ""}`} aria-labelledby="creation-title">
+  return <section ref={panel} className={`creation-panel${state.picking ? " is-picking" : preview ? " is-preview" : ""}`} data-region="sheet" data-state={state.picking ? "picking" : preview ? "preview" : "form"} aria-labelledby="creation-title">
     <div className="creation-handle" aria-hidden="true" />
-    <header className="creation-heading is-compact"><div><h1 id="creation-title" ref={title} tabIndex={-1}>{state.picking ? "Куда идём?" : preview ? "Ваш маршрут" : "Прогулка"}</h1></div><button type="button" className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки"><ExploreIcon name="close" /></button></header>
-    <div className="creation-body">
+    <header className="creation-heading is-compact" data-sheet-part="header"><div><h1 id="creation-title" ref={title} tabIndex={-1}>{state.picking ? "Куда идём?" : preview ? "Ваш маршрут" : "Прогулка"}</h1></div><button type="button" className="creation-close" onClick={onClose} aria-label="Закрыть создание прогулки"><ExploreIcon name="close" /></button></header>
+    <div className="creation-body" data-sheet-part="body">
       {!w.loaded ? <p role="status">Открываем черновик…</p> : <>
         {!preview && !state.picking && <>
           <div className="creation-endpoints">
@@ -140,7 +140,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
       {w.message && <p className="ui-notice" role="status">{w.message}</p>}
       {busy && <p role="status" className="ui-muted">{w.busy || "Определяем местоположение…"}</p>}
     </div>
-    {preview && w.openHref && <footer className="creation-footer"><Link className="ui-button" href={w.openHref}>Начать прогулку</Link></footer>}
-    {w.loaded && !preview && !state.picking && w.draft.start && (mode === "time" || w.draft.destination) && <footer className="creation-footer"><button className="ui-button" disabled={busy || !w.draft.start || (mode === "destination" && !w.draft.destination) || !!w.candidate || !!w.storageError} onClick={() => void build()}>Построить прогулку</button></footer>}
+    {preview && w.openHref && <footer className="creation-footer" data-sheet-part="footer"><Link className="ui-button" href={w.openHref}>Начать прогулку</Link></footer>}
+    {w.loaded && !preview && !state.picking && w.draft.start && (mode === "time" || w.draft.destination) && <footer className="creation-footer" data-sheet-part="footer"><button className="ui-button" disabled={busy || !w.draft.start || (mode === "destination" && !w.draft.destination) || !!w.candidate || !!w.storageError} onClick={() => void build()}>Построить прогулку</button></footer>}
   </section>;
 }

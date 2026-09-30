@@ -8,7 +8,7 @@ vi.mock("react",()=>({
   useEffect:(effect:()=>void|(()=>void))=>mock.effects.push(effect),
 }));
 vi.mock("leaflet",()=>{
-  const layer=()=>({addTo:vi.fn().mockReturnThis(),on:vi.fn().mockReturnThis(),clearLayers:vi.fn()});
+  const layer=()=>({addTo:vi.fn().mockReturnThis(),on:vi.fn().mockReturnThis(),clearLayers:vi.fn(),getContainer:()=>null});
   return {
     map:()=>{
       let center={lat:0,lng:0},zoom=0,removed=false;
