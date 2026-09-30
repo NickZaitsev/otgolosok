@@ -63,8 +63,12 @@ export function PlaceSheet({ address, busy, error, createHref, walkHref, onClose
       <h2 id="new-place-title" className={a.title}>{busy ? "Определяем адрес…" : address ?? "О чём расскажет этот дом?"}</h2>
       <button type="button" className={a.iconButton} aria-label="Закрыть выбранное место" onClick={onClose}><ExploreIcon name="close" /></button>
     </div>}
-    footer={busy ? null : <Link className={a.primary} href={createHref} prefetch={false}>{address ? "Подготовить историю этого дома" : "Ввести адрес вручную"}<ExploreIcon name="plus" /></Link>}>
-    {note || walkHref ? <>{note}{walkHref ? <WalkFromHere href={walkHref} onClick={onWalk} /> : null}</> : null}
+    // Both actions stay in the footer: the card has no text to scroll past them.
+    footer={busy ? null : <>
+      <Link className={a.primary} href={createHref} prefetch={false}>{address ? "Подготовить историю этого дома" : "Ввести адрес вручную"}<ExploreIcon name="plus" /></Link>
+      {walkHref ? <WalkFromHere href={walkHref} onClick={onWalk} footer /> : null}
+    </>}>
+    {note}
   </Sheet>;
 }
 
@@ -97,8 +101,8 @@ export function NearbySheet({ radius, recommendations, onRadius, onSelect, onRes
   </Sheet>;
 }
 
-function WalkFromHere({ href, onClick }: { href: string; onClick: () => void }) {
-  return <Link className={`${a.secondary} ${a.bodyAction}`} href={href} onClick={onClick} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk" /></Link>;
+function WalkFromHere({ href, onClick, footer = false }: { href: string; onClick: () => void; footer?: boolean }) {
+  return <Link className={footer ? a.secondary : `${a.secondary} ${a.bodyAction}`} href={href} onClick={onClick} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk" /></Link>;
 }
 
 /** The first-visit hint in the notices slot. */
