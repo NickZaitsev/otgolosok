@@ -19,7 +19,7 @@ async function render(value: MapItem[], selectedId?: string) {
   });
 }
 
-const pins = () => [...container.querySelectorAll<HTMLElement>(".explore-pin")];
+const pins = () => [...container.querySelectorAll<HTMLElement>('[data-marker="pin"]')];
 
 beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
@@ -48,7 +48,7 @@ it("keeps marker elements and keyboard focus across re-renders and selection", a
 
   await render(items(), "a");
   expect(pins()[0]).toBe(first);
-  expect(first.classList.contains("selected")).toBe(true);
+  expect(first.getAttribute("data-selected")).toBe("true");
   expect(first.getAttribute("aria-pressed")).toBe("true");
   expect(document.activeElement).toBe(first);
 
@@ -60,7 +60,7 @@ it("keeps marker elements and keyboard focus across re-renders and selection", a
 
 it("exposes the map as a labelled region", async () => {
   await render(items());
-  const map = container.querySelector(".explore-map");
+  const map = container.querySelector('[data-region="map"]');
   expect(map?.getAttribute("role")).toBe("region");
   expect(map?.getAttribute("aria-label")).toMatch(/^Карта историй/);
 });

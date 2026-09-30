@@ -25,6 +25,8 @@ import { describeLocateError, locateOnce } from "@/lib/position/locate";
 type Place = {label:string; address:string|null; location:Coordinates};
 type StoryPin = MapItem & {address:string; duration?:number; chapter?:number; jobId?:string; placeId?:string; audioUrl?:string; status?:string; paragraphs?:string[]; attribution?:SourceAttribution};
 type CatalogPlace = {id:string;name:string;address:string|null;location:Coordinates;story:{title:string;paragraphs:Array<{text:string}>;sources?:StorySourceRef[];facts?:unknown[]}|null;audio:{url:string;durationSec:number}|null;distanceM:number|null};
+// Transitional until this screen moves to MapShell: keeps a selected place above the bottom card, as panBy(0, 80) did.
+const LEGACY_CARD_INSETS = {top:0,right:0,bottom:160,left:0};
 // Keep the nearby viewport across client-side navigation, independently of walk maps.
 const nearbyMapView: MapViewState = {current:null};
 const MELNIKOV: StoryPin = {id:"4c76cc5f-0fcd-41db-a36e-e63cce9b3f09",jobId:"4c76cc5f-0fcd-41db-a36e-e63cce9b3f09",title:"Воздушные телефоны Дома Мельникова",address:"Кривоарбатский переулок, 10",location:{lat:55.74805556,lon:37.58944444},duration:56};
@@ -199,7 +201,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
 
   return <>
     {creating && <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />}
-    <ExploreMap viewState={nearbyMapView} items={creating ? creationItems : mapItems} geometry={creating ? creationMap.geometry : undefined} routePadding={creating ? creationMap.padding : undefined} selectedId={selected??(place?"picked-place":undefined)} focus={creating ? creationMap.focus : focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}}} onPoint={point=>creating ? setPicked(point) : void findPlace(point)} />
+    <ExploreMap viewState={nearbyMapView} items={creating ? creationItems : mapItems} geometry={creating ? creationMap.geometry : undefined} insets={creating ? creationMap.padding : LEGACY_CARD_INSETS} legacyChrome selectedId={selected??(place?"picked-place":undefined)} focus={creating ? creationMap.focus : focus} user={user} onSelect={id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}}} onPoint={point=>creating ? setPicked(point) : void findPlace(point)} />
     <div className={`around-content${creating?" creation-open":""}${search?" searching":""}`}>
       <header className="around-header" data-region="header">
         <div className="around-topline"><Link href="/" prefetch={false} className="around-brand"><BrandMark /></Link><button className="around-icon" type="button" aria-label={search?"Закрыть поиск":"Найти адрес"} onClick={()=>search?setSearch(false):openSearch()}><ExploreIcon name={search?"close":"search"}/></button></div>

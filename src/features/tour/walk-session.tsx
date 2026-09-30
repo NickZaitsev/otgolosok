@@ -65,7 +65,7 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
   return <>
     <div className="walk-session-map">
       <ExploreMap items={items} selectedId={active ? chapter?.id : undefined} focus={focus} user={user}
-        geometry={geometry} routePadding={padding} onPoint={noop} onSelect={id => {
+        geometry={geometry} insets={padding} legacyChrome onPoint={noop} onSelect={id => {
           const position = chapters.findIndex(item => item.id === id);
           if (position >= 0) { if (active) select(position); else setDrawer("stops"); }
         }} mapLabel="Карта прогулки: пешеходный маршрут и остановки" />

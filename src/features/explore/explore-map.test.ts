@@ -4,6 +4,7 @@ import type { MapFocus, MapViewState } from "./explore-map";
 const mock=vi.hoisted(()=>({effects:[] as Array<()=>void|(()=>void)>,basemaps:[] as unknown[],tileLayers:[] as string[],maps:[] as Array<{setView:ReturnType<typeof vi.fn<([lat,lng]:number[],zoom:number)=>unknown>>;panBy:ReturnType<typeof vi.fn>;fire:(event:string)=>void}>}));
 vi.mock("react",()=>({
   useRef:(current:unknown)=>({current:current??{}}),
+  useImperativeHandle:()=>{},
   useState:()=>[true,vi.fn()],
   useEffect:(effect:()=>void|(()=>void))=>mock.effects.push(effect),
 }));
@@ -19,7 +20,8 @@ vi.mock("leaflet",()=>{
         on:(events:string,handler:()=>void)=>{for(const event of events.split(" ")){if(!listeners.has(event))listeners.set(event,new Set());listeners.get(event)!.add(handler);}},
         off:(events:string,handler:()=>void)=>{for(const event of events.split(" "))listeners.get(event)?.delete(handler);},
         fire:(event:string)=>{listeners.get(event)?.forEach(handler=>handler());},
-        remove:vi.fn(()=>{removed=true;}),invalidateSize:vi.fn(),panBy:vi.fn(),
+        remove:vi.fn(()=>{removed=true;}),invalidateSize:vi.fn(),panBy:vi.fn(),fitBounds:vi.fn(),
+        getSize:()=>({x:390,y:844}),getMinZoom:()=>3,getMaxZoom:()=>19,
       };
       mock.maps.push(map);return map;
     },
@@ -45,13 +47,16 @@ async function mount(viewState?:MapViewState,focus:MapFocus|null=null,canvas:{co
   vi.stubGlobal("matchMedia",()=>({matches:true}));
   vi.stubGlobal("document",{createElement:()=>({getContext:()=>canvas.context})});
   vi.stubGlobal("ResizeObserver",class{observe(){} disconnect(){}});
+  vi.stubGlobal("getComputedStyle",()=>({getPropertyValue:()=>""}));
   mock.effects=[];
   ExploreMap({items:[],focus,user:null,onSelect:vi.fn(),onPoint:vi.fn(),viewState});
+  // Effects in declaration order: handlers, status, map creation, then the view effects.
   const effects=[...mock.effects];
   effects[0]();
-  const cleanup=effects[1]();
+  effects[1]();
+  const cleanup=effects[2]();
   await vi.dynamicImportSettled();
-  effects.slice(2).forEach(effect=>effect());
+  effects.slice(3).forEach(effect=>effect());
   return {map:mock.maps.at(-1)!,cleanup};
 }
 

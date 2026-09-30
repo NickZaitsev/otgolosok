@@ -35,7 +35,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 
     await expect(page.getByRole("heading", { name: stops[0].address, exact: true })).toBeVisible();
     const boxes = await page.locator(".walk-session-panel").evaluate(el => {
       const panel = el.getBoundingClientRect();
-      const nav = document.querySelector(".app-navigation")!.getBoundingClientRect();
+      const nav = document.querySelector('[data-region="nav"]')!.getBoundingClientRect();
       return { top: panel.top, bottom: panel.bottom, navTop: nav.top, right: panel.right, width: innerWidth };
     });
     expect(boxes.top).toBeGreaterThanOrEqual(0);
@@ -109,7 +109,7 @@ test("геопозиция отличается от остановок и не 
   await context.setGeolocation({ latitude: 55.7505, longitude: 37.6005, accuracy: 12 });
   await setup(page);
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
-  const position = page.locator(".explore-user-position");
+  const position = page.locator('[data-marker="user"]');
   await expect(position).toBeVisible();
   await expect(position.locator("span")).toHaveCSS("background-color", "rgb(36, 107, 144)");
   await expect(page.locator(".leaflet-control-scale")).toHaveCount(0);
@@ -149,7 +149,7 @@ const mapControls = { "крестик": ".walk-session-back", "поиск": ".wa
 // Кнопка свободна, если она целиком в окне, на неё не заходят панель и навигация, а в её центре — она сама.
 function controlsState(page: Page) {
   return page.evaluate(controls => {
-    const covers = { "панель": ".walk-session-panel", "навигация": ".app-navigation" };
+    const covers = { "панель": ".walk-session-panel", "навигация": '[data-region="nav"]' };
     return Object.fromEntries(Object.entries(controls).flatMap(([name, selector]) => {
       const control = document.querySelector(selector);
       if (!control) return [];
@@ -180,7 +180,7 @@ function routeIsVisible(page: Page) {
     if (!path) return false;
     const route = path.getBoundingClientRect();
     const inside = route.left >= 0 && route.top >= 0 && route.right <= innerWidth && route.bottom <= innerHeight;
-    return inside && [".walk-session-panel", ".app-navigation"].every(selector => {
+    return inside && [".walk-session-panel", '[data-region="nav"]'].every(selector => {
       const other = document.querySelector(selector)!.getBoundingClientRect();
       return route.right <= other.left || route.left >= other.right || route.bottom <= other.top || route.top >= other.bottom;
     });
@@ -240,7 +240,7 @@ test.describe("панель прогулки на телефоне", () => {
       await checkPanelStates(page, async state => {
         await expectMapUsable(page, state);
         const panel = await edges(page, ".walk-session-panel");
-        const navigation = await edges(page, ".app-navigation");
+        const navigation = await edges(page, '[data-region="nav"]');
         expect(panel.right, state).toBe(12);
         const header = await edges(page, ".walk-session-header");
         expect(header, state).toMatchObject({ top: 12, left: 12 });
