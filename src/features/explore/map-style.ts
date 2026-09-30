@@ -4,7 +4,8 @@ import type { ExpressionSpecification, StyleSpecification } from "maplibre-gl";
 export const MAP_TILES_ORIGIN = "https://tiles.versatiles.org";
 
 // VersaTiles serves OSM in the Shortbread schema (CC0), so only © OpenStreetMap is owed.
-// The "land" layer is left out: VersaTiles mixes ESA WorldCover into it, which needs its own credit.
+// VersaTiles fills the "land" layer with ESA WorldCover classes up to about z9, which needs its own credit;
+// from z11 it holds OSM landuse only, so greenery is drawn from LAND_MIN_ZOOM on.
 // No sprite: the map carries no POI icons, only streets, water, buildings and names.
 const paper = "#f5f1e8";
 const street = "#ffffff";
@@ -12,6 +13,10 @@ const casing = "#dccfb9";
 const water = "#b3d4cf";
 const label = "#3d3732";
 const muted = "#8a8178";
+
+export const LAND_MIN_ZOOM = 12;
+const lawn = ["park", "garden", "grass", "village_green", "recreation_ground", "meadow", "playground", "allotments", "cemetery"];
+const woods = ["forest", "wood", "scrub", "orchard"];
 
 const drivable = ["motorway", "trunk", "primary", "secondary", "tertiary", "unclassified", "residential", "living_street", "pedestrian", "service"];
 const major = ["motorway", "trunk", "primary"];
@@ -34,11 +39,15 @@ export const mapStyle = {
   glyphs: `${MAP_TILES_ORIGIN}/assets/glyphs/{fontstack}/{range}.pbf`,
   layers: [
     { id: "background", type: "background", paint: { "background-color": paper } },
+    { id: "lawn", type: "fill", source: "osm", "source-layer": "land", minzoom: LAND_MIN_ZOOM,
+      filter: ["in", ["get", "kind"], ["literal", lawn]], paint: { "fill-color": "#d5e6c0" } },
+    { id: "woods", type: "fill", source: "osm", "source-layer": "land", minzoom: LAND_MIN_ZOOM,
+      filter: ["in", ["get", "kind"], ["literal", woods]], paint: { "fill-color": "#c2dca8" } },
     { id: "water", type: "fill", source: "osm", "source-layer": "water_polygons", paint: { "fill-color": water } },
     { id: "waterway", type: "line", source: "osm", "source-layer": "water_lines", filter: aboveGround,
       paint: { "line-color": water, "line-width": ["interpolate", ["linear"], ["zoom"], 12, 1, 18, 4] } },
     { id: "street-area", type: "fill", source: "osm", "source-layer": "street_polygons", minzoom: 15, filter: aboveGround,
-      paint: { "fill-color": street } },
+      paint: { "fill-color": "#faf6ee" } },
     { id: "rail", type: "line", source: "osm", "source-layer": "streets",
       filter: ["all", ["==", ["get", "kind"], "rail"], aboveGround],
       paint: { "line-color": "#d8cfbf", "line-width": ["interpolate", ["linear"], ["zoom"], 13, 0.5, 18, 2] } },

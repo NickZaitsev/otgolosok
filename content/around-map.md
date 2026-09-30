@@ -29,14 +29,16 @@
 
 - Leaflet: https://leafletjs.com/reference.html
 - Подложка: собственный плоский стиль без иконок `src/features/explore/map-style.ts`
-  (улицы, вода, дома, русские названия в палитре проекта) поверх тайлов
+  (улицы, вода, зелень, дома, русские названия в палитре проекта) поверх тайлов
   https://versatiles.org — бесплатно и без ключа. Рисуется MapLibre GL 5
   через `@maplibre/maplibre-gl-leaflet` под слоями Leaflet. Тайлы и шрифты
   берутся с `tiles.versatiles.org` через fetch, поэтому домен есть в
   `connect-src`; воркер MapLibre стартует из `blob:` (`worker-src`).
 - Схема тайлов Shortbread распространяется под CC0, поэтому достаточно
-  подписи «© OpenStreetMap» (ODbL, обязательна). Слой `land` не используется:
-  VersaTiles строит его и по ESA WorldCover, которому нужна своя подпись.
+  подписи «© OpenStreetMap» (ODbL, обязательна). В слое `land` VersaTiles
+  примерно до z9 лежат классы ESA WorldCover (`bare_rock`, `grassland`), им
+  нужна своя подпись; с z11 там только землепользование OSM. Поэтому зелень
+  (парки, скверы, лес) рисуется с `LAND_MIN_ZOOM` = 12.
   Схема OpenMapTiles (OpenFreeMap, MapTiler) требует подписи «© OpenMapTiles»
   по CC-BY — поэтому от неё отказались. Тест `map-style.test.ts` проверяет
   стиль валидатором MapLibre и эти ограничения.

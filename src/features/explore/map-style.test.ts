@@ -1,7 +1,7 @@
 import { validateStyleMin } from "@maplibre/maplibre-gl-style-spec";
 import { expect, it } from "vitest";
 import { contentSecurityPolicy } from "../../../scripts/content-security-policy.mjs";
-import { MAP_TILES_ORIGIN, mapStyle } from "./map-style";
+import { LAND_MIN_ZOOM, MAP_TILES_ORIGIN, mapStyle } from "./map-style";
 
 it("passes the MapLibre style specification", () => {
   expect(validateStyleMin(mapStyle).map(error => error.message)).toEqual([]);
@@ -14,8 +14,11 @@ it("stays flat and icon-free", () => {
 });
 
 it("uses only data that owes no credit beyond OpenStreetMap", () => {
-  // VersaTiles builds "land" partly from ESA WorldCover, which needs its own attribution.
-  expect(mapStyle.layers.map(layer => "source-layer" in layer ? layer["source-layer"] : null)).not.toContain("land");
+  // Below z11 VersaTiles "land" carries ESA WorldCover classes, which need their own attribution.
+  const land = mapStyle.layers.filter(layer => "source-layer" in layer && layer["source-layer"] === "land");
+  expect(land.length).toBeGreaterThan(0);
+  expect(LAND_MIN_ZOOM).toBeGreaterThanOrEqual(11);
+  for (const layer of land) expect(layer.minzoom).toBe(LAND_MIN_ZOOM);
 });
 
 it("fetches tiles and glyphs only from the origin the CSP allows", () => {
