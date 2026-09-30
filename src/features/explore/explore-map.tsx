@@ -88,7 +88,7 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
       } else {
         L.tileLayer(FALLBACK_TILE_URL,{maxZoom:19,updateWhenIdle:true,keepBuffer:1}).on("tileerror",()=>setTileError(true)).on("tileload",()=>setTileError(false)).addTo(map);
       }
-      L.control.zoom({position:"bottomright",zoomInTitle:"Приблизить",zoomOutTitle:"Отдалить"}).addTo(map);
+      L.control.zoom({position:"bottomright",zoomInTitle:"Приблизить",zoomOutTitle:"Отдалить"}).addTo(map).getContainer()?.setAttribute("data-region","controls");
       map.on("click",(event:Leaflet.LeafletMouseEvent)=>handlers.current.onPoint({lat:event.latlng.lat,lon:event.latlng.lng}));
       runtime.current={L,map,markers:L.layerGroup().addTo(map),markerById:new Map(),position:L.layerGroup().addTo(map),route:L.layerGroup().addTo(map)};
       observer=new ResizeObserver(()=>{if(!disposed)map.invalidateSize();});observer.observe(container.current);
@@ -136,7 +136,10 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
         marker=rt.L.marker(position,{icon,title:item.title,alt:item.title,keyboard:true,zIndexOffset:item.compact?-1000:0,bubblingMouseEvents:false}).addTo(rt.markers);
         marker.on("click",()=>handlers.current.onSelect(item.id));
       }
-      marker.getElement()?.setAttribute("aria-pressed",String(active));
+      const element=marker.getElement();
+      element?.setAttribute("aria-pressed",String(active));
+      element?.setAttribute("data-marker",item.compact?"dot":"pin");
+      element?.setAttribute("data-selected",String(active));
       rt.markerById.set(item.id,{marker,look});
     }
   },[items,selectedId,ready]);
@@ -162,6 +165,7 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     rt.route.clearLayers();
     if(!geometry || geometry.length<2)return;
     const line=rt.L.polyline(geometry.map(p=>[p.lat,p.lon] as [number,number]),{color:"#203e38",weight:5,opacity:.9,interactive:false}).addTo(rt.route);
+    line.getElement()?.setAttribute("data-route","");
     rt.map.fitBounds(line.getBounds(),{paddingTopLeft:routePadding?[routePadding.left,routePadding.top]:[35,35],paddingBottomRight:routePadding?[routePadding.right,routePadding.bottom]:[35,35],maxZoom:17,animate:false});
   },[geometry,ready,routePadding]);
 
@@ -172,13 +176,13 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     // icon is more reliable than a tiny circleMarker on high-DPI/mobile maps.
     rt.L.circle([user.lat,user.lon],{radius:Math.min(Math.max(user.accuracyM,20),5000),color:"#246b90",weight:2,fillColor:"#246b90",fillOpacity:.16,interactive:false}).addTo(rt.position);
     const icon=rt.L.divIcon({className:"explore-user-position",html:"<span aria-hidden=\"true\"></span>",iconSize:[30,30],iconAnchor:[15,15]});
-    rt.L.marker([user.lat,user.lon],{icon,interactive:false,zIndexOffset:1000}).addTo(rt.position);
+    rt.L.marker([user.lat,user.lon],{icon,interactive:false,zIndexOffset:1000}).addTo(rt.position).getElement()?.setAttribute("data-marker","user");
   },[user,ready]);
 
   return <div className="explore-map-layer">
-    <div ref={container} className="explore-map" role="region" aria-label={mapLabel??"Карта историй. Выберите отметку или нажмите на дом, чтобы подготовить историю."} />
-    {!ready?<p className="map-loading" role="status">{mapError?"Карта не загрузилась. Откройте список историй.":"Загружаем карту…"}</p>:null}
-    {tileError?<p className="map-network-note" role="status">Карта требует интернета. Сохранённые истории доступны в разделе «Сохранено».</p>:null}
-    <a className="map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>
+    <div ref={container} className="explore-map" data-region="map" role="region" aria-label={mapLabel??"Карта историй. Выберите отметку или нажмите на дом, чтобы подготовить историю."} />
+    {!ready?<p className="map-loading" data-region="notices" role="status">{mapError?"Карта не загрузилась. Откройте список историй.":"Загружаем карту…"}</p>:null}
+    {tileError?<p className="map-network-note" data-region="notices" role="status">Карта требует интернета. Сохранённые истории доступны в разделе «Сохранено».</p>:null}
+    <a className="map-attribution" data-region="attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>
   </div>;
 }

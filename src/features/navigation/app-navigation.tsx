@@ -24,7 +24,7 @@ export function AppNavigation({ active, embedded = false, onNearby, onWalk }: Pr
     : <Link href="/" aria-current={current === "nearby" ? "page" : undefined}><ExploreIcon name="map"/><span>Рядом</span></Link>;
   const walk = <Link href="/?walk=create" onClick={onWalk} aria-current={current === "walk" ? "page" : undefined}><ExploreIcon name="plus"/><span>Прогулка</span></Link>;
 
-  return <nav className={`app-navigation${embedded ? " around-nav" : " app-navigation--standalone"}`} aria-label="Основная навигация">
+  return <nav className={`app-navigation${embedded ? " around-nav" : " app-navigation--standalone"}`} data-region="nav" aria-label="Основная навигация">
     {nearby}
     {walk}
     <Link href="/history" aria-current={current === "history" ? "page" : undefined}><ExploreIcon name="walk"/><span>История</span></Link>

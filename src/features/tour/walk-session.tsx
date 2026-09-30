@@ -70,13 +70,13 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
           if (position >= 0) { if (active) select(position); else setDrawer("stops"); }
         }} mapLabel="Карта прогулки: пешеходный маршрут и остановки" />
     </div>
-    <header ref={headerRef} className="walk-session-header">
+    <header ref={headerRef} className="walk-session-header" data-region="header">
       <Link href="/" prefetch={false} className="walk-session-brand" aria-label="Отголосок, на главную" onClick={() => onStop()}><BrandMark /></Link>
       <Link className="walk-session-search" href="/?search=1" prefetch={false} aria-label="Найти адрес" onClick={() => onStop()}><ExploreIcon name="search" /></Link>
       <Link className="walk-session-back" href="/" prefetch={false} aria-label="Закрыть прогулку" onClick={() => onStop()}><ExploreIcon name="close" /></Link>
     </header>
-    {active && user ? <button type="button" className="walk-session-locate" aria-label="Моё местоположение" onClick={() => setFocus({ lat: user.lat, lon: user.lon, zoom: 16 })}><ExploreIcon name="locate" /></button> : null}
-    <section ref={panelRef} className="walk-session-panel" aria-labelledby="walk-session-title">
+    {active && user ? <button type="button" className="walk-session-locate" data-region="controls" aria-label="Моё местоположение" onClick={() => setFocus({ lat: user.lat, lon: user.lon, zoom: 16 })}><ExploreIcon name="locate" /></button> : null}
+    <section ref={panelRef} className="walk-session-panel" data-region="sheet" aria-labelledby="walk-session-title">
       <header className="walk-session-heading">
         <div>
           <p className="walk-session-meta">{active ? chapter ? `Остановка ${index + 1} из ${chapters.length}` : "До финиша" : `${route.duration_min} мин · ${distance.toLocaleString("ru-RU", { maximumFractionDigits: 1 })} км`}</p>
@@ -96,12 +96,12 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
         {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />Остановки · {chapters.length}</button> : null}
         {active && hasText ? <button type="button" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}>Читать историю</button> : null}
       </div> : null}
-      {drawer && !completed ? <div className="walk-session-drawer" key={`${drawer}-${index}`}>
+      {drawer && !completed ? <div className="walk-session-drawer" data-sheet-part="body" key={`${drawer}-${index}`}>
         {drawer === "stops" ? <ol className="walk-session-stops">{chapters.map((item, position) => <li key={item.id}>
           {active ? <button type="button" aria-current={position === index ? "step" : undefined} onClick={() => select(position)}><span>{position + 1}</span>{item.title}</button> : <p><span>{position + 1}</span>{item.title}</p>}
         </li>)}</ol> : drawer === "story" ? story : settings}
       </div> : null}
-      <footer className="walk-session-actions">
+      <footer className="walk-session-actions" data-sheet-part="footer">
         {completed ? <Link className="walk-session-primary" href="/">На карту</Link> : active ? <>
           {index > 0 ? <button type="button" className="walk-session-previous" aria-label="Предыдущая остановка" onClick={() => select(index - 1)}><ExploreIcon name="arrow" /></button> : null}
           <button type="button" className="walk-session-primary" onClick={() => { setDrawer(null); if (index + 1 < chapters.length) select(index + 1); else onStop(true); }}>{index + 1 < chapters.length ? "Дальше" : "Завершить"}<ExploreIcon name="arrow" /></button>
