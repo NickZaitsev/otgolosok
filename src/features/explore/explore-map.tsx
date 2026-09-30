@@ -13,6 +13,11 @@ import styles from "./explore-map.module.css";
 
 /** Raster basemap for browsers without WebGL, which the vector basemap requires. */
 export const FALLBACK_TILE_URL="https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+/**
+ * The whole city fits at z10. Further out the basemap tiles carry greenery only as ESA WorldCover landcover,
+ * which the style leaves out (it needs its own credit), so the map would turn grey; a city walk never needs that view.
+ */
+export const MAP_MIN_ZOOM=10;
 
 function supportsWebGL() {
   const canvas=document.createElement("canvas");
@@ -97,7 +102,7 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
       appliedFocus.current=saved?.focus??null;
       // Leaflet 1.9 leaves its zoom transition timer alive after remove().
       // Zoom immediately so switching tabs mid-zoom cannot touch a removed map.
-      const map=L.map(container.current,{zoomControl:false,attributionControl:false,zoomAnimation:false,fadeAnimation:!reduced,markerZoomAnimation:false,minZoom:3,maxZoom:19}).setView(saved?[saved.center.lat,saved.center.lon]:[55.7249,37.6507],saved?.zoom??16);
+      const map=L.map(container.current,{zoomControl:false,attributionControl:false,zoomAnimation:false,fadeAnimation:!reduced,markerZoomAnimation:false,minZoom:MAP_MIN_ZOOM,maxZoom:19}).setView(saved?[saved.center.lat,saved.center.lon]:[55.7249,37.6507],saved?.zoom??16);
       if(viewState){
         saveView=()=>{const center=map.getCenter();viewState.current={center:{lat:center.lat,lon:center.lng},zoom:map.getZoom(),focus:appliedFocus.current};};
         map.on("moveend zoomend",saveView);
