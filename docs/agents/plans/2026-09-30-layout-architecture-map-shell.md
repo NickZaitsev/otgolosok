@@ -1,6 +1,6 @@
 # Plan: Layout architecture — one map shell, CSS Modules, enforced layout invariants
 
-Status: plan, 2026-09-30.
+Status: in progress since 2026-09-30, phases 0–4 done (phases 3 and 4 merged into one commit); next: phase 5 (walk session on MapShell).
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
