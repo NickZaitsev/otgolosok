@@ -8,6 +8,9 @@
   --sheet-gap: 0.75rem;
   --sheet-action-h: var(--control-primary-min);
 
+  /* The attribution line at the top edge and the gap under it. */
+  --attribution-strip: 1.25rem;
+
   position: fixed;
   inset: 0;
   isolation: isolate;
@@ -36,7 +39,7 @@
     "dock" minmax(0, auto)
     / minmax(0, 1fr);
   gap: var(--shell-gap);
-  padding: max(var(--shell-gutter), var(--safe-top))
+  padding: calc(var(--safe-top) + var(--attribution-strip))
     max(var(--shell-gutter), var(--safe-right)) var(--nav-clearance)
     max(var(--shell-gutter), var(--safe-left));
   pointer-events: none;
@@ -68,7 +71,14 @@
   display: flex;
   gap: var(--space-xs);
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+}
+
+/* Pinned to the top edge, outside the grid: the frame's top padding keeps its strip free. */
+.attribution {
+  position: absolute;
+  top: var(--safe-top);
+  right: max(0.25rem, var(--safe-right));
 }
 
 .free {

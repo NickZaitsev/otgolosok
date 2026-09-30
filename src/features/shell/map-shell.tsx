@@ -46,8 +46,8 @@ export function MapShell({ map, header, controls, notices, sheet }: Props) {
     </div>
     <div className={styles.frame} data-dock={hasDock ? undefined : "none"}>
       <header className={styles.header} data-region="header">{header}</header>
+      <div className={styles.attribution}><MapAttribution surface={mapCell} /></div>
       <div className={styles.controls}>
-        <MapAttribution />
         <MapControls zoom={{ zoomIn, zoomOut, ...limits }}>{controls}</MapControls>
       </div>
       <div ref={free} className={styles.free} aria-hidden="true" />

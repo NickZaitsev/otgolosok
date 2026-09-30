@@ -400,12 +400,22 @@ test("после завершения маршрута карта открыва
   await expect(page.getByRole("button", { name: "Слушать эту часть" })).toBeFocused();
 });
 
-test("подпись карты размером 11 пикселей без подчёркивания", async ({ page }) => {
+test("подпись карты размером 11 пикселей без подчёркивания прижата к верхнему краю", async ({ page }) => {
   await page.goto("/");
-  const attribution = page.getByRole("link", { name: "© OpenStreetMap", exact: true });
+  const attribution = page.getByRole("link", { name: "OpenStreetMap", exact: true });
+  expect((await attribution.boundingBox())!.y).toBeLessThanOrEqual(1);
   await expect(attribution).toBeVisible();
   expect(await attribution.evaluate(el => ({ size: getComputedStyle(el).fontSize, decoration: getComputedStyle(el).textDecorationLine }))).toEqual({ size: "11px", decoration: "none" });
   await expect(attribution).toHaveAttribute("href", "https://www.openstreetmap.org/copyright");
+});
+
+test("подпись карты сворачивается при касании карты и открывается кнопкой", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("Загружаем карту…")).toHaveCount(0);
+  await page.locator('[data-region="map"]').dispatchEvent("pointerdown");
+  await expect(page.getByRole("link", { name: "OpenStreetMap", exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Источник данных карты" }).click();
+  await expect(page.getByRole("link", { name: "OpenStreetMap", exact: true })).toBeFocused();
 });
 
 test("выбор на карте показывает понятный заголовок и контурную отмену", async ({ page }, info) => {
