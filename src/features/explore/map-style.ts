@@ -6,9 +6,9 @@ export const MAP_TILES_ORIGIN = "https://tiles.versatiles.org";
 // VersaTiles serves OSM in the Shortbread schema (CC0), so only © OpenStreetMap is owed.
 // The "land" layer is left out: VersaTiles mixes ESA WorldCover into it, which needs its own credit.
 // No sprite: the map carries no POI icons, only streets, water, buildings and names.
-const paper = "#f3eee4";
-const street = "#fffdf8";
-const casing = "#e2d8c6";
+const paper = "#f5f1e8";
+const street = "#ffffff";
+const casing = "#dccfb9";
 const water = "#b3d4cf";
 const label = "#3d3732";
 const muted = "#8a8178";
@@ -55,7 +55,7 @@ export const mapStyle = {
       layout: { "line-cap": "round", "line-join": "round" },
       paint: { "line-color": street, "line-width": streetWidth(1) } },
     { id: "building", type: "fill", source: "osm", "source-layer": "buildings", minzoom: 14,
-      paint: { "fill-color": "#e6ddcd", "fill-outline-color": "#d6cbb8" } },
+      paint: { "fill-color": "#ead6bf", "fill-outline-color": "#d4b594" } },
     { id: "housenumber", type: "symbol", source: "osm", "source-layer": "addresses", minzoom: 17.5,
       layout: { "text-field": ["get", "housenumber"], "text-font": ["noto_sans_regular"], "text-size": 11 },
       paint: { "text-color": muted, "text-halo-color": paper, "text-halo-width": 1 } },
