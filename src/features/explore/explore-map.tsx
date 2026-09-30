@@ -4,7 +4,45 @@ import { useEffect, useRef, useState } from "react";
 import type * as Leaflet from "leaflet";
 import type { Coordinates } from "../tour/types";
 import "leaflet/dist/leaflet.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import "./map-dots.css";
+
+/** Vector basemap; its tiles, glyphs and sprites are all served by tiles.openfreemap.org (see the CSP). */
+export const MAP_STYLE_URL="https://tiles.openfreemap.org/styles/bright";
+/** Raster basemap for browsers without WebGL, which the vector basemap requires. */
+export const FALLBACK_TILE_URL="https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+function supportsWebGL() {
+  const canvas=document.createElement("canvas");
+  const gl=canvas.getContext("webgl2")??canvas.getContext("webgl");
+  gl?.getExtension("WEBGL_lose_context")?.loseContext();
+  // jsdom and some locked-down browsers return undefined rather than null.
+  return Boolean(gl);
+}
+
+type VectorModule=typeof import("@maplibre/maplibre-gl-leaflet");
+type BasemapInternals={_map:Leaflet.Map|null; _glMap:import("maplibre-gl").Map&{_actualCanvas:HTMLElement}; _resizeContainer():void; _zoomEnd():void};
+
+/**
+ * maplibre-gl-leaflet 0.1.4 redraws after a resize in an animation frame without checking that
+ * the layer is still on a map, so a resize right before unmount throws on the removed map.
+ * Same redraw as upstream, skipped once the layer is gone.
+ */
+function safeBasemapLayer(L:typeof Leaflet,{MaplibreGL}:VectorModule):typeof Leaflet.MaplibreGL {
+  return MaplibreGL.extend({
+    _transitionEnd(this:BasemapInternals){
+      L.Util.requestAnimFrame(()=>{
+        const map=this._map;if(!map)return;
+        const offset=map.latLngToContainerPoint(map.getBounds().getNorthWest());
+        this._resizeContainer();
+        L.DomUtil.setTransform(this._glMap._actualCanvas,offset,1);
+        this._glMap.once("moveend",()=>this._zoomEnd());
+        const center=map.getCenter();
+        this._glMap.jumpTo({center:[center.lng,center.lat],zoom:map.getZoom()-1});
+      });
+    },
+  });
+}
 
 export type MapItem = {id:string; title:string; location:Coordinates; number?:number; pending?:boolean; compact?:boolean};
 export type MapFocus = Coordinates & {zoom?:number};
@@ -27,7 +65,10 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     let disposed=false;
     let observer:ResizeObserver|undefined;
     let saveView:(()=>void)|undefined;
-    void import("leaflet").then((L)=>{
+    void import("leaflet").then(async(L)=>{
+      // The vector engine is large and useless without WebGL, so only those browsers download it.
+      // If its chunk fails to load, the raster fallback still gives a working map.
+      const vector=supportsWebGL()?await import("@maplibre/maplibre-gl-leaflet").catch(()=>null):null;
       if(disposed||!container.current)return;
       const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
       const saved=viewState?.current;
@@ -39,7 +80,17 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
         saveView=()=>{const center=map.getCenter();viewState.current={center:{lat:center.lat,lon:center.lng},zoom:map.getZoom(),focus:appliedFocus.current};};
         map.on("moveend zoomend",saveView);
       }
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,updateWhenIdle:true,keepBuffer:1}).on("tileerror",()=>setTileError(true)).on("tileload",()=>setTileError(false)).addTo(map);
+      if(vector){
+        // Leaflet keeps markers, route and controls; MapLibre only draws the basemap underneath.
+        const Basemap=safeBasemapLayer(L,vector);
+        const basemap=new Basemap({style:MAP_STYLE_URL,attributionControl:false}).addTo(map).getMaplibreMap();
+        // The Bright sprite lacks a few POI icons (office, gate, atm…); draw nothing instead of warning per tile.
+        basemap.on("styleimagemissing",({id})=>{if(!basemap.hasImage(id))basemap.addImage(id,{width:1,height:1,data:new Uint8Array(4)});});
+        basemap.on("error",()=>setTileError(true));
+        basemap.on("data",(event)=>{if(event.dataType==="source"&&"tile" in event&&event.tile)setTileError(false);});
+      } else {
+        L.tileLayer(FALLBACK_TILE_URL,{maxZoom:19,updateWhenIdle:true,keepBuffer:1}).on("tileerror",()=>setTileError(true)).on("tileload",()=>setTileError(false)).addTo(map);
+      }
       L.control.zoom({position:"bottomright",zoomInTitle:"Приблизить",zoomOutTitle:"Отдалить"}).addTo(map);
       map.on("click",(event:Leaflet.LeafletMouseEvent)=>handlers.current.onPoint({lat:event.latlng.lat,lon:event.latlng.lng}));
       runtime.current={L,map,markers:L.layerGroup().addTo(map),markerById:new Map(),position:L.layerGroup().addTo(map),route:L.layerGroup().addTo(map)};
@@ -131,6 +182,6 @@ export function ExploreMap({items,selectedId,focus,user,onSelect,onPoint,geometr
     <div ref={container} className="explore-map" role="region" aria-label={mapLabel??"Карта историй. Выберите отметку или нажмите на дом, чтобы подготовить историю."} />
     {!ready?<p className="map-loading" role="status">{mapError?"Карта не загрузилась. Откройте список историй.":"Загружаем карту…"}</p>:null}
     {tileError?<p className="map-network-note" role="status">Карта требует интернета. Сохранённые истории доступны в разделе «Сохранено».</p>:null}
-    <a className="map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>
+    <p className="map-attribution"><a href="https://openfreemap.org" target="_blank" rel="noreferrer">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank" rel="noreferrer">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a></p>
   </div>;
 }

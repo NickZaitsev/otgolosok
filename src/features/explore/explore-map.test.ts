@@ -1,7 +1,7 @@
 import { afterEach, expect, it, vi } from "vitest";
 import type { MapFocus, MapViewState } from "./explore-map";
 
-const mock=vi.hoisted(()=>({effects:[] as Array<()=>void|(()=>void)>,maps:[] as Array<{setView:ReturnType<typeof vi.fn<([lat,lng]:number[],zoom:number)=>unknown>>;panBy:ReturnType<typeof vi.fn>;fire:(event:string)=>void}>}));
+const mock=vi.hoisted(()=>({effects:[] as Array<()=>void|(()=>void)>,basemaps:[] as unknown[],tileLayers:[] as string[],maps:[] as Array<{setView:ReturnType<typeof vi.fn<([lat,lng]:number[],zoom:number)=>unknown>>;panBy:ReturnType<typeof vi.fn>;fire:(event:string)=>void}>}));
 vi.mock("react",()=>({
   useRef:(current:unknown)=>({current:current??{}}),
   useState:()=>[true,vi.fn()],
@@ -23,16 +23,26 @@ vi.mock("leaflet",()=>{
       };
       mock.maps.push(map);return map;
     },
-    tileLayer:layer,layerGroup:layer,control:{zoom:layer,scale:layer},
+    tileLayer:(url:string)=>{mock.tileLayers.push(url);return layer();},layerGroup:layer,control:{zoom:layer,scale:layer},
   };
 });
+vi.mock("@maplibre/maplibre-gl-leaflet",()=>{
+  class MaplibreGL{
+    constructor(options:unknown){mock.basemaps.push(options);}
+    static extend(){return this;}
+    addTo(){return this;}
+    getMaplibreMap(){return {on:vi.fn()};}
+  }
+  return {MaplibreGL};
+});
 
-import { ExploreMap } from "./explore-map";
+import { ExploreMap, FALLBACK_TILE_URL, MAP_STYLE_URL } from "./explore-map";
 
-afterEach(()=>{mock.effects=[];mock.maps=[];vi.unstubAllGlobals();});
+afterEach(()=>{mock.effects=[];mock.maps=[];mock.basemaps=[];mock.tileLayers=[];vi.unstubAllGlobals();});
 
-async function mount(viewState?:MapViewState,focus:MapFocus|null=null){
+async function mount(viewState?:MapViewState,focus:MapFocus|null=null,canvas:{context:unknown}={context:{getExtension:()=>null}}){
   vi.stubGlobal("matchMedia",()=>({matches:true}));
+  vi.stubGlobal("document",{createElement:()=>({getContext:()=>canvas.context})});
   vi.stubGlobal("ResizeObserver",class{observe(){} disconnect(){}});
   mock.effects=[];
   ExploreMap({items:[],focus,user:null,onSelect:vi.fn(),onPoint:vi.fn(),viewState});
@@ -105,4 +115,15 @@ it("ignores late resize events from an unmounted map without losing the saved vi
   }).not.toThrow();
   expect(state.current).toEqual({center:{lat:55.77,lon:37.62},zoom:15,focus:null});
   returned.cleanup?.();
+});
+
+it.each([
+  ["with WebGL","draws the OpenFreeMap vector basemap",{getExtension:()=>null},[{style:MAP_STYLE_URL,attributionControl:false}],[]],
+  ["without WebGL","falls back to OSM raster tiles",null,[],[FALLBACK_TILE_URL]],
+  ["with an unimplemented canvas","falls back to OSM raster tiles",undefined,[],[FALLBACK_TILE_URL]],
+] as const)("%s %s",async(_,__,context,basemaps,tileLayers)=>{
+  const {cleanup}=await mount(undefined,null,{context});
+  expect(mock.basemaps).toEqual(basemaps);
+  expect(mock.tileLayers).toEqual(tileLayers);
+  cleanup?.();
 });
