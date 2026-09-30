@@ -8,10 +8,6 @@ import { SCREEN_STATES } from "./support/scenarios";
  * fixed the run fails until the entry is removed, so the list only shrinks.
  */
 const KNOWN_LAYOUT_FAILURES: KnownFailure[] = [
-  { screen: "вход", state: "форма", invariant: "content", reason: "страница не учитывает вырезы и высоту навигации",
-    cases: ["390×844 с вырезом"] },
-  { screen: "история", state: "список", invariant: "content", reason: "страница не учитывает вырезы и высоту навигации",
-    cases: ["390×844 с вырезом"] },
   { screen: "история", state: "список", invariant: "viewport", reason: "области стоят абсолютными отступами и не учитывают вырезы",
     cases: ["844×390 с вырезом"] },
   { screen: "карта", state: "выбранный дом", invariant: "focus", reason: "выбранное место центрируется без учёта шапки, кнопок и панели",
@@ -122,8 +118,6 @@ const KNOWN_LAYOUT_FAILURES: KnownFailure[] = [
     cases: ["1024×500", "1280×640", "1440×900", "320×568", "360×640", "375×667", "390×844", "390×844 с вырезом", "430×932", "568×320", "667×375", "699×800", "700×800", "768×1024", "844×390", "844×390 с вырезом", "932×430", "webkit 1024×500", "webkit 320×568", "webkit 390×844", "webkit 667×375"] },
   { screen: "прогулка", state: "текст истории", invariant: "viewport", reason: "области стоят абсолютными отступами и не учитывают вырезы",
     cases: ["844×390 с вырезом"] },
-  { screen: "профиль", state: "профиль", invariant: "content", reason: "страница не учитывает вырезы и высоту навигации",
-    cases: ["390×844 с вырезом"] },
   { screen: "профиль", state: "профиль", invariant: "viewport", reason: "области стоят абсолютными отступами и не учитывают вырезы",
     cases: ["844×390 с вырезом"] },
   { screen: "создание", state: "выбор на карте", invariant: "free", reason: "панель и кнопки закрывают почти всю карту",
