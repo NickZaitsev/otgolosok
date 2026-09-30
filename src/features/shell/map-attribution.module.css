@@ -18,7 +18,14 @@
     0 0 4px var(--surface-island),
     0 1px 8px var(--surface-island);
   border-radius: 6px;
+
+  /* Quiet on the map, but fully legible once pointed at or focused. */
+  opacity: 0.5;
   pointer-events: auto;
+}
+
+.attribution a:is(:hover, :focus-visible) {
+  opacity: 1;
 }
 
 .attribution a:hover {
