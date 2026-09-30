@@ -11,7 +11,6 @@ import { AddressInput } from "./address-input";
 import { routeShortfall, validStops, type Place } from "./model";
 import { ResearchPanel } from "./research-panel";
 import { describeLocateError, locateOnce } from "@/lib/position/locate";
-import "../ui/surfaces.css";
 import "./walk-creation-panel.css";
 
 export type CreationMap = { items: MapItem[]; geometry?: Coordinates[]; focus: Coordinates | null; picking: boolean; padding?: {top:number;right:number;bottom:number;left:number} };
