@@ -36,7 +36,8 @@ vi.mock("@maplibre/maplibre-gl-leaflet",()=>{
   return {MaplibreGL};
 });
 
-import { ExploreMap, FALLBACK_TILE_URL, MAP_STYLE_URL } from "./explore-map";
+import { ExploreMap, FALLBACK_TILE_URL } from "./explore-map";
+import { mapStyle } from "./map-style";
 
 afterEach(()=>{mock.effects=[];mock.maps=[];mock.basemaps=[];mock.tileLayers=[];vi.unstubAllGlobals();});
 
@@ -118,7 +119,7 @@ it("ignores late resize events from an unmounted map without losing the saved vi
 });
 
 it.each([
-  ["with WebGL","draws the OpenFreeMap vector basemap",{getExtension:()=>null},[{style:MAP_STYLE_URL,attributionControl:false}],[]],
+  ["with WebGL","draws the own vector basemap",{getExtension:()=>null},[{style:mapStyle,attributionControl:false}],[]],
   ["without WebGL","falls back to OSM raster tiles",null,[],[FALLBACK_TILE_URL]],
   ["with an unimplemented canvas","falls back to OSM raster tiles",undefined,[],[FALLBACK_TILE_URL]],
 ] as const)("%s %s",async(_,__,context,basemaps,tileLayers)=>{

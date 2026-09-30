@@ -24,7 +24,7 @@ describe("content security policy", () => {
 
   it("пускает к карте только её источники и воркер MapLibre", () => {
     const directive = (name: string) => contentSecurityPolicy([]).split("; ").find(d => d.startsWith(`${name} `));
-    expect(directive("connect-src")).toBe("connect-src 'self' https://tiles.openfreemap.org");
+    expect(directive("connect-src")).toBe("connect-src 'self' https://tiles.versatiles.org");
     expect(directive("img-src")).toBe("img-src 'self' data: blob: https://tile.openstreetmap.org");
     expect(directive("worker-src")).toBe("worker-src 'self' blob:");
     expect(directive("script-src")).toBe("script-src 'self'");

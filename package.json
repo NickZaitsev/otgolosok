@@ -32,6 +32,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@maplibre/maplibre-gl-style-spec": "24.10.0",
     "@playwright/test": "^1.63.0",
     "@types/leaflet": "^1.9.22",
     "@types/node": "^24.13.3",

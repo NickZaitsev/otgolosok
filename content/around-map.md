@@ -6,7 +6,7 @@
 
 ## Сценарии
 
-- «Рядом»: Leaflet 1.9.4 с векторной подложкой OpenFreeMap Bright. Четыре точки первой прогулки
+- «Рядом»: Leaflet 1.9.4 с собственной векторной подложкой. Четыре точки первой прогулки
   и готовая история Дома Мельникова. Количество отражает доступные записи.
 - Геолокация по кнопке. Без разрешения работают карта и поиск адреса.
   Точная позиция (до 50 м) открывает карточку «Готовые истории рядом»
@@ -28,12 +28,18 @@
 ## Источники и эксплуатация
 
 - Leaflet: https://leafletjs.com/reference.html
-- Подложка: стиль https://tiles.openfreemap.org/styles/bright (данные OSM,
-  схема OpenMapTiles), рисуется MapLibre GL 5 через
-  `@maplibre/maplibre-gl-leaflet` под слоями Leaflet. Бесплатно, без ключа
-  и без лимитов запросов: https://openfreemap.org. Стиль, тайлы, шрифты и
-  спрайты берутся с `tiles.openfreemap.org` через fetch, поэтому домен есть в
+- Подложка: собственный плоский стиль без иконок `src/features/explore/map-style.ts`
+  (улицы, вода, дома, русские названия в палитре проекта) поверх тайлов
+  https://versatiles.org — бесплатно и без ключа. Рисуется MapLibre GL 5
+  через `@maplibre/maplibre-gl-leaflet` под слоями Leaflet. Тайлы и шрифты
+  берутся с `tiles.versatiles.org` через fetch, поэтому домен есть в
   `connect-src`; воркер MapLibre стартует из `blob:` (`worker-src`).
+- Схема тайлов Shortbread распространяется под CC0, поэтому достаточно
+  подписи «© OpenStreetMap» (ODbL, обязательна). Слой `land` не используется:
+  VersaTiles строит его и по ESA WorldCover, которому нужна своя подпись.
+  Схема OpenMapTiles (OpenFreeMap, MapTiler) требует подписи «© OpenMapTiles»
+  по CC-BY — поэтому от неё отказались. Тест `map-style.test.ts` проверяет
+  стиль валидатором MapLibre и эти ограничения.
   MapLibre 6 не подходит: он грузит воркер отдельным файлом рядом со своим
   модулем, а в бандле Next этот файл не появляется.
 - `maplibre-gl-leaflet` 0.1.4 после ресайза перерисовывает подложку в
@@ -41,13 +47,10 @@
   после ресайза падал на `getZoom` у снятой карты; `safeBasemapLayer` в
   `explore-map.tsx` повторяет перерисовку с этой проверкой. При обновлении
   плагина проверьте, исправлено ли это выше по течению.
-- В спрайте Bright нет части значков (office, gate, atm и др.); на
-  `styleimagemissing` ставится прозрачная заглушка вместо предупреждения на
-  каждый тайл.
 - Без WebGL карта переходит на растровые тайлы
   https://tile.openstreetmap.org/{z}/{x}/{y}.png. Правила:
   https://operations.osmfoundation.org/policies/tiles/
-- Подписи «OpenFreeMap © OpenMapTiles © OpenStreetMap» видимы на карте.
+- Подпись «© OpenStreetMap» видима на карте.
   Без массовой предзагрузки и офлайн-копирования тайлов; обычное браузерное
   кеширование HTTP.
 - Адреса: серверный Nominatim-совместимый resolver, `/api/story-place`.
