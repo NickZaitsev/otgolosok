@@ -147,32 +147,25 @@
 }
 
 /*
- * Tall wide screens: the header island stands centred above the map, like the navigation below;
- * the controls row spans the width, and the sheet takes the right column under them.
- * Landscape phones keep the header in the left column: their height is too precious for a row.
+ * Tall wide screens keep one centred column, like the navigation below: header, controls,
+ * free map and the sheet above the navigation. Landscape phones keep the side column:
+ * their height is too precious for stacking.
  */
 @media (width >= 700px) and (height > 560px) {
-  .frame {
-    grid-template:
-      "header header" auto
-      "controls controls" auto
-      "free dock" minmax(0, 1fr)
-      / minmax(17.5rem, 1fr) minmax(0, var(--sheet-w));
-  }
-
+  .frame,
   .frame[data-dock="none"] {
-    grid-template-areas:
-      "header header"
-      "controls controls"
-      "free free";
+    grid-template:
+      "header" minmax(0, auto)
+      "controls" auto
+      "free" minmax(var(--map-min-free), 1fr)
+      "dock" minmax(0, auto)
+      / minmax(0, 1fr);
   }
 
-  .header {
+  .header,
+  .controls,
+  .dock {
     justify-self: center;
-  }
-
-  .controls {
-    justify-self: stretch;
-    width: 100%;
+    width: min(var(--island-max), 100%);
   }
 }
