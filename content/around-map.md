@@ -35,10 +35,14 @@
   берутся с `tiles.versatiles.org` через fetch, поэтому домен есть в
   `connect-src`; воркер MapLibre стартует из `blob:` (`worker-src`).
 - Схема тайлов Shortbread распространяется под CC0, поэтому достаточно
-  подписи «© OpenStreetMap» (ODbL, обязательна). В слое `land` VersaTiles
-  примерно до z9 лежат классы ESA WorldCover (`bare_rock`, `grassland`), им
-  нужна своя подпись; с z11 там только землепользование OSM. Поэтому зелень
-  (парки, скверы, лес) рисуется с `LAND_MIN_ZOOM` = 11.
+  подписи «© OpenStreetMap» (ODbL, обязательна). На мелких масштабах VersaTiles
+  подмешивает в слой `land` спутниковые классы ESA WorldCover, которым нужна
+  своя подпись (CC BY 4.0): `forest` до z6, `farmland`, `residential`,
+  `bare_rock`, `heath` до z9, `scrub`, `grassland`, `marsh`, `swamp` до z10
+  (`config.ts` в versatiles-org/landcover-vectors, таблица
+  `ESA_LANDCOVER_MAX_ZOOM`). Каждый слой зелени начинается выше этих масштабов:
+  парки и скверы OSM — на любом масштабе, где они есть в тайлах, лес — с z7,
+  кустарник — с z11.
   Схема OpenMapTiles (OpenFreeMap, MapTiler) требует подписи «© OpenMapTiles»
   по CC-BY — поэтому от неё отказались. Тест `map-style.test.ts` проверяет
   стиль валидатором MapLibre и эти ограничения.

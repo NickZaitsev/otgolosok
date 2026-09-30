@@ -1,7 +1,7 @@
 import { featureFilter, validateStyleMin } from "@maplibre/maplibre-gl-style-spec";
 import { expect, it } from "vitest";
 import { contentSecurityPolicy } from "../../../scripts/content-security-policy.mjs";
-import { LAND_MIN_ZOOM, MAP_TILES_ORIGIN, mapStyle } from "./map-style";
+import { ESA_LANDCOVER_MAX_ZOOM, MAP_TILES_ORIGIN, mapStyle } from "./map-style";
 
 it("passes the MapLibre style specification", () => {
   expect(validateStyleMin(mapStyle).map(error => error.message)).toEqual([]);
@@ -13,12 +13,25 @@ it("stays flat and icon-free", () => {
   expect(mapStyle.layers.filter(layer => "layout" in layer && layer.layout && "icon-image" in layer.layout)).toEqual([]);
 });
 
-it("uses only data that owes no credit beyond OpenStreetMap", () => {
-  // Below z11 VersaTiles "land" carries ESA WorldCover classes, which need their own attribution.
-  const land = mapStyle.layers.filter(layer => "source-layer" in layer && layer["source-layer"] === "land");
-  expect(land.length).toBeGreaterThan(0);
-  expect(LAND_MIN_ZOOM).toBeGreaterThanOrEqual(11);
-  for (const layer of land) expect(layer.minzoom).toBe(LAND_MIN_ZOOM);
+const landLayers = mapStyle.layers.filter(layer => "source-layer" in layer && layer["source-layer"] === "land");
+const drawsAt = (zoom: number, kind: string) => landLayers.some(layer =>
+  (layer.minzoom ?? 0) <= zoom && "filter" in layer && featureFilter(layer.filter).filter({ zoom }, { type: 3, properties: { kind } }));
+
+it("never draws ESA WorldCover landcover, which owes credit beyond OpenStreetMap", () => {
+  for (const [kind, maxZoom] of Object.entries(ESA_LANDCOVER_MAX_ZOOM)) {
+    for (let zoom = 0; zoom <= maxZoom; zoom++) expect(drawsAt(zoom, kind), `${kind} at z${zoom}`).toBe(false);
+  }
+});
+
+it.each([
+  [3, "park"],
+  [7, "forest"],
+  [10, "forest"],
+  [10, "cemetery"],
+  [11, "scrub"],
+  [16, "garden"],
+])("draws OSM greenery at z%i: %s", (zoom, kind) => {
+  expect(drawsAt(zoom, kind)).toBe(true);
 });
 
 it("fetches tiles and glyphs only from the origin the CSP allows", () => {

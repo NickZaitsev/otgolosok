@@ -4,8 +4,8 @@ import type { ExpressionSpecification, LayerSpecification, LineLayerSpecificatio
 export const MAP_TILES_ORIGIN = "https://tiles.versatiles.org";
 
 // VersaTiles serves OSM in the Shortbread schema (CC0), so only © OpenStreetMap is owed.
-// VersaTiles fills the "land" layer with ESA WorldCover classes up to about z9, which needs its own credit;
-// from z11 it holds OSM landuse only, so greenery is drawn from LAND_MIN_ZOOM on.
+// At low zooms VersaTiles fills the "land" layer with ESA WorldCover classes, which need their own credit.
+// Each green layer starts above the zooms where ESA emits any of its kinds, so only OSM landuse is drawn.
 // No sprite: the map carries no POI icons, only streets, water, buildings and names.
 // Colours follow Yandex Maps: neutral light ground, bright blue water, fresh green parks,
 // white side streets and grey-blue main roads, grey buildings.
@@ -20,9 +20,12 @@ const water = "#8fd3f7";
 const label = "#333333";
 const muted = "#8e8e8e";
 
-export const LAND_MIN_ZOOM = 11;
+/** The highest zoom at which VersaTiles emits each ESA WorldCover kind (versatiles-org/landcover-vectors, config.ts). */
+export const ESA_LANDCOVER_MAX_ZOOM: Record<string, number> = {
+  forest: 6, farmland: 9, residential: 9, bare_rock: 9, heath: 9, scrub: 10, grassland: 10, marsh: 10, swamp: 10,
+};
 const lawn = ["park", "garden", "grass", "village_green", "recreation_ground", "meadow", "playground", "allotments", "cemetery"];
-const woods = ["forest", "wood", "scrub", "orchard"];
+const woods = ["forest", "wood", "orchard"];
 
 const drivable = ["motorway", "trunk", "primary", "secondary", "tertiary", "unclassified", "residential", "living_street", "pedestrian", "service"];
 const major = ["motorway", "trunk", "primary"];
@@ -41,6 +44,12 @@ const byRank = (motorwayColor: string, mainColor: string, sideColor: string): Ex
   ["match", ["get", "kind"], "motorway", motorwayColor, main.filter(kind => kind !== "motorway"), mainColor, sideColor];
 
 const aboveGround: ExpressionSpecification = ["!=", ["get", "tunnel"], true];
+
+const greenLayer = (id: string, kinds: string[], color: string): LayerSpecification => ({
+  id, type: "fill", source: "osm", "source-layer": "land",
+  minzoom: Math.max(0, ...kinds.map(kind => (ESA_LANDCOVER_MAX_ZOOM[kind] ?? -1) + 1)),
+  filter: ["in", ["get", "kind"], ["literal", kinds]], paint: { "fill-color": color },
+});
 
 const streetLayers = (id: string, kinds: string[], minzoom: number): LayerSpecification[] => {
   const common: Omit<LineLayerSpecification, "id" | "paint"> = { type: "line", source: "osm", "source-layer": "streets", minzoom,
@@ -71,10 +80,10 @@ export const mapStyle = {
   glyphs: `${MAP_TILES_ORIGIN}/assets/glyphs/{fontstack}/{range}.pbf`,
   layers: [
     { id: "background", type: "background", paint: { "background-color": ground } },
-    { id: "lawn", type: "fill", source: "osm", "source-layer": "land", minzoom: LAND_MIN_ZOOM,
-      filter: ["in", ["get", "kind"], ["literal", lawn]], paint: { "fill-color": "#d3efb3" } },
-    { id: "woods", type: "fill", source: "osm", "source-layer": "land", minzoom: LAND_MIN_ZOOM,
-      filter: ["in", ["get", "kind"], ["literal", woods]], paint: { "fill-color": "#bfe39a" } },
+    greenLayer("lawn", lawn, "#d3efb3"),
+    greenLayer("woods", woods, "#bfe39a"),
+    // OSM scrub shares its kind with ESA shrubland, so it appears only once ESA is gone.
+    greenLayer("scrub", ["scrub"], "#bfe39a"),
     { id: "hospital", type: "fill", source: "osm", "source-layer": "sites", minzoom: 14,
       filter: ["==", ["get", "kind"], "hospital"], paint: { "fill-color": "#f9dfe7" } },
     { id: "campus", type: "fill", source: "osm", "source-layer": "sites", minzoom: 14,
