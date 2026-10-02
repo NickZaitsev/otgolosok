@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState } from "react";
-import { DRAFT_RESEARCH_LIMIT, draftClipboardText, draftResearchOptions, draftResearchStatuses, pageCount, pageRange, type AdminApi, type AdminRun, type ContentDraft, type ContentDraftPage, type ContentDraftResearchFilter, type ContentPlace, type Draft, type DraftResearchResult } from "./model";
+import { DRAFT_RESEARCH_LIMIT, draftClipboardText, draftResearchOptions, draftResearchStatuses, pageRange, type AdminApi, type AdminRun, type ContentDraft, type ContentDraftPage, type ContentDraftResearchFilter, type ContentPlace, type Draft, type DraftResearchResult } from "./model";
 import { PlaceTextFields, placeTextValid } from "./place-text-fields";
 import { skeletonRows } from "./table-skeleton";
 import "./content-admin.css";
@@ -28,6 +28,7 @@ export function DraftsAdmin({ api, busy, run, onDirtyChange }: DraftsAdminProps)
   const [researchCount, setResearchCount] = useState(20);
   const [researchFilter, setResearchFilter] = useState<ContentDraftResearchFilter>("all");
   const loaded = useRef(false);
+  const [pageStarts, setPageStarts] = useState([0]);
   const editorHeading = useRef<HTMLHeadingElement>(null);
   const placeOpener = useRef<HTMLButtonElement | null>(null);
   const pendingNavigation = useRef<"editor" | "list" | null>(null);
@@ -48,14 +49,23 @@ export function DraftsAdmin({ api, busy, run, onDirtyChange }: DraftsAdminProps)
     target.scrollIntoView({ block, behavior: "instant" });
   }, [busy, place]);
 
-  async function load(next: number, signal: AbortSignal, research: ContentDraftResearchFilter = researchFilter) {
-    setLoading(true);
+  async function load(next: number, signal: AbortSignal, research: ContentDraftResearchFilter = researchFilter, showLoading = true) {
+    if (showLoading) setLoading(true);
     try {
       const result = await api<ContentDraftPage>(`/content/drafts?limit=${DRAFT_PAGE}&offset=${next}&research=${research}`, signal);
       // A page can fall off the end when drafts are approved between requests.
-      if (!result.items.length && next > 0) { await load(Math.max(0, next - DRAFT_PAGE), signal, research); return; }
+      if (!result.items.length && next > 0) { await load(pageStarts.filter(start => start < next).at(-1) ?? Math.max(0, next - DRAFT_PAGE), signal, research, showLoading); return; }
+      setPageStarts(previous => {
+        if (next === 0) return [0];
+        if (next > offset) return [...previous, next];
+        if (next < offset) {
+          const starts = previous.filter(start => start <= next);
+          return starts.at(-1) === next ? starts : [...starts, next];
+        }
+        return previous;
+      });
       setPage(result); setOffset(next);
-    } finally { setLoading(false); }
+    } finally { if (showLoading) setLoading(false); }
   }
 
   useEffect(() => {
@@ -102,10 +112,10 @@ export function DraftsAdmin({ api, busy, run, onDirtyChange }: DraftsAdminProps)
     void run("Постановка черновиков в очередь…", async signal => {
       const result = await api<DraftResearchResult>("/content/drafts/research", signal, { requestKey: crypto.randomUUID(), ...(mode === "deep" ? { mode } : {}), ...("limit" in target ? { limit: target.limit } : { placeIds: target.placeIds }) });
       setPlace(null); setDraft(null); setBaseline("");
-      await load(offset, signal);
       setNotice("limit" in target
         ? `Поставлено в очередь на переисследование: ${numbers.format(result.count)}. Партия «${result.batch.name}».`
         : `Черновик «${target.name}» поставлен в очередь на ${mode === "deep" ? "глубокое исследование" : "переисследование"}.`);
+      await load(offset, signal, researchFilter, false);
     });
   }
 
@@ -115,8 +125,18 @@ export function DraftsAdmin({ api, busy, run, onDirtyChange }: DraftsAdminProps)
     void run("Утверждение текста…", async signal => {
       await api(`/content/places/${current.id}/approve`, signal, { story });
       setPlace(null); setDraft(null); setBaseline("");
-      await load(offset, signal);
+      const removed = page.items.find(item => item.placeId === current.id);
+      const remaining = page.items.filter(item => item.placeId !== current.id);
+      setPage(previous => ({
+        ...previous,
+        items: previous.items.filter(item => item.placeId !== current.id),
+        total: Math.max(0, previous.total - (removed ? 1 : 0)),
+        counts: removed && previous.counts ? { ...previous.counts, [removed.research]: Math.max(0, (previous.counts[removed.research] ?? 0) - 1) } : previous.counts,
+        unresearched: removed && removed.researchEligible && previous.unresearched !== undefined ? Math.max(0, previous.unresearched - 1) : previous.unresearched,
+      }));
       setNotice(`Текст утверждён: ${current.name}.`);
+      // Only an emptied later page needs another request; other rows keep their DOM and position.
+      if (!remaining.length && offset > 0) await load(pageStarts.at(-2) ?? 0, signal, researchFilter, false);
     });
   }
 
@@ -180,9 +200,9 @@ export function DraftsAdmin({ api, busy, run, onDirtyChange }: DraftsAdminProps)
     </table></div>
     {!loading && !page.items.length && <p className="admin-empty-row" role="status">{researchFilter === "all" ? "Черновиков нет." : "Черновиков с этим статусом нет."}</p>}
     <nav className="admin-pagination" aria-label="Страницы черновиков">
-      <button disabled={disabled || offset === 0} onClick={() => void run("Загрузка черновиков…", signal => load(Math.max(0, offset - DRAFT_PAGE), signal))}>Назад</button>
-      <span className="admin-meta">Страница {Math.floor(offset / DRAFT_PAGE) + 1} из {pageCount(page.total, DRAFT_PAGE)}</span>
-      <button disabled={disabled || !page.hasMore} onClick={() => void run("Загрузка черновиков…", signal => load(offset + DRAFT_PAGE, signal))}>Далее</button>
+      <button disabled={disabled || offset === 0} onClick={() => void run("Загрузка черновиков…", signal => load(pageStarts.at(-2) ?? 0, signal))}>Назад</button>
+      <span className="admin-meta">Страница {pageStarts.length} из {pageStarts.length + Math.ceil(Math.max(0, page.total - offset - page.items.length) / DRAFT_PAGE)}</span>
+      <button disabled={disabled || !page.hasMore} onClick={() => void run("Загрузка черновиков…", signal => load(offset + page.items.length, signal))}>Далее</button>
     </nav>
   </section>;
 }

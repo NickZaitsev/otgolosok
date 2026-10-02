@@ -384,9 +384,9 @@ test("open-data records head the item's sources with their dataset, before the s
 });
 
 // Draft re-research through the search model: which drafts are queued, and how completion replaces them.
-function draftStore(t, count = 4) {
+function draftStore(t, count = 4, databasePath = ":memory:") {
   let clock = Date.parse("2026-09-29T10:00:00Z");
-  const store = createStore(":memory:", { maxActive: 100, now: () => clock += 60000 }); t.after(() => store.close());
+  const store = createStore(databasePath, { maxActive: 100, now: () => clock += 60000 }); t.after(() => store.close());
   const places = Array.from({ length: count }, (_, index) => ({ ...catalog.places[0], placeId: `osm:node:${index + 1}`, osmId: index + 1, name: `Место ${index + 1}` }));
   store.importPlaces({ ...catalog, places });
   store.createBatch({ requestKey: "draft-drafts-key", placeIds: places.map(place => place.placeId), limit: count, identityPolicy: "weak_identity" });
@@ -733,4 +733,24 @@ test("map points flag ready photos and the detail carries the photo", t => {
     assert.equal("photo" in point("osm:node:1"), false);
   }
   assert.equal(store.getPublishedPlace("osm:way:2").photo, null);
+});
+
+test("draft eligibility matches the bulk research counter, including drafts without a job", t => {
+  const directory = mkdtempSync(join(tmpdir(), "draft-eligibility-"));
+  const databasePath = join(directory, "store.db");
+  const { store, order, draft } = draftStore(t, 3, databasePath);
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  assert.equal(draft(order[0]).researchEligible, true);
+  store.researchDrafts({ requestKey: "draft-eligibility-queued", placeIds: [order[0]] });
+  assert.equal(draft(order[0]).researchEligible, false);
+  const job = store.claimContentJob();
+  store.updateContentCheckpoint(job.id, { ...job.checkpoint, research: { perplexity: { status: "ok" } } });
+  store.completeContentJob(job.id, { story: { title: "Проверено", paragraphs: [{ text: "Текст", factIds: [] }] }, evidence: {} });
+  assert.equal(draft(order[0]).researchEligible, false);
+  const db = new DatabaseSync(databasePath);
+  try { db.prepare("UPDATE place_texts SET input_key='without-job' WHERE place_id=?").run(order[1]); } finally { db.close(); }
+  assert.equal(draft(order[1]).research, "plain");
+  assert.equal(draft(order[1]).researchEligible, false);
+  const page = store.listDrafts();
+  assert.equal(page.items.filter(item => item.researchEligible).length, page.unresearched);
 });

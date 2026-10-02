@@ -511,7 +511,8 @@ export function createContentStore({db,now,transaction}) {
     listDrafts({limit=50,offset=0,research="all"}={}) {
       if(!Number.isSafeInteger(limit)||limit<1||limit>100||!Number.isSafeInteger(offset)||offset<0||!DRAFT_RESEARCH_FILTERS.includes(research))throw fail("BAD_REQUEST");
       const where=`p.archived=0 AND ${DRAFT_PLACE}${research==="all"?"":` AND ${DRAFT_RESEARCH_STATUS}='${research}'`}`;
-      const rows=db.prepare(`SELECT p.id,p.name,p.address,p.lat,p.lon,t.id text_id,t.story_json,t.verification,t.created_at,${DRAFT_RESEARCH_STATUS} research_status
+      const rows=db.prepare(`SELECT p.id,p.name,p.address,p.lat,p.lon,t.id text_id,t.story_json,t.verification,t.created_at,${DRAFT_RESEARCH_STATUS} research_status,
+          (j.state IN ('ready','failed','review_required','insufficient_evidence') AND NOT ${PERPLEXITY_DONE}) research_eligible
         FROM places p ${DRAFT_TEXT_JOIN} WHERE ${where} ORDER BY t.created_at DESC,p.id LIMIT ? OFFSET ?`).all(limit+1,offset);
       const total=Number(db.prepare(`SELECT count(*) n FROM places p ${DRAFT_TEXT_JOIN} WHERE ${where}`).get().n);
       // Materialize only the status: GROUP BY otherwise carries multi-megabyte checkpoints into its temp sorter.
@@ -520,7 +521,7 @@ export function createContentStore({db,now,transaction}) {
       ) SELECT s,count(*) n FROM draft_research GROUP BY s`).all().map(row=>[row.s,Number(row.n)]));
       const unresearched=Number(db.prepare(`SELECT count(*) n ${DRAFT_JOB} AND ${DRAFT_PLACE} AND NOT ${PERPLEXITY_DONE}`).get().n);
       return {total,unresearched,counts,hasMore:rows.length>limit,items:rows.slice(0,limit).map(row=>{const story=decode(row.story_json)??{};
-        return {placeId:row.id,name:row.name,address:row.address,location:{lat:row.lat,lon:row.lon},research:row.research_status,
+        return {placeId:row.id,name:row.name,address:row.address,location:{lat:row.lat,lon:row.lon},research:row.research_status,researchEligible:Boolean(row.research_eligible),
           text:{id:row.text_id,title:typeof story.title==="string"?story.title:"",paragraphs:(Array.isArray(story.paragraphs)?story.paragraphs:[]).map(paragraph=>typeof paragraph?.text==="string"?paragraph.text:"").filter(Boolean),
             verification:row.verification,createdAt:row.created_at}};})};
     },
