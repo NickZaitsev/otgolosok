@@ -8,6 +8,7 @@ import { cx } from "../ui/cx";
 import { ExploreIcon } from "./icons";
 import { nearbyRadii, type NearbyRadius, type NearbyRecommendation } from "./nearby-stories";
 import { StoryAudioPlayer } from "../tour/story-audio-player";
+import { PlaceFeedback } from "../place-feedback/place-feedback";
 import { PlacePhotoBanner } from "./place-photo";
 import { usePlaceStory } from "./place-story";
 import { isExpandableStory, type StoryPin } from "./story-pin";
@@ -78,7 +79,10 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
     header={header}
     corner={expand || !label ? close(styles.cornerClose) : null}
     // The player stays with the action: the text never takes it away. It is the walk's player too.
-    footer={content.audioUrl || action ? <>{content.audioUrl ? <StoryAudioPlayer key={content.audioUrl} className={styles.audio} src={content.audioUrl} /> : null}{action}</> : null}>
+    footer={content.audioUrl || action || (catalog && loaded.status === "ready") ? <>
+      {catalog && loaded.status === "ready" && story.placeId ? <PlaceFeedback key={story.placeId} placeId={story.placeId} title={story.title} /> : null}
+      {content.audioUrl ? <StoryAudioPlayer key={content.audioUrl} className={styles.audio} src={content.audioUrl} /> : null}{action}
+    </> : null}>
     <>
       {peek ? null : <div className={cx(styles.heading, (expand || !label) && styles.titleRow)}>{heading}</div>}
       {pendingText && loaded.status === "loading" ? <p className={a.text} role="status">Загружаем рассказ…</p> : null}

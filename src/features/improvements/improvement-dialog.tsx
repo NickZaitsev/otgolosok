@@ -7,8 +7,8 @@ import { resolveReviewer, type Reviewer } from "../reviews/api";
 import { targetKey, type ReviewTarget } from "../reviews/model";
 import reviewStyles from "../reviews/walk-reviews.module.css";
 import { loadImprovement, saveImprovement } from "./api";
-import { canonicalIssues, IMPROVEMENT_ISSUES, improvementIssueLabels, type ImprovementIssue, type MyImprovement } from "./model";
-import styles from "./improvement-dialog.module.css";
+import { canonicalIssues, type ImprovementIssue, type MyImprovement } from "./model";
+import { ImprovementFields } from "./improvement-fields";
 
 /** How long the thank-you message stays before the window closes itself. */
 export const IMPROVEMENT_SENT_CLOSE_MS = 3000;
@@ -100,10 +100,6 @@ export function ImprovementDialog({ target, open, onClose, walkTitle }: { target
     }
   }
 
-  function toggle(issue: ImprovementIssue, checked: boolean) {
-    setSelected(current => checked ? [...current, issue] : current.filter(item => item !== issue));
-  }
-
   return <dialog ref={dialog} className={reviewStyles.dialog} aria-labelledby={titleId} onClose={onClose}
     onClick={event => {
       // A click on the backdrop lands on the dialog element itself, outside its box.
@@ -125,13 +121,7 @@ export function ImprovementDialog({ target, open, onClose, walkTitle }: { target
       </div> : !loaded ? <p className={reviewStyles.message} role="status">Загружаем…</p>
       : <form className={reviewStyles.form} onSubmit={event => void submit(event)} aria-labelledby={titleId}>
         {mine?.status === "resolved" ? <p className={reviewStyles.message}>Редакция уже поработала над вашим прошлым запросом. Если проблема осталась, отправьте его снова.</p> : null}
-        <fieldset className={styles.options}>
-          <legend>Отметьте, что мешает. Можно несколько вариантов.</legend>
-          {IMPROVEMENT_ISSUES.map(issue => <label key={issue} className={styles.option}>
-            <input type="checkbox" checked={selected.includes(issue)} disabled={busy} onChange={event => toggle(issue, event.target.checked)} />
-            <span>{improvementIssueLabels[issue]}</span>
-          </label>)}
-        </fieldset>
+        <ImprovementFields selected={selected} busy={busy} onChange={setSelected} />
         {mine?.status === "open" ? <p className={reviewStyles.hint}>Ваш запрос уже у редакции. Измените отметки или снимите все, чтобы отозвать его.</p> : null}
         {error ? <p className={reviewStyles.error} role="alert">{error}</p> : null}
         <button type="submit" className={reviewStyles.primary} disabled={busy || unchanged || (withdraw && !mine)}>
