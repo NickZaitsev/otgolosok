@@ -27,6 +27,9 @@
 
   /* Sheet headings; map screens make it smaller on short screens. */
   --text-sheet-title: var(--text-section);
+
+  /* Running text of map sheets: a sheet is a small card, the long-read body size is too large for it. */
+  --text-sheet-body: var(--text-control);
   --text-subtitle: 1.5rem;
   --text-page: 2rem;
   --leading-tight: 1.2;

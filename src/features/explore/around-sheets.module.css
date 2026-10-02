@@ -12,12 +12,17 @@
 }
 
 .story {
-  margin: var(--space-sm) 0;
+  margin: 0 0 var(--space-sm);
+}
+
+/* The sheet gap already sets the story off from the header; only a note right above it needs a margin. */
+.source + .story {
+  margin-top: var(--space-sm);
 }
 
 .story p {
   margin: 0 0 0.625rem;
-  font-size: var(--text-body);
+  font-size: var(--text-sheet-body);
   line-height: var(--leading-body);
   color: var(--map-green);
 }
