@@ -183,12 +183,22 @@
   margin-bottom: 0;
 }
 
+/* The title and address inside the body are set off from the text by the same gap as the sheet's parts. */
+.heading:not(:last-child) {
+  margin-bottom: var(--sheet-gap, 0.75rem);
+}
+
 /* Leaves room for the corner close button beside the first line of the title. */
 .titleRow {
   padding-right: calc(
     var(--control-min) + var(--sheet-scrollbar, 12px) -
       var(--sheet-pad, 1.25rem) + 0.75rem
   );
+}
+
+/* Over a photo the close sits in the photo's corner, so the title takes the full width. */
+:global([data-sheet-part="media"]:not(:empty)) ~ * .titleRow {
+  padding-right: 0;
 }
 
 /* Readable over a photo as well as over the plain card. */

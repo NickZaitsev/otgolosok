@@ -17,6 +17,13 @@ async function settle(page: Page) {
   await page.waitForFunction(() => !document.documentElement.matches(":active-view-transition"));
 }
 
+type Box = { x: number; y: number; width: number; height: number } | null;
+/** Sticky parts may land on a sub-pixel offset at a fractional scroll position; a pixel is not a visible shift. */
+function expectSameBox(actual: Box, expected: Box) {
+  expect(actual).not.toBeNull();
+  for (const key of ["x", "y", "width", "height"] as const) expect(Math.abs(actual![key] - expected![key])).toBeLessThanOrEqual(1);
+}
+
 async function openStory(page: Page) {
   await mockGuestApi(page);
   await openLongStory(page);
@@ -63,8 +70,8 @@ test("длинная история раскрывается на весь эк�
   expect(await card.evaluate(el => el.scrollHeight - el.clientHeight)).toBeGreaterThan(100);
   await card.evaluate(el => { el.scrollTop = el.scrollHeight; });
   await expect.poll(() => card.evaluate(el => el.scrollHeight - el.clientHeight - el.scrollTop)).toBeLessThanOrEqual(1);
-  expect(await close.boundingBox()).toEqual(before.close);
-  expect(await player.boundingBox()).toEqual(before.player);
+  expectSameBox(await close.boundingBox(), before.close);
+  expectSameBox(await player.boundingBox(), before.player);
   await page.screenshot({ path: info.outputPath("story-expanded-end.png") });
 
   // «Назад» сворачивает карточку, не уходя со страницы.

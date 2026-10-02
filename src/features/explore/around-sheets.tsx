@@ -55,9 +55,11 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
   const pendingText = catalog && loaded.status !== "ready";
   const label = story.pending ? "Готовим для вас" : story.chapter !== undefined ? `По дороге · часть ${story.chapter + 1}` : progress ? progress.label : null;
   const labelText = label ? <span className={a.label}>{label}</span> : null;
-  const heading = <><h2 id="selected-place-title" className={a.title}>{story.title}</h2>{story.title !== story.address ? <p className={styles.address}>{story.address}</p> : null}</>;
+  const title = <h2 id="selected-place-title" className={a.title}>{story.title}</h2>;
+  // The peek names the place only; the address waits in the expanded card.
+  const heading = peek ? title : <>{title}{story.title !== story.address ? <p className={styles.address}>{story.address}</p> : null}</>;
   const close = (className?: string) => <button type="button" className={cx(a.iconButton, className)} aria-label="Закрыть карточку" onClick={onClose}><ExploreIcon name="close" /></button>;
-  // In the peek the title and the teaser open the story; controls inside them (retry) keep their own job.
+  // In the peek the title, the teaser and the photo open the story; controls inside them (retry) keep their own job.
   const expandOnClick = peek ? (event: MouseEvent) => { if (!(event.target as Element).closest("a, button, summary")) expand.onExpand(); } : undefined;
   // An expandable card keeps its close in the corner in both states. Walk parts and stories in progress keep their
   // label row with the close; a plain place card has no label, its close sits in the corner over the photo.
@@ -70,13 +72,15 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
     handle={expand ? <SheetHandle expanded={expanded} onExpand={expand.onExpand} onCollapse={expand.onCollapse} controls="story-sheet"
       expandLabel="Читать историю полностью" collapseLabel="Свернуть историю" /> : null}
     // Only catalog places have photos; the index flag holds the banner until the detail arrives.
-    media={catalog ? <PlacePhotoBanner key={story.id} photo={loaded.story?.photo} pending={story.hasPhoto === true && loaded.status === "loading"} title={story.title} /> : null}
+    media={catalog ? <PlacePhotoBanner key={story.id} photo={loaded.story?.photo} pending={story.hasPhoto === true && loaded.status === "loading"} title={story.title}
+      // In the peek the photo is part of the preview and expands the story like its title and text.
+      onPreview={peek ? expand.onExpand : undefined} /> : null}
     header={header}
     corner={expand || !label ? close(styles.cornerClose) : null}
     // The player stays with the action: the text never takes it away. It is the walk's player too.
     footer={content.audioUrl || action ? <>{content.audioUrl ? <StoryAudioPlayer key={content.audioUrl} className={styles.audio} src={content.audioUrl} /> : null}{action}</> : null}>
     <>
-      {peek ? null : label && !expand ? heading : <div className={styles.titleRow}>{heading}</div>}
+      {peek ? null : <div className={cx(styles.heading, (expand || !label) && styles.titleRow)}>{heading}</div>}
       {pendingText && loaded.status === "loading" ? <p className={a.text} role="status">Загружаем рассказ…</p> : null}
       {pendingText && loaded.status === "error" ? <div role="alert"><p className={a.text}>Не удалось загрузить рассказ.</p><button type="button" className={a.secondary} onClick={loaded.retry}>Повторить</button></div> : null}
       {pendingText && loaded.status === "missing" ? <p className={a.text} role="status">Эта история больше недоступна.</p> : null}

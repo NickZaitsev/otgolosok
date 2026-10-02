@@ -165,6 +165,8 @@ it("свёрнутая история показывает только нача
   expect(container.textContent).not.toContain("Создать прогулку отсюда");
   expect(container.textContent).not.toContain("Источники");
   expect(container.querySelector("[data-sheet-part='header'] #selected-place-title")).not.toBeNull();
+  // The peek names the place only; the address is for the expanded card.
+  expect(container.textContent).not.toContain(point.address);
   expect(container.querySelector("[data-sheet-part='corner'] button[aria-label='Закрыть карточку']")).not.toBeNull();
   expect(container.querySelector("[data-sheet-part='footer'] audio")).not.toBeNull();
   await act(async () => container.querySelector<HTMLElement>("[data-sheet-part='body'] p")!.click());
@@ -182,6 +184,7 @@ it("раскрытая история показывает весь текст, 
   expect(container.textContent).toContain("Источники");
   expect(container.textContent).toContain("Создать прогулку отсюда");
   expect(container.querySelector("[data-sheet-part='body'] #selected-place-title")).not.toBeNull();
+  expect(container.querySelector("[data-sheet-part='body']")?.textContent).toContain(point.address);
   await act(async () => container.querySelector<HTMLElement>("[data-sheet-part='body'] p")!.click());
   expect(onExpand).not.toHaveBeenCalled();
   await act(async () => handle!.click());

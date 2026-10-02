@@ -20,6 +20,11 @@
   cursor: zoom-in;
 }
 
+/* A tap on the peek's photo expands the story; the viewer opens from the expanded card. */
+.preview {
+  cursor: pointer;
+}
+
 .banner img {
   display: block;
   width: 100%;
