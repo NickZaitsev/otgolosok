@@ -1,0 +1,3371 @@
+{
+  "source": "https://izi.travel/ru/rossiya/putevoditeli-po-moskva",
+  "checkedAt": "2026-10-02T12:57:34.569Z",
+  "catalogComplete": true,
+  "catalogTotal": 1356,
+  "criteria": {
+    "free": true,
+    "minRating": 4.4,
+    "minReviews": 1,
+    "type": "Тур по городу"
+  },
+  "tours": [
+    {
+      "id": "5fefa1bc-bc12-4b98-89ac-30fb0b68290b",
+      "title": "Фотовыставка Shotland",
+      "url": "https://izi.travel/ru/5fef-fotovystavka-shotland/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "2843dbe7-3be8-4cb4-b47a-677f8c3c94b7",
+      "title": "Московский Кремль в период правления царя Ивана Васильевича Грозного",
+      "url": "https://izi.travel/ru/2843-moskovskiy-kreml-v-period-pravleniya-carya-ivana-vasilevicha-groznogo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 3
+    },
+    {
+      "id": "e3229a87-4c74-4df5-99bf-8b0090e0fcf2",
+      "title": "Измайловские пруды",
+      "url": "https://izi.travel/ru/e322-izmaylovskie-prudy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 5
+    },
+    {
+      "id": "54d96971-54ba-4c72-b34d-93cae6274488",
+      "title": "Москва торговых людей. Замоскворечье",
+      "url": "https://izi.travel/ru/54d9-moskva-torgovykh-lyudey-zamoskvoreche/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 6
+    },
+    {
+      "id": "bf7594a1-a36d-45f4-9314-8deb32e9499a",
+      "title": "Аудиогид по маршруту 10 км Московского Марафона",
+      "url": "https://izi.travel/ru/bf75-audiogid-po-marshrutu-10-km-moskovskogo-marafona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "915972f6-3ac1-4e69-b9f8-731dfcebfb61",
+      "title": "Мозаика Мещанской слободы: от дома-музея Щепкина до дома-музея Виктора Васнецова",
+      "url": "https://izi.travel/ru/9159-mozaika-meschanskoy-slobody-ot-doma-muzeya-schepkina-do-doma-muzeya-viktora-vasnecova/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "d3f3eda0-dc8a-4715-b545-cc493130faa0",
+      "title": "101 здание, которое изменило Москву. короче",
+      "url": "https://izi.travel/ru/d3f3-101-zdanie-kotoroe-izmenilo-moskvu-koroche/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "019ac86f-628d-4e2e-afb1-fc23323e8146",
+      "title": "Фотовыставка \"История вокруг нас\"",
+      "url": "https://izi.travel/ru/019a-fotovystavka-istoriya-vokrug-nas/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "cc8e9f12-6292-463f-b552-8d109920ce62",
+      "title": "Маршрут по Москве",
+      "url": "https://izi.travel/ru/cc8e-marshrut-po-moskve/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "24cecec2-a31f-4b19-a7fb-6b9e98c0d61e",
+      "title": "Moscow's Big Circle Line",
+      "url": "https://izi.travel/ru/24ce-moscow-s-big-circle-line/en",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 22
+    },
+    {
+      "id": "39a84461-5608-485c-870b-fa79232b2e60",
+      "title": "Колёсами по воде. Новорязанская – самая транспортная улица Москвы",
+      "url": "https://izi.travel/ru/39a8-kolyosami-po-vode-novoryazanskaya-samaya-transportnaya-ulica-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "e610947f-c319-4e8b-8b2e-3446f46b88c1",
+      "title": "\"Невидимый\" монастырь на Петровке.",
+      "url": "https://izi.travel/ru/e610-nevidimyy-monastyr-na-petrovke/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "736b690b-17cd-4a61-9124-119592a355e2",
+      "title": "Места Москвы из рассказа \"Муму\" Ивана Тургенева",
+      "url": "https://izi.travel/ru/736b-mesta-moskvy-iz-rasskaza-mumu-ivana-turgeneva/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "c35a1f67-50d4-4ec3-ad8b-b86cff5fc0ed",
+      "title": "Очаково-Матвеевское",
+      "url": "https://izi.travel/ru/c35a-ochakovo-matveevskoe/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 4
+    },
+    {
+      "id": "b59a76f1-47d3-4b7d-a8fa-66b08fc5b639",
+      "title": "Во Елохове селе",
+      "url": "https://izi.travel/ru/b59a-vo-elokhove-sele/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "5c8bafe0-5744-49d5-9041-9727275460be",
+      "title": "Замоскворечье глазами москвички.",
+      "url": "https://izi.travel/ru/5c8b-zamoskvoreche-glazami-moskvichki/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 17
+    },
+    {
+      "id": "a2333f7e-7db1-48dd-bd60-18495629a10d",
+      "title": "Москва Новогодняя",
+      "url": "https://izi.travel/ru/a233-moskva-novogodnyaya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "0aa55548-2496-4c04-acd8-356055a37c5d",
+      "title": "По стопам студентов и паровичка",
+      "url": "https://izi.travel/ru/0aa5-po-stopam-studentov-i-parovichka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "adfefe46-f28b-4c38-867c-5e407416cbea",
+      "title": "ЛАБИРИНТЫ ХОХЛОВКИ И ХИТРОВКИ. Прогулки по неизвестной Москве",
+      "url": "https://izi.travel/ru/adfe-labirinty-khokhlovki-i-khitrovki-progulki-po-neizvestnoy-moskve/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "249914a3-3089-4285-8ee2-34c13f134ddc",
+      "title": "Топография террора. Якиманка",
+      "url": "https://izi.travel/ru/2499-topografiya-terrora-yakimanka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 2
+    },
+    {
+      "id": "1541f610-856f-426d-9782-0daffb136b4e",
+      "title": "Прогулка по Патриаршим прудам",
+      "url": "https://izi.travel/ru/1541-progulka-po-patriarshim-prudam/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "b9f00c72-ae81-4777-baf9-3abb582c1cb8",
+      "title": "Кукуй. Потерянный ручей",
+      "url": "https://izi.travel/ru/b9f0-kukuy-poteryannyy-ruchey/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "a4aa1290-1696-40ab-9c28-03ba9106a1d5",
+      "title": "Автомобильное путешествие из Москвы в Сергиев Посад",
+      "url": "https://izi.travel/ru/a4aa-avtomobilnoe-puteshestvie-iz-moskvy-v-sergiev-posad/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 3
+    },
+    {
+      "id": "5134c476-a004-4929-933b-93a39b3ea7ca",
+      "title": "Старые дачи Нового Гиреева. И не только.",
+      "url": "https://izi.travel/ru/5134-starye-dachi-novogo-gireeva-i-ne-tolko/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 3
+    },
+    {
+      "id": "364fe7a1-6d36-4b0f-8e88-e7e99ad29cb7",
+      "title": "Москва глазами юного Петра I",
+      "url": "https://izi.travel/ru/364f-moskva-glazami-yunogo-petra-i/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 7
+    },
+    {
+      "id": "8424cb17-4106-4c3f-8b31-ebfec1e8e3ba",
+      "title": "Москва готическая: величественная архитектура города. Часть 1",
+      "url": "https://izi.travel/ru/8424-moskva-goticheskaya-velichestvennaya-arkhitektura-goroda-chast-1/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 4
+    },
+    {
+      "id": "7981fac7-dcdb-4e84-9bf2-1c2fe7a4963f",
+      "title": "Вокруг Останкинского дворца",
+      "url": "https://izi.travel/ru/7981-vokrug-ostankinskogo-dvorca/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "1145d46e-8239-4853-8e3b-5d16c9d1e221",
+      "title": "По следам древних ледников",
+      "url": "https://izi.travel/ru/1145-po-sledam-drevnikh-lednikov/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 14
+    },
+    {
+      "id": "8f610854-9143-4768-851e-59b833d39dbb",
+      "title": "От пинена до Шанель по Мясницкой к Маросейке",
+      "url": "https://izi.travel/ru/8f61-ot-pinena-do-shanel-po-myasnickoy-k-maroseyke/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "3218ddad-287b-46bb-af16-71841f0697a0",
+      "title": "Метро Царицыно - Большой дворец. Прогулка для маломобильных посетителей",
+      "url": "https://izi.travel/ru/3218-metro-caricyno-bolshoy-dvorec-progulka-dlya-malomobilnykh-posetiteley/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "413e93d7-4a7e-42ba-9a98-911d9d1b5df1",
+      "title": "В гостях у заказника",
+      "url": "https://izi.travel/ru/413e-v-gostyakh-u-zakaznika/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 8
+    },
+    {
+      "id": "ce73440d-a2b2-4c6b-b14e-ce06f3151652",
+      "title": "Новогиреево дачное",
+      "url": "https://izi.travel/ru/ce73-novogireevo-dachnoe/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "c0312c0e-1473-4cf2-8115-26a526f95468",
+      "title": "История передачи информации",
+      "url": "https://izi.travel/ru/c031-istoriya-peredachi-informacii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 5
+    },
+    {
+      "id": "a9b1d2ae-f84c-4189-87ca-bd83cce5843d",
+      "title": "Александровский сад",
+      "url": "https://izi.travel/ru/a9b1-aleksandrovskiy-sad/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "905cf716-a7aa-482a-aafe-7c067cdd0061",
+      "title": "Экологический маршрут (парк Лосиный остров)",
+      "url": "https://izi.travel/ru/905c-ekologicheskiy-marshrut-park-losinyy-ostrov/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 27
+    },
+    {
+      "id": "3dab7fe4-e6d5-4a05-8243-d9ff98f40727",
+      "title": "Улицы Москвы в повести М.А. Булгакова  \"Собачье сердце\"",
+      "url": "https://izi.travel/ru/3dab-ulicy-moskvy-v-povesti-m-bulgakova-sobache-serdce/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "05cde597-f550-4705-8e09-8c9011bd6919",
+      "title": "Остоженка и Пречистенка: авторское право сквозь призму жизни классиков",
+      "url": "https://izi.travel/ru/05cd-ostozhenka-i-prechistenka-avtorskoe-pravo-skvoz-prizmu-zhizni-klassikov/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "4989938f-aee2-434d-9f30-90f052c36816",
+      "title": "Царицыно от постройки до современности.",
+      "url": "https://izi.travel/ru/4989-caricyno-ot-postroyki-do-sovremennosti/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "8b86150f-911e-489e-b185-1476e960abf3",
+      "title": "Новый год по домам",
+      "url": "https://izi.travel/ru/8b86-novyy-god-po-domam/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "6bafe2dd-7ca4-436d-a7f7-443dd6183776",
+      "title": "Московский метрополитен",
+      "url": "https://izi.travel/ru/6baf-moskovskiy-metropoliten/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "62f1abe2-a9c9-46db-98d2-137bc90ffa88",
+      "title": "\"Сталинские Гиганты: Тайны Небесных Башен Москвы\"",
+      "url": "https://izi.travel/ru/62f1-stalinskie-giganty-tayny-nebesnykh-bashen-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "5583b15d-8ce9-4ec5-9cf7-249276eb108f",
+      "title": "туристический маршрут \"по стопам Александра Сергеевича Пушкина\"",
+      "url": "https://izi.travel/ru/5583-turisticheskiy-marshrut-po-stopam-aleksandra-sergeevicha-pushkina/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 11
+    },
+    {
+      "id": "96b4896c-9d42-4448-8ad8-1230a27d595c",
+      "title": "Ароматные Сыромятники: промышленное прошлое кластера в ароматах",
+      "url": "https://izi.travel/ru/96b4-aromatnye-syromyatniki-promyshlennoe-proshloe-klastera-v-aromatakh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "2d17fd32-a9c9-4a7e-8254-f514d8bbf77f",
+      "title": "Свет Бульварного кольца",
+      "url": "https://izi.travel/ru/2d17-svet-bulvarnogo-kolca/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "88477f7a-4899-40fb-895f-41d4a2b0cfa0",
+      "title": "Архитектура перемен",
+      "url": "https://izi.travel/ru/8847-arkhitektura-peremen/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "eaa6078f-6a6d-4299-a5e3-e5181ce956fb",
+      "title": "Голоса Обручевского района",
+      "url": "https://izi.travel/ru/eaa6-golosa-obruchevskogo-rayona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 191
+    },
+    {
+      "id": "8621f8bd-2743-41d4-9be7-ec3a553a473a",
+      "title": "Across Campuses and Cultures: An Academic Walk in Moscow",
+      "url": "https://izi.travel/ru/8621-across-campuses-and-cultures-academic-walk-moscow/en",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 39
+    },
+    {
+      "id": "16559115-2e6d-4de6-bfe2-d017099ab0e6",
+      "title": "Аудиогид «Воронцово: усадьба и парк. Кольцевой маршрут»",
+      "url": "https://izi.travel/ru/1655-audiogid-voroncovo-usadba-i-park-kolcevoy-marshrut/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 21
+    },
+    {
+      "id": "7145bc85-b296-4109-beee-371faa6aefd9",
+      "title": "Архитектурные коды Обручевского района: от усадьбы Воронцово до кампусов науки",
+      "url": "https://izi.travel/ru/7145-arkhitekturnye-kody-obruchevskogo-rayona-ot-usadby-voroncovo-do-kampusov-nauki/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 32
+    },
+    {
+      "id": "c477dd31-86c9-4c23-a31b-eb695de314e4",
+      "title": "Воронцовский парк: от зарождения и до наших дней",
+      "url": "https://izi.travel/ru/c477-voroncovskiy-park-ot-zarozhdeniya-i-do-nashikh-dney/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 14
+    },
+    {
+      "id": "ba7668ec-ebfa-43a4-80d1-125d67bd14d0",
+      "title": "Зимнее сияние Москвы (вечерний маршрут)",
+      "url": "https://izi.travel/ru/ba76-zimnee-siyanie-moskvy-vecherniy-marshrut/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "c9a91f5f-5626-4be5-9f40-4887161551a0",
+      "title": "Золотое кольцо России",
+      "url": "https://izi.travel/ru/c9a9-zolotoe-kolco-rossii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "5fa50810-183e-43da-994e-3591ed07daeb",
+      "title": "ИСТОРИЧЕСКИЙ ОБЛИК МОСКВЫ НА ПОЛОТНАХ  РУССКИХ ХУДОЖНИКОВ",
+      "url": "https://izi.travel/ru/5fa5-istoricheskiy-oblik-moskvy-na-polotnakh-russkikh-khudozhnikov/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 8
+    },
+    {
+      "id": "e19aca03-5900-443e-acad-54d251310a80",
+      "title": "ВДНХ: история и будущее",
+      "url": "https://izi.travel/ru/e19a-vdnkh-istoriya-i-buduschee/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "0cf2dfa2-a1a7-481b-b481-f2ed4f32ae73",
+      "title": "Черты Китая на улицах моего города (Москва)",
+      "url": "https://izi.travel/ru/0cf2-cherty-kitaya-na-ulicakh-moego-goroda-moskva/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 8
+    },
+    {
+      "id": "e17eaa1a-ff88-4229-a21a-cce2ef685fda",
+      "title": "Здравствуй моя Москва",
+      "url": "https://izi.travel/ru/e17e-zdravstvuy-moya-moskva/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 4
+    },
+    {
+      "id": "90ffcf1b-f255-40c3-80f9-7b29cb0ca581",
+      "title": "Мосты Москвы",
+      "url": "https://izi.travel/ru/90ff-mosty-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "5396cb45-5581-4cf4-8c4a-0742cdec9427",
+      "title": "МГАДМТ имени Н.И.Сац",
+      "url": "https://izi.travel/ru/5396-mgadmt-imeni-n-i-sac/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 5
+    },
+    {
+      "id": "377d3ab7-70bd-4c5f-aea1-ae7e817b98a5",
+      "title": "Москва инженера Владимира Шухова",
+      "url": "https://izi.travel/ru/377d-moskva-inzhenera-vladimira-shukhova/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 36
+    },
+    {
+      "id": "5b44557d-c0a4-4c5e-bc12-a05ab9e18de4",
+      "title": "Память в золоте",
+      "url": "https://izi.travel/ru/5b44-pamyat-v-zolote/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 160
+    },
+    {
+      "id": "6445811d-0226-4a99-8930-f9a8c074e505",
+      "title": "Бирюлёво Восточное в годы ВОВ",
+      "url": "https://izi.travel/ru/6445-biryulyovo-vostochnoe-v-gody-vov/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 11
+    },
+    {
+      "id": "963fe5ae-dce4-4a31-aed6-591b70dd4aad",
+      "title": "Таганский тур мечты",
+      "url": "https://izi.travel/ru/963f-taganskiy-tur-mechty/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "eeb4fd9b-2bb9-4a6c-bd60-521f52e166cc",
+      "title": "Овчинники и Нижние Садовники глазами москвички.",
+      "url": "https://izi.travel/ru/eeb4-ovchinniki-i-nizhnie-sadovniki-glazami-moskvichki/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 9
+    },
+    {
+      "id": "47966891-54a6-4aef-8c86-d3aa0200746b",
+      "title": "\"Москва Паустовского во7емь Сцен Открытого Письма*\"",
+      "url": "https://izi.travel/ru/4796-moskva-paustovskogo-vo7em-scen-otkrytogo-pisma/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 6
+    },
+    {
+      "id": "39e50438-2714-4991-9ff6-1e64e9b16d46",
+      "title": "Город Кострома",
+      "url": "https://izi.travel/ru/39e5-gorod-kostroma/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "aa726f3f-8df4-4587-a0f3-bef3426e0fec",
+      "title": "Без приглашения",
+      "url": "https://izi.travel/ru/aa72-bez-priglasheniya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "b8400fcb-de0a-4b32-9f78-93ec9360daaf",
+      "title": "Римско-католический Кафедральный Собор Непорочного Зачатия Пресвятой Девы Марии в Москве",
+      "url": "https://izi.travel/ru/b840-rimsko-katolicheskiy-kafedralnyy-sobor-neporochnogo-zachatiya-presvyatoy-devy-marii-v-moskve/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 9
+    },
+    {
+      "id": "0ad8860f-1eef-4ff0-9f6b-e6208a7859cb",
+      "title": "Квест-экскурсия \"Территория образования\"",
+      "url": "https://izi.travel/ru/0ad8-kvest-ekskursiya-territoriya-obrazovaniya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "aa83db21-90f6-44b9-a5d6-3e0563a319ca",
+      "title": "«Доктор физики Курчатов» по прозвищу «БОРОДА»",
+      "url": "https://izi.travel/ru/aa83-doktor-fiziki-kurchatov-po-prozvischu-boroda/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "fad7eccd-ff56-40ba-9685-ee346b2e98c1",
+      "title": "Аудиоспектакль-променад “Слушай парк”",
+      "url": "https://izi.travel/ru/fad7-audiospektakl-promenad-slushay-park/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 15
+    },
+    {
+      "id": "0145c905-8282-4f07-b7e7-2bba633ed205",
+      "title": "Будем соседями! Корин",
+      "url": "https://izi.travel/ru/0145-budem-sosedyami-korin/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 4
+    },
+    {
+      "id": "9a9b2c8e-4962-480a-b752-e57699d249b9",
+      "title": "Аудиогид по маршруту 42,2 км Московского Марафона",
+      "url": "https://izi.travel/ru/9a9b-audiogid-po-marshrutu-42-2-km-moskovskogo-marafona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 5
+    },
+    {
+      "id": "dc54f650-2d8a-4dd9-978e-e5a3ef30b1ef",
+      "title": "Тур по храмам Замоскворечья",
+      "url": "https://izi.travel/ru/dc54-tur-po-khramam-zamoskvorechya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 8
+    },
+    {
+      "id": "09bca255-f5f8-438c-9c4c-559d9f685795",
+      "title": "Игра на местности \"Секреты Воробьевых гор\"",
+      "url": "https://izi.travel/ru/09bc-igra-na-mestnosti-sekrety-vorobevykh-gor/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "cc87d33d-1a97-43b8-bf7b-5496c5a91154",
+      "title": "«Мир Пречистенки и Арбата» — новое московское купечество. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/cc87-mir-prechistenki-i-arbata-novoe-moskovskoe-kupechestvo-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 3
+    },
+    {
+      "id": "afeeb9e2-324d-48d4-8397-5f271ea1248a",
+      "title": "По Старой Басманной. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/afee-po-staroy-basmannoy-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 7
+    },
+    {
+      "id": "fcf1aab0-d0d6-47f6-9e17-46ed02b94547",
+      "title": "Из \"старой\" Третьяковки в \"новую\": маршрут через Якиманку",
+      "url": "https://izi.travel/ru/fcf1-iz-staroy-tretyakovki-v-novuyu-marshrut-cherez-yakimanku/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 18
+    },
+    {
+      "id": "1fc2bccf-ce84-4726-85cc-b33797cea3dc",
+      "title": "Денежный переулок. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/1fc2-denezhnyy-pereulok-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 5
+    },
+    {
+      "id": "e2737aad-9a17-4e5a-9964-6b7de3e12105",
+      "title": "Москва Лермонтова",
+      "url": "https://izi.travel/ru/e273-moskva-lermontova/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "d1e3933a-9327-4154-8e95-139fc7956ecd",
+      "title": "\"Улица, похожая на реку\". Поварская Марины Цветаевой.",
+      "url": "https://izi.travel/ru/d1e3-ulica-pokhozhaya-na-reku-povarskaya-mariny-cvetaevoy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "9bab020b-6894-4783-8520-b5f0d48e5140",
+      "title": "Из \"старой\" Третьяковки в \"новую\": маршрут по набережной",
+      "url": "https://izi.travel/ru/9bab-iz-staroy-tretyakovki-v-novuyu-marshrut-po-naberezhnoy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 11
+    },
+    {
+      "id": "e89c0ad6-14b0-46d0-88f5-4cfcfe7f963a",
+      "title": "«Их шаги слышали улицы Пресни».",
+      "url": "https://izi.travel/ru/e89c-ikh-shagi-slyshali-ulicy-presni/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 6
+    },
+    {
+      "id": "ae4f0f70-c464-4f3f-8d3c-6aabae134675",
+      "title": "Москва Театральная",
+      "url": "https://izi.travel/ru/ae4f-moskva-teatralnaya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 6
+    },
+    {
+      "id": "f424c0fe-e5b6-4b56-9e1f-bac15c7c0493",
+      "title": "Метро и вокзалы Москвы. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/f424-metro-i-vokzaly-moskvy-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 2
+    },
+    {
+      "id": "4ad78342-7e54-4f49-b954-5f4be4fe9ad0",
+      "title": "Парк Горького во время Великой Отечественной войны",
+      "url": "https://izi.travel/ru/4ad7-park-gorkogo-vo-vremya-velikoy-otechestvennoy-voyny/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 7
+    },
+    {
+      "id": "3ccc1bb1-d0cf-4fff-8fe3-95854c68abdc",
+      "title": "Где родился А.С. Пушкин?",
+      "url": "https://izi.travel/ru/3ccc-gde-rodilsya-s-pushkin/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 4
+    },
+    {
+      "id": "be849b8d-9a5d-4f9a-8d76-6d906eca06c9",
+      "title": "GPS-прогулка по Московскому зоопарку с Николаем Дроздовым",
+      "url": "https://izi.travel/ru/be84-gps-progulka-po-moskovskomu-zooparku-s-nikolaem-drozdovym/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 9
+    },
+    {
+      "id": "eca0639f-804c-4624-80a0-89e0d01194f7",
+      "title": "Московское метро",
+      "url": "https://izi.travel/ru/eca0-moskovskoe-metro/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "f88d6b51-c37f-4ab3-9a48-61e59ca7f1b5",
+      "title": "Летопись Русской Усадьбы. Подмосковье",
+      "url": "https://izi.travel/ru/f88d-letopis-russkoy-usadby-podmoskove/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 5
+    },
+    {
+      "id": "2c5a75a8-018e-456a-8818-736d07a4a662",
+      "title": "Пресня - Сити",
+      "url": "https://izi.travel/ru/2c5a-presnya-siti/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 129
+    },
+    {
+      "id": "ff73fbce-b921-494b-98f2-efb05f6ed8af",
+      "title": "Доходные дома купеческого Замоскворечья. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/ff73-dokhodnye-doma-kupecheskogo-zamoskvorechya-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 1
+    },
+    {
+      "id": "f6cef3fc-29f3-48aa-bcfb-a2bd7e2d4525",
+      "title": "Булгаковская Москва, или однажды на Патриарших. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/f6ce-bulgakovskaya-moskva-ili-odnazhdy-na-patriarshikh-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 9
+    },
+    {
+      "id": "f32a28cb-560c-4a70-81aa-b8dce294a328",
+      "title": "Москворецкие берега. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/f32a-moskvoreckie-berega-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 7
+    },
+    {
+      "id": "3c384752-35fe-4f1c-a3ea-f1001ed1ad31",
+      "title": "По тургеневским местам Арбата и Остоженки",
+      "url": "https://izi.travel/ru/3c38-po-turgenevskim-mestam-arbata-i-ostozhenki/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 3
+    },
+    {
+      "id": "7a2a444f-44f0-4450-9341-8bea0b77f3da",
+      "title": "Война на Арбате",
+      "url": "https://izi.travel/ru/7a2a-voyna-na-arbate/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 3
+    },
+    {
+      "id": "29b46ddf-0571-4b24-9d0a-5b12129b865a",
+      "title": "Тимирязевка в годы Великой Отечественной Войны 1941-1945 гг.",
+      "url": "https://izi.travel/ru/29b4-timiryazevka-v-gody-velikoy-otechestvennoy-voyny-1941-1945-gg/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 15
+    },
+    {
+      "id": "912be192-39db-48e5-a846-90eb6fbc9296",
+      "title": "Бабушкинский | в компании Александра Усольцева и Delivery Club",
+      "url": "https://izi.travel/ru/912b-babushkinskiy-v-kompanii-aleksandra-usolceva-i-delivery-club/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 3
+    },
+    {
+      "id": "ba61437e-e771-4959-a2b3-39c7d2b6e818",
+      "title": "Строгино | в компании Александра Усольцева и Delivery Club",
+      "url": "https://izi.travel/ru/ba61-strogino-v-kompanii-aleksandra-usolceva-i-delivery-club/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "09033a04-694a-4857-85dd-db298235d0ed",
+      "title": "Люблино | в компании Александра Усольцева и Delivery Club",
+      "url": "https://izi.travel/ru/0903-lyublino-v-kompanii-aleksandra-usolceva-i-delivery-club/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "22523c80-8202-4f3a-a6a9-18396d97bf7d",
+      "title": "Москва. Хамовники – перекрёсток времён.",
+      "url": "https://izi.travel/ru/2252-moskva-khamovniki-perekryostok-vremyon/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 20
+    },
+    {
+      "id": "89346503-1d2d-4552-b5cd-5938c800eba5",
+      "title": "История района Митино",
+      "url": "https://izi.travel/ru/8934-istoriya-rayona-mitino/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "1bb2b46c-ffe2-4e2f-b918-f01321c2b301",
+      "title": "Академгородок Курчатовского института",
+      "url": "https://izi.travel/ru/1bb2-akademgorodok-kurchatovskogo-instituta/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "024f5b50-5672-4676-a393-8518bf561a3a",
+      "title": "История района Строгино",
+      "url": "https://izi.travel/ru/024f-istoriya-rayona-strogino/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "9fc5c96c-66b2-4915-bf90-bbff4cb29474",
+      "title": "По Верхней Красносельской",
+      "url": "https://izi.travel/ru/9fc5-po-verkhney-krasnoselskoy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "0091bebf-914c-44cd-b631-f67f2c6cb7f9",
+      "title": "Заповедная прогулка. Фили-Кунцево - Крылатское",
+      "url": "https://izi.travel/ru/0091-zapovednaya-progulka-fili-kuncevo-krylatskoe/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "366c1ada-b4c3-47e0-b881-29c1b102830b",
+      "title": "Прогулка по Шаболовке",
+      "url": "https://izi.travel/ru/366c-progulka-po-shabolovke/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "db1e0e55-627a-41d4-88a4-0766f4de6450",
+      "title": "Новый парк Строгинской поймы",
+      "url": "https://izi.travel/ru/db1e-novyy-park-stroginskoy-poymy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "6fb420f7-e233-4788-9fb1-c397b0bc2039",
+      "title": "Экскурсия по Москве Романтичной вместе с Экскурс-бюро№1 и  KitKat",
+      "url": "https://izi.travel/ru/6fb4-ekskursiya-po-moskve-romantichnoy-vmeste-s-ekskurs-byurono1-i-kitkat/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 4
+    },
+    {
+      "id": "4670bc87-173d-41d5-80ae-16627641e66c",
+      "title": "Мальтийское командорство деревни Пенягино",
+      "url": "https://izi.travel/ru/4670-maltiyskoe-komandorstvo-derevni-penyagino/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "ef2be5b1-a229-4779-acb2-e72ef5397a2e",
+      "title": "История \"Усадьбы Троице-Лыково\"",
+      "url": "https://izi.travel/ru/ef2b-istoriya-usadby-troice-lykovo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 14
+    },
+    {
+      "id": "8404e869-4a24-4e23-a4af-6a4fe04f06e4",
+      "title": "Я шагаю по району. Пешком по Соколу и Ходынке: от храма грузинской царевны и генеральских «сталинок» – до соловьиной купальни и авиационного парка",
+      "url": "https://izi.travel/ru/8404-ya-shagayu-po-rayonu-peshkom-po-sokolu-i-khodynke-ot-khrama-gruzinskoy-carevny-i-generalskikh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 13
+    },
+    {
+      "id": "a03bbef2-d688-481a-b23e-bf86ac574df6",
+      "title": "Мичуринский проспект",
+      "url": "https://izi.travel/ru/a03b-michurinskiy-prospekt/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "79136682-ae16-4352-8d13-2275f118bb44",
+      "title": "Коровинское шоссе",
+      "url": "https://izi.travel/ru/7913-korovinskoe-shosse/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "1cea4ea1-0194-4e02-9571-40a28e52fedc",
+      "title": "Проспект Мира и Ярославское шоссе",
+      "url": "https://izi.travel/ru/1cea-prospekt-mira-i-yaroslavskoe-shosse/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "361f7d5f-8b04-4379-8498-d2ba75e6262d",
+      "title": "Рязанский проспект",
+      "url": "https://izi.travel/ru/361f-ryazanskiy-prospekt/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "f67a6c38-e9f4-4d1f-834b-148b53b77b5c",
+      "title": "ВДНХ - Главное",
+      "url": "https://izi.travel/ru/f67a-vdnkh-glavnoe/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 9
+    },
+    {
+      "id": "f0581263-5265-43ce-bdc6-696867337854",
+      "title": "Я шагаю по району. Капотня: вся правда о самом благоустроенном районе",
+      "url": "https://izi.travel/ru/f058-ya-shagayu-po-rayonu-kapotnya-vsya-pravda-o-samom-blagoustroennom-rayone/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "274a43cb-32b0-47bd-87d0-0cb09fb10f59",
+      "title": "Москва глазами организатора мероприятий",
+      "url": "https://izi.travel/ru/274a-moskva-glazami-organizatora-meropriyatiy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "9d64cfd4-275e-4ff2-a5db-2dad9ea9e190",
+      "title": "Поселок Коммунарка в прошлом и настоящем",
+      "url": "https://izi.travel/ru/9d64-poselok-kommunarka-v-proshlom-i-nastoyaschem/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "3eb146fb-12b6-4924-bfba-86015d8df3e0",
+      "title": "Путешествие на каблуках",
+      "url": "https://izi.travel/ru/3eb1-puteshestvie-na-kablukakh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 9
+    },
+    {
+      "id": "7021466f-61ce-4efc-83f9-3fb3e8a3b298",
+      "title": "Прогулка по достопримечательностям, посвящённым дню народного единства",
+      "url": "https://izi.travel/ru/7021-progulka-po-dostoprimechatelnostyam-posvyaschyonnym-dnyu-narodnogo-edinstva/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 4
+    },
+    {
+      "id": "3d1a0a38-4b23-4c13-a7a7-06b0122e7a6a",
+      "title": "Путь к  святыням Андреевского ставропигиального мужского монастыря",
+      "url": "https://izi.travel/ru/3d1a-put-k-svyatynyam-andreevskogo-monastyrya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "a1f00f09-e34b-48f2-93d7-2fd3eecf8ed2",
+      "title": "История городов Золотого Кольца России",
+      "url": "https://izi.travel/ru/a1f0-istoriya-gorodov-zolotogo-kolca-rossii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "2ce1fdb6-1af2-4c84-87a7-7e1815f0272d",
+      "title": "Романовы на пороге воцарения",
+      "url": "https://izi.travel/ru/2ce1-romanovy-na-poroge-vocareniya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 10
+    },
+    {
+      "id": "124dd895-189f-439f-9a28-fcda8f4b9811",
+      "title": "Аудиогид вокруг квартала ПИК «Барклая 6»",
+      "url": "https://izi.travel/ru/124d-audiogid-vokrug-kvartala-pik-barklaya-6/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 3
+    },
+    {
+      "id": "eb2f822e-69e2-4508-8b92-d060362db60a",
+      "title": "Таганский район: купеческие и промышленные династии",
+      "url": "https://izi.travel/ru/eb2f-taganskiy-rayon-kupecheskie-i-promyshlennye-dinastii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 10
+    },
+    {
+      "id": "d61c389f-a794-4ac4-92ff-81a0d21d463d",
+      "title": "Памятные места моей Малой Родины Можайского района г. Москвы",
+      "url": "https://izi.travel/ru/d61c-pamyatnye-mesta-moey-maloy-rodiny-mozhayskogo-rayona-g-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 18
+    },
+    {
+      "id": "dbfb0705-05e1-4f02-bbe1-2836b7eb12d6",
+      "title": "Привет, Москва! Литература и театр в городе",
+      "url": "https://izi.travel/ru/dbfb-privet-moskva-literatura-i-teatr-v-gorode/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "caaf6bd9-57a9-4051-9991-225e63543651",
+      "title": "От Даниловки до Парка Горького с AZIMUT Тульская",
+      "url": "https://izi.travel/ru/caaf-ot-danilovki-do-parka-gorkogo-s-azimut-tulskaya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "d210647f-d808-47fc-aebc-2206a305fc35",
+      "title": "Нескучный сад",
+      "url": "https://izi.travel/ru/d210-neskuchnyy-sad/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 3
+    },
+    {
+      "id": "6b5cdd17-0ccf-4552-aa63-6c9cd8216e50",
+      "title": "Путь к Святыне",
+      "url": "https://izi.travel/ru/6b5c-put-k-svyatyne/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "e14bac06-5f5c-423b-bfd6-d0fbdf556eb2",
+      "title": "НетРУДНый маршрут",
+      "url": "https://izi.travel/ru/e14b-netrudnyy-marshrut/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 146
+    },
+    {
+      "id": "c246d419-687e-452b-bd4c-a844d0f62c44",
+      "title": "Экотропа РУДН: от усадьбы до кампуса",
+      "url": "https://izi.travel/ru/c246-ekotropa-rudn-ot-usadby-do-kampusa/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 41
+    },
+    {
+      "id": "17892788-97ba-4972-8a0b-69c535c1ecba",
+      "title": "Там, где Москва становится природой",
+      "url": "https://izi.travel/ru/1789-tam-gde-moskva-stanovitsya-prirodoy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 31
+    },
+    {
+      "id": "abfbb1a0-5ecd-4f20-a66c-049612f56495",
+      "title": "\"Воронцовский вальс\"",
+      "url": "https://izi.travel/ru/abfb-voroncovskiy-vals/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 95
+    },
+    {
+      "id": "b0df7498-bcf7-4fbb-af96-dfd58111afdd",
+      "title": "На трамваях через всю Москву: с востока на запад",
+      "url": "https://izi.travel/ru/b0df-na-tramvayakh-cherez-vsyu-moskvu-s-vostoka-na-zapad/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 12
+    },
+    {
+      "id": "2eae2f62-a777-4a79-b73f-4caf5458b896",
+      "title": "Самые старые трамвайные линии Москвы",
+      "url": "https://izi.travel/ru/2eae-samye-starye-tramvaynye-linii-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 8
+    },
+    {
+      "id": "15fc9e09-4347-45fe-a135-19bf8db87282",
+      "title": "Прогулка по Измайловскому кремлю",
+      "url": "https://izi.travel/ru/15fc-progulka-po-izmaylovskomu-kremlyu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 21
+    },
+    {
+      "id": "ea8dfb99-825c-4063-9502-d781a79e07d2",
+      "title": "Сталинские высотки - «семь сестёр» велосипедный тур",
+      "url": "https://izi.travel/ru/ea8d-stalinskie-vysotki-sem-sestyor-velosipednyy-tur/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 2
+    },
+    {
+      "id": "c1482a3d-e351-471a-8db3-dd8fb7b7ac41",
+      "title": "Басманный район: Новое прочтение",
+      "url": "https://izi.travel/ru/c148-basmannyy-rayon-novoe-prochtenie/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 3
+    },
+    {
+      "id": "408da030-7760-4390-8fbd-d3e816496950",
+      "title": "Говорящие экспрессы. Москва-Голицыно",
+      "url": "https://izi.travel/ru/408d-govoryaschie-ekspressy-moskva-golicyno/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 2
+    },
+    {
+      "id": "55df9135-809c-4429-ab2d-270aaafca873",
+      "title": "По дороге на Физтех",
+      "url": "https://izi.travel/ru/55df-po-doroge-na-fiztekh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 4
+    },
+    {
+      "id": "e00c599b-336a-49c6-92c4-106f492c7ac1",
+      "title": "Гоголевский бульвар - жемчужина Бульварного кольца",
+      "url": "https://izi.travel/ru/e00c-gogolevskiy-bulvar-zhemchuzhina-bulvarnogo-kolca/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 2
+    },
+    {
+      "id": "f9acd6cb-4304-48df-a8f7-1398aaddc102",
+      "title": "Гуляем с книгой. М.А. Булгаков. Мастер и Маргарита",
+      "url": "https://izi.travel/ru/f9ac-gulyaem-s-knigoy-m-bulgakov-master-i-margarita/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "279d5da8-b141-4545-88d0-8f405d441e20",
+      "title": "Московский Кремль с Чевостиком",
+      "url": "https://izi.travel/ru/279d-moskovskiy-kreml-s-chevostikom/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 2
+    },
+    {
+      "id": "84451c74-6da6-4d5e-b64e-e7239ac8f598",
+      "title": "Путешествие по Капитанской слободе: усадьбы 18-19 века на Новой Басманной улице",
+      "url": "https://izi.travel/ru/8445-puteshestvie-po-kapitanskoy-slobode-usadby-18-19-veka-na-novoy-basmannoy-ulice/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 4
+    },
+    {
+      "id": "bf8d54d5-b5fa-4819-a1eb-a63074f27d2d",
+      "title": "Москва Двенадцатого года",
+      "url": "https://izi.travel/ru/bf8d-moskva-dvenadcatogo-goda/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "59b38862-9621-4c71-b0f3-e4ccbe571974",
+      "title": "Говорящие экспрессы. Москва - Сергиев-Посад",
+      "url": "https://izi.travel/ru/59b3-govoryaschie-ekspressy-moskva-sergiev-posad/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 9
+    },
+    {
+      "id": "bda1f53e-636a-4026-8ce9-3d50444c4969",
+      "title": "Говорящие экспрессы. Москва - Дмитров",
+      "url": "https://izi.travel/ru/bda1-govoryaschie-ekspressy-moskva-dmitrov/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 13
+    },
+    {
+      "id": "38cd1015-479b-451e-b8c6-9a0e2dfab778",
+      "title": "Маршрут 12. На излете бывшей царской дороги",
+      "url": "https://izi.travel/ru/38cd-marshrut-12-na-izlete-byvshey-carskoy-dorogi/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 1
+    },
+    {
+      "id": "1178046d-511b-4c65-8e67-f6cdcdabb877",
+      "title": "Маршрут 3. От \"Военного строителя\" до Покровских ворот",
+      "url": "https://izi.travel/ru/1178-marshrut-3-ot-voennogo-stroitelya-do-pokrovskikh-vorot/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "734271aa-559c-4b44-b843-375adb21ed5d",
+      "title": "МГТУ им. Н. Э. Баумана",
+      "url": "https://izi.travel/ru/7342-mgtu-im-n-e-baumana/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "4230e417-efb8-42ee-9097-38d22736ac8b",
+      "title": "Говорящие экспрессы. Москва-Ожерелье",
+      "url": "https://izi.travel/ru/4230-govoryaschie-ekspressy-moskva-ozherele/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 4
+    },
+    {
+      "id": "33c83006-ea07-413e-9235-bd27e43cdcdc",
+      "title": "Дворцово-парковый ансамбль \"Лефортово\"",
+      "url": "https://izi.travel/ru/33c8-dvorcovo-parkovyy-ansambl-lefortovo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 7
+    },
+    {
+      "id": "ac08dcd6-3862-4c6d-9770-c21987b28f9c",
+      "title": "Говорящие экспрессы. Москва - Тула",
+      "url": "https://izi.travel/ru/ac08-govoryaschie-ekspressy-moskva-tula/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 10
+    },
+    {
+      "id": "662a6df2-0e99-495a-b750-41eb32d1c8e6",
+      "title": "Исчезающие Сокольники",
+      "url": "https://izi.travel/ru/662a-ischezayuschie-sokolniki/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 14
+    },
+    {
+      "id": "77cd5e58-47e3-4869-8336-74e74a42a7b0",
+      "title": "По бывшим восточным окраинам Москвы",
+      "url": "https://izi.travel/ru/77cd-po-byvshim-vostochnym-okrainam-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 4
+    },
+    {
+      "id": "a2c58805-2523-4bae-8ae2-b2c9fe91e254",
+      "title": "Маршрут 7. По Старой Басманной от дома Муравьева-Апостола до Разгуляя",
+      "url": "https://izi.travel/ru/a2c5-marshrut-7-po-staroy-basmannoy-ot-doma-muraveva-apostola-do-razgulyaya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "54b25378-383e-4991-bfcf-1b7ec1d77c35",
+      "title": "Маршрут 10. Ирининский придел и Переведеновка",
+      "url": "https://izi.travel/ru/54b2-marshrut-10-irininskiy-pridel-i-perevedenovka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 2
+    },
+    {
+      "id": "918a7fd1-bff3-4faf-8218-cd651786a75d",
+      "title": "Усадьба Останкино",
+      "url": "https://izi.travel/ru/918a-usadba-ostankino/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 3
+    },
+    {
+      "id": "eb4e2e24-f75b-4adf-808e-54d23784a173",
+      "title": "Храмы Замоскворечья. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/eb4e-khramy-zamoskvorechya-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "99b74ad5-10ca-4bd8-8217-08d3dc4f6185",
+      "title": "Говорящие экспрессы. Москва - Калуга",
+      "url": "https://izi.travel/ru/99b7-govoryaschie-ekspressy-moskva-kaluga/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 12
+    },
+    {
+      "id": "d9ef1dd4-2de3-44e9-90bc-bdfbf55310f1",
+      "title": "По пути в Дарвиновский музей",
+      "url": "https://izi.travel/ru/d9ef-po-puti-v-darvinovskiy-muzey/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 2
+    },
+    {
+      "id": "2943ed5a-c717-473b-98b4-95154951c490",
+      "title": "Михаил Жебрак. «Пешком по Москве-2». Маршрут №2 «СВЯТАЯ ДОРОГА»",
+      "url": "https://izi.travel/ru/2943-mikhail-zhebrak-peshkom-po-moskve-2-marshrut-no2-svyataya-doroga/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "8c4e0b25-550f-42ec-b5a1-a391469f66d5",
+      "title": "Михаил Жебрак. «Пешком по Москве-2». Маршрут 7 «Из конюхов в шталмейстеры»",
+      "url": "https://izi.travel/ru/8c4e-mikhail-zhebrak-peshkom-po-moskve-2-marshrut-7-iz-konyukhov-v-shtalmeystery/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "962d24a6-e1ea-44e9-8870-e456689f47e9",
+      "title": "История и архитектура допетровской Москвы",
+      "url": "https://izi.travel/ru/962d-istoriya-i-arkhitektura-dopetrovskoy-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 11
+    },
+    {
+      "id": "8cb46425-1936-411b-b082-10a1e997df3b",
+      "title": "Из Москвы в Смоленск на \"Ласточке\"",
+      "url": "https://izi.travel/ru/8cb4-iz-moskvy-v-smolensk-na-lastochke/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "868e7cf4-6622-4b78-8d39-5d5d8ce81867",
+      "title": "Город Бабушкин в годы войны",
+      "url": "https://izi.travel/ru/868e-gorod-babushkin-v-gody-voyny/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "9cf30c96-5ab6-4a78-94f4-693f1c10b1ad",
+      "title": "Чудеса архитектуры на Чистых прудах",
+      "url": "https://izi.travel/ru/9cf3-chudesa-arkhitektury-na-chistykh-prudakh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 9
+    },
+    {
+      "id": "ec3ede1b-da65-4b9a-a10d-7a4e62e7789f",
+      "title": "Крепостные пруды. Вернакулярная территория Чистые пруды",
+      "url": "https://izi.travel/ru/ec3e-krepostnye-prudy-vernakulyarnaya-territoriya-chistye-prudy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "de80b024-d2f7-47d4-9a9c-4073baf6412b",
+      "title": "О поле, поле, кто тебя усеял..? по М-4. Москва – Куликово Поле",
+      "url": "https://izi.travel/ru/de80-o-pole-pole-kto-tebya-useyal-po-m-4-moskva-kulikovo-pole/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 5
+    },
+    {
+      "id": "bd3226a0-7d2a-46cb-9846-16cc5b93bcfd",
+      "title": "Адреса войны на Старой Басманной улице",
+      "url": "https://izi.travel/ru/bd32-adresa-voyny-na-staroy-basmannoy-ulice/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "bb70af5e-1425-4f5a-9cdc-f9833cc8c84b",
+      "title": "Дачное Царицыно для малышей",
+      "url": "https://izi.travel/ru/bb70-dachnoe-caricyno-dlya-malyshey/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 2
+    },
+    {
+      "id": "8e3c0c7d-dc90-4c41-a7fb-b19d68926043",
+      "title": "Историческое путешествие по улице Маршала Василевского",
+      "url": "https://izi.travel/ru/8e3c-istoricheskoe-puteshestvie-po-ulice-marshala-vasilevskogo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 14
+    },
+    {
+      "id": "1c01e184-465d-4dab-92b8-077c3399e007",
+      "title": "Армянская Москва. Маршрут 1",
+      "url": "https://izi.travel/ru/1c01-armyanskaya-moskva-marshrut-1/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "9df85bd1-62b4-4a1e-ac47-06bc64b0b588",
+      "title": "Царицыно. Воздушный сад",
+      "url": "https://izi.travel/ru/9df8-caricyno-vozdushnyy-sad/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 9
+    },
+    {
+      "id": "42397d30-9573-4f1e-a094-2dbf25fd6520",
+      "title": "River Palace. Речной круиз",
+      "url": "https://izi.travel/ru/4239-river-palace-rechnoy-kruiz/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 5
+    },
+    {
+      "id": "4317bd03-9b00-4a36-ac6e-a0905e60311c",
+      "title": "Армянская Москва. Маршрут 2",
+      "url": "https://izi.travel/ru/4317-armyanskaya-moskva-marshrut-2/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "dd7a15aa-db5c-48d3-bf76-b0b6675d568a",
+      "title": "Планета-Кафе – ул.Солженицына – Андроников монастырь",
+      "url": "https://izi.travel/ru/dd7a-planeta-kafe-ul-solzhenicyna-andronikov-monastyr/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 11
+    },
+    {
+      "id": "bff7b17f-577c-4364-9a15-31f78f758279",
+      "title": "Прогулка по Лефортово со Львом Дуровым",
+      "url": "https://izi.travel/ru/bff7-progulka-po-lefortovo-so-lvom-durovym/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 33
+    },
+    {
+      "id": "f6187438-311e-43f7-bb23-414acadc9b5b",
+      "title": "Moscow. Tverskaya",
+      "url": "https://izi.travel/ru/f618-moscow-tverskaya/en",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 2
+    },
+    {
+      "id": "3f6e9427-39e5-4a04-8741-93d574ac4fe1",
+      "title": "Moscow. Zamoskvorechie",
+      "url": "https://izi.travel/ru/3f6e-moscow-zamoskvorechie/en",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 1
+    },
+    {
+      "id": "767ca5d4-4491-4b4d-a130-aab2ef61f292",
+      "title": "Тур по дворцовой усадьбе \"Кусково\"",
+      "url": "https://izi.travel/ru/767c-tur-po-dvorcovoy-usadbe-kuskovo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 36
+    },
+    {
+      "id": "ee63482f-f8c3-4559-9662-5a6cb5189b66",
+      "title": "Парк Горького: обзорная экскурсия",
+      "url": "https://izi.travel/ru/ee63-park-gorkogo-obzornaya-ekskursiya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 21
+    },
+    {
+      "id": "ac2fc8c2-ae70-49e6-b559-77ed799a0ebc",
+      "title": "Красная книга Архнадзора",
+      "url": "https://izi.travel/ru/ac2f-krasnaya-kniga-arkhnadzora/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 3
+    },
+    {
+      "id": "6c7167f9-89e0-44b8-a2fb-bb97c14bbd36",
+      "title": "Топография террора. Лубянка и окрестности",
+      "url": "https://izi.travel/ru/6c71-topografiya-terrora-lubyanka-i-okrestnosti/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 7
+    },
+    {
+      "id": "e0cb9f81-e70c-4f55-bfee-b01d8cd9416c",
+      "title": "\"Гагаринская Москва\": Путеводитель по местам Москвы, связанным с жизнью и деятельностью  первого космонавта Земли Ю.А.Гагарина",
+      "url": "https://izi.travel/ru/e0cb-gagarinskaya-moskva-putevoditel-po-mestam-moskvy-svyazannym-s-zhiznyu-i-deyatelnostyu-pervogo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "bc83683e-c9be-430d-9cd8-40fccd76ea25",
+      "title": "Последний адрес: голоса",
+      "url": "https://izi.travel/ru/bc83-posledniy-adres-golosa/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "4acf98e1-95c4-43bb-92db-9f489ee25b82",
+      "title": "Герои нашего времени о пушкинской Москве",
+      "url": "https://izi.travel/ru/4acf-geroi-nashego-vremeni-o-pushkinskoy-moskve/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 16
+    },
+    {
+      "id": "76b66a62-a25b-4121-bd3a-a8c86f3a52ba",
+      "title": "Как Роман Клейн Москву построил",
+      "url": "https://izi.travel/ru/76b6-kak-roman-kleyn-moskvu-postroil/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 10
+    },
+    {
+      "id": "ded90458-f9d5-48d1-a293-1ac437491585",
+      "title": "Сокровища столицы России",
+      "url": "https://izi.travel/ru/ded9-sokrovischa-stolicy-rossii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 4
+    },
+    {
+      "id": "2a4f4202-d7a8-45e7-b5d9-f511e98c2861",
+      "title": "Образовательная экскурсия “Мосты Москвы: История и архитектура”",
+      "url": "https://izi.travel/ru/2a4f-obrazovatelnaya-ekskursiya-mosty-moskvy-istoriya-i-arkhitektura/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 6
+    },
+    {
+      "id": "8cd4c677-edf0-4256-a1c9-cdc4038b0080",
+      "title": "Ароматы Переведеновки и Немецкого рынка",
+      "url": "https://izi.travel/ru/8cd4-aromaty-perevedenovki-i-nemeckogo-rynka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "a4763ab4-6ab0-4c6f-8242-f3338f176626",
+      "title": "Вокруг Храма Христа Спасителя",
+      "url": "https://izi.travel/ru/a476-vokrug-khrama-khrista-spasitelya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 7
+    },
+    {
+      "id": "26c52a99-f6a7-40bd-a080-3e782e92aa8a",
+      "title": "Хитровка с Алексеем Дедушкиным",
+      "url": "https://izi.travel/ru/26c5-khitrovka-s-alekseem-dedushkinym/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 80
+    },
+    {
+      "id": "37371046-a5f2-4d73-ae1d-5549e29742d5",
+      "title": "Путешествуй на Ласточке! Москва – Тверь",
+      "url": "https://izi.travel/ru/3737-puteshestvuy-na-lastochke-moskva-tver/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 15
+    },
+    {
+      "id": "655072fe-8a3a-40b1-85f7-12a456cfe8a9",
+      "title": "Говорящие экспрессы. Москва-Рязань",
+      "url": "https://izi.travel/ru/6550-govoryaschie-ekspressy-moskva-ryazan/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 12
+    },
+    {
+      "id": "1c714504-f9ff-42f9-b0ae-879ada0bbd44",
+      "title": "Сталинские высотки - «семь сестёр» пеший тур",
+      "url": "https://izi.travel/ru/1c71-stalinskie-vysotki-sem-sestyor-peshiy-tur/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "2158b587-148e-4a7c-8190-9a0d53ff1436",
+      "title": "Старообрядчество в Басманном районе",
+      "url": "https://izi.travel/ru/2158-staroobryadchestvo-v-basmannom-rayone/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 6
+    },
+    {
+      "id": "dbf119f8-9307-4885-afa5-ccc0e9596d8f",
+      "title": "\"Там в переулках за Арбатом, совсем особый город...\"",
+      "url": "https://izi.travel/ru/dbf1-tam-v-pereulkakh-za-arbatom-sovsem-osobyy-gorod/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 1
+    },
+    {
+      "id": "a7e054c3-20c4-40c2-9ab3-f8f14ca100a7",
+      "title": "Гастрономическое автопутешествие по М-11. Москва – Торжок",
+      "url": "https://izi.travel/ru/a7e0-gastronomicheskoe-avtoputeshestvie-po-m-11-moskva-torzhok/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 17
+    },
+    {
+      "id": "0a30e12e-1261-48de-bbd8-199944afe4ce",
+      "title": "По центру Москвы с Екатериной Андреевой",
+      "url": "https://izi.travel/ru/0a30-po-centru-moskvy-s-ekaterinoy-andreevoy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 3
+    },
+    {
+      "id": "2efb6926-903b-42c4-b386-fb1f7db499fe",
+      "title": "Прогулка по Патриаршим прудам с актёром Всеволодом Кузнецовым | Москва",
+      "url": "https://izi.travel/ru/2efb-progulka-po-patriarshim-prudam-s-aktyorom-vsevolodom-kuznecovym-moskva/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 13
+    },
+    {
+      "id": "09f9ea3b-eb4f-4eda-bdb4-775a70a00114",
+      "title": "Пять дворов Покровки: от Бульварного до Садового кольца. Прогулка с Сергеем Никитиным",
+      "url": "https://izi.travel/ru/09f9-pyat-dvorov-pokrovki-ot-bulvarnogo-do-sadovogo-kolca-progulka-s-sergeem-nikitinym/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 5
+    },
+    {
+      "id": "061fe2d6-8781-4e69-bdeb-039a52fe454e",
+      "title": "Армянский переулок с соседями",
+      "url": "https://izi.travel/ru/061f-armyanskiy-pereulok-s-sosedyami/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "17bd244b-64eb-4f9b-bd93-5a45b87446c2",
+      "title": "Привет, Москва особенная! Тифлоэкскурсия по маршруту автобуса «Б», внешнее кольцо",
+      "url": "https://izi.travel/ru/17bd-privet-moskva-osobennaya-tifloekskursiya-po-marshrutu-avtobusa-b-vneshnee-kolco/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "bb26bde7-46f9-4661-975f-10070f965ab5",
+      "title": "Златоустов монастырь: разрушенный, но живой.",
+      "url": "https://izi.travel/ru/bb26-zlatoustov-monastyr-razrushennyy-no-zhivoy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 4
+    },
+    {
+      "id": "189f642c-c530-40e3-8488-945a26b21c3d",
+      "title": "Достоевский в Москве: детство на Божедомке",
+      "url": "https://izi.travel/ru/189f-dostoevskiy-v-moskve-detstvo-na-bozhedomke/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 9
+    },
+    {
+      "id": "503d4c51-0581-4ab7-af48-086000a452c6",
+      "title": "Москва. Прогулка от Кожевников до Крутиц.",
+      "url": "https://izi.travel/ru/503d-moskva-progulka-ot-kozhevnikov-do-krutic/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 22
+    },
+    {
+      "id": "3beef227-2954-4479-a337-c7b199e4130e",
+      "title": "Рождественка. Прогулка по улице с многовековой историей",
+      "url": "https://izi.travel/ru/3bee-rozhdestvenka-progulka-po-ulice-s-mnogovekovoy-istoriey/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 16
+    },
+    {
+      "id": "0ecdb2c9-d171-4ed1-90f1-26f03094b23f",
+      "title": "Рассказывает мемориальная доска",
+      "url": "https://izi.travel/ru/0ecd-rasskazyvaet-memorialnaya-doska/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "3a6e3c82-f4fb-47d4-b2ed-a4ea876347a8",
+      "title": "Как пройти в библиотеку?",
+      "url": "https://izi.travel/ru/3a6e-kak-proyti-v-biblioteku/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 4
+    },
+    {
+      "id": "7cb05848-43ad-4b68-9b96-78e6ea7ba5a1",
+      "title": "Е. И. Дёмина, А. П. Маресьев – судьбы, опалённые войной",
+      "url": "https://izi.travel/ru/7cb0-e-i-dyomina-p-maresev-sudby-opalyonnye-voynoy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "4b8da411-051a-4cb0-971f-a1e98a2d7ef0",
+      "title": "\"Московский телеграф\", укротители огня и уголок чудес",
+      "url": "https://izi.travel/ru/4b8d-moskovskiy-telegraf-ukrotiteli-ognya-i-ugolok-chudes/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "a3fc8b8c-1324-433e-a93a-f2d8616e2f08",
+      "title": "Братцево",
+      "url": "https://izi.travel/ru/a3fc-bratcevo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 1
+    },
+    {
+      "id": "eb8033c1-2036-4b3e-b92f-6ffce3f801b7",
+      "title": "Bitzevskiy forest",
+      "url": "https://izi.travel/ru/eb80-bitzevskiy-forest/en",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 10
+    },
+    {
+      "id": "1c1cc320-7cea-4df0-b3b6-5c077211227c",
+      "title": "Прогулка по Москве Валентина Серова",
+      "url": "https://izi.travel/ru/1c1c-progulka-po-moskve-valentina-serova/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 8
+    },
+    {
+      "id": "e66deb26-22d4-40c0-91e3-2f32472ffe1d",
+      "title": "АВАНГАРД. Архитектурный путеводитель",
+      "url": "https://izi.travel/ru/e66d-avangard-arkhitekturnyy-putevoditel/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 3
+    },
+    {
+      "id": "1e78ee29-007b-4ca2-996d-b97d49d46669",
+      "title": "Абрикосовы в Москве XIX века",
+      "url": "https://izi.travel/ru/1e78-abrikosovy-v-moskve-xix-veka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 18
+    },
+    {
+      "id": "e0aa17a7-6a78-454f-89c7-eb7e2a0638bb",
+      "title": "Прогулка по Москве Казимира Малевича",
+      "url": "https://izi.travel/ru/e0aa-progulka-po-moskve-kazimira-malevicha/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 6
+    },
+    {
+      "id": "ce63e3b0-28cf-47dc-84c9-714252e3da6f",
+      "title": "По Доброй слободе и ее окрестностям",
+      "url": "https://izi.travel/ru/ce63-po-dobroy-slobode-i-ee-okrestnostyam/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "34c56df5-bdcf-46cc-b094-29a251c7d3c5",
+      "title": "Московское центральное кольцо (МЦК)",
+      "url": "https://izi.travel/ru/34c5-moskovskoe-centralnoe-kolco-mck/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 2
+    },
+    {
+      "id": "6f32fed7-8fb0-4d83-9d61-846443d8ed88",
+      "title": "Хлебозавод №9",
+      "url": "https://izi.travel/ru/6f32-khlebozavod-no9/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 7
+    },
+    {
+      "id": "e56e85d6-8161-4ca5-910b-75d82d3e0818",
+      "title": "Детство в Сокольниках",
+      "url": "https://izi.travel/ru/e56e-detstvo-v-sokolnikakh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 3
+    },
+    {
+      "id": "2b05ffe3-354e-43e7-abd1-d8f2fb4efdc6",
+      "title": "Храм Преподобной Ефросинии Великой княгини Московской",
+      "url": "https://izi.travel/ru/2b05-khram-prepodobnoy-efrosinii-velikoy-knyagini-moskovskoy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "90896703-1717-40b5-b3ff-26836b01a4bf",
+      "title": "Время \"Ч\". Энциклопедия жизни района",
+      "url": "https://izi.travel/ru/9089-vremya-ch-enciklopediya-zhizni-rayona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "769e6735-c821-4b95-a78c-558c1cfd7baa",
+      "title": "По Плющихе к Гайдаровке",
+      "url": "https://izi.travel/ru/769e-po-plyuschikhe-k-gaydarovke/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "52a6fdf5-9c5d-4aea-8b82-cbad2bf6c544",
+      "title": "Аллея \"Дорога жизни\" в Строгино",
+      "url": "https://izi.travel/ru/52a6-alleya-doroga-zhizni-v-strogino/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "1f0bb279-b84c-4e91-aa24-c5c7f8e728e8",
+      "title": "Вехи памяти и славы: прогулка по Серебряному бору",
+      "url": "https://izi.travel/ru/1f0b-vekhi-pamyati-i-slavy-progulka-po-serebryanomu-boru/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "b3187258-56fa-4d89-9ad0-368171239b90",
+      "title": "Москва Анны Голубкиной. От Кропоткинской до Большого Лёвшинского",
+      "url": "https://izi.travel/ru/b318-moskva-anny-golubkinoy-ot-kropotkinskoy-do-bolshogo-lyovshinskogo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "feb9671d-db62-479d-9054-5d4f99c135f9",
+      "title": "Москва Варлама Шаламова",
+      "url": "https://izi.travel/ru/feb9-moskva-varlama-shalamova/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 2
+    },
+    {
+      "id": "d3be9a03-2101-491e-a6f6-4c6a7d29fc6f",
+      "title": "Прогулка по территории музея им. А. Рублева",
+      "url": "https://izi.travel/ru/d3be-progulka-po-territorii-muzeya-im-rubleva/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 6
+    },
+    {
+      "id": "a09d8fa5-642f-4741-be7b-f959fefaf219",
+      "title": "Привет, Москва! Кино к месту",
+      "url": "https://izi.travel/ru/a09d-privet-moskva-kino-k-mestu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "524e2daf-064e-4830-be17-a024bfeb4b43",
+      "title": "Как пойти в библиотеку и прийти туда в два часа ночи",
+      "url": "https://izi.travel/ru/524e-kak-poyti-v-biblioteku-i-priyti-tuda-v-dva-chasa-nochi/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "45031de2-3f5c-43a4-8df6-f27df621cb61",
+      "title": "Круглые Дома Столицы",
+      "url": "https://izi.travel/ru/4503-kruglye-doma-stolicy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 6
+    },
+    {
+      "id": "ec106b17-fc83-49ec-a1fe-18fddff03dad",
+      "title": "#ЭКСПОЗИЦИИ уЛИЦ",
+      "url": "https://izi.travel/ru/ec10-ekspozicii-ulic/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 3
+    },
+    {
+      "id": "607740c2-87d7-4b2d-a804-e5e108b95eeb",
+      "title": "Из жизни привидений Останкино в книгах Владимира Орлова",
+      "url": "https://izi.travel/ru/6077-iz-zhizni-privideniy-ostankino-v-knigakh-vladimira-orlova/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 3
+    },
+    {
+      "id": "636e57c7-fa5b-4787-acc1-2de4cf9fe839",
+      "title": "Москва. Сретенка",
+      "url": "https://izi.travel/ru/636e-moskva-sretenka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 9
+    },
+    {
+      "id": "3f46e059-9829-4e60-894e-34b099cfb8f1",
+      "title": "Минское шоссе: Дорога боевой славы",
+      "url": "https://izi.travel/ru/3f46-minskoe-shosse-doroga-boevoy-slavy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 7
+    },
+    {
+      "id": "5ff25d02-ee4e-4cfe-a418-e88e8d64a300",
+      "title": "Москва. Истории любви",
+      "url": "https://izi.travel/ru/5ff2-moskva-istorii-lyubvi/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 11
+    },
+    {
+      "id": "c09156ac-943d-444d-a10c-c53232a8b9b1",
+      "title": "Москва нонконформистов. Искусство ХХ века",
+      "url": "https://izi.travel/ru/c091-moskva-nonkonformistov-iskusstvo-khkh-veka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "300f55ad-b286-46b1-bd95-68f23fdd833c",
+      "title": "Киевское шоссе: Дорога боевой славы",
+      "url": "https://izi.travel/ru/300f-kievskoe-shosse-doroga-boevoy-slavy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "53b0e047-01be-4da5-b953-a86d35863215",
+      "title": "Надежный тыл. Басманный район в годы войны",
+      "url": "https://izi.travel/ru/53b0-nadezhnyy-tyl-basmannyy-rayon-v-gody-voyny/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "37114bef-a0b1-4e67-bbc7-0c2426d2cb7e",
+      "title": "Сокольники. Первая прогулка",
+      "url": "https://izi.travel/ru/3711-sokolniki-pervaya-progulka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 27
+    },
+    {
+      "id": "2009ff33-e63a-40a8-afa0-581066e68b3a",
+      "title": "Обзорная экскурсия по территории ВДНХ",
+      "url": "https://izi.travel/ru/2009-obzornaya-ekskursiya-po-territorii-vdnkh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 11
+    },
+    {
+      "id": "c27edc37-966d-4433-a76a-1051c4033d14",
+      "title": "Волоколамское шоссе",
+      "url": "https://izi.travel/ru/c27e-volokolamskoe-shosse/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 2
+    },
+    {
+      "id": "fd58b4a5-7315-4408-a5a4-da53bd1a4bb6",
+      "title": "Москва Фёдора Шехтеля",
+      "url": "https://izi.travel/ru/fd58-moskva-fyodora-shekhtelya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 10
+    },
+    {
+      "id": "5a90d9b0-ecc3-4b81-a3fc-c46a2fe8d2b6",
+      "title": "Ивановская горка. Первая прогулка",
+      "url": "https://izi.travel/ru/5a90-ivanovskaya-gorka-pervaya-progulka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 31
+    },
+    {
+      "id": "1264380a-42cc-4f48-81d6-34f32b918db9",
+      "title": "МОДЕРН. Архитектурный путеводитель",
+      "url": "https://izi.travel/ru/1264-modern-arkhitekturnyy-putevoditel/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 4
+    },
+    {
+      "id": "1a003f27-218f-4d48-9d93-cef341dfad36",
+      "title": "Пять веков истории Басманного района",
+      "url": "https://izi.travel/ru/1a00-pyat-vekov-istorii-basmannogo-rayona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 2
+    },
+    {
+      "id": "8f8208ce-a8db-4f33-8cb6-b5f3fd60ca61",
+      "title": "Культурное автопутешествие по М-11. Москва – Клин",
+      "url": "https://izi.travel/ru/8f82-kulturnoe-avtoputeshestvie-po-m-11-moskva-klin/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 7
+    },
+    {
+      "id": "3324633b-45f9-4058-830b-371679092307",
+      "title": "Индустриальное автопутешествие по М-11. Москва – Торжок",
+      "url": "https://izi.travel/ru/3324-industrialnoe-avtoputeshestvie-po-m-11-moskva-torzhok/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 5
+    },
+    {
+      "id": "06f706f3-8612-4485-83db-a30487a9ddb2",
+      "title": "«Волынское» – конгресс-парк и природный оазис недалеко от Кремля",
+      "url": "https://izi.travel/ru/06f7-volynskoe-kongress-park-i-prirodnyy-oazis-nedaleko-ot-kremlya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 11
+    },
+    {
+      "id": "72ae8b98-27c9-4d79-9a8a-15d790a0ffe2",
+      "title": "Москва на кинолентах",
+      "url": "https://izi.travel/ru/72ae-moskva-na-kinolentakh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 12
+    },
+    {
+      "id": "e73c98b3-5867-48b2-900d-22ec2ca71576",
+      "title": "Два Гоголя. Московские памятники писателю",
+      "url": "https://izi.travel/ru/e73c-dva-gogolya-moskovskie-pamyatniki-pisatelyu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "34a9ecc6-a3de-4a7f-b02f-2ee85df8e700",
+      "title": "Кремлёвская цитадель",
+      "url": "https://izi.travel/ru/34a9-kremlyovskaya-citadel/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 4
+    },
+    {
+      "id": "2c032c22-52a8-475d-916e-90f213c80da7",
+      "title": "Перестроенные дома Замоскворечья. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/2c03-perestroennye-doma-zamoskvorechya-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "6a1fd8fa-2f61-441a-a829-5027f7795740",
+      "title": "Царицыно. Парк",
+      "url": "https://izi.travel/ru/6a1f-caricyno-park/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 48
+    },
+    {
+      "id": "010f9a6e-946a-471a-8266-9f61ac93eaed",
+      "title": "Милютинский переулок. Проект \"Узнай Москву\"",
+      "url": "https://izi.travel/ru/010f-milyutinskiy-pereulok-proekt-uznay-moskvu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 5
+    },
+    {
+      "id": "58068609-72e4-4984-b1dd-c932a41f8c12",
+      "title": "\"Кутузов-парк\" в твоём мобильном!",
+      "url": "https://izi.travel/ru/5806-kutuzov-park-v-tvoyom-mobilnom/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "ce138443-8375-4755-8f28-a023c23d8b01",
+      "title": "Головинский рубеж. Квест",
+      "url": "https://izi.travel/ru/ce13-golovinskiy-rubezh-kvest/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 9
+    },
+    {
+      "id": "f2f4ad16-81c7-4794-8e1a-bbf334b29ed1",
+      "title": "От Тургеневской до Полиграфа",
+      "url": "https://izi.travel/ru/f2f4-ot-turgenevskoy-do-poligrafa/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "323d38d3-4f37-4269-801d-4dd93d48d648",
+      "title": "Мастер и Маргарита. Квест от профессора чёрной магии.",
+      "url": "https://izi.travel/ru/323d-master-i-margarita-kvest-ot-professora-chyornoy-magii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 53
+    },
+    {
+      "id": "84f7797b-5501-47da-be90-9f97a7326eeb",
+      "title": "Берестовская Москва",
+      "url": "https://izi.travel/ru/84f7-berestovskaya-moskva/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "700e66af-1022-45b6-a139-4c63a4e920a6",
+      "title": "Москва – Тверь",
+      "url": "https://izi.travel/ru/700e-moskva-tver/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 9
+    },
+    {
+      "id": "7163c20e-191a-4223-bb38-cd7ef18e611a",
+      "title": "Где вкуснее пастила? Автопутешествие-дегустация. Москва – Белёв – Тула – Коломна",
+      "url": "https://izi.travel/ru/7163-gde-vkusnee-pastila-avtoputeshestvie-degustaciya-moskva-belyov-tula-kolomna/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 12
+    },
+    {
+      "id": "0c63e8f4-19c9-4541-8740-988695bc4845",
+      "title": "Говорящие экспрессы. Москва - Владимир",
+      "url": "https://izi.travel/ru/0c63-govoryaschie-ekspressy-moskva-vladimir/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 8
+    },
+    {
+      "id": "03242b76-03b3-4bbb-9881-f4ccd525bad3",
+      "title": "От Сухаревской до Полиграфа (квест)",
+      "url": "https://izi.travel/ru/0324-ot-sukharevskoy-do-poligrafa-kvest/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 4
+    },
+    {
+      "id": "fc14aac9-1d23-4562-ba7f-c26e8caa7ad5",
+      "title": "Зелёный маршрут: сады, парки и скверы Басманного района",
+      "url": "https://izi.travel/ru/fc14-zelyonyy-marshrut-sady-parki-i-skvery-basmannogo-rayona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 3
+    },
+    {
+      "id": "bb9cf59d-e581-4822-948c-4cfc16e85ff8",
+      "title": "Легенды Басманного района",
+      "url": "https://izi.travel/ru/bb9c-legendy-basmannogo-rayona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 3
+    },
+    {
+      "id": "8eff6fe3-94fa-48ac-aae4-8d41b1071991",
+      "title": "Михаил Жебрак. «Пешком по Москве». Маршрут №6. «КАРМАН ЗАМОСКВОРЕЧЬЯ»",
+      "url": "https://izi.travel/ru/8eff-mikhail-zhebrak-peshkom-po-moskve-marshrut-no6-karman-zamoskvorechya/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "68547367-ae78-4a10-b262-394f41115af9",
+      "title": "\"Петрушествие\" по Москве",
+      "url": "https://izi.travel/ru/6854-petrushestvie-po-moskve/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "dd55d837-ad60-41a9-9f46-c1650dd3758e",
+      "title": "Иноземцы в Басманном районе",
+      "url": "https://izi.travel/ru/dd55-inozemcy-v-basmannom-rayone/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 2
+    },
+    {
+      "id": "94f6fcbe-49c9-4886-83e6-3fadbb12129c",
+      "title": "Хлебный маршрут: булочные Басманного района",
+      "url": "https://izi.travel/ru/94f6-khlebnyy-marshrut-bulochnye-basmannogo-rayona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "c59861d3-fbc7-4be2-acb8-a5e3f2a4a259",
+      "title": "Уличный аудиогид к выставке \"Подземная Неглинка\"",
+      "url": "https://izi.travel/ru/c598-ulichnyy-audiogid-k-vystavke-podzemnaya-neglinka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 2
+    },
+    {
+      "id": "aaba0076-fa86-4bf0-af34-20d2d4ee22c4",
+      "title": "Путеводитель по району Замоскворечье города Москвы",
+      "url": "https://izi.travel/ru/aaba-putevoditel-po-rayonu-zamoskvoreche-goroda-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "ef51043c-5018-4b5f-b96a-29574719551b",
+      "title": "Медицинский квест. РММ >>> МГМСУ",
+      "url": "https://izi.travel/ru/ef51-medicinskiy-kvest-rmm-mgmsu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 1
+    },
+    {
+      "id": "b83e8fde-048e-4497-96df-998ec6e9799b",
+      "title": "Как пройти в Библиотеку? Экскурсионный маршрут от станции метро «Курская»  до Библиотеки Некрасова в Денисовском пер.",
+      "url": "https://izi.travel/ru/b83e-kak-proyti-v-biblioteku-ekskursionnyy-marshrut-ot-stancii-metro-kurskaya-do-biblioteki-nekrasova-v/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 4
+    },
+    {
+      "id": "c1d8bad1-5d71-4dbf-a1a5-4cad7cb8ac2e",
+      "title": "Измайловский рубеж. Квест",
+      "url": "https://izi.travel/ru/c1d8-izmaylovskiy-rubezh-kvest/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 23
+    },
+    {
+      "id": "d453d10b-0c44-4ed7-b935-06add817e18a",
+      "title": "Маршрут 5. От Лялина переулка до Садового",
+      "url": "https://izi.travel/ru/d453-marshrut-5-ot-lyalina-pereulka-do-sadovogo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "4ec668ee-4e4e-4bd5-90aa-6e39179f7c09",
+      "title": "Маршрут 8. По Спартаковской от Мусина-Пушкина в Елохово",
+      "url": "https://izi.travel/ru/4ec6-marshrut-8-po-spartakovskoy-ot-musina-pushkina-v-elokhovo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 3
+    },
+    {
+      "id": "e0b23ebf-0b95-48a4-bd09-bb699be1918e",
+      "title": "Москва Корнея Чуковского",
+      "url": "https://izi.travel/ru/e0b2-moskva-korneya-chukovskogo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 6
+    },
+    {
+      "id": "26cc0313-c3b1-4aa5-b5e1-249e57778f33",
+      "title": "Монорельсовая Транспортная Система | Путешествие от станции Тимирязевская до ул. С.Эйзенштейна",
+      "url": "https://izi.travel/ru/26cc-monorelsovaya-transportnaya-sistema-puteshestvie-ot-stancii-timiryazevskaya-do-ul-s-eyzenshteyna/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "ffede5dc-7249-402d-931d-241f3b26c748",
+      "title": "Территория детства – Рогожская застава",
+      "url": "https://izi.travel/ru/ffed-territoriya-detstva-rogozhskaya-zastava/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 6
+    },
+    {
+      "id": "d45e623f-9245-4cab-a3a2-6a8198704db9",
+      "title": "Москва Василия Сурикова",
+      "url": "https://izi.travel/ru/d45e-moskva-vasiliya-surikova/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "fd41da1a-7aca-41a7-b2c7-5fcc5969ce30",
+      "title": "Бутырки-1 – улица Руставели",
+      "url": "https://izi.travel/ru/fd41-butyrki-1-ulica-rustaveli/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 3
+    },
+    {
+      "id": "bb0f0fd7-e276-4291-92ba-ed90f572447f",
+      "title": "Истории о Москве для свободной прогулки",
+      "url": "https://izi.travel/ru/bb0f-istorii-o-moskve-dlya-svobodnoy-progulki/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 7
+    },
+    {
+      "id": "2fe0e3b7-75b3-477b-8225-9d1808010516",
+      "title": "Маршрут 1. Маросейка. От Ильинских ворот до Армянского переулка",
+      "url": "https://izi.travel/ru/2fe0-marshrut-1-maroseyka-ot-ilinskikh-vorot-do-armyanskogo-pereulka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 4
+    },
+    {
+      "id": "11defb69-bec6-405a-a367-640c2aeec3a8",
+      "title": "Прогулки со Смирновым",
+      "url": "https://izi.travel/ru/11de-progulki-so-smirnovym/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 3
+    },
+    {
+      "id": "23e70282-a1c6-4ebb-b687-533bf551a8ec",
+      "title": "Сталинская высотка в Зарядье - \"восьмая сестра\"",
+      "url": "https://izi.travel/ru/23e7-stalinskaya-vysotka-v-zaryade-vosmaya-sestra/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "c6bcb951-debb-47fb-bc24-81bb0fad97d9",
+      "title": "Михаил Жебрак. «Пешком по Москве». Маршрут №5. «ГРАНИЦА БЕЛОГО»",
+      "url": "https://izi.travel/ru/c6bc-mikhail-zhebrak-peshkom-po-moskve-marshrut-no5-granica-belogo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 2
+    },
+    {
+      "id": "1907d2d4-74f4-4741-9ae0-f4e0a88ae5d2",
+      "title": "Всё, что вы хотели знать о модерне, или искусство жить красиво",
+      "url": "https://izi.travel/ru/1907-vsyo-chto-vy-khoteli-znat-o-moderne-ili-iskusstvo-zhit-krasivo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 13
+    },
+    {
+      "id": "0786cec7-7b0a-46d6-ab8c-5f6f2ac1c5a2",
+      "title": "Площадь Тверская Застава",
+      "url": "https://izi.travel/ru/0786-ploschad-tverskaya-zastava/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 5
+    },
+    {
+      "id": "40428fdb-ca6b-4a1f-9484-3ff8056b304d",
+      "title": "Большой террор: пролог, кульминация, эпилог",
+      "url": "https://izi.travel/ru/4042-bolshoy-terror-prolog-kulminaciya-epilog/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 1
+    },
+    {
+      "id": "7ae55d2c-c4c4-477d-9555-1acde8e5302d",
+      "title": "Маршрут по древней Москве: палаты Басманного района",
+      "url": "https://izi.travel/ru/7ae5-marshrut-po-drevney-moskve-palaty-basmannogo-rayona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 11
+    },
+    {
+      "id": "a143b739-454a-4739-a5a1-22e9086ea750",
+      "title": "Михаил Жебрак. «Пешком по Москве». Маршрут №3. «НА ФОНЕ ПУШКИНА»",
+      "url": "https://izi.travel/ru/a143-mikhail-zhebrak-peshkom-po-moskve-marshrut-no3-na-fone-pushkina/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "152821f1-4cd1-4aab-8084-f57521360414",
+      "title": "Михаил Жебрак. «Пешком по Москве».  Маршрут № 1. «ЦАРЬ ГОРЫ».",
+      "url": "https://izi.travel/ru/1528-mikhail-zhebrak-peshkom-po-moskve-marshrut-no-1-car-gory/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 1
+    },
+    {
+      "id": "df37bc0a-393f-4544-8992-39db7c389750",
+      "title": "Михаил Жебрак. «Пешком по Москве». Маршрут №4. «ОПРИЧНАЯ СТОРОНКА»",
+      "url": "https://izi.travel/ru/df37-mikhail-zhebrak-peshkom-po-moskve-marshrut-no4-oprichnaya-storonka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "45bc6f03-125b-4f2d-a8e5-10f8a30ffc5e",
+      "title": "Обзорная экскурсия по Новокосино",
+      "url": "https://izi.travel/ru/45bc-obzornaya-ekskursiya-po-novokosino/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 3
+    },
+    {
+      "id": "bac7b116-553e-4106-8475-d0937bf5ce08",
+      "title": "Говорящие экспрессы. Москва - Новый Иерусалим",
+      "url": "https://izi.travel/ru/bac7-govoryaschie-ekspressy-moskva-novyy-ierusalim/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 5
+    },
+    {
+      "id": "52bc4e53-b0b4-40c3-a0f4-7b7d3d95fd3a",
+      "title": "Футбольные адреса в Москве",
+      "url": "https://izi.travel/ru/52bc-futbolnye-adresa-v-moskve/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "9f449c32-fbab-476f-8187-ec7d87acae62",
+      "title": "Московское метро: от станции к станции с Audiogid.ru",
+      "url": "https://izi.travel/ru/9f44-moskovskoe-metro-ot-stancii-k-stancii-s-audiogid-ru/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 14
+    },
+    {
+      "id": "77007952-2aa4-4824-a1ff-ab1d9c4a3557",
+      "title": "Прогулка по набережным Москвы-реки",
+      "url": "https://izi.travel/ru/7700-progulka-po-naberezhnym-moskvy-reki/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 6
+    },
+    {
+      "id": "d6de1157-d708-4d66-9a17-cf29a284a39d",
+      "title": "Слободы страны Басмании",
+      "url": "https://izi.travel/ru/d6de-slobody-strany-basmanii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 5
+    },
+    {
+      "id": "172361eb-cb67-4d67-8620-ef2fae35e475",
+      "title": "Толстой в Москве: от любви до ненависти",
+      "url": "https://izi.travel/ru/1723-tolstoy-v-moskve-ot-lyubvi-do-nenavisti/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "250e4c36-03d8-4be2-9a75-1a1107563fa8",
+      "title": "Современная Москва глазами Толстого",
+      "url": "https://izi.travel/ru/250e-sovremennaya-moskva-glazami-tolstogo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "275b30f7-26a2-427b-b6b1-b3f8fe5dc7bb",
+      "title": "Чистые пруды",
+      "url": "https://izi.travel/ru/275b-chistye-prudy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 9
+    },
+    {
+      "id": "9d57324d-b2c5-4012-b0e1-4b1a2d04ca67",
+      "title": "Бегом по Беговому",
+      "url": "https://izi.travel/ru/9d57-begom-po-begovomu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 5
+    },
+    {
+      "id": "016b9e25-1c2d-4647-ae14-1e3f10ec1547",
+      "title": "Практика в Коломенском",
+      "url": "https://izi.travel/ru/016b-praktika-v-kolomenskom/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 8
+    },
+    {
+      "id": "cdf52487-b5d2-4887-b7bf-b5fa1d6c56b2",
+      "title": "Архитектура Главного ботанического сада им. Н. В. Цицина РАН",
+      "url": "https://izi.travel/ru/cdf5-arkhitektura-glavnogo-botanicheskogo-sada-im-n-v-cicina-ran/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "f91e1d4b-5c66-4691-9188-b790d3f21702",
+      "title": "Парк Дружбы",
+      "url": "https://izi.travel/ru/f91e-park-druzhby/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 6
+    },
+    {
+      "id": "8e9d5507-41df-4620-bbc5-552360bab3a6",
+      "title": "Квиз \"Детский Достоевский\"",
+      "url": "https://izi.travel/ru/8e9d-kviz-detskiy-dostoevskiy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 4
+    },
+    {
+      "id": "3ee5c3d1-66d4-4474-9e69-3f4bae0a9d07",
+      "title": "Dog-friendly гид №1: \"Собаки. Начало\" от Юли и Пончика",
+      "url": "https://izi.travel/ru/3ee5-dog-friendly-gid-no1-sobaki-nachalo-ot-yuli-i-ponchika/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "ab96c8b4-3b6b-4e26-b445-5ef255f73007",
+      "title": "Памятники Дивизиям народного ополчения в Москве.  Часть I",
+      "url": "https://izi.travel/ru/ab96-pamyatniki-diviziyam-narodnogo-opolcheniya-v-moskve-chast-i/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "db3e9884-33e1-4f59-9929-0518c09cbfc8",
+      "title": "Я шагаю по району. Преображенское: у истоков петровских реформ",
+      "url": "https://izi.travel/ru/db3e-ya-shagayu-po-rayonu-preobrazhenskoe-u-istokov-petrovskikh-reform/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 5
+    },
+    {
+      "id": "cbdd78cd-dbb6-4cdc-ac3a-30eeb8cc42e0",
+      "title": "Я шагаю по району. Куркино: путешествие по московской Швейцарии",
+      "url": "https://izi.travel/ru/cbdd-ya-shagayu-po-rayonu-kurkino-puteshestvie-po-moskovskoy-shveycarii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "aaf01120-209f-4b08-a47d-a8435c4d4590",
+      "title": "По местам бывшего города Кунцево в Можайском районе",
+      "url": "https://izi.travel/ru/aaf0-po-mestam-byvshego-goroda-kuncevo-v-mozhayskom-rayone/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "c1a6dc16-5ca0-4c08-b04c-1da50f019d07",
+      "title": "Москва. Хамовники. Большая прогулка по Девичьему полю",
+      "url": "https://izi.travel/ru/c1a6-moskva-khamovniki-bolshaya-progulka-po-devichemu-polyu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 24
+    },
+    {
+      "id": "d84892bb-9259-4413-b544-fb476202d56c",
+      "title": "Старые Сокольники",
+      "url": "https://izi.travel/ru/d848-starye-sokolniki/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 2
+    },
+    {
+      "id": "8ef50bda-bec3-410c-8185-0ee7ee035715",
+      "title": "Я шагаю по району. Нагатинский Затон: где жили «кочерыжники» и обосновались герои сказок?",
+      "url": "https://izi.travel/ru/8ef5-ya-shagayu-po-rayonu-nagatinskiy-zaton-gde-zhili-kocheryzhniki-i-obosnovalis-geroi-skazok/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 4
+    },
+    {
+      "id": "24bd09c5-e165-4277-b6c4-cd72a39c31fe",
+      "title": "Утраченные храмы Москвы",
+      "url": "https://izi.travel/ru/24bd-utrachennye-khramy-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "294596f3-5060-444d-a354-7d6d66dc3841",
+      "title": "Киновышка - Места съемок советских фильмов на Чистых прудах",
+      "url": "https://izi.travel/ru/2945-kinovyshka-mesta-semok-sovetskikh-filmov-na-chistykh-prudakh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "aa864b83-f8cc-4d05-a8f3-7621a7f889fb",
+      "title": "Даниил Страхов и Сергей Шнырёв читают стихи под музыку Алексея Айги и Ансамбля «4'33\"».",
+      "url": "https://izi.travel/ru/aa86-daniil-strakhov-i-sergey-shnyryov-chitayut-stikhi-pod-muzyku-alekseya-aygi-i-ansamblya-4-33/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "e9332490-da3c-427c-bd7b-45207715e392",
+      "title": "Волгоградский проспект",
+      "url": "https://izi.travel/ru/e933-volgogradskiy-prospekt/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "57f56da4-59d4-42d6-b45a-6b9e0adc5beb",
+      "title": "Ивановская горка. Вторая прогулка",
+      "url": "https://izi.travel/ru/57f5-ivanovskaya-gorka-vtoraya-progulka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 28
+    },
+    {
+      "id": "ee2fecd3-13a1-4d08-99d4-52783b8e4dfc",
+      "title": "Ленинский проспект",
+      "url": "https://izi.travel/ru/ee2f-leninskiy-prospekt/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "f7eb87dc-d2c4-4536-aa3b-4c55ef46a556",
+      "title": "Щёлковское шоссе",
+      "url": "https://izi.travel/ru/f7eb-schyolkovskoe-shosse/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.4,
+      "reviews": 1
+    },
+    {
+      "id": "ab18ff5e-4935-4a1a-95c3-26bea0022807",
+      "title": "Дореволюционная Шаболовка",
+      "url": "https://izi.travel/ru/ab18-dorevolyucionnaya-shabolovka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 8
+    },
+    {
+      "id": "5d4878a4-895c-4d29-9575-4f53fc4ce065",
+      "title": "Экскурсия \"С приветствием, Вас помнящий всегда Знакомый ваш Сергей Есенин.\"",
+      "url": "https://izi.travel/ru/5d48-ekskursiya-s-privetstviem-vas-pomnyaschiy-vsegda-znakomyy-vash-sergey-esenin/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 4
+    },
+    {
+      "id": "735fbf12-d43b-4791-b3eb-216ae6d53200",
+      "title": "Британская Москва",
+      "url": "https://izi.travel/ru/735f-britanskaya-moskva/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 7
+    },
+    {
+      "id": "08c7759d-efbb-416d-8247-d29193f69b1b",
+      "title": "Журналистская Москва",
+      "url": "https://izi.travel/ru/08c7-zhurnalistskaya-moskva/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "4b21349a-2147-4e60-8612-69428b0cb645",
+      "title": "Дмитровское шоссе",
+      "url": "https://izi.travel/ru/4b21-dmitrovskoe-shosse/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "b39125a0-52f1-4ecb-bda2-67f316cf6a22",
+      "title": "Бахметьевский гараж и вокруг него | Архитектура авангарда",
+      "url": "https://izi.travel/ru/b391-bakhmetevskiy-garazh-i-vokrug-nego-arkhitektura-avangarda/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 4
+    },
+    {
+      "id": "37a96ab4-b33d-4a8f-bec6-d82ac748a04d",
+      "title": "Прощальный подарок скупого мецената",
+      "url": "https://izi.travel/ru/37a9-proschalnyy-podarok-skupogo-mecenata/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "f294f1ef-a591-4882-90d3-1096346ea103",
+      "title": "Исторический тур по Москве с элементами психологического тренинга",
+      "url": "https://izi.travel/ru/f294-istoricheskiy-tur-po-moskve-s-elementami-psikhologicheskogo-treninga/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 2
+    },
+    {
+      "id": "2ef72f5e-f251-455a-85e6-f8099a86e234",
+      "title": "Алексей Щусев. Казанский вокзал",
+      "url": "https://izi.travel/ru/2ef7-aleksey-schusev-kazanskiy-vokzal/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "af65b62d-87d1-460e-90b3-97a86d8297a8",
+      "title": "Китай-город и близкие сердцу моменты Вари Веденеевой из Периодика Пресс",
+      "url": "https://izi.travel/ru/af65-kitay-gorod-i-blizkie-serdcu-momenty-vari-vedeneevoy-iz-periodika-press/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "24a0d024-4a97-41a2-ad43-94eb9a473adb",
+      "title": "Моя Москва - Южное Тушино",
+      "url": "https://izi.travel/ru/24a0-moya-moskva-yuzhnoe-tushino/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "03cc23cf-7148-4e18-a4e7-b4983412ab29",
+      "title": "Арт-пробежка по Москве на 10 км",
+      "url": "https://izi.travel/ru/03cc-art-probezhka-po-moskve-na-10-km/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "c608bfa4-4072-4dae-bdb5-aa75f7da4d31",
+      "title": "Храм Богоявления. Из центра в Елохово",
+      "url": "https://izi.travel/ru/c608-khram-bogoyavleniya-iz-centra-v-elokhovo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "f7c2f3bf-ab75-45b3-a1dc-fe846905193e",
+      "title": "Квиз \"Московские игры Петра I\"",
+      "url": "https://izi.travel/ru/f7c2-kviz-moskovskie-igry-petra-i/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "499cab6f-6fc8-4030-9f44-a62cb5c30f2f",
+      "title": "По местам Серафима Саровского в Москве. Часть 2",
+      "url": "https://izi.travel/ru/499c-po-mestam-serafima-sarovskogo-v-moskve-chast-2/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "63ed817a-512b-4937-8533-78ce18538a6b",
+      "title": "По Красносельской и окраинам Сокольников",
+      "url": "https://izi.travel/ru/63ed-po-krasnoselskoy-i-okrainam-sokolnikov/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 3
+    },
+    {
+      "id": "64c18851-2f64-4456-9dd2-c5f09ee67317",
+      "title": "Сад имени Баумана и его окрестности, как достопримечательное место",
+      "url": "https://izi.travel/ru/64c1-sad-imeni-baumana-i-ego-okrestnosti-kak-dostoprimechatelnoe-mesto/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 6
+    },
+    {
+      "id": "397d2089-bfa1-493d-9dc1-4135c8678c34",
+      "title": "Экскурсия по Северному речному вокзалу",
+      "url": "https://izi.travel/ru/397d-ekskursiya-po-severnomu-rechnomu-vokzalu/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 10
+    },
+    {
+      "id": "56c33c23-40fa-49d6-aa60-71b42921680d",
+      "title": "Москва Анны Ахматовой: места и люди",
+      "url": "https://izi.travel/ru/56c3-moskva-anny-akhmatovoy-mesta-i-lyudi/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "4096aac4-39f9-4508-80f4-111239fcbb53",
+      "title": "История Бескудниковского района",
+      "url": "https://izi.travel/ru/4096-istoriya-beskudnikovskogo-rayona/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 1
+    },
+    {
+      "id": "6fedad03-6c39-48d7-be2b-b3651c19ac00",
+      "title": "Спиридоновка. Большая прогулка по маленькой улице",
+      "url": "https://izi.travel/ru/6fed-spiridonovka-bolshaya-progulka-po-malenkoy-ulice/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 19
+    },
+    {
+      "id": "aad1bb0f-1e58-4c2c-8089-81fef663095b",
+      "title": "Я шагаю по району. Отрадное: там, где сошлись религии, поверья и традиции",
+      "url": "https://izi.travel/ru/aad1-ya-shagayu-po-rayonu-otradnoe-tam-gde-soshlis-religii-poverya-i-tradicii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 8
+    },
+    {
+      "id": "c868ced8-9656-43bf-a256-5d44b14eb4b9",
+      "title": "Дорога триумфа. Автопутешествие в парк \"Патриот\" через Северный обход Одинцова",
+      "url": "https://izi.travel/ru/c868-doroga-triumfa-avtoputeshestvie-v-park-patriot-cherez-severnyy-obkhod-odincova/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "802bc242-d982-4da8-a58d-337f99a23046",
+      "title": "Место силы. Аптекарский огород.",
+      "url": "https://izi.travel/ru/802b-mesto-sily-aptekarskiy-ogorod/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 46
+    },
+    {
+      "id": "31fb8994-84ee-4c91-9dea-8e2b71ae0c66",
+      "title": "Я шагаю по району. Савелки: пространство для комфортной жизни",
+      "url": "https://izi.travel/ru/31fb-ya-shagayu-po-rayonu-savelki-prostranstvo-dlya-komfortnoy-zhizni/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.9,
+      "reviews": 1
+    },
+    {
+      "id": "6adf19bf-7a0c-4958-be6f-f1f77029e63c",
+      "title": "У Калужской заставы. Прогулка в прошлое",
+      "url": "https://izi.travel/ru/6adf-u-kaluzhskoy-zastavy-progulka-v-proshloe/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 19
+    },
+    {
+      "id": "d600a705-448f-4e86-8b52-88e22c705d1d",
+      "title": "Сокольники – жемчужина Москвы",
+      "url": "https://izi.travel/ru/d600-sokolniki-zhemchuzhina-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 25
+    },
+    {
+      "id": "41b8130f-70f6-4091-9c77-dea01e3607b0",
+      "title": "По бунинским аллеям Москвы",
+      "url": "https://izi.travel/ru/41b8-po-buninskim-alleyam-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "cc7d5cc4-62e7-4f36-9ae8-2b4923a1497f",
+      "title": "\"Герцогство Беляево\"",
+      "url": "https://izi.travel/ru/cc7d-gercogstvo-belyaevo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 1
+    },
+    {
+      "id": "d8c9d299-e0c1-4d1a-9422-47940cb6945e",
+      "title": "Парк Кузьминки. Новый стиль старого парка",
+      "url": "https://izi.travel/ru/d8c9-park-kuzminki-novyy-stil-starogo-parka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 12
+    },
+    {
+      "id": "0257f26d-1505-44e2-beeb-47ef482c40e0",
+      "title": "Спорт в городе-парке «Первый Московский»",
+      "url": "https://izi.travel/ru/0257-sport-v-gorode-parke-pervyy-moskovskiy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "e81bdaec-9fca-4a09-829d-60aecf89e8aa",
+      "title": "Площадь без нумерации. Вернакулярная территория Хохловка",
+      "url": "https://izi.travel/ru/e81b-ploschad-bez-numeracii-vernakulyarnaya-territoriya-khokhlovka/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "13d8b733-864a-4461-ab07-ae0e90a457bc",
+      "title": "Прогулка по Москве с Татьяной Лариной",
+      "url": "https://izi.travel/ru/13d8-progulka-po-moskve-s-tatyanoy-larinoy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.6,
+      "reviews": 11
+    },
+    {
+      "id": "5baeeb26-5a14-46b9-9543-c1c0dccd4106",
+      "title": "Моя Москва (Путешествие по Москве-реке)",
+      "url": "https://izi.travel/ru/5bae-moya-moskva-puteshestvie-po-moskve-reke/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 8
+    },
+    {
+      "id": "0d5e159f-4667-438c-b1ed-613e544b1176",
+      "title": "Тушино | в компании Александра Усольцева и Delivery Club",
+      "url": "https://izi.travel/ru/0d5e-tushino-v-kompanii-aleksandra-usolceva-i-delivery-club/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "f21372a1-069f-423d-b60d-dc0df179c178",
+      "title": "Дорога в Даровое: от Рогожской заставы до Коломны",
+      "url": "https://izi.travel/ru/f213-doroga-v-darovoe-ot-rogozhskoy-zastavy-do-kolomny/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 4
+    },
+    {
+      "id": "c6706243-b3f7-46b0-9cb0-7140c14df449",
+      "title": "На лыжах в Сокольники",
+      "url": "https://izi.travel/ru/c670-na-lyzhakh-v-sokolniki/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.7,
+      "reviews": 1
+    },
+    {
+      "id": "02ebd8b0-c0d0-405b-a6c2-e165e6fccd8a",
+      "title": "Москва глазами иностранцев",
+      "url": "https://izi.travel/ru/02eb-moskva-glazami-inostrancev/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.5,
+      "reviews": 1
+    },
+    {
+      "id": "396c20fe-3a6b-4f0a-b391-88b495103378",
+      "title": "Аудиогид по лесотерапии",
+      "url": "https://izi.travel/ru/396c-audiogid-po-lesoterapii/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 2
+    },
+    {
+      "id": "0117475b-8e10-4247-815f-5d6eb2b8020d",
+      "title": "Бутырки-2 – Огородный проезд",
+      "url": "https://izi.travel/ru/0117-butyrki-2-ogorodnyy-proezd/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "2c0b7531-dddf-49ee-94da-4c4813ac96a9",
+      "title": "Парк \"Усадьба Трубецких в Хамовниках\"",
+      "url": "https://izi.travel/ru/2c0b-park-usadba-trubeckikh-v-khamovnikakh/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 10
+    },
+    {
+      "id": "699f6729-6fb9-4b1e-aa6c-6e143cce7a88",
+      "title": "Щукино академиков",
+      "url": "https://izi.travel/ru/699f-schukino-akademikov/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 2
+    },
+    {
+      "id": "f7b0455b-1d06-43fc-a235-9507cd8e00b8",
+      "title": "Строгино в годы Великой Отечественной войны",
+      "url": "https://izi.travel/ru/f7b0-strogino-v-gody-velikoy-otechestvennoy-voyny/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 3
+    },
+    {
+      "id": "d81233a2-71d2-437b-9999-c9dba85acfa8",
+      "title": "Прогулка к усадьбе Покровское-Стрешнево",
+      "url": "https://izi.travel/ru/d812-progulka-k-usadbe-pokrovskoe-streshnevo/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 1
+    },
+    {
+      "id": "bf946f50-8aef-4b9d-a008-451fcfb6b7ac",
+      "title": "Art-Tour \"Шедевры музеев мира на улицах города. Великие художники России на улицах Москвы.\"",
+      "url": "https://izi.travel/ru/bf94-art-tour-shedevry-muzeev-mira-na-ulicakh-goroda-velikie-khudozhniki-rossii-na-ulicakh-moskvy/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 4.8,
+      "reviews": 5
+    },
+    {
+      "id": "fd84b712-b61c-4230-8a6d-2b549fd96e5d",
+      "title": "Прогулка по Москве Серебряного века: Александр Головин",
+      "url": "https://izi.travel/ru/fd84-progulka-po-moskve-serebryanogo-veka-aleksandr-golovin/ru",
+      "price": "Бесплатно",
+      "type": "Тур по городу",
+      "rating": 5,
+      "reviews": 14
+    }
+  ]
+}
