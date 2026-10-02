@@ -1,6 +1,6 @@
 # Plan: Expandable story card on the map (peek ↔ full-screen reading)
 
-Status: plan, 2026-10-02.
+Status: implemented 2026-10-02 in branch `feat/promo-walks-stories-only`. Divergences are listed under "Implementation notes" at the end.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -156,6 +156,17 @@ Run before committing: `pnpm check`, then the full `pnpm test:e2e` (stop the pre
 - Deep links that open a story expanded; a separate place page/route.
 - Removing the fade-mask/scrollbar machinery from `Sheet` — other sheets still use it.
 - A wider reading column on desktop.
+
+## Implementation notes (divergences from the steps above)
+
+- **Safe areas (step 3/5).** No `--sheet-inset-*` variables: the layout matrix forbids regions inside safe-area insets, so in the stack mode the expanded frame gets `padding: var(--safe-*)` and `background: var(--surface-island)` (the notch strips look like the card), and the sheet stays inside the safe area. The expanded sheet has `padding-bottom: 0`; the footer is `position: sticky; bottom: 0` as a full-width bar with its own padding.
+- **Scrim (step 5).** Marked `data-scrim`, not `data-region` (the layout matrix treats regions as islands and reported scrim/sheet overlap). It uses `z-index: var(--z-map)` and is painted after the map (the stylelint z-index allow-list only accepts `--z-*` tokens).
+- **Collapsed body (step 3).** Instead of a static mask the body keeps the existing scroll-driven fade with `overflow: hidden` (still a scroll container), so the fade appears only when the teaser is actually clipped. E2E therefore assert `overflow-y: hidden` on the body and no overflow on the sheet, not `scrollHeight - clientHeight <= 1` on the body. The body is never in the tab order for an expandable sheet.
+- **`isExpandableStory` (step 6).** Walk chapters are excluded even if they carry `paragraphs`.
+- **Re-expanding after Back from `/?walk=create` (step 4).** Implemented on a key change during render: content that appears while `history.state` carries its key starts expanded; the mount effect strips the key first, so reloads still start collapsed.
+- **Photo (user request during implementation).** In the expanded card the place photo is shown whole in its original aspect ratio (`place-photo.module.css`, `[data-expanded] .banner`).
+- **Container queries (step 6)** were not needed: on the whole matrix the collapsed title and footer are fully visible.
+- **E2E.** New tests live in `e2e/story-sheet.spec.ts` (the old inner-scroll test was removed from `interface.spec.ts`); tests that used «Создать прогулку отсюда» or «Источники» now expand the card first. Interactions right after a state change wait for the view transition to end (`:active-view-transition`): taps during it go to the transition overlay.
 
 ---
 **Maintenance note (for the implementing agent):** when this plan is implemented, update the `Status:` line above, e.g. `Status: implemented YYYY-MM-DD in branch `feat/<name>``. If the plan changes during implementation, update the affected sections too — the plan must not lie about what was built.

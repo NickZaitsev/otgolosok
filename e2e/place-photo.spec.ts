@@ -59,6 +59,35 @@ test("фото сверху карточки открывается с авто�
   expect(await audio?.evaluate(element => element.isConnected)).toBe(true);
 });
 
+test("в развёрнутой истории фото показано целиком, в исходных пропорциях", async ({ page }) => {
+  await openPlace(page);
+  const trigger = page.getByRole("button", { name: `Открыть фото: ${title}` });
+  await expect(trigger.locator("img")).toHaveJSProperty("naturalWidth", photo.width);
+  const ratio = async () => trigger.evaluate(button => { const box = button.getBoundingClientRect(); return box.width / box.height; });
+  // Свёрнутая карточка показывает полосу фото, обрезанную по высоте.
+  expect(await ratio()).toBeGreaterThan(photo.width / photo.height + 0.05);
+  await page.getByRole("button", { name: "Читать историю полностью" }).click();
+  await expect(page.getByRole("button", { name: "Свернуть историю" })).toHaveAttribute("aria-expanded", "true");
+  await page.waitForFunction(() => !document.documentElement.matches(":active-view-transition"));
+  expect(await ratio()).toBeCloseTo(photo.width / photo.height, 2);
+  expect(await trigger.locator("img").evaluate(img => { const box = img.getBoundingClientRect(), frame = img.parentElement!.getBoundingClientRect(); return Math.abs(box.height - frame.height); })).toBeLessThanOrEqual(1);
+});
+
+test("Escape в просмотре фото закрывает только фото, развёрнутая карточка остаётся", async ({ page }) => {
+  await openPlace(page);
+  const handle = page.getByRole("button", { name: "Читать историю полностью" });
+  await handle.click();
+  const collapse = page.getByRole("button", { name: "Свернуть историю" });
+  await expect(collapse).toHaveAttribute("aria-expanded", "true");
+  await page.waitForFunction(() => !document.documentElement.matches(":active-view-transition"));
+  await page.getByRole("button", { name: `Открыть фото: ${title}` }).click();
+  const viewer = page.getByRole("dialog", { name: title, exact: true });
+  await expect(viewer).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(viewer).not.toBeVisible();
+  await expect(collapse).toHaveAttribute("aria-expanded", "true");
+});
+
 test("место под фото держится, пока грузится рассказ, и фото встаёт в него без сдвига", async ({ page }) => {
   const held = heldDetail();
   await openPlace(page, undefined, {}, held.intercept);

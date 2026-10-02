@@ -196,3 +196,18 @@
   background: var(--surface-island);
   box-shadow: var(--shadow-island);
 }
+
+/* The peek of an expandable story: the first paragraph, at most three lines. */
+.story.teaser p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* The title and the teaser of the peek open the story. */
+.expandArea {
+  cursor: pointer;
+}

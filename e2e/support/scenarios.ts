@@ -84,6 +84,13 @@ export const SCREEN_STATES: ScreenState[] = [
   { screen: "карта", state: "длинная история", options: { map: true, focus: "marker" }, open: async page => {
     await mockGuestApi(page); await openLongStory(page, { visible: false }); await mapReady(page);
   } },
+  // The expanded story covers the map on purpose: no map or marker checks.
+  { screen: "карта", state: "развёрнутая история", options: {}, open: async page => {
+    await mockGuestApi(page); await openLongStory(page, { visible: false }); await mapReady(page);
+    await page.getByRole("button", { name: "Читать историю полностью", exact: true }).click();
+    await expect(page.locator('[data-sheet="story"][data-expanded]')).toBeAttached();
+    await page.waitForFunction(() => !document.documentElement.matches(":active-view-transition"));
+  } },
   { screen: "карта", state: "выбранный дом", options: { map: true, focus: "marker" }, open: async page => {
     await mockGuestApi(page);
     await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: "Москва, 1-й Дербеневский переулок, 5", location: { lat: 55.725, lon: 37.65 } } }));

@@ -170,6 +170,8 @@ test("дом передаёт старт, возврат включён по у�
   await mockMapCatalog(page, [{ id: "test-house", title: "Дом для прогулки", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon }]);
   await page.goto("/");
   await page.locator('[title="Дом для прогулки"]').click();
+  // «Создать прогулку отсюда» — в развёрнутой карточке истории.
+  await page.getByRole("button", { name: "Читать историю полностью" }).click();
   await page.getByRole("link", { name: "Создать прогулку отсюда" }).click();
   await expect(page.locator('[data-creation="endpoints"]')).toContainText("Москва, Дербеневская, 1");
   await page.getByRole("button", { name: "Куда", exact: true }).click();
@@ -368,42 +370,16 @@ test("карточка выбранного дома не оставляет п�
   await expect(title).toHaveCount(0);
 });
 
-test("длинная история прокручивается внутри карточки, закрытие и плеер остаются на месте", async ({ page }, info) => {
-  const story = await openLongStory(page);
-  const card = page.locator('[data-sheet="story"]');
-  const close = page.getByRole("button", { name: "Закрыть карточку", exact: true });
-  const audio = card.getByRole("region", { name: "Плеер истории" });
-  const state = () => story.evaluate(el => {
-    const style = getComputedStyle(el);
-    return { fadeTop: style.getPropertyValue("--fade-top"), fadeBottom: style.getPropertyValue("--fade-bottom"), rest: el.scrollHeight - el.clientHeight - el.scrollTop };
-  });
-  const before = { close: await close.boundingBox(), audio: await audio.boundingBox(), card: await card.boundingBox() };
-  expect(await card.evaluate(el => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(1);
-  expect(before.audio!.y + before.audio!.height).toBeLessThanOrEqual(before.card!.y + before.card!.height);
-  await expect.poll(state).toMatchObject({ fadeTop: "0px", fadeBottom: "28px" });
-  expect((await state()).rest).toBeGreaterThan(100);
-
-  await close.focus();
-  await page.keyboard.press("Tab");
-  await expect(story).toBeFocused();
-  await page.keyboard.press("End");
-  await expect.poll(async () => (await state()).rest).toBeLessThanOrEqual(1);
-  await expect.poll(state).toMatchObject({ fadeTop: "28px", fadeBottom: "0px" });
-  expect(await close.boundingBox()).toEqual(before.close);
-  expect(await audio.boundingBox()).toEqual(before.audio);
-  await page.screenshot({ path: info.outputPath("story-card-scrolled.png") });
-});
-
 const shortPortraits: [number, number, { top: number; bottom: number }?][] = [[375, 667], [360, 640], [390, 700], [375, 667, { top: 47, bottom: 34 }]];
 for (const [width, height, insets] of shortPortraits) {
   test(`длинная история не заходит на кнопки карты ${width}×${height}${insets ? ` с вырезами ${insets.top}/${insets.bottom}` : ""}`, async ({ page }, info) => {
     await page.setViewportSize({ width, height });
     // Вырезы сдвигают и кнопки, и нижнюю панель: зазор между ними сохраняется.
     if (insets) await (await page.context().newCDPSession(page)).send("Emulation.setSafeAreaInsetsOverride", { insets });
-    const story = await openLongStory(page);
-    // Текст прокручивается внутри, значит, карточка упёрлась в свою наибольшую высоту.
-    expect(await story.evaluate(el => el.scrollHeight - el.clientHeight)).toBeGreaterThan(0);
+    await openLongStory(page);
+    // Свёрнутая карточка не прокручивается: длинный текст обрезан до начала, полностью он читается в развёрнутой.
     expect(await page.locator('[data-sheet="story"]').evaluate(el => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(1);
+    expect(await page.locator('[data-sheet="story"] [data-sheet-part="body"]').evaluate(el => getComputedStyle(el).overflowY)).toBe("hidden");
     const sheet = (await page.locator('[data-sheet="story"]').boundingBox())!;
     for (const control of [page.getByRole("button", { name: "Моё местоположение", exact: true }), page.getByRole("group", { name: "Масштаб карты" })]) {
       const box = (await control.boundingBox())!;
@@ -473,6 +449,8 @@ test("клик карты после создания от дома задаёт
   await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: finish, location: { lat: 55.75, lon: 37.6 } } }));
   await page.goto("/");
   await page.locator('[title="Стартовый дом"]').click();
+  // «Создать прогулку отсюда» — в развёрнутой карточке истории.
+  await page.getByRole("button", { name: "Читать историю полностью" }).click();
   await page.getByRole("link", { name: "Создать прогулку отсюда" }).click();
   await expect(page.getByRole("button", { name: "Откуда", exact: true })).toContainText(start);
   await page.locator(`[data-region="map"]`).click({ position: { x: 150, y: 200 } });

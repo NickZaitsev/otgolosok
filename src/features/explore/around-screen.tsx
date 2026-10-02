@@ -19,7 +19,9 @@ import { MapShell } from "../shell/map-shell";
 import { MapControlButton } from "../shell/map-controls";
 import { AroundHeader } from "./around-header";
 import { GeoNotice, LocationPromptSheet, MapHintNotice, NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
-import type { StoryPin } from "./story-pin";
+import { isExpandableStory, type StoryPin } from "./story-pin";
+import { useExpandableSheet } from "../shell/use-expandable-sheet";
+import { useHideNavigation } from "../navigation/navigation-visibility";
 import { openDataAttribution } from "./source-attribution";
 import a from "./around.module.css";
 import styles from "./around-screen.module.css";
@@ -243,10 +245,19 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const walkHref=walkStart?.address?`/?${new URLSearchParams({walk:"create",address:walkStart.address,lat:String(walkStart.location.lat),lon:String(walkStart.location.lon)})}`:"/?walk=create";
   function closePlace(){lookup.current?.abort();prepareRequest.current?.abort();setPlace(null);setPlaceBusy(false);setPlaceError("");setPreparing(false);setPrepareError("");setNearbyCenter(null);}
 
+  // The story sheet is shown when nothing outranks it below (the location prompt only shows without a story).
+  const storyShown=!creating&&Boolean(active);
+  const reading=useExpandableSheet(storyShown&&active&&isExpandableStory(active)?active.id:undefined);
+  // The expanded story covers the screen, the navigation included.
+  useHideNavigation(reading.expanded);
   const sheet = creating
     ? <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />
     : prompt&&!active&&!place&&!placeBusy&&!placeError ? <LocationPromptSheet geo={geo} onLocate={locate} onDismiss={dismissGeoPrompt} />
-    : active ? <StorySheet story={active} walkHref={active.address&&!placeBusy?walkHref:null} startRef={startRef} onStart={onStart} onClose={()=>{setSelected(undefined);setRetryError("");}} onWalk={rememberOpener}
+    : active ? <StorySheet story={active} walkHref={active.address&&!placeBusy?walkHref:null} startRef={startRef} onStart={onStart}
+        onClose={()=>{reading.dismiss();setSelected(undefined);setRetryError("");}}
+        // The link pushes its own history entry; going back first would race with it.
+        onWalk={()=>{reading.dismiss({keepHistoryEntry:true});rememberOpener();}}
+        expanded={reading.expanded} onExpand={reading.expand} onCollapse={reading.collapse}
         retrying={retrying} retryError={retryError} onRetry={active.jobId?()=>void retryStory():undefined} />
     : explorePanel==="place" ? <PlaceSheet address={place?.address??null} busy={placeBusy} error={placeError} preparing={preparing} prepareError={prepareError} walkHref={place?walkHref:null} onPrepare={()=>void prepareStory()} onClose={closePlace} onWalk={rememberOpener} />
     : explorePanel==="nearby" ? <NearbySheet status={nearbyStatus} radius={nearbyRadius} recommendations={recommendations} onRadius={setNearbyRadius} onSelect={selectRecommendation} onClose={()=>{setNearbyCenter(null);setPlace(null);setPrompt(false);}} />
@@ -268,7 +279,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       header={<AroundHeader />}
       controls={creating?null:<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton>}
       notices={notices}
-      sheet={sheet} />
+      sheet={sheet} sheetExpanded={reading.expanded&&storyShown} onCollapseSheet={reading.collapse} />
     {pathname === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();}} />}
   </>;
 }

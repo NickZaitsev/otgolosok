@@ -136,3 +136,13 @@
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
+
+/* In the expanded story the photo is whole, in its own proportions: the img keeps them through its width and height. */
+[data-expanded] .banner {
+  height: auto;
+}
+
+[data-expanded] .banner img {
+  height: auto;
+  object-fit: fill;
+}
