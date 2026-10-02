@@ -63,6 +63,28 @@ describe("universal walk adapters", () => {
     expect(walkDocumentToDraft(document).stops[0]).toEqual(contentStop);
   });
 
+  it.each([
+    { name: "a catalog place without a story", place: { placeId: "osm:node:7" }, story: false, placeId: "osm:node:7" },
+    { name: "a catalog place told by its own story", place: { contentId: "osm:way:42", placeId: "osm:way:42" }, story: true, placeId: "osm:way:42" },
+    { name: "a walk saved before stops named their place", place: { contentId: "osm:way:42" }, story: true, placeId: "osm:way:42" },
+    { name: "an OSM story the server could not resolve", place: { contentId: "osm:way:42" }, story: false, placeId: undefined },
+    { name: "a stop off the catalog", place: {}, story: true, placeId: undefined },
+  ])("links the place photo of $name", ({ place, story, placeId }) => {
+    const stop = { ...firstStop, ...place };
+    const document = draftToWalkDocument({ ...draft([stop]), jobs: [] }, "55555555-5555-4555-8555-555555555555");
+    const walkStory = { title: "Дом", address: firstStop.address, paragraphs: [{ text: "Рассказ.", factIds: [] }], sources: [], facts: [] };
+    const route = walkViewToRoute({ document, revision: 1, contentVersion: "photo-1",
+      chapters: document.stops.map(item => ({ id: item.id, status: story ? "text_ready" as const : "unavailable" as const, story: story ? walkStory : null, audio: null })) });
+    expect(route.walk?.steps.at(-1)?.place_id).toBe(placeId);
+  });
+
+  it("keeps the catalog place of a stop through editor restore", () => {
+    const stop = { ...firstStop, placeId: "osm:node:7" };
+    const document = draftToWalkDocument({ ...draft([stop]), jobs: [] }, "66666666-6666-4666-8666-666666666666");
+    expect(document.stops[0].placeId).toBe("osm:node:7");
+    expect(walkDocumentToDraft(document).stops[0]).toEqual(stop);
+  });
+
   it.each([11, 28, 40])("preserves %i stops through editor restore and playback", count => {
     const stops = Array.from({ length: count }, (_, index) => ({ address: `Москва, Арбат, ${index + 3}`, location: { lat: 55.753 + index * 0.001, lon: 37.594 } }));
     const document = draftToWalkDocument({ ...draft(stops), jobs: [] }, "55555555-5555-4555-8555-555555555555");
@@ -98,5 +120,22 @@ describe("universal walk adapters", () => {
     const route = walkViewToRoute(view);
     expect(getWalkChapters(route, true).map(chapter => chapter.id)).toEqual(["kozhevniki", "derbenevskaya", "housing", "zindel"]);
     expect(route.walk?.path.coordinates.length).toBeGreaterThan(20);
+  });
+
+  it("carries route tunnels from the builder to the walk and back, and omits them when absent", () => {
+    const id = "66666666-6666-4666-8666-666666666666";
+    const geometry = [start.location, firstStop.location, secondStop.location];
+    const built = (tunnels?: Array<[number, number]>) => ({ ...draft(), jobs: [], route: { stops: [firstStop, secondStop], geometry, distanceM: 300, walkingMinutes: 4, attribution: "OSM", ...(tunnels ? { tunnels } : {}) } });
+    const document = draftToWalkDocument(built([[1, 2]]), id);
+    expect(document.route?.tunnels).toEqual([[1, 2]]);
+    expect(walkDocumentToDraft(document).route?.tunnels).toEqual([[1, 2]]);
+    const view = { document, revision: 1, contentVersion: "tunnels-1", chapters: document.stops.map(stop => ({ id: stop.id, status: "unavailable" as const, story: null, audio: null })) };
+    const route = walkViewToRoute(view);
+    expect(route.walk?.path.tunnels).toEqual([[1, 2]]);
+    expect(routeToWalkView(route).document.route?.tunnels).toEqual([[1, 2]]);
+
+    const plain = draftToWalkDocument(built(), id);
+    expect(JSON.stringify(plain)).not.toContain("tunnels");
+    expect(walkViewToRoute({ ...view, document: plain }).walk?.path).not.toHaveProperty("tunnels");
   });
 });

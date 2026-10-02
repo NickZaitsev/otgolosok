@@ -6,8 +6,8 @@ export type MapFocus = Coordinates & { zoom?: number };
 type ViewMap = Pick<Leaflet.Map, "getSize" | "getZoom" | "getBoundsZoom" | "setView" | "panBy" | "fitBounds" | "on" | "off">;
 type Target = { kind: "focus"; focus: MapFocus } | { kind: "fit"; bounds: Leaflet.LatLngBoundsExpression };
 
-/** Room a stop pin needs around its point: it rises about 48 px above it. */
-const PIN = { top: 48, side: 24 };
+/** Room a marker needs around its point: the largest, a selected stop, is a ~40 px circle centred on it. */
+const PIN = { top: 24, side: 24 };
 /** Smallest box a fit or a focus is squeezed into when panels leave less of the map free. */
 const MIN_BOX = { x: 160, y: 96 };
 const FOCUS_ZOOM = 16;
@@ -50,9 +50,17 @@ export function createMapView(map: ViewMap) {
     } finally { own--; }
   }
 
+  /** keepUserView: a refinement of the current view, ignored once the user has moved the map. */
+  function request(next: Target, keepUserView: boolean) {
+    if (keepUserView && userMoved) return;
+    target = next;
+    userMoved = false;
+    apply();
+  }
+
   return {
-    focus(focus: MapFocus) { target = { kind: "focus", focus }; userMoved = false; apply(); },
-    fit(bounds: Leaflet.LatLngBoundsExpression) { target = { kind: "fit", bounds }; userMoved = false; apply(); },
+    focus(focus: MapFocus, { keepUserView = false } = {}) { request({ kind: "focus", focus }, keepUserView); },
+    fit(bounds: Leaflet.LatLngBoundsExpression, { keepUserView = false } = {}) { request({ kind: "fit", bounds }, keepUserView); },
     /** A removed route must not be re-fitted when panels move later. */
     clearFit() { if (target?.kind === "fit") target = null; },
     setInsets(next: MapInsets) {

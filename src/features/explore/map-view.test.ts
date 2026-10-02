@@ -26,13 +26,13 @@ const route: [number, number][] = [[55.75, 37.6], [55.76, 37.61]];
 const panels = { top: 130, right: 12, bottom: 344, left: 12 };
 
 describe("вид карты", () => {
-  it("вписывает маршрут в свободную область с запасом на булавку", () => {
+  it("вписывает маршрут в свободную область с запасом на метку", () => {
     const map = fakeMap();
     const view = createMapView(map as never);
     view.setInsets(panels);
     view.fit(route);
-    expect(map.getBoundsZoom).toHaveBeenLastCalledWith(route, false, { x: 72, y: 546 });
-    expect(map.fitBounds).toHaveBeenLastCalledWith(route, { paddingTopLeft: [36, 178], paddingBottomRight: [36, 368], maxZoom: 15, animate: false });
+    expect(map.getBoundsZoom).toHaveBeenLastCalledWith(route, false, { x: 72, y: 522 });
+    expect(map.fitBounds).toHaveBeenLastCalledWith(route, { paddingTopLeft: [36, 154], paddingBottomRight: [36, 368], maxZoom: 15, animate: false });
   });
 
   it.each([
@@ -105,5 +105,24 @@ describe("вид карты", () => {
     view.clearFit();
     view.setInsets(panels);
     expect(map.fitBounds).toHaveBeenCalledTimes(1);
+  });
+
+  it("уточнение вида не отменяет ручной сдвиг карты, а без него применяется", () => {
+    const map = fakeMap();
+    const view = createMapView(map as never);
+    view.fit(route);
+    view.fit(route, { keepUserView: true });
+    expect(map.fitBounds).toHaveBeenCalledTimes(2);
+    map.userGesture();
+    view.fit([[55.7, 37.5], [55.71, 37.51]], { keepUserView: true });
+    view.focus({ lat: 55.7, lon: 37.5 }, { keepUserView: true });
+    expect(map.fitBounds).toHaveBeenCalledTimes(2);
+    expect(map.setView).not.toHaveBeenCalled();
+    // The ignored request does not hand the view back: panels still leave it alone.
+    view.setInsets(panels);
+    expect(map.fitBounds).toHaveBeenCalledTimes(2);
+    // A plain request, as for a new leg, takes the view over again.
+    view.fit(route);
+    expect(map.fitBounds).toHaveBeenCalledTimes(3);
   });
 });

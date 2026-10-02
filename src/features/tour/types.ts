@@ -84,6 +84,8 @@ export type WalkStep = {
     min_fixes: number;
     max_accuracy_m: number;
   };
+  // The published catalog place the stop tells about; its card photo is shown during the walk.
+  place_id?: string;
   // Universal walk views keep stops visible while their story is preparing.
   status?: "not_requested" | "preparing" | "text_ready" | "ready" | "failed" | "review_required" | "insufficient_evidence" | "unavailable";
   audio?: {
@@ -110,6 +112,8 @@ export type WalkPlan = {
     source_url: string;
     checked_at: string;
     costing: "pedestrian";
+    // Covered stretches as [a, b] index ranges of coordinates; absent for routes built before tunnel data.
+    tunnels?: Array<[number, number]>;
   };
   steps: WalkStep[];
 };

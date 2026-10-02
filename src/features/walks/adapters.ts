@@ -10,6 +10,11 @@ const defaultTrigger = {
   max_accuracy_m: 50,
 };
 
+// Stored JSON never gets "tunnels: undefined": an absent key means the route has no tunnel data.
+function copyTunnels(tunnels: Array<[number, number]> | undefined) {
+  return tunnels ? { tunnels: tunnels.map(([a, b]) => [a, b] as [number, number]) } : {};
+}
+
 function samePlace(left: { location: Coordinates }, right: { location: Coordinates }) {
   return left.location.lat === right.location.lat && left.location.lon === right.location.lon;
 }
@@ -40,6 +45,7 @@ export function draftToWalkDocument(draft: Draft, id: string, previous?: WalkDoc
       id: old?.id ?? stopId(id, index),
       place: { address: place.address, location: { ...place.location } },
       storyRef: storyFor(place, draft.jobs),
+      ...(place.placeId ? { placeId: place.placeId } : {}),
       transition: old?.transition ?? "",
       nextHint: old?.nextHint ?? "",
       ...(old?.triggerLocation ? { triggerLocation: { ...old.triggerLocation } } : {}),
@@ -62,6 +68,7 @@ export function draftToWalkDocument(draft: Draft, id: string, previous?: WalkDoc
       distanceM: draft.route.distanceM,
       walkingMinutes: draft.route.walkingMinutes,
       attribution: draft.route.attribution,
+      ...copyTunnels(draft.route.tunnels),
     } : null,
     fieldChecked: false,
   });
@@ -90,13 +97,14 @@ export function walkDocumentToDraft(document: WalkDocument, previousJobs: DraftS
     ...(document.destination ? { destination: document.destination } : {}),
     mode: document.mode,
     minutes: document.minutes === 15 ? 30 : document.minutes as 30 | 60 | 90,
-    stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location }, ...(stop.storyRef?.kind === "osm" ? { contentId: stop.storyRef.id } : {}) })),
+    stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location }, ...(stop.storyRef?.kind === "osm" ? { contentId: stop.storyRef.id } : {}), ...(stop.placeId ? { placeId: stop.placeId } : {}) })),
     route: document.route ? {
       stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location } })),
       geometry: document.route.geometry.map(point => ({ ...point })),
       distanceM: document.route.distanceM,
       walkingMinutes: document.route.walkingMinutes,
       attribution: document.route.attribution,
+      ...copyTunnels(document.route.tunnels),
     } : null,
     jobs: jobDrafts(document, previousJobs),
     submitting: null,
@@ -168,10 +176,19 @@ function audioToLegacy(audio: WalkAudio | null): WalkStep["audio"] {
   };
 }
 
+/**
+ * The catalog place whose photo the stop shows. Walks saved before stops carried placeId still have
+ * the place of a resolved OSM story: the server resolves one only for the place at the stop.
+ */
+function photoPlace(stop: WalkView["document"]["stops"][number], story: WalkStory | null) {
+  return stop.placeId ?? (stop.storyRef?.kind === "osm" && story ? stop.storyRef.id : undefined);
+}
+
 function chapterToPoi(view: WalkView, index: number): { poi: Poi; step: WalkStep } {
   const stop = view.document.stops[index];
   const chapter = view.chapters[index];
   const content = walkStoryToHistorical(chapter.story, view.revision);
+  const placeId = photoPlace(stop, chapter.story);
   const poi: Poi = {
     id: stop.id,
     name: chapter.story?.title ?? stop.place.address,
@@ -194,6 +211,7 @@ function chapterToPoi(view: WalkView, index: number): { poi: Poi; step: WalkStep
     ...(stop.triggerLocation ? { trigger_location: stop.triggerLocation } : {}),
     trigger: defaultTrigger,
     status: chapter.status,
+    ...(placeId ? { place_id: placeId } : {}),
     ...(audioToLegacy(chapter.audio) ? { audio: audioToLegacy(chapter.audio) } : {}),
   };
   return { poi, step };
@@ -233,7 +251,7 @@ export function walkViewToRoute(input: WalkView): Route {
       distance_m: route?.distanceM ?? 0,
       walking_min: route?.walkingMinutes ?? view.document.minutes,
       field_checked: view.document.fieldChecked,
-      path: { coordinates: route?.geometry.map(point => [point.lon, point.lat]) ?? [], provider: route?.attribution ?? "", source_url: "", checked_at: "", costing: "pedestrian" },
+      path: { coordinates: route?.geometry.map(point => [point.lon, point.lat]) ?? [], provider: route?.attribution ?? "", source_url: "", checked_at: "", costing: "pedestrian", ...copyTunnels(route?.tunnels) },
       steps: chapters.map(item => item.step),
     },
   };
@@ -286,7 +304,7 @@ export function routeToWalkView(route: Route): WalkView {
       minutes: [15, 30, 60, 90].includes(route.duration_min) ? route.duration_min : 30,
       start,
       stops,
-      route: geometry.length >= 2 && route.walk ? { geometry, distanceM: route.walk.distance_m, walkingMinutes: route.walk.walking_min, attribution: route.walk.path.provider } : null,
+      route: geometry.length >= 2 && route.walk ? { geometry, distanceM: route.walk.distance_m, walkingMinutes: route.walk.walking_min, attribution: route.walk.path.provider, ...copyTunnels(route.walk.path.tunnels) } : null,
       fieldChecked: route.walk?.field_checked ?? false,
     },
     revision: 0,

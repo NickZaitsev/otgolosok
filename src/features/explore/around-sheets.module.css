@@ -119,6 +119,17 @@
   align-self: flex-start;
 }
 
+.sources {
+  font-size: var(--text-secondary);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.sources span {
+  display: block;
+  color: var(--map-muted);
+}
+
 .help summary {
   padding: 0.75rem 0;
   text-decoration: underline;
@@ -169,7 +180,10 @@
 
 /* Leaves room for the corner close button beside the first line of the title. */
 .titleRow {
-  padding-right: calc(var(--control-min) - var(--sheet-pad, 1.25rem) + 0.75rem);
+  padding-right: calc(
+    var(--control-min) + var(--sheet-scrollbar, 12px) -
+      var(--sheet-pad, 1.25rem) + 0.75rem
+  );
 }
 
 /* Readable over a photo as well as over the plain card. */

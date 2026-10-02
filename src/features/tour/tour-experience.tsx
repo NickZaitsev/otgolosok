@@ -14,7 +14,7 @@ import { walkViewToRoute } from "../walks/adapters";
 import type { OfflineWalkRef } from "../walks/offline";
 import { StorySources, StoryText } from "./story-content";
 import { BrandMark } from "../brand/brand-mark";
-import { chapterTriggerConfig, getWalkChapters, nextChapterTarget } from "./walk-plan";
+import { arrivalTarget, arrivalTriggerConfig, getWalkChapters, hasFinishLeg, type StopStage } from "./walk-plan";
 import { advanceModeLabels, advanceModes, playbackRates, useWalkSettings, type AdvanceMode, type PlaybackRate } from "./walk-settings";
 import { AudioPlayerControls } from "./audio-player-controls";
 import { loadPublishedRoute } from "./published-route-cache";
@@ -32,16 +32,17 @@ import { useWalkReviews } from "../reviews/use-walk-reviews";
 import { ReviewDialog } from "../reviews/review-dialog";
 import { WalkReviews } from "../reviews/walk-reviews";
 import { useLaunchReport } from "../walks/launches";
+import type { OwnWalk } from "../walks/own-walk";
 
 type SessionPhase = "reading" | "walking";
 
-export function TourExperience({ route, walk, offline = null, reviewTarget = null, launchTarget = null }: { route?: Route; walk?: WalkView; offline?: OfflineWalkRef | null; reviewTarget?: ReviewTarget | null; launchTarget?: ReviewTarget | null }) {
+export function TourExperience({ route, walk, offline = null, reviewTarget = null, launchTarget = null, own = null }: { route?: Route; walk?: WalkView; offline?: OfflineWalkRef | null; reviewTarget?: ReviewTarget | null; launchTarget?: ReviewTarget | null; own?: OwnWalk | null }) {
   const resolvedRoute = walk ? walkViewToRoute(walk) : route;
   if (!resolvedRoute) return <main className="shell"><section className="hero-copy"><h1>Прогулка не найдена</h1><p className="dek">Откройте ссылку ещё раз или вернитесь к списку прогулок.</p></section></main>;
-  return <AvailableTour route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} />;
+  return <AvailableTour route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} />;
 }
 
-function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, reviewTarget, launchTarget }: { route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null }) {
+function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, reviewTarget, launchTarget, own }: { route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null }) {
   const [route, setRoute] = useState(initialRoute);
   const firstPoi = route.pois[0];
   const [phase, setPhase] = useState<SessionPhase>("reading");
@@ -49,6 +50,9 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const [wakeStatus, setWakeStatus] = useState<WakeLockStatus>("idle");
   const [showSources, setShowSources] = useState(false);
   const [chapterIndex, setChapterIndex] = useState(0);
+  // Universal walks: on the way to the current stop, or arrived and its story started.
+  // The classic walk on / always plays on selection, so it stays at "stop".
+  const [stage, setStage] = useState<StopStage>("stop");
   // The chapter the last walk stopped at: the map reopens with its card.
   const [stoppedChapter, setStoppedChapter] = useState<number>();
   const [isReplay, setIsReplay] = useState(false);
@@ -75,6 +79,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const liveRef = useRef({
     advance: settings.advance as AdvanceMode,
     index: 0,
+    stage: "stop" as StopStage,
     count: 0,
     target: firstPoi.location as Coordinates,
     config: {
@@ -83,6 +88,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     } as TriggerConfig,
   });
   const selectChapterRef = useRef<(index: number) => void>(() => {});
+  const arriveByPlaceRef = useRef<() => void>(() => {});
   const controlsRef = useRef<{ toggle: () => void; seekBy: (offset: number) => void; seekTo: (position: number) => void }>({
     toggle: () => {}, seekBy: () => {}, seekTo: () => {},
   });
@@ -102,8 +108,10 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   // Stable between playback updates, so the map and plan do not rebuild on every tick.
   const chapters = useMemo(() => getWalkChapters(route, universal), [route, universal]);
   const chapter = chapters[chapterIndex];
-  const walkContent = chapter?.content ?? firstPoi;
-  const walkAudioUrl = chapter?.audio?.url ?? walkContent.story.audio_url;
+  // On the way to the finish (index chapters.length) the player keeps the last stop's story.
+  const storyChapter = chapter ?? (universal ? chapters.at(-1) : undefined);
+  const walkContent = storyChapter?.content ?? firstPoi;
+  const walkAudioUrl = storyChapter?.audio?.url ?? walkContent.story.audio_url;
   const walkUsesTestAudio = !universal && !walkAudioUrl;
   const { savedCheckpoint, saveCheckpoint, clearCheckpoint } = usePlaybackProgress(route.id,
     chapters.flatMap((item) => item.audio ? [{ id: item.id, audioUrl: item.audio.url, durationSec: item.audio.duration_sec }] : []));
@@ -116,9 +124,13 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     windowSize: 5,
     maxAccuracyM: firstPoi.trigger.max_accuracy_m,
   };
-  // The walk listens for the stop whose chapter plays next, not for the finish.
-  const target = chapters.length ? nextChapterTarget(chapters, chapterIndex, finish) : finish;
-  const triggerConfig = chapters.length ? chapterTriggerConfig(chapters, chapterIndex, baseTriggerConfig) : baseTriggerConfig;
+  // The walk listens for the stop it is walking to: the current one on the way
+  // there, then the one whose chapter plays next, and finally the finish.
+  const target = arrivalTarget(chapters, chapterIndex, stage, finish);
+  const triggerConfig = arrivalTriggerConfig(chapters, chapterIndex, stage, baseTriggerConfig);
+  // A universal walk whose finish lies past the last stop has one more step: the way there.
+  const finishLeg = universal && Boolean(route.walk) && hasFinishLeg(chapters, finish, baseTriggerConfig.enterM);
+  const chapterSource = (index: number) => chapters[index]?.audio?.url ?? chapters[index]?.content.story.audio_url ?? null;
   const chapterTitle = chapter?.title ?? null;
   const chapterPlace = chapter?.place ?? null;
 
@@ -177,14 +189,18 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     const replayMode = params.get("replay");
     const initialIndex = requestedIndex !== undefined && requestedIndex >= 0 && requestedIndex < chapters.length ? requestedIndex : resumeSaved && savedChapterIndex >= 0 ? savedChapterIndex : 0;
     const initialPosition = requestedIndex === undefined && resumeSaved && savedCheckpoint ? savedCheckpoint.positionSec : 0;
-    const startAudioUrl = chapters[initialIndex]?.audio?.url ?? chapters[initialIndex]?.content.story.audio_url ?? firstPoi.story.audio_url;
+    const startAudioUrl = chapterSource(initialIndex) ?? firstPoi.story.audio_url;
+    // A universal walk starts on the way to the stop, unless the walker listens at
+    // home in a row or continues a story they had already been listening to.
+    const initialStage: StopStage = universal && settings.advance !== "sequence" && initialPosition < 1 ? "approach" : "stop";
 
     // First, while the click still owns user activation (iOS).
-    audio.begin(initialIndex, initialPosition, startAudioUrl);
+    if (initialStage === "approach") audio.prime(initialIndex);
+    else audio.begin(initialIndex, initialPosition, startAudioUrl);
     setPhase("walking");
-    // After audio.begin: counting must not delay the start or spend the click's user activation.
+    // After the audio call: counting must not delay the start or spend the click's user activation.
     reportLaunch();
-    setChapterIndex(initialIndex);
+    showStop(initialIndex, initialStage);
     setShowSources(false);
     setIsReplay(replayMode === "clean" || replayMode === "walk");
     setShowDiagnostics(Boolean(replayMode) || params.get("debug") === "1");
@@ -207,9 +223,8 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
       onEntered: () => {
         // Arriving at a stop starts its chapter only when the walker asked for it.
         // The trigger already withholds the arrival while a recording is playing.
-        const live = liveRef.current;
         if (!route.walk) void audio.play();
-        else if (live.advance === "place" && live.index + 1 < live.count) selectChapterRef.current(live.index + 1);
+        else arriveByPlaceRef.current();
       },
     });
   }
@@ -226,37 +241,81 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     setWakeStatus("idle");
     setIsReplay(false);
     setShowSources(false);
-    setStoppedChapter(chapterIndex);
+    setStoppedChapter(Math.min(chapterIndex, chapters.length - 1));
     restoreFocusRef.current = true;
     setPhase("reading");
   }
 
-  function selectChapter(index: number) {
-    if (!sessionActiveRef.current || index < 0 || index >= chapters.length) return;
+  /** Shows chapter `index` at `nextStage` and points the trigger at the stop the walker now walks to. */
+  function showStop(index: number, nextStage: StopStage) {
     setShowSources(false);
     setChapterIndex(index);
-    // The trigger now watches the stop after this one. Update the live values
-    // here as well: a position update can arrive before the render that refreshes them.
+    setStage(nextStage);
+    // Update the live values here as well: a position update can arrive before the render that refreshes them.
     position.resetTrigger();
     liveRef.current = {
-      ...liveRef.current, index,
-      target: nextChapterTarget(chapters, index, finish),
-      config: chapterTriggerConfig(chapters, index, baseTriggerConfig),
+      ...liveRef.current, index, stage: nextStage,
+      target: arrivalTarget(chapters, index, nextStage, finish),
+      config: arrivalTriggerConfig(chapters, index, nextStage, baseTriggerConfig),
     };
+  }
+
+  function selectChapter(index: number) {
+    if (!sessionActiveRef.current || index < 0) return;
+    if (index === chapters.length && finishLeg) {
+      // The last story keeps playing while the walker heads to the finish.
+      showStop(index, "approach");
+      return;
+    }
+    if (index >= chapters.length) return;
+    // Listening in a row plays straight on; on a universal walk the walker first goes to the stop.
+    const playNow = !universal || settings.advance === "sequence";
+    showStop(index, playNow ? "stop" : "approach");
     // Pass the destination explicitly: React state still holds the old chapter during this click.
-    audio.switchTo(index, chapters[index].audio?.url ?? chapters[index].content.story.audio_url);
+    audio.switchTo(index, chapterSource(index), playNow);
+  }
+
+  /** The walker is at the stop they were walking to: its story starts and the next leg lights up. */
+  function arrive() {
+    const live = liveRef.current;
+    if (live.stage === "approach" && live.index < live.count) showStop(live.index, "stop");
+  }
+
+  // Pressing play on the way to a stop (on screen or on the lock screen) means the walker is there.
+  function toggleAudio() {
+    arrive();
+    audio.toggle();
+  }
+
+  // «По месту»: reaching the stop starts its story; reaching the next one moves on to it.
+  function arriveByPlace() {
+    const live = liveRef.current;
+    if (live.advance !== "place" || !sessionActiveRef.current) return;
+    // The trigger listens for the finish on the way there and after the last stop.
+    if (finishLeg && (live.index === live.count || (live.index === live.count - 1 && live.stage === "stop"))) stopTour(true);
+    else if (universal && live.stage === "approach") {
+      arrive();
+      void audio.play(chapterSource(live.index));
+    } else if (live.index + 1 < live.count) {
+      if (!universal) selectChapter(live.index + 1);
+      else {
+        showStop(live.index + 1, "stop");
+        audio.switchTo(live.index + 1, chapterSource(live.index + 1));
+      }
+    }
   }
 
   // Refreshed after every render so the long-lived position subscription and the
   // lock-screen handlers always act on the chapter that is playing now.
   useEffect(() => {
     liveRef.current = {
-      advance: settings.advance, index: chapterIndex, count: chapters.length,
+      advance: settings.advance, index: chapterIndex, stage, count: chapters.length,
       target, config: triggerConfig,
     };
     selectChapterRef.current = selectChapter;
+    arriveByPlaceRef.current = arriveByPlace;
     controlsRef.current = {
-      toggle: audio.toggle,
+      toggle: toggleAudio,
       seekBy: (offset) => audio.seek((audioRef.current?.currentTime ?? playbackTime) + offset),
       seekTo: (position) => audio.seek(position),
     };
@@ -279,14 +338,15 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
       </header> : null}
 
       {universal && reviewTarget ? <ReviewDialog reviews={reviews} open={rateOpen} onClose={() => setRateOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
-      {universal ? <WalkSession route={route} chapters={chapters} index={chapterIndex} active={isWalking} completed={completed}
-        user={position.diagnostics.lastFix} positionFailed={positionFailed(position.diagnostics)} resume={Boolean(savedCheckpoint)} titleRef={walkTitleRef} startRef={startButtonRef}
-        onStart={() => startTour()} onSelect={selectChapter} onStop={stopTour}
+      {universal ? <WalkSession route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg}
+        user={position.diagnostics.lastFix} positionFailed={positionFailed(position.diagnostics)}
+        positionDenied={position.diagnostics.sourceStatus === "permission-denied"} onRetryPosition={position.retry} resume={Boolean(savedCheckpoint)} titleRef={walkTitleRef} startRef={startButtonRef}
+        onStart={() => startTour()} onSelect={selectChapter} onStop={stopTour} own={own}
         ratingLabel={formatRatingSummary(reviews.summary)}
         hasReview={Boolean(reviews.mine)} ratingCount={reviews.summary?.count ?? null} reviews={reviewTarget ? <WalkReviews reviews={reviews} onRate={() => setRateOpen(true)} /> : null} onRate={() => setRateOpen(true)}
         audioError={audioStatus === "blocked" || audioStatus === "error" ? "Не удалось включить аудио. Нажмите «Повторить запуск звука»." : ""}
         player={walkAudioUrl ? <AudioPlayerControls compact position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
-          label={audioButtonLabel} rate={settings.rate} onToggle={audio.toggle} onSeek={audio.seek} onRate={rate => updateSettings({ rate })} /> : null}
+          label={audioButtonLabel} rate={settings.rate} onToggle={toggleAudio} onSeek={audio.seek} onRate={rate => updateSettings({ rate })} /> : null}
         story={<><StoryText story={walkContent.story} />{walkContent.sources.length ? <StorySources content={walkContent} open={showSources} onToggle={toggleSources} /> : null}</>}
         settings={<div className="walk-session-settings">
           <label>Переключение остановок<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{advanceModeLabels[mode]}</option>)}</select></label>

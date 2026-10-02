@@ -8,6 +8,7 @@ import { WalkSession } from "./walk-session";
 import { WalkMap } from "./walk-map";
 import { getWalkChapters } from "./walk-plan";
 import type { Route } from "./types";
+import type { OwnWalk } from "../walks/own-walk";
 
 const mapInput = vi.hoisted(() => ({ items: [] as Array<{ id: string; location: { lat: number; lon: number } }> }));
 vi.mock("../explore/explore-map", () => ({ ExploreMap: (props: typeof mapInput) => { mapInput.items = props.items; return null; } }));
@@ -58,14 +59,14 @@ it.each(["session", "map"])("%s ставит маркеры в точки про
   expect(selected.map(chapter => chapter.location)).toEqual(originalLocations);
 });
 
-function sessionDocument(props: { active?: boolean; completed?: boolean; ratingLabel?: string; hasReview?: boolean; ratingCount?: number | null; reviews?: string | null }) {
+function sessionDocument(props: { active?: boolean; completed?: boolean; ratingLabel?: string; hasReview?: boolean; ratingCount?: number | null; reviews?: string | null; own?: OwnWalk | null }) {
   const markup = renderToStaticMarkup(createElement(WalkSession, {
     route, chapters, index: 0, active: props.active ?? false, completed: props.completed ?? false,
     user: null, positionFailed: false, resume: false,
     titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
     onStart: () => {}, onSelect: () => {}, onStop: () => {},
     player: null, story: null, settings: null, audioError: "",
-    ratingLabel: props.ratingLabel, hasReview: props.hasReview, ratingCount: props.ratingCount, reviews: props.reviews,
+    ratingLabel: props.ratingLabel, hasReview: props.hasReview, ratingCount: props.ratingCount, reviews: props.reviews, own: props.own,
   }));
   return new DOMParser().parseFromString(markup, "text/html");
 }
@@ -132,6 +133,20 @@ it.each([
   expect(actions.querySelector(".walk-session-secondary")?.textContent).toBe("На карту");
 });
 
+const own: OwnWalk = { editHref: "/?walk=create&local=walk-1&edit=1", notes: ["У 2 остановок пока нет истории."] };
+// Own walks lead back to the builder only before the start; other walks never do.
+it.each([
+  ["своя до старта", own, false, false, true],
+  ["своя во время прогулки", own, true, false, false],
+  ["своя после завершения", own, false, true, false],
+  ["чужая до старта", null, false, false, false],
+])("%s: «Изменить маршрут» и подсказки показаны — %s", (_, ownWalk, active, completed, shown) => {
+  const document = sessionDocument({ own: ownWalk, active, completed });
+  const edit = [...document.querySelectorAll("a")].find(link => link.textContent === "Изменить маршрут");
+  expect(edit?.getAttribute("href") ?? null).toBe(shown ? own.editHref : null);
+  expect(document.body.textContent?.includes(own.notes[0])).toBe(shown);
+});
+
 it("после завершения прогулки без отзывов главная кнопка — «На карту»", () => {
   const document = sessionDocument({ completed: true, reviews: null });
   expect(document.querySelector(".walk-session-primary")?.textContent).toBe("На карту");
@@ -175,5 +190,76 @@ it("итог оценок в описании — кнопка, открываю
   await session.click(rating);
   expect(session.container.querySelector("[data-testid=reviews]")).toBeNull();
   expect(session.onRate).not.toHaveBeenCalled();
+  await session.unmount();
+});
+
+it.each([
+  { stage: "approach" as const, advance: "place" as const, audio: true, meta: "К остановке 2 из 4 · начнётся, когда подойдёте" },
+  { stage: "approach" as const, advance: "manual" as const, audio: true, meta: "К остановке 2 из 4" },
+  { stage: "approach" as const, advance: "sequence" as const, audio: true, meta: "К остановке 2 из 4" },
+  { stage: "approach" as const, advance: "place" as const, audio: false, meta: "К остановке 2 из 4" },
+  { stage: "stop" as const, advance: "place" as const, audio: true, meta: "Остановка 2 из 4" },
+  { stage: "stop" as const, advance: "manual" as const, audio: true, meta: "Остановка 2 из 4" },
+])("на пути к остановке и у неё: $stage, $advance, аудио $audio", ({ stage, advance, audio, meta }) => {
+  const stops = chapters.map(chapter => ({ ...chapter, audio: audio ? chapter.audio : undefined }));
+  expect(stops[1].audio === undefined).toBe(!audio);
+  const markup = renderToStaticMarkup(createElement(WalkSession, {
+    route, chapters: stops, index: 1, stage, advance, active: true, completed: false,
+    user: null, positionFailed: false, resume: false,
+    titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
+    onStart: () => {}, onSelect: () => {}, onStop: () => {},
+    player: null, story: null, settings: null, audioError: "",
+  }));
+  const document = new DOMParser().parseFromString(markup, "text/html");
+  expect(document.querySelector(".walk-session-meta")?.textContent).toBe(meta);
+});
+
+async function mountPosition(denied: boolean) {
+  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+  const container = document.createElement("div");
+  document.body.append(container);
+  const root = createRoot(container);
+  const onRetryPosition = vi.fn();
+  const render = (positionFailed: boolean, user: { lat: number; lon: number; accuracyM: number } | null) => act(async () => root.render(createElement(WalkSession, {
+    route, chapters, index: 0, active: true, completed: false,
+    user, positionFailed, positionDenied: denied && positionFailed, onRetryPosition, resume: false,
+    titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
+    onStart: () => {}, onSelect: () => {}, onStop: () => {},
+    player: null, story: null, settings: null, audioError: "",
+  })));
+  await render(true, null);
+  const button = () => [...container.querySelectorAll<HTMLButtonElement>(".walk-session-tools button")].find(item => item.textContent === "Геопозиции нет");
+  const drawer = () => container.querySelector(".walk-session-drawer");
+  const unmount = async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); };
+  return { container, render, button, drawer, onRetryPosition, unmount };
+}
+
+it.each([
+  [true, "Сайту запрещён доступ к геопозиции", true],
+  [false, "Не удалось определить положение", false],
+])("«Геопозиции нет» стоит рядом с «Остановками» и по нажатию снова запрашивает доступ (запрещён=%s)", async (denied, message, helpOpen) => {
+  const session = await mountPosition(denied);
+  const tools = [...session.container.querySelectorAll(".walk-session-tools button")].map(item => item.textContent);
+  expect(tools.slice(0, 2)).toEqual([`Остановки · ${chapters.length}`, "Геопозиции нет"]);
+  expect(session.container.textContent).not.toContain("Геопозиция недоступна");
+
+  await act(async () => session.button()!.click());
+  expect(session.onRetryPosition).toHaveBeenCalledTimes(1);
+  expect(session.button()?.getAttribute("aria-expanded")).toBe("true");
+  expect(session.drawer()?.textContent).toContain(message);
+  expect(session.drawer()?.querySelector("details")?.open).toBe(helpOpen);
+
+  // «Проверить снова» внутри подсказки тоже запрашивает положение заново.
+  await act(async () => [...session.drawer()!.querySelectorAll("button")].find(item => item.textContent === "Проверить снова")!.click());
+  expect(session.onRetryPosition).toHaveBeenCalledTimes(2);
+
+  // Пока браузер ищет положение, панель остаётся открытой и говорит об этом.
+  await session.render(false, null);
+  expect(session.drawer()?.textContent).toBe("Определяем положение…");
+  // Пришли координаты — подсказка и кнопка исчезают сами.
+  await session.render(false, { lat: 55.75, lon: 37.6, accuracyM: 10 });
+  expect(session.drawer()).toBeNull();
+  expect(session.button()).toBeUndefined();
   await session.unmount();
 });

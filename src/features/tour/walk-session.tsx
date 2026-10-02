@@ -2,19 +2,47 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
-import { ExploreMap, type MapFocus } from "../explore/explore-map";
+import { ExploreMap, type MapFitTarget, type MapFocus } from "../explore/explore-map";
 import { ExploreIcon } from "../explore/icons";
+import { PlacePhotoBanner } from "../explore/place-photo";
+import { usePlaceStory } from "../explore/place-story";
+import { GeoHelp } from "../explore/around-sheets";
 import { BrandMark } from "../brand/brand-mark";
+import { useHideNavigation } from "../navigation/navigation-visibility";
 import type { Coordinates, Route } from "./types";
-import type { WalkChapter } from "./walk-plan";
+import { highlightedLeg, type StopStage, type WalkChapter } from "./walk-plan";
+import { legFitPoints, legRange, routeLegCuts } from "./route-legs";
+import type { AdvanceMode } from "./walk-settings";
 import { StopWalkDialog } from "./stop-walk-dialog";
+import type { OwnWalk } from "../walks/own-walk";
 import "./walk-session.css";
 
 const noop = () => {};
 
-export function WalkSession({ route, chapters, index, active, completed, user, positionFailed, resume,
-  titleRef, startRef, onStart, onSelect, onStop, player, story, settings, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop }: {
+/** The photo of the catalog place a stop tells about, as on its map card; nothing while it loads or without one. */
+function StopPhoto({ placeId, title }: { placeId: string; title: string }) {
+  const place = usePlaceStory(placeId);
+  return <PlacePhotoBanner photo={place.story?.photo} title={title} />;
+}
+
+/**
+ * After «К остановке N из M»: that the story will start by itself on arrival. Only for `place`:
+ * in `manual` the «Слушать историю» button already says what to do. The meta line costs no extra
+ * height, unlike a line of its own, which pushed the primary action out of a small panel.
+ */
+export function approachHint(advance: AdvanceMode, hasAudio: boolean) {
+  return hasAudio && advance === "place" ? "начнётся, когда подойдёте" : "";
+}
+
+export function WalkSession({ route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume,
+  titleRef, startRef, onStart, onSelect, onStop, player, story, settings, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, own = null,
+  positionDenied = false, onRetryPosition = noop }: {
   route: Route; chapters: WalkChapter[]; index: number; active: boolean; completed: boolean;
+  /** The finish lies past the last stop: index `chapters.length` is the way there, ended by «Завершить». */
+  finishLeg?: boolean;
+  /** On the way to stop `index` or arrived there (see StopStage). */
+  stage?: StopStage;
+  advance?: AdvanceMode;
   user: (Coordinates & { accuracyM: number }) | null; positionFailed: boolean; resume: boolean;
   titleRef: RefObject<HTMLHeadingElement | null>; startRef: RefObject<HTMLButtonElement | null>;
   onStart: () => void; onSelect: (index: number) => void; onStop: (completed?: boolean) => void;
@@ -29,31 +57,62 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
   reviews?: ReactNode | null;
   /** Opens the rating form in its own window. */
   onRate?: () => void;
+  /** The viewer's own walk: before the start it leads back to the builder and shows the builder's notes. */
+  own?: OwnWalk | null;
+  /** The site has no access to geolocation: asking again will not show a prompt, the walker allows it in the browser. */
+  positionDenied?: boolean;
+  /** Asks the browser for the position again; called from a tap, so it may show the permission prompt. */
+  onRetryPosition?: () => void;
 }) {
   const panelRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLElement>(null);
-  // The panel covers the bottom of the map or, on a low landscape screen, a column on the right.
+  // The panel covers the bottom of the map or, on a low landscape screen, a column on the right;
+  // `size` is how far it reaches in from that edge of the screen.
   // The header covers the top of the map; its bottom edge is measured from the top of the screen.
-  const [cover, setCover] = useState<{ side: "bottom" | "right"; size: number; top: number }>({ side: "bottom", size: 250, top: 74 });
+  const [cover, setCover] = useState<{ side: "bottom" | "right"; size: number; top: number }>({ side: "bottom", size: 354, top: 74 });
+  // A running walk takes the whole screen: the bottom navigation goes, walk-session.css lowers the panel and map buttons.
+  // The header still leads out of the walk, and the navigation returns once the walk is stopped or finished.
+  useHideNavigation(active);
   // A walk opens on its first stop; a walk without stops shows the whole route.
   const [focus, setFocus] = useState<MapFocus | null>(() => {
     const first = chapters[0];
     return first ? { ...(first.trigger_location ?? first.location) } : null;
   });
-  const [drawer, setDrawer] = useState<"stops" | "story" | "settings" | "reviews" | null>(null);
+  const [drawer, setDrawer] = useState<"stops" | "story" | "settings" | "reviews" | "position" | null>(null);
   const [confirmStop, setConfirmStop] = useState(false);
   const chapter = chapters[index];
   const geometry = useMemo(() => (route.walk?.path.coordinates ?? []).map(([lon, lat]) => ({ lat, lon })), [route.walk?.path]);
   const items = useMemo(() => [
-    ...(route.walk ? [{ id: "walk-start", title: `Старт: ${route.walk.start.address}`, location: route.walk.start.location, compact: true }] : []),
+    ...(route.walk ? [{ id: "walk-start", title: `Старт: ${route.walk.start.address}`, location: route.walk.start.location, endpoint: true }] : []),
     ...chapters.map((item, i) => ({ id: item.id, title: `Остановка ${i + 1}: ${item.title}`, location: item.trigger_location ?? item.location, number: i + 1 })),
-    ...(route.walk ? [{ id: "walk-finish", title: `Финиш: ${route.walk.finish.address}`, location: route.walk.finish.location, compact: true }] : []),
+    ...(route.walk ? [{ id: "walk-finish", title: `Финиш: ${route.walk.finish.address}`, location: route.walk.finish.location, endpoint: true }] : []),
   ], [chapters, route.walk]);
-  // Beside the panel the route also keeps clear of the map buttons above the navigation.
+  // During the walk the leg to walk now stands out; the map fits it whenever it changes.
+  const stops = useMemo(() => chapters.map(item => item.trigger_location ?? item.location), [chapters]);
+  const cuts = useMemo(() => routeLegCuts(geometry, stops), [geometry, stops]);
+  const leg = highlightedLeg(index, stage, chapters.length);
+  const legPath = active ? legRange(cuts, geometry.length, leg) : null;
+  const legEnd = stops[leg] ?? route.walk?.finish.location ?? null;
+  const legKey = active && legEnd ? `${leg}:${legPath?.join("-") ?? "point"}` : null;
+  // Adjusted while rendering when the leg changes (not in an effect), so the fit lands with the highlight.
+  // The walker's position joins the fit when it is known; the first fix after a fit without it
+  // refines that fit once per walk, unless the walker has moved the map in the meantime.
+  const [legFit, setLegFit] = useState<{ key: string | null; target: MapFitTarget | null; waiting: boolean; refined: boolean }>({ key: null, target: null, waiting: false, refined: false });
+  if (legFit.key !== legKey) {
+    const view = legKey && legEnd ? legFitPoints(geometry, legPath, legEnd, user) : null;
+    setLegFit({ key: legKey, target: view ? { points: view.points, keepUserView: false } : null, waiting: Boolean(view && !view.withUser), refined: legKey ? legFit.refined : false });
+  } else if (legFit.waiting && user && legEnd) {
+    const view = legFitPoints(geometry, legPath, legEnd, user);
+    setLegFit({ ...legFit, waiting: false, refined: true,
+      target: view.withUser && !legFit.refined ? { points: view.points, keepUserView: true } : legFit.target });
+  }
+  // Beside the panel the route also keeps clear of the row of map buttons at the bottom left:
+  // above the navigation before the start, at the bottom edge during the walk.
   // Below the header it leaves room for a stop pin, which rises about 48 px above its point.
   const padding = useMemo(() => cover.side === "right"
-    ? { top: cover.top + 48, right: cover.size + 24, bottom: 160, left: 45 }
-    : { top: cover.top + 48, right: 45, bottom: cover.size + 125, left: 45 }, [cover]);
+    ? { top: cover.top + 48, right: cover.size + 24, bottom: active ? 80 : 160, left: 45 }
+    : { top: cover.top + 48, right: 45, bottom: cover.size + 21, left: 45 }, [cover, active]);
+  // Measured again when the walk starts or stops: the panel moves down or up with the navigation and may keep its size.
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
@@ -61,7 +120,8 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
       const box = panel.getBoundingClientRect();
       // walk-session.css docks the panel to the right on a low landscape screen.
       const side = getComputedStyle(panel).getPropertyValue("--walk-panel-dock").trim() === "right" ? "right" : "bottom";
-      const size = Math.ceil(side === "right" ? (panel.parentElement?.getBoundingClientRect().right ?? innerWidth) - box.left : box.height);
+      const screen = panel.parentElement?.getBoundingClientRect() ?? { right: innerWidth, bottom: innerHeight };
+      const size = Math.ceil(side === "right" ? screen.right - box.left : screen.bottom - box.top);
       const top = Math.ceil(headerRef.current?.getBoundingClientRect().bottom ?? 0);
       setCover(current => current.side === side && current.size === size && current.top === top ? current : { side, size, top });
     };
@@ -71,18 +131,23 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
     // Turning the phone may keep the panel's size while its dock changes.
     addEventListener("resize", measure);
     return () => { observer.disconnect(); removeEventListener("resize", measure); };
-  }, []);
+  }, [active]);
+  // The position help closes by itself once a fix arrives after a retry.
+  if (drawer === "position" && (user || !active)) setDrawer(null);
+  function retryPosition() { setDrawer("position"); onRetryPosition(); }
   function select(position: number) { setDrawer(null); onSelect(position); }
   function toggleReviews() { setDrawer(drawer === "reviews" ? null : "reviews"); }
   function rate() { setDrawer(null); onRate(); }
   const distance = (route.walk?.distance_m ?? 0) / 1000;
   const hasText = Boolean(chapter?.content.story.paragraphs.length);
   const canStart = geometry.length > 1;
+  // After the last stop comes the way to the finish, when it lies elsewhere.
+  const next = index + 1 < chapters.length || (finishLeg && index + 1 === chapters.length);
 
   return <>
     <div className="walk-session-map">
       <ExploreMap items={items} selectedId={active ? chapter?.id : undefined} focus={focus} user={user}
-        geometry={geometry} fitGeometry={!focus} insets={padding} legacyChrome onPoint={noop} onSelect={id => {
+        geometry={geometry} fitGeometry={!focus} tunnels={route.walk?.path.tunnels} activeLeg={legPath} fitTarget={legFit.target} insets={padding} legacyChrome onPoint={noop} onSelect={id => {
           const position = chapters.findIndex(item => item.id === id);
           if (position >= 0) { if (active) select(position); else setDrawer("stops"); }
         }} mapLabel="Карта прогулки: пешеходный маршрут и остановки" />
@@ -94,9 +159,11 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
     </header>
     {active && user ? <button type="button" className="walk-session-locate" data-region="controls" aria-label="Моё местоположение" onClick={() => setFocus({ lat: user.lat, lon: user.lon, zoom: 16 })}><ExploreIcon name="locate" /></button> : null}
     <section ref={panelRef} className="walk-session-panel" data-region="sheet" aria-labelledby="walk-session-title">
+      {/* Like the player, the photo yields its room to an open drawer. */}
+      {active && chapter?.place_id && !drawer ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} title={chapter.title} /></div> : null}
       <header className="walk-session-heading">
         <div>
-          <p className="walk-session-meta">{active ? chapter ? `Остановка ${index + 1} из ${chapters.length}` : "До финиша" : `${route.duration_min} мин · ${distance.toLocaleString("ru-RU", { maximumFractionDigits: 1 })} км`}{!active && !completed && ratingLabel ? <> · {reviews
+          <p className="walk-session-meta">{active ? chapter ? stage === "approach" ? [`К остановке ${index + 1} из ${chapters.length}`, approachHint(advance, Boolean(chapter.audio))].filter(Boolean).join(" · ") : `Остановка ${index + 1} из ${chapters.length}` : "До финиша" : `${route.duration_min} мин · ${distance.toLocaleString("ru-RU", { maximumFractionDigits: 1 })} км`}{!active && !completed && ratingLabel ? <> · {reviews
             ? <button type="button" className="walk-session-rating" aria-expanded={drawer === "reviews"} onClick={toggleReviews}>{ratingLabel}</button>
             : ratingLabel}</> : null}</p>
           <h1 id="walk-session-title" ref={titleRef} tabIndex={-1}>{completed ? "Прогулка завершена" : active ? chapter?.title ?? route.walk?.finish.address ?? "Прогулка" : route.title.trim() || "Ваш маршрут"}</h1>
@@ -109,13 +176,15 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
         </div> : null}
       </header>
       {!active && !completed ? <p className="walk-session-address">{route.walk?.start.address} → {route.walk?.finish.address}</p> : null}
+      {!active && !completed ? own?.notes.map(note => <p key={note} className="walk-session-muted">{note}</p>) : null}
       {active && chapter && chapter.title !== chapter.place ? <p className="walk-session-address">{chapter.place}</p> : null}
       {active && !drawer ? player : null}
       {active && audioError ? <p className="walk-session-notice" role="status">{audioError}</p> : null}
-      {active && positionFailed ? <p className="walk-session-notice" role="status">Геопозиция недоступна. Остановки можно переключать вручную.</p> : null}
       {active && chapter && !chapter.audio && !hasText ? <p className="walk-session-muted">Без истории</p> : null}
       {!completed ? <div className="walk-session-tools">
         {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />Остановки · {chapters.length}</button> : null}
+        {active && (positionFailed || drawer === "position") ? <button type="button" className="walk-session-position" aria-expanded={drawer === "position"} onClick={retryPosition}><ExploreIcon name="locate" />Геопозиции нет</button> : null}
+        {!active && own ? <Link href={own.editHref} prefetch={false}>Изменить маршрут</Link> : null}
         {active && hasText ? <button type="button" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}>Читать историю</button> : null}
         {!active && reviews ? ratingCount === 0
           ? <button type="button" aria-haspopup="dialog" onClick={rate}>{hasReview ? "Изменить отзыв" : "Оставить отзыв"}</button>
@@ -124,7 +193,10 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
       {drawer && !completed ? <div className="walk-session-drawer" data-sheet-part="body" key={`${drawer}-${index}`}>
         {drawer === "stops" ? <ol className="walk-session-stops">{chapters.map((item, position) => <li key={item.id}>
           {active ? <button type="button" aria-current={position === index ? "step" : undefined} onClick={() => select(position)}><span>{position + 1}</span>{item.title}</button> : <p><span>{position + 1}</span>{item.title}</p>}
-        </li>)}</ol> : drawer === "story" ? story : drawer === "reviews" ? reviews : <>
+        </li>)}</ol> : drawer === "position" ? <div role="status">
+          <p className="walk-session-muted">{!positionFailed ? "Определяем положение…" : positionDenied ? "Сайту запрещён доступ к геопозиции. Разрешите его в браузере — до тех пор остановки переключаются вручную." : "Не удалось определить положение. Проверьте, включена ли геолокация на устройстве, — до тех пор остановки переключаются вручную."}</p>
+          {positionFailed ? <GeoHelp open={positionDenied} onRetry={onRetryPosition} /> : null}
+        </div> : drawer === "story" ? story : drawer === "reviews" ? reviews : <>
           {settings}
           {reviews ? <button type="button" className="walk-session-rate" aria-haspopup="dialog" onClick={rate}>Оценить прогулку</button> : null}
         </>}
@@ -135,7 +207,7 @@ export function WalkSession({ route, chapters, index, active, completed, user, p
           <Link className="walk-session-secondary" href="/">На карту</Link>
         </> : <Link className="walk-session-primary" href="/">На карту</Link> : active ? <>
           {index > 0 ? <button type="button" className="walk-session-previous" aria-label="Предыдущая остановка" onClick={() => select(index - 1)}><ExploreIcon name="arrow" /></button> : null}
-          <button type="button" className="walk-session-primary" onClick={() => { setDrawer(null); if (index + 1 < chapters.length) select(index + 1); else onStop(true); }}>{index + 1 < chapters.length ? "Дальше" : "Завершить"}<ExploreIcon name="arrow" /></button>
+          <button type="button" className="walk-session-primary" onClick={() => { setDrawer(null); if (next) select(index + 1); else onStop(true); }}>{index + 1 < chapters.length ? "Дальше" : next ? "К финишу" : "Завершить"}<ExploreIcon name="arrow" /></button>
         </> : <button type="button" ref={startRef} disabled={!canStart} className="walk-session-primary" onClick={() => { setDrawer(null); onStart(); }}>{resume ? "Продолжить прогулку" : "Начать прогулку"}<ExploreIcon name="arrow" /></button>}
       </footer>
       {!canStart ? <p role="alert" className="walk-session-notice">В этой прогулке ещё нет маршрута. Постройте его в редакторе из истории.</p> : null}

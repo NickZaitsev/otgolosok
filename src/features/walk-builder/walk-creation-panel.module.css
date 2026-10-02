@@ -188,11 +188,6 @@
   accent-color: var(--map-green);
 }
 
-.wide {
-  width: 100%;
-  margin-top: var(--space-md);
-}
-
 /* Picking a point on the map: the sheet shrinks to a hint and a cancel. */
 .mapPick p {
   margin: 0 0 var(--space-md);
@@ -203,57 +198,6 @@
 
 .mapPick button {
   width: 100%;
-}
-
-/* Built route preview. */
-.summary {
-  display: flex;
-  gap: var(--space-lg);
-  margin: var(--space-xs) 0 var(--space-md);
-}
-
-.summary strong {
-  font-size: var(--text-page);
-  letter-spacing: -0.04em;
-}
-
-.summary small {
-  display: block;
-  font-size: var(--text-meta);
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--map-muted);
-}
-
-.shortfall {
-  margin: 0 0 var(--space-md);
-  font-size: var(--text-secondary);
-  line-height: 1.45;
-}
-
-.routePoints {
-  overflow: hidden;
-  background: var(--raised);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-}
-
-.routePoints p {
-  margin: 0;
-  padding: 0.625rem 0.875rem;
-  font-size: var(--text-secondary);
-  line-height: 1.4;
-}
-
-.routePoints p + p {
-  border-top: 1px solid var(--line);
-}
-
-.routePoints small {
-  display: block;
-  margin-bottom: 0.1875rem;
-  font-size: var(--text-meta);
-  color: var(--map-muted);
 }
 
 .textButton {

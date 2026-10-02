@@ -1,12 +1,13 @@
-import { MAX_WALK_STOPS } from "../../../backend/walk-document.mjs";
+import { MAX_WALK_STOPS, validTunnels } from "../../../backend/walk-document.mjs";
 import type { Coordinates } from "../tour/types";
 import { isMoscowPoint } from "../explore/map-jobs";
 import { stageLabels, type GenerationStage } from "../generator/types";
 
 export const DRAFT_KEY = "otgolosok:walk:v1";
 export { MAX_WALK_STOPS };
-export type Place = { address: string; location: Coordinates; contentId?: string };
-export type Plan = { stops: Place[]; geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string };
+/** contentId: the catalog place whose published story the stop tells; placeId: the catalog place at the stop, story or not. */
+export type Place = { address: string; location: Coordinates; contentId?: string; placeId?: string };
+export type Plan = { stops: Place[]; geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string; tunnels?: Array<[number, number]> };
 // Mirrors MIN_BUDGET_SHARE in backend/walks.mjs: automatic walks aim for at least this share of the chosen time.
 export const MIN_BUDGET_SHARE = 0.75;
 /** Walking minutes of an automatic walk that fell short of the chosen time, otherwise null. */
@@ -30,7 +31,7 @@ export type Draft = {
 export const emptyDraft = (): Draft => ({ version: 1, title: "Моя прогулка", start: null, mode: "loop", minutes: 30, stops: [], route: null, jobs: [], submitting: null });
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 export function isPlace(v: unknown): v is Place {
-  return record(v) && typeof v.address === "string" && v.address.trim().length >= 6 && v.address.length <= 180 && !/[\p{Cc}\p{Cf}<>]/u.test(v.address) && record(v.location) && typeof v.location.lat === "number" && typeof v.location.lon === "number" && isMoscowPoint(v.location as Coordinates) && (v.contentId === undefined || typeof v.contentId === "string" && /^osm:(node|way|relation):\d+$/.test(v.contentId));
+  return record(v) && typeof v.address === "string" && v.address.trim().length >= 6 && v.address.length <= 180 && !/[\p{Cc}\p{Cf}<>]/u.test(v.address) && record(v.location) && typeof v.location.lat === "number" && typeof v.location.lon === "number" && isMoscowPoint(v.location as Coordinates) && [v.contentId, v.placeId].every(id => id === undefined || typeof id === "string" && /^osm:(node|way|relation):\d+$/.test(id));
 }
 export const placeKey = (p: Place) => `${p.address.trim().toLocaleLowerCase("ru")}|${p.location.lat}|${p.location.lon}`;
 // Match normalizeAddress + the unhashed addressKey input in backend/domain.mjs.
@@ -49,8 +50,10 @@ export function manualStopLimit(start: Place | null, jobs: StoryRef[] = []) {
 export function validStops(start: Place | null, stops: Place[], destination?: Place | null, jobs: StoryRef[] = []) {
   if (!start || !isPlace(start) || stops.length < (destination ? 0 : 1) || stops.length > manualStopLimit(start, jobs) || !stops.every(isPlace)) return false;
   if (destination && !isPlace(destination)) return false;
+  // As on the server, the first stop may be the start building itself.
   const points = [start, ...stops, ...(destination ? [destination] : [])];
-  return points.every((p, i) => points.slice(0, i).every(q => {
+  return points.every((p, i) => points.slice(0, i).every((q, j) => {
+    if (stops.length && i === 1 && j === 0) return true;
     const rad = Math.PI / 180;
     const h = Math.sin((p.location.lat-q.location.lat)*rad/2)**2 + Math.cos(p.location.lat*rad)*Math.cos(q.location.lat*rad)*Math.sin((p.location.lon-q.location.lon)*rad/2)**2;
     return 12742000 * Math.asin(Math.sqrt(Math.min(1,h))) >= 5;
@@ -60,7 +63,8 @@ export function isPlan(v: unknown): v is Plan {
   return record(v) && Array.isArray(v.stops) && v.stops.length >= 0 && v.stops.length <= MAX_WALK_STOPS && v.stops.every(isPlace) &&
     Array.isArray(v.geometry) && v.geometry.length >= 2 && v.geometry.length <= 12000 && v.geometry.every(p => record(p) && typeof p.lat === "number" && typeof p.lon === "number" && isMoscowPoint(p as Coordinates)) &&
     typeof v.distanceM === "number" && Number.isFinite(v.distanceM) && v.distanceM > 0 && v.distanceM <= 8100 &&
-    typeof v.walkingMinutes === "number" && Number.isFinite(v.walkingMinutes) && v.walkingMinutes > 0 && v.walkingMinutes <= 90 && typeof v.attribution === "string" && v.attribution.length > 0 && v.attribution.length <= 2000;
+    typeof v.walkingMinutes === "number" && Number.isFinite(v.walkingMinutes) && v.walkingMinutes > 0 && v.walkingMinutes <= 90 && typeof v.attribution === "string" && v.attribution.length > 0 && v.attribution.length <= 2000 &&
+    validTunnels(v.tunnels, v.geometry.length);
 }
 export const isJobId = (id: unknown): id is string => typeof id === "string" && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(id);
 export const isStage = (stage: unknown): stage is GenerationStage => typeof stage === "string" && Object.hasOwn(stageLabels, stage);

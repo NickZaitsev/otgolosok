@@ -1,11 +1,12 @@
 export type Coordinates = { lat: number; lon: number };
 export type Place = { address: string; location: Coordinates };
 export type StoryRef = { kind: "job" | "osm" | "catalog"; id: string } | null;
-export type WalkStop = { id: string; place: Place; storyRef: StoryRef; transition: string; nextHint: string; triggerLocation?: Coordinates };
+export type WalkStop = { id: string; place: Place; storyRef: StoryRef; placeId?: string; transition: string; nextHint: string; triggerLocation?: Coordinates };
 export type WalkDocument = {
   version: 2; id: string; title: string; description: string; city: "Москва"; mode: "open" | "loop";
   minutes: number; start: Place | null; destination?: Place | null; stops: WalkStop[];
-  route: { geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string } | null;
+  // tunnels: covered stretches as [a, b] vertex ranges of geometry (see validTunnels in backend/walk-document.mjs).
+  route: { geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string; tunnels?: Array<[number, number]> } | null;
   fieldChecked: boolean;
 };
 export type WalkStory = { title: string; address: string; paragraphs: Array<{ text: string; factIds: string[] }>;
