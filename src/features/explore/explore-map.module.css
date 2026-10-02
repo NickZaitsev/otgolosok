@@ -153,26 +153,38 @@
   outline-offset: 0;
 }
 
+/* Like story markers, the 48 px Leaflet box is the hit area and the inner span is the visible circle. */
 .cluster {
   display: grid;
   place-items: center;
-  color: var(--on-dark);
-  font-weight: 700;
-  font-size: var(--text-map-pin);
-  font-family: var(--font-body), sans-serif;
-  line-height: 1;
-  background: var(--map-orange);
-  border: 3px solid var(--surface-island);
+  background: transparent;
+  border: 0;
   border-radius: 50%;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--map-orange) 30%, transparent);
   cursor: pointer;
 }
 
-.cluster:hover {
+.cluster > span {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 34px;
+  height: 34px;
+  color: var(--on-dark);
+  font-weight: 500;
+  font-size: var(--text-map-cluster);
+  font-family: var(--font-body), sans-serif;
+  line-height: 1;
+  background: var(--map-orange);
+  border: 2px solid var(--surface-island);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--map-orange) 30%, transparent);
+}
+
+.cluster:hover > span {
   background: color-mix(in srgb, var(--map-orange) 88%, var(--on-dark));
 }
 
 .cluster:focus-visible {
   outline: var(--focus-ring);
-  outline-offset: 3px;
+  outline-offset: 0;
 }
