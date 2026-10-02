@@ -36,7 +36,7 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean) {
   return hasAudio && advance === "place" ? "Начнётся, когда подойдёте" : "";
 }
 
-export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume,
+export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1,
   titleRef, startRef, onStart, onSelect, onStop, player, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
   positionDenied = false, onRetryPosition = noop }: {
   /** A message for the map notices, e.g. that the walk opened from its offline copy. */
@@ -48,8 +48,11 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   stage?: StopStage;
   advance?: AdvanceMode;
   user: (Coordinates & { accuracyM: number }) | null; positionFailed: boolean; resume: boolean;
+  /** The stop the saved walk stopped at, marked in «Остановки» before «Продолжить прогулку»; -1 when unknown. */
+  resumeIndex?: number;
   titleRef: RefObject<HTMLHeadingElement | null>; startRef: RefObject<HTMLButtonElement | null>;
-  onStart: () => void; onSelect: (index: number) => void; onStop: (completed?: boolean) => void;
+  /** Starts the walk: from the saved place, or from stop `index` when the walker picked one in «Остановки». */
+  onStart: (index?: number) => void; onSelect: (index: number) => void; onStop: (completed?: boolean) => void;
   player: ReactNode; story: ReactNode; audioError: string;
   /** Playback settings, shown only during the walk: before the start they are noise on the card. */
   settings: ReactNode;
@@ -114,6 +117,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   if (drawer === "position" && (user || !active)) setDrawer(null);
   function retryPosition() { setDrawer("position"); onRetryPosition(); }
   function select(position: number) { setDrawer(null); onSelect(position); }
+  function startAt(position?: number) { setDrawer(null); onStart(position); }
   function toggleReviews() { setDrawer(drawer === "reviews" ? null : "reviews"); }
   function rate() { setDrawer(null); onRate(); }
   function improve() { setDrawer(null); onImprove?.(); }
@@ -162,10 +166,12 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
       {drawer && !completed ? <div className="walk-session-drawer" data-sheet-part="body" key={`${drawer}-${index}`}>
         {drawer === "stops" ? <>
           {/* Before the start the addresses live here, not on the card: the card keeps only the title and the action.
-              During the walk the list is for jumping between stops, and on a small screen the lines would crowd the map. */}
+              During the walk the list is for jumping between stops, and on a small screen the lines would crowd the map.
+              A walk already begun continues from any stop: the walker may have gone ahead or come back another day. */}
           {!active && route.walk ? <p className="walk-session-endpoint">{route.walk.start.address === route.walk.finish.address ? "Старт и финиш" : "Старт"}: {route.walk.start.address}</p> : null}
           <ol className="walk-session-stops">{chapters.map((item, position) => <li key={item.id}>
-            {active ? <button type="button" aria-current={position === index ? "step" : undefined} onClick={() => select(position)}><span>{position + 1}</span>{item.title}</button> : <p><span>{position + 1}</span>{item.title}</p>}
+            {active ? <button type="button" aria-current={position === index ? "step" : undefined} onClick={() => select(position)}><span>{position + 1}</span>{item.title}</button>
+              : resume && canStart ? <button type="button" aria-current={position === resumeIndex ? "step" : undefined} onClick={() => startAt(position)}><span>{position + 1}</span>{item.title}</button> : <p><span>{position + 1}</span>{item.title}</p>}
           </li>)}</ol>
           {!active && route.walk && route.walk.start.address !== route.walk.finish.address ? <p className="walk-session-endpoint">Финиш: {route.walk.finish.address}</p> : null}
           {!active ? offline : null}
@@ -186,7 +192,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         </> : <Link className="walk-session-primary" href="/">На карту</Link> : active ? <>
           {index > 0 ? <button type="button" className="walk-session-previous" aria-label="Предыдущая остановка" onClick={() => select(index - 1)}><ExploreIcon name="arrow" /></button> : null}
           <button type="button" className="walk-session-primary" onClick={() => { setDrawer(null); if (next) select(index + 1); else onStop(true); }}>{index + 1 < chapters.length ? "Дальше" : next ? "К финишу" : "Завершить"}<ExploreIcon name="arrow" /></button>
-        </> : <button type="button" ref={startRef} disabled={!canStart} className="walk-session-primary" onClick={() => { setDrawer(null); onStart(); }}>{resume ? "Продолжить прогулку" : "Начать прогулку"}<ExploreIcon name="arrow" /></button>}
+        </> : <button type="button" ref={startRef} disabled={!canStart} className="walk-session-primary" onClick={() => startAt()}>{resume ? "Продолжить прогулку" : "Начать прогулку"}<ExploreIcon name="arrow" /></button>}
       </footer>
       {!canStart ? <p role="alert" className="walk-session-notice">В этой прогулке ещё нет маршрута. Постройте его в редакторе из истории.</p> : null}
     </section>;

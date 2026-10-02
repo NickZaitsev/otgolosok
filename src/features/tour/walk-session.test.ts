@@ -72,18 +72,18 @@ function sessionDocument(props: { active?: boolean; completed?: boolean; ratingL
 }
 const buttonTexts = (document: Document) => [...document.querySelectorAll("button")].map(button => button.textContent);
 
-async function mountSession(props: { active?: boolean; completed?: boolean; ratingLabel?: string; ratingCount?: number | null; reviewable?: boolean; improvable?: boolean; walk?: Route["walk"]; offline?: boolean }) {
+async function mountSession(props: { active?: boolean; completed?: boolean; ratingLabel?: string; ratingCount?: number | null; reviewable?: boolean; improvable?: boolean; walk?: Route["walk"]; offline?: boolean; resume?: boolean; resumeIndex?: number }) {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
   const container = document.createElement("div");
   document.body.append(container);
   const root = createRoot(container);
-  const onRate = vi.fn(), onImprove = vi.fn();
+  const onRate = vi.fn(), onImprove = vi.fn(), onStart = vi.fn();
   await act(async () => root.render(createElement(WalkSession, {
     route: props.walk ? { ...route, walk: props.walk } : route, chapters, index: 0, active: props.active ?? false, completed: props.completed ?? false,
-    user: null, positionFailed: false, resume: false,
+    user: null, positionFailed: false, resume: props.resume ?? false, resumeIndex: props.resumeIndex,
     titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
-    onStart: () => {}, onSelect: () => {}, onStop: () => {},
+    onStart, onSelect: () => {}, onStop: () => {},
     player: null, story: null, settings: createElement("p", null, "настройки"), audioError: "",
     offline: props.offline ? createElement("p", { "data-testid": "offline" }, "офлайн") : null,
     ratingLabel: props.ratingLabel, ratingCount: props.ratingCount,
@@ -93,7 +93,7 @@ async function mountSession(props: { active?: boolean; completed?: boolean; rati
   const find = (text: string) => [...container.querySelectorAll("button")].find(button => button.textContent === text);
   const click = (element: HTMLElement) => act(async () => element.click());
   const unmount = async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); };
-  return { container, find, click, onRate, onImprove, unmount };
+  return { container, find, click, onRate, onImprove, onStart, unmount };
 }
 
 it.each([
@@ -178,6 +178,29 @@ it("во время прогулки «Остановки» — только с�
   await session.click(session.find(`Остановка 1 из ${chapters.length}`)!);
   expect(session.container.querySelector(".walk-session-stops")).not.toBeNull();
   expect(session.container.querySelector(".walk-session-endpoint")).toBeNull();
+  await session.unmount();
+});
+
+it("начатую прогулку можно продолжить с любой остановки из «Остановок»", async () => {
+  const session = await mountSession({ resume: true, resumeIndex: 1 });
+  await session.click(session.find(`Остановки · ${chapters.length}`)!);
+  const stops = [...session.container.querySelectorAll<HTMLButtonElement>(".walk-session-stops button")];
+  expect(stops).toHaveLength(chapters.length);
+  expect(stops.map(stop => stop.getAttribute("aria-current"))).toEqual(chapters.map((_, i) => i === 1 ? "step" : null));
+  await session.click(stops.at(-1)!);
+  expect(session.onStart).toHaveBeenCalledWith(chapters.length - 1);
+  expect(session.container.querySelector(".walk-session-stops")).toBeNull();
+  await session.click(session.container.querySelector<HTMLButtonElement>(".walk-session-primary")!);
+  expect(session.container.querySelector(".walk-session-primary")?.textContent).toContain("Продолжить прогулку");
+  expect(session.onStart).toHaveBeenLastCalledWith(undefined);
+  await session.unmount();
+});
+
+it("до первого старта остановки в списке — только для чтения", async () => {
+  const session = await mountSession({});
+  await session.click(session.find(`Остановки · ${chapters.length}`)!);
+  expect(session.container.querySelectorAll(".walk-session-stops button")).toHaveLength(0);
+  expect(session.container.querySelectorAll(".walk-session-stops p")).toHaveLength(chapters.length);
   await session.unmount();
 });
 
