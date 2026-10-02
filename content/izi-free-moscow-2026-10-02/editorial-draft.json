@@ -1,6 +1,6 @@
 {
   "id": "izi-free-moscow-first-draft-2026-10-02",
-  "status": "draft_not_applied",
+  "status": "first_package_published",
   "method": "IZI Travel использован для отбора мест и исторических сведений. Формулировки новых абзацев самостоятельные; источники указаны для каждого факта, полные тексты глав не перенесены.",
   "snapshotAt": "2026-10-02T13:13:22.320Z",
   "entries": [
@@ -635,5 +635,13 @@
         "wordCount": 117
       }
     }
-  ]
+  ],
+  "publication": {
+    "date": "2026-10-02",
+    "target": "https://otgolosok.online",
+    "newPlaces": 3,
+    "publishedTexts": 4,
+    "publicApiVerified": 4,
+    "importId": "05ad5231-c83c-49cc-8cc3-a66033219043"
+  }
 }
