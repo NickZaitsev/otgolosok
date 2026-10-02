@@ -19,7 +19,8 @@ const directives = [
   ["child-src", `'self' blob: ${analytics}`],
   ["font-src", "'self'"],
   ["connect-src", `'self' https://tiles.versatiles.org ${analytics} ${sockets}`],
-  ["media-src", "'self'"],
+  // The audio unlock plays a generated silent WAV data: URI from the user's tap.
+  ["media-src", "'self' data:"],
   // MapLibre bundles its tile worker and starts it from a blob: URL.
   ["worker-src", "'self' blob:"],
   ["manifest-src", "'self'"],

@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { createTestToneDataUri } from "@/lib/audio/audio-element";
 import { contentSecurityPolicy, inlineScriptHashes, withContentSecurityPolicy } from "../../scripts/content-security-policy.mjs";
 
 const hash = (body: string) => `'sha256-${createHash("sha256").update(body, "utf8").digest("base64")}'`;
@@ -37,6 +38,14 @@ describe("content security policy", () => {
     expect(directive("img-src")).toContain("img-src 'self' data: blob: https://tile.openstreetmap.org ");
     expect(directive("worker-src")).toBe("worker-src 'self' blob:");
     expect(directive("script-src")).toContain("script-src 'self' https://mc.yandex.ru ");
+  });
+
+  it("пропускает тихий клип разблокировки звука и не открывает внешние источники медиа", () => {
+    // iOS grants playback to the element that played this clip from the tap.
+    const scheme = new URL(createTestToneDataUri({ durationSeconds: 0.15, amplitude: 0 })).protocol;
+    const media = contentSecurityPolicy([]).split("; ").find(d => d.startsWith("media-src "))!.split(" ").slice(1);
+    expect(media).toContain(scheme);
+    expect(media).toEqual(["'self'", "data:"]);
   });
 
   it("разрешает точные адреса Метрики и Вебвизора без wildcard и unsafe-eval", () => {
