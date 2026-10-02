@@ -37,13 +37,15 @@ import type { OwnWalk } from "../walks/own-walk";
 
 type SessionPhase = "reading" | "walking";
 
-export function TourExperience({ route, walk, offline = null, reviewTarget = null, launchTarget = null, own = null }: { route?: Route; walk?: WalkView; offline?: OfflineWalkRef | null; reviewTarget?: ReviewTarget | null; launchTarget?: ReviewTarget | null; own?: OwnWalk | null }) {
+export function TourExperience({ route, walk, offline = null, offlineNotice = "", reviewTarget = null, launchTarget = null, own = null }: { route?: Route; walk?: WalkView; offline?: OfflineWalkRef | null;
+  /** Why the walk opened from its offline copy; shown among the map notices. */
+  offlineNotice?: string; reviewTarget?: ReviewTarget | null; launchTarget?: ReviewTarget | null; own?: OwnWalk | null }) {
   const resolvedRoute = walk ? walkViewToRoute(walk) : route;
   if (!resolvedRoute) return <main className="shell"><section className="hero-copy"><h1>Прогулка не найдена</h1><p className="dek">Откройте ссылку ещё раз или вернитесь к списку прогулок.</p></section></main>;
-  return <AvailableTour route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} />;
+  return <AvailableTour route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} offlineNotice={walk ? offlineNotice : ""} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} />;
 }
 
-function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, reviewTarget, launchTarget, own }: { route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null }) {
+function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, offlineNotice = "", reviewTarget, launchTarget, own }: { route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; offlineNotice?: string; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null }) {
   const [route, setRoute] = useState(initialRoute);
   const firstPoi = route.pois[0];
   const [phase, setPhase] = useState<SessionPhase>("reading");
@@ -346,7 +348,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
 
       {universal && reviewTarget ? <ReviewDialog reviews={reviews} open={rateOpen} onClose={() => setRateOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
       {universal && reviewTarget ? <ImprovementDialog target={reviewTarget} open={improveOpen} onClose={() => setImproveOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
-      {universal ? <WalkSession route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg}
+      {universal ? <WalkSession notice={offlineNotice} route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg}
         user={position.diagnostics.lastFix} positionFailed={positionFailed(position.diagnostics)}
         positionDenied={position.diagnostics.sourceStatus === "permission-denied"} onRetryPosition={position.retry} resume={Boolean(savedCheckpoint)} titleRef={walkTitleRef} startRef={startButtonRef}
         onStart={() => startTour()} onSelect={selectChapter} onStop={stopTour} own={own}

@@ -17,7 +17,6 @@ import { useMapCatalog } from "./use-map-catalog";
 import { rememberGeoPromptDismissal, shouldShowGeoPrompt } from "./geo-prompt";
 import { MapShell } from "../shell/map-shell";
 import { MapControlButton } from "../shell/map-controls";
-import { AroundHeader } from "./around-header";
 import { GeoNotice, LocationPromptSheet, MapHintNotice, NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
 import { isExpandableStory, type StoryPin } from "./story-pin";
 import { useExpandableSheet } from "../shell/use-expandable-sheet";
@@ -276,7 +275,6 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       map={{onViewport,viewState:nearbyMapView,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
         onSelect:id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
         onPoint:point=>creating?setPicked(point):void findPlace(point)}}
-      header={<AroundHeader />}
       controls={creating?null:<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton>}
       notices={notices}
       sheet={sheet} sheetExpanded={reading.expanded&&storyShown} onCollapseSheet={reading.collapse} />

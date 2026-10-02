@@ -44,6 +44,11 @@
   pointer-events: none;
 }
 
+/* Without the bottom navigation the dock goes down to the edge, with the same gutter as at the sides. */
+.frame[data-nav="none"] {
+  padding-bottom: max(var(--shell-gutter), var(--safe-bottom));
+}
+
 .top,
 .dock {
   justify-self: center;

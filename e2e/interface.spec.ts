@@ -150,15 +150,9 @@ test("создаёт A→Б на карте и восстанавливает е
   await expect(page.locator('[data-sheet="creation"]')).toHaveCount(0);
   await expect(page.getByRole("navigation", { name: "Основная навигация" })).toHaveCount(1);
   await expect(page.getByRole("link", { name: "Открыть мою прогулку" })).toHaveCount(0);
-  const frame = page.locator(".walk-session-map");
+  const frame = page.locator('[data-region="map"]');
   await expect(frame).toBeVisible();
-  const geometry = await frame.evaluate(el => {
-    const frame = el.getBoundingClientRect();
-    const map = el.querySelector(".explore-map-layer")!.getBoundingClientRect();
-    return { height: frame.height, contained: map.top >= frame.top && map.bottom <= frame.bottom && map.left >= frame.left && map.right <= frame.right };
-  });
-  expect(geometry.height).toBeGreaterThan(200);
-  expect(geometry.contained).toBe(true);
+  expect(await frame.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThan(200);
   const overlay = frame.locator(".leaflet-route-pane svg");
   await expect(overlay).toBeVisible();
   await expect.poll(() => overlay.evaluate(el => Math.abs(el.getBoundingClientRect().width - Number(el.getAttribute("width"))))).toBeLessThan(2);
@@ -488,7 +482,7 @@ test("прогулка из Александровского сада с чет�
   await page.getByRole("button", { name: "Открыть прогулку", exact: true }).click();
   await expect(page.getByRole("heading", { name: draft.title, exact: true })).toBeVisible();
   await expect(page.getByText("Некорректные данные прогулки.", { exact: true })).toHaveCount(0);
-  const map = page.locator(".walk-session-map");
+  const map = page.locator('[data-region="map"]');
   await map.scrollIntoViewIfNeeded();
   await expect(map.locator(".leaflet-route-pane path[data-route]")).toBeVisible();
   const overlay = map.locator(".leaflet-route-pane svg");
