@@ -35,7 +35,7 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean) {
 }
 
 export function WalkSession({ route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume,
-  titleRef, startRef, onStart, onSelect, onStop, player, story, settings, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
+  titleRef, startRef, onStart, onSelect, onStop, player, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
   positionDenied = false, onRetryPosition = noop }: {
   route: Route; chapters: WalkChapter[]; index: number; active: boolean; completed: boolean;
   /** The finish lies past the last stop: index `chapters.length` is the way there, ended by «Завершить». */
@@ -46,7 +46,11 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
   user: (Coordinates & { accuracyM: number }) | null; positionFailed: boolean; resume: boolean;
   titleRef: RefObject<HTMLHeadingElement | null>; startRef: RefObject<HTMLButtonElement | null>;
   onStart: () => void; onSelect: (index: number) => void; onStop: (completed?: boolean) => void;
-  player: ReactNode; story: ReactNode; settings: ReactNode; audioError: string;
+  player: ReactNode; story: ReactNode; audioError: string;
+  /** Playback settings, shown only during the walk: before the start they are noise on the card. */
+  settings: ReactNode;
+  /** The offline copy controls before the start, under the route in «Остановки»: the copy is saved before going out. */
+  offline?: ReactNode;
   /** «★ 4,6 · 12 оценок» for the reading-phase meta line; empty hides it. */
   ratingLabel?: string;
   /** The viewer already has a review of this walk, so the finish screen offers to edit it. */
@@ -172,13 +176,12 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
           <h1 id="walk-session-title" ref={titleRef} tabIndex={-1}>{completed ? "Прогулка завершена" : active ? chapter?.title ?? route.walk?.finish.address ?? "Прогулка" : route.title.trim() || "Ваш маршрут"}</h1>
         </div>
         {!completed ? <div className="walk-session-heading-actions">
-          <button type="button" className="walk-session-icon" aria-label="Настройки прогулки" aria-expanded={drawer === "settings"} onClick={() => setDrawer(drawer === "settings" ? null : "settings")}>
+          {active ? <button type="button" className="walk-session-icon" aria-label="Настройки прогулки" aria-expanded={drawer === "settings"} onClick={() => setDrawer(drawer === "settings" ? null : "settings")}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor"/><circle cx="15" cy="17" r="3" fill="currentColor"/></svg>
-          </button>
+          </button> : null}
           {active ? <button type="button" className="walk-session-icon" aria-label="Прервать прогулку" aria-haspopup="dialog" onClick={() => setConfirmStop(true)}><ExploreIcon name="close" /></button> : null}
         </div> : null}
       </header>
-      {!active && !completed ? <p className="walk-session-address">{route.walk?.start.address} → {route.walk?.finish.address}</p> : null}
       {!active && !completed ? own?.notes.map(note => <p key={note} className="walk-session-muted">{note}</p>) : null}
       {active && chapter && chapter.title !== chapter.place ? <p className="walk-session-address">{chapter.place}</p> : null}
       {active && !drawer ? player : null}
@@ -194,9 +197,16 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
           : <button type="button" aria-expanded={drawer === "reviews"} onClick={toggleReviews}>Отзывы</button> : null}
       </div> : null}
       {drawer && !completed ? <div className="walk-session-drawer" data-sheet-part="body" key={`${drawer}-${index}`}>
-        {drawer === "stops" ? <ol className="walk-session-stops">{chapters.map((item, position) => <li key={item.id}>
-          {active ? <button type="button" aria-current={position === index ? "step" : undefined} onClick={() => select(position)}><span>{position + 1}</span>{item.title}</button> : <p><span>{position + 1}</span>{item.title}</p>}
-        </li>)}</ol> : drawer === "position" ? <div role="status">
+        {drawer === "stops" ? <>
+          {/* Before the start the addresses live here, not on the card: the card keeps only the title and the action.
+              During the walk the list is for jumping between stops, and on a small screen the lines would crowd the map. */}
+          {!active && route.walk ? <p className="walk-session-endpoint">{route.walk.start.address === route.walk.finish.address ? "Старт и финиш" : "Старт"}: {route.walk.start.address}</p> : null}
+          <ol className="walk-session-stops">{chapters.map((item, position) => <li key={item.id}>
+            {active ? <button type="button" aria-current={position === index ? "step" : undefined} onClick={() => select(position)}><span>{position + 1}</span>{item.title}</button> : <p><span>{position + 1}</span>{item.title}</p>}
+          </li>)}</ol>
+          {!active && route.walk && route.walk.start.address !== route.walk.finish.address ? <p className="walk-session-endpoint">Финиш: {route.walk.finish.address}</p> : null}
+          {!active ? offline : null}
+        </> : drawer === "position" ? <div role="status">
           <p className="walk-session-muted">{!positionFailed ? "Определяем положение…" : positionDenied ? "Сайту запрещён доступ к геопозиции. Разрешите его в браузере — до тех пор остановки переключаются вручную." : "Не удалось определить положение. Проверьте, включена ли геолокация на устройстве, — до тех пор остановки переключаются вручную."}</p>
           {positionFailed ? <GeoHelp open={positionDenied} onRetry={onRetryPosition} /> : null}
         </div> : drawer === "story" ? story : drawer === "reviews" ? reviews : <>

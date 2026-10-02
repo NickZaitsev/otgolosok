@@ -157,7 +157,7 @@ export const SCREEN_STATES: ScreenState[] = [
       return online ? route.fulfill({ json: longStop }) : route.abort("internetdisconnected");
     });
     await page.goto("/walk?catalog=paveletskaya");
-    await page.getByRole("button", { name: "Настройки прогулки" }).click();
+    await page.getByRole("button", { name: /^Остановки ·/ }).click();
     await page.getByRole("button", { name: "Сохранить прогулку без сети" }).first().click();
     await expect(page.getByText(/^Офлайн-копия сохранена/).first()).toBeVisible();
     online = false;

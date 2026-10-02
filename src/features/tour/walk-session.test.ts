@@ -72,7 +72,7 @@ function sessionDocument(props: { active?: boolean; completed?: boolean; ratingL
 }
 const buttonTexts = (document: Document) => [...document.querySelectorAll("button")].map(button => button.textContent);
 
-async function mountSession(props: { active?: boolean; completed?: boolean; ratingLabel?: string; ratingCount?: number | null; reviewable?: boolean; improvable?: boolean }) {
+async function mountSession(props: { active?: boolean; completed?: boolean; ratingLabel?: string; ratingCount?: number | null; reviewable?: boolean; improvable?: boolean; walk?: Route["walk"]; offline?: boolean }) {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
   const container = document.createElement("div");
@@ -80,11 +80,12 @@ async function mountSession(props: { active?: boolean; completed?: boolean; rati
   const root = createRoot(container);
   const onRate = vi.fn(), onImprove = vi.fn();
   await act(async () => root.render(createElement(WalkSession, {
-    route, chapters, index: 0, active: props.active ?? false, completed: props.completed ?? false,
+    route: props.walk ? { ...route, walk: props.walk } : route, chapters, index: 0, active: props.active ?? false, completed: props.completed ?? false,
     user: null, positionFailed: false, resume: false,
     titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
     onStart: () => {}, onSelect: () => {}, onStop: () => {},
     player: null, story: null, settings: createElement("p", null, "настройки"), audioError: "",
+    offline: props.offline ? createElement("p", { "data-testid": "offline" }, "офлайн") : null,
     ratingLabel: props.ratingLabel, ratingCount: props.ratingCount,
     reviews: props.reviewable === false ? null : createElement("p", { "data-testid": "reviews" }, "список"), onRate,
     onImprove: props.improvable === false ? null : onImprove,
@@ -146,6 +147,45 @@ it.each([
   const edit = [...document.querySelectorAll("a")].find(link => link.textContent === "Изменить маршрут");
   expect(edit?.getAttribute("href") ?? null).toBe(shown ? own.editHref : null);
   expect(document.body.textContent?.includes(own.notes[0])).toBe(shown);
+});
+
+it.each([
+  [false, false],
+  [true, true],
+])("кнопка настроек есть только во время прогулки: active=%s → %s", (active, shown) => {
+  expect(Boolean(sessionDocument({ active }).querySelector("[aria-label='Настройки прогулки']"))).toBe(shown);
+});
+
+it("адреса старта и финиша не занимают карточку до старта", () => {
+  const text = sessionDocument({}).querySelector(".walk-session-panel")?.textContent ?? "";
+  expect(text).not.toContain(route.walk!.start.address);
+  expect(text).not.toContain(route.walk!.finish.address);
+});
+
+const start = { ...route.walk!.start, address: "Москва, Никитский бульвар, 8" };
+it.each([
+  ["разные адреса", { ...route.walk!.finish, address: "Москва, Тверская, 1" }, ["Старт: Москва, Никитский бульвар, 8", "Финиш: Москва, Тверская, 1"]],
+  ["кольцевой маршрут", { ...route.walk!.finish, address: start.address }, ["Старт и финиш: Москва, Никитский бульвар, 8"]],
+])("«Остановки» показывают старт и финиш маршрута, %s", async (_, finish, expected) => {
+  const session = await mountSession({ walk: { ...route.walk!, start, finish } });
+  await session.click(session.find(`Остановки · ${chapters.length}`)!);
+  expect([...session.container.querySelectorAll(".walk-session-endpoint")].map(line => line.textContent)).toEqual(expected);
+  await session.unmount();
+});
+
+it("во время прогулки «Остановки» — только список остановок, без адресов старта и финиша", async () => {
+  const session = await mountSession({ active: true });
+  await session.click(session.find(`Остановки · ${chapters.length}`)!);
+  expect(session.container.querySelector(".walk-session-stops")).not.toBeNull();
+  expect(session.container.querySelector(".walk-session-endpoint")).toBeNull();
+  await session.unmount();
+});
+
+it.each([[false, true], [true, false]])("офлайн-копия в «Остановках» при active=%s показана — %s", async (active, shown) => {
+  const session = await mountSession({ active, offline: true });
+  await session.click(session.find(`Остановки · ${chapters.length}`)!);
+  expect(Boolean(session.container.querySelector("[data-testid=offline]"))).toBe(shown);
+  await session.unmount();
 });
 
 it("после завершения прогулки без отзывов главная кнопка — «На карту»", () => {

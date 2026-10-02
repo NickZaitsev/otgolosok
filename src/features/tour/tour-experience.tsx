@@ -329,6 +329,11 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const audioButtonLabel = audioStatus === "loading" ? "Отменить запуск" : audioStatus === "playing" ? "Пауза" : audioStatus === "paused" ? "Продолжить" : audioStatus === "ended" ? "Слушать ещё раз" : audioStatus === "unlocking" ? "Включить звук" : audioStatus === "blocked" || audioStatus === "error" ? "Повторить запуск звука" : walkUsesTestAudio ? "Проверить звук" : walkAudioUrl ? "Слушать историю" : "Аудио ещё не готово";
   const player: PlayerState = { status: audioStatus, position: playbackTime, duration, canSeek, label: audioButtonLabel, source: walkAudioUrl, testTone: walkUsesTestAudio };
   const toggleSources = () => setShowSources((value) => !value);
+  // During the walk it sits in the settings, before the start in «Остановки», where the settings button is gone.
+  const offlineControls = offlineRef || shellStatus ? <>
+    {offlineRef ? <OfflineCopyControls copy={offlineCopy} statusClassName="walk-session-muted" /> : null}
+    {shellStatus ? <p className="walk-session-muted" role="status">{shellStatus}</p> : null}
+  </> : null;
 
   return (
     <main className={universal ? "walk-session" : isWalking ? "shell" : undefined} data-mode={isWalking ? "walk" : "reading"}>
@@ -355,9 +360,8 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
         settings={<div className="walk-session-settings">
           <label>Переключение остановок<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{advanceModeLabels[mode]}</option>)}</select></label>
           <label>Скорость аудио<select value={settings.rate} onChange={event => updateSettings({ rate: Number(event.target.value) as PlaybackRate })}>{playbackRates.map(rate => <option key={rate} value={rate}>{String(rate).replace(".", ",")}×</option>)}</select></label>
-          {offlineRef ? <OfflineCopyControls copy={offlineCopy} statusClassName="walk-session-muted" /> : null}
-          {shellStatus ? <p className="walk-session-muted" role="status">{shellStatus}</p> : null}
-        </div>} /> : isWalking ? (
+          {offlineControls}
+        </div>} offline={offlineControls ? <div className="walk-session-offline">{offlineControls}</div> : null} /> : isWalking ? (
         <ClassicWalkView route={route} chapters={chapters} chapterIndex={chapterIndex} titleRef={walkTitleRef}
           diagnostics={position.diagnostics} triggerConfig={triggerConfig} player={player} wakeStatus={wakeStatus}
           settings={settings} onSettings={updateSettings} showSources={showSources} onToggleSources={toggleSources}
