@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode, type Ref } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type Ref } from "react";
 import { cx } from "../ui/cx";
 import styles from "./sheet.module.css";
 
@@ -45,8 +45,10 @@ type Props = {
 export function Sheet({ id, label, labelledBy, media, corner, handle, expanded = false, header, footer, children, bodyLabel, className, sheetRef, name, state }: Props) {
   const body = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
+  const foot = useRef<HTMLDivElement>(null);
   const [scrollable, setScrollable] = useState(false);
-  const hasBody = Boolean(children);
+  const [footerSize, setFooterSize] = useState(0);
+  const hasBody = Boolean(children), hasFooter = Boolean(footer);
   useEffect(() => {
     const element = body.current, inner = content.current;
     if (!element || !inner) return;
@@ -58,10 +60,22 @@ export function Sheet({ id, label, labelledBy, media, corner, handle, expanded =
     observer.observe(inner);
     return () => observer.disconnect();
   }, [hasBody]);
+  // An expanded sheet keeps what it scrolls into view (focus, a new message) clear of its pinned footer.
+  useEffect(() => {
+    const element = foot.current;
+    if (!element) { setFooterSize(0); return; }
+    const measure = () => setFooterSize(element.offsetHeight);
+    measure();
+    // Expanding only adds the footer's padding and border: watch the border box it is measured by.
+    const observer = new ResizeObserver(measure);
+    observer.observe(element, { box: "border-box" });
+    return () => observer.disconnect();
+  }, [hasFooter]);
 
   return <section ref={sheetRef} id={id} className={cx(styles.sheet, className)} data-region="sheet" data-sheet={name} data-state={state}
     data-expandable={handle ? "" : undefined} data-expanded={handle && expanded ? "" : undefined}
-    aria-label={labelledBy ? undefined : label} aria-labelledby={labelledBy}>
+    aria-label={labelledBy ? undefined : label} aria-labelledby={labelledBy}
+    style={footerSize ? { "--sheet-footer-size": `${footerSize}px` } as CSSProperties : undefined}>
     {/* Controls that float over the sheet and stay at its top while an expanded sheet scrolls. */}
     {corner || handle ? <div className={styles.chrome} data-sheet-part="chrome">
       {handle ? <div className={styles.handle} data-sheet-part="handle">{handle}</div> : null}
@@ -73,6 +87,6 @@ export function Sheet({ id, label, labelledBy, media, corner, handle, expanded =
       role={bodyLabel ? "region" : undefined} aria-label={bodyLabel}
       // Only a body that actually scrolls is worth a stop in the tab order; an expandable one never does.
       tabIndex={scrollable && !handle ? 0 : undefined}><div ref={content} className={styles.content}>{children}</div></div> : null}
-    {footer ? <div className={styles.footer} data-sheet-part="footer">{footer}</div> : null}
+    {footer ? <div ref={foot} className={styles.footer} data-sheet-part="footer">{footer}</div> : null}
   </section>;
 }
