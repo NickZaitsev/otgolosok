@@ -35,17 +35,18 @@ Production: https://otgolosok.online
 ## Домен
 
 Основной адрес — `otgolosok.online` (регистратор reg.ru, DNS в Cloudflare:
-`A @` и `A www` → адрес production-VPS). `www.otgolosok.online` и старый
-`otgolosok.softmg.tech` отвечают 301 на `https://otgolosok.online` с сохранением
-пути и query: это отдельный Traefik router `otgolosok-softmg-tech-redirect`,
-который `deploy-otgolosok-prod` создаёт через `PUBLIC_HOST` и `REDIRECT_HOSTS`
-в `deploy-static.sh`. Каталог `/srv/sites/otgolosok.softmg.tech`, сеть
+`A @` и `A www` → адрес production-VPS). `www.otgolosok.online` отвечает 301
+на `https://otgolosok.online` с сохранением пути и query: это отдельный Traefik
+router `otgolosok-softmg-tech-redirect`, который `deploy-otgolosok-prod` создаёт
+через `PUBLIC_HOST` и `REDIRECT_HOSTS` в `deploy-static.sh`. Старый домен
+`otgolosok.softmg.tech` удалён из DNS и больше не обслуживается. Каталог
+`/srv/sites/otgolosok.softmg.tech`, сеть
 `otgolosoksoftmgtech-net` и имена Compose-проектов сохранили старый домен — это
 внутренние идентификаторы, переименовывать их не нужно.
 
 Backend принимает только один origin (`APP_ORIGIN=https://otgolosok.online`):
 Better Auth и проверки same-origin отклоняют запросы с других хостов. Поэтому
-старые хосты перенаправляются целиком, а не обслуживают сайт параллельно.
+`www` перенаправляется целиком, а не обслуживают сайт параллельно.
 Сертификаты выпускает Traefik через Let's Encrypt HTTP-01. Если в Cloudflare
 включить проксирование (оранжевое облако), нужен режим SSL «Full (strict)», а
 лимиты по IP в backend начнут видеть адреса Cloudflare вместо клиентов, пока

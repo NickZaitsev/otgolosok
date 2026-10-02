@@ -84,7 +84,7 @@ OSM-данных недостаточно для надёжного опреде
 ### 3. Проверить результат
 
 ```bash
-curl -fsS 'https://otgolosok.softmg.tech/api/content/places?status=ready&limit=10'
+curl -fsS 'https://otgolosok.online/api/content/places?status=ready&limit=10'
 ```
 
 Ход выполнения и ошибки видны в разделе `content` production-админки.
