@@ -39,7 +39,8 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 
     await expect(navigation).toBeVisible();
     await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
     await expect(page.getByRole("heading", { name: stops[0].address, exact: true })).toBeVisible();
-    await expect(page.locator(".walk-session-meta")).toHaveText("К остановке 1 из 2");
+    await expect(page.locator(".walk-session-tools button").first()).toHaveText("Остановка 1 из 2");
+    await expect(page.locator(".walk-session-meta")).toHaveCount(0);
     await expect(map).toBeVisible();
     // Идущая прогулка занимает весь экран: нижней навигации нет до остановки или завершения.
     await expect(navigation).toHaveCount(0);
@@ -133,14 +134,14 @@ test("аудио, текст и список остановок открываю
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
   await expect(page.getByRole("region", { name: "Плеер истории" })).toBeVisible();
   // По дороге к остановке ничего не играет. Первая остановка — у самого старта: идти до неё нечего, участок не подсвечен.
-  await expect(page.locator(".walk-session-meta")).toHaveText("К остановке 1 из 4");
+  await expect(page.locator(".walk-session-tools button").first()).toHaveText("Остановка 1 из 4");
+  await expect(page.locator(".walk-session-meta")).toHaveCount(0);
   expect(await storyPlaying(page)).toBe(false);
   const activeLeg = page.locator('.walk-session-map [data-route-part="active"]');
   await expect(activeLeg).toHaveCount(0);
   // «Слушать историю» — это «я на месте»: история играет, подсвечен уже участок к следующей остановке.
   await page.getByRole("button", { name: "Слушать историю", exact: true }).click();
   await expect(page.getByRole("button", { name: "Пауза", exact: true })).toBeVisible();
-  await expect(page.locator(".walk-session-meta")).toHaveText("Остановка 1 из 4");
   await expect(activeLeg).toHaveCount(1);
   const secondLeg = await activeLeg.getAttribute("d");
   await page.getByRole("button", { name: "Пауза", exact: true }).click();
@@ -152,19 +153,24 @@ test("аудио, текст и список остановок открываю
   await page.getByLabel("Переключение остановок").selectOption("manual");
   await page.getByLabel("Скорость аудио").selectOption("1.25");
   await page.getByRole("button", { name: "Настройки прогулки" }).click();
-  await page.getByRole("button", { name: /Остановки ·/ }).click();
+  await page.getByRole("button", { name: /^Остановка \d+ из/ }).click();
   await page.locator(".walk-session-stops button").nth(1).click();
   await expect(page.getByRole("heading", { name: "Название с оврагом внутри", exact: true })).toBeVisible();
-  await expect(page.locator(".walk-session-meta")).toHaveText("К остановке 2 из 4");
+  await expect(page.locator(".walk-session-tools button").first()).toHaveText("Остановка 2 из 4");
   await page.getByRole("button", { name: "Слушать историю", exact: true }).click();
   await expect(page.getByRole("button", { name: "Пауза", exact: true })).toBeVisible();
   await expect.poll(() => page.locator("audio").evaluate(el => (el as HTMLAudioElement).playbackRate)).toBe(1.25);
   await page.getByRole("button", { name: "Дальше", exact: true }).click();
-  await expect(page.locator(".walk-session-meta")).toHaveText("К остановке 3 из 4");
+  await expect(page.locator(".walk-session-tools button").first()).toHaveText("Остановка 3 из 4");
+  await expect(page.getByRole("button", { name: "Слушать историю", exact: true })).toBeVisible();
   await expect.poll(() => page.locator("audio").evaluate(el => (el as HTMLAudioElement).paused)).toBe(true);
   await expect.poll(() => activeLeg.getAttribute("d"), { message: "подсвечен участок к третьей остановке" }).not.toBe(secondLeg);
   await page.screenshot({ path: info.outputPath("audio-session.png") });
-  await page.getByRole("link", { name: "Закрыть прогулку" }).click();
+  await page.getByRole("button", { name: "Прервать прогулку" }).click();
+  await page.getByRole("dialog", { name: "Прервать прогулку?" }).getByRole("button", { name: "Прервать", exact: true }).click();
+  // В шапке крестика нет: прогулку закрывает крестик в карточке.
+  await expect(page.locator(".walk-session-header").getByRole("link", { name: "Закрыть прогулку" })).toHaveCount(0);
+  await page.locator(".walk-session-panel").getByRole("link", { name: "Закрыть прогулку" }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator(".walk-session")).toHaveCount(0);
   // Закрытая во время прогулки страница не оставляет стартовую карту без навигации.
@@ -330,7 +336,7 @@ for (const viewport of [{ width: 320, height: 568 }, { width: 844, height: 390 }
 // Одна остановка с длинной историей и аудио: панель прогулки становится самой высокой.
 const catalog = routeData as Route;
 const longStop = routeToWalkView({ ...catalog, walk: { ...catalog.walk!, steps: catalog.walk!.steps.slice(-1) } });
-const mapControls = { "крестик": ".walk-session-back", "плюс": ".leaflet-control-zoom-in", "минус": ".leaflet-control-zoom-out",
+const mapControls = { "плюс": ".leaflet-control-zoom-in", "минус": ".leaflet-control-zoom-out",
   "геопозиция": ".walk-session-locate", "подпись OSM": ".map-attribution" };
 
 // Кнопка свободна, если она целиком в окне, на неё не заходят панель и навигация (до старта), а в её центре — она сама.
@@ -403,7 +409,7 @@ async function checkPanelStates(page: Page, check: (state: string) => Promise<vo
 // Кнопки карты свободны, а первая остановка видна.
 async function expectMapUsable(page: Page, state: string) {
   const controls = await controlsState(page);
-  expect(Object.keys(controls), state).toEqual(expect.arrayContaining(["крестик", "плюс", "минус", "подпись OSM"]));
+  expect(Object.keys(controls), state).toEqual(expect.arrayContaining(["плюс", "минус", "подпись OSM"]));
   expect(controls, state).toEqual(Object.fromEntries(Object.keys(controls).map(name => [name, "свободна"])));
   await expect.poll(() => firstStopIsVisible(page), { message: `первая остановка видна: ${state}` }).toBe(true);
 }
@@ -429,7 +435,7 @@ test.describe("панель прогулки на телефоне", () => {
   // Сенсорный экран: на горизонтальном телефоне навигация тогда островок во всю ширину окна.
   test.use({ hasTouch: true, isMobile: true });
 
-  // Во всю ширину (уже 700 px) панель поднималась до 20 px от верха и закрывала крестик и кнопки масштаба,
+  // Во всю ширину (уже 700 px) панель поднималась до 20 px от верха и закрывала кнопки шапки и масштаба,
   // а по центру (шире) карта вписывала маршрут над панелью, где места не было, и линия пропадала.
   // Теперь панель — колонкой справа, как карточка на стартовой карте, а кнопки карты — в левой колонке.
   for (const [width, height] of [[667, 375], [568, 320], [844, 390]]) {
@@ -558,15 +564,16 @@ test.describe("переключение остановок", () => {
 
   test("по месту история начинается сама, когда идущий подходит к остановке", async ({ page }) => {
     await open(page, "place", "&replay=walk&speed=20");
-    await expect(page.locator(".walk-session-meta")).toHaveText("К остановке 1 из 4 · начнётся, когда подойдёте");
+    await expect(page.locator(".walk-session-meta")).toHaveText("Начнётся, когда подойдёте");
     expect(await storyPlaying(page)).toBe(false);
-    await expect(page.locator(".walk-session-meta")).toHaveText("Остановка 1 из 4", { timeout: 20_000 });
+    await expect(page.locator(".walk-session-meta")).toHaveCount(0, { timeout: 20_000 });
     await expect.poll(() => paused(page)).toBe(false);
   });
 
   test("подряд история играет сразу, без дороги к остановке", async ({ page }) => {
     await open(page, "sequence");
-    await expect(page.locator(".walk-session-meta")).toHaveText("Остановка 1 из 4");
+    await expect(page.locator(".walk-session-tools button").first()).toHaveText("Остановка 1 из 4");
+    await expect(page.locator(".walk-session-meta")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Пауза", exact: true })).toBeVisible();
     await expect.poll(() => storyPlaying(page)).toBe(true);
   });

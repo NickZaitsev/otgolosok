@@ -26,12 +26,12 @@ function StopPhoto({ placeId, title }: { placeId: string; title: string }) {
 }
 
 /**
- * After «К остановке N из M»: that the story will start by itself on arrival. Only for `place`:
- * in `manual` the «Слушать историю» button already says what to do. The meta line costs no extra
- * height, unlike a line of its own, which pushed the primary action out of a small panel.
+ * On the way to a stop: that the story will start by itself on arrival. Only for `place`:
+ * in `manual` the «Слушать историю» button already says what to do. It takes the meta line above
+ * the title, unlike a line of its own, which pushed the primary action out of a small panel.
  */
 export function approachHint(advance: AdvanceMode, hasAudio: boolean) {
-  return hasAudio && advance === "place" ? "начнётся, когда подойдёте" : "";
+  return hasAudio && advance === "place" ? "Начнётся, когда подойдёте" : "";
 }
 
 export function WalkSession({ route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume,
@@ -150,6 +150,8 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
   const canStart = geometry.length > 1;
   // After the last stop comes the way to the finish, when it lies elsewhere.
   const next = index + 1 < chapters.length || (finishLeg && index + 1 === chapters.length);
+  const meta = !active ? `${route.duration_min} мин · ${distance.toLocaleString("ru-RU", { maximumFractionDigits: 1 })} км`
+    : !chapter ? "До финиша" : stage === "approach" ? approachHint(advance, Boolean(chapter.audio)) : "";
 
   return <>
     <div className="walk-session-map">
@@ -161,7 +163,6 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
     </div>
     <header ref={headerRef} className="walk-session-header" data-region="header">
       <Link href="/" prefetch={false} className="walk-session-brand" aria-label="Отголосок, на главную" onClick={() => onStop()}><BrandMark /></Link>
-      <Link className="walk-session-back" href="/" prefetch={false} aria-label="Закрыть прогулку" onClick={() => onStop()}><ExploreIcon name="close" /></Link>
     </header>
     {active && user ? <button type="button" className="walk-session-locate" data-region="controls" aria-label="Моё местоположение" onClick={() => setFocus({ lat: user.lat, lon: user.lon, zoom: 16 })}><ExploreIcon name="locate" /></button> : null}
     <section ref={panelRef} className="walk-session-panel" data-region="sheet" aria-labelledby="walk-session-title">
@@ -169,16 +170,19 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
       {active && chapter?.place_id && !drawer ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} title={chapter.title} /></div> : null}
       <header className="walk-session-heading">
         <div>
-          <p className="walk-session-meta">{active ? chapter ? stage === "approach" ? [`К остановке ${index + 1} из ${chapters.length}`, approachHint(advance, Boolean(chapter.audio))].filter(Boolean).join(" · ") : `Остановка ${index + 1} из ${chapters.length}` : "До финиша" : `${route.duration_min} мин · ${distance.toLocaleString("ru-RU", { maximumFractionDigits: 1 })} км`}{!active && !completed && ratingLabel ? <> · {reviews
+          {/* During the walk the stop number lives on the «Остановки» button; this line is left for the hint and the finish. */}
+          {meta ? <p className="walk-session-meta">{meta}{!active && !completed && ratingLabel ? <> · {reviews
             ? <button type="button" className="walk-session-rating" aria-expanded={drawer === "reviews"} onClick={toggleReviews}>{ratingLabel}</button>
-            : ratingLabel}</> : null}</p>
+            : ratingLabel}</> : null}</p> : null}
           <h1 id="walk-session-title" ref={titleRef} tabIndex={-1}>{completed ? "Прогулка завершена" : active ? chapter?.title ?? route.walk?.finish.address ?? "Прогулка" : route.title.trim() || "Ваш маршрут"}</h1>
         </div>
         {!completed ? <div className="walk-session-heading-actions">
           {active ? <button type="button" className="walk-session-icon" aria-label="Настройки прогулки" aria-expanded={drawer === "settings"} onClick={() => setDrawer(drawer === "settings" ? null : "settings")}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor"/><circle cx="15" cy="17" r="3" fill="currentColor"/></svg>
           </button> : null}
-          {active ? <button type="button" className="walk-session-icon" aria-label="Прервать прогулку" aria-haspopup="dialog" onClick={() => setConfirmStop(true)}><ExploreIcon name="close" /></button> : null}
+          {/* The cross belongs to the card: during the walk it interrupts it after a confirmation, before the start it leaves for the map. */}
+          {active ? <button type="button" className="walk-session-icon" aria-label="Прервать прогулку" aria-haspopup="dialog" onClick={() => setConfirmStop(true)}><ExploreIcon name="close" /></button>
+            : <Link className="walk-session-icon" href="/" prefetch={false} aria-label="Закрыть прогулку" onClick={() => onStop()}><ExploreIcon name="close" /></Link>}
         </div> : null}
       </header>
       {!active && !completed ? own?.notes.map(note => <p key={note} className="walk-session-muted">{note}</p>) : null}
@@ -187,7 +191,7 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
       {active && audioError ? <p className="walk-session-notice" role="status">{audioError}</p> : null}
       {active && chapter && !chapter.audio && !hasText ? <p className="walk-session-muted">Без истории</p> : null}
       {!completed ? <div className="walk-session-tools">
-        {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />Остановки · {chapters.length}</button> : null}
+        {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />{active && chapter ? `Остановка ${index + 1} из ${chapters.length}` : `Остановки · ${chapters.length}`}</button> : null}
         {active && (positionFailed || drawer === "position") ? <button type="button" className="walk-session-position" aria-expanded={drawer === "position"} onClick={retryPosition}><ExploreIcon name="locate" />Геопозиции нет</button> : null}
         {!active && own ? <Link href={own.editHref} prefetch={false}>Изменить маршрут</Link> : null}
         {active && hasText ? <button type="button" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}>Читать историю</button> : null}

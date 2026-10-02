@@ -175,7 +175,7 @@ it.each([
 
 it("во время прогулки «Остановки» — только список остановок, без адресов старта и финиша", async () => {
   const session = await mountSession({ active: true });
-  await session.click(session.find(`Остановки · ${chapters.length}`)!);
+  await session.click(session.find(`Остановка 1 из ${chapters.length}`)!);
   expect(session.container.querySelector(".walk-session-stops")).not.toBeNull();
   expect(session.container.querySelector(".walk-session-endpoint")).toBeNull();
   await session.unmount();
@@ -183,7 +183,7 @@ it("во время прогулки «Остановки» — только с�
 
 it.each([[false, true], [true, false]])("офлайн-копия в «Остановках» при active=%s показана — %s", async (active, shown) => {
   const session = await mountSession({ active, offline: true });
-  await session.click(session.find(`Остановки · ${chapters.length}`)!);
+  await session.click(session.find(active ? `Остановка 1 из ${chapters.length}` : `Остановки · ${chapters.length}`)!);
   expect(Boolean(session.container.querySelector("[data-testid=offline]"))).toBe(shown);
   await session.unmount();
 });
@@ -258,13 +258,13 @@ it("итог оценок в описании — кнопка, открываю
 });
 
 it.each([
-  { stage: "approach" as const, advance: "place" as const, audio: true, meta: "К остановке 2 из 4 · начнётся, когда подойдёте" },
-  { stage: "approach" as const, advance: "manual" as const, audio: true, meta: "К остановке 2 из 4" },
-  { stage: "approach" as const, advance: "sequence" as const, audio: true, meta: "К остановке 2 из 4" },
-  { stage: "approach" as const, advance: "place" as const, audio: false, meta: "К остановке 2 из 4" },
-  { stage: "stop" as const, advance: "place" as const, audio: true, meta: "Остановка 2 из 4" },
-  { stage: "stop" as const, advance: "manual" as const, audio: true, meta: "Остановка 2 из 4" },
-])("на пути к остановке и у неё: $stage, $advance, аудио $audio", ({ stage, advance, audio, meta }) => {
+  { stage: "approach" as const, advance: "place" as const, audio: true, meta: "Начнётся, когда подойдёте" },
+  { stage: "approach" as const, advance: "manual" as const, audio: true, meta: null },
+  { stage: "approach" as const, advance: "sequence" as const, audio: true, meta: null },
+  { stage: "approach" as const, advance: "place" as const, audio: false, meta: null },
+  { stage: "stop" as const, advance: "place" as const, audio: true, meta: null },
+  { stage: "stop" as const, advance: "manual" as const, audio: true, meta: null },
+])("номер остановки — на кнопке списка, над заголовком только подсказка: $stage, $advance, аудио $audio", ({ stage, advance, audio, meta }) => {
   const stops = chapters.map(chapter => ({ ...chapter, audio: audio ? chapter.audio : undefined }));
   expect(stops[1].audio === undefined).toBe(!audio);
   const markup = renderToStaticMarkup(createElement(WalkSession, {
@@ -275,7 +275,21 @@ it.each([
     player: null, story: null, settings: null, audioError: "",
   }));
   const document = new DOMParser().parseFromString(markup, "text/html");
-  expect(document.querySelector(".walk-session-meta")?.textContent).toBe(meta);
+  expect(document.querySelector(".walk-session-meta")?.textContent ?? null).toBe(meta);
+  expect(document.querySelector(".walk-session-tools button")?.textContent).toBe(`Остановка 2 из ${chapters.length}`);
+});
+
+it("на пути к финишу после последней остановки кнопка списка снова называет все остановки", () => {
+  const markup = renderToStaticMarkup(createElement(WalkSession, {
+    route, chapters, index: chapters.length, finishLeg: true, active: true, completed: false,
+    user: null, positionFailed: false, resume: false,
+    titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
+    onStart: () => {}, onSelect: () => {}, onStop: () => {},
+    player: null, story: null, settings: null, audioError: "",
+  }));
+  const document = new DOMParser().parseFromString(markup, "text/html");
+  expect(document.querySelector(".walk-session-meta")?.textContent).toBe("До финиша");
+  expect(document.querySelector(".walk-session-tools button")?.textContent).toBe(`Остановки · ${chapters.length}`);
 });
 
 async function mountPosition(denied: boolean) {
@@ -305,7 +319,7 @@ it.each([
 ])("«Геопозиции нет» стоит рядом с «Остановками» и по нажатию снова запрашивает доступ (запрещён=%s)", async (denied, message, helpOpen) => {
   const session = await mountPosition(denied);
   const tools = [...session.container.querySelectorAll(".walk-session-tools button")].map(item => item.textContent);
-  expect(tools.slice(0, 2)).toEqual([`Остановки · ${chapters.length}`, "Геопозиции нет"]);
+  expect(tools.slice(0, 2)).toEqual([`Остановка 1 из ${chapters.length}`, "Геопозиции нет"]);
   expect(session.container.textContent).not.toContain("Геопозиция недоступна");
 
   await act(async () => session.button()!.click());

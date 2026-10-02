@@ -13,11 +13,10 @@
 .walk-session-map .leaflet-overlay-pane svg{max-width:none;max-height:none}
 .walk-session-map .leaflet-bottom.leaflet-right{top:var(--walk-controls-top);bottom:auto;right:12px}
 .walk-session-map .map-attribution{top:var(--walk-controls-top);bottom:auto;left:12px;right:auto}
-/* Шапка как на стартовой карте: логотип слева, закрытие прогулки справа. Высота 62 px:
+/* Шапка как на стартовой карте: логотип слева; крестик прогулки — в её карточке. Высота 62 px:
    от её низа на 12 px ниже начинаются кнопки карты (--walk-controls-top). */
 .walk-session-header{position:absolute;z-index:3;top:var(--walk-header-top);left:12px;right:12px;display:flex;align-items:center;gap:4px;box-sizing:border-box;height:62px;padding:8px 8px 8px 16px;border:1px solid #203e3818;border-radius:24px;background:#fffaf0f2;box-shadow:0 8px 30px #203e3824}
 .walk-session-brand{min-width:0;margin-right:auto;color:inherit;text-decoration:none;font-size:var(--text-control)}
-.walk-session-back{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;color:inherit}
 .walk-session-locate{position:absolute;z-index:2;right:18px;top:calc(var(--walk-controls-top) + 84px);display:grid;place-items:center;width:44px;height:44px;border:1px solid #203e3818;border-radius:50%;background:#fffaf0;color:inherit;box-shadow:0 4px 16px #203e3814;cursor:pointer}
 .walk-session-panel{position:absolute;z-index:2;display:flex;flex-direction:column;bottom:calc(104px + 2 * env(safe-area-inset-bottom));left:12px;right:12px;max-height:calc(100dvh - 104px - var(--walk-controls-top) - 2 * env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;padding:20px;border:1px solid #203e3818;border-radius:24px;background:#fffaf0;box-shadow:0 8px 30px #203e3824}
 /* The panel is a column so that on a short screen its flexible parts shrink instead of the whole panel scrolling:
@@ -94,11 +93,11 @@
 @media(max-height:560px){.walk-session-panel{padding:12px 16px}.walk-session-heading h1{font-size:18px}.walk-session-address{margin-top:6px}.walk-session-actions{margin-top:8px}.walk-session-primary{min-height:42px;padding:8px 14px}.walk-session-tools:has(button,a){margin-top:4px}.walk-session-photo{margin:-12px -16px 10px}}
 
 /* Низкий горизонтальный экран: панель во всю ширину или по центру поднималась почти
-   до верха и закрывала крестик, кнопки масштаба и линию маршрута. Как карточка на
+   до верха и закрывала кнопки шапки, кнопки масштаба и линию маршрута. Как карточка на
    стартовой карте, она стоит колонкой справа над навигацией, кнопки карты — в ряд
    слева над навигацией, подпись OSM — между панелью и навигацией. По --walk-panel-dock
    walk-session.tsx вписывает маршрут слева от панели, а не над ней. Шапка стоит в левой
-   колонке шириной по содержимому (280 px): логотип и кнопка закрытия. Панель шириной 420 px,
+   колонке шириной 280 px: логотип. Панель шириной 420 px,
    как на компьютере, но оставляет слева место шапке с полями: чем шире колонка, тем
    реже переносится текст и тем меньше прокрутка панели. Шире 700 px блок min-width:700px
    ставит шапку по центру сдвигом и отступом 18 px, поэтому здесь они отменяются. */

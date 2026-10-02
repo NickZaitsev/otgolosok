@@ -132,7 +132,7 @@ export const SCREEN_STATES: ScreenState[] = [
   { screen: "прогулка", state: "список остановок", options: { map: true }, open: async page => {
     await openLocalWalk(page);
     await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
-    await page.getByRole("button", { name: /^Остановки ·/ }).click(); await mapReady(page);
+    await page.getByRole("button", { name: /^Остановка \d+ из/ }).click(); await mapReady(page);
   } },
   { screen: "прогулка", state: "настройки", options: { map: true }, open: async page => {
     await startLongWalk(page);
