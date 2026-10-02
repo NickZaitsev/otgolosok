@@ -184,3 +184,77 @@
     width: min(var(--island-max), 100%);
   }
 }
+
+/*
+ * An expanded sheet (see Sheet `expanded`): the navigation is hidden, the map stays where it was and is dimmed
+ * by the scrim, which a click collapses through. Stack: the sheet takes the whole screen inside the safe areas,
+ * edge to edge; the frame paints the strips under the notches in the sheet's colour. Side and centred columns:
+ * the sheet takes the column's full height, still an island.
+ * The scrim is on the map's level, painted after it; the frame stays above.
+ */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-map);
+  pointer-events: auto;
+  background: color-mix(in srgb, var(--map-green) 35%, transparent);
+}
+
+.frame[data-sheet-mode="expanded"] {
+  --sheet-radius: 0;
+  --sheet-border: 0;
+  --sheet-shadow: none;
+
+  grid-template: "dock" minmax(0, 1fr) / minmax(0, 1fr);
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+  background: var(--surface-island);
+}
+
+.frame[data-sheet-mode="expanded"] :is(.top, .free, .attribution, .notices) {
+  display: none;
+}
+
+.frame[data-sheet-mode="expanded"] .dock {
+  width: 100%;
+}
+
+.frame[data-sheet-mode="expanded"] .dock > :not(.notices) {
+  flex: 1 1 auto;
+}
+
+@media (width >= 700px), (width >= 568px) and (height <= 560px) {
+  .frame[data-sheet-mode="expanded"] {
+    --sheet-radius: initial;
+    --sheet-border: initial;
+    --sheet-shadow: initial;
+
+    grid-template:
+      "top dock" auto
+      "free dock" minmax(0, 1fr)
+      / minmax(17.5rem, 1fr) minmax(0, var(--sheet-w));
+    padding: calc(var(--safe-top) + var(--attribution-strip))
+      max(var(--shell-gutter), var(--safe-right))
+      max(var(--shell-gutter), var(--safe-bottom))
+      max(var(--shell-gutter), var(--safe-left));
+    background: none;
+  }
+
+  /* The map stays visible beside the column, and so does its attribution. */
+  .frame[data-sheet-mode="expanded"] :is(.free, .attribution) {
+    display: block;
+  }
+}
+
+@media (width >= 700px) and (height > 560px) {
+  .frame[data-sheet-mode="expanded"] {
+    grid-template: "dock" minmax(0, 1fr) / minmax(0, 1fr);
+  }
+
+  .frame[data-sheet-mode="expanded"] .free {
+    display: none;
+  }
+
+  .frame[data-sheet-mode="expanded"] .dock {
+    width: min(var(--island-max), 100%);
+  }
+}
