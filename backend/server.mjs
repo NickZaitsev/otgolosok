@@ -31,6 +31,7 @@ import { createWalkLaunchRoutes } from "./walk-launch-routes.mjs";
 import { createTopWalks } from "./walk-top.mjs";
 import { createReviewRateLimiter } from "./walk-reviews.mjs";
 import { createWalkReviewRoutes } from "./walk-review-routes.mjs";
+import { createWalkImprovementRoutes } from "./walk-improvement-routes.mjs";
 import { resolveWalkView } from "./walk-view.mjs";
 import { builtinRoutes } from "./builtin-routes.mjs";
 import { catalogWalkView } from "./walk-catalog.mjs";
@@ -129,12 +130,13 @@ export function parseUserDailyLimit(value) {
  * @property {number} [userDailyLimit]
  * @property {number} [shutdownGraceMs]
  * @property {ReturnType<typeof createReviewRateLimiter>} [reviewLimiter] review writes per account or client IP
+ * @property {ReturnType<typeof createReviewRateLimiter>} [improvementLimiter] improvement request writes per account or client IP
  * @property {ReturnType<typeof createReviewRateLimiter>} [launchLimiter] walk launch reports per account or client IP
  * @property {ReturnType<typeof createReviewRateLimiter>} [launchWalkLimiter] counted launches of one walk per client IP
  */
 
 /** @param {CreateAppOptions} options */
-export function createApp({store,provider,osmGeocoder=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000})}) {
+export function createApp({store,provider,osmGeocoder=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),improvementLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000})}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const speechProviders={openai:provider,yandex:yandexTts,elevenlabs:elevenLabsTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
@@ -154,6 +156,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,eleven
   const authorizePromo=adminAuth(promoEnabled?promoWalksToken:"");
   const promoWalks=promoEnabled&&accountStore?createPromoWalkService({accountStore,planWalk:walkPlanner,store,origin}):null;
   const reviews=createWalkReviewRoutes({store,accountStore,origin,authSecret,limiter:reviewLimiter,json,body});
+  const improvements=createWalkImprovementRoutes({store,accountStore,origin,authSecret,limiter:improvementLimiter,json,body});
   const launches=createWalkLaunchRoutes({store,accountStore,authSecret,limiter:launchLimiter,walkLimiter:launchWalkLimiter,json,body});
   const topWalks=accountStore?createTopWalks({accountStore,store,builtinRoutes}):null;
   const legacyAdminEnabled=allowLegacyAdminToken??(!auth||process.env.ALLOW_LEGACY_ADMIN_TOKEN==="true");
@@ -202,6 +205,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,eleven
         if(favorite&&req.method==="PUT"){accountStore.setFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}
         if(favorite&&req.method==="DELETE"){accountStore.deleteFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}
         if(await reviews.own(req,res,url,session))return;
+        if(await improvements.own(req,res,url,session))return;
         json(res,404,{error:{code:"NOT_FOUND",message:"Account endpoint not found."}});return;
       }
       if(url.pathname==="/api/worker/v1/claim"||url.pathname.startsWith("/api/worker/v1/jobs/")) {
@@ -338,6 +342,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,eleven
         }
         if(roleAuthorized&&!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Refresh the editor and retry."}});return;}
         if(await reviews.admin(req,res,url,roleAuthorized?session.user.id:null))return;
+        if(await improvements.admin(req,res,url,roleAuthorized?session.user.id:null))return;
         if(req.method==="GET"&&url.pathname==="/api/story-admin/walks/shared") {
           const entries=[...url.searchParams];
           if(entries.some(([key,value])=>!["limit","offset","q","author","mode","access","listing"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
@@ -594,6 +599,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,eleven
         sendCacheableJson(req,res,serializeCell(cell,points));return;
       }
       if(await reviews.public(req,res,url,session))return;
+      if(await improvements.public(req,res,url,session))return;
       if(url.pathname==="/api/top-walks") {
         if(!["GET","HEAD"].includes(req.method)){res.setHeader("Allow","GET, HEAD");json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;}
         if(url.search)throw failure("BAD_REQUEST");

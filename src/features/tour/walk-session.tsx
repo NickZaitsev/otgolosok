@@ -35,7 +35,7 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean) {
 }
 
 export function WalkSession({ route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume,
-  titleRef, startRef, onStart, onSelect, onStop, player, story, settings, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, own = null,
+  titleRef, startRef, onStart, onSelect, onStop, player, story, settings, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
   positionDenied = false, onRetryPosition = noop }: {
   route: Route; chapters: WalkChapter[]; index: number; active: boolean; completed: boolean;
   /** The finish lies past the last stop: index `chapters.length` is the way there, ended by «Завершить». */
@@ -57,6 +57,8 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
   reviews?: ReactNode | null;
   /** Opens the rating form in its own window. */
   onRate?: () => void;
+  /** Opens «Что улучшить?»; null for walks the server cannot take requests for. */
+  onImprove?: (() => void) | null;
   /** The viewer's own walk: before the start it leads back to the builder and shows the builder's notes. */
   own?: OwnWalk | null;
   /** The site has no access to geolocation: asking again will not show a prompt, the walker allows it in the browser. */
@@ -138,6 +140,7 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
   function select(position: number) { setDrawer(null); onSelect(position); }
   function toggleReviews() { setDrawer(drawer === "reviews" ? null : "reviews"); }
   function rate() { setDrawer(null); onRate(); }
+  function improve() { setDrawer(null); onImprove?.(); }
   const distance = (route.walk?.distance_m ?? 0) / 1000;
   const hasText = Boolean(chapter?.content.story.paragraphs.length);
   const canStart = geometry.length > 1;
@@ -199,8 +202,10 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
         </div> : drawer === "story" ? story : drawer === "reviews" ? reviews : <>
           {settings}
           {reviews ? <button type="button" className="walk-session-rate" aria-haspopup="dialog" onClick={rate}>Оценить прогулку</button> : null}
+          {onImprove ? <button type="button" className="walk-session-rate" aria-haspopup="dialog" onClick={improve}>Что улучшить в прогулке?</button> : null}
         </>}
       </div> : null}
+      {completed && onImprove ? <button type="button" className="walk-session-rate" aria-haspopup="dialog" onClick={improve}>Что улучшить в прогулке?</button> : null}
       <footer className={`walk-session-actions${completed && reviews ? " walk-session-actions--finish" : ""}`} data-sheet-part="footer">
         {completed ? reviews ? <>
           <button type="button" className="walk-session-primary" aria-haspopup="dialog" onClick={onRate}>{hasReview ? "Изменить отзыв" : "Оставить отзыв"}</button>

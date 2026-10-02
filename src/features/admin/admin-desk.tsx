@@ -6,6 +6,7 @@ import { WalkAdminSection as WalkAdmin } from "./shared-walk-admin";
 import { ContentAdmin } from "./content-admin";
 import { DraftsAdmin } from "./drafts-admin";
 import { ReviewsAdmin } from "./reviews-admin";
+import { ImprovementsAdmin } from "./improvements-admin";
 import { draftCheck, initialDraft, safeSourceLink, stages, ttsProviderLabels, type AdminApi, type Draft, type Job, type Summary, type TtsProvider } from "./model";
 import { skeletonRows } from "./table-skeleton";
 import { readFetch } from "../auth/read-fetch";
@@ -13,7 +14,7 @@ import { csrfHeaders, getSession, signOut } from "../auth/client";
 
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const PAGE_SIZE = 50;
-type AdminSection = "addresses" | "walks" | "content" | "drafts" | "reviews";
+type AdminSection = "addresses" | "walks" | "content" | "drafts" | "reviews" | "improvements";
 type RelevanceFilter = "active" | "irrelevant" | "all";
 
 class ApiError extends Error {
@@ -120,8 +121,8 @@ export function AdminDesk() {
   }
 
   const api: AdminApi = async <T,>(path: string, signal: AbortSignal, body?: unknown): Promise<T> => {
-    const endpoint = path.startsWith("/walks") || path.startsWith("/content/") || path.startsWith("/reviews") ? `/api/story-admin${path}` : `/api/story-admin/jobs${path}`;
-    const response = await ((path.startsWith("/walks/shared?") || path.startsWith("/reviews?")) && body === undefined ? readFetch : fetch)(endpoint, {
+    const endpoint = path.startsWith("/walks") || path.startsWith("/content/") || path.startsWith("/reviews") || path.startsWith("/improvements") ? `/api/story-admin${path}` : `/api/story-admin/jobs${path}`;
+    const response = await ((path.startsWith("/walks/shared?") || path.startsWith("/reviews?") || path.startsWith("/improvements?")) && body === undefined ? readFetch : fetch)(endpoint, {
       method: body === undefined ? "GET" : "POST", cache: "no-store", credentials: "same-origin",
       redirect: "error", signal,
       headers: { ...(body === undefined ? {} : { "Content-Type": "application/json", ...csrfHeaders() }) },
@@ -203,7 +204,7 @@ export function AdminDesk() {
         accept((await api<{ job: Job }>(`/${id}`, signal)).job);
         pendingNavigation.current = "editor";
       } else if (id) setError("В ссылке указан неверный идентификатор задания. Выберите задание из списка.");
-      else if (["walks","content","drafts","reviews"].includes(params.get("section") ?? "")) setSection(params.get("section") as AdminSection);
+      else if (["walks","content","drafts","reviews","improvements"].includes(params.get("section") ?? "")) setSection(params.get("section") as AdminSection);
     });
   // `sessionRestored` makes this effect a one-time client-side restore.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -311,6 +312,7 @@ export function AdminDesk() {
             <button disabled={Boolean(busy)} aria-current={section === "content" ? "page" : undefined} onClick={() => changeSection("content")}>OSM-партии</button>
             <button disabled={Boolean(busy)} aria-current={section === "drafts" ? "page" : undefined} onClick={() => changeSection("drafts")}>Черновики</button>
             <button disabled={Boolean(busy)} aria-current={section === "reviews" ? "page" : undefined} onClick={() => changeSection("reviews")}>Отзывы</button>
+            <button disabled={Boolean(busy)} aria-current={section === "improvements" ? "page" : undefined} onClick={() => changeSection("improvements")}>Улучшения</button>
           </nav>
 
           {section === "walks" ? (
@@ -321,6 +323,8 @@ export function AdminDesk() {
             <DraftsAdmin api={api} busy={busy} run={run} onDirtyChange={setContentDirty} />
           ) : section === "reviews" ? (
             <ReviewsAdmin api={api} busy={busy} run={run} />
+          ) : section === "improvements" ? (
+            <ImprovementsAdmin api={api} busy={busy} run={run} />
           ) : (
             <section className="admin-addresses" aria-labelledby="admin-addresses-title">
               <div className="admin-section-head">

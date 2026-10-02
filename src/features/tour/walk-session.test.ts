@@ -72,13 +72,13 @@ function sessionDocument(props: { active?: boolean; completed?: boolean; ratingL
 }
 const buttonTexts = (document: Document) => [...document.querySelectorAll("button")].map(button => button.textContent);
 
-async function mountSession(props: { active?: boolean; completed?: boolean; ratingLabel?: string; ratingCount?: number | null; reviewable?: boolean }) {
+async function mountSession(props: { active?: boolean; completed?: boolean; ratingLabel?: string; ratingCount?: number | null; reviewable?: boolean; improvable?: boolean }) {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
   const container = document.createElement("div");
   document.body.append(container);
   const root = createRoot(container);
-  const onRate = vi.fn();
+  const onRate = vi.fn(), onImprove = vi.fn();
   await act(async () => root.render(createElement(WalkSession, {
     route, chapters, index: 0, active: props.active ?? false, completed: props.completed ?? false,
     user: null, positionFailed: false, resume: false,
@@ -87,11 +87,12 @@ async function mountSession(props: { active?: boolean; completed?: boolean; rati
     player: null, story: null, settings: createElement("p", null, "настройки"), audioError: "",
     ratingLabel: props.ratingLabel, ratingCount: props.ratingCount,
     reviews: props.reviewable === false ? null : createElement("p", { "data-testid": "reviews" }, "список"), onRate,
+    onImprove: props.improvable === false ? null : onImprove,
   })));
   const find = (text: string) => [...container.querySelectorAll("button")].find(button => button.textContent === text);
   const click = (element: HTMLElement) => act(async () => element.click());
   const unmount = async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); };
-  return { container, find, click, onRate, unmount };
+  return { container, find, click, onRate, onImprove, unmount };
 }
 
 it.each([
@@ -178,6 +179,29 @@ it.each([[true, true], [false, false]])("«Оценить прогулку» в 
     expect(session.container.querySelector(".walk-session-drawer")).toBeNull();
   }
   await session.unmount();
+});
+
+it.each([[true, true], [false, false]])("«Что улучшить в прогулке?» в настройках, когда прогулка принимает запросы=%s, открывает окно и закрывает настройки", async (improvable, shown) => {
+  const session = await mountSession({ active: true, improvable });
+  await session.click(session.container.querySelector<HTMLButtonElement>("[aria-label='Настройки прогулки']")!);
+  expect(Boolean(session.find("Что улучшить в прогулке?"))).toBe(shown);
+  if (shown) {
+    await session.click(session.find("Что улучшить в прогулке?")!);
+    expect(session.onImprove).toHaveBeenCalledTimes(1);
+    expect(session.container.querySelector(".walk-session-drawer")).toBeNull();
+  }
+  await session.unmount();
+});
+
+it("экран завершения предлагает запросить улучшение, но не до старта", async () => {
+  const finished = await mountSession({ completed: true });
+  await finished.click(finished.find("Что улучшить в прогулке?")!);
+  expect(finished.onImprove).toHaveBeenCalledTimes(1);
+  await finished.unmount();
+
+  const before = await mountSession({});
+  expect(before.find("Что улучшить в прогулке?")).toBeUndefined();
+  await before.unmount();
 });
 
 it("итог оценок в описании — кнопка, открывающая и закрывающая список отзывов", async () => {

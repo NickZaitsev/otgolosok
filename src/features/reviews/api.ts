@@ -22,7 +22,8 @@ export async function resolveReviewer(): Promise<Reviewer> {
   }
 }
 
-function identityHeaders(reviewer: Reviewer, write: boolean): Record<string, string> {
+/** Reviews and improvement requests share one identity: the account or the guest device key. */
+export function identityHeaders(reviewer: Reviewer, write: boolean): Record<string, string> {
   if (reviewer.kind === "user") return write ? csrfHeaders() : {};
   const key = getReviewKey({ create: write });
   if (!key && write) throw new ReviewKeyUnavailableError();

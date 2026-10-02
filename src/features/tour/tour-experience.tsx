@@ -31,6 +31,7 @@ import { formatRatingSummary, type ReviewTarget } from "../reviews/model";
 import { useWalkReviews } from "../reviews/use-walk-reviews";
 import { ReviewDialog } from "../reviews/review-dialog";
 import { WalkReviews } from "../reviews/walk-reviews";
+import { ImprovementDialog } from "../improvements/improvement-dialog";
 import { useLaunchReport } from "../walks/launches";
 import type { OwnWalk } from "../walks/own-walk";
 
@@ -62,6 +63,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const reviews = useWalkReviews(reviewTarget);
   const reportLaunch = useLaunchReport(launchTarget);
   const [rateOpen, setRateOpen] = useState(false);
+  const [improveOpen, setImproveOpen] = useState(false);
   // A UX filter against drive-by ratings, not a security control: the server does not check it.
   const startButtonRef = useRef<HTMLButtonElement>(null);
   const walkTitleRef = useRef<HTMLHeadingElement>(null);
@@ -338,12 +340,14 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
       </header> : null}
 
       {universal && reviewTarget ? <ReviewDialog reviews={reviews} open={rateOpen} onClose={() => setRateOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
+      {universal && reviewTarget ? <ImprovementDialog target={reviewTarget} open={improveOpen} onClose={() => setImproveOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
       {universal ? <WalkSession route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg}
         user={position.diagnostics.lastFix} positionFailed={positionFailed(position.diagnostics)}
         positionDenied={position.diagnostics.sourceStatus === "permission-denied"} onRetryPosition={position.retry} resume={Boolean(savedCheckpoint)} titleRef={walkTitleRef} startRef={startButtonRef}
         onStart={() => startTour()} onSelect={selectChapter} onStop={stopTour} own={own}
         ratingLabel={formatRatingSummary(reviews.summary)}
         hasReview={Boolean(reviews.mine)} ratingCount={reviews.summary?.count ?? null} reviews={reviewTarget ? <WalkReviews reviews={reviews} onRate={() => setRateOpen(true)} /> : null} onRate={() => setRateOpen(true)}
+        onImprove={reviewTarget ? () => setImproveOpen(true) : null}
         audioError={audioStatus === "blocked" || audioStatus === "error" ? "Не удалось включить аудио. Нажмите «Повторить запуск звука»." : ""}
         player={walkAudioUrl ? <AudioPlayerControls compact position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
           label={audioButtonLabel} rate={settings.rate} onToggle={toggleAudio} onSeek={audio.seek} onRate={rate => updateSettings({ rate })} /> : null}
