@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type Ref } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type Ref } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { WalkCreationPanel, type CreationMap } from "../walk-builder/walk-creation-panel";
 import type { Coordinates, Route } from "../tour/types";
@@ -57,7 +57,6 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const closeCreation = useCallback(() => { router.replace("/", {scroll:false}); setPicked(null); setTimeout(() => opener.current?.focus(), 0); }, [router]);
   const rememberOpener = () => { opener.current = document.activeElement as HTMLElement; };
   const pathname=usePathname();
-  const [search,setSearch]=useState(false),[query,setQuery]=useState("");
   const [selected,setSelected]=useState(()=>walkChapterAt(route,openChapter)?.id);
   const [place,setPlace]=useState<Place|null>(null),[placeBusy,setPlaceBusy]=useState(false),[placeError,setPlaceError]=useState("");
   const [focus,setFocus]=useState<MapFocus|null>(()=>{const chapter=walkChapterAt(route,openChapter);return chapter?{...chapter.location}:null;});
@@ -72,21 +71,9 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const prepareRequest=useRef<AbortController|null>(null);
   const {places:catalog,status:catalogStatus,nearbyStatus,maintenance:catalogMaintenance,retry:retryCatalog,onViewport}=useMapCatalog(nearbyCenter,nearbyRadius);
   const lookup=useRef<AbortController|null>(null),locating=useRef<(()=>void)|null>(null);
-  const input=useRef<HTMLInputElement>(null);
 
   // Отменённый поиск позиции не должен оставить кнопку в «Определяем положение…»: в StrictMode очистка срабатывает и без размонтирования.
   useEffect(()=>()=>{lookup.current?.abort();if(locating.current){locating.current();locating.current=null;setGeo("idle");}},[]);
-  useEffect(()=>{if(search)input.current?.focus();},[search]);
-  // Кнопка поиска в шапке прогулки ведёт на /?search=1: открываем поле адреса и убираем параметр из адреса.
-  useEffect(()=>{
-    if(params.get("search")!=="1")return;
-    const timer=setTimeout(()=>{
-      setSearch(true);setPrompt(false);
-      const rest=new URLSearchParams(params.toString());rest.delete("search");
-      router.replace(rest.size?`${pathname}?${rest}`:pathname,{scroll:false});
-    },0);
-    return()=>clearTimeout(timer);
-  },[params,pathname,router]);
   useEffect(()=>{
     const timer=setTimeout(()=>setPrompt(shouldShowGeoPrompt(localStorage)),0);
     return()=>clearTimeout(timer);
@@ -143,7 +130,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
         const found=record;
         setTracked(current=>[found,...current.filter(item=>item.id!==id)]);
         setJobs(current=>({...current,[id]:job}));
-        setPlace(null);setPrompt(false);setSearch(false);setSelected(id);setFocus({...found.location});
+        setPlace(null);setPrompt(false);setSelected(id);setFocus({...found.location});
       }catch(error){if(!controller.signal.aborted)setGeoMessage(toUserMessage(error,"Не удалось открыть историю."));}
     })();
   },[params,pathname,router]);
@@ -166,35 +153,31 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const mapItems=useMemo(()=>place?[...visible,{id:"picked-place",title:place.address??"Выбранное место",location:place.location,pending:true}]:visible,[visible,place]);
 
   function select(pin:StoryPin){
-    lookup.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setRetryError("");setSelected(pin.id);setFocus({...pin.location});setPrompt(false);setSearch(false);
+    lookup.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setRetryError("");setSelected(pin.id);setFocus({...pin.location});setPrompt(false);
   }
   function selectRecommendation(id:string){
     const direct=pins.find(pin=>pin.id===id);
     if(direct){select(direct);return;}
   }
-  function openSearch(){setSearch(true);setPrompt(false);}
   function dismissGeoPrompt(){rememberGeoPromptDismissal(localStorage);setPrompt(false);}
-  async function findPlace(value:Coordinates|string){
+  async function findPlace(value:Coordinates){
     lookup.current?.abort();const controller=new AbortController();lookup.current=controller;
     prepareRequest.current?.abort();setPreparing(false);setPrepareError("");
-    setPrompt(false);setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);setSearch(false);
-    if(typeof value!=="string"){
-      setFocus({...value});setNearbyCenter(value);
-      if(!isMoscowPoint(value)){setPlaceBusy(false);setPlaceError("Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку.");return;}
-    }
+    setPrompt(false);setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);
+    setFocus({...value});setNearbyCenter(value);
+    if(!isMoscowPoint(value)){setPlaceBusy(false);setPlaceError("Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку.");return;}
     const timer=setTimeout(()=>controller.abort("timeout"),12000);
     try {
-      const params=new URLSearchParams(typeof value==="string"?{q:value}:{lat:String(value.lat),lon:String(value.lon)});
+      const params=new URLSearchParams({lat:String(value.lat),lon:String(value.lon)});
       const response=await fetch(`/api/story-place?${params}`,{signal:controller.signal});const result=await response.json();
       if(!response.ok)throw new Error(result.error?.message??"Не удалось определить адрес.");
       if(!result.location||!isMoscowPoint(result.location))throw new Error("Выберите адрес в Москве.");
       if(lookup.current!==controller||controller.signal.aborted)return;
-      setPlace(result);setFocus(result.location);setNearbyCenter(result.location);setSearch(false);
+      setPlace(result);setFocus(result.location);setNearbyCenter(result.location);
     }catch(error){
-      if(lookup.current===controller&&(!controller.signal.aborted||controller.signal.reason==="timeout"))setPlaceError(controller.signal.aborted?"Поиск занял слишком много времени. Повторите поиск или выберите дом на карте.":toUserMessage(error,"Не удалось определить адрес."));
+      if(lookup.current===controller&&(!controller.signal.aborted||controller.signal.reason==="timeout"))setPlaceError(controller.signal.aborted?"Адрес определялся слишком долго. Нажмите на дом ещё раз.":toUserMessage(error,"Не удалось определить адрес."));
     }finally{clearTimeout(timer);if(lookup.current===controller)setPlaceBusy(false);}
   }
-  function submitSearch(event:FormEvent){event.preventDefault();if(query.trim().length>=3)void findPlace(query.trim());}
   // Сначала показываем грубую точку, затем уточняем её; поиск рядом запускаем по итоговой.
   function locate(){
     locating.current?.();
@@ -262,7 +245,6 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
 
   const sheet = creating
     ? <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />
-    : search ? null
     : prompt&&!active&&!place&&!placeBusy&&!placeError ? <LocationPromptSheet geo={geo} onLocate={locate} onDismiss={dismissGeoPrompt} />
     : active ? <StorySheet story={active} walkHref={active.address&&!placeBusy?walkHref:null} startRef={startRef} onStart={onStart} onClose={()=>{setSelected(undefined);setRetryError("");}} onWalk={rememberOpener}
         retrying={retrying} retryError={retryError} onRetry={active.jobId?()=>void retryStory():undefined} />
@@ -272,8 +254,8 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   // An empty slot must stay null: the shell gives the dock room only when there is something to show.
   const noticeList = [
     catalogStatus!=="ready"||catalogMaintenance?<div key="catalog" className={styles.catalogStatus} data-region="catalog-status"><span role="status" aria-atomic="true">{catalogMaintenance?"Сервис обновляется. Карта загрузится автоматически.":catalogStatus==="error"?"Не все места загрузились.":"Загружаем места…"}</span>{catalogStatus==="loading"&&!catalogMaintenance?<progress aria-label="Загрузка мест на карте"/>:null}{catalogStatus==="error"&&!catalogMaintenance?<button type="button" onClick={retryCatalog}>Повторить загрузку мест</button>:null}</div>:null,
-    !creating&&geoMessage&&!search?<GeoNotice key="geo" message={geoMessage} outside={geoOutside} denied={geo==="denied"} onMoscow={showMoscow} onRetry={locate} onClose={()=>{setGeoMessage("");setGeoOutside(false);}} />:null,
-    !creating&&!sheet&&!search&&mapHintVisible?<MapHintNotice key="hint" onClose={()=>setMapHintVisible(false)} />:null,
+    !creating&&geoMessage?<GeoNotice key="geo" message={geoMessage} outside={geoOutside} denied={geo==="denied"} onMoscow={showMoscow} onRetry={locate} onClose={()=>{setGeoMessage("");setGeoOutside(false);}} />:null,
+    !creating&&!sheet&&mapHintVisible?<MapHintNotice key="hint" onClose={()=>setMapHintVisible(false)} />:null,
     !creating&&updateAvailable?<a key="update" className={a.notice} href="/update.html">Доступна новая версия · обновить</a>:null,
   ].filter(Boolean);
   const notices = noticeList.length ? noticeList : null;
@@ -283,10 +265,10 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       map={{onViewport,viewState:nearbyMapView,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
         onSelect:id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
         onPoint:point=>creating?setPicked(point):void findPlace(point)}}
-      header={<AroundHeader search={search&&!creating} query={query} busy={placeBusy} inputRef={input} onToggle={()=>search?setSearch(false):openSearch()} onQuery={setQuery} onSubmit={submitSearch} />}
-      controls={search||creating?null:<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton>}
+      header={<AroundHeader />}
+      controls={creating?null:<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton>}
       notices={notices}
       sheet={sheet} />
-    {pathname === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();setSearch(false);}} />}
+    {pathname === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();}} />}
   </>;
 }

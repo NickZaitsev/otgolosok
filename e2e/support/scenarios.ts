@@ -102,11 +102,6 @@ export const SCREEN_STATES: ScreenState[] = [
     await page.getByRole("button", { name: "Моё местоположение", exact: true }).click();
     await expect(page.getByRole("heading", { name: /^В радиусе/ })).toBeVisible({ timeout: 10_000 });
   } },
-  { screen: "карта", state: "поиск", options: { map: true }, open: async page => {
-    await mockGuestApi(page); await page.goto("/"); await mapReady(page);
-    await page.getByRole("button", { name: "Найти адрес", exact: true }).click();
-    await expect(page.getByLabel("Какой дом вас интересует?")).toBeFocused();
-  } },
   { screen: "создание", state: "форма", options: { map: true }, open: async page => {
     await mockGuestApi(page); await page.goto("/?walk=create");
     await expect(page.getByRole("button", { name: "Откуда", exact: true })).toBeVisible(); await mapReady(page);

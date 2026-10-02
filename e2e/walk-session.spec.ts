@@ -203,16 +203,6 @@ test("крестик в карточке прерывает прогулку т�
   await expect(page.getByRole("navigation", { name: "Основная навигация" }), "после остановки навигация возвращается").toBeVisible();
 });
 
-test("поиск в шапке прогулки открывает поиск адреса на карте", async ({ page }) => {
-  await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: routeToWalkView(routeData as Route) }));
-  await page.goto("/walk?catalog=paveletskaya");
-  await expect(page.getByRole("link", { name: "Отголосок, на главную" })).toBeVisible();
-  await page.getByRole("link", { name: "Найти адрес", exact: true }).click();
-  await expect(page.getByLabel("Какой дом вас интересует?")).toBeFocused();
-  await expect(page).toHaveURL(/\/$/);
-  await expect(page.locator(".walk-session")).toHaveCount(0);
-});
-
 test("отказ аудио не блокирует переход к следующей остановке", async ({ page }) => {
   await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: routeToWalkView(routeData as Route) }));
   await page.route("**/audio/**", route => route.abort());
@@ -340,7 +330,7 @@ for (const viewport of [{ width: 320, height: 568 }, { width: 844, height: 390 }
 // Одна остановка с длинной историей и аудио: панель прогулки становится самой высокой.
 const catalog = routeData as Route;
 const longStop = routeToWalkView({ ...catalog, walk: { ...catalog.walk!, steps: catalog.walk!.steps.slice(-1) } });
-const mapControls = { "крестик": ".walk-session-back", "поиск": ".walk-session-search", "плюс": ".leaflet-control-zoom-in", "минус": ".leaflet-control-zoom-out",
+const mapControls = { "крестик": ".walk-session-back", "плюс": ".leaflet-control-zoom-in", "минус": ".leaflet-control-zoom-out",
   "геопозиция": ".walk-session-locate", "подпись OSM": ".map-attribution" };
 
 // Кнопка свободна, если она целиком в окне, на неё не заходят панель и навигация (до старта), а в её центре — она сама.
@@ -413,7 +403,7 @@ async function checkPanelStates(page: Page, check: (state: string) => Promise<vo
 // Кнопки карты свободны, а первая остановка видна.
 async function expectMapUsable(page: Page, state: string) {
   const controls = await controlsState(page);
-  expect(Object.keys(controls), state).toEqual(expect.arrayContaining(["крестик", "поиск", "плюс", "минус", "подпись OSM"]));
+  expect(Object.keys(controls), state).toEqual(expect.arrayContaining(["крестик", "плюс", "минус", "подпись OSM"]));
   expect(controls, state).toEqual(Object.fromEntries(Object.keys(controls).map(name => [name, "свободна"])));
   await expect.poll(() => firstStopIsVisible(page), { message: `первая остановка видна: ${state}` }).toBe(true);
 }

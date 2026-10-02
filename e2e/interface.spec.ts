@@ -59,13 +59,14 @@ test("карта автоматически восстанавливается �
   expect(errors).toEqual([]);
 });
 
-test("знак одинакового размера на карте и странице входа", async ({ page }) => {
+// Шапка карты высотой с кнопки карты, поэтому знак в ней меньше, чем на остальных страницах.
+test("знак на карте меньше, чем на странице входа", async ({ page }) => {
   const sizes: string[] = [];
   for (const path of ["/", "/login"]) {
     await page.goto(path);
     sizes.push(await page.locator(".brand-mark").first().evaluate(el => getComputedStyle(el).fontSize));
   }
-  expect(sizes).toEqual(["28px", "28px"]);
+  expect(sizes).toEqual(["22px", "28px"]);
 });
 
 test("история загружает следующую страницу аккаунтных прогулок", async ({ page }, info) => {
@@ -619,3 +620,23 @@ test("кнопка «Моё местоположение» объясняет з
   await page.getByRole("button", { name: "Моё местоположение", exact: true }).click();
   await expect(page.getByText("Нет доступа к геолокации. Можно разрешить его в настройках или выбрать место на карте.")).toBeVisible();
 });
+
+for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1280, height: 800 }]) {
+  test(`шапка карты в одну строку с кнопками карты на ${viewport.width}×${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await mockMapCatalog(page, []);
+    await page.goto("/");
+    const header = page.locator('[data-region="header"]');
+    await expect(header.getByRole("link")).toContainText("Отголосок");
+    await expect(page.getByRole("button", { name: "Найти адрес" })).toHaveCount(0);
+    const head = (await header.boundingBox())!;
+    for (const name of ["Моё местоположение", "Отдалить", "Приблизить"]) {
+      const control = (await page.getByRole("button", { name, exact: true }).boundingBox())!;
+      expect(Math.abs(control.y - head.y), name).toBeLessThanOrEqual(1);
+      expect(Math.abs(control.height - head.height), name).toBeLessThanOrEqual(1);
+      expect(control.x, `${name} правее шапки`).toBeGreaterThanOrEqual(head.x + head.width);
+    }
+    const mark = header.locator(".brand-mark");
+    expect(await mark.evaluate(element => element.scrollWidth <= element.parentElement!.clientWidth), "логотип не обрезан").toBe(true);
+  });
+}

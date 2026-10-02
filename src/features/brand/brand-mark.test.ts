@@ -13,7 +13,7 @@ describe("единый логотип", () => {
       "../admin/admin-desk.tsx",
     ]) {
       const source = read(path);
-      expect(source, path).toContain("<BrandMark />");
+      expect(source, path).toMatch(/<BrandMark[ /]/);
       expect(source, path).not.toMatch(/(?:Отголосок|отголосок)<span/);
     }
   });

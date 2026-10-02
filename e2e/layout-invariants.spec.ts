@@ -8,8 +8,6 @@ import { SCREEN_STATES } from "./support/scenarios";
  * fixed the run fails until the entry is removed, so the list only shrinks.
  */
 const KNOWN_LAYOUT_FAILURES: KnownFailure[] = [
-  { screen: "карта", state: "поиск", invariant: "free", reason: "панель и кнопки закрывают почти всю карту",
-    cases: ["568×320"] },
   { screen: "прогулка", state: "до старта", invariant: "overlap", reason: "области позиционируются абсолютными координатами и не знают друг о друге",
     cases: ["1024×500", "568×320", "667×375", "844×390", "844×390 с вырезом", "932×430", "webkit 1024×500", "webkit 667×375"] },
   { screen: "прогулка", state: "до старта", invariant: "target", reason: "кнопки масштаба Leaflet 42×44, ссылка логотипа ниже 44 px, кнопки закрыты панелью",

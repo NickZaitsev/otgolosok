@@ -161,7 +161,6 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
     </div>
     <header ref={headerRef} className="walk-session-header" data-region="header">
       <Link href="/" prefetch={false} className="walk-session-brand" aria-label="Отголосок, на главную" onClick={() => onStop()}><BrandMark /></Link>
-      <Link className="walk-session-search" href="/?search=1" prefetch={false} aria-label="Найти адрес" onClick={() => onStop()}><ExploreIcon name="search" /></Link>
       <Link className="walk-session-back" href="/" prefetch={false} aria-label="Закрыть прогулку" onClick={() => onStop()}><ExploreIcon name="close" /></Link>
     </header>
     {active && user ? <button type="button" className="walk-session-locate" data-region="controls" aria-label="Моё местоположение" onClick={() => setFocus({ lat: user.lat, lon: user.lon, zoom: 16 })}><ExploreIcon name="locate" /></button> : null}

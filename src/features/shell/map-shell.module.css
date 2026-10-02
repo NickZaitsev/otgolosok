@@ -1,6 +1,6 @@
 /*
  * The only place that knows the screen size of map screens. Two modes:
- * stack (header, controls, free map, dock — one column) and side (dock as a right column).
+ * stack (top row, free map, dock — one column) and side (dock as a right column).
  * Feature styles never position against the viewport; they live inside these regions.
  */
 .shell {
@@ -33,8 +33,7 @@
   z-index: var(--z-map-ui);
   display: grid;
   grid-template:
-    "header" minmax(0, auto)
-    "controls" auto
+    "top" auto
     "free" minmax(var(--map-min-free), 1fr)
     "dock" minmax(0, auto)
     / minmax(0, 1fr);
@@ -45,33 +44,34 @@
   pointer-events: none;
 }
 
-.header,
-.controls,
+.top,
 .dock {
   justify-self: center;
   width: min(var(--island-max), 100%);
   min-width: 0;
 }
 
-.header {
-  grid-area: header;
-  max-height: 100%;
-  padding: 0.5rem 0.5rem 0.5rem 1rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  pointer-events: auto;
-  background: var(--surface-island-glass);
-  border: 1px solid var(--border-island);
-  border-radius: var(--radius-island);
-  box-shadow: var(--shadow-island);
-}
-
-.controls {
-  grid-area: controls;
+/* The header and the map controls share one row and one height: a control is the tallest thing in it. */
+.top {
+  grid-area: top;
   display: flex;
   gap: var(--space-xs);
   align-items: center;
-  justify-content: flex-end;
+}
+
+.header {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  height: var(--control-min);
+  padding: 0 1rem;
+  overflow: hidden;
+  pointer-events: auto;
+  background: var(--surface-island-glass);
+  border: 1px solid var(--border-island);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-island);
 }
 
 /* Pinned to the top edge, outside the grid: the frame's top padding keeps its strip free. */
@@ -139,21 +139,18 @@
 @media (width >= 700px), (width >= 568px) and (height <= 560px) {
   .frame {
     grid-template:
-      "header dock" auto
-      "controls dock" auto
+      "top dock" auto
       "free dock" minmax(0, 1fr)
       / minmax(17.5rem, 1fr) minmax(0, var(--sheet-w));
   }
 
   .frame[data-dock="none"] {
     grid-template-areas:
-      "header header"
-      "controls controls"
+      "top top"
       "free free";
   }
 
-  .header,
-  .controls {
+  .top {
     justify-self: start;
   }
 
@@ -163,7 +160,7 @@
 }
 
 /*
- * Tall wide screens keep one centred column, like the navigation below: header, controls,
+ * Tall wide screens keep one centred column, like the navigation below: top row,
  * free map and the sheet above the navigation. Landscape phones keep the side column:
  * their height is too precious for stacking.
  */
@@ -171,15 +168,13 @@
   .frame,
   .frame[data-dock="none"] {
     grid-template:
-      "header" minmax(0, auto)
-      "controls" auto
+      "top" auto
       "free" minmax(var(--map-min-free), 1fr)
       "dock" minmax(0, auto)
       / minmax(0, 1fr);
   }
 
-  .header,
-  .controls,
+  .top,
   .dock {
     justify-self: center;
     width: min(var(--island-max), 100%);

@@ -12,7 +12,7 @@ export type ShellMapProps = Omit<ExploreMapProps, "insets" | "ref" | "onStatus" 
 
 type Props = {
   map: ShellMapProps;
-  /** Contents of the header island: brand, search, closing the screen. */
+  /** Contents of the header island, one control tall: the brand. */
   header: ReactNode;
   /** Screen buttons placed before the zoom pair, e.g. «Моё местоположение». */
   controls?: ReactNode;
@@ -24,7 +24,7 @@ type Props = {
 
 /**
  * The frame of every full-screen map: the map fills the screen and islands take their rows in one
- * grid — header, controls, free map, dock with notices and the sheet. Nothing is positioned by hand,
+ * grid — the top row (header with the map controls beside it), free map, dock with notices and the sheet. Nothing is positioned by hand,
  * so an island that grows takes room from the free map instead of covering another island.
  * The map keeps its focus and route inside the free cell, measured from this layout.
  */
@@ -45,11 +45,11 @@ export function MapShell({ map, header, controls, notices, sheet }: Props) {
       <ExploreMap {...map} ref={handle} insets={insets} onStatus={setStatus} onZoomLimits={setLimits} />
     </div>
     <div className={styles.frame} data-dock={hasDock ? undefined : "none"}>
-      <header className={styles.header} data-region="header">{header}</header>
-      <div className={styles.attribution}><MapAttribution surface={mapCell} /></div>
-      <div className={styles.controls}>
+      <div className={styles.top}>
+        <header className={styles.header} data-region="header">{header}</header>
         <MapControls zoom={{ zoomIn, zoomOut, ...limits }}>{controls}</MapControls>
       </div>
+      <div className={styles.attribution}><MapAttribution surface={mapCell} /></div>
       <div ref={free} className={styles.free} aria-hidden="true" />
       {hasDock ? <div className={styles.dock}>
         {hasNotices ? <div className={styles.notices} data-region="notices">
