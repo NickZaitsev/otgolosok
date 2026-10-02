@@ -93,6 +93,15 @@ test("в развёрнутой истории фото показано цел�
   expect(await banner(page).locator("img").evaluate(img => { const box = img.getBoundingClientRect(), frame = img.parentElement!.getBoundingClientRect(); return Math.abs(box.height - frame.height); })).toBeLessThanOrEqual(1);
 });
 
+test("вертикальное фото в развёрнутой истории не выше 4:5, обрезано по центру", async ({ page }) => {
+  // The same file under portrait dimensions: the banner takes its ratio from the place data.
+  await openPlace(page, undefined, { photo: { ...photo, width: 600, height: 1200 } });
+  await expandStory(page);
+  const box = await banner(page).evaluate(element => { const rect = element.getBoundingClientRect(); return { ratio: rect.width / rect.height, fit: getComputedStyle(element.querySelector("img")!).objectFit }; });
+  expect(box.ratio).toBeCloseTo(4 / 5, 2);
+  expect(box.fit).toBe("cover");
+});
+
 test("Escape в просмотре фото закрывает только фото, развёрнутая карточка остаётся", async ({ page }) => {
   await openPlace(page);
   await expandStory(page);

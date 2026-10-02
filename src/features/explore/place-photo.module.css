@@ -142,12 +142,9 @@
   outline-offset: 2px;
 }
 
-/* In the expanded story the photo is whole, in its own proportions: the img keeps them through its width and height. */
+/* In the expanded story the photo is whole, in its own proportions; a tall one is cropped to 4:5 around its middle
+   (--photo-ratio, see PlacePhotoBanner). */
 [data-expanded] .banner {
   height: auto;
-}
-
-[data-expanded] .banner img {
-  height: auto;
-  object-fit: fill;
+  aspect-ratio: var(--photo-ratio);
 }
