@@ -2,14 +2,23 @@ import { createHash } from "node:crypto";
 
 // Static export has no request-time nonce, so inline bootstrap scripts are
 // allowed by hash. frame-ancestors is ignored in <meta>; ingress sends it.
+// Exact collector origins from Yandex's CSP documentation (no wildcard hosts).
+const collectors = [
+  "ru", "az", "by", "co.il", "com", "com.am", "com.ge", "com.tr", "ee",
+  "fr", "kg", "kz", "lt", "lv", "md", "tj", "tm", "uz",
+].map(zone => `https://mc.yandex.${zone}`).concat("https://mc.webvisor.com", "https://mc.webvisor.org");
+const analytics = collectors.join(" ");
+const sockets = collectors.map(origin => origin.replace("https:", "wss:")).join(" ");
 const directives = [
   ["default-src", "'self'"],
   ["style-src", "'self' 'unsafe-inline'"],
   // VersaTiles serves the vector basemap tiles and glyphs (fetched, so connect-src);
   // OSM raster tiles are the fallback when WebGL is unavailable.
-  ["img-src", "'self' data: blob: https://tile.openstreetmap.org"],
+  ["img-src", `'self' data: blob: https://tile.openstreetmap.org ${analytics}`],
+  ["frame-src", `'self' blob: ${analytics}`],
+  ["child-src", `'self' blob: ${analytics}`],
   ["font-src", "'self'"],
-  ["connect-src", "'self' https://tiles.versatiles.org"],
+  ["connect-src", `'self' https://tiles.versatiles.org ${analytics} ${sockets}`],
   ["media-src", "'self'"],
   // MapLibre bundles its tile worker and starts it from a blob: URL.
   ["worker-src", "'self' blob:"],
@@ -32,7 +41,7 @@ export function inlineScriptHashes(html) {
 }
 
 export function contentSecurityPolicy(scriptHashes) {
-  const script = ["'self'", ...scriptHashes].join(" ");
+  const script = ["'self'", analytics, "https://yastatic.net", ...scriptHashes].join(" ");
   const [defaults, ...rest] = directives;
   return [defaults, ["script-src", script], ...rest]
     .map(([name, value]) => `${name} ${value}`)

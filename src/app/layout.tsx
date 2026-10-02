@@ -1,3 +1,6 @@
+import { Suspense } from "react";
+import { YandexMetrika } from "@/features/analytics/yandex-metrika";
+import { METRIKA_ID } from "@/features/analytics/metrika";
 import type { Metadata, Viewport } from "next";
 import { AppNavigation } from "@/features/navigation/app-navigation";
 import "@/styles/tokens.css";
@@ -26,7 +29,14 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, view
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru">
-      <body>{children}<AppNavigation /></body>
+      <body>
+        {children}<AppNavigation />
+        <Suspense fallback={null}><YandexMetrika /></Suspense>
+        {process.env.NODE_ENV === "production" && <noscript><div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`https://mc.yandex.ru/watch/${METRIKA_ID}`} style={{ position: "absolute", left: -9999 }} alt="" />
+        </div></noscript>}
+      </body>
     </html>
   );
 }

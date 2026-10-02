@@ -1,3 +1,4 @@
 ops/production/traefik/** text eol=lf
 scripts/verify-production-tls.sh text eol=lf
 *.css text eol=lf
+backend/builtin-routes.mjs text eol=lf

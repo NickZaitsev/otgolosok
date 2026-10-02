@@ -13,5 +13,6 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["backend/**/*.mjs"]
+  "include": ["backend/**/*.mjs"],
+  "exclude": ["backend/data"]
 }

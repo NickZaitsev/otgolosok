@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { contentSecurityPolicy, inlineScriptHashes, withContentSecurityPolicy } from "../../scripts/content-security-policy.mjs";
 
@@ -6,6 +7,14 @@ const hash = (body: string) => `'sha256-${createHash("sha256").update(body, "utf
 const policyOf = (html: string) => /http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html)?.[1] ?? "";
 
 describe("content security policy", () => {
+  it("разрешает встраивание Docker-сайта только интерфейсам Метрики", () => {
+    const headers = readFileSync(new URL("../../docker/security-headers.conf", import.meta.url), "utf8");
+    const ancestors = /frame-ancestors ([^;]+)/.exec(headers)?.[1].split(" ") ?? [];
+    expect(ancestors).toContain("https://metrika.yandex.ru");
+    expect(ancestors).toContain("https://metrica.yandex.ru");
+    expect(ancestors.every(origin => /^https:\/\/(?:analytics|metr|metrica|metrika)\.(?:yandex(?:\.[a-z.]+)?|ya\.ru)$/.test(origin))).toBe(true);
+    expect(headers).not.toContain("add_header X-Frame-Options");
+  });
   it("разрешает только inline-скрипты страницы по их хешу", () => {
     const html = `<!DOCTYPE html><html><head><meta charSet="utf-8"/><script src="/_next/a.js" async=""></script></head>`
       + `<body><script>self.__next_f.push([1,"Привет"])</script><script id="x">(self.__next_f=[]).push(0)</script></body></html>`;
@@ -19,15 +28,28 @@ describe("content security policy", () => {
 
   it("не хеширует внешние и пустые скрипты", () => {
     expect(inlineScriptHashes(`<script src="/a.js"></script><script async src='/b.js'></script><script></script>`)).toEqual([]);
-    expect(contentSecurityPolicy([])).toMatch(/^default-src 'self'; script-src 'self'; /);
+    expect(contentSecurityPolicy([])).toMatch(/^default-src 'self'; script-src 'self' https:\/\/mc.yandex.ru /);
   });
 
-  it("пускает к карте только её источники и воркер MapLibre", () => {
+  it("сохраняет источники карты и воркер MapLibre", () => {
     const directive = (name: string) => contentSecurityPolicy([]).split("; ").find(d => d.startsWith(`${name} `));
-    expect(directive("connect-src")).toBe("connect-src 'self' https://tiles.versatiles.org");
-    expect(directive("img-src")).toBe("img-src 'self' data: blob: https://tile.openstreetmap.org");
+    expect(directive("connect-src")).toContain("connect-src 'self' https://tiles.versatiles.org ");
+    expect(directive("img-src")).toContain("img-src 'self' data: blob: https://tile.openstreetmap.org ");
     expect(directive("worker-src")).toBe("worker-src 'self' blob:");
-    expect(directive("script-src")).toBe("script-src 'self'");
+    expect(directive("script-src")).toContain("script-src 'self' https://mc.yandex.ru ");
+  });
+
+  it("разрешает точные адреса Метрики и Вебвизора без wildcard и unsafe-eval", () => {
+    const policy = contentSecurityPolicy([]);
+    const directive = (name: string) => policy.split("; ").find(d => d.startsWith(`${name} `))!;
+    for (const name of ["script-src", "connect-src", "img-src", "frame-src", "child-src"]) {
+      expect(directive(name)).toContain("https://mc.yandex.ru");
+      expect(directive(name)).toContain("https://mc.yandex.com.tr");
+      expect(directive(name)).toContain("https://mc.webvisor.org");
+    }
+    expect(directive("script-src")).toContain("https://yastatic.net");
+    expect(directive("connect-src")).toContain("wss://mc.yandex.ru");
+    expect(policy).not.toMatch(/\*|unsafe-eval/);
   });
 
   it("ставит политику до первого скрипта и не дублирует её при повторной сборке", () => {
