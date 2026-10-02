@@ -6,12 +6,13 @@ const coordinate = (value, max) => typeof value === "number" && Number.isFinite(
 export const validLocation = location => coordinate(location?.lat, 90) && coordinate(location?.lon, 180);
 
 /** Keep only public source fields needed for editorial assessment. Never store comments or photos. */
-export function sourceRecord(raw) {
+export function sourceRecord(raw, fallbackLocation = null) {
+  const location = validLocation(raw?.location) ? raw.location : fallbackLocation;
   if (!raw || !Number.isSafeInteger(raw.id) || raw.id <= 0 || typeof raw.title !== "string" || !raw.title.trim()
-    || !validLocation(raw.location)) throw fail("WIKIMAPIA_INVALID_PLACE");
+    || !validLocation(location)) throw fail("WIKIMAPIA_INVALID_PLACE");
   return {
     id: raw.id, title: raw.title, description: typeof raw.description === "string" ? raw.description : "",
-    url: `https://wikimapia.org/${raw.id}/ru`, location: { lat: raw.location.lat, lon: raw.location.lon },
+    url: `https://wikimapia.org/${raw.id}/ru`, location: { lat: location.lat, lon: location.lon },
     deleted: raw.is_deleted === true, categories: Array.isArray(raw.tags) ? raw.tags.map(tag => tag.title).filter(title => typeof title === "string") : [],
   };
 }
@@ -75,12 +76,15 @@ export function createWikimapiaClient({ apiKey = "", example = false, intervalMs
       if (!validLocation(place)) throw fail("WIKIMAPIA_INVALID_INPUT");
       const data = await request("place.getnearest", { lat: String(place.lat), lon: String(place.lon), count: "50" });
       if (!Array.isArray(data?.places)) throw fail("WIKIMAPIA_INVALID_RESPONSE");
-      return data.places.map(sourceRecord);
+      return data.places.flatMap(raw => {
+        try { return [sourceRecord(raw)]; }
+        catch (error) { if (error?.code === "WIKIMAPIA_INVALID_PLACE") return []; throw error; }
+      });
     },
-    async detail(id) {
+    async detail(id, fallbackLocation = null) {
       if (!Number.isSafeInteger(id) || id <= 0) throw fail("WIKIMAPIA_INVALID_ID");
       const data = await request("place.getbyid", { id: String(id), data_blocks: "main,location" });
-      const record = sourceRecord(data);
+      const record = sourceRecord(data, fallbackLocation);
       if (record.id !== id) throw fail("WIKIMAPIA_ID_MISMATCH");
       return record;
     },

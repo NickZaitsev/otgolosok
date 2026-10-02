@@ -35,7 +35,7 @@ async function main() {
       const matches = candidateMatches(place, nearest);
       const candidates = [];
       for (const match of matches.slice(0, 3)) {
-        const detail = (await cached(`detail-${match.id}.json`, () => client.detail(match.id))).data;
+        const detail = (await cached(`detail-${match.id}.json`, () => client.detail(match.id, match.location))).data;
         candidates.push({ ...detail, distanceM: match.distanceM, nameCoverage: match.nameCoverage });
       }
       result = { place, status: candidates.length ? "needs_review" : "no_candidate", nearestCount: nearest.length,
