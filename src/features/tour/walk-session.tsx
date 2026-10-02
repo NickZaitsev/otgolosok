@@ -15,14 +15,29 @@ import { legFitPoints, legRange, routeLegCuts } from "./route-legs";
 import type { AdvanceMode } from "./walk-settings";
 import { StopWalkDialog } from "./stop-walk-dialog";
 import type { OwnWalk } from "../walks/own-walk";
+import { historicalWalkPhotos } from "./historical-photos";
+import historicalStyles from "./historical-photos.module.css";
 import "./walk-session.css";
 
 const noop = () => {};
 
 /** The photo of the catalog place a stop tells about, as on its map card; nothing while it loads or without one. */
-function StopPhoto({ placeId, title }: { placeId: string; title: string }) {
+function StopPhoto({ placeId, stopId, title }: { placeId?: string; stopId: string; title: string }) {
   const place = usePlaceStory(placeId);
-  return <PlacePhotoBanner photo={place.story?.photo} title={title} />;
+  const photos = historicalWalkPhotos(stopId);
+  return <>
+    {placeId ? <PlacePhotoBanner photo={place.story?.photo} title={title} /> : null}
+    {photos.length ? <section className={historicalStyles.gallery} aria-labelledby={`${stopId}-historical-title`}>
+      <h3 id={`${stopId}-historical-title`} className={historicalStyles.heading}>Исторические снимки</h3>
+      <ul className={historicalStyles.list}>{photos.map(photo => <li key={photo.cid} className={historicalStyles.item}>
+        <a className={historicalStyles.link} href={`https://pastvu.com/p/${photo.cid}`} target="_blank" rel="noopener noreferrer">
+          <img className={historicalStyles.image} src={photo.src} alt={`${photo.title}, ${photo.year} год`} loading="lazy" />
+          <span className={historicalStyles.caption}>{photo.year} · {photo.title}</span>
+          <span className={historicalStyles.source}>Открыть на PastVu</span>
+        </a>
+      </li>)}</ul>
+    </section> : null}
+  </>;
 }
 
 /**
@@ -163,7 +178,7 @@ export function WalkSession({ route, chapters, index, stage = "stop", advance = 
     {active && user ? <button type="button" className="walk-session-locate" data-region="controls" aria-label="Моё местоположение" onClick={() => setFocus({ lat: user.lat, lon: user.lon, zoom: 16 })}><ExploreIcon name="locate" /></button> : null}
     <section ref={panelRef} className="walk-session-panel" data-region="sheet" aria-labelledby="walk-session-title">
       {/* Like the player, the photo yields its room to an open drawer. */}
-      {active && chapter?.place_id && !drawer ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} title={chapter.title} /></div> : null}
+      {active && chapter && !drawer ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} stopId={chapter.id} title={chapter.title} /></div> : null}
       <header className="walk-session-heading">
         <div>
           <p className="walk-session-meta">{active ? chapter ? stage === "approach" ? [`К остановке ${index + 1} из ${chapters.length}`, approachHint(advance, Boolean(chapter.audio))].filter(Boolean).join(" · ") : `Остановка ${index + 1} из ${chapters.length}` : "До финиша" : `${route.duration_min} мин · ${distance.toLocaleString("ru-RU", { maximumFractionDigits: 1 })} км`}{!active && !completed && ratingLabel ? <> · {reviews
