@@ -528,8 +528,8 @@ function raw(base,path,headers={},method="GET") {
   });
 }
 
-async function mapFixture(t) {
-  const f=await fixture(t);
+async function mapFixture(t,options={}) {
+  const f=await fixture(t,options);
   f.store.importPlaces({source:"fixture",sourceSha256:"a".repeat(64),places:[
     {placeId:"osm:node:8",osmType:"node",osmId:8,name:"Сад",location:{lat:55.75,lon:37.61},tags:{leisure:"garden"}},
     {placeId:"osm:node:9",osmType:"node",osmId:9,name:"Парк",location:{lat:56.1,lon:37.2},tags:{leisure:"park"}},
@@ -593,6 +593,40 @@ test("published place details are revalidated by ETag while a missing place stay
   assert.equal((await raw(f.base,"/api/content/places/osm:node:8",{"If-None-Match":response.headers.etag})).status,304);
   const missing=await raw(f.base,"/api/content/places/osm:node:404");
   assert.equal(missing.status,404);assert.equal(missing.headers["cache-control"],"no-store");assert.equal(missing.headers.etag,undefined);
+});
+
+test("a shared place link serves its preview page, revalidated by ETag, ahead of the static site",async t=>{
+  const site=await mkdtemp(join(tmpdir(),"static-site-"));t.after(()=>rm(site,{recursive:true,force:true}));
+  await writeFile(join(site,"index.html"),"<!doctype html><title>Карта</title>");
+  const f=await mapFixture(t,{staticDirectory:site});
+  const response=await raw(f.base,"/place/node/8?utm_source=telegram",{"Accept-Encoding":"br"});
+  assert.equal(response.status,200);assert.equal(response.headers["content-type"],"text/html; charset=utf-8");
+  assert.equal(response.headers["cache-control"],"no-cache");assert.equal(response.headers["content-encoding"],"br");
+  assert.match(response.headers["content-security-policy"],/^default-src 'none'; script-src 'sha256-[A-Za-z0-9+/]+=*'/);
+  const html=brotliDecompressSync(response.body).toString();
+  assert.match(html,/<meta property="og:title" content="История: Сад">/);
+  assert.match(html,/<meta property="og:url" content="https:\/\/otgolosok\.test\/place\/node\/8">/);
+  assert.match(html,/<a id="open" href="\/\?place=osm:node:8">/);
+  const again=await raw(f.base,"/place/node/8",{"If-None-Match":response.headers.etag});
+  assert.equal(again.status,304);assert.equal(again.body.length,0);
+  const head=await raw(f.base,"/place/node/8",{},"HEAD");
+  assert.equal(head.status,200);assert.equal(head.body.length,0);assert.equal(Number(head.headers["content-length"]),Buffer.byteLength(html));
+  assert.equal((await raw(f.base,"/")).body.toString(),"<!doctype html><title>Карта</title>");
+});
+
+test("a shared link to a missing place or a malformed one answers an uncached HTML 404",async t=>{
+  const f=await mapFixture(t);
+  const gone=await raw(f.base,"/place/node/404");
+  assert.equal(gone.status,404);assert.equal(gone.headers["content-type"],"text/html; charset=utf-8");
+  assert.equal(gone.headers["cache-control"],"no-cache");assert.equal(gone.headers.etag,undefined);
+  assert.match(gone.body.toString(),/Эта история больше недоступна\./);assert.match(gone.body.toString(),/href="\/\?place=osm:node:404"/);
+  for(const path of ["/place/node/08","/place/area/8","/place/node/8/","/place/","/place/node/8.html"]) {
+    const response=await raw(f.base,path);
+    assert.equal(response.status,404,path);assert.equal(response.headers["content-type"],"text/html; charset=utf-8",path);
+    assert.match(response.body.toString(),/<a href="\/">Открыть карту историй<\/a>/,path);
+  }
+  const head=await raw(f.base,"/place/node/404",{},"HEAD");
+  assert.equal(head.status,404);assert.equal(head.body.length,0);
 });
 
 test("place photos are served immutable by content-addressed name only",async t=>{
