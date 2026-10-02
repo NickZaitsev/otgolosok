@@ -38,7 +38,8 @@
 }
 
 /* Controls over the sheet: a zero-height row at the top of the content box, so it takes no room. Raised: the masked
-   body is a stacking context that would otherwise paint over it. Sticky: an expanded sheet scrolls under it. */
+   body is a stacking context that would otherwise paint over it. Sticky: an expanded sheet scrolls under it; the
+   offset counts from the sheet's content edge, so `top: 0` keeps the row where it rests. */
 .chrome {
   position: sticky;
   top: 0;
@@ -63,7 +64,7 @@
 /* The grip starts at the sheet's top edge, centred. */
 .handle {
   position: absolute;
-  top: calc(-1 * var(--sheet-pad, 1.25rem));
+  top: calc(-1 * var(--sheet-top, var(--sheet-pad, 1.25rem)));
   left: 50%;
   translate: -50% 0;
 }
@@ -71,6 +72,19 @@
 /* Over a photo the grip gets a light halo. */
 .sheet:has(> .media:not(:empty)) > .chrome > .handle {
   --handle-shadow: 0 0 0 2px var(--surface-island);
+}
+
+/* The one expandable sheet on a map screen slides between its two states (see use-expandable-sheet). */
+.sheet[data-expandable] {
+  view-transition-name: map-sheet;
+}
+
+/* Without a photo the grip gets its own strip above the content, one control tall: its hit area ends where the
+   title begins. */
+.sheet[data-expandable]:not(:has(> .media:not(:empty))) {
+  --sheet-top: var(--control-min);
+
+  padding-top: var(--sheet-top);
 }
 
 .header,
@@ -234,17 +248,14 @@
   box-shadow: var(--sheet-shadow, var(--shadow-island));
 }
 
-.sheet[data-expanded] > .chrome {
-  top: var(--sheet-pad, 1.25rem);
-}
-
 .sheet[data-expanded] > .media {
   flex: none;
 }
 
-/* Doubled attribute: outranks the media rule that keeps a few lines of a scrolling body. */
+/* Doubled attribute: outranks the media rule that keeps a few lines of a scrolling body. A short text leaves the
+   free room under itself: the body grows, so the footer stays at the bottom edge. */
 .sheet[data-expanded][data-expanded] > .body {
-  flex: none;
+  flex: 1 0 auto;
   min-height: auto;
   margin-right: 0;
   padding-right: 0;
@@ -267,11 +278,6 @@
 /* Expanded without a footer the text still ends clear of the bottom edge. */
 .sheet[data-expanded]:not(:has(> .footer)) > .body {
   padding-bottom: var(--sheet-pad, 1.25rem);
-}
-
-/* The one expandable sheet on a map screen slides between its two states (see use-expandable-sheet). */
-.sheet[data-expandable] {
-  view-transition-name: map-sheet;
 }
 
 :global(::view-transition-group(map-sheet)) {

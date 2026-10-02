@@ -1,6 +1,8 @@
 import { expect, test, type Page } from "./support/test";
 import { SAFE_AREA_CASES, VIEWPORTS } from "./support/layout";
 import { mockGuestApi, openLongStory } from "./support/scenarios";
+import { mockMapCatalog } from "./support/map-catalog";
+import { MOSCOW_CENTER } from "../src/features/explore/map-jobs";
 
 // Раскрываемая карточка истории на карте: свёрнутая — не прокручивается, развёрнутая — читается как страница.
 
@@ -103,6 +105,35 @@ test("нажатие на начало текста раскрывает ист�
   await openStory(page);
   await page.getByRole("region", { name: "Текст истории", exact: true }).locator("p").first().click();
   await expect(handle(page)).toHaveAttribute("aria-expanded", "true");
+});
+
+/** Without a photo the grip has its own strip: its hit area ends above the title. */
+async function expectHandleClearOfTitle(page: Page) {
+  const grip = (await handle(page).boundingBox())!, title = (await page.locator("#selected-place-title").boundingBox())!;
+  expect(grip.y + grip.height).toBeLessThanOrEqual(title.y + 1);
+}
+
+test("короткая история без фото: ручка не заходит на заголовок, плеер внизу, свободное место под текстом", async ({ page }) => {
+  await mockGuestApi(page);
+  await mockMapCatalog(page, [{ id: "short-story", title: "Короткая история", address: "Москва, Дербеневская, 3", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon,
+    paragraphs: ["Первый абзац короткой истории.", "Второй абзац."], audioUrl: "/api/story-audio/short-story.mp3", durationSec: 30 }]);
+  await page.goto("/");
+  await page.locator('[title="Короткая история"]').dispatchEvent("click");
+  await expect(handle(page)).toHaveAttribute("aria-expanded", "false");
+  await expectHandleClearOfTitle(page);
+  await handle(page).click();
+  await expect(handle(page)).toHaveAttribute("aria-expanded", "true");
+  await settle(page);
+  await expectHandleClearOfTitle(page);
+  const layout = await sheet(page).evaluate(element => {
+    const box = element.getBoundingClientRect(), footer = element.querySelector('[data-sheet-part="footer"]')!.getBoundingClientRect();
+    const text = element.querySelector('[data-sheet-part="body"] p:last-of-type')!.getBoundingClientRect();
+    return { footerGap: box.bottom - footer.bottom, room: footer.top - text.bottom, scroll: element.scrollHeight - element.clientHeight };
+  });
+  // The player sits at the bottom edge; the free room is between the text and the player.
+  expect(Math.abs(layout.footerGap)).toBeLessThanOrEqual(1);
+  expect(layout.room).toBeGreaterThan(100);
+  expect(layout.scroll).toBeLessThanOrEqual(1);
 });
 
 test("свайп по ручке раскрывает и сворачивает карточку, горизонтальный — нет", async ({ page }) => {
