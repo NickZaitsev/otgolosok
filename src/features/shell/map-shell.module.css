@@ -51,17 +51,21 @@
   min-width: 0;
 }
 
-/* The header and the map controls share one row and one height: a control is the tallest thing in it. */
+/*
+ * The header and the map controls share one row and one height: a control is the tallest thing in it.
+ * The header island is as wide as its content, the controls keep to the right edge; the map shows between them.
+ */
 .top {
   grid-area: top;
   display: flex;
   gap: var(--space-xs);
   align-items: center;
+  justify-content: space-between;
 }
 
 .header {
   display: flex;
-  flex: 1;
+  flex: 0 1 auto;
   align-items: center;
   min-width: 0;
   height: var(--control-min);

@@ -636,6 +636,8 @@ for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }
       expect(Math.abs(control.height - head.height), name).toBeLessThanOrEqual(1);
       expect(control.x, `${name} правее шапки`).toBeGreaterThanOrEqual(head.x + head.width);
     }
+    const link = (await header.getByRole("link").boundingBox())!;
+    expect(head.width - link.width, "остров шапки по ширине логотипа").toBeLessThanOrEqual(34);
     const mark = header.locator(".brand-mark");
     expect(await mark.evaluate(element => element.scrollWidth <= element.parentElement!.clientWidth), "логотип не обрезан").toBe(true);
   });

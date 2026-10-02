@@ -15,7 +15,7 @@
 }
 
 /* On the narrowest phones the zoom pair and «Моё местоположение» leave the mark about 120 px. */
-@media (width < 360px) {
+@container shell (width < 360px) {
   .brand .mark {
     font-size: var(--text-body);
   }
