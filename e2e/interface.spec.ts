@@ -4,7 +4,7 @@ import { MOSCOW_CENTER } from "../src/features/explore/map-jobs";
 
 async function openLongStory(page: Page) {
   const text = "Корпус имеет сложную, отдалённо Т-образную форму, а главный фасад построен как трёхчастная композиция. ".repeat(5);
-  await mockMapCatalog(page, [{ id: "long-story", title: "Длинная история", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon, paragraphs: [text, text, text], audioUrl: "/api/story-audio/long-story.mp3", durationSec: 120 }]);
+  await mockMapCatalog(page, [{ id: "osm:node:1001", title: "Длинная история", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon, paragraphs: [text, text, text], audioUrl: "/api/story-audio/long-story.mp3", durationSec: 120 }]);
   await page.goto("/");
   await page.locator('[title="Длинная история"]').click();
   const story = page.getByRole("region", { name: "Текст истории", exact: true });
@@ -161,7 +161,7 @@ test("создаёт A→Б на карте и восстанавливает е
 });
 
 test("дом передаёт старт, возврат включён по умолчанию, Back закрывает панель", async ({ page }) => {
-  await mockMapCatalog(page, [{ id: "test-house", title: "Дом для прогулки", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon }]);
+  await mockMapCatalog(page, [{ id: "osm:node:1002", title: "Дом для прогулки", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon }]);
   await page.goto("/");
   await page.locator('[title="Дом для прогулки"]').click();
   // «Создать прогулку отсюда» — в развёрнутой карточке истории.
@@ -439,7 +439,7 @@ for (const endpoint of ["Откуда", "Куда"]) {
 test("клик карты после создания от дома задаёт финиш, а явный выбор меняет старт", async ({ page }) => {
   const start = "Москва, Дербеневская, 1";
   const finish = "Москва, Арбат, 10";
-  await mockMapCatalog(page, [{ id: "start-house", title: "Стартовый дом", address: start, lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon }]);
+  await mockMapCatalog(page, [{ id: "osm:node:1003", title: "Стартовый дом", address: start, lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon }]);
   await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: finish, location: { lat: 55.75, lon: 37.6 } } }));
   await page.goto("/");
   await page.locator('[title="Стартовый дом"]').click();

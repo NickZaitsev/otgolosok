@@ -22,7 +22,7 @@ export async function mockGuestApi(page: Page) {
 
 export async function openLongStory(page: Page, { visible = true } = {}) {
   const text = "Корпус имеет сложную, отдалённо Т-образную форму, а главный фасад построен как трёхчастная композиция. ".repeat(5);
-  await mockMapCatalog(page, [{ id: "long-story", title: "Длинная история", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon, paragraphs: [text, text, text], audioUrl: "/api/story-audio/long-story.mp3", durationSec: 120 }]);
+  await mockMapCatalog(page, [{ id: "osm:node:1001", title: "Длинная история", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon, paragraphs: [text, text, text], audioUrl: "/api/story-audio/long-story.mp3", durationSec: 120 }]);
   await page.goto("/");
   // On a short landscape screen the pin can sit under the geolocation card; this helper only opens the state.
   await page.locator('[title="Длинная история"]').dispatchEvent("click");

@@ -10,7 +10,8 @@ import { nearbyRadii, type NearbyRadius, type NearbyRecommendation } from "./nea
 import { StoryAudioPlayer } from "../tour/story-audio-player";
 import { PlacePhotoBanner } from "./place-photo";
 import { usePlaceStory } from "./place-story";
-import { isExpandableStory, type StoryPin } from "./story-pin";
+import { SharePlaceButton } from "./share-place-button";
+import { isExpandableStory, isLinkablePlace, type StoryPin } from "./story-pin";
 import a from "./around.module.css";
 import styles from "./around-sheets.module.css";
 
@@ -96,6 +97,8 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
         </details> : null}
         {!action && story.placeId && !pendingText && !content.paragraphs?.length ? <p className={a.text}>Проверенный текст доступен в карточке места{content.audioUrl ? "; запись можно слушать здесь." : "; озвучивание ещё не готово."}</p> : null}
         {walkHref ? <WalkFromHere href={walkHref} onClick={onWalk} /> : null}
+        {/* Only a published catalog place has a link to share, and only the reading view offers it. */}
+        {expand && expanded && isLinkablePlace(story) && loaded.status === "ready" ? <SharePlaceButton key={story.id} placeId={story.id} title={story.title} /> : null}
       </>}
     </>
   </Sheet>;
@@ -169,6 +172,17 @@ export function MapHintNotice({ onClose }: { onClose: () => void }) {
   return <div className={a.notice}>
     <p><strong>Какой дом вам интересен?</strong>Нажмите на карту — найдём его историю.</p>
     <button className={a.iconButton} type="button" aria-label="Закрыть подсказку" onClick={onClose}><ExploreIcon name="close" /></button>
+  </div>;
+}
+
+/** A story link being opened, or why it could not be: a damaged link, an unpublished story, a failed request. */
+export function LinkNotice({ message, alert = false, onRetry, onClose }: { message: string; alert?: boolean; onRetry?: () => void; onClose: () => void }) {
+  return <div className={a.notice}>
+    <div>
+      <p role={alert ? "alert" : "status"}>{message}</p>
+      {onRetry ? <button type="button" className={`${a.secondary} ${a.bodyAction}`} onClick={onRetry}>Повторить</button> : null}
+    </div>
+    <button className={`${a.iconButton} ${styles.top}`} type="button" aria-label="Скрыть сообщение" onClick={onClose}><ExploreIcon name="close" /></button>
   </div>;
 }
 

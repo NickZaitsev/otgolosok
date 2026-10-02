@@ -26,6 +26,8 @@ function expectSameBox(actual: Box, expected: Box) {
   for (const key of ["x", "y", "width", "height"] as const) expect(Math.abs(actual![key] - expected![key])).toBeLessThanOrEqual(1);
 }
 
+const here = (page: Page) => { const url = new URL(page.url()); return url.pathname + url.search; };
+
 async function openStory(page: Page) {
   await mockGuestApi(page);
   await openLongStory(page);
@@ -66,6 +68,10 @@ test("длинная история раскрывается на весь эк�
   await expect(page.locator('[data-region="header"]')).toBeHidden();
   await expect(page.getByRole("navigation", { name: "Основная навигация" })).toHaveCount(0);
   await expect(card.getByRole("link", { name: "Создать прогулку отсюда" })).toBeVisible();
+  // Прокрутка к элементу останавливается над плеером: карточка знает высоту подвала развёрнутого вида, с его отступами.
+  await settle(page);
+  const pinnedFooter = `${await footer.evaluate(el => (el as HTMLElement).offsetHeight)}px`;
+  await expect.poll(() => card.evaluate(el => el.style.getPropertyValue("--sheet-footer-size")), { timeout: 1000 }).toBe(pinnedFooter);
 
   // Прокручивается вся карточка; закрытие и плеер остаются на месте.
   const before = { close: await close.boundingBox(), player: await player.boundingBox() };
@@ -76,10 +82,10 @@ test("длинная история раскрывается на весь эк�
   expectSameBox(await player.boundingBox(), before.player);
   await page.screenshot({ path: info.outputPath("story-expanded-end.png") });
 
-  // «Назад» сворачивает карточку, не уходя со страницы.
+  // «Назад» сворачивает карточку, не уходя со страницы и не теряя ссылки на место.
   await page.goBack();
   await expect(handle(page)).toHaveAttribute("aria-expanded", "false");
-  expect(new URL(page.url()).pathname + new URL(page.url()).search).toBe("/");
+  expect(here(page)).toBe("/?place=osm:node:1001");
   await expect(card).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Основная навигация" })).toBeVisible();
   expect(await page.locator('[data-sheet="story"] audio').evaluate(el => el === (window as unknown as { storyAudio: Element }).storyAudio)).toBe(true);
@@ -90,15 +96,18 @@ test("длинная история раскрывается на весь эк�
   await page.keyboard.press("Escape");
   await expect(handle(page)).toHaveAttribute("aria-expanded", "false");
 
-  // Закрытие развёрнутой карточки забирает её запись истории: «Назад» потом ничего не открывает.
+  // Закрытие развёрнутой карточки переписывает её запись на карту без места: «Назад» возвращает свёрнутую карточку.
   await settle(page);
   await handle(page).click();
   await expect(handle(page)).toHaveAttribute("aria-expanded", "true");
   await settle(page);
   await close.click();
   await expect(card).toHaveCount(0);
+  expect(here(page)).toBe("/");
   await page.goBack();
-  await expect(card).toHaveCount(0);
+  await expect(card).toBeVisible();
+  await expect(handle(page)).toHaveAttribute("aria-expanded", "false");
+  expect(here(page)).toBe("/?place=osm:node:1001");
 });
 
 test("нажатие на начало текста раскрывает историю", async ({ page }) => {
@@ -115,7 +124,7 @@ async function expectHandleClearOfTitle(page: Page) {
 
 test("короткая история без фото: ручка не заходит на заголовок, плеер внизу, свободное место под текстом", async ({ page }) => {
   await mockGuestApi(page);
-  await mockMapCatalog(page, [{ id: "short-story", title: "Короткая история", address: "Москва, Дербеневская, 3", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon,
+  await mockMapCatalog(page, [{ id: "osm:node:1004", title: "Короткая история", address: "Москва, Дербеневская, 3", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon,
     paragraphs: ["Первый абзац короткой истории.", "Второй абзац."], audioUrl: "/api/story-audio/short-story.mp3", durationSec: 30 }]);
   await page.goto("/");
   await page.locator('[title="Короткая история"]').dispatchEvent("click");
