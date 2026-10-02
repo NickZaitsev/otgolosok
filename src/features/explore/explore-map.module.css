@@ -51,11 +51,11 @@
 }
 
 .stop > span {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   color: var(--map-orange);
-  font-weight: 800;
-  font-size: var(--text-map-pin);
+  font-weight: 500;
+  font-size: var(--text-map-stop);
   font-family: var(--font-body), sans-serif;
   line-height: 1;
   background: var(--surface-island);
