@@ -6,9 +6,16 @@ export type PlaceFeedbackInput = { rating: PlaceRating | null; issues: Improveme
 export type PlaceFeedback = PlaceFeedbackInput & { rating: PlaceRating; status: "open" | "resolved"; updatedAt: string };
 export type PlaceFeedbackResponse = { mine: PlaceFeedback | null };
 
+const OSM_PLACE = /^osm:(node|way|relation):\d+$/;
+
+/** Votes belong to an OSM place: other IDs have nothing the server could store a vote for. */
+export function canRatePlace(placeId: string) {
+  return OSM_PLACE.test(placeId);
+}
+
 export function feedbackPath(placeId: string) {
   // IDs follow the same contract as the public place detail endpoint.
-  if (!/^osm:(node|way|relation):\d+$/.test(placeId)) throw new TypeError("Неверное место.");
+  if (!canRatePlace(placeId)) throw new TypeError("Неверное место.");
   return `/api/content/places/${placeId}/feedback/mine`;
 }
 

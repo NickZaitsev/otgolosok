@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { feedbackPath, validatePlaceFeedback } from "./model";
+import { canRatePlace, feedbackPath, validatePlaceFeedback } from "./model";
 
 const mine = { rating: -1, issues: ["voiceover", "short_text"], text: "Подробности", status: "open", updatedAt: "2026-10-02T10:00:00Z" };
 describe("place feedback contract", () => {
   it("builds only supported place paths", () => {
     expect(feedbackPath("osm:way:7")).toBe("/api/content/places/osm:way:7/feedback/mine");
     expect(() => feedbackPath("../admin")).toThrow();
+  });
+  it.each([["osm:node:1", true], ["osm:relation:42", true], ["long-story", false], ["osm:area:1", false], ["osm:way:", false], ["osm:way:7/x", false]])("canRatePlace(%s) = %s", (id, expected) => {
+    expect(canRatePlace(id)).toBe(expected);
   });
   it("accepts an empty vote, a dislike with only text and canonical reasons", () => {
     expect(validatePlaceFeedback({ mine: null })).toEqual({ mine: null });

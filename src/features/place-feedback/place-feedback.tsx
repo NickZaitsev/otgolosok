@@ -85,7 +85,7 @@ export function PlaceFeedback({ placeId, title }: { placeId: string; title: stri
       <button type="button" disabled={!loaded || busy} aria-pressed={loaded?.mine?.rating === -1} onClick={event => rate(-1, event.currentTarget)}><ExploreIcon name="thumbDown" />Не нравится</button>
     </div>
     {loaded?.mine?.rating === -1 ? <button type="button" className={styles.explain} disabled={busy} onClick={event => { opener.current = event.currentTarget; improve(loaded.mine); }}>Что можно улучшить?</button> : null}
-    {failed ? <p className={styles.message} role="alert">Не удалось загрузить оценку. <button type="button" onClick={() => { setFailed(false); setAttempt(value => value + 1); }}>Повторить</button></p> : null}
+    {failed ? <p className={styles.message} role="alert">Не удалось загрузить оценку. <button type="button" className={styles.explain} onClick={() => { setFailed(false); setAttempt(value => value + 1); }}>Повторить</button></p> : null}
     {!loaded && !failed ? <p className={styles.message} role="status">Загружаем оценку…</p> : null}
     {notice ? <p className={styles.message} role="status">{notice}</p> : null}
     {error && !open ? <p className={reviewStyles.error} role="alert">{error}</p> : null}

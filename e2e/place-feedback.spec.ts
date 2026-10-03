@@ -3,9 +3,16 @@ import { mockMapCatalog } from "./support/map-catalog";
 import { MOSCOW_CENTER } from "../src/features/explore/map-jobs";
 
 const id = "osm:node:999999990", title = "Парк у реки";
+/** Opens the place and expands its story: the rating waits in the expanded card, after the text. */
+async function openPlace(page: Page) {
+  await page.getByTitle(title, { exact: true }).click();
+  await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+  await expect(page.getByRole("group", { name: "Оценка места" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Читать историю полностью", exact: true }).click();
+}
 type Vote = { rating: 1 | -1; issues: string[]; text: string; status: string; updatedAt: string } | null;
-async function setup(page: Page) {
-  let mine: Vote = null;
+async function setup(page: Page, { failedLoads = 0 } = {}) {
+  let mine: Vote = null, failures = failedLoads;
   const writes: unknown[] = [];
   await page.route("**/api/**", route => route.fulfill({ json: { user: null, items: [], walks: [] } }));
   await mockMapCatalog(page, [{ id, title, address: "Москва", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon, paragraphs: ["История парка. ".repeat(80)] }]);
@@ -15,12 +22,17 @@ async function setup(page: Page) {
       writes.push(input);
       expect(route.request().headers()["x-review-key"]).toMatch(/^[A-Za-z0-9_-]{43}$/);
       mine = input.rating === null ? null : { ...input, status: "open", updatedAt: "2026-10-02T10:00:00Z" };
+    } else if (failures > 0) {
+      failures -= 1;
+      // A 4xx is not retried by the client, so the error shows at once.
+      await route.fulfill({ status: 400, json: { error: { code: "BAD_REQUEST", message: "Ошибка" } } });
+      return;
     }
     await route.fulfill({ json: { mine } });
   });
   await page.goto("/");
-  await page.getByTitle(title, { exact: true }).click();
-  await expect(page.getByRole("button", { name: "Нравится", exact: true })).toBeEnabled();
+  await openPlace(page);
+  if (!failedLoads) await expect(page.getByRole("button", { name: "Нравится", exact: true })).toBeEnabled();
   return { writes };
 }
 
@@ -41,7 +53,7 @@ test("лайк меняется на дизлайк, форма принимае
   await expect(dislike).toHaveAttribute("aria-pressed", "true");
   expect(writes.at(-1)).toEqual({ rating: -1, issues: ["voiceover"], text: "Расскажите подробнее о старом мосте." });
   await page.reload();
-  await page.getByTitle(title, { exact: true }).click();
+  await openPlace(page);
   await expect(dislike).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Что можно улучшить?" }).click();
   await expect(dialog.getByLabel(/Ваш комментарий/)).toHaveValue("Расскажите подробнее о старом мосте.");
@@ -80,6 +92,21 @@ test("ошибка записи не меняет оценку и сохраня
   await page.getByRole("button", { name: "Нравится", exact: true }).click();
   await expect(page.getByRole("button", { name: "Не нравится", exact: true })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("button", { name: "Нравится", exact: true })).toHaveAttribute("aria-pressed", "false");
+});
+
+test("после ошибки загрузки оценку можно запросить снова крупной кнопкой", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await setup(page, { failedLoads: 1 });
+  const alert = page.getByRole("alert").filter({ hasText: "Не удалось загрузить оценку." });
+  const retry = alert.getByRole("button", { name: "Повторить", exact: true });
+  await expect(retry).toBeVisible();
+  await expect(page.getByRole("button", { name: "Нравится", exact: true })).toBeDisabled();
+  const size = await retry.evaluate(element => element.getBoundingClientRect());
+  expect(size.height).toBeGreaterThanOrEqual(44);
+  expect(size.width).toBeGreaterThanOrEqual(44);
+  await retry.click();
+  await expect(alert).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Нравится", exact: true })).toBeEnabled();
 });
 
 for (const viewport of [{ width: 320, height: 568 }, { width: 844, height: 390 }, { width: 1440, height: 900 }]) {
