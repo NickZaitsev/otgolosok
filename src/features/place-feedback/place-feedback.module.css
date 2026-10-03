@@ -1,0 +1,92 @@
+.root {
+  display: grid;
+  flex: 1 1 100%;
+  min-width: 0;
+  gap: 8px;
+  color: var(--map-green);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px;
+  color: var(--map-green);
+  background: var(--field-surface);
+  border: 1px solid var(--field-border);
+  border-radius: 12px;
+  font: inherit;
+  font-size: var(--text-secondary);
+  cursor: pointer;
+}
+
+.actions button[aria-pressed="true"] {
+  background: var(--control-soft);
+  border-color: var(--map-green);
+  box-shadow: inset 0 0 0 1px var(--map-green);
+  font-weight: 700;
+}
+
+.actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.explain {
+  min-height: 44px;
+  padding: 8px;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: var(--text-secondary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.message {
+  margin: 0;
+  font-size: var(--text-secondary);
+}
+
+.comment {
+  display: grid;
+  gap: 8px;
+  font-size: var(--text-control);
+}
+
+.comment span {
+  font-size: var(--text-secondary);
+}
+
+.comment textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: 12px;
+  color: inherit;
+  background: var(--field-surface);
+  border: 1px solid var(--field-border);
+  border-radius: 12px;
+  font: inherit;
+  resize: vertical;
+}
+
+.actions button:focus-visible,
+.explain:focus-visible,
+.comment textarea:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.actions button:hover:not(:disabled),
+.explain:hover:not(:disabled) {
+  background: var(--control-soft);
+}

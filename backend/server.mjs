@@ -31,6 +31,7 @@ import { createWalkLaunchRoutes } from "./walk-launch-routes.mjs";
 import { createTopWalks } from "./walk-top.mjs";
 import { createReviewRateLimiter } from "./walk-reviews.mjs";
 import { createWalkReviewRoutes } from "./walk-review-routes.mjs";
+import { createPlaceFeedbackRoutes } from "./place-feedback-routes.mjs";
 import { createWalkImprovementRoutes } from "./walk-improvement-routes.mjs";
 import { resolveWalkView } from "./walk-view.mjs";
 import { builtinRoutes } from "./builtin-routes.mjs";
@@ -156,6 +157,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,eleven
   const authorizePromo=adminAuth(promoEnabled?promoWalksToken:"");
   const promoWalks=promoEnabled&&accountStore?createPromoWalkService({accountStore,planWalk:walkPlanner,store,origin}):null;
   const reviews=createWalkReviewRoutes({store,accountStore,origin,authSecret,limiter:reviewLimiter,json,body});
+  const placeFeedback=createPlaceFeedbackRoutes({store,accountStore,origin,authSecret,limiter:improvementLimiter,json,body});
   const improvements=createWalkImprovementRoutes({store,accountStore,origin,authSecret,limiter:improvementLimiter,json,body});
   const launches=createWalkLaunchRoutes({store,accountStore,authSecret,limiter:launchLimiter,walkLimiter:launchWalkLimiter,json,body});
   const topWalks=accountStore?createTopWalks({accountStore,store,builtinRoutes}):null;
@@ -343,6 +345,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,eleven
         if(roleAuthorized&&!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Refresh the editor and retry."}});return;}
         if(await reviews.admin(req,res,url,roleAuthorized?session.user.id:null))return;
         if(await improvements.admin(req,res,url,roleAuthorized?session.user.id:null))return;
+        if(await placeFeedback.admin(req,res,url))return;
         if(req.method==="GET"&&url.pathname==="/api/story-admin/walks/shared") {
           const entries=[...url.searchParams];
           if(entries.some(([key,value])=>!["limit","offset","q","author","mode","access","listing"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
@@ -600,6 +603,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,eleven
       }
       if(await reviews.public(req,res,url,session))return;
       if(await improvements.public(req,res,url,session))return;
+      if(await placeFeedback.public(req,res,url,session))return;
       if(url.pathname==="/api/top-walks") {
         if(!["GET","HEAD"].includes(req.method)){res.setHeader("Allow","GET, HEAD");json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;}
         if(url.search)throw failure("BAD_REQUEST");
