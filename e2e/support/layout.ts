@@ -138,6 +138,10 @@ export async function collectViolations(page: Page, options: LayoutOptions, safe
         if (y < clip.top || y > clip.bottom) continue; // scrolled away: the user scrolls to it
       }
       const hit = x >= 0 && y >= 0 && x <= width && y <= height ? document.elementFromPoint(x, y) : null;
+      // Under a sticky bar of its own scroller the control is scrolled away too: the user scrolls to it.
+      let bar: Element | null = null;
+      for (let node = hit; scroller && node && node !== scroller; node = node.parentElement) if (getComputedStyle(node).position === "sticky") { bar = node; break; }
+      if (scroller && bar && scroller.contains(bar) && !bar.contains(target)) continue;
       if (!hit || !(target.contains(hit) || hit.contains(target))) add("target", `«${describe(control)}» закрыт: в центре ${hit ? describe(hit) : "ничего"}`);
       const exempt = control.closest("[data-region=attribution]");
       if (!exempt && (box.right - box.left < 43.5 || box.bottom - box.top < 43.5)) add("target", `«${describe(control)}» ${Math.round(box.right - box.left)}×${Math.round(box.bottom - box.top)} меньше 44×44`);
