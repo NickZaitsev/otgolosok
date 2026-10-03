@@ -139,8 +139,9 @@
   .admin-masthead { padding-block: .75rem; }
   .admin-context { width: 100%; order: 3; }
   .admin-heading { padding-top: 1.5rem; }
-  .admin-tabs { margin-inline: -1rem; padding-inline: 1rem; }
-  .admin-desk .admin-tabs button { min-width: 0; flex: 1; }
+  /* The tabs keep their labels whole: when they do not fit the row scrolls sideways, not the page. */
+  .admin-tabs { margin-inline: -1rem; padding-inline: 1rem; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: none; }
+  .admin-desk .admin-tabs button { min-width: 0; flex: 1 0 auto; white-space: nowrap; }
   .admin-section-head { align-items: flex-end; }
   .admin-filters { grid-template-columns: minmax(0, 1fr); padding: .75rem; }
   .admin-filter-submit { grid-column: auto; width: 100%; }
