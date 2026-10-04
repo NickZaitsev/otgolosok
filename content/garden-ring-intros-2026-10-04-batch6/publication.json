@@ -1,0 +1,189 @@
+{
+  "verifiedAt": "2026-10-04T16:50:28.333Z",
+  "bundleId": "garden-ring-intros-2026-10-04-batch6",
+  "transport": "https-h2",
+  "results": [
+    {
+      "placeId": "osm:node:1592025111",
+      "name": "Дом на набережной",
+      "textId": "819f5cc7-9ca7-4dd6-b66b-bfc5ea32ff02",
+      "audioJobId": "eb36240b-f172-421d-9752-3911d68c98fe",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/5635aa643bbc4fd4f5ca60e44b28d25e7723d2f58ced341eb06691b83f5c14fc.mp3",
+        "sha256": "5635aa643bbc4fd4f5ca60e44b28d25e7723d2f58ced341eb06691b83f5c14fc",
+        "bytes": 451629,
+        "durationSec": 56.424,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "852158b45e9c242eddd675a03ebf96939a1f92596db07e937b7226f2af6da493",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/063e76eaca8982b72ec97ec876902cc5faaa5e14e16928d9092d81a45e77be6e.jpg",
+        "src": "/api/place-images/5e9c1b931787481164ee9508d8826e1fbde62e2ff22f2e8fe5f95ab981a066b7.jpg",
+        "width": 500,
+        "height": 667,
+        "alt": "Музей «Дом на набережной»",
+        "author": "Bogdanov-62",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_20200119_133955.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:way:274909164",
+      "name": "Дом Пороховщикова",
+      "textId": "c516ce82-b0ef-4570-b9cc-bceafc8eeb0b",
+      "audioJobId": "624a3a28-7eda-4110-930f-2f51cb1f55a8",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/50f5b80ce57e646113963cdf70f3a9d523cf133df22cdfc7ab6f87f3e4457b66.mp3",
+        "sha256": "50f5b80ce57e646113963cdf70f3a9d523cf133df22cdfc7ab6f87f3e4457b66",
+        "bytes": 463917,
+        "durationSec": 57.96,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "3637a370cb719da4f104e877d6476d76a3dfd8a6c8fe96cc62ca05c7d7ffdb33",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/6f9750e3e229c86f85f05fd4faca967be5f49782c3783cd0dd484ef7a7f339b3.jpg",
+        "src": "/api/place-images/b667f1c005bbe2708d6e8115033a1023a51b9039f8b90cd99727dbcd92d734b5.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Дом Пороховщикова",
+        "author": "Lite",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dom_porohovschikova.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:relation:12198829",
+      "name": "Дом с атлантами",
+      "textId": "a890012f-7a65-43f6-8e06-2d02e4835e3e",
+      "audioJobId": "bfcee4d5-df6f-4b48-b9f3-1766d6290043",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/ebe8f6297e26f036038a11a13f9367c025da85c30d6a78e630fc8f086cfe4b4e.mp3",
+        "sha256": "ebe8f6297e26f036038a11a13f9367c025da85c30d6a78e630fc8f086cfe4b4e",
+        "bytes": 450861,
+        "durationSec": 56.328,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "a4587240d2f4c657724ac5d30dc23f7ffbad344bdcff348ad6912bc1c681d1ba",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/0a0f1daef20f5c30038f11211ff3f1cf7c665d73ab5e6560c5f888c2aafbd272.jpg",
+        "src": "/api/place-images/917cbdbe6a6e12885025007dc8ee86699436731e8aa9aa3bd1e32edaf3bd95de.jpg",
+        "width": 960,
+        "height": 768,
+        "alt": "Дом с атлантами на Солянке",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Solyanka_7_Aug_2009_05.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:relation:6210565",
+      "name": "Дом Союзов",
+      "textId": "3dc68fa6-6b1f-431c-8c3c-dcea8473b5f7",
+      "audioJobId": "120a67c0-983f-472e-8637-6f740b48e9e6",
+      "audioProfile": "elevenlabs-v3",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/84fdfff78d89b841550bd3ff12beee43bfe5987c13cc87d3dc28558306753b6b.mp3",
+        "sha256": "84fdfff78d89b841550bd3ff12beee43bfe5987c13cc87d3dc28558306753b6b",
+        "bytes": 479469,
+        "durationSec": 59.904,
+        "model": "eleven_v3",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/52a8ecbc8d2b6930afe7b629db4a76ca69af568bcbeeeef8312c39f0287c807f.jpg",
+        "src": "/api/place-images/6c6b0ccb3a1d9e8fb0e0fe252856b446493bc6a422f003f66e16204eb3ca0ebf.jpg",
+        "width": 960,
+        "height": 640,
+        "alt": "Дом Союзов (Дом Благородного собрания)",
+        "author": "Иван Манилов",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:La_maison_Green_-_panoramio.jpg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [
+        {
+          "id": "76f7ee56-1d28-454e-bc05-4a731ebf0147",
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "shareToken": "21e06a2b-dece-424e-b603-6ae79d5377a7"
+        }
+      ],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": [
+        {
+          "id": "76f7ee56-1d28-454e-bc05-4a731ebf0147",
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "shareToken": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "chapterId": "76f7ee56-1d28-454e-bc05-4a731ebf0147-stop-2",
+          "status": "ready",
+          "audio": {
+            "url": "/api/story-audio/84fdfff78d89b841550bd3ff12beee43bfe5987c13cc87d3dc28558306753b6b.mp3",
+            "sha256": "84fdfff78d89b841550bd3ff12beee43bfe5987c13cc87d3dc28558306753b6b",
+            "durationSec": 59.904
+          },
+          "httpsTextVerified": true
+        }
+      ]
+    }
+  ],
+  "status": "published_with_revoice",
+  "summary": {
+    "publishedTexts": 4,
+    "f5Audio": 3,
+    "elevenLabsAudio": 1,
+    "pendingAudio": 0,
+    "preservedPhotos": 4,
+    "newPhotos": 0
+  }
+}
