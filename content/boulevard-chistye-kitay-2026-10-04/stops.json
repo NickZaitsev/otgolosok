@@ -1,0 +1,358 @@
+{
+  "title": "От Чистых прудов до Китай-города",
+  "sourceUrl": "https://izi.travel/ru/1272-bulvarnoe-kolco-progulka-s-audiogid-ru-ot-petrovskogo-bulvara-do-pl-yauzskie-vorota/ru",
+  "chapters": {
+    "from": 22,
+    "to": 50
+  },
+  "stops": [
+    {
+      "chapters": [
+        22
+      ],
+      "placeId": "osm:node:8892457359",
+      "address": "Мясницкие ворота",
+      "trigger": {
+        "lat": 55.7651338377046,
+        "lon": 37.6377332732941
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        23
+      ],
+      "placeId": "osm:relation:15671458",
+      "address": "Дом Юшкова",
+      "trigger": {
+        "lat": 55.7644091439679,
+        "lon": 37.6360377648041
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        24
+      ],
+      "placeId": "osm:relation:418691",
+      "address": "Московский почтамт",
+      "trigger": {
+        "lat": 55.7642801996478,
+        "lon": 37.6369353042297
+      },
+      "decision": "reuse-expanded-published"
+    },
+    {
+      "chapters": [
+        25
+      ],
+      "placeId": "osm:way:530343541",
+      "address": "Чистые пруды",
+      "trigger": {
+        "lat": 55.7645041484579,
+        "lon": 37.639294387012
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        26
+      ],
+      "placeId": "osm:way:1164348040",
+      "address": "Меншикова башня",
+      "trigger": {
+        "lat": 55.7632545,
+        "lon": 37.6389146
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        27
+      ],
+      "placeId": "osm:relation:17305841",
+      "address": "Чистопрудный, 8",
+      "trigger": {
+        "lat": 55.7630796,
+        "lon": 37.6411446
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        28
+      ],
+      "placeId": "osm:way:22143842",
+      "address": "Харитоньевский переулок",
+      "trigger": {
+        "lat": 55.7634808390417,
+        "lon": 37.6425725030106
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        29
+      ],
+      "placeId": "osm:way:42503311",
+      "address": "«Современник»",
+      "trigger": {
+        "lat": 55.761786,
+        "lon": 37.645796
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        30
+      ],
+      "placeId": "osm:way:45256537",
+      "address": "Дом со зверями",
+      "trigger": {
+        "lat": 55.7599849528686,
+        "lon": 37.6444421153442
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        31
+      ],
+      "placeId": "osm:way:81443652",
+      "address": "Покровка",
+      "trigger": {
+        "lat": 55.7593021143587,
+        "lon": 37.6452197878052
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        32
+      ],
+      "placeId": "osm:relation:288619",
+      "address": "Покровские ворота",
+      "trigger": {
+        "lat": 55.7594635401626,
+        "lon": 37.6461124325409
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        33
+      ],
+      "placeId": "osm:way:533065231",
+      "address": "Хохловская площадь",
+      "trigger": {
+        "lat": 55.7587250186339,
+        "lon": 37.6461403343933
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        34
+      ],
+      "placeId": "osm:relation:12819470",
+      "address": "Покровские казармы",
+      "trigger": {
+        "lat": 55.757583,
+        "lon": 37.6477121
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        36
+      ],
+      "placeId": "osm:way:131753188",
+      "address": "Дом Телешова",
+      "trigger": {
+        "lat": 55.75305,
+        "lon": 37.64565
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        35
+      ],
+      "placeId": "osm:way:25059224",
+      "address": "Подколокольный переулок",
+      "trigger": {
+        "lat": 55.7530046547917,
+        "lon": 37.6467069735718
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        37
+      ],
+      "placeId": "osm:node:2331521772",
+      "address": "Хитровская площадь",
+      "trigger": {
+        "lat": 55.7533040232708,
+        "lon": 37.6436865627045
+      },
+      "decision": "first-story"
+    },
+    {
+      "chapters": [
+        38
+      ],
+      "placeId": "osm:way:49009576",
+      "address": "Дом-утюг",
+      "trigger": {
+        "lat": 55.7527,
+        "lon": 37.64295
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        43
+      ],
+      "placeId": "osm:relation:14277905",
+      "address": "Трактиры Хитровки",
+      "trigger": {
+        "lat": 55.75264,
+        "lon": 37.64339
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        39
+      ],
+      "placeId": "osm:way:533065211",
+      "address": "Яузский бульвар",
+      "trigger": {
+        "lat": 55.7527130450565,
+        "lon": 37.6469418719665
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        40
+      ],
+      "placeId": "osm:way:40444265",
+      "address": "Дом причта",
+      "trigger": {
+        "lat": 55.7528066454765,
+        "lon": 37.647562109262
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        41
+      ],
+      "placeId": "osm:way:37771187",
+      "address": "Два дома академии",
+      "trigger": {
+        "lat": 55.7525372,
+        "lon": 37.6477010999999
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        42
+      ],
+      "placeId": "osm:way:40444262",
+      "address": "Яузский, 9",
+      "trigger": {
+        "lat": 55.7516488214712,
+        "lon": 37.6469142890244
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        44
+      ],
+      "placeId": "osm:way:40444274",
+      "address": "Особняк Филипповых",
+      "trigger": {
+        "lat": 55.75066,
+        "lon": 37.64339
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        45
+      ],
+      "placeId": "osm:way:37769553",
+      "address": "Яузские ворота",
+      "trigger": {
+        "lat": 55.74972,
+        "lon": 37.64291
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        46
+      ],
+      "placeId": "osm:relation:17361989",
+      "address": "Воспитательный дом",
+      "trigger": {
+        "lat": 55.7487,
+        "lon": 37.63712
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        47
+      ],
+      "placeId": "osm:way:52521245",
+      "address": "Солянка",
+      "trigger": {
+        "lat": 55.7511390210641,
+        "lon": 37.6417930021302
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        48
+      ],
+      "placeId": "osm:relation:17361977",
+      "address": "Опекунский совет",
+      "trigger": {
+        "lat": 55.7520025939613,
+        "lon": 37.63998944841
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        49
+      ],
+      "placeId": "osm:relation:12198830",
+      "address": "Храм на Стрелке",
+      "trigger": {
+        "lat": 55.7528883088354,
+        "lon": 37.639739142599
+      },
+      "decision": "expanded-story"
+    },
+    {
+      "chapters": [
+        50
+      ],
+      "placeId": "osm:relation:9854949",
+      "address": "Всех Святых на Кулишках",
+      "trigger": {
+        "lat": 55.7536472,
+        "lon": 37.6351318
+      },
+      "decision": "expanded-story"
+    }
+  ]
+}
