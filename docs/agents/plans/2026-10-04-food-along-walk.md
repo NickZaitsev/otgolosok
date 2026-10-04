@@ -1,6 +1,6 @@
 # План: кофейни, кафе и перекус по пути прогулки
 
-Status: in progress since 2026-10-04; phases 1–4 committed; phase 5 implemented, awaiting review without commit; next: phase 6. WebKit verification blocked by browser launch crash.
+Status: in progress since 2026-10-04; phases 1–5 committed; phase 6 implemented, awaiting review without commit; next: phase 7. WebKit verification remains blocked by the previously recorded browser launch crash.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 >
@@ -323,6 +323,19 @@ WebKit: те же 323 падения браузера до открытия ст
 
 **Проверка.** `pnpm vitest run src/features/walks src/features/food`; e2e: сохранить прогулку,
 перейти в офлайн (`context.setOffline(true)`), открыть ящик «Поесть рядом».
+
+**Phase 6 result (2026-10-04).** Offline walk packages now own the food manifest and route cells
+in their staging directory. The optional `food` field preserves version-1 compatibility; food bytes
+share the 60 MiB budget with audio. Food download/validation/storage failure drops the entire food
+copy without losing the walk; HTTP 503 is silent, and warnings are limited to an available feature.
+Loading a package validates and seeds food memory explicitly, without writing into the global food
+cache or assigning a network manifest ETag. Normal revalidation can update seeded cells on reconnect.
+Replacement and removal discard food with its owning stage. The older `published-route-cache.ts`
+is a separate path: its atomic route response embeds the food snapshot and seeds it on fallback.
+Its geometry is `[lon, lat][]`, whereas WalkView uses coordinate objects. Tests cover both paths,
+malformed packages, storage refusal, ETag changes, old manifests and byte-budget boundaries.
+Chromium covers opening offline in dev and reloading with the real service worker on a local production
+build; no production deployment or git commit was performed. See `../food-offline-copy.md` for checks.
 
 ## Фаза 7. Выкладка, документация, финальная проверка
 

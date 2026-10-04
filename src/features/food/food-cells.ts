@@ -1,4 +1,4 @@
-import { createCacheStorage, createCellStore, type CellStorage, type ManifestCell } from "../../lib/geo/cell-store";
+import { bareEtag, createCacheStorage, createCellStore, type CellStorage, type ManifestCell } from "../../lib/geo/cell-store";
 import type { CatalogBounds } from "../explore/catalog-bounds";
 import { fetchWithRetry, RequestError } from "../walk-builder/request";
 import type { FoodPlace } from "./types";
@@ -18,7 +18,7 @@ export function foodCellsFor(keys: Iterable<string>, bounds: CatalogBounds): str
     return lat / 20 <= bounds.north && (lat + 1) / 20 >= bounds.south && lon / 20 <= bounds.east && (lon + 1) / 20 >= bounds.west;
   });
 }
-function parseManifest(value: unknown): FoodManifest {
+export function parseFoodManifest(value: unknown): FoodManifest {
   const m = value as FoodManifest | null;
   if (!m || m.version !== 1 || m.cellSize !== FOOD_CELL_SIZE || typeof m.sourceEditedAt !== "string" || !Number.isFinite(Date.parse(m.sourceEditedAt))
     || typeof m.attribution !== "string" || !m.attribution.trim() || !Array.isArray(m.cells)) throw invalid();
@@ -30,7 +30,7 @@ function parseManifest(value: unknown): FoodManifest {
   }
   return m;
 }
-function parseCell(value: unknown, key: string): FoodPlace[] {
+export function parseFoodCell(value: unknown, key: string): FoodPlace[] {
   const cell = value as { lat: number; lon: number; places: FoodPlace[] } | null;
   if (!cell || !integer(cell.lat, -1800, 1799) || !integer(cell.lon, -3600, 3599) || `${cell.lat}:${cell.lon}` !== key || !Array.isArray(cell.places)) throw invalid();
   const ids = new Set<string>();
@@ -54,10 +54,10 @@ export function createFoodCellStore({ storage = createCacheStorage(FOOD_CACHE_NA
   const core = createCellStore<FoodPlace>({ storage, fetch, now, manifestUrl: FOOD_MANIFEST_URL, cellsFor: foodCellsFor,
     isUnavailable: error => error instanceof RequestError && error.status === 503,
     parseManifest: value => {
-      const parsed = parseManifest(value);
+      const parsed = parseFoodManifest(value);
       manifest = parsed;
       return new Map<string, ManifestCell>(parsed.cells.map(c => [`${c.lat}:${c.lon}`, { count: c.count, etag: c.etag }]));
-    }, parseCell });
+    }, parseCell: parseFoodCell });
   const makeSnapshot = () => { const s = core.snapshot(); return { ...s, places: s.points, unavailable: s.maintenance, manifest }; };
   let previous = core.snapshot(), current = makeSnapshot();
   const snapshot = () => {
@@ -65,6 +65,15 @@ export function createFoodCellStore({ storage = createCacheStorage(FOOD_CACHE_NA
     return current;
   };
   return { ...core, snapshot,
+    seedOffline(input: Parameters<typeof core.seedOffline>[0]) {
+      const parsed = parseFoodManifest(input.manifest), keys = new Set<string>();
+      for (const c of input.cells) {
+        const expected = parsed.cells.find(cell => `${cell.lat}:${cell.lon}` === c.key);
+        if (keys.has(c.key) || !expected || expected.etag !== bareEtag(c.etag) || parseFoodCell(c.body, c.key).length !== expected.count) throw invalid();
+        keys.add(c.key);
+      }
+      core.seedOffline(input);
+    },
     async loadManifest() { await core.ensureManifest(); return manifest; },
     async loadKeys(keys: Iterable<string>) {
       const selected = [...new Set(keys)];

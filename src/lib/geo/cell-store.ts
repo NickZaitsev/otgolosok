@@ -240,6 +240,18 @@ export function createCellStore<T extends { id: string }>({ storage, fetch = fet
   }
 
   return {
+    /** A package snapshot is immediately usable; its manifest is rechecked on the next request. */
+    seedOffline({ manifest: value, cells }: { manifest: unknown; cells: Array<{ key: string; etag: string; body: unknown }> }) {
+      // Validate everything before changing the store; partial packages never leak into memory.
+      const parsed = cells.map(c => ({ ...c, points: parseCell(c.body, c.key) }));
+      const next = parseManifest(value);
+      for (const c of parsed) if (next.get(c.key)?.etag !== bareEtag(c.etag)) throw new Error("Некорректная офлайн-область карты.");
+      replaceManifest(null, next, 0);
+      for (const c of parsed) { setCell(c.key, bareEtag(c.etag) ?? "", c.points); status.set(c.key, "ready"); }
+      manifestStatus = "ready";
+      maintenance = false;
+      emit();
+    },
     ensureKeys,
     ensureManifest,
     subscribe(listener: () => void) {

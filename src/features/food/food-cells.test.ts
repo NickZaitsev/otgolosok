@@ -188,3 +188,39 @@ it("buffers successful responses after a transient failure", async () => {
   expect(await (await result).json()).toEqual({ ok: true });
   expect(fetch).toHaveBeenCalledTimes(2);
 });
+
+it("seeds a package without persistent cache and revalidates its ETags after reconnecting", async () => {
+  const api = server(), storage = memoryStorage(), store = createFoodCellStore({ storage, fetch: api.fetch });
+  api.state.offline = true;
+  store.seedOffline({ manifest: api.manifest(), cells: [{ key: "1115:752", etag: e1, body: { lat: 1115, lon: 752, places: api.state.cells["1115:752"] } }] });
+  expect(store.snapshot().manifestStatus).toBe("ready");
+  expect(store.snapshot().unavailable).toBe(false);
+  expect((await store.loadKeys(["1115:752"])).map(p => p.name)).toEqual(["Кофейня"]);
+  expect(storage.entries.size).toBe(0);
+  api.state.offline = false;
+  api.state.etag = e2;
+  api.state.cells["1115:752"][0] = { ...foodPlace(), name: "Новая кофейня" };
+  await store.revalidate();
+  await store.loadKeys(["1115:752"]);
+  await vi.waitFor(() => expect(store.snapshot().places.map(p => p.name)).toEqual(["Новая кофейня"]));
+  const cellCall = api.fetch.mock.calls.find(([path]) => path.endsWith("1115/752"));
+  expect(new Headers(cellCall?.[2]?.headers).get("If-None-Match")).toBe(`"${e1}"`);
+});
+
+it("rejects a malformed offline cell without changing the snapshot", () => {
+  const api = server(), store = createFoodCellStore({ storage: memoryStorage(), fetch: api.fetch });
+  const before = store.snapshot();
+  expect(() => store.seedOffline({ manifest: api.manifest(), cells: [{ key: "1115:752", etag: e1, body: { lat: 1115, lon: 752, places: [{ ...foodPlace(), website: "javascript:alert(1)" }] } }] })).toThrow();
+  expect(store.snapshot()).toBe(before);
+  expect(store.snapshot().manifest).toBeNull();
+});
+
+
+it.each(["etag", "count", "duplicate"])("отклоняет офлайн-пакет с неверным %s целиком", failure => {
+  const api = server(), store = createFoodCellStore({ storage: memoryStorage(), fetch: api.fetch });
+  const cell = { key: "1115:752", etag: failure === "etag" ? e2 : e1, body: { lat: 1115, lon: 752, places: failure === "count" ? [] : [foodPlace()] } };
+  const before = store.snapshot();
+  expect(() => store.seedOffline({ manifest: api.manifest(), cells: failure === "duplicate" ? [cell, cell] : [cell] })).toThrow();
+  expect(store.snapshot()).toBe(before);
+  expect(store.snapshot().manifest).toBeNull();
+});

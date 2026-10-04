@@ -37,6 +37,7 @@ export function useOfflineCopy(view: WalkView | undefined, ref: OfflineWalkRef |
     try {
       const result = await saveWalkOffline(view, ref);
       setSaved(result.availableAudio);
+      if (result.foodWarning) setMessage("Заведения не сохранены");
     } catch (caught) {
       setMessage(toUserMessage(caught, "Не удалось сохранить офлайн-копию."));
     } finally {

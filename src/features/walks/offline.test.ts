@@ -1,3 +1,5 @@
+import { FOOD_MANIFEST_URL, foodCellStore } from "../food/food-cells";
+import { RequestError } from "../walk-builder/request";
 import { webcrypto } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { WalkView } from "./model";
@@ -144,4 +146,109 @@ describe("открытие прогулки без сети", () => {
     await withSavedCopy(catalogRef);
     await expect(loadWalkWithOfflineCopy(async () => otherView, catalogRef, signal())).resolves.toEqual({ view: otherView, offline: false });
   });
+});
+
+const foodEtag = "a".repeat(32);
+const foodManifest = { version: 1, cellSize: .05, sourceEditedAt: "2026-10-02T10:00:00Z", attribution: "© участники OpenStreetMap", cells: [{ lat: 1115, lon: 752, count: 1, etag: foodEtag }] };
+const foodCell = { lat: 1115, lon: 752, places: [{ id: "osm:node:1", name: "Кофе по пути", kind: "coffee", lat: 55.751, lon: 37.601, address: null, openingHours: "24/7", cuisine: null, website: null, phone: null }] };
+const foodView: WalkView = { ...view, document: { ...view.document, route: { geometry: [{ lat: 55.75, lon: 37.6 }, { lat: 55.752, lon: 37.602 }], distanceM: 250, walkingMinutes: 4, attribution: "OSM" } } };
+function foodFetcher(failure?: "cell" | "503" | "etag") {
+  return vi.fn(async (url: string) => {
+    if (failure === "503") throw new RequestError("Нет индекса", "FOOD_INDEX_UNAVAILABLE", 503);
+    if (failure === "cell" && url !== FOOD_MANIFEST_URL) throw new TypeError("offline");
+    return new Response(JSON.stringify(url === FOOD_MANIFEST_URL ? foodManifest : foodCell), { headers: { ETag: `"${failure === "etag" ? "b".repeat(32) : foodEtag}"` } });
+  });
+}
+
+describe("заведения в офлайн-копии", () => {
+  it.each([userRef, catalogRef, sharedRef])("сохраняет ячейки в стадию пакета %j и засевает хранилище", async ref => {
+    const cache = new MemoryCache();
+    const saved = await saveWalkOffline(foodView, ref, { cache, fetcher: audioFetcher(), foodFetcher: foodFetcher() });
+    expect(saved.foodWarning).toBe(false);
+    expect(saved.manifest.food).toEqual({ sourceEditedAt: foodManifest.sourceEditedAt, attribution: foodManifest.attribution, cells: [{ key: "1115:752", etag: foodEtag, bytes: new TextEncoder().encode(JSON.stringify(foodCell)).byteLength }] });
+    expect([...cache.entries.keys()].filter(k => k.includes("/food/"))).toHaveLength(2);
+    foodCellStore.seedOffline({ manifest: { ...foodManifest, cells: [] }, cells: [] });
+    expect(foodCellStore.snapshot().places).toEqual([]);
+    // A status check (the offline-copy button) must not touch the shared store.
+    expect((await loadOfflineWalk(ref, cache))?.view).toEqual(foodView);
+    expect(foodCellStore.snapshot().places).toEqual([]);
+    expect((await loadOfflineWalk(ref, cache, { seedFood: true }))?.view).toEqual(foodView);
+    expect(foodCellStore.snapshot().places.map(p => p.name)).toContain("Кофе по пути");
+  });
+
+  it("не откатывает более свежие данные заведений старым пакетом", async () => {
+    const cache = new MemoryCache();
+    await saveWalkOffline(foodView, catalogRef, { cache, fetcher: audioFetcher(), foodFetcher: foodFetcher() });
+    const newer = { ...foodManifest, sourceEditedAt: new Date(Date.parse(foodManifest.sourceEditedAt) + 86_400_000).toISOString(), cells: [] };
+    foodCellStore.seedOffline({ manifest: newer, cells: [] });
+    await loadOfflineWalk(catalogRef, cache, { seedFood: true });
+    expect(foodCellStore.snapshot().manifest?.sourceEditedAt).toBe(newer.sourceEditedAt);
+    expect(foodCellStore.snapshot().places).toEqual([]);
+  });
+
+  it("старый манифест без food остаётся валидным", async () => {
+    const cache = new MemoryCache();
+    await saveWalkOffline(view, catalogRef, { cache, fetcher: audioFetcher() });
+    const loaded = await loadOfflineWalk(catalogRef, cache);
+    expect(loaded?.view).toEqual(view);
+    expect(loaded?.manifest.food).toBeUndefined();
+  });
+
+  it.each([["cell", true], ["etag", true], ["503", false]] as const)("при отказе %s сохраняет прогулку без food, предупреждение: %s", async (failure, warning) => {
+    const cache = new MemoryCache();
+    const saved = await saveWalkOffline(foodView, catalogRef, { cache, fetcher: audioFetcher(), foodFetcher: foodFetcher(failure) });
+    expect(saved.manifest.food).toBeUndefined();
+    expect(saved.foodWarning).toBe(warning);
+    expect((await loadOfflineWalk(catalogRef, cache))?.view).toEqual(foodView);
+    expect([...cache.entries.keys()].some(k => k.includes("/food/"))).toBe(false);
+  });
+
+  it.each([-1, 0, 1])("учитывает байты манифеста и ячейки на границе бюджета %+i", async delta => {
+    const cache = new MemoryCache();
+    const bytes = audioBody.byteLength + new TextEncoder().encode(JSON.stringify(foodManifest) + JSON.stringify(foodCell)).byteLength;
+    const saved = await saveWalkOffline(foodView, catalogRef, { cache, fetcher: audioFetcher(), foodFetcher: foodFetcher(), maxBytes: bytes + delta });
+    expect(Boolean(saved.manifest.food)).toBe(delta >= 0);
+    expect(saved.foodWarning).toBe(delta < 0);
+    expect((await loadOfflineWalk(catalogRef, cache))?.manifest.audio).toHaveLength(1);
+  });
+
+  it("удаляет ячейки старой стадии при обновлении и последней — при удалении", async () => {
+    const cache = new MemoryCache();
+    await saveWalkOffline(foodView, catalogRef, { cache, fetcher: audioFetcher(), foodFetcher: foodFetcher() });
+    const old = [...cache.entries.keys()].filter(k => k.includes("/food/"));
+    await saveWalkOffline({ ...foodView, revision: 2 }, catalogRef, { cache, fetcher: audioFetcher(), foodFetcher: foodFetcher() });
+    expect(old.every(k => !cache.entries.has(k))).toBe(true);
+    expect((await loadOfflineWalk(catalogRef, cache))?.manifest.revision).toBe(2);
+    await removeOfflineWalk(catalogRef, cache);
+    expect(cache.entries.size).toBe(0);
+  });
+
+  it("не оставляет части food при отказе записи в Cache Storage", async () => {
+    const cache = new MemoryCache(), put = cache.put.bind(cache);
+    cache.put = async (key, value) => { if (String(key).endsWith("/food/1115/752")) throw new Error("quota"); await put(key, value); };
+    const saved = await saveWalkOffline(foodView, catalogRef, { cache, fetcher: audioFetcher(), foodFetcher: foodFetcher() });
+    expect(saved.manifest.food).toBeUndefined();
+    expect(saved.foodWarning).toBe(true);
+    expect([...cache.entries.keys()].some(k => k.includes("/food/"))).toBe(false);
+    expect((await loadOfflineWalk(catalogRef, cache))?.view).toEqual(foodView);
+  });
+});
+
+
+it("заменяет пакет с заведениями копией без них при отказе обновления", async () => {
+  const cache = new MemoryCache();
+  await saveWalkOffline(foodView, catalogRef, { cache, fetcher: audioFetcher(), foodFetcher: foodFetcher() });
+  await saveWalkOffline({ ...foodView, revision: 2 }, catalogRef, { cache, foodFetcher: foodFetcher("cell") });
+  expect((await loadOfflineWalk(catalogRef, cache))?.manifest.food).toBeUndefined();
+  expect([...cache.entries.keys()].some(k => k.includes("/food/"))).toBe(false);
+});
+
+it("повреждение ячейки не мешает открыть сохранённую прогулку", async () => {
+  const cache = new MemoryCache();
+  await saveWalkOffline(foodView, catalogRef, { cache, fetcher: audioFetcher(), foodFetcher: foodFetcher() });
+  const key = [...cache.entries.keys()].find(k => k.endsWith("/food/1115/752"))!;
+  await cache.put(key, new Response("broken"));
+  foodCellStore.seedOffline({ manifest: { ...foodManifest, cells: [] }, cells: [] });
+  expect((await loadOfflineWalk(catalogRef, cache))?.view).toEqual(foodView);
+  expect(foodCellStore.snapshot().places).toEqual([]);
 });
