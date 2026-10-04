@@ -843,5 +843,18 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "retrievedAt": "2026-10-04",
     "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:node:4481478260": {
+    "thumbnail": "/images/places/node-4481478260-e437f4b2fed2.jpg",
+    "src": "/images/places/node-4481478260-140945c4ee40.jpg",
+    "width": 960,
+    "height": 640,
+    "alt": "Памятник князю Владимиру на Боровицкой площади",
+    "author": "Alexxx1979",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow._Monument_to_Vladimir_the_Great_P4121753_2600.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-04",
+    "modifications": "Размер уменьшен; превью обрезается при показе."
   }
 }
