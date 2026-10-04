@@ -242,5 +242,146 @@
       "audioSha256": "a1ddd2fbc3e4461eb0f02db9a47b58337211cc1455c615da9c1fecd16a250b19",
       "audioDurationSec": 88.056
     }
-  ]
+  ],
+  "photos": {
+    "editorial": 18,
+    "automatic": [
+      "osm:way:544516659"
+    ],
+    "withoutPhoto": [
+      "osm:node:4909347021",
+      "osm:node:1805425906",
+      "osm:way:1359042497",
+      "osm:way:813211640"
+    ],
+    "note": "Редакционные фото Wikimedia Commons с автором и лицензией в backend/place-images-editorial.json; у Сходненской ГЭС автоматическое фото из Wikidata. Для памятника Черенкову, знака жертвам теракта, места рынка и парашютной фабрики свободных снимков в Commons не найдено.",
+    "entries": [
+      {
+        "placeId": "osm:node:5202107560",
+        "commonsFile": "File:Spartak Metro 27 August 2014 01.jpg",
+        "author": "mos.ru",
+        "license": "CC BY 4.0",
+        "alt": "Северный вестибюль станции «Спартак» в день открытия, 27 августа 2014 года"
+      },
+      {
+        "placeId": "osm:relation:4006864",
+        "commonsFile": "File:Стадион «Лукойл Арена» в Москве (08.01.2024) 01.jpg",
+        "author": "Brateevsky",
+        "license": "CC BY-SA 4.0",
+        "alt": "Стадион «Лукойл Арена» зимой 2024 года"
+      },
+      {
+        "placeId": "osm:node:4235760493",
+        "commonsFile": "File:Match veteranov Spartaka (27).jpg",
+        "author": "Дмитрий Садовников",
+        "license": "CC BY-SA 3.0",
+        "alt": "Памятник братьям Старостиным у стадиона «Спартак»"
+      },
+      {
+        "placeId": "osm:way:863613147",
+        "commonsFile": "File:Ил-14 в Тушино.jpg",
+        "author": "Vulkan-Avia (Иванов Андрей)",
+        "license": "Public domain",
+        "alt": "Ил-14 на Тушинском аэродроме"
+      },
+      {
+        "placeId": "osm:way:552402456",
+        "commonsFile": "File:Река Химка в Покровском-Стрешнево IMG 3662 (10).jpg",
+        "author": "Sunny365days",
+        "license": "CC BY-SA 4.0",
+        "alt": "Река Химка в Покровском-Стрешневе"
+      },
+      {
+        "placeId": "osm:node:4076834974",
+        "commonsFile": "File:Vodnikov street 06.JPG",
+        "author": "Anastasiya Lvova",
+        "license": "CC BY-SA 3.0",
+        "alt": "ДОТ 1941 года на улице Водников"
+      },
+      {
+        "placeId": "osm:node:1203989452",
+        "commonsFile": "File:Gabrichevskogo street 05.JPG",
+        "author": "Anastasiya Lvova",
+        "license": "CC BY-SA 3.0",
+        "alt": "ДОТ 1941 года у улицы Габричевского с памятной табличкой о рубеже обороны"
+      },
+      {
+        "placeId": "osm:relation:10377512",
+        "commonsFile": "File:Locks 7-8 of Moscow-Volga Canal 2014-03 1395685999.jpg",
+        "author": "Sergey Norin from Moscow, Russia",
+        "license": "CC BY 2.0",
+        "alt": "Башни шлюза № 8 канала имени Москвы"
+      },
+      {
+        "placeId": "osm:relation:6085904",
+        "commonsFile": "File:Мост Бачелиса 114623.jpg",
+        "author": "Xunks",
+        "license": "CC BY-SA 4.0",
+        "alt": "Мост Бачелиса над шлюзом № 8"
+      },
+      {
+        "placeId": "osm:way:1241471052",
+        "commonsFile": "File:Тушинский тоннель.jpg",
+        "author": "Leokand",
+        "license": "CC BY-SA 4.0",
+        "alt": "Въезд в Тушинский тоннель на Волоколамском шоссе"
+      },
+      {
+        "placeId": "osm:way:939780806",
+        "commonsFile": "File:Views from Kirovskaya Poyma - St.Vladimir church complex July 2025 01.jpg",
+        "author": "Retired electrician",
+        "license": "CC0",
+        "alt": "Храмовый комплекс святого Владимира в Тушине, вид из Кировской поймы"
+      },
+      {
+        "placeId": "osm:node:296959504",
+        "commonsFile": "File:Tushinskaya (Тушинская) (5161314698).jpg",
+        "author": "Mikhail (Vokabre) Shcherbakov from Moscow, Russia",
+        "license": "CC BY-SA 2.0",
+        "alt": "Путевая стена станции «Тушинская»"
+      },
+      {
+        "placeId": "osm:relation:7113936",
+        "commonsFile": "File:Viympel toropova entrance.jpg",
+        "author": "Leksey",
+        "license": "CC0",
+        "alt": "Вход в ГосМКБ «Вымпел» имени И. И. Торопова"
+      },
+      {
+        "placeId": "osm:relation:7771761",
+        "commonsFile": "File:Аэроклуб Чкалова 2.jpg",
+        "author": "D-tarasov",
+        "license": "CC BY-SA 4.0",
+        "alt": "Здание Центрального аэроклуба имени Чкалова на Волоколамском шоссе, 88"
+      },
+      {
+        "placeId": "osm:relation:3788872",
+        "commonsFile": "File:Вишнёвая улица в Москве.jpg",
+        "author": "Leokand",
+        "license": "CC BY-SA 3.0",
+        "alt": "Вишнёвая улица, вдоль которой стоят корпуса завода"
+      },
+      {
+        "placeId": "osm:way:1098823594",
+        "commonsFile": "File:Tushino Church of Transfiguration.jpg",
+        "author": "Такой-сякой",
+        "license": "Public domain",
+        "alt": "Церковь Спаса Преображения в Спасском-Тушине, соседнем с бывшим селом Тушино"
+      },
+      {
+        "placeId": "osm:way:23397208",
+        "commonsFile": "File:Dolgova st 01.JPG",
+        "author": "Anastasiya Lvova",
+        "license": "CC BY-SA 3.0",
+        "alt": "Улица Долгова"
+      },
+      {
+        "placeId": "osm:way:206261011",
+        "commonsFile": "File:Buran 2 01 2008.jpg",
+        "author": "Gaz v pol at Russian Wikipedia",
+        "license": "CC BY-SA 3.0",
+        "alt": "Корабль «Буран» 2.01 у причала Тушинского завода, 2008 год"
+      }
+    ]
+  }
 }
