@@ -1,0 +1,246 @@
+{
+  "bundleId": "tushino-spartak-2026-10-04-v1",
+  "publishedAt": "2026-10-04",
+  "importId": "01676a1a-3494-4436-8d67-10d7ea75569b",
+  "newPlaces": 17,
+  "publishedStories": 23,
+  "audio": {
+    "profile": "f5-ru-v1",
+    "verified": 23,
+    "durationMinutes": 27.43,
+    "shortestSec": 60.912
+  },
+  "verification": "Публичный HTTPS API: все 23 рассказа совпадают с пакетом; у каждой точки текущая редакция озвучена новым заданием F5, SHA-256 и размер скачанного MP3 совпадают с квитанцией, длительность по ffprobe расходится меньше чем на секунду. Все 23 точки находятся в поиске мест по радиусу.",
+  "entries": [
+    {
+      "placeId": "osm:node:5202107560",
+      "created": true,
+      "textId": "5e29b899-7920-4268-a658-0564fe2b3a0f",
+      "previousTextId": null,
+      "wordCount": 127,
+      "audioJobId": "bd79ef3e-e517-420d-bbbb-2a1e440696eb",
+      "audioSha256": "4f804304c529775903a1c2b713c47e46cc918f56e9290c6bf56083af12610c89",
+      "audioDurationSec": 70.464
+    },
+    {
+      "placeId": "osm:relation:4006864",
+      "created": true,
+      "textId": "f1ce26b1-228b-45e9-a88d-11107ba63dd3",
+      "previousTextId": null,
+      "wordCount": 136,
+      "audioJobId": "811e0e3a-a144-4ac4-ad12-ae1e13662d30",
+      "audioSha256": "5b9a9d1c289763949632aac79548ba91cfdf62eabc690032d5065fbe6a78fc9f",
+      "audioDurationSec": 81
+    },
+    {
+      "placeId": "osm:node:4235760493",
+      "created": false,
+      "textId": "9d27e41e-6aa4-4c86-a1a8-b0f0d4b4ea90",
+      "previousTextId": null,
+      "wordCount": 108,
+      "audioJobId": "b9e412a0-5e43-491f-9559-cfa6f0cb2464",
+      "audioSha256": "4c2492a507633ad9ac9b037296ac0835361867cd9ebde432321861e8232207aa",
+      "audioDurationSec": 64.896
+    },
+    {
+      "placeId": "osm:node:4909347021",
+      "created": false,
+      "textId": "6ed1c5ec-9549-44d2-811d-60fe9054e917",
+      "previousTextId": null,
+      "wordCount": 109,
+      "audioJobId": "0e8f47dd-c3fe-44fb-868b-e5e91944e560",
+      "audioSha256": "9df303133f363ad7ed49a00ed0ae627d51535bed2ce9766c96d2698a3f7571f9",
+      "audioDurationSec": 63.144
+    },
+    {
+      "placeId": "osm:way:863613147",
+      "created": true,
+      "textId": "3057adbc-1556-437a-b156-8f3574c335d9",
+      "previousTextId": null,
+      "wordCount": 129,
+      "audioJobId": "73a7d7f0-1005-4402-848b-6e8279ef895e",
+      "audioSha256": "8910ae5e4b8d2621ad61fb1d4a506573b71024031e4e6ce9feaa267c8433d717",
+      "audioDurationSec": 81.048
+    },
+    {
+      "placeId": "osm:way:552402456",
+      "created": true,
+      "textId": "8a12a02f-e5b3-40b4-bc88-67118c6f5bda",
+      "previousTextId": null,
+      "wordCount": 117,
+      "audioJobId": "9a090dad-54f8-488a-9628-2081af7e4ae8",
+      "audioSha256": "5096a4fd9ab777c277cdde942ea5c71239a12c41945e21956c246a65a511bbfb",
+      "audioDurationSec": 60.912
+    },
+    {
+      "placeId": "osm:node:4076834974",
+      "created": false,
+      "textId": "07ea94fb-db21-4a55-9334-530ae1ed1684",
+      "previousTextId": null,
+      "wordCount": 122,
+      "audioJobId": "8522c429-c4b2-4847-b123-926c175baa48",
+      "audioSha256": "5eca6ef3c9e2ae419668eb0b689e303471a8cea236304ac7fd7be44ffaca2d92",
+      "audioDurationSec": 72.936
+    },
+    {
+      "placeId": "osm:node:1203989452",
+      "created": false,
+      "textId": "f166dd5d-aeea-40e3-b63c-8a86abb2e459",
+      "previousTextId": null,
+      "wordCount": 112,
+      "audioJobId": "34af452a-afea-448b-be68-5f644b4a30ae",
+      "audioSha256": "513e66f1488c3683560b8b1007fbe5e709c21a4e9905e3452a4a22d4b63f8cc9",
+      "audioDurationSec": 63.072
+    },
+    {
+      "placeId": "osm:relation:10377512",
+      "created": true,
+      "textId": "7074f169-b10f-4515-9e0d-e7e356aec05b",
+      "previousTextId": null,
+      "wordCount": 122,
+      "audioJobId": "b0ef8064-4d55-467f-a39f-c12e0d9db23c",
+      "audioSha256": "3bd535a914df008cfc6499a8bc45975c595210b84f21ae9edb00124b3d74681e",
+      "audioDurationSec": 69.192
+    },
+    {
+      "placeId": "osm:relation:6085904",
+      "created": true,
+      "textId": "4d3b95a5-1065-4e21-a154-6a48624193d6",
+      "previousTextId": null,
+      "wordCount": 125,
+      "audioJobId": "0c08c94a-19a5-47c2-ad1d-78831dab5e8e",
+      "audioSha256": "718fa5a3abb3ed36c1bcec0faa4c9d30c5e0641942d60acda8c5e9b1f4afb0de",
+      "audioDurationSec": 71.376
+    },
+    {
+      "placeId": "osm:way:1241471052",
+      "created": true,
+      "textId": "9ffd7b3a-9331-40e1-9479-6e5013ca583e",
+      "previousTextId": null,
+      "wordCount": 120,
+      "audioJobId": "90431b88-ebbb-4129-86bf-e9d9ea95f98a",
+      "audioSha256": "2d62e8e0d244b0fe3eda639861716b943aba93c7c0b201a84e4bca3689fbc66a",
+      "audioDurationSec": 70.416
+    },
+    {
+      "placeId": "osm:way:939780806",
+      "created": true,
+      "textId": "46950859-302f-4839-bb5b-5081ff1dcc99",
+      "previousTextId": null,
+      "wordCount": 114,
+      "audioJobId": "6acd43ca-e8fa-4072-95bc-d5a6b6aad035",
+      "audioSha256": "6f9a45065a00b4b42477c2d1fecb2393e7bc1d2013e31d8f0b691508c6ed801b",
+      "audioDurationSec": 66.6
+    },
+    {
+      "placeId": "osm:node:296959504",
+      "created": true,
+      "textId": "3d8dfc54-b876-46de-89f5-1dbb1f08c2b0",
+      "previousTextId": null,
+      "wordCount": 126,
+      "audioJobId": "6cfbc9c0-a62b-4771-974e-a1eb0c497de9",
+      "audioSha256": "2dab428b6876d911b5babcc8f48339e1b6712f0e6320182380f9d974d60b8461",
+      "audioDurationSec": 73.656
+    },
+    {
+      "placeId": "osm:relation:7113936",
+      "created": true,
+      "textId": "2af20ebf-d9e2-46e0-b90e-90bc3530226e",
+      "previousTextId": null,
+      "wordCount": 120,
+      "audioJobId": "5682814b-d915-4ada-8a59-5fc452032669",
+      "audioSha256": "fd63fa8e8e9a86f4aa01d686b09423ffc26591ed5b36d04d51501934f4e68aa0",
+      "audioDurationSec": 74.136
+    },
+    {
+      "placeId": "osm:node:1805425906",
+      "created": false,
+      "textId": "8906eda9-04eb-4110-bac0-05880dbff40e",
+      "previousTextId": null,
+      "wordCount": 116,
+      "audioJobId": "3849687c-7ab2-4efe-bc3d-f52226545d00",
+      "audioSha256": "bc78dcc5182e4fddbd573e73887f5c42e62fdba9a9f77e7a1e14871bc0820035",
+      "audioDurationSec": 63.36
+    },
+    {
+      "placeId": "osm:way:1359042497",
+      "created": true,
+      "textId": "a8bed786-b5e3-4ddb-9b23-b79f1555cff9",
+      "previousTextId": null,
+      "wordCount": 117,
+      "audioJobId": "3714f1b4-0d6c-4841-bd07-e9767d935b0f",
+      "audioSha256": "3852327d588716667396c5b84691a8ddcc8ad9f84d09f717ad4d4af5eb98cd96",
+      "audioDurationSec": 69.168
+    },
+    {
+      "placeId": "osm:relation:7771761",
+      "created": true,
+      "textId": "56af8be8-793e-4648-8c49-6e83784366e3",
+      "previousTextId": null,
+      "wordCount": 111,
+      "audioJobId": "9b1a24fc-0b3d-40e3-bef3-f55db3f009ea",
+      "audioSha256": "d5f822d7065aa6714752099aab08a3d443cff921af39d8ce3a3bb040aaa1104f",
+      "audioDurationSec": 71.544
+    },
+    {
+      "placeId": "osm:way:813211640",
+      "created": true,
+      "textId": "9985c9a3-521b-490b-9cce-32288e6aab61",
+      "previousTextId": null,
+      "wordCount": 113,
+      "audioJobId": "7bee4d0a-a662-4191-a9af-19d4d5e52664",
+      "audioSha256": "b6167c929bfaf75fdb7e4651d2f501b78859f7d81d7091962b58ae7b5a30c34e",
+      "audioDurationSec": 68.64
+    },
+    {
+      "placeId": "osm:relation:3788872",
+      "created": true,
+      "textId": "b4ae65ab-12b2-4faf-bc87-08035553a256",
+      "previousTextId": null,
+      "wordCount": 148,
+      "audioJobId": "3d79d421-b4f4-4872-81c3-a79dec8f4485",
+      "audioSha256": "e59a789f52e141d922d95e784a90c22c2852ad812fe5a88697ea8428d5249e1b",
+      "audioDurationSec": 95.064
+    },
+    {
+      "placeId": "osm:way:1098823594",
+      "created": true,
+      "textId": "8c31c7d6-fa8b-4c5d-af9c-22d25110b38c",
+      "previousTextId": null,
+      "wordCount": 116,
+      "audioJobId": "b58d7ff1-5506-4971-971c-0b20a4454017",
+      "audioSha256": "4a697c810f5e53a8f0349da11f0258e52242c4a97fd210e69f005ad69d769d8c",
+      "audioDurationSec": 70.944
+    },
+    {
+      "placeId": "osm:way:23397208",
+      "created": true,
+      "textId": "e6b608e0-bb25-4389-b2d4-273d70609edc",
+      "previousTextId": null,
+      "wordCount": 106,
+      "audioJobId": "5a3ab0d8-5117-424b-be79-b1c04fb37f3c",
+      "audioSha256": "29b9d9cb709f9e4956fc0809ba057cdff61f2ec15f90033a881269e99b6218c3",
+      "audioDurationSec": 63.408
+    },
+    {
+      "placeId": "osm:way:544516659",
+      "created": false,
+      "textId": "9aa8b836-5de5-49b3-9806-b1e00c9d0e02",
+      "previousTextId": "13866c7f-3033-44e3-a8cf-43c77ae7da14",
+      "wordCount": 127,
+      "audioJobId": "f1e1d7df-6022-4573-a1e5-d17574f6ca25",
+      "audioSha256": "58438d555a5430612946eee5db2d46af895f0b81ac29626c198008236ab80dc6",
+      "audioDurationSec": 73.056
+    },
+    {
+      "placeId": "osm:way:206261011",
+      "created": true,
+      "textId": "d91bb090-d7e9-4626-a140-2bd542a7be6f",
+      "previousTextId": null,
+      "wordCount": 155,
+      "audioJobId": "2cf3d1b7-79d6-412d-a0b8-4c0b37014e1a",
+      "audioSha256": "a1ddd2fbc3e4461eb0f02db9a47b58337211cc1455c615da9c1fecd16a250b19",
+      "audioDurationSec": 88.056
+    }
+  ]
+}
