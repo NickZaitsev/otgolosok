@@ -122,21 +122,18 @@
       "placeId": "osm:way:46966391",
       "name": "Центральный дом журналиста",
       "textId": "56b22ea8-2adf-4924-bed9-69a6f4768fd7",
-      "audioJobId": "ae12d22c-0886-49dc-abb9-6f4c2787e634",
-      "audioProfile": "f5-ru-v1",
+      "audioJobId": "7724c8af-f7a5-4305-85b0-5a562eb5ca63",
+      "audioProfile": "elevenlabs-v3",
       "state": "succeeded",
       "audio": {
-        "url": "/api/story-audio/a778279a1460d5816889b52347b6b2ad06afcff878fc6612026fc606e2e5a944.mp3",
-        "sha256": "a778279a1460d5816889b52347b6b2ad06afcff878fc6612026fc606e2e5a944",
-        "bytes": 370029,
-        "durationSec": 46.224,
-        "model": "f5",
-        "voice": "obrazec6",
-        "provider": "external",
-        "synthetic": true,
-        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
-        "preparedTextSha256": "d6430a0ba3519291c1d89eb5f843368988b34a58d9d22e1ae00f95868c274890",
-        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+        "url": "/api/story-audio/be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4.mp3",
+        "sha256": "be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4",
+        "bytes": 339309,
+        "durationSec": 42.384,
+        "model": "eleven_v3",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
       },
       "photo": {
         "thumbnail": "/images/places/way-46966391-84ee37613a8b.jpg",
@@ -150,7 +147,31 @@
         "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
       },
       "storyVerified": true,
-      "audioHttpVerified": true
+      "audioHttpVerified": true,
+      "previousF5Audio": {
+        "audioJobId": "ae12d22c-0886-49dc-abb9-6f4c2787e634",
+        "audio": {
+          "url": "/api/story-audio/a778279a1460d5816889b52347b6b2ad06afcff878fc6612026fc606e2e5a944.mp3",
+          "sha256": "a778279a1460d5816889b52347b6b2ad06afcff878fc6612026fc606e2e5a944",
+          "bytes": 370029,
+          "durationSec": 46.224,
+          "model": "f5",
+          "voice": "obrazec6",
+          "provider": "external",
+          "synthetic": true,
+          "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+          "preparedTextSha256": "d6430a0ba3519291c1d89eb5f843368988b34a58d9d22e1ae00f95868c274890",
+          "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+        }
+      },
+      "promoWalks": [
+        {
+          "id": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "shareToken": "b2823a83-f861-46f2-834b-b7873960882a"
+        }
+      ],
+      "elevenLabsHttpsVerified": true
     },
     {
       "placeId": "osm:way:31482156",
@@ -523,10 +544,97 @@
   },
   "summary": {
     "publishedTexts": 14,
-    "revoicedF5": 14,
+    "revoicedF5": 13,
     "newPhotos": 5,
     "existingPhotosPreserved": 4,
     "withoutPublishedPhoto": 5,
-    "pastvuCandidates": 2
+    "pastvuCandidates": 2,
+    "revoicedElevenLabs": 1
+  },
+  "promoAudioVerification": {
+    "verifiedAt": "2026-10-04T11:40:25.110Z",
+    "promoWalksChecked": 18,
+    "results": [
+      {
+        "placeId": "osm:way:46966391",
+        "textId": "56b22ea8-2adf-4924-bed9-69a6f4768fd7",
+        "walks": [
+          {
+            "id": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
+            "title": "По бульварному кольцу от Кропоткинской до Тверской",
+            "shareToken": "b2823a83-f861-46f2-834b-b7873960882a"
+          }
+        ],
+        "job": {
+          "id": "7724c8af-f7a5-4305-85b0-5a562eb5ca63",
+          "state": "succeeded",
+          "profileId": "elevenlabs-v3",
+          "profileVersion": "1",
+          "priority": 0,
+          "attempts": 1,
+          "maxAttempts": 3,
+          "leaseGeneration": 1,
+          "leaseExpiresAt": null,
+          "updatedAt": "2026-10-04T11:40:24.317Z",
+          "workerId": "elevenlabs-v3-dispatcher",
+          "receipt": {
+            "jobId": "7724c8af-f7a5-4305-85b0-5a562eb5ca63",
+            "uploadId": "elevenlabs-v3-7724c8af-f7a5-4305-85b0-5a562eb5ca63-1",
+            "uploadSha256": "be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4",
+            "artifact": {
+              "url": "/api/story-audio/be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4.mp3",
+              "sha256": "be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4",
+              "bytes": 339309,
+              "durationSec": 42.384,
+              "model": "eleven_v3",
+              "voice": "9ivxhQ6xIsHd6R3Xc635",
+              "provider": "elevenlabs",
+              "synthetic": true
+            },
+            "acceptedAt": "2026-10-04T11:40:24.317Z"
+          },
+          "error": null,
+          "profile": {
+            "id": "elevenlabs-v3",
+            "engine": "elevenlabs",
+            "language": "ru",
+            "modelSha256": null,
+            "speaker": "9ivxhQ6xIsHd6R3Xc635",
+            "configVersion": "1",
+            "configSha256": null,
+            "referenceSha256": null,
+            "textPreparation": null,
+            "chunking": "elevenlabs-v3",
+            "maximumBytes": 67108864,
+            "maximumDurationSec": 600,
+            "maximumPublicationDurationSec": 300
+          }
+        },
+        "audio": {
+          "url": "/api/story-audio/be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4.mp3",
+          "sha256": "be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4",
+          "bytes": 339309,
+          "durationSec": 42.384,
+          "model": "eleven_v3",
+          "voice": "9ivxhQ6xIsHd6R3Xc635",
+          "provider": "elevenlabs",
+          "synthetic": true
+        },
+        "walkVerification": [
+          {
+            "id": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
+            "title": "По бульварному кольцу от Кропоткинской до Тверской",
+            "shareToken": "b2823a83-f861-46f2-834b-b7873960882a",
+            "chapterId": "boulevard-stop-17",
+            "audio": {
+              "url": "/api/story-audio/be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4.mp3",
+              "sha256": "be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4",
+              "durationSec": 42.384
+            }
+          }
+        ],
+        "httpsVerified": true
+      }
+    ]
   }
 }
