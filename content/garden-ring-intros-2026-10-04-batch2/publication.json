@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-04T12:31:25.573Z",
+  "verifiedAt": "2026-10-04T13:12:59.463Z",
   "bundleId": "garden-ring-intros-2026-10-04-batch2",
   "transport": "https-h2",
   "results": [
@@ -200,27 +200,21 @@
     },
     {
       "placeId": "osm:way:35814561",
-      "textId": "3aec3d91-28ef-49d7-a165-d192b9c047f6",
-      "wordCount": 109,
-      "skipped": false,
-      "promoWalks": [
-        {
-          "id": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
-          "title": "По бульварному кольцу от Кропоткинской до Тверской",
-          "shareToken": "b2823a83-f861-46f2-834b-b7873960882a"
-        }
-      ],
-      "audioJobId": "13cf84cc-8f08-4330-85de-cd8cfabd8295",
-      "audioState": "queued",
-      "audioProfile": "elevenlabs-v3",
-      "state": "failed",
-      "error": {
-        "failureId": "452ebede-1cc7-4bee-981f-bbe4550cf0fe",
-        "code": "TTS_QUOTA_EXCEEDED",
-        "message": "Speech synthesis failed"
-      },
-      "leaseExpiresAt": null,
       "name": "Художественный",
+      "textId": "3aec3d91-28ef-49d7-a165-d192b9c047f6",
+      "audioJobId": "13cf84cc-8f08-4330-85de-cd8cfabd8295",
+      "audioProfile": "elevenlabs-v3",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/36b565550c88405d8fd80094228482fec44c41cded3df386c1200372c28b869e.mp3",
+        "sha256": "36b565550c88405d8fd80094228482fec44c41cded3df386c1200372c28b869e",
+        "bytes": 502509,
+        "durationSec": 62.784,
+        "model": "eleven_v3",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
       "photo": {
         "thumbnail": "/images/places/way-35814561-e20677b9f416.jpg",
         "src": "/images/places/way-35814561-15f04ced063b.jpg",
@@ -232,20 +226,18 @@
         "license": "FAL",
         "licenseUrl": "http://artlibre.org/licence/lal/en"
       },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [
+        {
+          "id": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "shareToken": "b2823a83-f861-46f2-834b-b7873960882a"
+        }
+      ],
       "httpsTextVerified": true,
       "httpsPhotoVerified": true,
-      "httpsAudioVerified": false,
-      "publishedAudio": {
-        "url": "/api/story-audio/5f063da897a3045e8a905538b45385a68dd2d32a3520a4ac02bcd50a158f43b5.mp3",
-        "sha256": "5f063da897a3045e8a905538b45385a68dd2d32a3520a4ac02bcd50a158f43b5",
-        "bytes": 712941,
-        "durationSec": 89.088,
-        "model": "eleven_v3",
-        "voice": "9ivxhQ6xIsHd6R3Xc635",
-        "provider": "elevenlabs",
-        "synthetic": true
-      },
-      "previousAudioHttpsVerified": true,
+      "httpsAudioVerified": true,
       "promoWalkVerification": [
         {
           "id": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
@@ -254,11 +246,12 @@
           "chapterId": "boulevard-stop-12",
           "status": "ready",
           "audio": {
-            "url": "/api/story-audio/5f063da897a3045e8a905538b45385a68dd2d32a3520a4ac02bcd50a158f43b5.mp3",
-            "sha256": "5f063da897a3045e8a905538b45385a68dd2d32a3520a4ac02bcd50a158f43b5",
-            "durationSec": 89.088
+            "url": "/api/story-audio/36b565550c88405d8fd80094228482fec44c41cded3df386c1200372c28b869e.mp3",
+            "sha256": "36b565550c88405d8fd80094228482fec44c41cded3df386c1200372c28b869e",
+            "durationSec": 62.784
           },
-          "httpsTextVerified": true
+          "httpsTextVerified": true,
+          "httpsAudioVerified": true
         }
       ]
     },
@@ -380,14 +373,25 @@
       "promoWalkVerification": []
     }
   ],
-  "status": "published_elevenlabs_blocked_by_quota",
+  "status": "published_with_revoice",
   "summary": {
     "publishedTexts": 9,
     "newF5AudioVerified": 8,
-    "newElevenLabsAudioVerified": 0,
-    "elevenLabsPending": 1,
+    "newElevenLabsAudioVerified": 1,
+    "elevenLabsPending": 0,
     "photosVerified": 9,
     "newPhotos": 1,
     "existingPhotosPreserved": 8
+  },
+  "elevenLabsQuotaDiagnosis": {
+    "confirmed": true,
+    "cause": "api_key_credit_limit",
+    "apiKeyName": "Отголосок прод",
+    "diagnosticHttpStatus": 401,
+    "providerStatus": "quota_exceeded",
+    "action": "Владелец увеличил лимит существующего production API-ключа. То же задание успешно завершено; новая запись проверена в карточке и промопрогулке.",
+    "resolved": true,
+    "resolvedAt": "2026-10-04T13:12:59.463Z",
+    "previousApiKeyCreditLimit": 50000
   }
 }
