@@ -1,6 +1,6 @@
 # План: кофейни, кафе и перекус по пути прогулки
 
-Status: in progress since 2026-10-04; phase 1 done; next: phase 2.
+Status: in progress since 2026-10-04; phases 1–2 done; next: phase 3.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 >
@@ -161,7 +161,7 @@ type FoodPlace = {
    `backend/http-cache.mjs` (ETag, 304, сжатие):
    - `GET /api/food/cells` → `{version:1, cellSize, sourceEditedAt, attribution, cells:[{lat,lon,count,etag}]}`;
    - `GET /api/food/cells/{latKey}/{lonKey}` → `{lat, lon, places: FoodPlace[]}`; ключ ячейки — целое
-     `floor(coord / cellSize)`, чтобы не было дробей в URL.
+     `floor(coord * 20)`, чтобы не было дробей в URL.
    - Индекса нет → `503 {"error":"FOOD_INDEX_UNAVAILABLE"}` с `no-store`; клиент прячет функцию.
 3. Подключение в `startServer` (`server.mjs:786`) и закрытие при остановке (`server.mjs:725`).
 4. Тесты `backend/food-places.test.mjs` и HTTP-тесты по образцу `backend/map-cells.test.mjs` и
@@ -173,6 +173,17 @@ type FoodPlace = {
 
 **Не делать.** Не принимать геометрию маршрута в POST: клиент сам считает близость к линии, это
 нужно и для офлайна, и для кеширования. Не добавлять отдельный кеш в nginx без замера.
+
+**Phase 2 result (2026-10-04).** Read-only SQLite snapshot, cached camelCase cell bodies, shared ETags,
+GET/HEAD, br/gzip and 304 are implemented. Missing index returns uncached 503 without preventing startup.
+Nginx now preserves backend cache headers for `/api/food/`; compose routing needs no change.
+Keys use multiplication (`floor(coord * 20)`) as approved by the reviewer, with map-cells-style clamping
+at +90/+180 and ranges [-1800,1799]/[-3600,3599]. Occupied cells are serialized once;
+the empty-cell cache is bounded to 128 entries to avoid unbounded allocation for arbitrary public requests.
+Local curl: 94 cells, 13,294 places; manifest 7,301 bytes (2,351 br); center cell 1115/752
+has 1,641 places, 364,145 bytes (60,790 br at shared cache quality 5). See `../food-places-api.md`.
+Phase 0 correction for later work: `routeLegCuts` selects vertices, and `walk-plan.tsx` has no
+point-to-segment projection helper; phase 3 must implement that calculation explicitly.
 
 ## Фаза 3. Ядро на клиенте: ячейки, близость к маршруту, часы работы
 

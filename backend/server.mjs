@@ -24,6 +24,7 @@ import { ingestAudio, sweepAudioTemporaries } from "./audio-ingest.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
 import { createPlaceImageService, createWikimediaClient, placeImageUserAgent, startPlaceImageWorker } from "./place-images.mjs";
 import { openOsmGeocoder } from "./osm-geocoder.mjs";
+import { openFoodIndex, isCellLat as isFoodCellLat, isCellLon as isFoodCellLon } from "./food-places.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword } from "./auth.mjs";
 import { favoriteSummary } from "./favorite-summary.mjs";
 import { createAccountStore } from "./account-store.mjs";
@@ -104,6 +105,7 @@ export function parseUserDailyLimit(value) {
  * @property {ReturnType<typeof createStore>} store
  * @property {ReturnType<typeof createProvider> | null} [provider]
  * @property {ReturnType<typeof openOsmGeocoder> | null} [osmGeocoder]
+ * @property {ReturnType<typeof openFoodIndex> | null} [foodIndex]
  * @property {ReturnType<typeof createYandexTts> | null} [yandexTts]
  * @property {ReturnType<typeof createElevenLabsTts> | null} [elevenLabsTts]
  * @property {string} origin
@@ -137,7 +139,7 @@ export function parseUserDailyLimit(value) {
  */
 
 /** @param {CreateAppOptions} options */
-export function createApp({store,provider,osmGeocoder=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),improvementLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000})}) {
+export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),improvementLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000})}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const speechProviders={openai:provider,yandex:yandexTts,elevenlabs:elevenLabsTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
@@ -601,6 +603,12 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,eleven
         const {cell,points}=store.getMapCell(Number(mapCell[1]),Number(mapCell[2]));
         sendCacheableJson(req,res,serializeCell(cell,points));return;
       }
+      if(readMethod&&(url.pathname==="/api/food/cells"||url.pathname.startsWith("/api/food/cells/"))) {
+        const foodCell=/^\/api\/food\/cells\/(-?(?:0|[1-9]\d{0,3}))\/(-?(?:0|[1-9]\d{0,3}))$/.exec(url.pathname);
+        if(req.url.includes("?")||(url.pathname!=="/api/food/cells"&&(!foodCell||foodCell[1]==="-0"||foodCell[2]==="-0"||!isFoodCellLat(Number(foodCell[1]))||!isFoodCellLon(Number(foodCell[2])))))throw failure("BAD_REQUEST");
+        if(!foodIndex) { json(res,503,{error:"FOOD_INDEX_UNAVAILABLE"});return; }
+        sendCacheableJson(req,res,foodCell?foodIndex.cell(Number(foodCell[1]),Number(foodCell[2])):foodIndex.manifest());return;
+      }
       if(await reviews.public(req,res,url,session))return;
       if(await improvements.public(req,res,url,session))return;
       if(await placeFeedback.public(req,res,url,session))return;
@@ -722,7 +730,7 @@ export function createApp({store,provider,osmGeocoder=null,yandexTts=null,eleven
     await Promise.race([drained,new Promise(done=>{timer=setTimeout(done,shutdownGraceMs);timer.unref?.();})]);
     clearTimeout(timer);server.closeAllConnections();await drained;
     await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop(),elevenLabsWorker?.stop(),placeImageWorker?.stop()]);
-    osmGeocoder?.close();await closeAuth();
+    osmGeocoder?.close();foodIndex?.close();await closeAuth();
   };
   return {server,close};
 }
@@ -784,11 +792,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   const accountStore=createAccountStore(authRuntime.accountDatabase);
   if(process.env.PROMO_WALKS_TOKEN)ensurePromoWalksUser(authRuntime.accountDatabase);
   const osmGeocoder=openOsmGeocoder(join(directory,"osm-addresses.sqlite"));
+  const foodIndex=openFoodIndex(join(directory,"osm-food.sqlite"));
   const imageDirectory=join(directory,"place-images");
   const placeImages=await setupPlaceImages({env:process.env,store,directory:imageDirectory,origin:appOrigin,logs});
   try {const swept=await sweepAudioTemporaries(join(directory,"audio"));if(swept)console.log(`Removed ${swept} abandoned temporary audio files`);}
   catch(error) {logs?.captureException(error,{operation:"sweepAudioTemporaries"});}
-  const app=createApp({store,provider,osmGeocoder,yandexTts,elevenLabsTts,origin:appOrigin,audioDirectory:join(directory,"audio"),imageDirectory,placeImages,staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close,userDailyLimit});
+  const app=createApp({store,provider,osmGeocoder,foodIndex,yandexTts,elevenLabsTts,origin:appOrigin,audioDirectory:join(directory,"audio"),imageDirectory,placeImages,staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close,userDailyLimit});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{
