@@ -1,6 +1,6 @@
 # План: кофейни, кафе и перекус по пути прогулки
 
-Status: in progress since 2026-10-04; phases 1–5 committed; phase 6 implemented, awaiting review without commit; next: phase 7. WebKit verification remains blocked by the previously recorded browser launch crash.
+Status: implemented 2026-10-04 in branch main; deployment pending user confirmation
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 >
@@ -181,7 +181,7 @@ Keys use multiplication (`floor(coord * 20)`) as approved by the reviewer, with 
 at +90/+180 and ranges [-1800,1799]/[-3600,3599]. Occupied cells are serialized once;
 the empty-cell cache is bounded to 128 entries to avoid unbounded allocation for arbitrary public requests.
 Local curl: 94 cells, 13,294 places; manifest 7,301 bytes (2,351 br); center cell 1115/752
-has 1,641 places, 364,145 bytes (60,790 br at shared cache quality 5). See `../food-places-api.md`.
+has 1,641 places, 364,145 bytes (60,790 br at shared cache quality 5). See `../food-places.md`.
 Phase 0 correction for later work: `routeLegCuts` selects vertices, and `walk-plan.tsx` has no
 point-to-segment projection helper; phase 3 must implement that calculation explicitly.
 
@@ -230,7 +230,7 @@ Loop selection uses the earliest local minimum within best distance +15m and the
 Opening results use `{day,time,daysAhead}` for `opensAt`, with Moscow civil time and separate Russian
 formatting. Required grammar plus simple observed variants recognizes 7,566 / 7,685 nonempty hours
 (98.45%). All four icons use exact Pinhead paths and existing colour tokens, tested at >=4.5:1.
-See `../food-client-core.md` for measurements, unsupported patterns and verification.
+See `../food-places.md` for measurements, unsupported patterns and verification.
 
 ## Фаза 4. Заведения в прогулке (до старта и во время)
 
@@ -282,7 +282,7 @@ MarkerKind остаётся в map-marker-look.ts. Старые API-заглуш
 Полный pnpm check прошёл. Chromium: 371 успешный сценарий (357 базовых + 14 новых);
 WebKit: те же 323 падения браузера до открытия страниц, что на базе. Локальная проверка
 Бульварного кольца нашла 155 заведений; сделаны три скриншота 390×844. Коммитов, веток,
-изменений backend и выкладки нет. Подробности: [Заведения в прогулке](../food-walk-session.md).
+изменений backend и выкладки нет. Подробности: [Заведения в прогулке](../food-places.md).
 
 ## Фаза 5. Карта «Рядом»
 
@@ -305,7 +305,7 @@ WebKit: те же 323 падения браузера до открытия ст
 переиспользованы. Общая `FoodCard` используется прогулкой и `FoodSheet`; на карте расстояние
 по прямой от известной позиции, атрибуция и дата, без возврата к списку. Выбор истории/заведения
 взаимоисключающий. Конструктор прогулки не подключён к загрузке заведений. Фазы 6–7 не выполнялись.
-Подробности, сверка снимка и проверки: [Еда на карте «Рядом»](../food-around-map.md).
+Подробности, сверка снимка и проверки: [Еда на карте «Рядом»](../food-places.md).
 
 ## Фаза 6. Офлайн-копия
 
@@ -335,7 +335,7 @@ is a separate path: its atomic route response embeds the food snapshot and seeds
 Its geometry is `[lon, lat][]`, whereas WalkView uses coordinate objects. Tests cover both paths,
 malformed packages, storage refusal, ETag changes, old manifests and byte-budget boundaries.
 Chromium covers opening offline in dev and reloading with the real service worker on a local production
-build; no production deployment or git commit was performed. See `../food-offline-copy.md` for checks.
+build; no production deployment or git commit was performed. See `../food-places.md` for checks.
 
 ## Фаза 7. Выкладка, документация, финальная проверка
 
@@ -355,6 +355,26 @@ build; no production deployment or git commit was performed. See `../food-offlin
    из чистой копии в фоне, перед этим проверить свежие резервные копии (параллельные выкладки).
    После выкладки: `GET /api/food/cells` → 200, ячейка центра, проверка на телефоне по каталожной прогулке.
    В заметку — без адресов серверов и деталей доступа.
+
+**Phase 7 result (2026-10-04).** Consolidated the five phase notes into `../food-places.md`,
+updated the documentation index and user README, and repaired plan links to the removed notes.
+Current phase-0 facts were rechecked: tiles use the public VersaTiles URL, MarkerKind lives in
+map-marker-look, shared loading lives in cell-store, and segment projection lives in food;
+routeLegCuts still selects vertices. The food SQLite connection closes after startup serialization.
+The legacy published-route cache has a separate 4 MiB food budget, not a shared audio budget.
+The requested global anti-pattern search is not empty: 11 Overpass/Nominatim lines in five old
+backend files are identical on baseline 954d11e; literal recursive grep also finds five existing
+ignored local backend/data scripts (16 total matches). Food adds none. The top-level backend osm-food
+search matches only server; recursive search also finds the food test fixture. Unknown-hours
+formatting and attribution in lists/cards are covered by passing tests. Around-food screenshots
+now use the configured external test output directory.
+`pnpm check` passed (1,337 Vitest, 783 backend, 26 Python tests / 78 subtests, build; 22 existing
+lint warnings). Final `pnpm lint && pnpm typecheck` and `git diff --check` passed. Full Chromium e2e passed all 517 scenarios, including layout-invariants.
+WebKit silent-media fails before navigation with Bus error 10 / exit 138 both here and in a detached
+worktree of 954d11e; the full WebKit matrix remains unverified on this machine. Existing known
+layout exceptions were unchanged. No new failures, commit, branch, server access or deployment.
+Deployment step 5 was explicitly excluded by the user and remains pending reviewer execution
+after user confirmation; WebKit requires a compatible environment.
 
 ## Риски
 

@@ -10,7 +10,7 @@ for (const [width, height] of [[390, 844], [1440, 900], [568, 400], [320, 568]])
     await openAroundFood(page);
     await showAroundFood(page);
     await expectLayout(page, { screen: "Рядом", state: "еда", layout: { name: `${width}×${height}`, viewport: { width, height } }, browserName: info.project.name, options: { map: true }, known: [] });
-    const shot = (name: string) => width === 390 ? page.screenshot({ path: `scratchpad/codex/shots/around-food-${name}.png` }) : Promise.resolve();
+    const shot = (name: string) => width === 390 ? page.screenshot({ path: info.outputPath(`around-food-${name}.png`) }) : Promise.resolve();
     await shot("markers");
     await openAroundFoodCard(page);
     const card = page.getByRole("region", { name: "Заведение", exact: true });
