@@ -1,6 +1,6 @@
 # План: кофейни, кафе и перекус по пути прогулки
 
-Status: in progress since 2026-10-04; phases 1–2 done; next: phase 3.
+Status: in progress since 2026-10-04; phases 1–3 done; next: phase 4.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 >
@@ -219,6 +219,18 @@ point-to-segment projection helper; phase 3 must implement that calculation expl
 
 **Не делать.** Не подключать `opening_hours.js` и прочие зависимости без согласования. Не показывать
 «Открыто», если статус `unknown`.
+
+**Phase 3 result (2026-10-04).** Client modules and unit tests only; no UI integration,
+commit, branch or deployment. The shared loader (>60 lines) moved to `src/lib/geo/cell-store.ts`;
+existing map-cells test expectations are unchanged. Food uses its own cache, route-key and viewport
+loading, strict response validation, and no retry for 503. Other transient failures retain bounded
+exponential retries. Point-to-segment projection is explicit; bbox and segment buckets reduce the
+2,000-place / 12,000-vertex fixture to 1,095,290 checks instead of 23,998,000.
+Loop selection uses the earliest local minimum within best distance +15m and the search radius.
+Opening results use `{day,time,daysAhead}` for `opensAt`, with Moscow civil time and separate Russian
+formatting. Required grammar plus simple observed variants recognizes 7,566 / 7,685 nonempty hours
+(98.45%). All four icons use exact Pinhead paths and existing colour tokens, tested at >=4.5:1.
+See `../food-client-core.md` for measurements, unsupported patterns and verification.
 
 ## Фаза 4. Заведения в прогулке (до старта и во время)
 
