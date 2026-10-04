@@ -830,5 +830,18 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "retrievedAt": "2026-10-04",
     "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
+  },
+  "osm:node:1161887274": {
+    "thumbnail": "/images/places/node-1161887274-0b2dfa12a3da.jpg",
+    "src": "/images/places/node-1161887274-2d436a220c91.jpg",
+    "width": 960,
+    "height": 640,
+    "alt": "Памятник Антону Чехову в Камергерском переулке",
+    "author": "Andrey Filippov 安德烈 from Moscow, Russia",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Kamergersky_Lane_2,_Chekhov_monument_(45202365844).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "retrievedAt": "2026-10-04",
+    "modifications": "Размер уменьшен; превью обрезается при показе."
   }
 }
