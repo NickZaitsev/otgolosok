@@ -8,6 +8,10 @@ import { getWalkChapters } from "../tour/walk-plan";
 import { createStoryJob, isJobId, readStoryJob, retryStoryJob } from "../generator/api";
 import { stageLabels, terminalStages, type GenerationJob } from "../generator/types";
 import type { MapFocus, MapViewState } from "./explore-map";
+import type { MapViewport } from "./catalog-bounds";
+import { useAroundFood } from "../food/use-around-food";
+import { FoodGlyph } from "../food/food-list";
+import type { FoodPlace } from "../food/types";
 import { ExploreIcon } from "./icons";
 import { AppNavigation } from "../navigation/app-navigation";
 import { isMoscowPoint, MOSCOW_CENTER, MOSCOW_ZOOM, readMapJobs, rememberMapJob, rememberMapPlace, type MapJob } from "./map-jobs";
@@ -17,7 +21,7 @@ import { useMapCatalog } from "./use-map-catalog";
 import { rememberGeoPromptDismissal, shouldShowGeoPrompt } from "./geo-prompt";
 import { MapShell } from "../shell/map-shell";
 import { MapControlButton } from "../shell/map-controls";
-import { GeoNotice, LocationPromptSheet, MapHintNotice, NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
+import { FoodSheet, GeoNotice, LocationPromptSheet, MapHintNotice, NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
 import { isExpandableStory, type StoryPin } from "./story-pin";
 import { useExpandableSheet } from "../shell/use-expandable-sheet";
 import { useHideNavigation } from "../navigation/navigation-visibility";
@@ -52,6 +56,8 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const router = useRouter();
   const params = useSearchParams();
   const creating = isWalkCreation(params);
+  const food = useAroundFood(creating);
+  const [selectedFood, setSelectedFood] = useState<FoodPlace | null>(null);
   const [creationMap, setCreationMap] = useState<CreationMap>({items:[], focus:null, picking:false});
   const [picked, setPicked] = useState<Coordinates | null>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -71,12 +77,14 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const [retrying,setRetrying]=useState(false),[retryError,setRetryError]=useState("");
   const prepareRequest=useRef<AbortController|null>(null);
   const {places:catalog,status:catalogStatus,nearbyStatus,maintenance:catalogMaintenance,retry:retryCatalog,onViewport}=useMapCatalog(nearbyCenter,nearbyRadius);
+  const onFoodViewport = food.onViewport;
+  const handleViewport = useCallback((area: MapViewport) => { onViewport(area); onFoodViewport(area); }, [onViewport, onFoodViewport]);
   const lookup=useRef<AbortController|null>(null),locating=useRef<(()=>void)|null>(null);
 
   // Отменённый поиск позиции не должен оставить кнопку в «Определяем положение…»: в StrictMode очистка срабатывает и без размонтирования.
   useEffect(()=>()=>{lookup.current?.abort();if(locating.current){locating.current();locating.current=null;setGeo("idle");}},[]);
   useEffect(()=>{
-    const timer=setTimeout(()=>setPrompt(shouldShowGeoPrompt(localStorage)),0);
+    const timer=setTimeout(()=>setPrompt((()=>{try{return shouldShowGeoPrompt(localStorage);}catch{return true;}})()),0);
     return()=>clearTimeout(timer);
   },[]);
   useEffect(()=>{
@@ -131,7 +139,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
         const found=record;
         setTracked(current=>[found,...current.filter(item=>item.id!==id)]);
         setJobs(current=>({...current,[id]:job}));
-        setPlace(null);setPrompt(false);setSelected(id);setFocus({...found.location});
+        setPlace(null);setPrompt(false);setSelectedFood(null);setSelected(id);setFocus({...found.location});
       }catch(error){if(!controller.signal.aborted)setGeoMessage(toUserMessage(error,"Не удалось открыть историю."));}
     })();
   },[params,pathname,router]);
@@ -151,20 +159,25 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   ],[visible,creationMap.items]);
   const active=pins.find(pin=>pin.id===selected);
   const explorePanel=selectExplorePanel({nearbyCenter:Boolean(nearbyCenter),place:Boolean(place),placeBusy,placeError:Boolean(placeError)});
-  const mapItems=useMemo(()=>place?[...visible,{id:"picked-place",title:place.address??"Выбранное место",location:place.location,pending:true}]:visible,[visible,place]);
+  const foodItems=useMemo(()=>food.places.map(value=>({id:`food:${value.id}`,title:value.name,location:{lat:value.lat,lon:value.lon},foodKind:value.kind})),[food.places]);
+  const mapItems=useMemo(()=>[...visible,...foodItems,...(place?[{id:"picked-place",title:place.address??"Выбранное место",location:place.location,pending:true}]:[])],[visible,foodItems,place]);
+  const foodPlace = food.visible ? selectedFood : null;
+  function selectFood(value: FoodPlace){
+    lookup.current?.abort();prepareRequest.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setPreparing(false);setPrepareError("");setNearbyCenter(null);setSelected(undefined);setRetryError("");setPrompt(false);setSelectedFood(value);setFocus({lat:value.lat,lon:value.lon});
+  }
 
   function select(pin:StoryPin){
-    lookup.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setRetryError("");setSelected(pin.id);setFocus({...pin.location});setPrompt(false);
+    lookup.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setRetryError("");setSelectedFood(null);setSelected(pin.id);setFocus({...pin.location});setPrompt(false);
   }
   function selectRecommendation(id:string){
     const direct=pins.find(pin=>pin.id===id);
     if(direct){select(direct);return;}
   }
-  function dismissGeoPrompt(){rememberGeoPromptDismissal(localStorage);setPrompt(false);}
+  function dismissGeoPrompt(){try{rememberGeoPromptDismissal(localStorage);}catch{/* Storage is optional. */}setPrompt(false);}
   async function findPlace(value:Coordinates){
     lookup.current?.abort();const controller=new AbortController();lookup.current=controller;
     prepareRequest.current?.abort();setPreparing(false);setPrepareError("");
-    setPrompt(false);setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);
+    setPrompt(false);setSelectedFood(null);setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);
     setFocus({...value});setNearbyCenter(value);
     if(!isMoscowPoint(value)){setPlaceBusy(false);setPlaceError("Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку.");return;}
     const timer=setTimeout(()=>controller.abort("timeout"),12000);
@@ -251,6 +264,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   useHideNavigation(reading.expanded);
   const sheet = creating
     ? <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />
+    : foodPlace&&food.manifest ? <FoodSheet place={foodPlace} manifest={food.manifest} hours={food.hours} distanceM={user?distance(user,foodPlace):undefined} onClose={()=>setSelectedFood(null)} />
     : prompt&&!active&&!place&&!placeBusy&&!placeError ? <LocationPromptSheet geo={geo} onLocate={locate} onDismiss={dismissGeoPrompt} />
     : active ? <StorySheet story={active} walkHref={active.address&&!placeBusy?walkHref:null} startRef={startRef} onStart={onStart}
         onClose={()=>{reading.dismiss();setSelected(undefined);setRetryError("");}}
@@ -263,6 +277,9 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     : null;
   // An empty slot must stay null: the shell gives the dock room only when there is something to show.
   const noticeList = [
+    !creating&&food.zoomHint?<p key="food-zoom" className={a.notice} role="status">Приблизьте карту, чтобы увидеть заведения</p>:null,
+    !creating&&food.error?<div key="food-error" className={styles.catalogStatus} role="status"><span>Не удалось загрузить заведения</span><button type="button" onClick={()=>void food.retry()}>Повторить загрузку заведений</button></div>:null,
+    !creating&&food.loading?<p key="food-loading" className={a.notice} role="status">Загружаем заведения…</p>:null,
     catalogStatus!=="ready"||catalogMaintenance?<div key="catalog" className={styles.catalogStatus} data-region="catalog-status"><span role="status" aria-atomic="true">{catalogMaintenance?"Сервис обновляется. Карта загрузится автоматически.":catalogStatus==="error"?"Не все места загрузились.":"Загружаем места…"}</span>{catalogStatus==="loading"&&!catalogMaintenance?<progress aria-label="Загрузка мест на карте"/>:null}{catalogStatus==="error"&&!catalogMaintenance?<button type="button" onClick={retryCatalog}>Повторить загрузку мест</button>:null}</div>:null,
     !creating&&geoMessage?<GeoNotice key="geo" message={geoMessage} outside={geoOutside} denied={geo==="denied"} onMoscow={showMoscow} onRetry={locate} onClose={()=>{setGeoMessage("");setGeoOutside(false);}} />:null,
     !creating&&!sheet&&mapHintVisible?<MapHintNotice key="hint" onClose={()=>setMapHintVisible(false)} />:null,
@@ -272,10 +289,10 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
 
   return <>
     <MapShell
-      map={{onViewport,viewState:nearbyMapView,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
-        onSelect:id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
+      map={{onViewport:handleViewport,viewState:nearbyMapView,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:foodPlace?`food:${foodPlace.id}`:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
+        onSelect:id=>{const value=food.places.find(value=>`food:${value.id}`===id);if(!creating&&value){selectFood(value);return;}const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
         onPoint:point=>creating?setPicked(point):void findPlace(point)}}
-      controls={creating?null:<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton>}
+      controls={creating?null:<>{!food.unavailable&&food.manifest?<MapControlButton aria-label="Еда" aria-pressed={food.enabled} className={styles.foodToggle} onClick={()=>{setSelectedFood(null);food.toggle();}}><FoodGlyph /></MapControlButton>:null}<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton></>}
       notices={notices}
       sheet={sheet} sheetExpanded={reading.expanded&&storyShown} onCollapseSheet={reading.collapse} />
     {pathname === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();}} />}

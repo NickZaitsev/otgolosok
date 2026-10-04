@@ -19,6 +19,7 @@ async function representedPlaces(page: Page) {
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("otgolosok:explore:geo-prompt-dismissed", "1"));
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
 });
 
 test("карта показывает все 1438 мест одной ячейки двумя запросами и загружает текст по клику", async ({ page }) => {

@@ -14,7 +14,7 @@ import type { Coordinates } from "../tour/types";
 import { NO_INSETS, type MapInsets } from "../shell/map-insets";
 import type { MapStatus } from "../shell/map-status-notice";
 import { cx } from "../ui/cx";
-import { catalogArea, type CatalogArea } from "./catalog-bounds";
+import { catalogArea, type MapViewport } from "./catalog-bounds";
 import { createMapClusters, loadMapLibrary, type MapClusters } from "./map-clusters";
 import { MOSCOW_CENTER, MOSCOW_ZOOM } from "./map-jobs";
 import { markerLook, type MarkerKind, type MarkerLook } from "./map-marker-look";
@@ -130,7 +130,7 @@ export type ExploreMapProps = {
   viewState?: MapViewState;
   /** The part of the map no panel covers: focus and route are kept inside it. */
   insets?: MapInsets;
-  onViewport?: (area: CatalogArea) => void;
+  onViewport?: (area: MapViewport) => void;
   onZoomLimits?: (limits: ZoomLimits) => void;
   onStatus?: (status: MapStatus) => void;
   ref?: Ref<MapHandle>;
@@ -354,6 +354,9 @@ export function ExploreMap({
         const routePane = map.createPane("route");
         routePane.style.zIndex = "410";
         routePane.classList.add(styles.routePane);
+        // Separate pane guarantees that even selected food stays below every story.
+        const foodPane = map.createPane("food");
+        foodPane.style.zIndex = "590";
         const activePane = map.createPane("routeActive");
         activePane.style.zIndex = "420";
         activePane.classList.add(styles.routePane);
@@ -385,7 +388,7 @@ export function ExploreMap({
           clearTimeout(viewportTimer);
           viewportTimer = setTimeout(() => {
             if (!disposed && handlers.current.onViewport && map.getSize().x > 0 && map.getSize().y > 0)
-              handlers.current.onViewport(catalogArea(map));
+              handlers.current.onViewport({ ...catalogArea(map), zoom: map.getZoom(), center: { lat: map.getCenter().lat, lon: map.getCenter().lng } });
           }, 160);
         };
         map.on("moveend resize", reportViewport);
@@ -467,6 +470,7 @@ export function ExploreMap({
           title: item.title,
           alt: item.title,
           keyboard: true,
+          pane: item.foodKind ? "food" : "markerPane",
           zIndexOffset: variant.zIndex,
           bubblingMouseEvents: false,
         });

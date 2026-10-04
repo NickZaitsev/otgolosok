@@ -67,6 +67,7 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--control-min);
+  min-width: var(--control-min);
   padding: 0;
   border: 0;
   background: transparent;

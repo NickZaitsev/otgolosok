@@ -16,6 +16,7 @@ const ready = job("ready", {
 
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/**", route => route.fulfill({ json: { user: null, walks: [], nextCursor: null, items: [], version: 1, cellSize: 1, cells: [] } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.route("**/api/story-place?*", route => route.fulfill({ json: place }));
 });
 

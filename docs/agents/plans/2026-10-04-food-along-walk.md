@@ -1,6 +1,6 @@
 # План: кофейни, кафе и перекус по пути прогулки
 
-Status: in progress since 2026-10-04; phases 1–4 implemented; phase 4 awaiting review without commit; next: phase 5. WebKit verification blocked by browser launch crash.
+Status: in progress since 2026-10-04; phases 1–4 committed; phase 5 implemented, awaiting review without commit; next: phase 6. WebKit verification blocked by browser launch crash.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 >
@@ -296,6 +296,16 @@ WebKit: те же 323 падения браузера до открытия ст
    состояния после перезагрузки.
 
 **Проверка.** `pnpm check`; e2e `around`-сценарии и `layout-invariants`.
+
+**Итог фазы 5 (04.10.2026).** На обычном экране «Рядом» подключён переключатель «Еда»
+с сохранением настройки и загрузкой ячеек только при включении и масштабе ≥15. Небольшой
+запас области — `required` (полшага масштаба), а не большой `buffered` историй; при >300 местах
+выбираются ближайшие к центру 300. `onViewport` дополнен масштабом и центром. Отдельная pane
+заведений ниже историй даже при выборе; `foodMarkerSvg` и правило исключения из кластеров
+переиспользованы. Общая `FoodCard` используется прогулкой и `FoodSheet`; на карте расстояние
+по прямой от известной позиции, атрибуция и дата, без возврата к списку. Выбор истории/заведения
+взаимоисключающий. Конструктор прогулки не подключён к загрузке заведений. Фазы 6–7 не выполнялись.
+Подробности, сверка снимка и проверки: [Еда на карте «Рядом»](../food-around-map.md).
 
 ## Фаза 6. Офлайн-копия
 

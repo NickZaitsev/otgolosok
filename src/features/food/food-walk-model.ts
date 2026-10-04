@@ -18,7 +18,7 @@ export function groupRouteFood(places: RouteFoodPlace[], stops: Array<{ alongM: 
   }
   return groups;
 }
-/** Scoped to the mounted walk: equal OSM strings share one table, including unknown strings. */
+/** Scoped to the mounted screen: equal OSM strings share one table, including unknown strings. */
 export function createFoodHoursCache(parse = parseOpeningHours) {
   const schedules = new Map<string | null, ParsedHours | null>();
   return (value: string | null, now: Date) => {
