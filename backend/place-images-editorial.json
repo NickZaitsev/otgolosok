@@ -1142,5 +1142,31 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "retrievedAt": "2026-10-04",
     "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:node:5181346005": {
+    "thumbnail": "/images/places/node-5181346005-bc18b901c95d.jpg",
+    "src": "/images/places/node-5181346005-028f7baca04c.jpg",
+    "width": 960,
+    "height": 720,
+    "alt": "Дом на Тверской, 17, где расположен музей-квартира Гольденвейзера",
+    "author": "karel291",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Tverskaya_17_(508).jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "retrievedAt": "2026-10-04",
+    "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:node:5181397887": {
+    "thumbnail": "/images/places/node-5181397887-d7f74467dc39.jpg",
+    "src": "/images/places/node-5181397887-c5c11c1b1c2a.jpg",
+    "width": 960,
+    "height": 638,
+    "alt": "Дом артистов Большого театра в Брюсовом переулке, 7",
+    "author": "Gerarus",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bryusov_Lane,_7._2013_1.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-04",
+    "modifications": "Размер уменьшен; превью обрезается при показе."
   }
 }
