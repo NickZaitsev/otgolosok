@@ -1,6 +1,6 @@
 # План: кофейни, кафе и перекус по пути прогулки
 
-Status: implemented 2026-10-04 in branch main; deployment pending user confirmation
+Status: implemented and deployed 2026-10-04 in branch main (5565f66). Production: `/api/food/cells` 200, centre cell 60 KB br, «Поесть рядом» checked on a shared Boulevard walk at 390×844. WebKit not verified (browser crashes in the dev environment, also on the base commit).
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 >
