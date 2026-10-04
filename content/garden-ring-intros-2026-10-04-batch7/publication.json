@@ -1,0 +1,189 @@
+{
+  "verifiedAt": "2026-10-04T17:02:27.305Z",
+  "bundleId": "garden-ring-intros-2026-10-04-batch7",
+  "transport": "https-h2",
+  "results": [
+    {
+      "placeId": "osm:relation:7524307",
+      "name": "Кафедральный собор Святых Петра и Павла",
+      "textId": "009bc107-f854-4cc4-bc73-eea50687e352",
+      "audioJobId": "41e57831-8a29-47b4-a016-ab02bd19de3f",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/ac23ab514aa5322ab6a6b785acad8aad6626397f7c71497231bebf994a812f6f.mp3",
+        "sha256": "ac23ab514aa5322ab6a6b785acad8aad6626397f7c71497231bebf994a812f6f",
+        "bytes": 500205,
+        "durationSec": 62.496,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "54b8b68e033b017468d8d9a4549297da6bfba6c5dc09c63c7d72119bc7844abb",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/images/places/relation-7524307-118a34176131.jpg",
+        "src": "/images/places/relation-7524307-0fa5b6e13dee.jpg",
+        "width": 960,
+        "height": 1343,
+        "alt": "Лютеранский собор Святых Петра и Павла в Старосадском переулке",
+        "author": "Bischof brauer",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lutheran_St._Peter_and_Paul_Cathedral_Moscow.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:relation:7719252",
+      "name": "Храм Святого Людовика Французского",
+      "textId": "10ff87e9-c188-46db-90f1-13227f1525bf",
+      "audioJobId": "9cc39998-fe4f-4911-a128-ce704bcb7157",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/38acf1906754aaf14620af45f2705e9c5e3b28c08f3ca03ab85b8134eb32aaf8.mp3",
+        "sha256": "38acf1906754aaf14620af45f2705e9c5e3b28c08f3ca03ab85b8134eb32aaf8",
+        "bytes": 472365,
+        "durationSec": 59.016,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "3721fec219241713e77fc4fa18688646d6ecfabfbcd3e6d41e6118db90fc01d1",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/c84c8b1cf5d9c7eec42bcd8fce546e43a900920320034fe02826d70b53a7119c.jpg",
+        "src": "/api/place-images/017c021bcf49ca8d85e72d6ac9944b516f2719fab8ac8713ad6d39f71f9094a7.jpg",
+        "width": 960,
+        "height": 642,
+        "alt": "Храм Святого Людовика Французского",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9A%D0%B0%D1%82%D0%BE%D0%BB%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D1%86%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C_%D0%9B%D1%8E%D0%B4%D0%BE%D0%B2%D0%B8%D0%BA%D0%B0_%D0%B2_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:relation:8043044",
+      "name": "Храм Святой Живоначальной Троицы в Хохлах",
+      "textId": "be71ec65-9567-4b6b-b6ae-5bd9011cbe33",
+      "audioJobId": "f7cc8089-15a5-497b-b3d8-5f6454ef023f",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/3c339d8718fa5c616a7a2aa3f2dc4842d251e1999351cf166e253e019b2168ff.mp3",
+        "sha256": "3c339d8718fa5c616a7a2aa3f2dc4842d251e1999351cf166e253e019b2168ff",
+        "bytes": 457005,
+        "durationSec": 57.096,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "0820807689ca9b934178d4f2b95fa043f267def4bb600787a1aaa783fdcde5a4",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/ea0e861d85bff25b4f6bbf4db35dc7e3abcabbeee8978101a78bb6f4f463f0d3.jpg",
+        "src": "/api/place-images/1b3cd8abdb517669467c350336e95d4d22e7d2e9838fc153242ce84713f96021.jpg",
+        "width": 500,
+        "height": 667,
+        "alt": "Храм Живоначальной Троицы в Хохлах",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_New_Year_in_Khokhlovsky_Lane.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:way:52504840",
+      "name": "Церковь Космы и Дамиана на Маросейке",
+      "textId": "3f89bcb3-a3ff-4b04-b61e-fa97cd437592",
+      "audioJobId": "83b15001-a0e5-4a42-a3ce-94c793259ca6",
+      "audioProfile": "elevenlabs-v3",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/20fac63ef948b3e546822cb56b8fe1f9ecf9a5e4ed1ca2316e91ea8f0e1c2f8e.mp3",
+        "sha256": "20fac63ef948b3e546822cb56b8fe1f9ecf9a5e4ed1ca2316e91ea8f0e1c2f8e",
+        "bytes": 432621,
+        "durationSec": 54.048,
+        "model": "eleven_v3",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/990951d4ab258dcb40d5640b40d602101ccf4baa3a2804c558e5edcc50b9bf96.jpg",
+        "src": "/api/place-images/28a15675a0a71ce9c174fe8b260606f802dc72bbd91bb458535b55052620ea61.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Церковь Космы и Дамиана на Маросейке",
+        "author": "Lodo27 from Moscow, Russia",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Church_of_Saints_Cosmas_and_Damian_in_Maroseyka_99.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [
+        {
+          "id": "ce997095-1706-4d81-bfeb-b230d6717bda",
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "shareToken": "6aac2ffb-8a36-4aac-b51e-a9d3af504594"
+        }
+      ],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": [
+        {
+          "id": "ce997095-1706-4d81-bfeb-b230d6717bda",
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "shareToken": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "chapterId": "ce997095-1706-4d81-bfeb-b230d6717bda-stop-2",
+          "status": "ready",
+          "audio": {
+            "url": "/api/story-audio/20fac63ef948b3e546822cb56b8fe1f9ecf9a5e4ed1ca2316e91ea8f0e1c2f8e.mp3",
+            "sha256": "20fac63ef948b3e546822cb56b8fe1f9ecf9a5e4ed1ca2316e91ea8f0e1c2f8e",
+            "durationSec": 54.048
+          },
+          "httpsTextVerified": true
+        }
+      ]
+    }
+  ],
+  "status": "published_with_revoice",
+  "summary": {
+    "publishedTexts": 4,
+    "f5Audio": 3,
+    "elevenLabsAudio": 1,
+    "pendingAudio": 0,
+    "preservedPhotos": 3,
+    "newPhotos": 1
+  }
+}

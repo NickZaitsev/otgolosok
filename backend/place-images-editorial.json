@@ -1129,5 +1129,18 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
     "retrievedAt": "2026-10-04",
     "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:relation:7524307": {
+    "thumbnail": "/images/places/relation-7524307-118a34176131.jpg",
+    "src": "/images/places/relation-7524307-0fa5b6e13dee.jpg",
+    "width": 960,
+    "height": 1343,
+    "alt": "Лютеранский собор Святых Петра и Павла в Старосадском переулке",
+    "author": "Bischof brauer",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lutheran_St._Peter_and_Paul_Cathedral_Moscow.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "retrievedAt": "2026-10-04",
+    "modifications": "Размер уменьшен; превью обрезается при показе."
   }
 }
