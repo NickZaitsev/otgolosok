@@ -1,7 +1,7 @@
 {
-  "status": "editorial_drafts_not_applied",
+  "status": "published_with_revoice",
   "snapshotAt": "2026-10-03T19:05:46.767Z",
-  "scope": "Полные пробные редакторские варианты для 14 точек из списка 400; не импортный пакет для production.",
+  "scope": "14 полных редакторских вариантов утверждены пользователем и опубликованы на production с новой озвучкой F5. Остальные кандидаты не редактировались.",
   "entries": [
     {
       "placeId": "osm:node:7428358400",
@@ -34,7 +34,7 @@
           "publisher": "mos.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 6794464,
@@ -85,7 +85,7 @@
           "publisher": "timeout.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [],
       "enrichment": "rewritten_existing_facts",
       "wikimapiaSearch": {
@@ -132,7 +132,7 @@
           "publisher": "bakhrushinmuseum.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 12905508,
@@ -183,7 +183,7 @@
           "publisher": "theartnewspaper.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 27577152,
@@ -227,7 +227,7 @@
           "publisher": "wikipedia.org"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 18385229,
@@ -271,7 +271,7 @@
           "publisher": "psy-msu.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 53363,
@@ -330,7 +330,7 @@
           "publisher": "xn--b1afkimsn3a.xn--p1ai"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 588779,
@@ -381,7 +381,7 @@
           "publisher": "garant.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 10319547,
@@ -420,7 +420,7 @@
           "publisher": "mos.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 257,
@@ -482,7 +482,7 @@
           "publisher": "mskrnews.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 38729472,
@@ -518,7 +518,7 @@
           "publisher": "data.mos.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 38729744,
@@ -544,9 +544,9 @@
         "Эта работа является отливкой монумента, оригинал которого установлен в Дели. После реставрации памятника 7 октября в «МУЗЕОНЕ» состоялось его торжественное открытие."
       ],
       "proposedParagraphs": [
-        "Ганди изображён пожилым, с молитвенно сложенными руками. На бронзовой скульптуре высечено его изречение «Моя жизнь - моё послание». Работу создал Рябичев в 1984 году; она находится в «Музеоне»."
+        "Ганди изображён пожилым, с молитвенно сложенными руками. На бронзовой скульптуре высечено его изречение «Моя жизнь - моё послание». Работу создал Дмитрий Рябичев в 1984 году; она находится в «Музеоне»."
       ],
-      "editorialNote": "Предварительная редактура на исходных фактах. На Wikimapia указан бюст, тогда как production-текст описывает фигуру со сложенными руками. Карточка не содержит описания; совпадение не подтверждено. Перед публикацией нужно сверить обе композиции по фотографии и уточнить, относится ли отливка из Дели к этой точке.",
+      "editorialNote": "Разрешено перед публикацией по бюллетеню посольства Индии за октябрь 2021 года, страницы 10-11. Он подтверждает автора Дмитрия Рябичева, 1984 год, расположение в Музеоне и отливку оригинала из Дели. Неоднозначная карточка Wikimapia не используется как источник новых фактов.",
       "originalSources": [
         {
           "id": "d1",
@@ -561,7 +561,7 @@
           "publisher": "gov.in"
         }
       ],
-      "status": "requires_identity_review",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 12036167,
@@ -577,7 +577,15 @@
         }
       ],
       "enrichment": "rewritten_existing_facts",
-      "address": "Парк искусств «МУЗЕОН», у 1-го Голутвинского переулка, район Якиманка, Москва"
+      "address": "Парк искусств «МУЗЕОН», у 1-го Голутвинского переулка, район Якиманка, Москва",
+      "additionalSources": [
+        {
+          "url": "https://indianembassy-moscow.gov.in/pdf-vestnik/2021-October-Russian.pdf",
+          "title": "Индийский вестник, октябрь 2021: Махатма Ганди вернулся в Музеон",
+          "checkedAt": "2026-10-03",
+          "use": "Идентичность скульптуры в Музеоне, автор и год; источник вместо карточки бюста на Wikimapia."
+        }
+      ]
     },
     {
       "placeId": "osm:node:13326303469",
@@ -598,7 +606,7 @@
           "publisher": "data.mos.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 27260157,
@@ -660,7 +668,7 @@
           "publisher": "interfax.ru"
         }
       ],
-      "status": "editorial_draft_not_applied",
+      "status": "published",
       "wikimapiaSources": [
         {
           "id": 24579756,
@@ -678,5 +686,8 @@
       "enrichment": "rewritten_existing_facts",
       "address": "Москва, Манежная площадь, Александровский сад"
     }
-  ]
+  ],
+  "publicationBundleId": "garden-ring-intros-2026-10-03-v1",
+  "publicationResults": "publication.json",
+  "photoSearch": "photos.md"
 }

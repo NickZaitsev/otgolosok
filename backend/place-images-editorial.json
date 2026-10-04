@@ -583,5 +583,70 @@
     "licenseUrl": "https://commons.wikimedia.org/wiki/File:Chekhov_with_brother_1882.jpg",
     "retrievedAt": "2026-10-03",
     "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
+  },
+  "osm:node:2590877091": {
+    "thumbnail": "/images/places/node-2590877091-f428e529eb2a.jpg",
+    "src": "/images/places/node-2590877091-7dc822bf98ad.jpg",
+    "width": 960,
+    "height": 640,
+    "alt": "Дом в Брюсовом переулке, 12, где находится музей-квартира Мейерхольда",
+    "author": "Шахов Алексей",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%94%D0%BE%D0%BC-%D0%BC%D1%83%D0%B7%D0%B5%D0%B9_%D0%9C%D0%B5%D0%B9%D0%B5%D1%80%D1%85%D0%BE%D0%BB%D1%8C%D0%B4%D0%B0_(%D0%91%D1%80%D1%8E%D1%81%D0%BE%D0%B2_%D0%BF%D0%B5%D1%80.,_12).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-03",
+    "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:node:2585233691": {
+    "thumbnail": "/images/places/node-2585233691-f559ed7c7a45.jpg",
+    "src": "/images/places/node-2585233691-8838a2f2154c.jpg",
+    "width": 960,
+    "height": 720,
+    "alt": "Памятник Александру Герцену во дворе старого здания МГУ",
+    "author": "Osazemen",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Monument_to_A.I._Herzen.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-03",
+    "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:node:13326303469": {
+    "thumbnail": "/images/places/node-13326303469-ba2edfc85533.jpg",
+    "src": "/images/places/node-13326303469-799451828df8.jpg",
+    "width": 960,
+    "height": 1418,
+    "alt": "Мемориальная доска Николаю Телешову",
+    "author": "Александр Сигачёв",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%B5%D0%BC%D0%BE%D1%80%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%D0%B4%D0%BE%D1%81%D0%BA%D0%B0_%D0%9D%D0%B8%D0%BA%D0%BE%D0%BB%D0%B0%D1%8E_%D0%A2%D0%B5%D0%BB%D0%B5%D1%88%D0%BE%D0%B2%D1%83.jpg",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "retrievedAt": "2026-10-03",
+    "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:node:7428358400": {
+    "thumbnail": "/images/places/node-7428358400-d637d0ca18a1.jpg",
+    "src": "/images/places/node-7428358400-458ae1968dc3.jpg",
+    "width": 960,
+    "height": 636,
+    "alt": "Особняк Цветкова на Пречистенской набережной, где установлена доска полку «Нормандия-Неман»",
+    "author": "Никонико962",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%97%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5_%D0%A6%D0%B2%D0%B5%D1%82%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B9_%D1%85%D1%83%D0%B4%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%B3%D0%B0%D0%BB%D0%B5%D1%80%D0%B5%D0%B8_2024_01.png",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-03",
+    "modifications": "Размер уменьшен; PNG преобразован в JPEG при необходимости. Превью обрезается при показе."
+  },
+  "osm:node:11299249710": {
+    "thumbnail": "/images/places/node-11299249710-857f5c986e15.jpg",
+    "src": "/images/places/node-11299249710-7d848c783f0f.jpg",
+    "width": 960,
+    "height": 717,
+    "alt": "Мемориал городов воинской славы в Александровском саду",
+    "author": "Vasyatka1",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Monument_to_Cities_of_Military_Glory_in_Alexandrovsky_Garden.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-03",
+    "modifications": "Размер уменьшен; PNG преобразован в JPEG при необходимости. Превью обрезается при показе."
   }
 }
