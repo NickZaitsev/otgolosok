@@ -856,5 +856,18 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "retrievedAt": "2026-10-04",
     "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:relation:6204093": {
+    "thumbnail": "/images/places/relation-6204093-4b144fd314bc.jpg",
+    "src": "/images/places/relation-6204093-66760c5f116e.jpg",
+    "width": 960,
+    "height": 540,
+    "alt": "Зрительный зал Новой сцены Большого театра",
+    "author": "МаратС",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F_%D1%81%D1%86%D0%B5%D0%BD%D0%B0.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "retrievedAt": "2026-10-04",
+    "modifications": "Размер уменьшен; превью обрезается при показе."
   }
 }
