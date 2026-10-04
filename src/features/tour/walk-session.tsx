@@ -20,6 +20,7 @@ import type { OwnWalk } from "../walks/own-walk";
 import { historicalWalkPhotos } from "./historical-photos";
 import historicalStyles from "./historical-photos.module.css";
 import "./walk-session.css";
+import type { WalkDirection } from "./walk-direction";
 
 const noop = () => {};
 
@@ -53,7 +54,9 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean) {
 
 export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1,
   titleRef, startRef, onStart, onSelect, onStop, player, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
-  positionDenied = false, onRetryPosition = noop }: {
+  positionDenied = false, onRetryPosition = noop, direction = "forward", onDirectionChange }: {
+  direction?: WalkDirection;
+  onDirectionChange?: (direction: WalkDirection) => void;
   /** A message for the map notices, e.g. that the walk opened from its offline copy. */
   notice?: string;
   route: Route; chapters: WalkChapter[]; index: number; active: boolean; completed: boolean;
@@ -102,6 +105,12 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   });
   const [drawer, setDrawer] = useState<"stops" | "story" | "settings" | "reviews" | "position" | null>(null);
   const [confirmStop, setConfirmStop] = useState(false);
+  const [focusedDirection, setFocusedDirection] = useState(direction);
+  if (focusedDirection !== direction) {
+    setFocusedDirection(direction);
+    const first = chapters[0];
+    setFocus(first ? { ...(first.trigger_location ?? first.location) } : route.walk?.start.location ?? null);
+  }
   const chapter = chapters[index];
   const geometry = useMemo(() => (route.walk?.path.coordinates ?? []).map(([lon, lat]) => ({ lat, lon })), [route.walk?.path]);
   const items = useMemo(() => [
@@ -173,6 +182,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />{active && chapter ? `Остановка ${index + 1} из ${chapters.length}` : `Остановки · ${chapters.length}`}</button> : null}
         {active && (positionFailed || drawer === "position") ? <button type="button" className="walk-session-position" aria-expanded={drawer === "position"} onClick={retryPosition}><ExploreIcon name="locate" />Геопозиции нет</button> : null}
         {!active && own ? <Link href={own.editHref} prefetch={false}>Изменить маршрут</Link> : null}
+        {!active && canStart && onDirectionChange ? <button type="button" aria-label="Пройти прогулку с конца" aria-pressed={direction === "reverse"} onClick={() => onDirectionChange(direction === "forward" ? "reverse" : "forward")}>{direction === "reverse" ? "Направление: с конца" : "Направление: с начала"}</button> : null}
         {active && hasText ? <button type="button" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}>Читать историю</button> : null}
         {!active && reviews ? ratingCount === 0
           ? <button type="button" aria-haspopup="dialog" onClick={rate}>{hasReview ? "Изменить отзыв" : "Оставить отзыв"}</button>
