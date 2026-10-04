@@ -15,7 +15,7 @@ shell_quote = '$(subst ','"'"',$(1))'
 
 .PHONY: help install dev dev-https replay build serve lint typecheck test check clean
 .PHONY: docker-up docker-down docker-logs docker-ps docker-config
-.PHONY: db-dump db-pack db-import db-restore db-info db-prune-audio osm-import osm-load
+.PHONY: db-dump db-pack db-import db-restore db-info db-prune-audio osm-import osm-load osm-food
 .PHONY: place-images place-images-prune
 .PHONY: admin-create admin-create-prod
 
@@ -106,6 +106,9 @@ place-images-prune: ## Удалить файлы фото мест без ссы
 
 osm-import: ## Собрать каталог достопримечательностей; PBF=path/to/Moscow.osm.pbf
 	python scripts/import-osm-attractions.py $(PBF) --output backend/data/osm-attractions.json $(OSM_IMPORT_ARGS)
+
+osm-food: ## Собрать индекс заведений; PBF=path/to/Moscow.osm.pbf [OSM_PYTHON=python]
+	$(if $(OSM_PYTHON),$(call shell_quote,$(OSM_PYTHON)),python) scripts/build-osm-food-index.py $(call shell_quote,$(PBF)) --output backend/data/osm-food.sqlite
 
 osm-load: ## Загрузить собранный каталог в SQLite
 	$(NODE) scripts/load-osm-catalog.mjs backend/data/osm-attractions.json

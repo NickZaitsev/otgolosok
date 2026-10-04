@@ -1,6 +1,6 @@
 # План: кофейни, кафе и перекус по пути прогулки
 
-Status: planned 2026-10-04
+Status: in progress since 2026-10-04; phase 1 done; next: phase 2.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 >
@@ -114,7 +114,8 @@ type FoodPlace = {
 Исключаются: объекты без `name`; `access=private|no`; префиксы жизненного цикла (`disused:`, `abandoned:`,
 `was:`), `opening_hours="closed"|"off"`; дубли `node` внутри `way` с тем же именем и типом
 (оставляем `node`). Для `way` и `relation` берётся репрезентативная точка (centroid, а если он вне
-контура — точка на поверхности, как в `build-osm-address-index.py`).
+контура — точка на поверхности). Адресный импортер сохраняет контуры; вычисление
+репрезентативной точки реализовано отдельно в `build-osm-food-index.py`.
 
 ## Фаза 1. Индекс заведений из PBF
 
@@ -142,6 +143,12 @@ type FoodPlace = {
 **Не делать.** Не тянуть заведения в `osm-attractions.json` и в таблицу `places` генератора —
 это не истории и они не должны попасть в очередь генерации текстов. Не добавлять сетевые запросы
 (Overpass, Nominatim) — только PBF.
+
+**Итог фазы 1 (04.10.2026).** Снимок BBBike SHA-256 `e5dd9170…`, правки до 2026-10-02: 13 294 заведения
+(coffee 1 881, cafe 3 083, restaurant 2 697, fast_food 3 878, bakery 590, bar 1 165), `opening_hours` у 57,8%,
+индекс ≈ 2 МБ, 124 объекта пропущены по геометрии. Худшая ячейка: 0,02° — 439 мест, 17 КБ br, 8 ячеек на 8 км;
+**0,05° — 1 641 место, 60 КБ br, 4 ячейки на 8 км (выбрано)**; 0,1° — 127 КБ br. `shop=coffee` не включается.
+В часах встречается `24:00` и интервалы через полночь (`00:00-02:00,07:00-24:00`) — парсер фазы 3 обязан их понимать.
 
 ## Фаза 2. API ячеек заведений
 
