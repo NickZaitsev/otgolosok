@@ -1,0 +1,148 @@
+{
+  "id": "3ed13c3d-dc96-4527-8cdc-8f7213962a59",
+  "title": "От «Спартака» до «Тушинской»",
+  "revision": 1,
+  "shareUrl": "https://otgolosok.online/walk?share=284227ab-a324-47f4-b07f-25617166bb3f",
+  "stops": 16,
+  "distanceM": 6863,
+  "walkingMinutes": 87,
+  "publishedAt": "2026-10-04",
+  "audio": {
+    "profile": "elevenlabs-v3",
+    "voice": "Отголосок2 (9ivxhQ6xIsHd6R3Xc635)",
+    "verified": 16,
+    "durationMinutes": 17.4,
+    "shortestSec": 57.264,
+    "entries": [
+      {
+        "placeId": "osm:node:5202107560",
+        "textId": "5e29b899-7920-4268-a658-0564fe2b3a0f",
+        "audioJobId": "b2dae207-2428-4acb-a5be-0be2a3ec8051",
+        "sha256": "45d2a02d685875177739ac69f9a545ba8baed3207f7c85859b77d9c2aee18188",
+        "durationSec": 63.648,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:way:863613147",
+        "textId": "3057adbc-1556-437a-b156-8f3574c335d9",
+        "audioJobId": "5c0f2dd5-e142-4265-9b9d-3040b676bcfd",
+        "sha256": "460879f1660c34f0c3c40787dfb2468cccbe733648cc78f9eb5e61a50c64e9ed",
+        "durationSec": 72.696,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:node:4235760493",
+        "textId": "9d27e41e-6aa4-4c86-a1a8-b0f0d4b4ea90",
+        "audioJobId": "14ea9b79-d72f-442e-96e5-4aaecf22a408",
+        "sha256": "48ef0bb1f2a179c0e645d9731ab05ccc9e1cb3f11a3f95661c4e97357f76b98a",
+        "durationSec": 59.736,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:relation:4006864",
+        "textId": "f1ce26b1-228b-45e9-a88d-11107ba63dd3",
+        "audioJobId": "52b69526-b6f2-4f09-b685-9db18a4dd1bb",
+        "sha256": "d3f3ba9b23b7b97b78148b073fe65394f8c849b8be4aba5c2613ccbfca3abb16",
+        "durationSec": 75.816,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:node:4909347021",
+        "textId": "6ed1c5ec-9549-44d2-811d-60fe9054e917",
+        "audioJobId": "9909f6dd-d55c-4354-9001-f36e0b2edf82",
+        "sha256": "f779c6a3eb3a9dff2424c7fd20bafa2d022b3a5f175a3d9b73a1073dd29f8870",
+        "durationSec": 59.664,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:way:552402456",
+        "textId": "8a12a02f-e5b3-40b4-bc88-67118c6f5bda",
+        "audioJobId": "a8b321f2-bb6f-4b91-898b-af0764737b46",
+        "sha256": "ea35765c89ad802f9a567cfb1081c6c84151a6c75d75a252c19b06444439bae0",
+        "durationSec": 59.496,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:relation:6085904",
+        "textId": "4d3b95a5-1065-4e21-a154-6a48624193d6",
+        "audioJobId": "f144e1f5-0373-4d40-91a5-8fb217effde3",
+        "sha256": "89b0aba9551dde2ac5875f225f07522740a444cc2851789ad88acc652e33367f",
+        "durationSec": 68.616,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:relation:10377512",
+        "textId": "7074f169-b10f-4515-9e0d-e7e356aec05b",
+        "audioJobId": "c410b992-a0c7-469d-aa37-abd602bffdfd",
+        "sha256": "808f4f45fc0f4a9d22095177f28bf5594ef6ca34027ae1feba5277c3197ce2d0",
+        "durationSec": 66.696,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:node:4076834974",
+        "textId": "07ea94fb-db21-4a55-9334-530ae1ed1684",
+        "audioJobId": "114764bd-9d0a-48c6-afbc-0a6bff107e3b",
+        "sha256": "2404a98cca103d3d314ab18d0c4d413badb50b7bf65a04feea72d21ac4e977e1",
+        "durationSec": 65.256,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:way:1241471052",
+        "textId": "9ffd7b3a-9331-40e1-9479-6e5013ca583e",
+        "audioJobId": "6de47026-f545-4979-92e3-d48c8a874345",
+        "sha256": "5f97ed3a499affa121065592ca0a5395272ff8fc257bc6d4ab166b381d35195f",
+        "durationSec": 62.856,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:relation:7771761",
+        "textId": "56af8be8-793e-4648-8c49-6e83784366e3",
+        "audioJobId": "5c041712-303a-416e-a710-5aa5f2098436",
+        "sha256": "fad3a691bdb53fb48a9b99d175f121b15f52df8e87f9fc5dc636520476ea9e84",
+        "durationSec": 67.416,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:relation:7113936",
+        "textId": "2af20ebf-d9e2-46e0-b90e-90bc3530226e",
+        "audioJobId": "02ed0e49-9671-429f-a7af-d605ee2976c3",
+        "sha256": "a3826ad0eae7007efd32c7d8adc3e8c86a513987dbb63b11d980a3053aa130eb",
+        "durationSec": 67.656,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:node:1805425906",
+        "textId": "8906eda9-04eb-4110-bac0-05880dbff40e",
+        "audioJobId": "98affdb1-a376-48bb-a862-9639320cbcab",
+        "sha256": "108ffc28068398c86b1afe5ab9d685c123d1c6db6f1a54539c987b8ad30bccba",
+        "durationSec": 57.264,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:way:1359042497",
+        "textId": "a8bed786-b5e3-4ddb-9b23-b79f1555cff9",
+        "audioJobId": "d40727e8-5f51-49ec-85b2-0bfd11e61a39",
+        "sha256": "e2746ea626537b5853708a694324c405de3b9ab2ff8a73bece2408952082e7ea",
+        "durationSec": 63.744,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:way:1098823594",
+        "textId": "8c31c7d6-fa8b-4c5d-af9c-22d25110b38c",
+        "audioJobId": "ed69dc66-ce85-4446-b505-cb14191cdfe0",
+        "sha256": "e7cd2fbd3d14d0065e2285941cdef1e3bff9bb0f3a0e237c9f65430e3bd7bc71",
+        "durationSec": 67.584,
+        "model": "eleven_v3"
+      },
+      {
+        "placeId": "osm:node:296959504",
+        "textId": "3d8dfc54-b876-46de-89f5-1dbb1f08c2b0",
+        "audioJobId": "6b64d6fe-11c5-4bb4-8c83-a3652772d384",
+        "sha256": "24a4850604f7007a948749af0c90ce9d30a6ba5ccd65c2514ee573d47d882360",
+        "durationSec": 66.144,
+        "model": "eleven_v3"
+      }
+    ]
+  },
+  "verification": "Публичный API: документ совпадает с walk.json, 16 глав с текстами пакета и статусом ready; аудио каждой главы — новое задание ElevenLabs, SHA-256 и размер скачанного MP3 совпадают с квитанцией, длительность по ffprobe расходится меньше чем на секунду."
+}
