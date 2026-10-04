@@ -1,6 +1,6 @@
 # План: кофейни, кафе и перекус по пути прогулки
 
-Status: in progress since 2026-10-04; phases 1–3 done; next: phase 4.
+Status: in progress since 2026-10-04; phases 1–4 implemented; phase 4 awaiting review without commit; next: phase 5. WebKit verification blocked by browser launch crash.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 >
@@ -268,6 +268,21 @@ See `../food-client-core.md` for measurements, unsupported patterns and verifica
 
 **Не делать.** Не менять стадии `approach`/`stop` и логику срабатывания историй. Не добавлять метки
 заведений в маршрутизатор и `walk-catalog`.
+
+**Итог фазы 4 (04.10.2026).** WalkSession получил ящик заведений, кнопку в футере,
+группы по остановкам до старта, разделы «Впереди/Позади», отдельные метки категорий и безопасную
+карточку. Граница «Впереди» — накопленная длина до той же вершины routeLegCuts, что используется
+в highlightedLeg; группировка остановок использует проекции на отрезки. Камера вписывает заведение
+и его проекцию без изменения участка. Разбор часов кешируется в Map на время жизни прогулки,
+включая неизвестные строки; статусы мемоизированы и обновляются на границах минут. Новые стили —
+CSS Modules и токены. Старая модель Route теряет режим документа: он передаётся в WalkSession
+отдельно из WalkView; для старых вызовов кольцо определяется по совпадающим старту и финишу.
+MarkerKind остаётся в map-marker-look.ts. Старые API-заглушки e2e явно возвращают food 503 вместо
+успешного ответа авторизации; ожидания раскладки и известные нарушения не изменены.
+Полный pnpm check прошёл. Chromium: 371 успешный сценарий (357 базовых + 14 новых);
+WebKit: те же 323 падения браузера до открытия страниц, что на базе. Локальная проверка
+Бульварного кольца нашла 155 заведений; сделаны три скриншота 390×844. Коммитов, веток,
+изменений backend и выкладки нет. Подробности: [Заведения в прогулке](../food-walk-session.md).
 
 ## Фаза 5. Карта «Рядом»
 

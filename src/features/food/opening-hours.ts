@@ -70,7 +70,12 @@ export function parseOpeningHours(value: string | null | undefined): ParsedHours
 
 /** Always uses the chosen civil timezone, independent of the device timezone. */
 export function openingHoursStatus(value: string | null | undefined, now = new Date(), timeZone = "Europe/Moscow"): HoursStatus {
-  const parsed = parseOpeningHours(value), holidayCaveat = parsed?.holidayCaveat ?? /(?:^|;)\s*PH off\s*(?:;|$)/.test(value ?? "");
+  return parsedOpeningHoursStatus(parseOpeningHours(value), value, now, timeZone);
+}
+
+/** Evaluate a cached weekly schedule without allocating another minute table. */
+export function parsedOpeningHoursStatus(parsed: ParsedHours | null, value: string | null | undefined, now = new Date(), timeZone = "Europe/Moscow"): HoursStatus {
+  const holidayCaveat = parsed?.holidayCaveat ?? /(?:^|;)\s*PH off\s*(?:;|$)/.test(value ?? "");
   const unknown: HoursStatus = { state: "unknown", holidayCaveat };
   if (!parsed || !Number.isFinite(now.getTime())) return unknown;
   let parts: Intl.DateTimeFormatPart[];

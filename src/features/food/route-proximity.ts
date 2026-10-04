@@ -111,3 +111,17 @@ export function formatNearbyStop(alongM: number, stops: Array<{ alongM: number }
   const index = nearestStop(alongM, stops);
   return index === null ? null : `рядом с остановкой ${index + 1}`;
 }
+
+/** Cumulative vertex distances use the same segment lengths as place projections. */
+export function routeVertexDistances(geometry: Coordinates[]): number[] {
+  let along = 0;
+  return geometry.map((point, i) => { if (i) along += distance(geometry[i - 1], point); return along; });
+}
+export function matchedRoutePoint(match: RouteMatch, geometry: Coordinates[], distances = routeVertexDistances(geometry)): Coordinates | null {
+  const a = geometry[match.vertex], b = geometry[match.vertex + 1];
+  if (!a) return null;
+  if (!b) return a;
+  const length = distances[match.vertex + 1] - distances[match.vertex];
+  const t = length ? Math.max(0, Math.min(1, (match.alongM - distances[match.vertex]) / length)) : 0;
+  return { lat: a.lat + t * (b.lat - a.lat), lon: a.lon + t * (b.lon - a.lon) };
+}

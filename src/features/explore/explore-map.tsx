@@ -8,6 +8,8 @@ import {
   type Ref,
 } from "react";
 import type * as Leaflet from "leaflet";
+import { foodMarkerSvg } from "../food/food-marker";
+import type { FoodKind } from "../food/types";
 import type { Coordinates } from "../tour/types";
 import { NO_INSETS, type MapInsets } from "../shell/map-insets";
 import type { MapStatus } from "../shell/map-status-notice";
@@ -90,6 +92,8 @@ export type MapItem = {
   title: string;
   location: Coordinates;
   number?: number;
+  /** Food stays separate from story clusters. */
+  foodKind?: FoodKind;
   pending?: boolean;
   /** A background catalog point in a mode where stories are secondary (walk creation): a small plain dot. */
   compact?: boolean;
@@ -138,6 +142,7 @@ const MARKER_CLASS: Record<MarkerKind, string> = {
   pending: styles.pending,
   endpoint: styles.endpoint,
   background: styles.background,
+  food: styles.food,
 };
 
 const CHEVRON_SIZE = 12;
@@ -427,9 +432,9 @@ export function ExploreMap({
     const additions: Leaflet.Marker[] = [];
     for (const item of items) {
       const active = item.id === selectedId;
-      const clustered = item.clusterable === true && !active;
+      const clustered = item.clusterable === true && !item.foodKind && !active;
       const variant = markerLook(item, active);
-      const look = JSON.stringify([item.title, variant.kind, variant.label, active]);
+      const look = JSON.stringify([item.title, variant.kind, variant.label, item.foodKind, active]);
       const position: [number, number] = [item.location.lat, item.location.lon];
       const existing = rt.markerById.get(item.id);
       if (existing) {
@@ -445,7 +450,7 @@ export function ExploreMap({
       const icon = rt.L.divIcon({
         className: cx(MARKER_CLASS[variant.kind], active && styles.selected),
         // Marker contents are a stop number or nothing, never upstream HTML.
-        html: `<span>${variant.label}</span>`,
+        html: item.foodKind ? foodMarkerSvg(item.foodKind) : `<span>${variant.label}</span>`,
         iconSize: [variant.size, variant.size],
         iconAnchor: [variant.size / 2, variant.size / 2],
       });
@@ -466,6 +471,11 @@ export function ExploreMap({
           bubblingMouseEvents: false,
         });
         marker.on("click", () => handlers.current.onSelect(item.id));
+        if (item.foodKind) marker.on("keydown", (event: Leaflet.LeafletKeyboardEvent) => {
+          if (!["Enter", " "].includes(event.originalEvent.key)) return;
+          event.originalEvent.preventDefault();
+          handlers.current.onSelect(item.id);
+        });
         marker.on("add", () => {
           const element = marker?.getElement();
           const selected = handlers.current.selectedId === item.id;

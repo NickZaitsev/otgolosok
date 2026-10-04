@@ -80,6 +80,7 @@ async function setup(page: import("@playwright/test").Page, empty = false, desti
     localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
   }, { id, document });
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.goto(`/walk?local=${id}`);
 }
 
@@ -139,6 +140,7 @@ test("прогулка по ссылке открывается на перво�
     localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
   }, { id, document });
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.goto(`/walk?local=${id}`);
   await expect(page.getByRole("button", { name: "Начать прогулку", exact: true })).toBeVisible();
   await expect.poll(() => firstStopIsVisible(page)).toBe(true);
@@ -298,6 +300,7 @@ test("гостевая прогулка показывает опубликов�
   }, { id, document });
   const requests: unknown[] = [];
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.route("**/api/story-walks/resolve", route => {
     requests.push(route.request().postDataJSON());
     return route.fulfill({ json: { document, revision: 0, contentVersion: "e".repeat(64), chapters: [{ id: document.stops[0].id, status: "text_ready",
@@ -326,6 +329,7 @@ async function openPhotoStop(page: Page, photo: typeof placePhoto | null = place
     localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
   }, { id, document });
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.route("**/api/story-walks/resolve", route => route.fulfill({ json: { document, revision: 0, contentVersion: "f".repeat(64), chapters: [{ id: document.stops[0].id, status: "text_ready",
     story: { title: "Кинотеатр «Художественный»", address: stops[0].address, paragraphs: [{ text: "Рассказ о кинотеатре.", factIds: [] }], sources: [], facts: [] }, audio: null }] } }));
   await page.route(`**/api/content/places/${photoPlace}`, route => route.fulfill({ json: { place: { id: photoPlace,
@@ -500,6 +504,7 @@ test.describe("отзывы к каталожной прогулке", () => {
   async function openWithReviews(page: Page) {
     const writes: Array<{ method: string; body: unknown; key: string | null }> = [];
     await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+    await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
     await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: oneStop }));
     await page.route("**/api/story-walks/paveletskaya/reviews**", async route => {
       const request = route.request();

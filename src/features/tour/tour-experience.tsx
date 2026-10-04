@@ -356,7 +356,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
       {universal && reviewTarget ? <ReviewDialog reviews={reviews} open={rateOpen} onClose={() => setRateOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
       {universal && reviewTarget ? <ImprovementDialog target={reviewTarget} open={improveOpen} onClose={() => setImproveOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
       {universal ? <WalkSession notice={offlineNotice} route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg}
-        direction={direction} onDirectionChange={value => {
+        direction={direction} foodMode={view?.document.mode} onDirectionChange={value => {
           if (sessionActiveRef.current) return;
           setDirection(value);
           setChapterIndex(0);

@@ -18,6 +18,7 @@ export const longStop = routeToWalkView({ ...catalog, walk: { ...catalog.walk!, 
 /** Mocks every API with an empty guest answer; specific routes registered later take precedence. */
 export async function mockGuestApi(page: Page) {
   await page.route("**/api/**", route => route.fulfill({ json: { user: null, walks: [], nextCursor: null, items: [], version: 1, cellSize: 1, cells: [] } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   // A guest has not rated any place yet; the shared stub above has no `mine` and would show the load error.
   await page.route("**/api/content/places/*/feedback/mine", route => route.fulfill({ json: { mine: null } }));
 }
@@ -43,10 +44,12 @@ export async function openLocalWalk(page: Page, empty = false) {
     localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
   }, { id: walkId, document });
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.goto(`/walk?local=${walkId}`);
 }
 
 async function openLongCatalogWalk(page: Page) {
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.context().grantPermissions(["geolocation"]);
   await page.context().setGeolocation({ latitude: 55.7232, longitude: 37.653, accuracy: 12 });
   await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: longStop }));
@@ -160,6 +163,7 @@ export const SCREEN_STATES: ScreenState[] = [
       if (!new URL(route.request().url()).pathname.startsWith("/api/story-walks/paveletskaya")) return route.fulfill({ json: { user: null } });
       return online ? route.fulfill({ json: longStop }) : route.abort("internetdisconnected");
     });
+    await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
     await page.goto("/walk?catalog=paveletskaya");
     await page.getByRole("button", { name: /^Остановки ·/ }).click();
     await page.getByRole("button", { name: "Сохранить прогулку без сети" }).first().click();

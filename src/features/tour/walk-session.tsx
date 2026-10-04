@@ -1,7 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type ReactNode, type RefObject } from "react";
+import { FoodGlyph, FoodList } from "../food/food-list";
+import { useWalkFood } from "../food/use-walk-food";
+import { distanceToRoute, matchedRoutePoint, routeVertexDistances } from "../food/route-proximity";
+import type { RouteFoodPlace } from "../food/food-walk-model";
+import { useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { MapFitTarget, MapFocus } from "../explore/explore-map";
 import { ExploreIcon } from "../explore/icons";
 import { PlacePhotoBanner } from "../explore/place-photo";
@@ -20,6 +24,7 @@ import type { OwnWalk } from "../walks/own-walk";
 import { historicalWalkPhotos } from "./historical-photos";
 import historicalStyles from "./historical-photos.module.css";
 import "./walk-session.css";
+import foodStyles from "./walk-food.module.css";
 import type { WalkDirection } from "./walk-direction";
 
 const noop = () => {};
@@ -54,8 +59,9 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean) {
 
 export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1,
   titleRef, startRef, onStart, onSelect, onStop, player, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
-  positionDenied = false, onRetryPosition = noop, direction = "forward", onDirectionChange }: {
+  positionDenied = false, onRetryPosition = noop, direction = "forward", foodMode: documentFoodMode, onDirectionChange }: {
   direction?: WalkDirection;
+  foodMode?: "open" | "loop";
   onDirectionChange?: (direction: WalkDirection) => void;
   /** A message for the map notices, e.g. that the walk opened from its offline copy. */
   notice?: string;
@@ -103,7 +109,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
     const first = chapters[0];
     return first ? { ...(first.trigger_location ?? first.location) } : null;
   });
-  const [drawer, setDrawer] = useState<"stops" | "story" | "settings" | "reviews" | "position" | null>(null);
+  const [drawer, setDrawer] = useState<"stops" | "story" | "settings" | "reviews" | "position" | "food" | null>(null);
   const [confirmStop, setConfirmStop] = useState(false);
   const [focusedDirection, setFocusedDirection] = useState(direction);
   if (focusedDirection !== direction) {
@@ -113,15 +119,34 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   }
   const chapter = chapters[index];
   const geometry = useMemo(() => (route.walk?.path.coordinates ?? []).map(([lon, lat]) => ({ lat, lon })), [route.walk?.path]);
+  const foodVisible = drawer === "food" && !completed;
+  const foodMode = documentFoodMode ?? (route.walk && route.walk.start.location.lat === route.walk.finish.location.lat && route.walk.start.location.lon === route.walk.finish.location.lon ? "loop" : "open");
+  const food = useWalkFood(geometry, foodMode, foodVisible);
+  if (food.unavailable && drawer === "food") setDrawer(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const [selectedFood, setSelectedFood] = useState<RouteFoodPlace | null>(null);
+  const [foodFit, setFoodFit] = useState<MapFitTarget | null>(null);
+  useLayoutEffect(() => { if (drawer === "food" && drawerRef.current) drawerRef.current.scrollTop = 0; }, [drawer, selectedFood?.id]);
+  const foodManifestError = geometry.length > 1 && food.error && !food.manifest && !food.unavailable;
+  const vertexDistances = useMemo(() => routeVertexDistances(geometry), [geometry]);
   const items = useMemo(() => [
     ...(route.walk ? [{ id: "walk-start", title: `Старт: ${route.walk.start.address}`, location: route.walk.start.location, endpoint: true }] : []),
     ...chapters.map((item, i) => ({ id: item.id, title: `Остановка ${i + 1}: ${item.title}`, location: item.trigger_location ?? item.location, number: i + 1 })),
     ...(route.walk ? [{ id: "walk-finish", title: `Финиш: ${route.walk.finish.address}`, location: route.walk.finish.location, endpoint: true }] : []),
   ], [chapters, route.walk]);
+  const mapItems = useMemo(() => foodVisible && !food.unavailable ? [...items, ...food.places.map(p => ({ id: p.id, title: p.name, location: { lat: p.lat, lon: p.lon }, foodKind: p.kind }))] : items, [items, foodVisible, food.places, food.unavailable]);
+  function openFood(place: RouteFoodPlace) {
+    setSelectedFood(place);
+    setDrawer("food");
+    const nearest = matchedRoutePoint(place, geometry, vertexDistances);
+    setFoodFit({ points: [{ lat: place.lat, lon: place.lon }, ...(nearest ? [nearest] : [])], keepUserView: false });
+  }
   // During the walk the leg to walk now stands out; the map fits it whenever it changes.
   const stops = useMemo(() => chapters.map(item => item.trigger_location ?? item.location), [chapters]);
+  const foodStops = useMemo(() => stops.map(stop => distanceToRoute(stop, geometry, { mode: foodMode })), [stops, geometry, foodMode]);
   const cuts = useMemo(() => routeLegCuts(geometry, stops), [geometry, stops]);
   const leg = highlightedLeg(index, stage, chapters.length);
+  const foodFromM = vertexDistances[leg === 0 ? 0 : cuts[leg - 1] ?? 0] ?? 0;
   const legPath = active ? legRange(cuts, geometry.length, leg) : null;
   const legEnd = stops[leg] ?? route.walk?.finish.location ?? null;
   const legKey = active && legEnd ? `${leg}:${legPath?.join("-") ?? "point"}` : null;
@@ -153,9 +178,10 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   const meta = !active ? `${route.duration_min} мин · ${distance.toLocaleString("ru-RU", { maximumFractionDigits: 1 })} км`
     : !chapter ? "До финиша" : stage === "approach" ? approachHint(advance, Boolean(chapter.audio)) : "";
 
-  const panel = <section className="walk-session-panel" data-region="sheet" aria-labelledby="walk-session-title">
+  const panel = <section className={`walk-session-panel ${foodStyles.panel}`} data-region="sheet" aria-labelledby="walk-session-title">
       {/* Like the player, the photo yields its room to an open drawer. */}
       {active && chapter && !drawer ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} stopId={chapter.id} title={chapter.title} /></div> : null}
+      <div className={`${foodStyles.body}${foodVisible || foodManifestError ? ` ${foodStyles.bodyScrollable}` : ""}`}>
       <header className="walk-session-heading">
         <div>
           {/* During the walk the stop number lives on the «Остановки» button; this line is left for the hint and the finish. */}
@@ -173,23 +199,25 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
             : <Link className="walk-session-icon" href="/" prefetch={false} aria-label="Закрыть прогулку" onClick={() => onStop()}><ExploreIcon name="close" /></Link>}
         </div> : null}
       </header>
-      {!active && !completed ? own?.notes.map(note => <p key={note} className="walk-session-muted">{note}</p>) : null}
+      {!active && !completed && !foodVisible ? own?.notes.map(note => <p key={note} className="walk-session-muted">{note}</p>) : null}
       {active && chapter && chapter.title !== chapter.place ? <p className="walk-session-address">{chapter.place}</p> : null}
       {active && !drawer ? player : null}
       {active && audioError ? <p className="walk-session-notice" role="status">{audioError}</p> : null}
       {active && chapter && !chapter.audio && !hasText ? <p className="walk-session-muted">Без истории</p> : null}
-      {!completed ? <div className="walk-session-tools">
+      {!completed && !foodVisible ? <div className="walk-session-tools">
         {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />{active && chapter ? `Остановка ${index + 1} из ${chapters.length}` : `Остановки · ${chapters.length}`}</button> : null}
         {active && (positionFailed || drawer === "position") ? <button type="button" className="walk-session-position" aria-expanded={drawer === "position"} onClick={retryPosition}><ExploreIcon name="locate" />Геопозиции нет</button> : null}
         {!active && own ? <Link href={own.editHref} prefetch={false}>Изменить маршрут</Link> : null}
-        {!active && canStart && onDirectionChange ? <button type="button" aria-label="Пройти прогулку с конца" aria-pressed={direction === "reverse"} onClick={() => onDirectionChange(direction === "forward" ? "reverse" : "forward")}>{direction === "reverse" ? "Направление: с конца" : "Направление: с начала"}</button> : null}
+        {!active && canStart && onDirectionChange ? <button type="button" aria-label="Пройти прогулку с конца" aria-pressed={direction === "reverse"} onClick={() => { setDrawer(null); onDirectionChange(direction === "forward" ? "reverse" : "forward"); }}>{direction === "reverse" ? "Направление: с конца" : "Направление: с начала"}</button> : null}
         {active && hasText ? <button type="button" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}>Читать историю</button> : null}
         {!active && reviews ? ratingCount === 0
           ? <button type="button" aria-haspopup="dialog" onClick={rate}>{hasReview ? "Изменить отзыв" : "Оставить отзыв"}</button>
           : <button type="button" aria-expanded={drawer === "reviews"} onClick={toggleReviews}>Отзывы</button> : null}
       </div> : null}
-      {drawer && !completed ? <div className="walk-session-drawer" data-sheet-part="body" key={`${drawer}-${index}`}>
-        {drawer === "stops" ? <>
+      {drawer && !completed ? <div ref={drawerRef} className={`walk-session-drawer ${foodStyles.drawer}`} data-sheet-part="body" key={`${drawer}-${index}`}>
+        {drawer === "food" && food.manifest ? <FoodList places={food.places} stops={foodStops} active={active} fromM={foodFromM}
+          selected={selectedFood && food.places.find(p => p.id === selectedFood.id) || null} onSelect={openFood} onBack={() => setSelectedFood(null)}
+          hours={food.hours} manifest={food.manifest} error={food.error} loading={food.loading} onRetry={food.retry} /> : drawer === "stops" ? <>
           {/* Before the start the addresses live here, not on the card: the card keeps only the title and the action.
               During the walk the list is for jumping between stops, and on a small screen the lines would crowd the map.
               A walk already begun continues from any stop: the walker may have gone ahead or come back another day. */}
@@ -210,7 +238,10 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         </>}
       </div> : null}
       {completed && onImprove ? <button type="button" className="walk-session-rate" aria-haspopup="dialog" onClick={improve}>Что улучшить в прогулке?</button> : null}
-      <footer className={`walk-session-actions${completed && reviews ? " walk-session-actions--finish" : ""}`} data-sheet-part="footer">
+      {foodManifestError ? <p role="status" className="walk-session-notice">Не удалось загрузить заведения <button type="button" className={foodStyles.retry} onClick={food.retry}>Повторить</button></p> : null}
+      </div>
+      <footer className={`${foodStyles.actions} walk-session-actions${completed && reviews ? " walk-session-actions--finish" : ""}`} data-sheet-part="footer">
+        {!completed && geometry.length > 1 && food.manifest && !food.unavailable ? <button type="button" className={foodStyles.button} aria-label="Поесть рядом" aria-expanded={foodVisible} onClick={() => { setSelectedFood(null); setDrawer(foodVisible ? null : "food"); }}><FoodGlyph /><span>Поесть рядом</span></button> : null}
         {completed ? reviews ? <>
           <button type="button" className="walk-session-primary" aria-haspopup="dialog" onClick={onRate}>{hasReview ? "Изменить отзыв" : "Оставить отзыв"}</button>
           <Link className="walk-session-secondary" href="/">На карту</Link>
@@ -224,9 +255,11 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
 
   return <>
     <MapShell navigation={!active} onBrand={() => onStop()}
-      map={{ items, selectedId: active ? chapter?.id : undefined, focus, user, geometry, fitGeometry: !focus, tunnels: route.walk?.path.tunnels,
-        activeLeg: legPath, fitTarget: legFit.target, onPoint: noop, mapLabel: "Карта прогулки: пешеходный маршрут и остановки",
+      map={{ items: mapItems, selectedId: foodVisible && selectedFood ? selectedFood.id : active ? chapter?.id : undefined, focus, user, geometry, fitGeometry: !focus, tunnels: route.walk?.path.tunnels,
+        activeLeg: legPath, fitTarget: foodVisible && selectedFood ? foodFit : legFit.target, onPoint: noop, mapLabel: "Карта прогулки: пешеходный маршрут и остановки",
         onSelect: id => {
+          const place = foodVisible ? food.places.find(p => p.id === id) : null;
+          if (place) { openFood(place); return; }
           const position = chapters.findIndex(item => item.id === id);
           if (position >= 0) { if (active) select(position); else setDrawer("stops"); }
         } }}

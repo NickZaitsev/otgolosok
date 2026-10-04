@@ -7,6 +7,8 @@ const item = (extra: Partial<MapItem>): MapItem => ({ id: "x", title: "Мест�
 
 describe("вид метки на карте", () => {
   it.each([
+    ["заведение", { foodKind: "coffee" }, false, { kind: "food", label: "", size: 44, dataMarker: "food", zIndex: -1000 }],
+    ["выбранное заведение", { foodKind: "bar" }, true, { kind: "food", label: "", size: 44, dataMarker: "food", zIndex: 1000 }],
     ["место", {}, false, { kind: "place", label: "", size: 44, dataMarker: "pin", zIndex: 0 }],
     ["выбранное место", {}, true, { kind: "place", label: "", size: 44, dataMarker: "pin", zIndex: 1000 }],
     ["история готовится", { pending: true }, false, { kind: "pending", label: "", size: 44, dataMarker: "pin", zIndex: 0 }],

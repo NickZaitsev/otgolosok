@@ -188,3 +188,18 @@
   outline: var(--focus-ring);
   outline-offset: 0;
 }
+
+/* Food has a smaller visible disc while retaining the full touch target. */
+.food {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+}
+
+.food > svg {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--surface-island);
+  border-radius: var(--radius-pill);
+}
