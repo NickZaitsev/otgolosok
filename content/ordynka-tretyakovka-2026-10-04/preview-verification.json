@@ -1,0 +1,76 @@
+{
+  "verifiedAt": "2026-10-05",
+  "photosReady": 7,
+  "filesVerified": 14,
+  "audioReady": 7,
+  "places": [
+    {
+      "placeId": "osm:node:8044478986",
+      "files": {
+        "thumbnail": "1effe7406c96be3fbd9ad5ed0bdfccb7b36b3cdfdb6d85baf454cd17010efc4c",
+        "src": "9f5a73c67b0566161de110b11c5afd7728c2e685e4e8e495b80cc577541974a0"
+      },
+      "photoMatched": true
+    },
+    {
+      "placeId": "osm:node:1378700996",
+      "files": {
+        "thumbnail": "3f290fdfbe139ecde81d1076807f150bb42bc43a7136ef3405806a8a40e41ace",
+        "src": "8cd870d737cb394892943a0f025ad9d408c86a8d06a635c80c38f869c96018c8"
+      },
+      "photoMatched": true
+    },
+    {
+      "placeId": "osm:relation:20429251",
+      "files": {
+        "thumbnail": "237a1ed746f5ae9763b7d27c8c217e532a576d23ed2129977f16ad73bd01f240",
+        "src": "4a001bd1cf81190a15370a3e68228cecc30996df2f89d562b434057d4b967d2e"
+      },
+      "photoMatched": true
+    },
+    {
+      "placeId": "osm:way:53548437",
+      "files": {
+        "thumbnail": "c0e123222f84478a5c146301a0edd2a382d8fa4a12cfdce8f7bcc4935c06f8a2",
+        "src": "2ff2ddb736339c4bc0a35006f58513de0b31b123199497115fab65808c3e958e"
+      },
+      "photoMatched": true
+    },
+    {
+      "placeId": "osm:way:52435403",
+      "files": {
+        "thumbnail": "b6e3c40caa53b70a8942a2a85d3b0fae39db0ba8fad1c4dd7e6d8cde99ab4db2",
+        "src": "8ded93af480a7e6b5a517c7d7ed22b56b4cb1ed09858449d0fde3778fc59b81f"
+      },
+      "photoMatched": true
+    },
+    {
+      "placeId": "osm:relation:1907261",
+      "files": {
+        "thumbnail": "3ed37cd3b56aa5e95b481f27eee28e27408dbb4516d80ea7fcf0e0cc84f4e69f",
+        "src": "5bef95d2cc5dcb1a428cd66e902e735df01bf5d702e09c94b9f38c3d7c0667df"
+      },
+      "photoMatched": true
+    },
+    {
+      "placeId": "osm:way:52435420",
+      "files": {
+        "thumbnail": "040a8565b94d5bdfb2f8295920a15d9a889af0373ef5a656409db3edf8dd858a",
+        "src": "844443177bb9f8326467e233ad85641a9585a762aaa860b7ade1508c8bbbf50a"
+      },
+      "photoMatched": true
+    }
+  ],
+  "browser": {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "bannersLoaded": 7,
+    "fullPhotosOpened": 7,
+    "creditsAndLicenseLinksChecked": 7,
+    "photoErrors": 0,
+    "geolocationUnavailable": true,
+    "shmelevCropRechecked": true
+  }
+}
