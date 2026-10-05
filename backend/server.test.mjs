@@ -629,6 +629,20 @@ test("a shared link to a missing place or a malformed one answers an uncached HT
   assert.equal(head.status,404);assert.equal(head.body.length,0);
 });
 
+test("a shared link answers an uncached HTML 503 that still leads to the map when the store fails",async t=>{
+  const f=await mapFixture(t);
+  t.mock.method(f.store,"getPublishedPlace",()=>{throw new Error("SQLITE_BUSY: database is locked");});
+  const failed=await raw(f.base,"/place/node/8");
+  assert.equal(failed.status,503);assert.equal(failed.headers["content-type"],"text/html; charset=utf-8");
+  assert.equal(failed.headers["cache-control"],"no-store");assert.equal(failed.headers.etag,undefined);
+  assert.match(failed.headers["content-security-policy"],/script-src 'sha256-/);
+  const body=failed.body.toString();
+  assert.match(body,/Не удалось загрузить историю\./);assert.match(body,/href="\/\?place=osm:node:8"/);
+  assert.doesNotMatch(body,/SQLITE|locked/);
+  const head=await raw(f.base,"/place/node/8",{},"HEAD");
+  assert.equal(head.status,503);assert.equal(head.body.length,0);
+});
+
 test("place photos are served immutable by content-addressed name only",async t=>{
   const images=await mkdtemp(join(tmpdir(),"place-images-"));t.after(()=>rm(images,{recursive:true,force:true}));
   const f=await fixture(t,{imageDirectory:images}),name=`${"c".repeat(64)}.jpg`;

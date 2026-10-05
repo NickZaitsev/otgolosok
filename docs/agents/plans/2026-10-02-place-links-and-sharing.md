@@ -1,6 +1,6 @@
 # Plan: Place links in the URL and a "Share" button with link previews
 
-Status: implemented 2026-10-02 in branch `feat/promo-walks-stories-only`. Real messenger previews (Telegram, VK, WhatsApp) need the public HTTPS deployment and were not checked; the pre-existing e2e failures (layout «прогулка / офлайн-копия» 568×320, shared-walk-admin scrollWidth) fail on the base commit too.
+Status: implemented 2026-10-02 in branch `feat/promo-walks-stories-only`. Real messenger previews (Telegram, VK, WhatsApp) need the public HTTPS deployment and were not checked.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -124,7 +124,7 @@ Contract (the URL is the source of truth for the selected *catalog* place; local
 ### 6. Backend route — `backend/server.mjs`, `backend/http-cache.mjs`
 
 - `http-cache.mjs`: generalise to `sendCacheable(req, res, body, contentType, extraHeaders = {})`; keep `sendCacheableJson` as a thin wrapper (no behaviour change for JSON routes).
-- `server.mjs`: right after the public place route, `if (readMethod && SHARE_PATH.test(url.pathname))`: resolve the id, `store.getPublishedPlace(id)`, render, and answer with `Content-Type: text/html; charset=utf-8`, the page CSP in `Content-Security-Policy` (*as built:* no `Referrer-Policy` from the backend — nginx's `security-headers.conf` already adds it, and a duplicate header would be noise); 200 via `sendCacheable` (ETag, `no-cache`, compression, HEAD), 404 with `Cache-Control: no-cache`, the same CSP and no ETag. Any other `/place/...` path → 404 HTML "Страница не найдена" with a link to `/` (not the JSON 404). Query strings (utm) are ignored. Store failures fall into the existing catch (500 JSON) — acceptable, logged by `logs.captureException`.
+- `server.mjs`: right after the public place route, `if (readMethod && SHARE_PATH.test(url.pathname))`: resolve the id, `store.getPublishedPlace(id)`, render, and answer with `Content-Type: text/html; charset=utf-8`, the page CSP in `Content-Security-Policy` (*as built:* no `Referrer-Policy` from the backend — nginx's `security-headers.conf` already adds it, and a duplicate header would be noise); 200 via `sendCacheable` (ETag, `no-cache`, compression, HEAD), 404 with `Cache-Control: no-cache`, the same CSP and no ETag. Any other `/place/...` path → 404 HTML "Страница не найдена" with a link to `/` (not the JSON 404). Query strings (utm) are ignored. Store failures fall into the existing catch (500 JSON) — acceptable, logged by `logs.captureException`. *As built (follow-up):* a store failure answers an HTML 503 with `no-store`, no preview tags and the link to `/?place=…` (`shareUnavailableHtml`), logged by `logs.captureException`.
 - `origin` comes from `createApp({ origin })` (`APP_ORIGIN`).
 
 ### 7. nginx — `docker/nginx.conf`

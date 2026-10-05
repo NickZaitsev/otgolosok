@@ -106,6 +106,20 @@ ${meta("twitter:card", large ? "summary_large_image" : "summary")}
   return { status: place ? 200 : 404, html };
 }
 
+/**
+ * The place could not be read (the store failed): no preview tags, so a messenger does not cache a broken preview, and
+ * the same way on to the map, which retries on its own.
+ * @param {string} id
+ */
+export function shareUnavailableHtml(id) {
+  return `<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${SITE_TITLE}</title></head>
+<body><h1>Не удалось загрузить историю.</h1><p><a id="open" href="${escape(`/?place=${id}`)}">Открыть историю на карте</a></p></body>
+</html>
+`;
+}
+
 /** A path under /place/ that names no place. */
 export const SHARE_NOT_FOUND_HTML = `<!doctype html>
 <html lang="ru">
