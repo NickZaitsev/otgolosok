@@ -308,6 +308,21 @@ docker compose down
 Эквивалентные команды Make: `make docker-up`, `make docker-down`,
 `make docker-logs`, `make docker-ps`, `make docker-config`.
 
+## Мобильное приложение
+
+Android-приложение — оболочка Capacitor в `mobile/android`, которая открывает
+`https://otgolosok.online`. Обновления сайта видны в приложении сразу, релиз в
+магазин нужен только при изменении нативной части. Нужны Android Studio и
+Android SDK; Mac не нужен.
+
+```bash
+pnpm mobile:sync
+pnpm mobile:android
+```
+
+Устройство приложения, подпись релиза и проверки на телефоне описаны в
+[docs/agents/mobile-app.md](docs/agents/mobile-app.md).
+
 ## Деплой
 
 Production: https://otgolosok.online. Статическая сборка публикуется через

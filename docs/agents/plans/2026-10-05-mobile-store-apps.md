@@ -1,6 +1,6 @@
 # Plan: iOS and Android apps for App Store, Google Play and RuStore (Capacitor shell)
 
-Status: in progress since 2026-10-05. Scope cut to Android (Google Play + RuStore) on 2026-10-05 — see Approved decision 8; iOS items are deferred.
+Status: in progress since 2026-10-05. Scope cut to Android (Google Play + RuStore) on 2026-10-05 — see Approved decision 8; iOS items are deferred. Done: Stage 1 steps 1.1, 1.2 (Android), 1.3 (Android), 1.5, 1.9 — see "Implementation notes". Blocked on the user: 1.0 (store accounts, operator data), 1.4 (real Android phone + Android Studio), 1.6 (signing fingerprints), 1.7 (privacy policy operator and approval), 1.8 (store uploads); Stage 2 waits for 1.4.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -64,6 +64,18 @@ Planner defaults (not discussed explicitly; the implementing agent must confirm 
 - Capacitor plugin versions at plan time: `@capacitor/core|cli|ios|android` 8.5.2, `@capacitor/app` 8.1.2, `@capacitor/geolocation` 8.2.3, `@capacitor/share` 8.0.3, `@capacitor/splash-screen` 8.0.2, `@capacitor-community/keep-awake` 8.0.1, `@capacitor-community/background-geolocation` 1.2.26 (peer `@capacitor/core >=3`, README compatibility table lists Capacitor up to v7 — Capacitor 8 compatibility must be verified). `@jofr/capacitor-media-session` is stale (peer `^6`, last publish 2024) — do not use.
 
 ## Implementation
+
+### Implementation notes (2026-10-05, what was actually built — overrides the steps below where they differ)
+
+- **CSP vs bridge (1.4 item 1) resolved by reading Capacitor 8.5.2 source:** `Bridge.loadWebView()` injects the bridge with `WebViewCompat.addDocumentStartJavaScript` when the WebView supports `DOCUMENT_START_SCRIPT`; only the fallback rewrites HTML with an inline script through `WebViewLocalServer.handleProxyRequest`. The config sets `android.minWebViewVersion = 111` (Next.js 16 needs Chrome 111+ anyway), so the CSP needs no change. Still to be confirmed on a device.
+- Config lives in `mobile/capacitor-config.ts` (`buildCapacitorConfig(env)`, tested in `mobile/capacitor-config.test.ts`; `vitest.config.ts` includes `mobile/*.test.ts`); root `capacitor.config.ts` only calls it. Error page is `mobile/www/app-error.html` (`server.errorPath: "app-error.html"`, served at `<origin>/app-error.html`), not `error.html`.
+- `@capacitor/status-bar` is **not used**: Capacitor 8 core ships `SystemBars` (`plugins.SystemBars`: `insetsHandling: "native"`, `initialViewportFitValueHint: "cover"`, `style: "LIGHT"`); `src/lib/native/system-bars.ts` switches it for the dark classic walk screen. No CSS fallback in `tokens.css` was needed by design (native padding on WebView < 140); verify on a device.
+- `@capacitor/assets` is **not used** (its sharp 0.32 needs install scripts that pnpm ignores here): `scripts/build-app-icons.mjs` also renders Android launcher icons (legacy, round, adaptive foreground + monochrome) and portrait splash PNGs. Landscape splashes and the template's example tests were removed.
+- **Geolocation stays the web API on Android** (`@capacitor/geolocation` dropped, no `appGeolocation()` adapter): Capacitor's `BridgeWebChromeClient.onGeolocationPermissionsShowPrompt` requests the Android runtime permission itself. Only the denial texts became platform-aware (`src/lib/position/browser.ts`, `walk-session.tsx`, `GeoHelp` in `around-sheets.tsx`). The native adapter remains part of the deferred iOS work.
+- Share adapter is `src/features/explore/app-share.ts` (not `src/lib/native/share.ts`) to keep `src/lib` independent of features; app links live in `src/features/native/app-links.ts` for the same reason. The walk-in-progress predicate is `src/features/tour/walk-activity.ts`, set by `tour-experience.tsx` next to `sessionActiveRef`.
+- `native-shell.tsx` also registers a `backButton` listener: with `@capacitor/app` installed Android no longer handles Back itself (`AppPlugin` consumes it), so the page goes back in history and calls `App.minimizeApp()` at the first page. The launch URL is followed once per app run (`sessionStorage` marker), because the page reloads while `getLaunchUrl()` keeps returning it.
+- Android manifest: `allowBackup="false"` (keeps the session cookie out of cloud backups), portrait, while-in-use location permissions, App Links filter. Release signing reads `mobile/android/keystore.properties` or `OTGOLOSOK_KEYSTORE_*` / `OTGOLOSOK_KEY_*` env vars and fails `assembleRelease`/`bundleRelease` when missing.
+- Not built yet: `public/.well-known/assetlinks.json` and its nginx location (need certificate fingerprints), `/privacy` (needs the operator's name and contact, and approval of the text), store uploads.
 
 ### Stage 1 — Shell and test builds
 
