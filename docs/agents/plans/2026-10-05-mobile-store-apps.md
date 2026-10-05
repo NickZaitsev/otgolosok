@@ -1,6 +1,6 @@
 # Plan: iOS and Android apps for App Store, Google Play and RuStore (Capacitor shell)
 
-Status: plan, 2026-10-05.
+Status: plan, 2026-10-05. Scope cut to Android (Google Play + RuStore) on 2026-10-05 — see Approved decision 8; iOS items are deferred.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -28,6 +28,7 @@ External costs: Apple Developer Program $99/year, Google Play one-time $25, RuSt
 5. Developer accounts "probably already exist" — Step 1.0 verifies them before any store record is created.
 6. There is **no Mac right now**. Android work (scaffolding, adapters, builds) proceeds on Windows. The iOS build path (borrowed/found Mac vs. cloud macOS CI) is decided at the gate in Step 1.0; adding CI is infrastructure and needs the user's explicit approval (AGENTS.md YAGNI rule).
 7. Two stages: **Stage 1** — shell, native share/keep-awake/geolocation, app links, test builds (TestFlight, Play testing track, RuStore draft). **Stage 2** — screen-off walk mode (background geolocation + next chapter with the screen locked). **App Store submission only after Stage 2.**
+8. **Scope cut (2026-10-05): Android only — Google Play and RuStore.** iOS is deferred to a later iteration (no Mac). Do **not** implement any iOS-only item of this plan; they stay in the text as the future iOS backlog. Deferred items: `@capacitor/ios` dependency, `mobile:ios` script, `ios.path` and `ios.limitsNavigationsToAppBoundDomains` in the config, `npx cap add ios`, the whole iOS part of 1.2, the opaque 1024 App Store icon requirement (generate Android resources only), the iPhone items of 1.4/2.0, `public/.well-known/apple-app-site-association` and its nginx location (1.6), TestFlight (1.8), iOS parts of 2.1/2.4, App Store parts of Stage 3, the Apple account/Team ID/iOS build path questions in 1.0. Web adapters in `src/lib/native/` stay platform-neutral (`nativePlatform()` still returns `"ios" | "android" | null`) so iOS can be added later without rewriting them. Google Play and RuStore public release stays after Stage 2 (at least after the Android media controls of 2.4: without them the app would regress against Chrome, which shows lock-screen controls for the PWA).
 
 Planner defaults (not discussed explicitly; the implementing agent must confirm the first one with the user before creating any store record, the rest may be changed if the user objects):
 
