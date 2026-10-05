@@ -142,10 +142,10 @@ export function PlaceSheet({ address, busy, error, preparing = false, prepareErr
       <h2 id="new-place-title" className={a.title}>{busy ? "Определяем адрес…" : address ?? (unknown ? "Не знаем, что здесь" : "О чём расскажет этот дом?")}</h2>
       <button type="button" className={a.iconButton} aria-label="Закрыть выбранное место" onClick={onClose}><ExploreIcon name="close" /></button>
     </div>}
-    // Both actions stay in the footer: the card has no text to scroll past them.
-    footer={busy || (!address && !walkHref) ? null : !address && walkHref ? <WalkFromHere href={walkHref} onClick={onWalk} primary /> : <>
-      <button type="button" className={a.primary} disabled={preparing} onClick={onPrepare}>{preparing ? "Отправляем адрес…" : "История этого дома"}<ExploreIcon name="plus" /></button>
-      {walkHref ? <WalkFromHere href={walkHref} onClick={onWalk} footer /> : null}
+    // Both actions stay in the footer: the card has no text to scroll past them. The walk is the main action.
+    footer={busy || (!address && !walkHref) ? null : <>
+      {walkHref ? <WalkFromHere href={walkHref} onClick={onWalk} primary /> : null}
+      {address ? <button type="button" className={walkHref ? a.secondary : a.primary} disabled={preparing} onClick={onPrepare}>{preparing ? "Отправляем адрес…" : "История этого дома"}<ExploreIcon name="plus" /></button> : null}
     </>}>
     {note}
   </Sheet>;
@@ -185,8 +185,8 @@ export function NearbySheet({ status = "ready", radius, recommendations, onRadiu
   </Sheet>;
 }
 
-function WalkFromHere({ href, onClick, footer = false, primary = false }: { href: string; onClick: () => void; footer?: boolean; primary?: boolean }) {
-  return <Link className={primary ? a.primary : footer ? a.secondary : `${a.secondary} ${a.bodyAction}`} href={href} onClick={onClick} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk" /></Link>;
+function WalkFromHere({ href, onClick, primary = false }: { href: string; onClick: () => void; primary?: boolean }) {
+  return <Link className={primary ? a.primary : `${a.secondary} ${a.bodyAction}`} href={href} onClick={onClick} prefetch={false}>Создать прогулку отсюда <ExploreIcon name="walk" /></Link>;
 }
 
 /** The first-visit hint in the notices slot. */
