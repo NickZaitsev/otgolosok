@@ -45,6 +45,11 @@ export async function mockMapCatalog(page: Page, places: CatalogFixture[], { int
     if (route.request().headers()["if-none-match"] === etag) return route.fulfill({ status: 304, headers: { ETag: etag, "Cache-Control": "no-cache" } });
     return route.fulfill({ status: 200, body, contentType: "application/json; charset=utf-8", headers: { ETag: etag, "Cache-Control": "no-cache" } });
   };
+  // Catalog fixtures also expose the viewer's initial vote; feature tests override writes.
+  await page.route(/\/api\/content\/places\/[^/?]+\/feedback\/mine$/, route => {
+    if (route.request().method() !== "GET") return route.fallback();
+    return route.fulfill({ json: { mine: null } });
+  });
   await page.route(/\/api\/content\/(map-cells(\/-?\d+\/-?\d+)?|places\/[^/?]+)$/, async route => {
     const path = new URL(route.request().url()).pathname;
     requests.push(path);

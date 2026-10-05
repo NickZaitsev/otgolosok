@@ -4,7 +4,7 @@ import { MOSCOW_CENTER } from "../src/features/explore/map-jobs";
 
 async function openLongStory(page: Page) {
   const text = "Корпус имеет сложную, отдалённо Т-образную форму, а главный фасад построен как трёхчастная композиция. ".repeat(5);
-  await mockMapCatalog(page, [{ id: "osm:node:1001", title: "Длинная история", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon, paragraphs: [text, text, text], audioUrl: "/api/story-audio/long-story.mp3", durationSec: 120 }]);
+  await mockMapCatalog(page, [{ id: "osm:way:900000001", title: "Длинная история", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon, paragraphs: [text, text, text], audioUrl: "/api/story-audio/long-story.mp3", durationSec: 120 }]);
   await page.goto("/");
   await page.locator('[title="Длинная история"]').click();
   const story = page.getByRole("region", { name: "Текст истории", exact: true });

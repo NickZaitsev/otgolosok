@@ -18,11 +18,13 @@ export const longStop = routeToWalkView({ ...catalog, walk: { ...catalog.walk!, 
 /** Mocks every API with an empty guest answer; specific routes registered later take precedence. */
 export async function mockGuestApi(page: Page) {
   await page.route("**/api/**", route => route.fulfill({ json: { user: null, walks: [], nextCursor: null, items: [], version: 1, cellSize: 1, cells: [] } }));
+  // A guest has not rated any place yet; the shared stub above has no `mine` and would show the load error.
+  await page.route("**/api/content/places/*/feedback/mine", route => route.fulfill({ json: { mine: null } }));
 }
 
 export async function openLongStory(page: Page, { visible = true } = {}) {
   const text = "Корпус имеет сложную, отдалённо Т-образную форму, а главный фасад построен как трёхчастная композиция. ".repeat(5);
-  await mockMapCatalog(page, [{ id: "osm:node:1001", title: "Длинная история", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon, paragraphs: [text, text, text], audioUrl: "/api/story-audio/long-story.mp3", durationSec: 120 }]);
+  await mockMapCatalog(page, [{ id: "osm:way:900000001", title: "Длинная история", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon, paragraphs: [text, text, text], audioUrl: "/api/story-audio/long-story.mp3", durationSec: 120 }]);
   await page.goto("/");
   // On a short landscape screen the pin can sit under the geolocation card; this helper only opens the state.
   await page.locator('[title="Длинная история"]').dispatchEvent("click");

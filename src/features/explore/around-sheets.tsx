@@ -8,6 +8,8 @@ import { cx } from "../ui/cx";
 import { ExploreIcon } from "./icons";
 import { nearbyRadii, type NearbyRadius, type NearbyRecommendation } from "./nearby-stories";
 import { StoryAudioPlayer } from "../tour/story-audio-player";
+import { PlaceFeedback } from "../place-feedback/place-feedback";
+import { canRatePlace } from "../place-feedback/model";
 import { PlacePhotoBanner } from "./place-photo";
 import { usePlaceStory } from "./place-story";
 import { SharePlaceButton } from "./share-place-button";
@@ -54,6 +56,8 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
       ? <button type="button" className={a.primary} disabled={retrying} onClick={onRetry}>{retrying ? "Запускаем…" : progress.retryLabel}<ExploreIcon name="arrow" /></button>
       : null;
   const pendingText = catalog && loaded.status !== "ready";
+  // The place is rated in the expanded story, after reading: in the peek the row would squeeze out the teaser.
+  const rateable = catalog && !peek && loaded.status === "ready" && story.placeId !== undefined && canRatePlace(story.placeId);
   const label = story.pending ? "Готовим для вас" : story.chapter !== undefined ? `По дороге · часть ${story.chapter + 1}` : progress ? progress.label : null;
   const labelText = label ? <span className={a.label}>{label}</span> : null;
   const title = <h2 id="selected-place-title" className={a.title}>{story.title}</h2>;
@@ -79,7 +83,10 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
     header={header}
     corner={expand || !label ? close(styles.cornerClose) : null}
     // The player stays with the action: the text never takes it away. It is the walk's player too.
-    footer={content.audioUrl || action ? <>{content.audioUrl ? <StoryAudioPlayer key={content.audioUrl} className={styles.audio} src={content.audioUrl} /> : null}{action}</> : null}>
+    footer={content.audioUrl || action || rateable ? <>
+      {rateable && story.placeId ? <PlaceFeedback key={story.placeId} placeId={story.placeId} title={story.title} /> : null}
+      {content.audioUrl ? <StoryAudioPlayer key={content.audioUrl} className={styles.audio} src={content.audioUrl} /> : null}{action}
+    </> : null}>
     <>
       {peek ? null : <div className={cx(styles.heading, (expand || !label) && styles.titleRow)}>{heading}</div>}
       {pendingText && loaded.status === "loading" ? <p className={a.text} role="status">Загружаем рассказ…</p> : null}

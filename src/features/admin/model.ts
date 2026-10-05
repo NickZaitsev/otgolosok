@@ -248,7 +248,7 @@ export const identitySignals: Record<string, string> = {
 
 export type ContentDraft = {
   placeId: string; name: string; address: string | null; location: { lat: number; lon: number };
-  research: DraftResearchStatus;
+  research: DraftResearchStatus; researchEligible?: boolean;
   text: { id: string; title: string; paragraphs: string[]; verification: string; createdAt: string };
 };
 /** `unresearched` counts drafts the bulk re-research would still pick; `researchAvailable` says the server has a search model. */

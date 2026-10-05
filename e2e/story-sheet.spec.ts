@@ -85,7 +85,7 @@ test("длинная история раскрывается на весь эк�
   // «Назад» сворачивает карточку, не уходя со страницы и не теряя ссылки на место.
   await page.goBack();
   await expect(handle(page)).toHaveAttribute("aria-expanded", "false");
-  expect(here(page)).toBe("/?place=osm:node:1001");
+  expect(here(page)).toBe("/?place=osm:way:900000001");
   await expect(card).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Основная навигация" })).toBeVisible();
   expect(await page.locator('[data-sheet="story"] audio').evaluate(el => el === (window as unknown as { storyAudio: Element }).storyAudio)).toBe(true);
@@ -107,7 +107,7 @@ test("длинная история раскрывается на весь эк�
   await page.goBack();
   await expect(card).toBeVisible();
   await expect(handle(page)).toHaveAttribute("aria-expanded", "false");
-  expect(here(page)).toBe("/?place=osm:node:1001");
+  expect(here(page)).toBe("/?place=osm:way:900000001");
 });
 
 test("нажатие на начало текста раскрывает историю", async ({ page }) => {

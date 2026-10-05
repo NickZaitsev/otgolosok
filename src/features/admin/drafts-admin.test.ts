@@ -8,7 +8,7 @@ import type { AdminApi, AdminRun, ContentDraft, ContentDraftPage, ContentDraftRe
 
 const draft = (index: number): ContentDraft => ({
   placeId: `osm:node:${index}`, name: `Место ${index}`, address: index === 1 ? "Москва, Арбат, 1" : null, location: { lat: 55.75 + index / 1000, lon: 37.61 },
-  research: "plain",
+  research: "plain", researchEligible: true,
   text: { id: `t${index}`, title: `Заголовок ${index}`, paragraphs: [`Первый абзац ${index}.`, `Второй абзац ${index}.`], verification: "automatic", createdAt: "2026-09-28T17:00:00Z" },
 });
 
@@ -23,8 +23,11 @@ const place = (index: number): ContentPlace => ({
 
 let container: HTMLDivElement, root: Root, requests: string[], total: number, approved: { path: string; body: unknown }[], dirty: boolean[];
 let deepResearchAvailable: boolean, researchAvailable: boolean, researched: unknown[], mockResearch: Record<number, ContentDraft["research"]>, mockCounts: ContentDraftPage["counts"];
+let mockEligible: Record<number, boolean>;
+let beforeRequest: ((path: string) => Promise<void>) | undefined;
 const api: AdminApi = async <T,>(path: string, _signal: AbortSignal, body?: unknown) => {
   requests.push(path);
+  await beforeRequest?.(path);
   if (path === "/content/drafts/research") { researched.push(body); return { batch: { id: "b1", name: "Perplexity · черновики" }, count: 2 } as T; }
   if (path.endsWith("/approve")) { approved.push({ path, body }); total -= 1; return { place: place(1) } as T; }
   if (path.startsWith("/content/places/")) return { place: place(Number(path.split(":").at(-1))) } as T;
@@ -33,7 +36,7 @@ const api: AdminApi = async <T,>(path: string, _signal: AbortSignal, body?: unkn
   const research = (params.get("research") ?? "all") as ContentDraftResearchFilter;
   const all = Array.from({ length: Math.max(0, Math.min(50, total - offset)) }, (_, index) => {
     const index_ = offset + index + 1 + approved.length;
-    return { ...draft(index_), research: mockResearch[index_] ?? "plain" };
+    return { ...draft(index_), research: mockResearch[index_] ?? "plain", researchEligible: mockEligible[index_] ?? true };
   });
   const items = research === "all" ? all : all.filter(item => item.research === research);
   return { total: research === "all" ? total : items.length, hasMore: research === "all" && offset + all.length < total, items, researchAvailable, deepResearchAvailable, unresearched: total, counts: mockCounts } satisfies ContentDraftPage as T;
@@ -54,6 +57,7 @@ const button = (label: string) => [...container.querySelectorAll("button")].find
 
 beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  beforeRequest = undefined; mockEligible = {};
   requests = []; total = 2; approved = []; dirty = []; researchAvailable = false; deepResearchAvailable = false; researched = []; mockResearch = {}; mockCounts = { plain: 2 };
   Element.prototype.scrollIntoView = vi.fn();
   container = document.createElement("div");
@@ -106,6 +110,7 @@ describe("вкладка черновиков", () => {
     const rows = [...container.querySelectorAll("tbody > tr")];
     expect(rows.map(row => row.querySelector("#draft-place-title") ? "editor" : row.querySelector("th")?.firstChild?.textContent)).toEqual(["Место 1", "editor", "Место 2"]);
     expect(document.activeElement?.id).toBe("draft-place-title");
+    const remainingRow = button("Открыть черновик: Место 2").closest("tr");
     const second = container.querySelector<HTMLTextAreaElement>("#content-paragraph-1")!;
     expect(second.value).toBe("Второй абзац 1.");
     await act(async () => { edit(second, "Исправленный абзац."); });
@@ -116,11 +121,14 @@ describe("вкладка черновиков", () => {
       title: "Заголовок 1", paragraphs: [{ text: "Первый абзац 1.", factIds: ["f1"] }, { text: "Исправленный абзац.", factIds: ["f2"] }],
     } } }]);
     expect(container.querySelector("#draft-place-title")).toBeNull();
-    expect(requests.at(-1)).toBe("/content/drafts?limit=50&offset=0&research=all");
+    expect(requests.at(-1)).toBe("/content/places/osm:node:1/approve");
     expect(container.textContent).toContain("Текст утверждён: Место 1.");
     expect(container.textContent).not.toContain("Копировать черновик: Место 1");
     expect(button("Копировать черновик: Место 2")).toBeDefined();
     expect(dirty.at(-1)).toBe(false);
+    expect(button("Открыть черновик: Место 2").closest("tr")).toBe(remainingRow);
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(1);
+    expect(container.querySelector("#draft-research-filter")?.textContent).toContain("Ещё не переисследованы (1)");
   });
 
   it("не даёт утвердить текст с пустым абзацем", async () => {
@@ -222,4 +230,110 @@ it("запускает глубокое исследование только в
 it("скрывает глубокое исследование, когда отдельная модель не настроена", async () => {
   await mount();
   expect(container.querySelector('button[aria-label^="Глубокое исследование:"]')).toBeNull();
+});
+
+for (const mode of ["search", "deep"] as const) {
+  it(`сохраняет строки во время обновления после ${mode === "deep" ? "глубокого исследования" : "переисследования"}`, async () => {
+    researchAvailable = true; deepResearchAvailable = true;
+    await mount();
+    const rows = [...container.querySelectorAll("tbody tr")];
+    let release!: () => void;
+    const pending = new Promise<void>(resolve => { release = resolve; });
+    beforeRequest = async path => { if (path.startsWith("/content/drafts?")) await pending; };
+    mockResearch[1] = "queued";
+    await act(async () => { button(`${mode === "deep" ? "Глубокое исследование" : "Переисследовать черновик"}: Место 1`).click(); });
+    try {
+      expect([...container.querySelectorAll("tbody tr")]).toEqual(rows);
+      expect(container.querySelector(".admin-table-wrap")?.getAttribute("aria-busy")).toBe("false");
+    } finally { await act(async () => { release(); await pending; }); }
+    expect(button("Открыть черновик: Место 2").closest("tr")).toBe(rows[1]);
+    expect(rows[0].textContent).toContain("В очереди на переисследование");
+  });
+}
+
+it("сохраняет правки и строки при ошибке утверждения", async () => {
+  await mount();
+  await act(async () => { button("Открыть черновик: Место 1").click(); });
+  await act(async () => { edit(container.querySelector<HTMLInputElement>("#content-title")!, "Мои правки"); });
+  const rows = [...container.querySelectorAll("tbody tr")];
+  const errors: unknown[] = [];
+  const safeRun: AdminRun = async (label, action) => { try { await run(label, action); } catch (error) { errors.push(error); } };
+  await act(async () => { root.render(createElement(DraftsAdmin, { api, run: safeRun, busy: "", onDirtyChange: value => { dirty.push(value); } })); });
+  beforeRequest = async path => { if (path.endsWith("/approve")) throw new Error("Ошибка сервера"); };
+  await act(async () => { button("Утвердить текст").click(); });
+  expect(errors).toHaveLength(1);
+  expect(container.querySelector<HTMLInputElement>("#content-title")?.value).toBe("Мои правки");
+  expect([...container.querySelectorAll("tbody tr")]).toEqual(rows);
+  expect(dirty.at(-1)).toBe(true);
+});
+
+it("после утверждения последнего черновика показывает пустой список", async () => {
+  total = 1; mockCounts = { plain: 1 };
+  await mount();
+  await act(async () => { button("Открыть черновик: Место 1").click(); });
+  await act(async () => { button("Утвердить текст").click(); });
+  expect(container.querySelectorAll("tbody tr")).toHaveLength(0);
+  expect(container.textContent).toContain("Черновиков нет.");
+  expect(container.textContent).toContain("Страница 1 из 1");
+});
+
+it("после удаления строки переходит к следующим черновикам без пропуска", async () => {
+  total = 60;
+  await mount();
+  await act(async () => { button("Открыть черновик: Место 1").click(); });
+  await act(async () => { button("Утвердить текст").click(); });
+  await act(async () => { button("Далее").click(); });
+  expect(requests.at(-1)).toBe("/content/drafts?limit=50&offset=49&research=all");
+  expect(button("Открыть черновик: Место 51")).toBeDefined();
+});
+
+it("возвращается на прежнюю страницу после удаления строки и перехода вперёд", async () => {
+  total = 101;
+  await mount();
+  await act(async () => { button("Открыть черновик: Место 1").click(); });
+  await act(async () => { button("Утвердить текст").click(); });
+  await act(async () => { button("Далее").click(); });
+  expect(container.textContent).toContain("Страница 2 из 3");
+  await act(async () => { button("Далее").click(); });
+  expect(requests.at(-1)).toBe("/content/drafts?limit=50&offset=99&research=all");
+  expect(container.textContent).toContain("Страница 3 из 3");
+  await act(async () => { button("Назад").click(); });
+  expect(requests.at(-1)).toBe("/content/drafts?limit=50&offset=49&research=all");
+  expect(container.textContent).toContain("Страница 2 из 3");
+});
+
+it("возвращается на предыдущую страницу после утверждения последней строки", async () => {
+  total = 51;
+  await mount();
+  await act(async () => { button("Далее").click(); });
+  await act(async () => { button("Открыть черновик: Место 51").click(); });
+  await act(async () => { button("Утвердить текст").click(); });
+  expect(requests.at(-1)).toBe("/content/drafts?limit=50&offset=0&research=all");
+  expect(container.textContent).toContain("Страница 1 из 1");
+  expect(container.querySelectorAll("tbody tr")).toHaveLength(50);
+});
+
+it("после успешного переисследования сохраняет сообщение и строки при ошибке обновления", async () => {
+  researchAvailable = true;
+  await mount();
+  const rows = [...container.querySelectorAll("tbody tr")];
+  const errors: unknown[] = [];
+  const safeRun: AdminRun = async (label, action) => { try { await run(label, action); } catch (error) { errors.push(error); } };
+  await act(async () => { root.render(createElement(DraftsAdmin, { api, run: safeRun, busy: "", onDirtyChange: value => { dirty.push(value); } })); });
+  beforeRequest = async path => { if (path.startsWith("/content/drafts?")) throw new Error("Ошибка обновления"); };
+  await act(async () => { button("Переисследовать черновик: Место 1").click(); });
+  expect(errors).toHaveLength(1);
+  expect(researched).toHaveLength(1);
+  expect(container.textContent).toContain("Черновик «Место 1» поставлен в очередь на переисследование.");
+  expect([...container.querySelectorAll("tbody tr")]).toEqual(rows);
+});
+
+it("не уменьшает счётчик массового переисследования при утверждении недоступного черновика", async () => {
+  researchAvailable = true; mockEligible[1] = false;
+  await mount();
+  expect(container.textContent).toContain("Ещё не проверено через Perplexity: 2.");
+  await act(async () => { button("Открыть черновик: Место 1").click(); });
+  await act(async () => { button("Утвердить текст").click(); });
+  expect(container.textContent).toContain("Ещё не проверено через Perplexity: 2.");
+  expect(button("Открыть черновик: Место 1")).toBeUndefined();
 });

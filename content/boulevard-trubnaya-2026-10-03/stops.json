@@ -1,0 +1,348 @@
+{
+  "title": "От Трубной через Чистые пруды до Покровских ворот",
+  "sourceUrl": "https://izi.travel/ru/1272-bulvarnoe-kolco-progulka-s-audiogid-ru-ot-petrovskogo-bulvara-do-pl-yauzskie-vorota/ru",
+  "chapters": {
+    "from": 4,
+    "to": 33
+  },
+  "stops": [
+    {
+      "chapters": [
+        4,
+        5
+      ],
+      "placeId": "osm:relation:15685250",
+      "address": "Ресторан «Эрмитаж»",
+      "trigger": {
+        "lat": 55.7669718028663,
+        "lon": 37.6208998566613
+      },
+      "decision": "reuse-published"
+    },
+    {
+      "chapters": [
+        6
+      ],
+      "placeId": "osm:node:4948146040",
+      "address": "Трубная площадь",
+      "trigger": {
+        "lat": 55.767570058455,
+        "lon": 37.6219977619019
+      },
+      "decision": "reuse-published"
+    },
+    {
+      "chapters": [
+        7
+      ],
+      "placeId": "osm:way:52661703",
+      "address": "Подворье Ечкиных",
+      "trigger": {
+        "lat": 55.7665306307256,
+        "lon": 37.6216874276126
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        8
+      ],
+      "placeId": "osm:relation:2985852",
+      "address": "Цветной бульвар",
+      "trigger": {
+        "lat": 55.7697926640921,
+        "lon": 37.6217868600495
+      },
+      "decision": "reuse-published"
+    },
+    {
+      "chapters": [
+        12
+      ],
+      "placeId": "osm:way:47642637",
+      "address": "Трубная, 23",
+      "trigger": {
+        "lat": 55.77101,
+        "lon": 37.62457
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        13
+      ],
+      "placeId": "osm:way:986249013",
+      "address": "Грановский на Трубной",
+      "trigger": {
+        "lat": 55.7718,
+        "lon": 37.62561
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        9,
+        10
+      ],
+      "placeId": "osm:relation:6668708",
+      "address": "Угол Трубной и Цветного: трактир «Крым»",
+      "trigger": {
+        "lat": 55.767467742232,
+        "lon": 37.6232195607132
+      },
+      "decision": "reuse-published"
+    },
+    {
+      "chapters": [
+        11
+      ],
+      "placeId": "osm:way:697116263",
+      "address": "Трубная улица",
+      "trigger": {
+        "lat": 55.7663745762957,
+        "lon": 37.6241440743133
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        14
+      ],
+      "placeId": "osm:way:301719335",
+      "address": "Рождественский бульвар",
+      "trigger": {
+        "lat": 55.7665647006047,
+        "lon": 37.6258982390091
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        15
+      ],
+      "placeId": "osm:way:52673166",
+      "address": "Дом Фонвизиных",
+      "trigger": {
+        "lat": 55.7662566856649,
+        "lon": 37.6269611306884
+      },
+      "decision": "reuse-published"
+    },
+    {
+      "chapters": [
+        16
+      ],
+      "placeId": "osm:node:13245906707",
+      "address": "Дом Павловых",
+      "trigger": {
+        "lat": 55.7662831215289,
+        "lon": 37.627836391996
+      },
+      "decision": "new-story"
+    },
+    {
+      "chapters": [
+        17
+      ],
+      "placeId": "osm:relation:15393022",
+      "address": "Демьян Бедный",
+      "trigger": {
+        "lat": 55.7662611071781,
+        "lon": 37.6286047005943
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        18
+      ],
+      "placeId": "osm:way:10618794",
+      "address": "Сретенские ворота",
+      "trigger": {
+        "lat": 55.7666837388046,
+        "lon": 37.6318276011887
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        19
+      ],
+      "placeId": "osm:way:51259798",
+      "address": "Сретенский монастырь",
+      "trigger": {
+        "lat": 55.7656765089538,
+        "lon": 37.6302760018524
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        20
+      ],
+      "placeId": "osm:way:372502321",
+      "address": "Сретенский бульвар",
+      "trigger": {
+        "lat": 55.7665169763368,
+        "lon": 37.6334703146805
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        21
+      ],
+      "placeId": "osm:way:50379934",
+      "address": "Милютинские дома",
+      "trigger": {
+        "lat": 55.76414,
+        "lon": 37.63215
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        22
+      ],
+      "placeId": "osm:node:8892457359",
+      "address": "Мясницкие ворота",
+      "trigger": {
+        "lat": 55.7651338377046,
+        "lon": 37.6377332732941
+      },
+      "decision": "new-story"
+    },
+    {
+      "chapters": [
+        23
+      ],
+      "placeId": "osm:relation:15671458",
+      "address": "Дом Юшкова",
+      "trigger": {
+        "lat": 55.7644091439679,
+        "lon": 37.6360377648041
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        24
+      ],
+      "placeId": "osm:relation:418691",
+      "address": "Московский почтамт",
+      "trigger": {
+        "lat": 55.7642801996478,
+        "lon": 37.6369353042297
+      },
+      "decision": "reuse-published"
+    },
+    {
+      "chapters": [
+        25
+      ],
+      "placeId": "osm:way:530343541",
+      "address": "Чистые пруды",
+      "trigger": {
+        "lat": 55.7645041484579,
+        "lon": 37.639294387012
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        26
+      ],
+      "placeId": "osm:way:1164348040",
+      "address": "Меншикова башня",
+      "trigger": {
+        "lat": 55.7632545,
+        "lon": 37.6389146
+      },
+      "decision": "new-story"
+    },
+    {
+      "chapters": [
+        27
+      ],
+      "placeId": "osm:relation:17305841",
+      "address": "Чистопрудный, 8",
+      "trigger": {
+        "lat": 55.7630796,
+        "lon": 37.6411446
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        28
+      ],
+      "placeId": "osm:way:22143842",
+      "address": "Харитоньевский переулок",
+      "trigger": {
+        "lat": 55.7634808390417,
+        "lon": 37.6425725030106
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        29
+      ],
+      "placeId": "osm:way:42503311",
+      "address": "Театр «Современник»",
+      "trigger": {
+        "lat": 55.761786,
+        "lon": 37.645796
+      },
+      "decision": "reuse-published"
+    },
+    {
+      "chapters": [
+        30
+      ],
+      "placeId": "osm:way:45256537",
+      "address": "Дом со зверями",
+      "trigger": {
+        "lat": 55.7599849528686,
+        "lon": 37.6444421153442
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        31
+      ],
+      "placeId": "osm:way:81443652",
+      "address": "Покровка",
+      "trigger": {
+        "lat": 55.7593021143587,
+        "lon": 37.6452197878052
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        32
+      ],
+      "placeId": "osm:relation:288619",
+      "address": "Покровские ворота",
+      "trigger": {
+        "lat": 55.7594635401626,
+        "lon": 37.6461124325409
+      },
+      "decision": "new-place-and-story"
+    },
+    {
+      "chapters": [
+        33
+      ],
+      "placeId": "osm:way:533065231",
+      "address": "Начало Покровского бульвара",
+      "trigger": {
+        "lat": 55.7587250186339,
+        "lon": 37.6461403343933
+      },
+      "decision": "new-place-and-story"
+    }
+  ]
+}

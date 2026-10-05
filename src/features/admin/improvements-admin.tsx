@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IMPROVEMENT_ISSUES, type ImprovementIssue } from "../improvements/model";
 import { pageCount, pageRange, type AdminApi, type AdminRun } from "./model";
+import { PlaceFeedbackAdmin } from "./place-feedback-admin";
 import { skeletonRows } from "./table-skeleton";
 import styles from "./reviews-admin.module.css";
 
@@ -59,7 +60,7 @@ export function ImprovementsAdmin({ api, run, busy }: { api: AdminApi; run: Admi
 
   const disabled = Boolean(busy) || loading;
   const hasFilters = applied.status !== "open" || Boolean(applied.issue || applied.q);
-  return <section className="walk-admin" aria-busy={loading} aria-labelledby="improvements-admin-title">
+  return <><section className="walk-admin" aria-busy={loading} aria-labelledby="improvements-admin-title">
     <div className="walk-admin__head">
       <div><h2 id="improvements-admin-title">Запросы на улучшение</h2><p>{page ? `Открытых запросов: ${page.open}` : "Что зрители просят улучшить в прогулках."}</p></div>
       <button type="button" disabled={disabled} onClick={() => void run("Обновление запросов…", signal => load(applied, page?.offset ?? 0, signal))}>Обновить список</button>
@@ -105,5 +106,5 @@ export function ImprovementsAdmin({ api, run, busy }: { api: AdminApi; run: Admi
       <span className="admin-meta">Страница {Math.floor(page.offset / PAGE_SIZE) + 1} из {pageCount(page.total, PAGE_SIZE)}</span>
       <button type="button" disabled={disabled || !page.hasMore} onClick={() => void run("Загрузка запросов…", signal => load(applied, page.offset + PAGE_SIZE, signal))}>Далее</button>
     </nav>}
-  </section>;
+  </section><PlaceFeedbackAdmin api={api} run={run} busy={busy} /></>;
 }

@@ -412,7 +412,7 @@ test("drafts list unapproved texts with their paragraphs and leave once approved
   const drafts=await list();
   assert.equal(drafts.total,2);
   assert.deepEqual(drafts.counts,{plain:2});
-  assert.deepEqual(drafts.items.find(item=>item.placeId==="osm:node:7"),{placeId:"osm:node:7",name:"Парк",address:null,location:{lat:55.75,lon:37.61},research:"plain",
+  assert.deepEqual(drafts.items.find(item=>item.placeId==="osm:node:7"),{placeId:"osm:node:7",name:"Парк",address:null,location:{lat:55.75,lon:37.61},research:"plain",researchEligible:true,
     text:{id:drafts.items.find(item=>item.placeId==="osm:node:7").text.id,title:"Парк",paragraphs:["Парк: первый абзац","Парк: второй абзац"],verification:"automatic",
       createdAt:drafts.items.find(item=>item.placeId==="osm:node:7").text.createdAt}});
   assert.equal(/** @type {any} */ (await (await fetch(`${f.base}/api/story-admin/content/drafts?limit=10&offset=0&research=plain`)).json()).total,2);
