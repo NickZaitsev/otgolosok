@@ -84,7 +84,7 @@ export const SCREEN_STATES: ScreenState[] = [
   { screen: "карта", state: "подсказка", options: { map: true }, open: async page => {
     await mockGuestApi(page); await page.goto("/");
     await page.getByRole("button", { name: "Закрыть карточку", exact: true }).click();
-    await expect(page.getByText("Какой дом вам интересен?")).toBeVisible(); await mapReady(page);
+    await expect(page.getByText("Откуда начнём прогулку?")).toBeVisible(); await mapReady(page);
   } },
   { screen: "карта", state: "длинная история", options: { map: true, focus: "marker" }, open: async page => {
     await mockGuestApi(page); await openLongStory(page, { visible: false }); await mapReady(page);

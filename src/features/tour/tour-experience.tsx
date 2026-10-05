@@ -8,13 +8,16 @@ import {
   type WakeLockController,
   type WakeLockStatus,
 } from "@/lib/wake-lock";
+import { appWakeLockNavigator } from "@/lib/native/keep-awake";
+import { setDarkScreenSystemBars } from "@/lib/native/system-bars";
+import { setWalkInProgress } from "./walk-activity";
 import type { Coordinates, Route } from "./types";
 import type { WalkView } from "../walks/model";
 import { walkViewToRoute } from "../walks/adapters";
 import type { OfflineWalkRef } from "../walks/offline";
 import { StorySources, StoryText } from "./story-content";
 import { BrandMark } from "../brand/brand-mark";
-import { arrivalTarget, arrivalTriggerConfig, getWalkChapters, hasFinishLeg, type StopStage } from "./walk-plan";
+import { arrivalTarget, arrivalTriggerConfig, followChapter, getWalkChapters, hasFinishLeg, type StopStage } from "./walk-plan";
 import { advanceModeLabels, advanceModes, playbackRates, useWalkSettings, type AdvanceMode, type PlaybackRate } from "./walk-settings";
 import { AudioPlayerControls } from "./audio-player-controls";
 import { loadPublishedRoute } from "./published-route-cache";
@@ -36,19 +39,26 @@ import { useLaunchReport } from "../walks/launches";
 import type { OwnWalk } from "../walks/own-walk";
 import { orientWalk, type WalkDirection } from "./walk-direction";
 import { useWalkDirection } from "./use-walk-direction";
+import type { FoodPlace } from "../food/types";
+
+export type AddFood = (place: FoodPlace, signal: AbortSignal) => Promise<string>;
 
 type SessionPhase = "reading" | "walking";
 
-export function TourExperience({ route, walk, offline = null, offlineNotice = "", reviewTarget = null, launchTarget = null, own = null }: { route?: Route; walk?: WalkView; offline?: OfflineWalkRef | null;
+export function TourExperience({ route, walk, offline = null, offlineNotice = "", reviewTarget = null, launchTarget = null, own = null, onAddFood = null }: { route?: Route; walk?: WalkView; offline?: OfflineWalkRef | null;
   /** Why the walk opened from its offline copy; shown among the map notices. */
-  offlineNotice?: string; reviewTarget?: ReviewTarget | null; launchTarget?: ReviewTarget | null; own?: OwnWalk | null }) {
-  const resolvedRoute = walk ? walkViewToRoute(walk) : route;
+  offlineNotice?: string; reviewTarget?: ReviewTarget | null; launchTarget?: ReviewTarget | null; own?: OwnWalk | null;
+  /** Adds a venue as a stop and saves the walk; resolves to a notice for the walker. */
+  onAddFood?: AddFood | null }) {
+  // A universal walk changes in place when a venue joins it, so its route follows the view.
+  const resolvedRoute = useMemo(() => walk ? walkViewToRoute(walk) : route, [walk, route]);
   if (!resolvedRoute) return <main className="shell"><section className="hero-copy"><h1>Прогулка не найдена</h1><p className="dek">Откройте ссылку ещё раз или вернитесь к списку прогулок.</p></section></main>;
-  return <AvailableTour route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} offlineNotice={walk ? offlineNotice : ""} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} />;
+  return <AvailableTour route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} offlineNotice={walk ? offlineNotice : ""} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} onAddFood={walk ? onAddFood : null} />;
 }
 
-function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, offlineNotice = "", reviewTarget, launchTarget, own }: { route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; offlineNotice?: string; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null }) {
-  const [publishedRoute, setRoute] = useState(initialRoute);
+function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, offlineNotice = "", reviewTarget, launchTarget, own, onAddFood }: { route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; offlineNotice?: string; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null; onAddFood: AddFood | null }) {
+  const [loadedRoute, setRoute] = useState(initialRoute);
+  const publishedRoute = universal ? initialRoute : loadedRoute;
   const { direction: preferredDirection, setDirection } = useWalkDirection(initialRoute.id);
   const [sessionDirection, setSessionDirection] = useState<WalkDirection>("forward");
   const [phase, setPhase] = useState<SessionPhase>("reading");
@@ -117,6 +127,16 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   }, [initialRoute, universal]);
   // Stable between playback updates, so the map and plan do not rebuild on every tick.
   const chapters = useMemo(() => getWalkChapters(route, universal), [route, universal]);
+  // A stop added during the walk shifts the numbering (see followChapter).
+  const chapterIds = chapters.map(item => item.id).join("\n");
+  const [shownIds, setShownIds] = useState(chapterIds);
+  const [retargeted, setRetargeted] = useState(0);
+  if (shownIds !== chapterIds) {
+    setShownIds(chapterIds);
+    const next = followChapter(shownIds.split("\n"), chapters.map(item => item.id), chapterIndex, stage);
+    if (next !== chapterIndex) setChapterIndex(next);
+    if (phase === "walking") setRetargeted(value => value + 1);
+  }
   const chapter = chapters[chapterIndex];
   // On the way to the finish (index chapters.length) the player keeps the last stop's story.
   const storyChapter = chapter ?? (universal ? chapters.at(-1) : undefined);
@@ -157,6 +177,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   useEffect(() => () => {
     sessionRef.current += 1;
     sessionActiveRef.current = false;
+    setWalkInProgress(false);
     void wakeControllerRef.current?.dispose();
     wakeControllerRef.current = null;
   }, []);
@@ -193,6 +214,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     setCompleted(false);
     setSessionDirection(direction);
     sessionActiveRef.current = true;
+    setWalkInProgress(true);
 
     const session = sessionRef.current + 1;
     sessionRef.current = session;
@@ -217,6 +239,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     setShowDiagnostics(Boolean(replayMode) || params.get("debug") === "1");
 
     const wakeController = createWakeLockController({
+      navigator: appWakeLockNavigator(),
       onChange: (snapshot) => {
         if (sessionRef.current === session) setWakeStatus(snapshot.status);
       },
@@ -245,6 +268,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     audio.end(completed);
     sessionRef.current += 1;
     sessionActiveRef.current = false;
+    setWalkInProgress(false);
     position.stop();
     const wakeController = wakeControllerRef.current;
     wakeControllerRef.current = null;
@@ -332,7 +356,22 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     };
   });
 
+  // After a stop joined the walk the trigger starts over for the stop the walker now walks to.
+  const retargetedRef = useRef(0);
+  useEffect(() => {
+    if (retargeted === retargetedRef.current) return;
+    retargetedRef.current = retargeted;
+    position.resetTrigger();
+  });
+
   const isWalking = phase !== "reading";
+  // The classic walk screen is dark (legacy.css `.shell[data-mode="walk"]`); a universal walk stays light.
+  const darkScreen = isWalking && !universal;
+  useEffect(() => {
+    if (!darkScreen) return;
+    void setDarkScreenSystemBars(true);
+    return () => void setDarkScreenSystemBars(false);
+  }, [darkScreen]);
   const duration = mediaDuration || chapter?.audio?.duration_sec || walkContent.story.duration_sec;
   const canSeek = !walkUsesTestAudio && mediaDuration > 0 && !["loading", "unlocking", "locked"].includes(audioStatus);
   const audioButtonLabel = audioStatus === "loading" ? "Отменить запуск" : audioStatus === "playing" ? "Пауза" : audioStatus === "paused" ? "Продолжить" : audioStatus === "ended" ? "Слушать ещё раз" : audioStatus === "unlocking" ? "Включить звук" : audioStatus === "blocked" || audioStatus === "error" ? "Повторить запуск звука" : walkUsesTestAudio ? "Проверить звук" : walkAudioUrl ? "Слушать историю" : "Аудио ещё не готово";
@@ -365,7 +404,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
         }}
         user={position.diagnostics.lastFix} positionFailed={positionFailed(position.diagnostics)}
         positionDenied={position.diagnostics.sourceStatus === "permission-denied"} onRetryPosition={position.retry} resume={Boolean(savedCheckpoint)} resumeIndex={savedChapterIndex} titleRef={walkTitleRef} startRef={startButtonRef}
-        onStart={index => startTour(true, index)} onSelect={selectChapter} onStop={stopTour} own={own}
+        onStart={index => startTour(true, index)} onSelect={selectChapter} onStop={stopTour} own={own} onAddFood={onAddFood}
         ratingLabel={formatRatingSummary(reviews.summary)}
         hasReview={Boolean(reviews.mine)} ratingCount={reviews.summary?.count ?? null} reviews={reviewTarget ? <WalkReviews reviews={reviews} onRate={() => setRateOpen(true)} /> : null} onRate={() => setRateOpen(true)}
         onImprove={reviewTarget ? () => setImproveOpen(true) : null}

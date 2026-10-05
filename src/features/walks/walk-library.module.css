@@ -36,6 +36,9 @@
   gap: var(--space-md);
   align-items: flex-start;
   justify-content: space-between;
+  padding-bottom: var(--space-lg);
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--control-border);
 }
 
 .toolbar > :first-child {

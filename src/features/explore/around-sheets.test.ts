@@ -39,10 +39,10 @@ it.each([
 });
 
 it.each([
-  { case: "точка без дома", address: null, error: "", walkHref: "/?walk=create&lat=55.75", title: "Не знаем, что здесь", actions: ["Создать прогулку отсюда"] },
-  { case: "дом найден", address: "ул. Пятницкая, 1", error: "", walkHref: "/?walk=create", title: "ул. Пятницкая, 1", actions: ["История этого дома", "Создать прогулку отсюда"] },
-  { case: "адрес не определился", address: null, error: "Не удалось определить адрес.", walkHref: null, title: "О чём расскажет этот дом?", actions: [] },
-])("карточка выбранной точки: $case", async ({ address, error, walkHref, title, actions }) => {
+  { case: "точка без дома", address: null, error: "", walkHref: "/?walk=create&lat=55.75", title: "Не знаем, что здесь", actions: ["Создать прогулку отсюда"], primary: "Создать прогулку отсюда" },
+  { case: "дом найден", address: "ул. Пятницкая, 1", error: "", walkHref: "/?walk=create", title: "ул. Пятницкая, 1", actions: ["Создать прогулку отсюда", "История этого дома"], primary: "Создать прогулку отсюда" },
+  { case: "адрес не определился", address: null, error: "Не удалось определить адрес.", walkHref: null, title: "О чём расскажет этот дом?", actions: [], primary: undefined },
+])("карточка выбранной точки: $case", async ({ address, error, walkHref, title, actions, primary }) => {
   const container = document.createElement("div");
   const root = createRoot(container);
   await act(async () => root.render(createElement(PlaceSheet, {
@@ -50,6 +50,7 @@ it.each([
   })));
   expect(container.querySelector("#new-place-title")?.textContent).toBe(title);
   expect([...container.querySelectorAll("[data-sheet-part='footer'] :is(a, button)")].map(control => control.textContent?.trim())).toEqual(actions);
+  expect(container.querySelector("[data-sheet-part='footer'] .primary")?.textContent?.trim()).toBe(primary);
   expect(container.querySelector("a[href^='/create']")).toBeNull();
   await act(async () => root.unmount());
 });

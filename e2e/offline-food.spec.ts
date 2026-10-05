@@ -56,9 +56,9 @@ for (const failure of [null, "cell", "503"] as const) {
     await expect(page.getByText(/^Офлайн-копия от /)).toBeVisible();
     await page.getByRole("button", { name: "Поесть рядом", exact: true }).click();
     const drawer = page.getByRole("region", { name: "Заведения вдоль маршрута" });
-    await expect(drawer.getByRole("button", { name: /Кофе по пути/ })).toBeVisible();
+    await expect(drawer.getByRole("button", { name: /^Кофе по пути/ })).toBeVisible();
     await expect(drawer).toContainText("© участники OpenStreetMap");
-    await drawer.getByRole("button", { name: /Кофе по пути/ }).click();
+    await drawer.getByRole("button", { name: /^Кофе по пути/ }).click();
     const card = page.getByRole("region", { name: "Заведение", exact: true });
     await expect(card.getByText("Открыто круглосуточно")).toBeVisible();
     await expect(card).toContainText("2 октября 2026");

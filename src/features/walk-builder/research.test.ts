@@ -71,17 +71,16 @@ describe("research persistence and application", () => {
   });
 });
 describe("walk requests", () => {
-  it("offers research for automatic stop shortages and unroutable automatic candidates", () => {
+  it("offers research only for an automatic stop shortage", () => {
     const shortage = new RejectedRequest("Insufficient ready stops", "WALK_STOPS_NOT_FOUND", 422);
-    const unroutable = new RejectedRequest("No route through automatic candidates", "WALK_NOT_FOUND", 404);
     expect(shouldOfferResearch("auto", shortage)).toBe(true);
-    expect(shouldOfferResearch("auto", unroutable)).toBe(true);
     expect(shouldOfferResearch("manual", shortage)).toBe(false);
-    expect(shouldOfferResearch("manual", unroutable)).toBe(false);
     for (const error of [new Error("WALK_STOPS_NOT_FOUND"), new RequestError("Unavailable", "SERVICE_UNAVAILABLE", 503)]) expect(shouldOfferResearch("auto", error)).toBe(false);
   });
-  // Researching other stops cannot fix a start or finish off the pedestrian network.
-  it.each(["WALK_START_UNREACHABLE", "WALK_DESTINATION_UNREACHABLE"])("does not offer research for %s", code => {
+  // Researching other stops cannot fix a start or finish off the pedestrian network,
+  // nor a walk the router cannot fit: a start inside the Kremlin has hundreds of
+  // ready stops around it, yet every route detours through a distant gate.
+  it.each(["WALK_START_UNREACHABLE", "WALK_DESTINATION_UNREACHABLE", "WALK_NOT_FOUND"])("does not offer research for %s", code => {
     expect(shouldOfferResearch("auto", new RejectedRequest("Сюда не дойти пешком.", code, 404))).toBe(false);
   });
   it("preserves error codes for CTA gating, missing recovery and unavailable providers", async () => {

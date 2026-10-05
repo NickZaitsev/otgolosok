@@ -14,14 +14,14 @@ export interface WakeLockSnapshot {
   error: unknown | null;
 }
 
-interface WakeLockSentinelLike {
+export interface WakeLockSentinelLike {
   readonly released?: boolean;
   release(): Promise<void>;
   addEventListener(type: "release", listener: () => void): void;
   removeEventListener(type: "release", listener: () => void): void;
 }
 
-interface WakeLockNavigatorLike {
+export interface WakeLockNavigatorLike {
   wakeLock?: {
     request(type: "screen"): Promise<WakeLockSentinelLike>;
   };

@@ -41,7 +41,8 @@ async function open(page: Page, options: { empty?: boolean; unavailable?: boolea
 }
 const foodButton = (page: Page) => page.getByRole("button", { name: "Поесть рядом", exact: true });
 const drawer = (page: Page) => page.getByRole("region", { name: "Заведения вдоль маршрута" });
-const row = (page: Page, name: string) => drawer(page).getByRole("button", { name: new RegExp(name) });
+// Anchored: the «+» beside a venue names it too («Добавить «…» в прогулку»).
+const row = (page: Page, name: string) => drawer(page).getByRole("button", { name: new RegExp(`^${name}`) });
 
 async function insideWindow(locator: Locator, width: number, height: number) {
   await expect(locator).toBeInViewport({ ratio: 1 });
@@ -103,6 +104,28 @@ for (const [width, height] of [[390, 844], [1440, 900], [568, 400], [320, 568]])
     await expect(pins).toHaveCount(0);
   });
 }
+
+test("стрелка назад стоит в футере перед «Поесть рядом»", async ({ page }) => {
+  await open(page);
+  const order = () => page.locator('[data-sheet-part="footer"] > *').evaluateAll(nodes => nodes.map(node => node.getAttribute("aria-label") ?? node.textContent?.trim()));
+  await expect(foodButton(page)).toBeVisible();
+  expect(await order()).toEqual(["Изменить маршрут", "Поесть рядом", "Начать прогулку"]);
+  await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Предыдущая остановка", exact: true })).toBeVisible();
+  expect(await order()).toEqual(["Предыдущая остановка", "Поесть рядом", "Дальше"]);
+});
+
+test("значок «Поесть рядом» — контурный, как стрелка назад", async ({ page }) => {
+  await open(page);
+  const look = (locator: Locator) => locator.locator("svg").evaluate(svg => {
+    const style = getComputedStyle(svg);
+    return { fill: style.fill, stroke: style.stroke, strokeWidth: style.strokeWidth, filled: [...svg.children].filter(node => !["none", "rgba(0, 0, 0, 0)"].includes(getComputedStyle(node).fill)).length };
+  });
+  const icon = await look(foodButton(page));
+  expect(icon).toEqual(await look(page.getByRole("link", { name: "Изменить маршрут", exact: true })));
+  expect(icon.filled).toBe(0);
+});
 
 test("метка открывает карточку с часами и возвратом к списку", async ({ page }) => {
   await open(page);

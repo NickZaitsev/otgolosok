@@ -10,7 +10,6 @@ import { stageLabels, terminalStages, type GenerationJob } from "../generator/ty
 import type { MapFocus, MapViewState } from "./explore-map";
 import type { MapViewport } from "./catalog-bounds";
 import { useAroundFood } from "../food/use-around-food";
-import { FoodGlyph } from "../food/food-list";
 import type { FoodPlace } from "../food/types";
 import { ExploreIcon } from "./icons";
 import { AppNavigation } from "../navigation/app-navigation";
@@ -337,7 +336,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       map={{onViewport:handleViewport,viewState:nearbyMapView,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:foodPlace?`food:${foodPlace.id}`:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
         onSelect:id=>{const value=food.places.find(value=>`food:${value.id}`===id);if(!creating&&value){selectFood(value);return;}const pin=storyPins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
         onPoint:point=>creating?setPicked(point):void findPlace(point)}}
-      controls={creating?null:<>{!food.unavailable&&food.manifest?<MapControlButton aria-label="Еда" aria-pressed={food.enabled} className={styles.foodToggle} onClick={()=>{setSelectedFood(null);food.toggle();}}><FoodGlyph /></MapControlButton>:null}<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton></>}
+      controls={creating?null:<>{!food.unavailable&&food.manifest?<MapControlButton aria-label="Еда" aria-pressed={food.enabled} className={styles.foodToggle} onClick={()=>{setSelectedFood(null);food.toggle();}}><ExploreIcon name="cup"/></MapControlButton>:null}<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton></>}
       notices={notices}
       sheet={sheet} sheetExpanded={reading.expanded&&storyShown} onCollapseSheet={reading.collapse} />
     {pathname === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();}} />}

@@ -31,6 +31,17 @@ for (const [width, height] of [[390, 844], [1440, 900], [568, 400], [320, 568]])
   });
 }
 
+test("значок переключателя «Еда» — контурный, как у соседних кнопок карты", async ({ page }) => {
+  await openAroundFood(page);
+  const look = (name: string) => page.getByRole("button", { name, exact: true }).locator("svg").evaluate(svg => {
+    const style = getComputedStyle(svg);
+    return { fill: style.fill, stroke: style.stroke, strokeWidth: style.strokeWidth, filled: [...svg.children].filter(node => !["none", "rgba(0, 0, 0, 0)"].includes(getComputedStyle(node).fill)).length };
+  });
+  const food = await look("Еда");
+  expect(food).toEqual(await look("Моё местоположение"));
+  expect(food.filled).toBe(0);
+});
+
 test("порог 15, выключено по умолчанию и сохранение при перезагрузке", async ({ page }) => {
   const api = await openAroundFood(page);
   await expect(foodToggle(page)).toHaveAttribute("aria-pressed", "false");

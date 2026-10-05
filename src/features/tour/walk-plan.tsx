@@ -70,3 +70,16 @@ export function getWalkChapters(route: Route, includePending = false): WalkChapt
     return content && (includePending || content.story.text_status === "ready") ? [{ ...step, content }] : [];
   });
 }
+
+/**
+ * The chapter index after stops joined the walk (`before` → `after`, chapter ids in walking order;
+ * `before.length` is the way to the finish). The walker stays with the stop they were at or walking to,
+ * unless a new stop lies on the leg they are walking now: then that stop is the next to reach.
+ */
+export function followChapter(before: string[], after: string[], index: number, stage: StopStage): number {
+  const current = before[index];
+  let next = current === undefined ? after.length : after.indexOf(current);
+  if (next < 0) next = Math.min(index, after.length);
+  if (stage === "approach" && next > 0 && !before.includes(after[next - 1])) next -= 1;
+  return next;
+}

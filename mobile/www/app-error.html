@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Отголосок</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+        background: #eee9df;
+        color: #171613;
+        font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        text-align: center;
+      }
+      main {
+        max-width: 22rem;
+      }
+      svg {
+        width: 72px;
+        height: 72px;
+      }
+      h1 {
+        margin: 20px 0 8px;
+        font-size: 22px;
+        line-height: 1.25;
+      }
+      p {
+        margin: 0 0 24px;
+        color: #4a463f;
+      }
+      button {
+        min-height: 48px;
+        padding: 0 28px;
+        border: 0;
+        border-radius: 999px;
+        background: #b52d20;
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+      }
+      small {
+        display: block;
+        margin-top: 24px;
+        color: #6b665d;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg viewBox="0 0 512 512" aria-hidden="true">
+        <rect width="512" height="512" rx="112" fill="#b52d20" />
+        <path
+          d="M111 305c42-90 75-135 99-135 30 0 35 172 70 172 25 0 47-58 121-173"
+          fill="none"
+          stroke="#f3ede2"
+          stroke-width="38"
+          stroke-linecap="round"
+        />
+        <circle cx="111" cy="305" r="21" fill="#171613" />
+        <circle cx="401" cy="169" r="21" fill="#171613" />
+      </svg>
+      <h1>Не удалось открыть Отголосок</h1>
+      <p>Проверьте подключение к интернету и попробуйте ещё раз.</p>
+      <button type="button" onclick="location.replace('/')">Повторить</button>
+      <small>Если не помогает, обновите «Android System WebView» и Chrome в Google Play.</small>
+    </main>
+  </body>
+</html>
