@@ -178,7 +178,7 @@ function WalkFromHere({ href, onClick, footer = false, primary = false }: { href
 /** The first-visit hint in the notices slot. */
 export function MapHintNotice({ onClose }: { onClose: () => void }) {
   return <div className={a.notice}>
-    <p><strong>Какой дом вам интересен?</strong>Нажмите на карту — найдём его историю.</p>
+    <p><strong>Откуда начнём прогулку?</strong>Нажмите на карту — построим маршрут.</p>
     <button className={a.iconButton} type="button" aria-label="Закрыть подсказку" onClick={onClose}><ExploreIcon name="close" /></button>
   </div>;
 }
