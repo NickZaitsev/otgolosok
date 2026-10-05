@@ -26,8 +26,8 @@
   </g>
   <circle class="large" cx="256" cy="256" r="50" fill="#b84b2c"/>
   <g class="small" fill="none">
-    <circle cx="256" cy="256" r="196" stroke="#a59a89" stroke-width="30"/>
-    <circle cx="256" cy="256" r="128" stroke="#e8cdbb" stroke-width="32"/>
+    <circle cx="256" cy="256" r="196" stroke="#8c8677" stroke-width="30"/>
+    <circle cx="256" cy="256" r="128" stroke="#cfac99" stroke-width="32"/>
   </g>
-  <circle class="small" cx="256" cy="256" r="70" fill="#d0552f"/>
+  <circle class="small" cx="256" cy="256" r="70" fill="#b84b2c"/>
 </svg>
