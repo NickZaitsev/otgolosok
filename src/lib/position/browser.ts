@@ -1,4 +1,5 @@
 import type { PositionFix } from "../geo/types";
+import { nativePlatform } from "../native/platform";
 import type {
   PositionSource,
   PositionSourceError,
@@ -33,7 +34,10 @@ function toFix(position: GeolocationPosition): PositionFix {
 function toSourceError(error: GeolocationPositionError): PositionSourceError {
   switch (error.code) {
     case error.PERMISSION_DENIED:
-      return { code: "permission-denied", message: "Доступ к геолокации запрещён. Разрешите его в настройках браузера." };
+      return {
+        code: "permission-denied",
+        message: `Доступ к геолокации запрещён. Разрешите его в настройках ${nativePlatform() ? "телефона" : "браузера"}.`,
+      };
     case error.POSITION_UNAVAILABLE:
       return { code: "position-unavailable", message: "Не удалось определить местоположение." };
     case error.TIMEOUT:

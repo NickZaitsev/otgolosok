@@ -3,6 +3,7 @@ import { YandexMetrika } from "@/features/analytics/yandex-metrika";
 import { METRIKA_ID } from "@/features/analytics/metrika";
 import type { Metadata, Viewport } from "next";
 import { AppNavigation } from "@/features/navigation/app-navigation";
+import { NativeShell } from "@/features/native/native-shell";
 import "@/styles/tokens.css";
 import "@/styles/base.css";
 import "@/styles/ui.css";
@@ -30,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru">
       <body>
-        {children}<AppNavigation />
+        {children}<AppNavigation /><NativeShell />
         <Suspense fallback={null}><YandexMetrika /></Suspense>
         {process.env.NODE_ENV === "production" && <noscript><div>
           {/* eslint-disable-next-line @next/next/no-img-element */}

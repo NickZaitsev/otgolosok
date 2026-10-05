@@ -7,6 +7,7 @@ import { ExploreIcon } from "../explore/icons";
 import { PlacePhotoBanner } from "../explore/place-photo";
 import { usePlaceStory } from "../explore/place-story";
 import { GeoHelp } from "../explore/around-sheets";
+import { nativePlatform } from "@/lib/native/platform";
 import { useHideNavigation } from "../navigation/navigation-visibility";
 import { MapShell } from "../shell/map-shell";
 import { MapControlButton } from "../shell/map-controls";
@@ -191,7 +192,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
           {!active && route.walk && route.walk.start.address !== route.walk.finish.address ? <p className="walk-session-endpoint">Финиш: {route.walk.finish.address}</p> : null}
           {!active ? offline : null}
         </> : drawer === "position" ? <div role="status">
-          <p className="walk-session-muted">{!positionFailed ? "Определяем положение…" : positionDenied ? "Сайту запрещён доступ к геопозиции. Разрешите его в браузере — до тех пор остановки переключаются вручную." : "Не удалось определить положение. Проверьте, включена ли геолокация на устройстве, — до тех пор остановки переключаются вручную."}</p>
+          <p className="walk-session-muted">{!positionFailed ? "Определяем положение…" : positionDenied ? (nativePlatform() ? "Приложению запрещён доступ к геопозиции. Разрешите его в настройках телефона — до тех пор остановки переключаются вручную." : "Сайту запрещён доступ к геопозиции. Разрешите его в браузере — до тех пор остановки переключаются вручную.") : "Не удалось определить положение. Проверьте, включена ли геолокация на устройстве, — до тех пор остановки переключаются вручную."}</p>
           {positionFailed ? <GeoHelp open={positionDenied} onRetry={onRetryPosition} /> : null}
         </div> : drawer === "story" ? story : drawer === "reviews" ? reviews : <>
           {settings}

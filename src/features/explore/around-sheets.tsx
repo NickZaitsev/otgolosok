@@ -5,6 +5,7 @@ import type { MouseEvent, ReactNode, Ref } from "react";
 import { Sheet } from "../shell/sheet";
 import { SheetHandle } from "../shell/sheet-handle";
 import { cx } from "../ui/cx";
+import { nativePlatform } from "@/lib/native/platform";
 import { ExploreIcon } from "./icons";
 import { nearbyRadii, type NearbyRadius, type NearbyRecommendation } from "./nearby-stories";
 import { StoryAudioPlayer } from "../tour/story-audio-player";
@@ -208,6 +209,15 @@ export function GeoNotice({ message, outside, denied, onMoscow, onRetry, onClose
 
 /** How to allow geolocation for the site; `open` shows the steps without the extra tap. */
 export function GeoHelp({ onRetry, open = false }: { onRetry: () => void; open?: boolean }): ReactNode {
+  if (nativePlatform() === "android") return <details className={styles.help} open={open}>
+    <summary>Как разрешить геолокацию</summary>
+    <ol>
+      <li>Откройте «Настройки» телефона → «Приложения» → «Отголосок» → «Разрешения» → «Местоположение».</li>
+      <li>Выберите «Разрешить только во время использования приложения» и включите «Точное местоположение».</li>
+      <li>Проверьте, что геолокация включена в быстрых настройках телефона, и вернитесь в приложение.</li>
+    </ol>
+    <button className={styles.inlineButton} type="button" onClick={onRetry}>Проверить снова</button>
+  </details>;
   return <details className={styles.help} open={open}>
     <summary>Как разрешить геолокацию</summary>
     <p><strong>На iPhone и iPad</strong></p>

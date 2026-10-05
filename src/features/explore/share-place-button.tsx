@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { cx } from "../ui/cx";
 import { ExploreIcon } from "./icons";
 import { placeShareUrl } from "./place-link";
-import { browserShareEnvironment, sharePlace, type ShareOutcome } from "./share-place";
+import { appShareEnvironment } from "./app-share";
+import { sharePlace, type ShareOutcome } from "./share-place";
 import a from "./around.module.css";
 
 /**
@@ -29,7 +30,7 @@ export function SharePlaceButton({ placeId, title }: { placeId: string; title: s
     const link = placeShareUrl(placeId, location.origin);
     setUrl(link);
     setOutcome(null);
-    try { setOutcome(await sharePlace({ title, url: link }, browserShareEnvironment())); }
+    try { setOutcome(await sharePlace({ title, url: link }, appShareEnvironment())); }
     finally { busy.current = false; }
   }
   return <>

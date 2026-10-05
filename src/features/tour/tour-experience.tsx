@@ -8,6 +8,9 @@ import {
   type WakeLockController,
   type WakeLockStatus,
 } from "@/lib/wake-lock";
+import { appWakeLockNavigator } from "@/lib/native/keep-awake";
+import { setDarkScreenSystemBars } from "@/lib/native/system-bars";
+import { setWalkInProgress } from "./walk-activity";
 import type { Coordinates, Route } from "./types";
 import type { WalkView } from "../walks/model";
 import { walkViewToRoute } from "../walks/adapters";
@@ -151,6 +154,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   useEffect(() => () => {
     sessionRef.current += 1;
     sessionActiveRef.current = false;
+    setWalkInProgress(false);
     void wakeControllerRef.current?.dispose();
     wakeControllerRef.current = null;
   }, []);
@@ -186,6 +190,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     if (phase !== "reading" || sessionActiveRef.current) return;
     setCompleted(false);
     sessionActiveRef.current = true;
+    setWalkInProgress(true);
 
     const session = sessionRef.current + 1;
     sessionRef.current = session;
@@ -210,6 +215,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     setShowDiagnostics(Boolean(replayMode) || params.get("debug") === "1");
 
     const wakeController = createWakeLockController({
+      navigator: appWakeLockNavigator(),
       onChange: (snapshot) => {
         if (sessionRef.current === session) setWakeStatus(snapshot.status);
       },
@@ -238,6 +244,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     audio.end(completed);
     sessionRef.current += 1;
     sessionActiveRef.current = false;
+    setWalkInProgress(false);
     position.stop();
     const wakeController = wakeControllerRef.current;
     wakeControllerRef.current = null;
@@ -326,6 +333,13 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   });
 
   const isWalking = phase !== "reading";
+  // The classic walk screen is dark (legacy.css `.shell[data-mode="walk"]`); a universal walk stays light.
+  const darkScreen = isWalking && !universal;
+  useEffect(() => {
+    if (!darkScreen) return;
+    void setDarkScreenSystemBars(true);
+    return () => void setDarkScreenSystemBars(false);
+  }, [darkScreen]);
   const duration = mediaDuration || chapter?.audio?.duration_sec || walkContent.story.duration_sec;
   const canSeek = !walkUsesTestAudio && mediaDuration > 0 && !["loading", "unlocking", "locked"].includes(audioStatus);
   const audioButtonLabel = audioStatus === "loading" ? "Отменить запуск" : audioStatus === "playing" ? "Пауза" : audioStatus === "paused" ? "Продолжить" : audioStatus === "ended" ? "Слушать ещё раз" : audioStatus === "unlocking" ? "Включить звук" : audioStatus === "blocked" || audioStatus === "error" ? "Повторить запуск звука" : walkUsesTestAudio ? "Проверить звук" : walkAudioUrl ? "Слушать историю" : "Аудио ещё не готово";
