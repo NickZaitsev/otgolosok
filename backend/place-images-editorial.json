@@ -1168,5 +1168,44 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "retrievedAt": "2026-10-04",
     "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:node:4909347021": {
+    "thumbnail": "/images/places/node-4909347021-18abcad8f7fd.jpg",
+    "src": "/images/places/node-4909347021-920897d3fd30.jpg",
+    "width": 800,
+    "height": 487,
+    "alt": "Баннер болельщиков в память о Фёдоре Черенкове на трибуне стадиона «Открытие Арена», 27 октября 2014 года",
+    "author": "Дмитрий Садовников",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Spartak-Loco_(2).jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "retrievedAt": "2026-10-04",
+    "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
+  },
+  "osm:node:1805425906": {
+    "thumbnail": "/images/places/node-1805425906-dff69b6fa5de.jpg",
+    "src": "/images/places/node-1805425906-bf4eb3599fb9.jpg",
+    "width": 960,
+    "height": 640,
+    "alt": "Лётное поле бывшего Тушинского аэродрома, где в 2000–2007 годах проходил фестиваль «Крылья». Снимок 2015 года",
+    "author": "Gennady Grachev from Moscow, Russia",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_former_Tushino_Airfield_(16780741981).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "retrievedAt": "2026-10-04",
+    "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
+  },
+  "osm:way:1359042497": {
+    "thumbnail": "/images/places/way-1359042497-8f5bfbb46be9.jpg",
+    "src": "/images/places/way-1359042497-c3056c31abb8.jpg",
+    "width": 960,
+    "height": 720,
+    "alt": "Волоколамское шоссе у огороженной бывшей территории Тушинского рынка, 2013 год",
+    "author": "karel291",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pokrovskoye-Streshnevo_District,_Moscow,_Russia_-_panoramio_(20).jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "retrievedAt": "2026-10-04",
+    "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
   }
 }

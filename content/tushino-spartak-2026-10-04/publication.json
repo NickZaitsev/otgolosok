@@ -245,17 +245,14 @@
     }
   ],
   "photos": {
-    "editorial": 18,
+    "editorial": 21,
     "automatic": [
       "osm:way:544516659"
     ],
     "withoutPhoto": [
-      "osm:node:4909347021",
-      "osm:node:1805425906",
-      "osm:way:1359042497",
       "osm:way:813211640"
     ],
-    "note": "Редакционные фото Wikimedia Commons с автором и лицензией в backend/place-images-editorial.json; у Сходненской ГЭС автоматическое фото из Wikidata. Для памятника Черенкову, знака жертвам теракта, места рынка и парашютной фабрики свободных снимков в Commons не найдено.",
+    "note": "Редакционные фото Wikimedia Commons с автором и лицензией в backend/place-images-editorial.json; у Сходненской ГЭС автоматическое фото из Wikidata. Для памятника Черенкову, знака жертвам теракта и места рынка поставлены контекстные снимки с прямой подписью. Без фото — парашютная фабрика.",
     "entries": [
       {
         "placeId": "osm:node:5202107560",
@@ -382,6 +379,27 @@
         "author": "Gaz v pol at Russian Wikipedia",
         "license": "CC BY-SA 3.0",
         "alt": "Корабль «Буран» 2.01 у причала Тушинского завода, 2008 год"
+      },
+      {
+        "placeId": "osm:node:4909347021",
+        "commonsFile": "File:Spartak-Loco (2).jpg",
+        "author": "Дмитрий Садовников",
+        "license": "CC BY-SA 3.0",
+        "alt": "Баннер болельщиков в память о Фёдоре Черенкове на трибуне стадиона «Открытие Арена», 27 октября 2014 года"
+      },
+      {
+        "placeId": "osm:node:1805425906",
+        "commonsFile": "File:Moscow, former Tushino Airfield (16780741981).jpg",
+        "author": "Gennady Grachev from Moscow, Russia",
+        "license": "CC BY 2.0",
+        "alt": "Лётное поле бывшего Тушинского аэродрома, где в 2000–2007 годах проходил фестиваль «Крылья». Снимок 2015 года"
+      },
+      {
+        "placeId": "osm:way:1359042497",
+        "commonsFile": "File:Pokrovskoye-Streshnevo District, Moscow, Russia - panoramio (20).jpg",
+        "author": "karel291",
+        "license": "CC BY 3.0",
+        "alt": "Волоколамское шоссе у огороженной бывшей территории Тушинского рынка, 2013 год"
       }
     ]
   }
