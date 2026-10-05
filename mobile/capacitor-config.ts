@@ -27,7 +27,7 @@ export type CapacitorConfigEnv = Readonly<Record<string, string | undefined>>;
  */
 export function buildCapacitorConfig(env: CapacitorConfigEnv): CapacitorConfig {
   const dev = env.OTGOLOSOK_APP_DEV === "1";
-  const url = parseAppUrl(env.OTGOLOSOK_APP_URL || DEFAULT_APP_URL, dev);
+  const url = new URL(parseAppUrl(env.OTGOLOSOK_APP_URL || DEFAULT_APP_URL, dev));
 
   return {
     appId: APP_ID,
@@ -35,8 +35,11 @@ export function buildCapacitorConfig(env: CapacitorConfigEnv): CapacitorConfig {
     webDir: "mobile/www",
     backgroundColor: BACKGROUND_COLOR,
     server: {
-      url,
-      // Served from the bundled web assets at <origin>/app-error.html when the site does not load.
+      url: url.origin,
+      // The bundled error page is served at <androidScheme>://<hostname>/app-error.html. With the default
+      // `localhost` its «Повторить» (`/`) would leave the site's host, and Capacitor hands such links to the browser.
+      hostname: url.hostname,
+      androidScheme: url.protocol.slice(0, -1),
       errorPath: "app-error.html",
       ...(dev ? { cleartext: true } : {}),
     },

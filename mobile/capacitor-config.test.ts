@@ -7,6 +7,8 @@ describe("buildCapacitorConfig", () => {
 
     expect(config.appId).toBe(APP_ID);
     expect(config.server?.url).toBe("https://otgolosok.online");
+    // The error page and its retry link stay on the site's origin.
+    expect(`${config.server?.androidScheme}://${config.server?.hostname}`).toBe(config.server?.url);
     expect(config.server?.cleartext).toBeUndefined();
     // Other hosts must open in the system browser, not inside the app.
     expect(config.server?.allowNavigation).toBeUndefined();
