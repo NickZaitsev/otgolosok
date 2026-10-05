@@ -9,7 +9,7 @@ import styles from "./food-list.module.css";
 
 export function FoodGlyph({ kind = "coffee" }: { kind?: RouteFoodPlace["kind"] }) {
   const icon = foodIcon(kind);
-  return <svg className={styles.glyph} viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill={`var(${foodGroup(kind).colorToken})`} /><path d={icon.glyph} transform="translate(5.5 5.5) scale(.87)" fill="var(--on-dark)" /></svg>;
+  return <svg className={styles.glyph} viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill={`var(${foodGroup(kind).colorToken})`} stroke="none" /><path d={icon.glyph} transform="translate(5.5 5.5) scale(.87)" fill="var(--on-dark)" stroke="none" /></svg>;
 }
 export function FoodAttribution({ manifest }: { manifest: FoodManifest }) {
   const date = new Date(manifest.sourceEditedAt).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Moscow" });

@@ -60,7 +60,3 @@
 .foodToggle[aria-pressed="true"] {
   background: var(--control-selected);
 }
-
-.foodToggle svg {
-  stroke: none;
-}

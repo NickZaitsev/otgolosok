@@ -31,6 +31,12 @@ for (const [width, height] of [[390, 844], [1440, 900], [568, 400], [320, 568]])
   });
 }
 
+test("значок переключателя «Еда» без обводки кнопки", async ({ page }) => {
+  await openAroundFood(page);
+  const strokes = await foodToggle(page).locator("svg > *").evaluateAll(nodes => nodes.map(node => getComputedStyle(node).stroke));
+  expect(strokes).toEqual(["none", "none"]);
+});
+
 test("порог 15, выключено по умолчанию и сохранение при перезагрузке", async ({ page }) => {
   const api = await openAroundFood(page);
   await expect(foodToggle(page)).toHaveAttribute("aria-pressed", "false");
