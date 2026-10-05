@@ -41,7 +41,8 @@ async function open(page: Page, options: { empty?: boolean; unavailable?: boolea
 }
 const foodButton = (page: Page) => page.getByRole("button", { name: "Поесть рядом", exact: true });
 const drawer = (page: Page) => page.getByRole("region", { name: "Заведения вдоль маршрута" });
-const row = (page: Page, name: string) => drawer(page).getByRole("button", { name: new RegExp(name) });
+// Anchored: the «+» beside a venue names it too («Добавить «…» в прогулку»).
+const row = (page: Page, name: string) => drawer(page).getByRole("button", { name: new RegExp(`^${name}`) });
 
 async function insideWindow(locator: Locator, width: number, height: number) {
   await expect(locator).toBeInViewport({ ratio: 1 });

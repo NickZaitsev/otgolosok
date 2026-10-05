@@ -25,15 +25,22 @@
   list-style: none;
 }
 
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border-bottom: 1px solid var(--border-island);
+}
+
 .row {
   display: flex;
+  flex: 1;
   align-items: flex-start;
   gap: var(--space-xs);
-  width: 100%;
+  min-width: 0;
   min-height: var(--control-min);
   padding: var(--space-xs) 0;
   border: 0;
-  border-bottom: 1px solid var(--border-island);
   background: transparent;
   color: inherit;
   font: inherit;
@@ -95,4 +102,72 @@
   color: var(--muted);
   font-size: var(--text-meta);
   line-height: var(--leading-control);
+}
+
+/* «+» beside a venue: the venue joins the walk as a stop between its neighbours. */
+.add,
+.addWide {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-width: var(--control-min);
+  min-height: var(--control-min);
+  padding: 0;
+  border: 1px solid var(--border-island);
+  border-radius: var(--radius-pill);
+  background: var(--surface-island);
+  color: var(--map-green);
+  font: inherit;
+  cursor: pointer;
+}
+
+.addWide {
+  margin: var(--space-xs) 0;
+  padding: 0 var(--space-md);
+}
+
+.add:hover,
+.addWide:hover {
+  background: var(--control-selected);
+}
+
+.add:disabled,
+.addWide:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.add[aria-busy="true"] {
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add[aria-busy="true"] {
+    animation: none;
+  }
+}
+
+.added,
+.addedWide {
+  flex: none;
+  color: var(--muted);
+  font-size: var(--text-secondary);
+}
+
+.addedWide {
+  display: block;
+  margin: var(--space-xs) 0;
+}
+
+.status {
+  margin: var(--space-xs) 0;
+  font-size: var(--text-secondary);
 }

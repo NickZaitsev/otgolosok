@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import routeData from "../../../public/data/routes/paveletskaya.json";
-import { arrivalTarget, arrivalTriggerConfig, chapterTriggerConfig, getWalkChapters, hasFinishLeg, highlightedLeg, nextChapterTarget } from "./walk-plan";
+import { arrivalTarget, arrivalTriggerConfig, chapterTriggerConfig, followChapter, getWalkChapters, hasFinishLeg, highlightedLeg, nextChapterTarget } from "./walk-plan";
 import type { Route } from "./types";
 
 const route = routeData as Route;
@@ -149,5 +149,21 @@ describe("Walking to a stop before its story", () => {
 
   it("has no finish leg without stops", () => {
     expect(hasFinishLeg([], { lat: 55.74, lon: 37.64 }, 30)).toBe(false);
+  });
+});
+
+describe("остановка, добавленная во время прогулки", () => {
+  const before = ["a", "b", "c"];
+  it.each([
+    ["на пути к b кафе перед b становится целью", ["a", "cafe", "b", "c"], 1, "approach", 1],
+    ["у b кафе после неё не сдвигает номер", ["a", "b", "cafe", "c"], 1, "stop", 1],
+    ["у b кафе раньше сдвигает номер", ["a", "cafe", "b", "c"], 1, "stop", 2],
+    ["на пути к c кафе позади сдвигает номер", ["cafe", "a", "b", "c"], 2, "approach", 3],
+    ["на пути к a кафе перед ней становится целью", ["cafe", "a", "b", "c"], 0, "approach", 0],
+    ["на пути к финишу кафе перед ним становится целью", ["a", "b", "c", "cafe"], 3, "approach", 3],
+    ["у последней остановки кафе к финишу не сдвигает номер", ["a", "b", "c", "cafe"], 2, "stop", 2],
+    ["без изменений номер прежний", ["a", "b", "c"], 2, "approach", 2],
+  ] as const)("%s", (_, after, index, stage, expected) => {
+    expect(followChapter(before, [...after], index, stage)).toBe(expected);
   });
 });

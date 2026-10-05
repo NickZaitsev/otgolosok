@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { FoodList } from "../food/food-list";
+import { FoodList, type FoodAdding } from "../food/food-list";
 import { useWalkFood } from "../food/use-walk-food";
 import { distanceToRoute, matchedRoutePoint, routeVertexDistances } from "../food/route-proximity";
 import type { RouteFoodPlace } from "../food/food-walk-model";
-import { useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { MapFitTarget, MapFocus } from "../explore/explore-map";
 import { ExploreIcon } from "../explore/icons";
 import { PlacePhotoBanner } from "../explore/place-photo";
@@ -27,6 +27,8 @@ import historicalStyles from "./historical-photos.module.css";
 import "./walk-session.css";
 import foodStyles from "./walk-food.module.css";
 import type { WalkDirection } from "./walk-direction";
+import type { AddFood } from "./tour-experience";
+import { toUserMessage } from "@/lib/errors/user-message";
 
 const noop = () => {};
 
@@ -60,7 +62,7 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean) {
 
 export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1,
   titleRef, startRef, onStart, onSelect, onStop, player, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
-  positionDenied = false, onRetryPosition = noop, direction = "forward", foodMode: documentFoodMode, onDirectionChange }: {
+  positionDenied = false, onRetryPosition = noop, direction = "forward", foodMode: documentFoodMode, onDirectionChange, onAddFood = null }: {
   direction?: WalkDirection;
   foodMode?: "open" | "loop";
   onDirectionChange?: (direction: WalkDirection) => void;
@@ -101,6 +103,8 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   positionDenied?: boolean;
   /** Asks the browser for the position again; called from a tap, so it may show the permission prompt. */
   onRetryPosition?: () => void;
+  /** Adds a venue from «Поесть рядом» as a stop; null where the walk cannot take one. */
+  onAddFood?: AddFood | null;
 }) {
   // A running walk takes the whole screen: the bottom navigation goes and MapShell lowers the card to the edge.
   // The header still leads out of the walk, and the navigation returns once the walk is stopped or finished.
@@ -126,7 +130,12 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   if (food.unavailable && drawer === "food") setDrawer(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const [selectedFood, setSelectedFood] = useState<RouteFoodPlace | null>(null);
-  const foodButton = geometry.length > 1 && food.manifest && !food.unavailable ? <button type="button" className={foodStyles.button} aria-label="Поесть рядом" aria-expanded={foodVisible} onClick={() => { setSelectedFood(null); setDrawer(foodVisible ? null : "food"); }}><ExploreIcon name="cup" /><span>Поесть рядом</span></button> : null;
+  // One venue at a time: each one reroutes the walk the next one is matched against.
+  const [foodPending, setFoodPending] = useState<string | null>(null);
+  const [foodStatus, setFoodStatus] = useState("");
+  const addController = useRef<AbortController | null>(null);
+  useEffect(() => () => addController.current?.abort(), []);
+  const foodButton = geometry.length > 1 && food.manifest && !food.unavailable ? <button type="button" className={foodStyles.button} aria-label="Поесть рядом" aria-expanded={foodVisible} onClick={() => { setSelectedFood(null); setFoodStatus(""); setDrawer(foodVisible ? null : "food"); }}><ExploreIcon name="cup" /><span>Поесть рядом</span></button> : null;
   const [foodFit, setFoodFit] = useState<MapFitTarget | null>(null);
   useLayoutEffect(() => { if (drawer === "food" && drawerRef.current) drawerRef.current.scrollTop = 0; }, [drawer, selectedFood?.id]);
   const foodManifestError = geometry.length > 1 && food.error && !food.manifest && !food.unavailable;
@@ -136,7 +145,29 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
     ...chapters.map((item, i) => ({ id: item.id, title: `Остановка ${i + 1}: ${item.title}`, location: item.trigger_location ?? item.location, number: i + 1 })),
     ...(route.walk ? [{ id: "walk-finish", title: `Финиш: ${route.walk.finish.address}`, location: route.walk.finish.location, endpoint: true }] : []),
   ], [chapters, route.walk]);
-  const mapItems = useMemo(() => foodVisible && !food.unavailable ? [...items, ...food.places.map(p => ({ id: p.id, title: p.name, location: { lat: p.lat, lon: p.lon }, foodKind: p.kind }))] : items, [items, foodVisible, food.places, food.unavailable]);
+  // A venue that joined the walk is drawn once, as its stop.
+  const mapItems = useMemo(() => foodVisible && !food.unavailable ? [...items, ...food.places
+    .filter(p => !chapters.some(item => item.location.lat === p.lat && item.location.lon === p.lon))
+    .map(p => ({ id: p.id, title: p.name, location: { lat: p.lat, lon: p.lon }, foodKind: p.kind }))] : items, [items, chapters, foodVisible, food.places, food.unavailable]);
+  async function addFood(place: RouteFoodPlace) {
+    if (!onAddFood || addController.current) return;
+    const controller = new AbortController();
+    addController.current = controller;
+    setFoodPending(place.id);
+    setFoodStatus("");
+    try {
+      const notice = await onAddFood(place, controller.signal);
+      if (!controller.signal.aborted) setFoodStatus([`«${place.name}» добавлено в прогулку.`, notice].filter(Boolean).join(" "));
+    } catch (caught) {
+      if (!controller.signal.aborted) setFoodStatus(toUserMessage(caught, "Не удалось добавить заведение в прогулку."));
+    } finally {
+      if (addController.current === controller) { addController.current = null; setFoodPending(null); }
+    }
+  }
+  const foodAdding: FoodAdding | null = onAddFood && !completed ? {
+    isAdded: place => chapters.some(item => item.location.lat === place.lat && item.location.lon === place.lon),
+    onAdd: place => void addFood(place), pending: foodPending, status: foodStatus,
+  } : null;
   function openFood(place: RouteFoodPlace) {
     setSelectedFood(place);
     setDrawer("food");
@@ -218,7 +249,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
       {drawer && !completed ? <div ref={drawerRef} className={`walk-session-drawer ${foodStyles.drawer}`} data-sheet-part="body" key={`${drawer}-${index}`}>
         {drawer === "food" && food.manifest ? <FoodList places={food.places} stops={foodStops} active={active} fromM={foodFromM}
           selected={selectedFood && food.places.find(p => p.id === selectedFood.id) || null} onSelect={openFood} onBack={() => setSelectedFood(null)}
-          hours={food.hours} manifest={food.manifest} error={food.error} loading={food.loading} onRetry={food.retry} /> : drawer === "stops" ? <>
+          hours={food.hours} manifest={food.manifest} error={food.error} loading={food.loading} onRetry={food.retry} adding={foodAdding} /> : drawer === "stops" ? <>
           {/* Before the start the addresses live here, not on the card: the card keeps only the title and the action.
               During the walk the list is for jumping between stops, and on a small screen the lines would crowd the map.
               A walk already begun continues from any stop: the walker may have gone ahead or come back another day. */}
