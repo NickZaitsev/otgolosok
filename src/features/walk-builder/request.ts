@@ -2,7 +2,8 @@ export class RequestError extends Error {
   constructor(message: string, public code: string, public status: number) { super(message); }
 }
 export class RejectedRequest extends RequestError {}
-export const shouldOfferResearch = (selection: "auto" | "manual", error: unknown) => selection === "auto" && error instanceof RequestError && ["WALK_STOPS_NOT_FOUND", "WALK_NOT_FOUND"].includes(error.code);
+/** Only a real shortage of catalog stops is fixed by researching more places; an unroutable walk is not. */
+export const shouldOfferResearch = (selection: "auto" | "manual", error: unknown) => selection === "auto" && error instanceof RequestError && error.code === "WALK_STOPS_NOT_FOUND";
 
 type FetchInit = { headers?: HeadersInit; cache?: RequestCache; method?: string; body?: string; noRetryStatuses?: readonly number[] };
 const NULL_BODY_STATUSES = new Set([101, 204, 205, 304]);

@@ -253,7 +253,7 @@ export function useWalkDraft() {
     } catch (caught) { if (!controller.signal.aborted) {
       const insufficient = shouldOfferResearch(selection, caught);
       setResearchOffered(insufficient);
-      setError(insufficient ? "Рядом пока недостаточно готовых остановок для этой прогулки." : toUserMessage(caught, "Маршрут недоступен."));
+      setError(insufficient ? "Рядом пока мало готовых историй." : toUserMessage(caught, "Маршрут недоступен."));
     } }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
     return false;

@@ -15,7 +15,6 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
   setBusy: (value: string) => void; onApply: () => void; onChooseStart: () => void;
 }) {
   const [job, setJob] = useState<ResearchJob | null>(null);
-  const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [missing, setMissing] = useState(false);
   const [restore, setRestore] = useState(0);
@@ -67,7 +66,7 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
   }, [identity, restore]);
 
   async function submit(retry = false) {
-    if (actionRef.current || posting.current || disabled || !consent) return;
+    if (actionRef.current || posting.current || disabled) return;
     const latest = current.current;
     if (retry ? !job?.canRetry || latest.research?.id !== job.id : !(offered || (missing && latest.research && researchMatches(latest, latest.research))) || !latest.start || (latest.research && !missing && researchMatches(latest, latest.research))) return;
     posting.current = true;
@@ -103,7 +102,7 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
   const canStart = (offered && (!ref || !matches || missing)) || (missing && matches);
   return <section className={styles.research} aria-labelledby="walk-research">
     <h2 id="walk-research">Исследование района</h2>
-    {offered ? <p>Для автоматического маршрута пока недостаточно готовых остановок. Можно поискать подтверждённые истории рядом или выбрать другое начало.</p> : null}
+    {offered ? <p>Можем найти и проверить истории ещё нескольких зданий рядом. Это займёт время, и прогулка может не получиться.</p> : null}
     {ref ? <p>Начало исследования: <strong>{ref.request.start.address}</strong>. {ref.request.minutes} мин пешком, {ref.request.mode === "loop" ? "с возвращением" : "без возвращения"}.</p> : null}
     {visibleJob ? <div role="status" aria-live="polite"><p><strong>{terminalStages.has(visibleJob.stage) && visibleJob.stage !== "ready" ? "Исследование остановлено" : visibleJob.stage === "queued" ? "Ждём своей очереди" : phases[visibleJob.phase]}</strong></p>{visibleJob.progress.total > 0 ? <p>Проверено адресов: {visibleJob.progress.checked} из {visibleJob.progress.total}. С подтверждениями: {visibleJob.progress.accepted}.</p> : null}{visibleJob.error ? <p className={styles.warning}>{visibleJob.error.message}</p> : null}</div> : ref && !missing ? <p role="status">{ref.id ? "Проверяем сохранённое исследование…" : "Отправка сохранена. Можно проверить статус сейчас или при возвращении, без новой отправки."}</p> : null}
     {ref && !ref.id ? <button onClick={() => {
@@ -115,9 +114,8 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
     {ref ? <details className={styles.details}><summary>Как продолжить позже</summary><p>Исследование продолжается после закрытия страницы. Вернитесь к прогулке из истории в этом браузере. Если сохранить черновик не удалось, скачайте его перед уходом.</p>{ref.id && <p className={styles.muted}>ID исследования: {ref.id}</p>}</details> : null}
     {ref && !matches && !draft.researchApplied ? <p>Параметры или остановки изменены. Сохранённое исследование остаётся доступно, но его маршрут нельзя применить к этой версии прогулки.</p> : null}
     {canStart || visibleJob?.canRetry ? <>
-      <p>Проверим не более 3 адресов поблизости. Подтверждений может не хватить, и прогулка не гарантирована. Время подготовки заранее неизвестно. Исследование и повтор расходуют общий лимит сервиса.</p>
-      <label className={styles.check}><input type="checkbox" checked={consent} disabled={disabled} onChange={e => setConsent(e.target.checked)} /> Разрешаю передать координаты картографическому сервису, адреса провайдерам исследования, а также автоматически подготовить тексты и аудио для найденного маршрута.</label>
-      <div className={styles.actions}>{canStart ? <button className={styles.primaryAction} disabled={disabled || !consent} onClick={() => void submit()}>Исследовать район</button> : null}{visibleJob?.canRetry ? <button disabled={disabled || !consent} onClick={() => void submit(true)}>Продолжить исследование</button> : null}</div>
+      <div className={styles.actions}>{canStart ? <button className={styles.primaryAction} disabled={disabled} onClick={() => void submit()}>Найти истории рядом</button> : null}{visibleJob?.canRetry ? <button disabled={disabled} onClick={() => void submit(true)}>Продолжить поиск</button> : null}</div>
+      <p className={styles.muted}>Адреса уйдут сервисам поиска и озвучки.</p>
     </> : null}
     {visibleJob?.stage === "ready" && !draft.researchApplied ? <><p>Применение сохранит готовый маршрут и ссылки на истории. Новые исследования, тексты или аудио при этом не заказываются.</p><button className={styles.primaryAction} disabled={disabled || !matches} onClick={() => {
       try { if (persist(applyResearch(current.current, visibleJob))) onApply(); }
