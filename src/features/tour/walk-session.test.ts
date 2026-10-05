@@ -144,7 +144,7 @@ it.each([
   ["чужая до старта", null, false, false, false],
 ])("%s: «Изменить маршрут» и подсказки показаны — %s", (_, ownWalk, active, completed, shown) => {
   const document = sessionDocument({ own: ownWalk, active, completed });
-  const edit = [...document.querySelectorAll("a")].find(link => link.textContent === "Изменить маршрут");
+  const edit = document.querySelector(".walk-session-actions a[aria-label='Изменить маршрут']");
   expect(edit?.getAttribute("href") ?? null).toBe(shown ? own.editHref : null);
   expect(document.body.textContent?.includes(own.notes[0])).toBe(shown);
 });

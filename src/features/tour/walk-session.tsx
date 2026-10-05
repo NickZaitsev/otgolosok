@@ -208,7 +208,6 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
       {!completed && !foodVisible ? <div className="walk-session-tools">
         {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />{active && chapter ? `Остановка ${index + 1} из ${chapters.length}` : `Остановки · ${chapters.length}`}</button> : null}
         {active && (positionFailed || drawer === "position") ? <button type="button" className="walk-session-position" aria-expanded={drawer === "position"} onClick={retryPosition}><ExploreIcon name="locate" />Геопозиции нет</button> : null}
-        {!active && own ? <Link href={own.editHref} prefetch={false}>Изменить маршрут</Link> : null}
         {!active && canStart && onDirectionChange ? <button type="button" aria-label="Пройти прогулку с конца" aria-pressed={direction === "reverse"} onClick={() => { setDrawer(null); onDirectionChange(direction === "forward" ? "reverse" : "forward"); }}>{direction === "reverse" ? "Направление: с конца" : "Направление: с начала"}</button> : null}
         {active && hasText ? <button type="button" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}>Читать историю</button> : null}
         {!active && reviews ? ratingCount === 0
@@ -249,7 +248,11 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         </> : <Link className="walk-session-primary" href="/">На карту</Link> : active ? <>
           {index > 0 ? <button type="button" className="walk-session-previous" aria-label="Предыдущая остановка" onClick={() => select(index - 1)}><ExploreIcon name="arrow" /></button> : null}
           <button type="button" className="walk-session-primary" onClick={() => { setDrawer(null); if (next) select(index + 1); else onStop(true); }}>{index + 1 < chapters.length ? "Дальше" : next ? "К финишу" : "Завершить"}<ExploreIcon name="arrow" /></button>
-        </> : <button type="button" ref={startRef} disabled={!canStart} className="walk-session-primary" onClick={() => startAt()}>{resume ? "Продолжить прогулку" : "Начать прогулку"}<ExploreIcon name="arrow" /></button>}
+        </> : <>
+          {/* The way back to the builder sits where «Назад» sits during the walk: before the start the walk is still being made. */}
+          {own ? <Link className="walk-session-previous" href={own.editHref} prefetch={false} aria-label="Изменить маршрут"><ExploreIcon name="arrow" /></Link> : null}
+          <button type="button" ref={startRef} disabled={!canStart} className="walk-session-primary" onClick={() => startAt()}>{resume ? "Продолжить прогулку" : "Начать прогулку"}<ExploreIcon name="arrow" /></button>
+        </>}
       </footer>
       {!canStart ? <p role="alert" className="walk-session-notice">В этой прогулке ещё нет маршрута. Постройте его в редакторе из истории.</p> : null}
     </section>;
