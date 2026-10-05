@@ -115,6 +115,17 @@ test("стрелка назад стоит в футере перед «Поес
   expect(await order()).toEqual(["Предыдущая остановка", "Поесть рядом", "Дальше"]);
 });
 
+test("значок «Поесть рядом» — контурный, как стрелка назад", async ({ page }) => {
+  await open(page);
+  const look = (locator: Locator) => locator.locator("svg").evaluate(svg => {
+    const style = getComputedStyle(svg);
+    return { fill: style.fill, stroke: style.stroke, strokeWidth: style.strokeWidth, filled: [...svg.children].filter(node => !["none", "rgba(0, 0, 0, 0)"].includes(getComputedStyle(node).fill)).length };
+  });
+  const icon = await look(foodButton(page));
+  expect(icon).toEqual(await look(page.getByRole("link", { name: "Изменить маршрут", exact: true })));
+  expect(icon.filled).toBe(0);
+});
+
 test("метка открывает карточку с часами и возвратом к списку", async ({ page }) => {
   await open(page);
   await foodButton(page).click();

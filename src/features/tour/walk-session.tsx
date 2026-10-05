@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FoodGlyph, FoodList } from "../food/food-list";
+import { FoodList } from "../food/food-list";
 import { useWalkFood } from "../food/use-walk-food";
 import { distanceToRoute, matchedRoutePoint, routeVertexDistances } from "../food/route-proximity";
 import type { RouteFoodPlace } from "../food/food-walk-model";
@@ -126,7 +126,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   if (food.unavailable && drawer === "food") setDrawer(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const [selectedFood, setSelectedFood] = useState<RouteFoodPlace | null>(null);
-  const foodButton = geometry.length > 1 && food.manifest && !food.unavailable ? <button type="button" className={foodStyles.button} aria-label="Поесть рядом" aria-expanded={foodVisible} onClick={() => { setSelectedFood(null); setDrawer(foodVisible ? null : "food"); }}><FoodGlyph /><span>Поесть рядом</span></button> : null;
+  const foodButton = geometry.length > 1 && food.manifest && !food.unavailable ? <button type="button" className={foodStyles.button} aria-label="Поесть рядом" aria-expanded={foodVisible} onClick={() => { setSelectedFood(null); setDrawer(foodVisible ? null : "food"); }}><ExploreIcon name="cup" /><span>Поесть рядом</span></button> : null;
   const [foodFit, setFoodFit] = useState<MapFitTarget | null>(null);
   useLayoutEffect(() => { if (drawer === "food" && drawerRef.current) drawerRef.current.scrollTop = 0; }, [drawer, selectedFood?.id]);
   const foodManifestError = geometry.length > 1 && food.error && !food.manifest && !food.unavailable;
