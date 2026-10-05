@@ -136,3 +136,21 @@ it.each([
 ])("drops a photo with %s and keeps the story", (_, broken) => {
   expect(storyWith({ ...photo, ...broken })).toEqual({ paragraphs: ["Абзац."] });
 });
+
+const withHeader = (place: Record<string, unknown>, title?: string) =>
+  placeStory.parsePlaceStory({ place: { ...place, text: { story: { ...(title === undefined ? {} : { title }), paragraphs: [{ text: "Абзац." }] } } } });
+
+it.each([
+  { case: "the story title wins over the place name", place: { name: "Дом", address: "ул. Арбат, 1", location: { lat: 55.75, lon: 37.59 } }, title: "Дом Мельникова",
+    expected: { title: "Дом Мельникова", address: "ул. Арбат, 1", location: { lat: 55.75, lon: 37.59 } } },
+  { case: "without a title and an address the name stands for both", place: { name: "Памятник", address: null, location: { lat: 55.7, lon: 37.6 } }, title: " ",
+    expected: { title: "Памятник", address: "Памятник", location: { lat: 55.7, lon: 37.6 } } },
+  { case: "no location", place: { name: "Дом" }, title: "Дом", expected: undefined },
+  { case: "a latitude out of range", place: { name: "Дом", location: { lat: 95, lon: 37.6 } }, title: "Дом", expected: undefined },
+  { case: "a text coordinate", place: { name: "Дом", location: { lat: "55.7", lon: 37.6 } }, title: "Дом", expected: undefined },
+  { case: "no name", place: { location: { lat: 55.7, lon: 37.6 } }, title: "Дом", expected: undefined },
+])("reads the place header for a linked place: $case", ({ place, title, expected }) => {
+  const story = withHeader(place, title);
+  expect(story.place).toEqual(expected);
+  expect(story.paragraphs).toEqual(["Абзац."]);
+});

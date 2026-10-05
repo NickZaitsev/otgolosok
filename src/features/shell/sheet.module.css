@@ -241,6 +241,9 @@
   padding-bottom: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+
+  /* Scrolling into view (focus, a message shown under an action) stops above the pinned footer. */
+  scroll-padding-bottom: var(--sheet-footer-size, 0);
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) transparent;
   border: var(--sheet-border, 1px solid var(--border-island));

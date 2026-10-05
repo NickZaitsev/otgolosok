@@ -161,7 +161,7 @@ test("создаёт A→Б на карте и восстанавливает е
 });
 
 test("дом передаёт старт, возврат включён по умолчанию, Back закрывает панель", async ({ page }) => {
-  await mockMapCatalog(page, [{ id: "test-house", title: "Дом для прогулки", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon }]);
+  await mockMapCatalog(page, [{ id: "osm:node:1002", title: "Дом для прогулки", address: "Москва, Дербеневская, 1", lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon }]);
   await page.goto("/");
   await page.locator('[title="Дом для прогулки"]').click();
   // «Создать прогулку отсюда» — в развёрнутой карточке истории.
@@ -439,7 +439,7 @@ for (const endpoint of ["Откуда", "Куда"]) {
 test("клик карты после создания от дома задаёт финиш, а явный выбор меняет старт", async ({ page }) => {
   const start = "Москва, Дербеневская, 1";
   const finish = "Москва, Арбат, 10";
-  await mockMapCatalog(page, [{ id: "start-house", title: "Стартовый дом", address: start, lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon }]);
+  await mockMapCatalog(page, [{ id: "osm:node:1003", title: "Стартовый дом", address: start, lat: MOSCOW_CENTER.lat, lon: MOSCOW_CENTER.lon }]);
   await page.route("**/api/story-place?*", route => route.fulfill({ json: { address: finish, location: { lat: 55.75, lon: 37.6 } } }));
   await page.goto("/");
   await page.locator('[title="Стартовый дом"]').click();

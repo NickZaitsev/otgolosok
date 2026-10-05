@@ -17,8 +17,11 @@ import { useMapCatalog } from "./use-map-catalog";
 import { rememberGeoPromptDismissal, shouldShowGeoPrompt } from "./geo-prompt";
 import { MapShell } from "../shell/map-shell";
 import { MapControlButton } from "../shell/map-controls";
-import { GeoNotice, LocationPromptSheet, MapHintNotice, NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
-import { isExpandableStory, type StoryPin } from "./story-pin";
+import { GeoNotice, LinkNotice, LocationPromptSheet, MapHintNotice, NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
+import { catalogPin, isExpandableStory, isLinkablePlace, linkedPlacePin, type StoryPin } from "./story-pin";
+import { isPlaceId, placeMapUrl } from "./place-link";
+import { usePlaceStory } from "./place-story";
+import { usePlaceUrl } from "./use-place-url";
 import { useExpandableSheet } from "../shell/use-expandable-sheet";
 import { useHideNavigation } from "../navigation/navigation-visibility";
 import { openDataAttribution } from "./source-attribution";
@@ -55,10 +58,12 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const [creationMap, setCreationMap] = useState<CreationMap>({items:[], focus:null, picking:false});
   const [picked, setPicked] = useState<Coordinates | null>(null);
   const opener = useRef<HTMLElement | null>(null);
-  const closeCreation = useCallback(() => { router.replace("/", {scroll:false}); setPicked(null); setTimeout(() => opener.current?.focus(), 0); }, [router]);
   const rememberOpener = () => { opener.current = document.activeElement as HTMLElement; };
   const pathname=usePathname();
   const [selected,setSelected]=useState(()=>walkChapterAt(route,openChapter)?.id);
+  const {urlPlace,invalid:invalidLink,openPlace,leavePlace,replaceUrl}=usePlaceUrl();
+  // Leaving the builder returns to the story it was opened from, with that story's URL; no router navigation.
+  const closeCreation = useCallback(() => { replaceUrl(selected&&isPlaceId(selected)?placeMapUrl(selected):"/"); setPicked(null); setTimeout(() => opener.current?.focus(), 0); }, [replaceUrl,selected]);
   const [place,setPlace]=useState<Place|null>(null),[placeBusy,setPlaceBusy]=useState(false),[placeError,setPlaceError]=useState("");
   const [focus,setFocus]=useState<MapFocus|null>(()=>{const chapter=walkChapterAt(route,openChapter);return chapter?{...chapter.location}:null;});
   const [user,setUser]=useState<(Coordinates&{accuracyM:number})|null>(null);
@@ -66,6 +71,9 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const [geo,setGeo]=useState<"idle"|"loading"|"ready"|"error"|"denied">("idle"),[geoMessage,setGeoMessage]=useState(""),[geoOutside,setGeoOutside]=useState(false);
   const [prompt,setPrompt]=useState(false);
   const [mapHintVisible,setMapHintVisible]=useState(true);
+  // The place a URL change selected; the map moves to it once its pin is known (a linked place may still be loading).
+  const [focusPlace,setFocusPlace]=useState<string|null>(null),[seenUrlPlace,setSeenUrlPlace]=useState<string|null>(null);
+  const [linkNotice,setLinkNotice]=useState("");
   const [tracked,setTracked]=useState<MapJob[]>(()=>typeof window==="undefined"?[]:readMapJobs()),[jobs,setJobs]=useState<Record<string,GenerationJob>>({});
   const [preparing,setPreparing]=useState(false),[prepareError,setPrepareError]=useState("");
   const [retrying,setRetrying]=useState(false),[retryError,setRetryError]=useState("");
@@ -136,34 +144,60 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     })();
   },[params,pathname,router]);
 
+  // The URL names the selected catalog place: a link, Back/Forward or the "Рядом" tab change it, the screen follows.
+  // The walk builder has its own URL and keeps the story it was opened from.
+  if(!creating&&urlPlace!==seenUrlPlace){
+    setSeenUrlPlace(urlPlace);
+    if(urlPlace){
+      if(urlPlace!==selected){setSelected(urlPlace);setFocusPlace(urlPlace);setRetryError("");}
+      setPlace(null);setPlaceBusy(false);setPlaceError("");setPrompt(false);
+    }else if(selected&&isPlaceId(selected)){setSelected(undefined);setFocusPlace(null);}
+  }
+  // A place opened by the URL cancels the address lookup of a house tapped before.
+  useEffect(()=>{if(urlPlace)lookup.current?.abort();},[urlPlace]);
+
   const pins=useMemo<StoryPin[]>(()=>{
     const chapters=getWalkChapters(route).flatMap((chapter,index)=>index===openChapter?[{id:chapter.id,title:chapter.title,address:chapter.place,location:chapter.location,duration:chapter.audio?.duration_sec,chapter:index,number:index+1}]:[]);
     const own=tracked.map(item=>jobPin(item,jobs[item.id]));
-    // The text, sources and audio of a catalog point load when its sheet opens (usePlaceStory).
-    const places=catalog.map(place=>({id:place.id,placeId:place.id,title:place.title,address:place.address,location:place.location,duration:place.durationSec??undefined,status:place.durationSec!=null?"Готово к прослушиванию":"Текст готов",hasPhoto:place.photo,clusterable:true}));
+    const places=catalog.map(catalogPin);
     return [...chapters,...own,...places.filter(place=>![...chapters,...own].some(existing=>existing.id===place.id))];
   },[route,openChapter,tracked,jobs,catalog]);
+  // A linked place outside the loaded map cells opens from its detail; its catalog pin replaces it once the cell loads.
+  const linkedId=selected&&isPlaceId(selected)&&!pins.some(pin=>pin.id===selected)?selected:undefined;
+  const linked=usePlaceStory(linkedId);
+  const linkedHeader=linkedId&&linked.status==="ready"?linked.story?.place:undefined;
+  const linkedPin=useMemo(()=>linkedId&&linkedHeader&&linked.story?linkedPlacePin(linkedId,linkedHeader,linked.story):undefined,[linkedId,linkedHeader,linked.story]);
+  const storyPins=useMemo(()=>linkedPin?[...pins,linkedPin]:pins,[pins,linkedPin]);
+  const linkFailure=invalidLink?"Ссылка на историю повреждена.":linkedId&&linked.status==="missing"?"Эта история больше недоступна.":"";
+  if(linkFailure&&linkNotice!==linkFailure)setLinkNotice(linkFailure);
+  // A damaged or unpublished link leaves the URL without adding a step.
+  useEffect(()=>{if(linkFailure)leavePlace({replace:true});},[linkFailure,leavePlace]);
+  const focusPin=focusPlace?storyPins.find(value=>value.id===focusPlace):undefined;
+  if(focusPin){setFocusPlace(null);setFocus({...focusPin.location});}
   const recommendations=useMemo(()=>nearbyCenter?recommendNearbyStories(nearbyCenter,nearbyRadius,catalog.flatMap(place=>place.durationSec!=null?[{id:place.id,title:place.title,address:place.address,location:place.location,durationSec:place.durationSec,sourceCount:place.sources,factCount:place.facts}]:[])):[],[nearbyCenter,nearbyRadius,catalog]);
-  const visible=useMemo(()=>[...pins].sort((a,b)=>user?distance(user,a.location)-distance(user,b.location):0),[pins,user]);
+  const visible=useMemo(()=>[...storyPins].sort((a,b)=>user?distance(user,a.location)-distance(user,b.location):0),[storyPins,user]);
   const creationItems=useMemo(()=>[
     ...visible.filter(pin=>!creationMap.items.some(point=>distance(pin.location,point.location)<15)).map(pin=>({...pin,compact:true})),
     ...creationMap.items,
   ],[visible,creationMap.items]);
-  const active=pins.find(pin=>pin.id===selected);
+  const active=storyPins.find(pin=>pin.id===selected);
   const explorePanel=selectExplorePanel({nearbyCenter:Boolean(nearbyCenter),place:Boolean(place),placeBusy,placeError:Boolean(placeError)});
   const mapItems=useMemo(()=>place?[...visible,{id:"picked-place",title:place.address??"Выбранное место",location:place.location,pending:true}]:visible,[visible,place]);
 
   function select(pin:StoryPin){
-    lookup.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setRetryError("");setSelected(pin.id);setFocus({...pin.location});setPrompt(false);
+    lookup.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setRetryError("");setLinkNotice("");setSelected(pin.id);setFocus({...pin.location});setPrompt(false);
+    // Every opened place is a history step; any other story takes the place out of the URL.
+    if(isLinkablePlace(pin))openPlace(pin.id);else leavePlace();
   }
   function selectRecommendation(id:string){
-    const direct=pins.find(pin=>pin.id===id);
+    const direct=storyPins.find(pin=>pin.id===id);
     if(direct){select(direct);return;}
   }
   function dismissGeoPrompt(){rememberGeoPromptDismissal(localStorage);setPrompt(false);}
   async function findPlace(value:Coordinates){
     lookup.current?.abort();const controller=new AbortController();lookup.current=controller;
     prepareRequest.current?.abort();setPreparing(false);setPrepareError("");
+    leavePlace();
     setPrompt(false);setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);
     setFocus({...value});setNearbyCenter(value);
     if(!isMoscowPoint(value)){setPlaceBusy(false);setPlaceError("Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку.");return;}
@@ -220,7 +254,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       const record={id:job.id,address:job.address,location:target.location};
       setTracked(current=>[record,...current.filter(item=>item.id!==job.id)]);
       setJobs(current=>({...current,[job.id]:job}));
-      lookup.current?.abort();setPlace(null);setNearbyCenter(null);setRetryError("");setSelected(job.id);
+      lookup.current?.abort();setPlace(null);setNearbyCenter(null);setRetryError("");leavePlace();setSelected(job.id);
     }catch(error){
       if(controller.signal.aborted)return;
       if((error as {status?:number}).status===401){router.push(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`);return;}
@@ -251,9 +285,17 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   useHideNavigation(reading.expanded);
   const sheet = creating
     ? <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />
-    : prompt&&!active&&!place&&!placeBusy&&!placeError ? <LocationPromptSheet geo={geo} onLocate={locate} onDismiss={dismissGeoPrompt} />
+    : prompt&&!active&&!linkedId&&!place&&!placeBusy&&!placeError ? <LocationPromptSheet geo={geo} onLocate={locate} onDismiss={dismissGeoPrompt} />
     : active ? <StorySheet story={active} walkHref={active.address&&!placeBusy?walkHref:null} startRef={startRef} onStart={onStart}
-        onClose={()=>{reading.dismiss();setSelected(undefined);setRetryError("");}}
+        onClose={()=>{
+          // Closing a place is a step without it: Back brings the card back. An expanded card's entry is rewritten,
+          // so Back lands on the collapsed card rather than on the reading view.
+          if(isLinkablePlace(active)){
+            if(reading.expanded){reading.dismiss({keepHistoryEntry:true});leavePlace({replace:true});}
+            else leavePlace();
+          }else reading.dismiss();
+          setSelected(undefined);setRetryError("");
+        }}
         // The link pushes its own history entry; going back first would race with it.
         onWalk={()=>{reading.dismiss({keepHistoryEntry:true});rememberOpener();}}
         expanded={reading.expanded} onExpand={reading.expand} onCollapse={reading.collapse}
@@ -264,6 +306,9 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   // An empty slot must stay null: the shell gives the dock room only when there is something to show.
   const noticeList = [
     catalogStatus!=="ready"||catalogMaintenance?<div key="catalog" className={styles.catalogStatus} data-region="catalog-status"><span role="status" aria-atomic="true">{catalogMaintenance?"Сервис обновляется. Карта загрузится автоматически.":catalogStatus==="error"?"Не все места загрузились.":"Загружаем места…"}</span>{catalogStatus==="loading"&&!catalogMaintenance?<progress aria-label="Загрузка мест на карте"/>:null}{catalogStatus==="error"&&!catalogMaintenance?<button type="button" onClick={retryCatalog}>Повторить загрузку мест</button>:null}</div>:null,
+    !creating&&linkedId&&linked.status==="loading"?<LinkNotice key="link" message="Открываем историю…" onClose={()=>leavePlace({replace:true})} />
+    :!creating&&linkedId&&(linked.status==="error"||(linked.status==="ready"&&!linkedHeader))?<LinkNotice key="link" message="Не удалось открыть историю." alert onRetry={linked.status==="error"?linked.retry:undefined} onClose={()=>leavePlace({replace:true})} />
+    :!creating&&linkNotice?<LinkNotice key="link" message={linkNotice} onClose={()=>setLinkNotice("")} />:null,
     !creating&&geoMessage?<GeoNotice key="geo" message={geoMessage} outside={geoOutside} denied={geo==="denied"} onMoscow={showMoscow} onRetry={locate} onClose={()=>{setGeoMessage("");setGeoOutside(false);}} />:null,
     !creating&&!sheet&&mapHintVisible?<MapHintNotice key="hint" onClose={()=>setMapHintVisible(false)} />:null,
     !creating&&updateAvailable?<a key="update" className={a.notice} href="/update.html">Доступна новая версия · обновить</a>:null,
@@ -273,7 +318,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   return <>
     <MapShell
       map={{onViewport,viewState:nearbyMapView,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
-        onSelect:id=>{const pin=pins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
+        onSelect:id=>{const pin=storyPins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
         onPoint:point=>creating?setPicked(point):void findPlace(point)}}
       controls={creating?null:<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton>}
       notices={notices}
