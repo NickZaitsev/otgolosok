@@ -123,10 +123,10 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   const foodVisible = drawer === "food" && !completed;
   const foodMode = documentFoodMode ?? (route.walk && route.walk.start.location.lat === route.walk.finish.location.lat && route.walk.start.location.lon === route.walk.finish.location.lon ? "loop" : "open");
   const food = useWalkFood(geometry, foodMode, foodVisible);
-  const foodButton = geometry.length > 1 && food.manifest && !food.unavailable ? <button type="button" className={foodStyles.button} aria-label="Поесть рядом" aria-expanded={foodVisible} onClick={() => { setSelectedFood(null); setDrawer(foodVisible ? null : "food"); }}><FoodGlyph /><span>Поесть рядом</span></button> : null;
   if (food.unavailable && drawer === "food") setDrawer(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const [selectedFood, setSelectedFood] = useState<RouteFoodPlace | null>(null);
+  const foodButton = geometry.length > 1 && food.manifest && !food.unavailable ? <button type="button" className={foodStyles.button} aria-label="Поесть рядом" aria-expanded={foodVisible} onClick={() => { setSelectedFood(null); setDrawer(foodVisible ? null : "food"); }}><FoodGlyph /><span>Поесть рядом</span></button> : null;
   const [foodFit, setFoodFit] = useState<MapFitTarget | null>(null);
   useLayoutEffect(() => { if (drawer === "food" && drawerRef.current) drawerRef.current.scrollTop = 0; }, [drawer, selectedFood?.id]);
   const foodManifestError = geometry.length > 1 && food.error && !food.manifest && !food.unavailable;
