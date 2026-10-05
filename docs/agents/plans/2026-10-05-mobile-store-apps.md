@@ -1,6 +1,6 @@
 # Plan: iOS and Android apps for App Store, Google Play and RuStore (Capacitor shell)
 
-Status: plan, 2026-10-05. Scope cut to Android (Google Play + RuStore) on 2026-10-05 — see Approved decision 8; iOS items are deferred.
+Status: in progress since 2026-10-05. Scope cut to Android (Google Play + RuStore) on 2026-10-05 — see Approved decision 8; iOS items are deferred.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -32,7 +32,7 @@ External costs: Apple Developer Program $99/year, Google Play one-time $25, RuSt
 
 Planner defaults (not discussed explicitly; the implementing agent must confirm the first one with the user before creating any store record, the rest may be changed if the user objects):
 
-- Bundle ID / application ID `online.otgolosok.app` (reverse of the production domain). It is immutable after the first store upload.
+- Bundle ID / application ID `online.otgolosok.app` (reverse of the production domain). It is immutable after the first store upload. **Confirmed by the user on 2026-10-05.**
 - Display name «Отголосок»; Russian as the development region and the only localization.
 - iPhone only (no iPad target), portrait only — matches `orientation: "portrait"` in `src/app/manifest.ts`.
 - Google Play and RuStore public release also after Stage 2 (Android WebView has no lock-screen media controls; parity comes with Stage 2, see Step 2.4). Testing tracks start in Stage 1.

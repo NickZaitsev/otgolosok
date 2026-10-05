@@ -70,3 +70,8 @@ next-env.d.ts
 
 # Локальные переопределения Docker Compose
 compose.override.yaml
+
+# Android release signing (docs/agents/mobile-app.md)
+*.jks
+*.keystore
+/mobile/android/keystore.properties

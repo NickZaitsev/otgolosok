@@ -20,6 +20,8 @@ const eslintConfig = defineConfig([
     "artifacts/**",
     "test-results/**",
     "playwright-report/**",
+    // Generated native project: Capacitor copies its own bridge JS into the app assets.
+    "mobile/android/**",
   ]),
 ]);
 
