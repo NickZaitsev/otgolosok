@@ -1,0 +1,133 @@
+{
+  "verifiedAt": "2026-10-05T08:07:35.899Z",
+  "bundleId": "garden-ring-intros-2026-10-05-batch10",
+  "transport": "https-h2",
+  "results": [
+    {
+      "placeId": "osm:way:47513274",
+      "name": "Музей-мастерская А. С. Голубкиной",
+      "textId": "b5de0c3e-7ff8-40e1-9c30-01142e284917",
+      "audioJobId": "6f10348d-2763-41c1-844f-0a11ef4a9707",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/dc004f531c23c9b89a84a52f9091ec490f1f421dc8fdfd1246d50527c612b735.mp3",
+        "sha256": "dc004f531c23c9b89a84a52f9091ec490f1f421dc8fdfd1246d50527c612b735",
+        "bytes": 489069,
+        "durationSec": 61.104,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "03812b648c23ac339c7d06398fcb21554a47ef2e6fcfbebdace5a76bede21dbc",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/6c746b7d8fcd80979fb3f538ff81f71a9be73bc7c5974bf043c4bd7263534f77.jpg",
+        "src": "/api/place-images/6a2abbf2a36a522720d9487617ccb573d33164cb88f231a3f74527a130f2ab17.jpg",
+        "width": 960,
+        "height": 619,
+        "alt": "Музей-мастерская А. С. Голубкиной",
+        "author": "Shakko",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Anna_Golubkina%27s_Museum-workshop_(Moscow,_2012)_by_shakko_03.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:node:7887532120",
+      "name": "Музей советских игровых автоматов",
+      "textId": "cc0cf37d-664d-40be-a513-e6de13833c09",
+      "audioJobId": "09840748-b0a0-4418-8065-4f485df3dde2",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/6a853b2855d8c714a2730144fa6dfd8eab77da23792442cee91d5f7cb65f83d9.mp3",
+        "sha256": "6a853b2855d8c714a2730144fa6dfd8eab77da23792442cee91d5f7cb65f83d9",
+        "bytes": 485805,
+        "durationSec": 60.696,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "8448768da27ce2412444072c09334aae89c3c484bf15601d328aa9d7115ff29d",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/fd6568ead1f8d71a22b9510e7935cc34a0167f58dc157638e2caefd108fff374.jpg",
+        "src": "/api/place-images/cffb6d3501655275fb777396ddee01d8c874c8c40bbe95f2976ee479641ba11d.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Музей советских игровых автоматов",
+        "author": "Hanno Böck",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arcademuseum-moscow.jpg",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:way:164210810",
+      "name": "Музей В.А. Тропинина и московских художников его времени",
+      "textId": "002cf8a8-493e-471b-87b7-87d4e2143d07",
+      "audioJobId": "4a5d369f-575e-4e53-ad0c-e385775def17",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/cf9571935d6221a81ad26a26f663e3fadcc2d6561c82ac6064959354ae4f011e.mp3",
+        "sha256": "cf9571935d6221a81ad26a26f663e3fadcc2d6561c82ac6064959354ae4f011e",
+        "bytes": 485613,
+        "durationSec": 60.672,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "a4a4cb99421eb1ab526e274817ff8265b55a20b2ebe4830650a416bf35dd8dbe",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/65c1941e6830590211866c5e3ac08e68018a5d76a252651085fc868e9196c429.jpg",
+        "src": "/api/place-images/ebbf50a763dfd39cc5bcc55740a8bc6ab0a4a38c694b95fe18a98416f773d46a.jpg",
+        "width": 960,
+        "height": 640,
+        "alt": "Музей В. А. Тропинина и московских художников его времени",
+        "author": "Andrei Raikin / Андрей Райкин, Alexei Sidelnikov / Алексей Сидельников, Andrei Lobanov / Андрей Лобанов (фото)",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9C%D1%83%D0%B7%D0%B5%D0%B9_%D0%A2%D1%80%D0%BE%D0%BF%D0%B8%D0%BD%D0%B8%D0%BD%D0%B0.jpg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    }
+  ],
+  "summary": {
+    "publishedTexts": 3,
+    "revoiced": 3,
+    "f5": 3,
+    "elevenlabs": 0,
+    "newPhotos": 0,
+    "preservedPhotos": 3,
+    "totalCandidatesCompleted": 61
+  }
+}
