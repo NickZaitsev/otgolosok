@@ -7,7 +7,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 
 const source = await readFile(new URL("../src/app/icon.svg", import.meta.url), "utf8");
-const rounded = /\s*<rect width="512" height="512" rx="\d+" fill="(#[0-9a-f]{6})"\/>/i;
+const rounded = /\s*<rect width="512" height="512" rx="\d+" fill="([^"]+)"\/>/i;
 const background = source.match(rounded);
 if (!background) throw new Error("icon.svg: the 512×512 background <rect rx> is missing; update the icon variants");
 const fullBleed = source.replace(/\srx="\d+"/, "");
