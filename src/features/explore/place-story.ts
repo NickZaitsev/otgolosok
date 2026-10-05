@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import type { Coordinates } from "../tour/types";
 import { RequestError, fetchWithRetry } from "../walk-builder/request";
 import { mapCellStore } from "./map-cells";
 import { openDataAttribution, type SourceAttribution, type StorySourceRef } from "./source-attribution";
@@ -15,7 +16,9 @@ export type PlacePhoto = {
   license: string;
   licenseUrl: string;
 };
-export type PlaceStory = { paragraphs: string[]; attribution?: SourceAttribution; audioUrl?: string; durationSec?: number; photo?: PlacePhoto };
+/** What the map index knows about a point (backend/map-cells.mjs `toMapPoint`): enough to open a linked place before its cell loads. */
+export type PlaceHeader = { title: string; address: string; location: Coordinates };
+export type PlaceStory = { paragraphs: string[]; attribution?: SourceAttribution; audioUrl?: string; durationSec?: number; photo?: PlacePhoto; place?: PlaceHeader };
 export type PlaceStoryState = { status: "idle" | "loading" | "ready" | "missing" | "error"; story?: PlaceStory; retry: () => void };
 
 const CACHE_LIMIT = 100;
@@ -50,11 +53,21 @@ export function parsePlacePhoto(value: unknown): PlacePhoto | undefined {
   return { thumbnail, src, width, height, alt, author: text(photo.author) ?? null, sourceUrl, license, licenseUrl };
 }
 
+const coordinate = (value: unknown, limit: number) => typeof value === "number" && Number.isFinite(value) && Math.abs(value) <= limit ? value : undefined;
+
+/** The title and address as the map index shows them: the story title, else the place name; the address, else the name. */
+function parsePlaceHeader(place: { name?: unknown; address?: unknown; location?: unknown }, storyTitle: unknown): PlaceHeader | undefined {
+  const location = place.location as { lat?: unknown; lon?: unknown } | null | undefined;
+  const lat = coordinate(location?.lat, 90), lon = coordinate(location?.lon, 180), name = text(place.name);
+  if (lat === undefined || lon === undefined || !name) return undefined;
+  return { title: text(storyTitle) ?? name, address: text(place.address) ?? name, location: { lat, lon } };
+}
+
 /** Maps `GET /api/content/places/:id` to the sheet body; a body without a published text is malformed. */
 export function parsePlaceStory(value: unknown): PlaceStory {
-  const place = (value as { place?: { text?: { story?: unknown; audio?: unknown }; photo?: unknown } } | null)?.place;
+  const place = (value as { place?: { name?: unknown; address?: unknown; location?: unknown; text?: { story?: unknown; audio?: unknown }; photo?: unknown } } | null)?.place;
   const placeText = place?.text;
-  const story = placeText?.story as { paragraphs?: unknown; sources?: unknown } | null | undefined;
+  const story = placeText?.story as { title?: unknown; paragraphs?: unknown; sources?: unknown } | null | undefined;
   if (!story || typeof story !== "object" || !Array.isArray(story.paragraphs)) throw new Error("Некорректный ответ рассказа.");
   const paragraphs = (story.paragraphs as Array<{ text?: unknown } | null>)
     .map(paragraph => paragraph?.text).filter((paragraph): paragraph is string => typeof paragraph === "string" && paragraph.trim().length > 0);
@@ -63,7 +76,9 @@ export function parsePlaceStory(value: unknown): PlaceStory {
   const durationSec = audioUrl && typeof audio?.durationSec === "number" && Number.isFinite(audio.durationSec) && audio.durationSec > 0 ? audio.durationSec : undefined;
   const attribution = openDataAttribution(Array.isArray(story.sources) ? story.sources as StorySourceRef[] : undefined);
   const photo = parsePlacePhoto(place?.photo);
-  return { paragraphs, ...(attribution ? { attribution } : {}), ...(audioUrl ? { audioUrl } : {}), ...(durationSec ? { durationSec } : {}), ...(photo ? { photo } : {}) };
+  const header = place ? parsePlaceHeader(place, story.title) : undefined;
+  return { paragraphs, ...(attribution ? { attribution } : {}), ...(audioUrl ? { audioUrl } : {}), ...(durationSec ? { durationSec } : {}), ...(photo ? { photo } : {}),
+    ...(header ? { place: header } : {}) };
 }
 
 /** null: the story was unpublished after the map index was loaded. */

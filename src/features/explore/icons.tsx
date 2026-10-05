@@ -1,4 +1,4 @@
-export type IconName = "map" | "list" | "locate" | "headphones" | "walk" | "bookmark" | "user" | "plus" | "close" | "arrow" | "thumbUp" | "thumbDown";
+export type IconName = "map" | "list" | "locate" | "headphones" | "walk" | "bookmark" | "user" | "plus" | "close" | "arrow" | "share" | "thumbUp" | "thumbDown";
 const paths: Record<IconName, React.ReactNode> = {
   map:<><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2z"/><path d="M9 3v16M15 5v16"/></>,
   list:<><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></>,
@@ -12,6 +12,7 @@ const paths: Record<IconName, React.ReactNode> = {
   thumbUp:<><path d="M7 10v11H3V10zM7 10l5-7c1-1 3 0 2 3l-1 4h6a2 2 0 0 1 2 2l-2 7a2 2 0 0 1-2 2H7"/></>,
   thumbDown:<><path d="M7 14V3H3v11zM7 14l5 7c1 1 3 0 2-3l-1-4h6a2 2 0 0 0 2-2l-2-7a2 2 0 0 0-2-2H7"/></>,
   arrow:<path d="M4 12h16m-6-6 6 6-6 6"/>,
+  share:<><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></>,
 };
 export function ExploreIcon({name}: {name: IconName}) {
   return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;

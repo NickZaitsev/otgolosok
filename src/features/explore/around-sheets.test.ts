@@ -5,7 +5,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
 import { jobPin } from "./around-screen";
 import type { NearbyRecommendation } from "./nearby-stories";
-import { isExpandableStory } from "./story-pin";
+import { catalogPin, isExpandableStory, isLinkablePlace, linkedPlacePin } from "./story-pin";
 import type { GenerationJob } from "../generator/types";
 
 const story: NearbyRecommendation = {
@@ -211,4 +211,44 @@ it("история, которая ещё готовится, остаётся �
   expect(container.querySelector("section")?.hasAttribute("data-expandable")).toBe(false);
   expect(container.querySelector("[data-sheet-part='header'] button[aria-label='Закрыть карточку']")).not.toBeNull();
   await unmount();
+});
+
+const catalogDetail = Response.json({ place: { id: "osm:way:5", name: "Дом", address: "ул. Арбат, 5", location: { lat: 55.75, lon: 37.59 },
+  text: { story: { title: "Дом на Арбате", paragraphs: [{ text: "Первый абзац." }, { text: "Второй абзац." }] }, audio: null } } });
+const catalogPlace = { ...place, id: "osm:way:5", placeId: "osm:way:5" };
+const shareButton = (container: HTMLElement) => [...container.querySelectorAll("button")].find(button => button.textContent?.includes("Поделиться"));
+
+it.each([
+  { case: "развёрнутое место каталога", pin: catalogPlace, expanded: true, shown: true },
+  { case: "свёрнутое место каталога", pin: catalogPlace, expanded: false, shown: false },
+  { case: "место с идентификатором не из каталога OSM", pin: { ...catalogPlace, id: "long-story", placeId: "long-story" }, expanded: true, shown: false },
+])("«Поделиться» есть только в развёрнутой карточке места каталога: $case", async ({ pin, expanded, shown }) => {
+  vi.stubGlobal("fetch", vi.fn(async () => catalogDetail.clone()));
+  const { container, unmount } = await renderReading(pin, expanded);
+  await act(async () => { await vi.waitFor(() => expect(texts(container)).toContain("Первый абзац.")); });
+  expect(Boolean(shareButton(container))).toBe(shown);
+  await unmount();
+});
+
+it("готовая заказанная история не предлагает поделиться", async () => {
+  const { container, unmount } = await renderReading(readyPin(), true);
+  expect(texts(container).length).toBeGreaterThan(0);
+  expect(shareButton(container)).toBeUndefined();
+  await unmount();
+});
+
+it.each([
+  { case: "место каталога", pin: catalogPlace, linkable: true },
+  { case: "место с чужим идентификатором", pin: { ...catalogPlace, id: "long-story", placeId: "long-story" }, linkable: false },
+  { case: "заказанная история", pin: { ...place, jobId: point.id, placeId: "osm:way:5" }, linkable: false },
+  { case: "часть прогулки по месту каталога", pin: { ...catalogPlace, chapter: 1 }, linkable: false },
+])("получает ли история свой адрес: $case", ({ pin, linkable }) => {
+  expect(isLinkablePlace(pin)).toBe(linkable);
+});
+
+it("место по ссылке выглядит на карте так же, как точка каталога", () => {
+  const point = { id: "osm:way:5", location: { lat: 55.75, lon: 37.59 }, title: "Дом на Арбате", address: "ул. Арбат, 5", durationSec: 90, facts: 2, sources: 1, photo: true };
+  const photo = { src: "/images/places/way-5-000000000000.jpg", thumbnail: "/images/places/way-5-111111111111.jpg", width: 1, height: 1, alt: "Дом", author: null, sourceUrl: "https://a.test", license: "CC0", licenseUrl: "https://b.test" };
+  expect(linkedPlacePin(point.id, { title: point.title, address: point.address, location: point.location }, { paragraphs: [], durationSec: 90, photo })).toEqual(catalogPin(point));
+  expect(catalogPin({ ...point, durationSec: null, photo: false }).status).toBe("Текст готов");
 });

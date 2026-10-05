@@ -52,14 +52,16 @@ function encode(body, etag, encoding) {
 }
 
 /**
- * Public, revalidated JSON: strong content ETag, `no-cache` (always revalidate, 304 when unchanged) and br/gzip.
+ * A public, revalidated body: strong content ETag, `no-cache` (always revalidate, 304 when unchanged) and br/gzip.
  * @param {import("node:http").IncomingMessage} req
  * @param {import("node:http").ServerResponse} res
- * @param {string} body already serialized JSON
+ * @param {string} body
+ * @param {string} contentType
+ * @param {Record<string, string>} [headers] sent with 200 and 304 alike
  */
-export function sendCacheableJson(req, res, body) {
+export function sendCacheable(req, res, body, contentType, headers = {}) {
   const etag = etagOf(body);
-  const common = { ETag: `"${etag}"`, "Cache-Control": CACHE_CONTROL, Vary: VARY, "X-Content-Type-Options": "nosniff" };
+  const common = { ...headers, ETag: `"${etag}"`, "Cache-Control": CACHE_CONTROL, Vary: VARY, "X-Content-Type-Options": "nosniff" };
   if (matchesIfNoneMatch(req.headers["if-none-match"], etag)) {
     res.writeHead(304, common);
     res.end();
@@ -69,9 +71,19 @@ export function sendCacheableJson(req, res, body) {
   const payload = encoding === "identity" ? Buffer.from(body) : encode(body, etag, encoding);
   res.writeHead(200, {
     ...common,
-    "Content-Type": "application/json; charset=utf-8",
+    "Content-Type": contentType,
     "Content-Length": payload.length,
     ...(encoding === "identity" ? {} : { "Content-Encoding": encoding }),
   });
   res.end(req.method === "HEAD" ? undefined : payload);
+}
+
+/**
+ * Public, revalidated JSON (see sendCacheable).
+ * @param {import("node:http").IncomingMessage} req
+ * @param {import("node:http").ServerResponse} res
+ * @param {string} body already serialized JSON
+ */
+export function sendCacheableJson(req, res, body) {
+  sendCacheable(req, res, body, "application/json; charset=utf-8");
 }

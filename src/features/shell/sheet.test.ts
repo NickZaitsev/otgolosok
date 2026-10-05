@@ -7,13 +7,18 @@ import { Sheet } from "./sheet";
 
 let root: Root;
 let container: HTMLDivElement;
+/** Runs every ResizeObserver callback the sheet registered. */
 let resize: () => void;
-/** jsdom has no layout: the test decides how tall the body content is. */
-let contentHeight = 100;
+/** jsdom has no layout: the test decides how tall the body content and the footer are. */
+let contentHeight = 100, footerHeight = 0;
 
 beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
-  vi.stubGlobal("ResizeObserver", class { constructor(callback: () => void) { resize = callback; } observe() {} disconnect() {} });
+  const callbacks: (() => void)[] = [];
+  resize = () => callbacks.forEach(callback => callback());
+  vi.stubGlobal("ResizeObserver", class { constructor(callback: () => void) { callbacks.push(callback); } observe() {} disconnect() {} });
+  footerHeight = 0;
+  vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockImplementation(() => footerHeight);
   vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(200);
   vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockImplementation(() => contentHeight);
   container = document.createElement("div");
@@ -90,4 +95,16 @@ it("без ручки карточка не раскрывается, даже �
   const sheet = container.querySelector("section")!;
   expect(sheet.hasAttribute("data-expandable")).toBe(false);
   expect(sheet.hasAttribute("data-expanded")).toBe(false);
+});
+
+it("сообщает высоту подвала, чтобы прокрутка к элементу останавливалась над ним", async () => {
+  footerHeight = 81;
+  const { sheet } = await render();
+  expect(sheet.style.getPropertyValue("--sheet-footer-size")).toBe("81px");
+  footerHeight = 120;
+  await act(async () => { resize(); });
+  expect(sheet.style.getPropertyValue("--sheet-footer-size")).toBe("120px");
+  // Without a footer nothing is reserved.
+  await act(async () => { root.render(createElement(Sheet, { label: "История места", header: "Заголовок" }, "Текст")); });
+  expect(sheet.style.getPropertyValue("--sheet-footer-size")).toBe("");
 });
