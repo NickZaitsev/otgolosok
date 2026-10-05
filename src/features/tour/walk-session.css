@@ -8,12 +8,12 @@
    As in the card's media slot, it yields height first on a short screen, down to a tap target, so the title and actions stay visible. */
 .walk-session-photo{container-type:inline-size;display:flex;flex:0 1 auto;flex-direction:column;min-height:44px;overflow:hidden;margin:-20px -20px 16px}
 .walk-session-photo:empty{display:none}
-.walk-session-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.walk-session-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .walk-session-heading>div{min-width:0}
 .walk-session-heading h1{font-family:inherit;font-size:22px;font-weight:700;line-height:1.25;letter-spacing:-.03em;margin:4px 0 0;overflow-wrap:anywhere}
 .walk-session-meta,.walk-session-muted{font-size:13px;line-height:1.4;color:#687770;margin:0}
 .walk-session-muted{margin-top:10px}
-.walk-session-heading-actions{display:flex;flex:none;gap:8px}
+.walk-session-heading-actions{display:flex;flex-direction:column;flex:none;gap:8px}
 .walk-session-icon{flex:none;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;color:inherit;background:#203e380a;cursor:pointer}
 .walk-session-address{font-size:14px;line-height:1.5;margin:0 0 8px;color:#687770;overflow-wrap:anywhere}
 .walk-session-tools{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px}
