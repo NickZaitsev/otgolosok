@@ -57,6 +57,7 @@
   outline-offset: 2px;
 }
 
+/* The tint is translucent: lay it over the island colour, or the map shows through the button. */
 .foodToggle[aria-pressed="true"] {
-  background: var(--control-selected);
+  background-image: linear-gradient(var(--control-selected) 0 0);
 }
