@@ -203,3 +203,11 @@
   border: 2px solid var(--surface-island);
   border-radius: var(--radius-pill);
 }
+
+/* Like a place, a selected venue grows: the opened card points at one disc among many. */
+.food.selected > svg {
+  width: 36px;
+  height: 36px;
+  border-width: 3px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ink) 35%, transparent);
+}
