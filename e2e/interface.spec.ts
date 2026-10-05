@@ -209,6 +209,9 @@ test("профиль сохраняет имя даже при отказе из
   await page.goto("/account");
   await expect(page.getByLabel("Ваше имя")).toHaveCount(0);
   await expect(page.getByText("Личное пространство", { exact: true })).toHaveCount(0);
+  const social = page.getByRole("region", { name: "Отголосок в соцсетях" });
+  await expect(social.getByRole("link", { name: /Telegram/ })).toHaveAttribute("href", "https://t.me/otgolosok_online");
+  await expect(social.getByRole("link", { name: /YouTube/ })).toHaveAttribute("href", "https://www.youtube.com/@otgolosok-online/shorts");
   await page.getByRole("button", { name: "Редактировать профиль", exact: true }).click();
   await page.getByLabel("Ваше имя").fill("Анна Новая");
   await page.getByRole("button", { name: "Сохранить изменения" }).click();
