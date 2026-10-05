@@ -402,5 +402,36 @@
         "alt": "Волоколамское шоссе у огороженной бывшей территории Тушинского рынка, 2013 год"
       }
     ]
+  },
+  "longRevisions": {
+    "bundleId": "tushino-spartak-long-2026-10-05-v1",
+    "publishedAt": "2026-10-05",
+    "note": "Три рассказа прогулки расширены до ~2 минут и озвучены ElevenLabs (elevenlabs-v3, «Отголосок2»); прежние редакции сохранены в истории.",
+    "entries": [
+      {
+        "placeId": "osm:way:863613147",
+        "textId": "4a43d05e-7796-40a3-855c-4677f6b228e6",
+        "audioJobId": "c7100adc-1e5e-427c-8ad3-7fd9b7df5b7c",
+        "sha256": "291b7d3d1a4dc37a9e69629acbe45f37df475fb8987fe68be1a0a9ed7c1ce078",
+        "durationSec": 155.568,
+        "wordCount": 279
+      },
+      {
+        "placeId": "osm:relation:4006864",
+        "textId": "8e26a2d8-9f35-432c-a770-97ef13728e2f",
+        "audioJobId": "3f231f99-ef60-4dd3-bcbe-65ce12279e02",
+        "sha256": "96a6388ea3e669db8374a6ea39e1086e7fb1f03be8f54f95734c2e7b25a722d5",
+        "durationSec": 142.056,
+        "wordCount": 257
+      },
+      {
+        "placeId": "osm:relation:6085904",
+        "textId": "e2634f4e-7ceb-44f1-8826-8a62949978f4",
+        "audioJobId": "d8a0a915-be53-481d-9bbf-3bb549984c3d",
+        "sha256": "5e977c3857dd7a0181bca05fd1e503b0dc654e21eac816151b362caa2780b75d",
+        "durationSec": 141.336,
+        "wordCount": 250
+      }
+    ]
   }
 }
