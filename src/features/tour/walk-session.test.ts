@@ -364,3 +364,31 @@ it.each([
   expect(session.button()).toBeUndefined();
   await session.unmount();
 });
+
+it("адрес остановки показывается в «Читать историю», а не на карточке", async () => {
+  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+  const stop = { ...chapters[0], title: "Дом Пашкова", place: "Москва, Моховая улица, 26" };
+  expect(stop.content.story.paragraphs.length).toBeGreaterThan(0);
+  const container = document.createElement("div");
+  document.body.append(container);
+  const root = createRoot(container);
+  await act(async () => root.render(createElement(WalkSession, {
+    route, chapters: [stop, ...chapters.slice(1)], index: 0, active: true, completed: false,
+    user: null, positionFailed: false, resume: false,
+    titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
+    onStart: () => {}, onSelect: () => {}, onStop: () => {},
+    player: null, story: createElement("p", null, "текст истории"), settings: null, audioError: "",
+  })));
+  expect(container.textContent).not.toContain(stop.place);
+
+  const read = [...container.querySelectorAll<HTMLButtonElement>(".walk-session-tools button")].find(item => item.textContent === "Читать историю")!;
+  await act(async () => read.click());
+  const drawer = container.querySelector(".walk-session-drawer");
+  expect(drawer?.querySelector(".walk-session-address")?.textContent).toBe(stop.place);
+  expect(drawer?.textContent).toBe(`${stop.place}текст истории`);
+
+  await act(async () => root.unmount());
+  container.remove();
+  vi.unstubAllGlobals();
+});

@@ -201,7 +201,6 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         </div> : null}
       </header>
       {!active && !completed && !foodVisible ? own?.notes.map(note => <p key={note} className="walk-session-muted">{note}</p>) : null}
-      {active && chapter && chapter.title !== chapter.place ? <p className="walk-session-address">{chapter.place}</p> : null}
       {active && !drawer ? player : null}
       {active && audioError ? <p className="walk-session-notice" role="status">{audioError}</p> : null}
       {active && chapter && !chapter.audio && !hasText ? <p className="walk-session-muted">Без истории</p> : null}
@@ -231,7 +230,11 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         </> : drawer === "position" ? <div role="status">
           <p className="walk-session-muted">{!positionFailed ? "Определяем положение…" : positionDenied ? (nativePlatform() ? "Приложению запрещён доступ к геопозиции. Разрешите его в настройках телефона — до тех пор остановки переключаются вручную." : "Сайту запрещён доступ к геопозиции. Разрешите его в браузере — до тех пор остановки переключаются вручную.") : "Не удалось определить положение. Проверьте, включена ли геолокация на устройстве, — до тех пор остановки переключаются вручную."}</p>
           {positionFailed ? <GeoHelp open={positionDenied} onRetry={onRetryPosition} /> : null}
-        </div> : drawer === "story" ? story : drawer === "reviews" ? reviews : <>
+        </div> : drawer === "story" ? <>
+          {/* The address belongs to the story: on the card it only pushes the player and the map down. */}
+          {chapter && chapter.title !== chapter.place ? <p className="walk-session-address">{chapter.place}</p> : null}
+          {story}
+        </> : drawer === "reviews" ? reviews : <>
           {settings}
           {reviews ? <button type="button" className="walk-session-rate" aria-haspopup="dialog" onClick={rate}>Оценить прогулку</button> : null}
           {onImprove ? <button type="button" className="walk-session-rate" aria-haspopup="dialog" onClick={improve}>Что улучшить в прогулке?</button> : null}
