@@ -152,8 +152,11 @@ it.each([
 it.each([
   [false, false],
   [true, true],
-])("кнопка настроек есть только во время прогулки: active=%s → %s", (active, shown) => {
-  expect(Boolean(sessionDocument({ active }).querySelector("[aria-label='Настройки прогулки']"))).toBe(shown);
+])("кнопка настроек есть только во время прогулки, в строке инструментов: active=%s → %s", (active, shown) => {
+  const document = sessionDocument({ active });
+  expect(Boolean(document.querySelector(".walk-session-tools [aria-label='Настройки прогулки']"))).toBe(shown);
+  // The heading keeps only the cross, so a one-line title leaves no gap under it.
+  expect(document.querySelectorAll(".walk-session-heading-actions .walk-session-icon")).toHaveLength(1);
 });
 
 it("адреса старта и финиша не занимают карточку до старта", () => {
