@@ -37,6 +37,8 @@ import { WalkReviews } from "../reviews/walk-reviews";
 import { ImprovementDialog } from "../improvements/improvement-dialog";
 import { useLaunchReport } from "../walks/launches";
 import type { OwnWalk } from "../walks/own-walk";
+import { orientWalk, type WalkDirection } from "./walk-direction";
+import { useWalkDirection } from "./use-walk-direction";
 
 type SessionPhase = "reading" | "walking";
 
@@ -49,9 +51,13 @@ export function TourExperience({ route, walk, offline = null, offlineNotice = ""
 }
 
 function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, offlineNotice = "", reviewTarget, launchTarget, own }: { route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; offlineNotice?: string; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null }) {
-  const [route, setRoute] = useState(initialRoute);
-  const firstPoi = route.pois[0];
+  const [publishedRoute, setRoute] = useState(initialRoute);
+  const { direction: preferredDirection, setDirection } = useWalkDirection(initialRoute.id);
+  const [sessionDirection, setSessionDirection] = useState<WalkDirection>("forward");
   const [phase, setPhase] = useState<SessionPhase>("reading");
+  const direction = universal ? phase === "walking" ? sessionDirection : preferredDirection : "forward";
+  const route = useMemo(() => orientWalk(publishedRoute, direction), [publishedRoute, direction]);
+  const firstPoi = route.pois[0];
   const [completed, setCompleted] = useState(false);
   const [wakeStatus, setWakeStatus] = useState<WakeLockStatus>("idle");
   const [showSources, setShowSources] = useState(false);
@@ -121,7 +127,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const walkAudioUrl = storyChapter?.audio?.url ?? walkContent.story.audio_url;
   const walkUsesTestAudio = !universal && !walkAudioUrl;
   const { savedCheckpoint, saveCheckpoint, clearCheckpoint } = usePlaybackProgress(route.id,
-    chapters.flatMap((item) => item.audio ? [{ id: item.id, audioUrl: item.audio.url, durationSec: item.audio.duration_sec }] : []));
+    chapters.flatMap((item) => item.audio ? [{ id: item.id, audioUrl: item.audio.url, durationSec: item.audio.duration_sec }] : []), direction);
   const savedChapterIndex = savedCheckpoint ? chapters.findIndex((item) => item.id === savedCheckpoint.chapterId) : -1;
   const finish = route.walk?.finish.location ?? firstPoi.viewpoint ?? firstPoi.location;
   const baseTriggerConfig: TriggerConfig = {
@@ -189,6 +195,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   function startTour(resumeSaved = true, requestedIndex?: number) {
     if (phase !== "reading" || sessionActiveRef.current) return;
     setCompleted(false);
+    setSessionDirection(direction);
     sessionActiveRef.current = true;
     setWalkInProgress(true);
 
@@ -363,6 +370,13 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
       {universal && reviewTarget ? <ReviewDialog reviews={reviews} open={rateOpen} onClose={() => setRateOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
       {universal && reviewTarget ? <ImprovementDialog target={reviewTarget} open={improveOpen} onClose={() => setImproveOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
       {universal ? <WalkSession notice={offlineNotice} route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg}
+        direction={direction} foodMode={view?.document.mode} onDirectionChange={value => {
+          if (sessionActiveRef.current) return;
+          setDirection(value);
+          setChapterIndex(0);
+          setStoppedChapter(undefined);
+          setStage("stop");
+        }}
         user={position.diagnostics.lastFix} positionFailed={positionFailed(position.diagnostics)}
         positionDenied={position.diagnostics.sourceStatus === "permission-denied"} onRetryPosition={position.retry} resume={Boolean(savedCheckpoint)} resumeIndex={savedChapterIndex} titleRef={walkTitleRef} startRef={startButtonRef}
         onStart={index => startTour(true, index)} onSelect={selectChapter} onStop={stopTour} own={own}

@@ -4,7 +4,7 @@ export class RequestError extends Error {
 export class RejectedRequest extends RequestError {}
 export const shouldOfferResearch = (selection: "auto" | "manual", error: unknown) => selection === "auto" && error instanceof RequestError && ["WALK_STOPS_NOT_FOUND", "WALK_NOT_FOUND"].includes(error.code);
 
-type FetchInit = { headers?: HeadersInit; cache?: RequestCache; method?: string; body?: string };
+type FetchInit = { headers?: HeadersInit; cache?: RequestCache; method?: string; body?: string; noRetryStatuses?: readonly number[] };
 const NULL_BODY_STATUSES = new Set([101, 204, 205, 304]);
 
 /**
@@ -37,6 +37,7 @@ export async function fetchWithRetry(path: string, signal: AbortSignal, init: Fe
     } catch (error) {
       last = error;
       if (controller.signal.aborted && signal.aborted) throw signal.reason ?? error;
+      if (error instanceof RequestError && init.noRetryStatuses?.includes(error.status)) throw error;
       // A spent personal daily quota does not recover within seconds, unlike a busy queue.
       if (error instanceof RejectedRequest && (error.status !== 429 || error.code === "QUOTA_EXCEEDED")) throw error;
       const retryable = timedOut || error instanceof RequestError && (error.status === 429 || error.status >= 500) || !(error instanceof RequestError) && !(error instanceof DOMException && error.name === "AbortError");

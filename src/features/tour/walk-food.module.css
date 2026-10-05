@@ -1,0 +1,67 @@
+/* A secondary food action shares the footer without displacing the primary action. */
+.panel {
+  container-type: inline-size;
+}
+
+.button {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-width: var(--control-min);
+  min-height: var(--control-min);
+  padding: var(--space-xs);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--map-green);
+  font: inherit;
+  font-size: var(--text-secondary);
+  cursor: pointer;
+}
+
+.button[aria-expanded="true"],
+.button:hover {
+  background: var(--control-selected);
+}
+
+.retry {
+  min-height: var(--control-min);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.actions:has(.button) > :last-child {
+  min-width: 0;
+  padding-inline: var(--space-sm);
+}
+
+@container (width <= 320px) {
+  .button span {
+    display: none;
+  }
+}
+
+/* Food states can scroll fixed content as a last resort; the footer stays outside. */
+.body {
+  display: contents;
+}
+
+.bodyScrollable {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* The legacy drawer extends into panel padding; inside the food scroller it must fit its parent. */
+.bodyScrollable .drawer {
+  margin-right: 0;
+}

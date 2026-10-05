@@ -1,0 +1,98 @@
+.content,
+.card {
+  color: var(--map-green);
+  overflow-wrap: anywhere;
+}
+
+.content h2,
+.card h2 {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--text-control);
+}
+
+.content h3 {
+  margin: var(--space-sm) 0 var(--space-xs);
+  font-size: var(--text-secondary);
+}
+
+.card p {
+  margin: var(--space-xs) 0;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  width: 100%;
+  min-height: var(--control-min);
+  padding: var(--space-xs) 0;
+  border: 0;
+  border-bottom: 1px solid var(--border-island);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row > span {
+  min-width: 0;
+}
+
+.row span span {
+  display: block;
+  color: var(--muted);
+  font-size: var(--text-secondary);
+}
+
+.row:hover,
+.row:active {
+  background: var(--control-selected);
+}
+
+.glyph {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.link,
+.links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-min);
+  min-width: var(--control-min);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.content summary,
+.card summary {
+  min-height: var(--control-min);
+  cursor: pointer;
+}
+
+.attribution {
+  margin: var(--space-sm) 0 0;
+  color: var(--muted);
+  font-size: var(--text-meta);
+  line-height: var(--leading-control);
+}

@@ -15,8 +15,8 @@ function subscribe(onChange: () => void) {
   };
 }
 
-export function usePlaybackProgress(routeId: string, chapters: PlaybackChapter[]) {
-  const key = playbackStorageKey(routeId);
+export function usePlaybackProgress(routeId: string, chapters: PlaybackChapter[], direction: "forward" | "reverse" = "forward") {
+  const key = playbackStorageKey(routeId) + (direction === "reverse" ? ":reverse" : "");
   const getSnapshot = useCallback(() => {
     try { return window.localStorage.getItem(key); } catch { return null; }
   }, [key]);

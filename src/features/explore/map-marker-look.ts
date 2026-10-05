@@ -1,6 +1,6 @@
 import type { MapItem } from "./explore-map";
 
-export type MarkerKind = "place" | "stop" | "pending" | "endpoint" | "background";
+export type MarkerKind = "place" | "stop" | "pending" | "endpoint" | "background" | "food";
 export type MarkerLook = {
   kind: MarkerKind;
   /** A stop's number or nothing: marker contents are never upstream HTML. */
@@ -8,7 +8,7 @@ export type MarkerLook = {
   /** Square icon side in px; the icon is anchored at its centre. */
   size: number;
   /** Value of `data-marker`, which tests and e2e select by. */
-  dataMarker: "pin" | "dot" | "endpoint";
+  dataMarker: "pin" | "dot" | "endpoint" | "food";
   /** Stacking: the selected marker on top, secondary points under stories. */
   zIndex: number;
 };
@@ -22,7 +22,7 @@ const BACKGROUND_HIT = 32;
  * Precedence: a walk end, then a background point, then a numbered stop, then a pending story.
  */
 export function markerLook(item: MapItem, active: boolean): MarkerLook {
-  const kind: MarkerKind = item.endpoint
+  const kind: MarkerKind = item.foodKind ? "food" : item.endpoint
     ? "endpoint"
     : item.compact
       ? "background"
@@ -31,12 +31,12 @@ export function markerLook(item: MapItem, active: boolean): MarkerLook {
         : item.pending
           ? "pending"
           : "place";
-  const secondary = kind === "endpoint" || kind === "background";
+  const secondary = kind === "endpoint" || kind === "background" || kind === "food";
   return {
     kind,
     label: kind === "stop" ? String(item.number) : "",
     size: kind === "background" ? BACKGROUND_HIT : HIT,
-    dataMarker: kind === "endpoint" ? "endpoint" : kind === "background" ? "dot" : "pin",
+    dataMarker: kind === "endpoint" ? "endpoint" : kind === "background" ? "dot" : kind === "food" ? "food" : "pin",
     zIndex: active ? 1000 : secondary ? -1000 : 0,
   };
 }

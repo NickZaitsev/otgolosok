@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "./support/test";
-import { draftToWalkDocument, routeToWalkView } from "../src/features/walks/adapters";
+import { draftToWalkDocument, routeToWalkView, walkViewToRoute } from "../src/features/walks/adapters";
 import routeData from "../public/data/routes/paveletskaya.json" with { type: "json" };
 import type { Route } from "../src/features/tour/types";
 import editorialPhotos from "../backend/place-images-editorial.json" with { type: "json" };
@@ -12,7 +12,63 @@ const stops = [3, 5].map((n, i) => ({ address: `Москва, Арбат, ${n}`,
 // поэтому сразу после старта одно «paused» мигает. Запись истории никогда не бывает data:.
 const storyPlaying = (page: Page) => page.locator("audio").evaluate(el => {
   const audio = el as HTMLAudioElement;
-  return !audio.paused && !audio.currentSrc.startsWith("data:");
+  return Boolean(audio.currentSrc) && !audio.paused && !audio.currentSrc.startsWith("data:");
+});
+
+test("прогулка с конца меняет остановки и финиш, запоминает направление после перезагрузки", async ({ page }) => {
+  await setup(page);
+  const direction = page.getByRole("button", { name: "Пройти прогулку с конца" });
+  await direction.click();
+  await expect(direction).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Остановки · 2" }).click();
+  await expect(page.locator(".walk-session-stops li").first()).toContainText(stops[1].address);
+  await expect(page.locator(".walk-session-endpoint").first()).toHaveText(`Старт: ${stops[1].address}`);
+  await expect(page.locator(".walk-session-endpoint").last()).toHaveText(`Финиш: ${start.address}`);
+  await page.reload();
+  await expect(direction).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+  await expect(direction).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: stops[1].address, exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await expect(page.getByRole("heading", { name: stops[0].address, exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Предыдущая остановка" }).click();
+  await expect(page.getByRole("heading", { name: stops[1].address, exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: "К финишу", exact: true }).click();
+  await expect(page.getByRole("heading", { name: start.address, exact: true })).toBeVisible();
+  await expect(page.locator('[data-route-part="active"]')).toHaveCount(1);
+  await page.getByRole("button", { name: "Завершить", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Прогулка завершена" })).toBeVisible();
+});
+
+test("прогресс двух направлений независим и обратная прогулка продолжается после перезагрузки", async ({ page }) => {
+  const view = routeToWalkView(routeData as Route);
+  const route = walkViewToRoute(view);
+  const chapter = route.walk!.steps.at(-2)!;
+  const forward = route.walk!.steps[0];
+  const checkpoint = (step: typeof chapter) => ({ version: 1, routeId: route.id, chapterId: step.id, audioUrl: step.audio!.url, positionSec: 0 });
+  await page.addInitScript(({ routeId, forward }) => {
+    const key = `otgolosok:playback:${routeId}`;
+    if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(forward));
+  }, { routeId: route.id, forward: checkpoint(forward) });
+  await page.route("**/api/story-walks/paveletskaya/view", request => request.fulfill({ json: view }));
+  await page.goto("/walk?catalog=paveletskaya");
+  await expect(page.getByRole("button", { name: "Продолжить прогулку", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Пройти прогулку с конца" }).click();
+  await expect(page.getByRole("button", { name: "Начать прогулку", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await expect(page.getByRole("heading", { name: chapter.title, exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Пройти прогулку с конца" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Продолжить прогулку", exact: true }).click();
+  await expect(page.getByRole("heading", { name: chapter.title, exact: true })).toBeVisible();
+  const saved = await page.evaluate(routeId => ({
+    forward: JSON.parse(localStorage.getItem(`otgolosok:playback:${routeId}`)!),
+    reverse: JSON.parse(localStorage.getItem(`otgolosok:playback:${routeId}:reverse`)!),
+  }), route.id);
+  expect(saved.forward).toEqual(checkpoint(forward));
+  expect(saved.reverse).toEqual(checkpoint(chapter));
 });
 
 async function setup(page: import("@playwright/test").Page, empty = false, destination = stops[1]) {
@@ -24,6 +80,7 @@ async function setup(page: import("@playwright/test").Page, empty = false, desti
     localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
   }, { id, document });
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.goto(`/walk?local=${id}`);
 }
 
@@ -83,6 +140,7 @@ test("прогулка по ссылке открывается на перво�
     localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
   }, { id, document });
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.goto(`/walk?local=${id}`);
   await expect(page.getByRole("button", { name: "Начать прогулку", exact: true })).toBeVisible();
   await expect.poll(() => firstStopIsVisible(page)).toBe(true);
@@ -242,6 +300,7 @@ test("гостевая прогулка показывает опубликов�
   }, { id, document });
   const requests: unknown[] = [];
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.route("**/api/story-walks/resolve", route => {
     requests.push(route.request().postDataJSON());
     return route.fulfill({ json: { document, revision: 0, contentVersion: "e".repeat(64), chapters: [{ id: document.stops[0].id, status: "text_ready",
@@ -270,6 +329,7 @@ async function openPhotoStop(page: Page, photo: typeof placePhoto | null = place
     localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
   }, { id, document });
   await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+  await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.route("**/api/story-walks/resolve", route => route.fulfill({ json: { document, revision: 0, contentVersion: "f".repeat(64), chapters: [{ id: document.stops[0].id, status: "text_ready",
     story: { title: "Кинотеатр «Художественный»", address: stops[0].address, paragraphs: [{ text: "Рассказ о кинотеатре.", factIds: [] }], sources: [], facts: [] }, audio: null }] } }));
   await page.route(`**/api/content/places/${photoPlace}`, route => route.fulfill({ json: { place: { id: photoPlace,
@@ -444,6 +504,7 @@ test.describe("отзывы к каталожной прогулке", () => {
   async function openWithReviews(page: Page) {
     const writes: Array<{ method: string; body: unknown; key: string | null }> = [];
     await page.route("**/api/**", route => route.fulfill({ json: { user: null } }));
+    await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
     await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: oneStop }));
     await page.route("**/api/story-walks/paveletskaya/reviews**", async route => {
       const request = route.request();
@@ -522,6 +583,19 @@ test.describe("переключение остановок", () => {
     await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
   }
   const paused = (page: Page) => page.locator("audio").evaluate(el => (el as HTMLAudioElement).paused);
+
+  test("по месту в обратном направлении играет рассказ последней остановки", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("otgolosok:walk-settings", JSON.stringify({ advance: "place", rate: 1 })));
+    await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: view }));
+    await page.goto("/walk?catalog=paveletskaya&replay=walk&speed=20");
+    await page.getByRole("button", { name: "Пройти прогулку с конца" }).click();
+    await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+    await expect.poll(() => storyPlaying(page), { timeout: 20_000 }).toBe(true);
+    const chapter = walkViewToRoute(view).walk!.steps.at(-1)!;
+    await expect(page.getByRole("heading", { name: chapter.title, exact: true })).toBeVisible();
+    await expect(page.locator("audio")).toHaveAttribute("src", chapter.audio!.url);
+    await expect(page.locator(".walk-session-meta")).toHaveCount(0);
+  });
 
   test("по месту история начинается сама, когда идущий подходит к остановке", async ({ page }) => {
     await open(page, "place", "&replay=walk&speed=20");

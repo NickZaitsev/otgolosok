@@ -1,8 +1,10 @@
+import { downloadOfflineFood, OFFLINE_FOOD_MAX_BYTES, offlineFoodSummary, seedOfflineFood, type OfflineFood, type OfflineFoodBundle } from "../food/offline-food";
+import { fetchFoodWithRetry } from "../food/food-cells";
 import { validateWalkView, type WalkView } from "./model";
 
 export const WALK_PACK_CACHE = "walk-packs-v1";
 const PACK_ROOT = "/__offline/walks/";
-const MAX_PACK_BYTES = 60 * 1024 * 1024;
+export const MAX_PACK_BYTES = 60 * 1024 * 1024;
 // Published routes (published-route-cache.ts) share this cache and its recordings.
 const PUBLISHED_ROUTE = /^\/api\/story-walks\/[^/]+$/;
 
@@ -30,6 +32,7 @@ export type OfflineWalkManifest = {
   contentVersion: string;
   savedAt: string;
   audio: OfflineAudio[];
+  food?: OfflineFood;
 };
 type OfflinePointer = { version: 1; stage: string; manifest: OfflineWalkManifest };
 type CachePort = Pick<Cache, "match" | "put" | "delete" | "keys">;
@@ -109,6 +112,7 @@ export async function saveWalkOffline(view: WalkView, ref: OfflineWalkRef, optio
   fetcher?: typeof fetch;
   now?: () => Date;
   maxBytes?: number;
+  foodFetcher?: typeof fetchFoodWithRetry;
 } = {}) {
   validateWalkView(view);
   const { scope, walkId } = ref;
@@ -145,8 +149,20 @@ export async function saveWalkOffline(view: WalkView, ref: OfflineWalkRef, optio
       if (bytesTotal > maxBytes) throw new Error("Офлайн-комплект прогулки слишком большой.");
       audio.push({ chapterId: chapter.id, url: chapter.audio.url, sha256: chapter.audio.sha256, bytes: body.byteLength });
     }
+    const food = await downloadOfflineFood(view.document.route?.geometry ?? [], Math.min(OFFLINE_FOOD_MAX_BYTES, maxBytes - bytesTotal), options.foodFetcher);
+    let foodWarning = food.warning;
+    if (food.bundle) {
+      try {
+        await cache.put(`${stage}/food/manifest.json`, response(food.bundle.manifest));
+        for (const cell of food.bundle.cells) await cache.put(`${stage}/food/${cell.key.replace(":", "/")}`, new Response(cell.body, { headers: { "Content-Type": "application/json", ETag: `"${cell.etag}"` } }));
+      } catch {
+        await removeStage(cache, `${stage}/food/`);
+        food.bundle = null;
+        foodWarning = true;
+      }
+    }
     const manifest: OfflineWalkManifest = { version: 1, walkId, scope, revision: view.revision, contentVersion: view.contentVersion,
-      savedAt: (options.now ?? (() => new Date()))().toISOString(), audio };
+      savedAt: (options.now ?? (() => new Date()))().toISOString(), audio, ...(food.bundle ? { food: offlineFoodSummary(food.bundle) } : {}) };
     await cache.put(`${stage}/view.json`, response(view));
     await cache.put(`${stage}/manifest.json`, response(manifest));
     const priorResponse = await cache.match(pointerKey(scope, walkId));
@@ -155,14 +171,15 @@ export async function saveWalkOffline(view: WalkView, ref: OfflineWalkRef, optio
     await cache.put(pointerKey(scope, walkId), response(pointer));
     if (prior && prior.stage !== stage) await removeStage(cache, prior.stage);
     await pruneAudio(cache).catch(() => {});
-    return { manifest, availableAudio: audio.length };
+    return { manifest, availableAudio: audio.length, foodWarning };
   } catch (error) {
     await removeStage(cache, stage).then(() => pruneAudio(cache)).catch(() => {});
     throw error instanceof Error ? error : new Error("Не удалось сохранить прогулку без сети.");
   }
 }
 
-export async function loadOfflineWalk({ scope, walkId }: OfflineWalkRef, cache?: CachePort): Promise<{ view: WalkView; manifest: OfflineWalkManifest } | null> {
+/** `seedFood` puts the saved food cells into the shared store: only for a walk opened from this copy, not for status checks. */
+export async function loadOfflineWalk({ scope, walkId }: OfflineWalkRef, cache?: CachePort, { seedFood = false }: { seedFood?: boolean } = {}): Promise<{ view: WalkView; manifest: OfflineWalkManifest } | null> {
   const storage = await openCache(cache);
   const pointerResponse = await storage.match(pointerKey(scope, walkId));
   const pointer = pointerResponse ? readPointer(await pointerResponse.json().catch(() => null)) : null;
@@ -170,7 +187,24 @@ export async function loadOfflineWalk({ scope, walkId }: OfflineWalkRef, cache?:
   const viewResponse = await storage.match(`${pointer.stage}/view.json`);
   if (!viewResponse) return null;
   try {
-    return { view: validateWalkView(await viewResponse.json()), manifest: pointer.manifest };
+    const view = validateWalkView(await viewResponse.json());
+    if (seedFood && pointer.manifest.food) {
+      try {
+        const manifest = await (await storage.match(`${pointer.stage}/food/manifest.json`))?.json();
+        const cells: OfflineFoodBundle["cells"] = [];
+        for (const c of pointer.manifest.food.cells) {
+          const cached = await storage.match(`${pointer.stage}/food/${c.key.replace(":", "/")}`);
+          if (!cached) throw new Error("Офлайн-ячейка заведений отсутствует.");
+          const body = await cached.text();
+          if (new TextEncoder().encode(body).byteLength !== c.bytes) throw new Error("Офлайн-ячейка заведений повреждена.");
+          cells.push({ ...c, body });
+        }
+        seedOfflineFood({ manifest, cells });
+      } catch {
+        // A damaged optional food copy never prevents opening the saved walk.
+      }
+    }
+    return { view, manifest: pointer.manifest };
   } catch {
     return null;
   }

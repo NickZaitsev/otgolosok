@@ -149,7 +149,7 @@ export async function loadWalkWithOfflineCopy(load: (signal: AbortSignal) => Pro
     return { view: await load(signal), offline: false };
   } catch (error) {
     if (signal.aborted || !ref || error instanceof WalkLoadError && error.status >= 400 && error.status < 500 && error.status !== 408 && error.status !== 429) throw error;
-    const saved = await loadOfflineWalk(ref).catch(() => null);
+    const saved = await loadOfflineWalk(ref, undefined, { seedFood: true }).catch(() => null);
     if (saved && usable(saved.view)) return { view: saved.view, offline: true, savedAt: saved.manifest.savedAt };
     throw error;
   }

@@ -1,3 +1,4 @@
+import { downloadOfflineFood, OFFLINE_FOOD_MAX_BYTES, seedOfflineFood, type OfflineFoodBundle } from "../food/offline-food";
 import type { Route } from "./types";
 import { applyPublishedRoute } from "./published-route";
 
@@ -71,11 +72,16 @@ async function cachedPublication(cache: Cache, base: Route, url: string) {
   try {
     const manifest = await cache.match(url);
     if (!manifest) return base;
-    const merged = applyPublishedRoute(base, await manifest.json());
+    const value = await manifest.json();
+    const merged = applyPublishedRoute(base, value);
     if (merged === base) return base;
     const audio = generatedAudio(merged);
     const available = await Promise.all(audio.map(entry => cache.match(entry.url)));
-    return available.every(Boolean) ? merged : base;
+    if (!available.every(Boolean)) return base;
+    if (value.offlineFood) {
+      try { seedOfflineFood(value.offlineFood as OfflineFoodBundle); } catch { /* A damaged optional copy does not block the walk. */ }
+    }
+    return merged;
   } catch {
     return base;
   }
@@ -112,7 +118,10 @@ export async function loadPublishedRoute(base: Route, signal: AbortSignal, { aud
       await cache.put(entry.url, await fetchAudio(entry, signal, audioTimeoutMs));
     }
     signal.throwIfAborted();
-    await cache.put(url, new Response(JSON.stringify(merged), { headers: { "Content-Type": "application/json" } }));
+    const food = await downloadOfflineFood(merged.walk?.path?.coordinates.map(([lon, lat]) => ({ lat, lon })) ?? [], OFFLINE_FOOD_MAX_BYTES, undefined, signal);
+    signal.throwIfAborted();
+    // The route snapshot owns its food copy: replacement and removal cannot leave orphan cells.
+    await cache.put(url, new Response(JSON.stringify({ ...merged, ...(food.bundle ? { offlineFood: food.bundle } : {}) }), { headers: { "Content-Type": "application/json" } }));
     return merged;
   } catch {
     return cachedPublication(cache, base, url);

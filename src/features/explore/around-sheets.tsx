@@ -18,6 +18,20 @@ import { isExpandableStory, isLinkablePlace, type StoryPin } from "./story-pin";
 import a from "./around.module.css";
 import styles from "./around-sheets.module.css";
 
+import { FoodCard } from "../food/food-list";
+import type { FoodManifest, FoodPlace } from "../food/food-cells";
+import type { createFoodHoursCache } from "../food/food-walk-model";
+
+export function FoodSheet({ place, manifest, hours, distanceM, onClose }: {
+  place: FoodPlace; manifest: FoodManifest; hours: ReturnType<typeof createFoodHoursCache>;
+  distanceM?: number; onClose: () => void;
+}) {
+  return <Sheet name="food" labelledBy="food-place-title" header={<div className={a.headerRow}>
+    <h2 id="food-place-title" className={a.title}>{place.name}</h2>
+    <button type="button" className={a.iconButton} aria-label="Закрыть карточку" onClick={onClose}><ExploreIcon name="close" /></button>
+  </div>}><FoodCard place={place} manifest={manifest} hours={hours} heading={false} distanceLabel={distanceM === undefined ? undefined : `≈ ${Math.round(distanceM)} м от вас`} /></Sheet>;
+}
+
 type GeoState = "idle" | "loading" | "ready" | "error" | "denied";
 
 /** Asks for geolocation once: the one action is in the footer, closing it is remembered by the screen. */

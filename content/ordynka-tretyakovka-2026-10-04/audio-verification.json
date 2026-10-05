@@ -1,0 +1,155 @@
+{
+  "verifiedAt": "2026-10-04T19:58:32.704769+00:00",
+  "shareUrl": "https://otgolosok.online/walk?share=6cacfdd1-defd-4afb-940f-5085356d0315",
+  "voiceName": "Отголосок2",
+  "voiceId": "9ivxhQ6xIsHd6R3Xc635",
+  "provider": "elevenlabs",
+  "model": "eleven_v3",
+  "ready": 7,
+  "total": 7,
+  "durationSec": 641.208,
+  "durationMinutes": 10.69,
+  "checks": {
+    "currentTextIds": true,
+    "storiesMatchBundle": true,
+    "previousVersionAudioRejected": true,
+    "downloadedAllFiles": true,
+    "sha256AndBytes": true,
+    "ffprobeDuration": true,
+    "publicWalkAudioReady": 7,
+    "mobileViewport": {
+      "width": 390,
+      "height": 844
+    },
+    "mobileStopsAndSources": 7,
+    "playPauseStops": [
+      1,
+      6,
+      7
+    ],
+    "audioErrors": false,
+    "fieldChecked": false
+  },
+  "rows": [
+    {
+      "placeId": "osm:node:8044478986",
+      "textId": "1d513461-e6eb-4740-9867-7b823ea20092",
+      "ready": true,
+      "url": "/api/story-audio/920a6338597d3b347303fe5494343a916e3d8344b6d310bbd45d5d83a3acc26a.mp3",
+      "sha256": "920a6338597d3b347303fe5494343a916e3d8344b6d310bbd45d5d83a3acc26a",
+      "bytes": 706605,
+      "durationSec": 88.296,
+      "model": "eleven_v3",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    {
+      "placeId": "osm:node:1378700996",
+      "textId": "a59baa16-8451-4a26-a1ad-ad32477ce6ed",
+      "ready": true,
+      "url": "/api/story-audio/5403c4f1853252b4f888e31fb3ee1c43a6bd729d4164d9c482e51daaefc2eab9.mp3",
+      "sha256": "5403c4f1853252b4f888e31fb3ee1c43a6bd729d4164d9c482e51daaefc2eab9",
+      "bytes": 702189,
+      "durationSec": 87.744,
+      "model": "eleven_v3",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    {
+      "placeId": "osm:relation:20429251",
+      "textId": "dca585fb-7890-4c77-ac74-7367683fd26f",
+      "ready": true,
+      "url": "/api/story-audio/442a02af2a4d944017e4bdb41e5be5d425e6e9d0da72980f8c0f6f3163edc69c.mp3",
+      "sha256": "442a02af2a4d944017e4bdb41e5be5d425e6e9d0da72980f8c0f6f3163edc69c",
+      "bytes": 700269,
+      "durationSec": 87.504,
+      "model": "eleven_v3",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    {
+      "placeId": "osm:way:53548437",
+      "textId": "a9a4916b-ae7d-48d4-b28c-9e6f6af6a658",
+      "ready": true,
+      "url": "/api/story-audio/6511d6c1eb409398f8f90da4cd8e4a261007d361466f5aaf5f42ee152bdd50bd.mp3",
+      "sha256": "6511d6c1eb409398f8f90da4cd8e4a261007d361466f5aaf5f42ee152bdd50bd",
+      "bytes": 742509,
+      "durationSec": 92.784,
+      "model": "eleven_v3",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    {
+      "placeId": "osm:way:52435403",
+      "textId": "73aed695-a9fe-4b1c-b392-37f6386c06c1",
+      "ready": true,
+      "url": "/api/story-audio/2f4b2d0b5f6474e4a04d5217177b7a8a8991305773fed3a13a8b6c0a5a3346fc.mp3",
+      "sha256": "2f4b2d0b5f6474e4a04d5217177b7a8a8991305773fed3a13a8b6c0a5a3346fc",
+      "bytes": 747501,
+      "durationSec": 93.408,
+      "model": "eleven_v3",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    {
+      "placeId": "osm:relation:1907261",
+      "textId": "9659a7dd-366b-4c1f-bbb1-eb1db881c122",
+      "ready": true,
+      "url": "/api/story-audio/68b712e417b89d57f892fc29933c1eafdd899bef07851ec2bae5c887d447fa95.mp3",
+      "sha256": "68b712e417b89d57f892fc29933c1eafdd899bef07851ec2bae5c887d447fa95",
+      "bytes": 837741,
+      "durationSec": 104.688,
+      "model": "eleven_v3",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    {
+      "placeId": "osm:way:52435420",
+      "textId": "47f402e8-d21a-4f37-9702-824685427e5a",
+      "ready": true,
+      "url": "/api/story-audio/3a3fe3cb6deec361e05797c82edb6e6c82e714443c558b77d7cad4d061555ab4.mp3",
+      "sha256": "3a3fe3cb6deec361e05797c82edb6e6c82e714443c558b77d7cad4d061555ab4",
+      "bytes": 694509,
+      "durationSec": 86.784,
+      "model": "eleven_v3",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    }
+  ],
+  "browserAudio": [
+    {
+      "stop": 1,
+      "playing": true,
+      "currentTime": 0.305117,
+      "duration": 88.24,
+      "error": null,
+      "source": "https://otgolosok.online/api/story-audio/920a6338597d3b347303fe5494343a916e3d8344b6d310bbd45d5d83a3acc26a.mp3",
+      "paused": true
+    },
+    {
+      "stop": 6,
+      "playing": true,
+      "currentTime": 0.309337,
+      "duration": 104.64,
+      "error": null,
+      "source": "https://otgolosok.online/api/story-audio/68b712e417b89d57f892fc29933c1eafdd899bef07851ec2bae5c887d447fa95.mp3",
+      "paused": true
+    },
+    {
+      "stop": 7,
+      "playing": true,
+      "currentTime": 0.307843,
+      "duration": 86.72,
+      "error": null,
+      "source": "https://otgolosok.online/api/story-audio/3a3fe3cb6deec361e05797c82edb6e6c82e714443c558b77d7cad4d061555ab4.mp3",
+      "paused": true
+    }
+  ]
+}

@@ -56,3 +56,11 @@
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
+
+.foodToggle[aria-pressed="true"] {
+  background: var(--control-selected);
+}
+
+.foodToggle svg {
+  stroke: none;
+}

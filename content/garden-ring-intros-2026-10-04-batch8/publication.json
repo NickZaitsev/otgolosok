@@ -1,0 +1,226 @@
+{
+  "verifiedAt": "2026-10-04T18:01:21.264Z",
+  "bundleId": "garden-ring-intros-2026-10-04-batch8",
+  "transport": "https-h2",
+  "results": [
+    {
+      "placeId": "osm:node:2613597034",
+      "name": "Музей искусства народов Востока",
+      "textId": "94f48d76-572b-41ef-ae8a-abb9387b028f",
+      "audioJobId": "81dd25d1-e616-4c7b-a261-26802d400ac5",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/e08719b7d6ba544a28e13f8e4b4adf04b7a9dbe84f68e4894bfdcc1e80754684.mp3",
+        "sha256": "e08719b7d6ba544a28e13f8e4b4adf04b7a9dbe84f68e4894bfdcc1e80754684",
+        "bytes": 538413,
+        "durationSec": 67.272,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "cd66dae83eeb3959c8262038f6b5e0661e1f21444273c3754ec94d8b3c746a29",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/067376a6d0dde7a912747d75c1eecaf7cf7751c760f4fdfda05ad8726b987493.jpg",
+        "src": "/api/place-images/b5a812bdea9f799f0ecb5f0645c68b8ac1fce3335b65718c88edfbdd1bfa2098.jpg",
+        "width": 960,
+        "height": 522,
+        "alt": "Государственный музей Востока",
+        "author": "Panther",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:East_nations_art_museum_in_Moscow_shot_01.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:node:3502941745",
+      "name": "Музей-квартира А.М. Васнецова",
+      "textId": "31776b22-ef22-4728-85e7-7c9b34fe8306",
+      "audioJobId": "a98db544-5024-4afc-9bdc-92b5e6eb5d27",
+      "audioProfile": "elevenlabs-v3",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/4827317a7996f6bcb19165b9f7b23c0c6a91810d39eab82b31a6ef70b389dbcd.mp3",
+        "sha256": "4827317a7996f6bcb19165b9f7b23c0c6a91810d39eab82b31a6ef70b389dbcd",
+        "bytes": 430125,
+        "durationSec": 53.736,
+        "model": "eleven_v3",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "photo": {
+        "thumbnail": "/api/place-images/0363403b50332194a1a3a2235ad13714a52d012d28f830245e6d9e524f2130ed.jpg",
+        "src": "/api/place-images/e87d71a9e135b54149e52a0f231700c07a656bb744d2e70e8ddf3f4948fc5a38.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Мемориальный музей-квартира А. М. Васнецова",
+        "author": "SergeyStepykin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%94%D0%BE%D1%85%D0%BE%D0%B4%D0%BD%D1%8B%D0%B9_%D0%B4%D0%BE%D0%BC_(%D0%B2_%D0%BE%D0%B4%D0%BD%D0%BE%D0%B9_%D0%B8%D0%B7_%D0%BA%D0%B2%D0%B0%D1%80%D1%82%D0%B8%D1%80_%D1%8D%D1%82%D0%BE%D0%B3%D0%BE_%D0%B4%D0%BE%D0%BC%D0%B0_%D0%B6%D0%B8%D0%BB_%D0%92%D0%B0%D1%81%D0%BD%D0%B5%D1%86%D0%BE%D0%B2_%D0%90._%D0%9C._%D0%B2_%D0%BF%D0%B5%D1%80%D0%B8%D0%BE%D0%B4_%D1%81_1904_%D0%BF%D0%BE_1933_%D0%B3%D0%B3.).JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [
+        {
+          "id": "a31d3178-92fd-44f5-8cd3-077b039e6966",
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "shareToken": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977"
+        },
+        {
+          "id": "7e58ab4a-70be-465c-aa36-45b4676133ab",
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "shareToken": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403"
+        },
+        {
+          "id": "68bf6161-ee73-4ba2-b4fa-a7ec46c13122",
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "shareToken": "2e8d898b-241b-432d-8408-603ebb965177"
+        }
+      ],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": [
+        {
+          "id": "a31d3178-92fd-44f5-8cd3-077b039e6966",
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "shareToken": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "chapterId": "a31d3178-92fd-44f5-8cd3-077b039e6966-stop-4",
+          "status": "ready",
+          "audio": {
+            "url": "/api/story-audio/4827317a7996f6bcb19165b9f7b23c0c6a91810d39eab82b31a6ef70b389dbcd.mp3",
+            "sha256": "4827317a7996f6bcb19165b9f7b23c0c6a91810d39eab82b31a6ef70b389dbcd",
+            "durationSec": 53.736
+          },
+          "httpsTextVerified": true
+        },
+        {
+          "id": "7e58ab4a-70be-465c-aa36-45b4676133ab",
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "shareToken": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "chapterId": "7e58ab4a-70be-465c-aa36-45b4676133ab-stop-4",
+          "status": "ready",
+          "audio": {
+            "url": "/api/story-audio/4827317a7996f6bcb19165b9f7b23c0c6a91810d39eab82b31a6ef70b389dbcd.mp3",
+            "sha256": "4827317a7996f6bcb19165b9f7b23c0c6a91810d39eab82b31a6ef70b389dbcd",
+            "durationSec": 53.736
+          },
+          "httpsTextVerified": true
+        },
+        {
+          "id": "68bf6161-ee73-4ba2-b4fa-a7ec46c13122",
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "shareToken": "2e8d898b-241b-432d-8408-603ebb965177",
+          "chapterId": "68bf6161-ee73-4ba2-b4fa-a7ec46c13122-stop-4",
+          "status": "ready",
+          "audio": {
+            "url": "/api/story-audio/4827317a7996f6bcb19165b9f7b23c0c6a91810d39eab82b31a6ef70b389dbcd.mp3",
+            "sha256": "4827317a7996f6bcb19165b9f7b23c0c6a91810d39eab82b31a6ef70b389dbcd",
+            "durationSec": 53.736
+          },
+          "httpsTextVerified": true
+        }
+      ]
+    },
+    {
+      "placeId": "osm:node:5181346005",
+      "name": "Музей-квартира А. Б. Гольденвейзера",
+      "textId": "9147cf38-4148-4d28-b1fc-554f9259a3d7",
+      "audioJobId": "ad7d842b-6497-41ad-b6c3-925a3ef46e05",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/6d1973a27f4b53493547b3061ba2da86854aab4d83e600c61152dd5e268a7d49.mp3",
+        "sha256": "6d1973a27f4b53493547b3061ba2da86854aab4d83e600c61152dd5e268a7d49",
+        "bytes": 493869,
+        "durationSec": 61.704,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "02f165deea98e83a09cb5fff5f144ba722ffc2c4f5c367d636f76a8079474701",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/images/places/node-5181346005-bc18b901c95d.jpg",
+        "src": "/images/places/node-5181346005-028f7baca04c.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Дом на Тверской, 17, где расположен музей-квартира Гольденвейзера",
+        "author": "karel291",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Tverskaya_17_(508).jpg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    },
+    {
+      "placeId": "osm:node:5181397887",
+      "name": "Музей-квартира Н.С. Голованова",
+      "textId": "20794099-870e-4ba2-acc6-8d6b6e86cdbd",
+      "audioJobId": "887b717b-d1c6-4e5b-8126-f75223a6d438",
+      "audioProfile": "f5-ru-v1",
+      "state": "succeeded",
+      "audio": {
+        "url": "/api/story-audio/6a60835dcbf06c99f2cd32ce8255bb1c7f44804f782d9ae4b85032368903f4dc.mp3",
+        "sha256": "6a60835dcbf06c99f2cd32ce8255bb1c7f44804f782d9ae4b85032368903f4dc",
+        "bytes": 494829,
+        "durationSec": 61.824,
+        "model": "f5",
+        "voice": "obrazec6",
+        "provider": "external",
+        "synthetic": true,
+        "preparationVersion": "html-unescape-v1_ru-normalizr-0.3.0_silero-stress-1.5_typography-v1",
+        "preparedTextSha256": "548554812a1131132157d610a3b3f14dda2df4592748fc89f0bb876f61849739",
+        "configSha256": "624d35a2b26de992a02c3082cda768775d77c5190eec3d839f7206623d35e86c"
+      },
+      "photo": {
+        "thumbnail": "/images/places/node-5181397887-d7f74467dc39.jpg",
+        "src": "/images/places/node-5181397887-c5c11c1b1c2a.jpg",
+        "width": 960,
+        "height": 638,
+        "alt": "Дом артистов Большого театра в Брюсовом переулке, 7",
+        "author": "Gerarus",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bryusov_Lane,_7._2013_1.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "storyVerified": true,
+      "audioHttpVerified": true,
+      "promoWalks": [],
+      "httpsTextVerified": true,
+      "httpsPhotoVerified": true,
+      "httpsAudioVerified": true,
+      "promoWalkVerification": []
+    }
+  ],
+  "status": "published_with_revoice",
+  "summary": {
+    "publishedTexts": 4,
+    "f5Audio": 3,
+    "elevenLabsAudio": 1,
+    "pendingAudio": 0,
+    "preservedPhotos": 2,
+    "newPhotos": 2,
+    "verifiedPromoWalks": 3
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "owner": "promo-walks",
+  "id": "b7e15c0d-3840-49ba-9f5e-44acb654e6fc",
+  "title": "Вокруг Третьяковки: искусство в жилом квартале",
+  "revision": 1,
+  "shareUrl": "https://otgolosok.online/walk?share=6cacfdd1-defd-4afb-940f-5085356d0315",
+  "stops": 7,
+  "distanceM": 562,
+  "walkingMinutes": 7,
+  "checks": {
+    "productionDryRunRollback": true,
+    "backupBeforeApply": true,
+    "publishedStoriesMatched": 7,
+    "listedInTop": true,
+    "mobileStopsAndSources": 7,
+    "fieldChecked": false
+  },
+  "recordedAt": "2026-10-04T19:40:46.873407+00:00"
+}

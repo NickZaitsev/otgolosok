@@ -4,6 +4,8 @@ import { mkdtemp,readFile,writeFile,rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createStore } from "./store.mjs";
+import { openFoodIndex } from "./food-places.mjs";
+import { foodIndexFixture, foodMeta, foodPlace } from "./test-fixtures/food-index.mjs";
 import { createApp, EDITORIAL_PLACE_IMAGES, setupPlaceImages, workerLeaseSecret } from "./server.mjs";
 import { createPlaceImageService, createWikimediaClient } from "./place-images.mjs";
 import { createAuth, sessionCsrfToken } from "./auth.mjs";
@@ -523,7 +525,7 @@ test("public catalog accepts only complete finite non-wrapping bounds", async t 
 /** Raw HTTP: fetch would decompress the body and add its own Accept-Encoding. */
 function raw(base,path,headers={},method="GET") {
   return new Promise((resolve,reject)=>{
-    const req=httpRequest(base+path,{method,headers},res=>{const chunks=[];res.on("data",chunk=>chunks.push(chunk));res.on("end",()=>resolve({status:res.statusCode,headers:res.headers,body:Buffer.concat(chunks)}));});
+    const req=httpRequest(base,{path,method,headers},res=>{const chunks=[];res.on("data",chunk=>chunks.push(chunk));res.on("end",()=>resolve({status:res.statusCode,headers:res.headers,body:Buffer.concat(chunks)}));});
     req.on("error",reject);req.end();
   });
 }
@@ -705,4 +707,60 @@ test("photo sync is off unless PLACE_IMAGE_SYNC=true, while the editorial catalo
   assert.equal(typeof service?.ensure,"function");
   const broken=join(images,"broken.json");await writeFile(broken,JSON.stringify({"osm:node:1":{src:"x"}}));
   await assert.rejects(setupPlaceImages({...options,env:{},catalogPath:broken}),{code:"INVALID_EDITORIAL_CATALOG"});
+});
+
+test("food manifest and cells preserve ETag, compression, GET/HEAD and revalidation",async t=>{
+  const foodIndex=openFoodIndex(await foodIndexFixture(t)),f=await fixture(t,{foodIndex,auth:null});
+  const manifest=await raw(f.base,"/api/food/cells"),value=JSON.parse(manifest.body.toString());
+  assert.equal(manifest.status,200);
+  const cell=await raw(f.base,"/api/food/cells/1115/752");
+  assert.deepEqual(value,{version:1,cellSize:0.05,sourceEditedAt:foodMeta.source_edited_at,attribution:foodMeta.attribution,cells:[{lat:1115,lon:752,count:1,etag:cell.headers.etag.slice(1,-1)}]});
+  assert.equal(cell.status,200);assert.deepEqual(JSON.parse(cell.body.toString()),{lat:1115,lon:752,places:[foodPlace]});
+  for(const path of ["/api/food/cells","/api/food/cells/1115/752","/api/food/cells/-1/-1"]) {
+    const identity=await raw(f.base,path);
+    assert.equal(identity.headers["cache-control"],"no-cache");assert.equal(identity.headers.vary,"Accept-Encoding");
+    assert.equal(identity.headers["content-type"],"application/json; charset=utf-8");assert.equal(identity.headers["content-length"],String(identity.body.length));
+    /** @type {Record<string, (value: Buffer) => Buffer>} */
+    const decoders={br:brotliDecompressSync,gzip:gunzipSync};
+    for(const [encoding,decode] of Object.entries(decoders)) {
+      const response=await raw(f.base,path,{"Accept-Encoding":encoding});assert.equal(response.status,200);
+      assert.equal(response.headers["content-encoding"],encoding);assert.equal(response.headers.etag,identity.headers.etag);
+      assert.equal(response.headers["content-length"],String(response.body.length));assert.deepEqual(decode(response.body),identity.body);
+      const head=await raw(f.base,path,{"Accept-Encoding":encoding},"HEAD");assert.equal(head.status,200);
+      assert.equal(head.headers.etag,identity.headers.etag);assert.equal(head.headers["content-length"],response.headers["content-length"]);assert.equal(head.body.length,0);
+    }
+    for(const header of [identity.headers.etag,`W/${identity.headers.etag}`,`"other", ${identity.headers.etag}`,"*"]) {
+      const response=await raw(f.base,path,{"If-None-Match":header});assert.equal(response.status,304);assert.equal(response.body.length,0);
+      assert.equal(response.headers.etag,identity.headers.etag);assert.equal(response.headers["cache-control"],"no-cache");assert.equal(response.headers.vary,"Accept-Encoding");
+    }
+    assert.equal((await raw(f.base,path,{"If-None-Match":'"other"'})).status,200);
+  }
+  assert.deepEqual(JSON.parse((await raw(f.base,"/api/food/cells/-1/-1")).body.toString()),{lat:-1,lon:-1,places:[]});
+  for(const path of ["/api/food/cells/-1800/-3600","/api/food/cells/1799/3599"])assert.equal((await raw(f.base,path)).status,200);
+});
+
+test("food paths reject queries, noncanonical keys and out-of-range cells even without an index",async t=>{
+  const f=await fixture(t,{auth:null});
+  for(const suffix of ["?v=1","?","/0/0?v=1","/0/0?","/-0/0","/0/-0","/00/0","/0/01","/+1/0","/1.5/0","/1e2/0","/1800/0","/-1801/0","/0/3600","/0/-3601","/99999/0","/0","/0/0/1","/","/%30/0","/abc/0"]) {
+    const path="/api/food/cells"+suffix,response=await raw(f.base,path);assert.equal(response.status,400,path);
+    assert.equal(JSON.parse(response.body.toString()).error.code,"BAD_REQUEST",path);assert.equal(response.headers.etag,undefined,path);
+  }
+});
+
+test("food API without an index returns uncached 503 and leaves the service available",async t=>{
+  const f=await fixture(t,{auth:null,foodIndex:null});
+  for(const path of ["/api/food/cells","/api/food/cells/1115/752"])for(const method of ["GET","HEAD"]) {
+    const response=await raw(f.base,path,{"If-None-Match":"*","Accept-Encoding":"br"},method);
+    assert.equal(response.status,503);assert.equal(response.headers["cache-control"],"no-store");assert.equal(response.headers.etag,undefined);
+    if(method==="GET")assert.deepEqual(JSON.parse(response.body.toString()),{error:"FOOD_INDEX_UNAVAILABLE"});else assert.equal(response.body.length,0);
+  }
+  assert.equal((await raw(f.base,"/api/story-service")).status,200);
+});
+
+test("server shutdown closes the food index",async t=>{
+  const index=openFoodIndex(await foodIndexFixture(t));let closed=false;
+  const f=await fixture(t,{foodIndex:{...index,close(){index.close();closed=true;}}});
+  assert.equal((await raw(f.base,"/api/food/cells")).status,200);assert.equal(closed,false);
+  // Registered after the fixture cleanup, so it observes the completed shutdown.
+  t.after(()=>assert.equal(closed,true));
 });

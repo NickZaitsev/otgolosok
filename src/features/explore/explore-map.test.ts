@@ -338,7 +338,7 @@ const routeProps = (activeLeg: [number, number] | null = null): Partial<ExploreM
 
 it("draws the route in its own panes below the markers, created once per map", async () => {
   const { cleanup } = await mount(undefined, null, undefined, routeProps());
-  expect(mock.panes.map((pane) => [pane.name, pane.zIndex])).toEqual([["route", "410"], ["routeActive", "420"]]);
+  expect(mock.panes.map((pane) => [pane.name, pane.zIndex])).toEqual([["route", "410"], ["food", "590"], ["routeActive", "420"]]);
   expect(mock.polylines.every((line) => line.options.pane === "route")).toBe(true);
   cleanup?.();
 });
@@ -366,14 +366,14 @@ it("dashes the green line over a tunnel and keeps its casing solid", async () =>
 it("fades everything but the leg to walk and marks its direction", async () => {
   const plain = await mount(undefined, null, undefined, routeProps());
   const dim = (pane: (typeof mock.panes)[number]) => [...pane.classes].some((name) => /dim/i.test(name));
-  expect(mock.panes.map(dim)).toEqual([false, false]);
+  expect(mock.panes.filter(pane => pane.name !== "food").map(dim)).toEqual([false, false]);
   expect(mock.arrows).toEqual([]);
   plain.cleanup?.();
 
   mock.panes = [];
   mock.polylines = [];
   const walking = await mount(undefined, null, undefined, routeProps([5, 8]));
-  expect(mock.panes.map(dim)).toEqual([true, false]);
+  expect(mock.panes.filter(pane => pane.name !== "food").map(dim)).toEqual([true, false]);
   const parts = mock.polylines.filter((line) => line.attributes.has("data-route")).map((line) => [line.attributes.get("data-route-part"), line.options.pane, line.points.length]);
   expect(parts).toEqual([["rest", "route", 3], ["rest", "route", 3], ["rest", "route", 2], ["rest", "route", 2], ["active", "routeActive", 4]]);
   // 15 px of a 0.0015° leg at 10 000 px per degree: one chevron at its middle, pointing north (up the screen).

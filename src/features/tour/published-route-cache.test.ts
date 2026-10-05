@@ -1,3 +1,4 @@
+import { FOOD_MANIFEST_URL, foodCellStore } from "../food/food-cells";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import routeData from "../../../public/data/routes/paveletskaya.json";
 import type { Route } from "./types";
@@ -58,6 +59,7 @@ function installCache(cache: MemoryCache) {
 function installNetwork(value: Route, audioUrl: string, audioBody: string) {
   vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
     const url = String(input);
+    if (url === FOOD_MANIFEST_URL) return new Response("{}", { status: 503 });
     if (url === manifestUrl) return new Response(JSON.stringify(value), { headers: { "Content-Type": "application/json" } });
     if (url === audioUrl) return new Response(audioBody, { headers: { "Content-Type": "audio/mpeg" } });
     throw new Error(`Unexpected request: ${url}`);
@@ -143,7 +145,7 @@ describe("published route cache", () => {
 
     await loadPublishedRoute(route, new AbortController().signal);
 
-    expect(network.mock.calls.map(([input]) => String(input))).toEqual([manifestUrl]);
+    expect(network.mock.calls.map(([input]) => String(input))).toEqual([manifestUrl, FOOD_MANIFEST_URL]);
   });
 
   it("keeps verified recordings when another one stalls, and fetches only the missing one later", async () => {
@@ -155,6 +157,7 @@ describe("published route cache", () => {
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       requested.push(url);
+      if (url === FOOD_MANIFEST_URL) return new Response("{}", { status: 503 });
       if (url === manifestUrl) return new Response(JSON.stringify(update.value), { headers: { "Content-Type": "application/json" } });
       const audio = update.audio.find(item => item.url === url)!;
       if (stalled && audio === update.audio[1]) {
@@ -170,6 +173,32 @@ describe("published route cache", () => {
     requested.length = 0;
     const result = await loadPublishedRoute(route, new AbortController().signal, { audioTimeoutMs: 20 });
     expect(result.walk!.steps[1].audio?.url).toBe(update.audio[1].url);
-    expect(requested).toEqual([manifestUrl, update.audio[1].url]);
+    expect(requested).toEqual([manifestUrl, update.audio[1].url, FOOD_MANIFEST_URL]);
   });
+});
+
+
+it("keeps catalog food with the publication, seeds it offline and replaces it on update", async () => {
+  const cache = new MemoryCache(), update = await publication();
+  const [lon, lat] = update.value.walk!.path.coordinates[0];
+  const latKey = Math.floor(lat * 20), lonKey = Math.floor(lon * 20), etag = "a".repeat(32);
+  const food = { id: "osm:node:99", kind: "coffee", name: "Кофе каталога", lat, lon, address: null, openingHours: "24/7", cuisine: null, website: null, phone: null };
+  let offline = false, enabled = true;
+  installCache(cache);
+  vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+    if (offline) throw new TypeError("offline");
+    const url = String(input);
+    if (url === manifestUrl) return new Response(JSON.stringify(update.value));
+    if (url === update.audioUrl) return new Response(update.audioBody, { headers: { "Content-Type": "audio/mpeg" } });
+    if (url === FOOD_MANIFEST_URL) return enabled ? new Response(JSON.stringify({ version: 1, cellSize: .05, sourceEditedAt: "2026-10-02T10:00:00Z", attribution: "© участники OpenStreetMap", cells: [{ lat: latKey, lon: lonKey, count: 1, etag }] })) : new Response("{}", { status: 503 });
+    return new Response(JSON.stringify({ lat: latKey, lon: lonKey, places: [food] }), { headers: { ETag: `"${etag}"` } });
+  }));
+  await loadPublishedRoute(route, new AbortController().signal);
+  expect((await (await cache.match(manifestUrl))?.json()).offlineFood.cells).toHaveLength(1);
+  offline = true;
+  expect((await loadPublishedRoute(route, new AbortController().signal)).walk!.steps[0].audio?.url).toBe(update.audioUrl);
+  expect(foodCellStore.snapshot().places.map(p => p.name)).toContain("Кофе каталога");
+  offline = false; enabled = false;
+  await loadPublishedRoute(route, new AbortController().signal);
+  expect((await (await cache.match(manifestUrl))?.json()).offlineFood).toBeUndefined();
 });

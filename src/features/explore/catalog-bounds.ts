@@ -2,6 +2,7 @@ import type * as Leaflet from "leaflet";
 import type { Coordinates } from "../tour/types";
 
 export type CatalogBounds = { west: number; south: number; east: number; north: number };
+export type MapViewport = CatalogArea & { zoom: number; center: Coordinates };
 export type CatalogArea = { required: CatalogBounds; buffered: CatalogBounds };
 
 /** Project pixels at the target zoom: padding latitude directly is not Mercator-correct. */
