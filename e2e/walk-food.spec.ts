@@ -104,6 +104,17 @@ for (const [width, height] of [[390, 844], [1440, 900], [568, 400], [320, 568]])
   });
 }
 
+test("стрелка назад стоит в футере перед «Поесть рядом»", async ({ page }) => {
+  await open(page);
+  const order = () => page.locator('[data-sheet-part="footer"] > *').evaluateAll(nodes => nodes.map(node => node.getAttribute("aria-label") ?? node.textContent?.trim()));
+  await expect(foodButton(page)).toBeVisible();
+  expect(await order()).toEqual(["Изменить маршрут", "Поесть рядом", "Начать прогулку"]);
+  await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Предыдущая остановка", exact: true })).toBeVisible();
+  expect(await order()).toEqual(["Предыдущая остановка", "Поесть рядом", "Дальше"]);
+});
+
 test("метка открывает карточку с часами и возвратом к списку", async ({ page }) => {
   await open(page);
   await foodButton(page).click();
