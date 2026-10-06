@@ -34,8 +34,11 @@ export const walkDetails = document => document?.route
   ? { walkingMinutes: document.route.walkingMinutes, distanceM: document.route.distanceM, stopCount: document.stops.length }
   : null;
 
+/** The walk document of a catalog route, or null when its editorial data does not form a valid walk. */
+export const catalogDocument = route => { try { return catalogWalkView(route).document; } catch { return null; } };
+
 /** Card details of a catalog walk, or null when its editorial data does not form a valid walk. */
-export const catalogDetails = route => { try { return walkDetails(catalogWalkView(route).document); } catch { return null; } };
+export const catalogDetails = route => walkDetails(catalogDocument(route));
 
 /** Public rating summary: the average rounded to hundredths, null without reviews. */
 export const ratingSummary = ({ ratingSum, ratingCount }) =>

@@ -15,10 +15,10 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace:
 
 const TOKEN = "22222222-2222-4222-8222-222222222222";
 const START = { lat: 55.75, lon: 37.6 };
-const card = { walkingMinutes: 45, distanceM: 3200, stopCount: 6, rating: { average: 4.5, count: 2 }, startDistanceM: 350 };
+const card = { walkingMinutes: 45, distanceM: 3200, stopCount: 6, rating: { average: 4.5, count: 2 }, startDistanceM: 350, finish: "Москва, Садовническая улица, 5" };
 const walks = [
   { ...card, kind: "catalog", id: "msk-walk", title: "Кожевники" },
-  { ...card, kind: "shared", id: TOKEN, title: "Арбат", rating: { average: null, count: 0 }, startDistanceM: 0 },
+  { ...card, kind: "shared", id: TOKEN, title: "Арбат", rating: { average: null, count: 0 }, startDistanceM: 0, finish: null },
 ];
 
 let root: Root;
@@ -76,6 +76,8 @@ describe("подборка в панели создания", () => {
     expect(links[0].textContent).toContain("45 мин · 3,2 км · 6 историй · старт в 350 м");
     expect(links[1].textContent).toContain("Пока без оценок");
     expect(links[1].textContent).toContain("старт рядом");
+    expect(links[0].textContent).toContain("до Садовническая улица, 5");
+    expect(links[1].textContent).toContain("по кругу, обратно к старту");
     expect(links[0].textContent).not.toContain("Ваша");
   });
 

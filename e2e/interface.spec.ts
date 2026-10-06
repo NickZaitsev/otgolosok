@@ -339,7 +339,7 @@ test("ручной адрес подтверждается кнопкой без
 });
 
 test("после выбора старта предлагает готовые прогулки рядом и открывает выбранную", async ({ page }) => {
-  const card = { walkingMinutes: 45, distanceM: 3200, stopCount: 6, rating: { average: 4.6, count: 12 } };
+  const card = { walkingMinutes: 45, distanceM: 3200, stopCount: 6, rating: { average: 4.6, count: 12 }, finish: "Москва, Садовническая улица, 5" };
   const walks = [
     { ...card, kind: "catalog", id: "msk-kozhevniki-zindel-short", title: "Кожевники", startDistanceM: 350 },
     { ...card, kind: "shared", id: "22222222-2222-4222-8222-222222222222", title: "Арбат", startDistanceM: 0 },
@@ -364,6 +364,7 @@ test("после выбора старта предлагает готовые �
   expect(queries).toEqual(["?lat=55.72550&lon=37.65131"]);
   await expect(nearby.getByRole("link", { name: /Моя прогулка/ })).toContainText("Ваша");
   await expect(nearby.getByRole("link", { name: /Кожевники/ })).toContainText("старт в 350 м");
+  await expect(nearby.getByRole("link", { name: /Кожевники/ })).toContainText("до Садовническая улица, 5");
   await nearby.getByRole("link", { name: /Кожевники/ }).click();
   await expect(page).toHaveURL(/\/walk\?catalog=msk-kozhevniki-zindel-short$/);
 });

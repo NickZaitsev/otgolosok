@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { formatRatingSummary } from "../reviews/model";
 import { formatTopWalkMeta } from "../walks/top-model";
-import { formatStartDistance, isOwnNearbyWalk, nearbyWalkHref, type NearbyWalk } from "../walks/nearby-model";
+import { formatFinish, formatStartDistance, isOwnNearbyWalk, nearbyWalkHref, type NearbyWalk } from "../walks/nearby-model";
 import styles from "./nearby-walks.module.css";
 
 /**
@@ -20,6 +20,7 @@ export function NearbyWalks({ walks }: { walks: NearbyWalk[] }) {
             <strong className={styles.title}>{walk.title}</strong>
             {isOwnNearbyWalk(walk) && <span className={styles.badge}>Ваша</span>}
           </span>
+          <span className={styles.finish}>{formatFinish(walk.finish)}</span>
           <span className={styles.rating}>{formatRatingSummary(walk.rating) || "Пока без оценок"}</span>
           <span className={styles.meta}>{formatTopWalkMeta(walk)} · {formatStartDistance(walk.startDistanceM)}</span>
         </Link>

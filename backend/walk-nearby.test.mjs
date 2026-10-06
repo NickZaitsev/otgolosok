@@ -14,10 +14,14 @@ let ids = 0;
 const uuid = () => `00000000-0000-4000-8000-${String(++ids).padStart(12, "0")}`;
 /** A point `meters` due north of the origin. */
 const north = (/** @type {number} */ meters) => ({ lat: ORIGIN.lat + meters / M_PER_LAT, lon: ORIGIN.lon });
-/** @param {{lat: number, lon: number}} location @param {{route?: boolean}} [options] */
-const document = (location, { route = true } = {}) => {
+/**
+ * @param {{lat: number, lon: number}} location
+ * @param {{route?: boolean, mode?: "open" | "loop", destination?: string}} [options]
+ */
+const document = (location, { route = true, mode = "open", destination } = {}) => {
   const start = { address: "Москва, Тестовая, 1", location }, stop = { address: "Москва, Тестовая, 2", location: { lat: location.lat + 0.001, lon: location.lon } };
-  return { version: 2, id: uuid(), title: "Прогулка", description: "", city: "Москва", mode: "open", minutes: 30, start,
+  return { version: 2, id: uuid(), title: "Прогулка", description: "", city: "Москва", mode, minutes: 30, start,
+    ...(destination ? { destination: { address: destination, location: { lat: location.lat + 0.002, lon: location.lon } } } : {}),
     stops: [{ id: uuid(), place: stop, storyRef: null, transition: "", nextHint: "" }],
     route: route ? { geometry: [start.location, stop.location], distanceM: 3200, walkingMinutes: 45, attribution: "OSM" } : null, fieldChecked: false };
 };
@@ -32,10 +36,10 @@ function fixture(t) {
   let key = 0;
   /**
    * @param {string} title @param {{lat: number, lon: number}} location
-   * @param {{owner?: string, visibility?: "private" | "shared" | "public", decision?: "approve" | "hide" | null, route?: boolean}} [options]
+   * @param {{owner?: string, visibility?: "private" | "shared" | "public", decision?: "approve" | "hide" | null, route?: boolean, mode?: "open" | "loop", destination?: string}} [options]
    */
-  const walk = (title, location, { owner = "anna", visibility = "public", decision = "approve", route = true } = {}) => {
-    const created = accountStore.createWalk(owner, { title, snapshot: document(location, { route }), idempotencyKey: `nearby-walk-${key++}` });
+  const walk = (title, location, { owner = "anna", visibility = "public", decision = "approve", route = true, mode = "open", destination } = {}) => {
+    const created = accountStore.createWalk(owner, { title, snapshot: document(location, { route, mode, destination }), idempotencyKey: `nearby-walk-${key++}` });
     if (visibility === "private") return created;
     const result = accountStore.setWalkVisibility(owner, created.id, created.revision, visibility);
     if (visibility === "public" && decision) accountStore.moderateWalkListing(result.id, { action: decision, revision: result.revision });
@@ -120,12 +124,27 @@ test("a damaged walk gives its slot to the next one", t => {
   assert.deepEqual(f.list().map(item => item.title), titles);
 });
 
+test("the card names where the walk ends", async t => {
+  /** @type {Array<[string, {mode?: "open" | "loop", destination?: string}, string | null]>} */
+  const cases = [
+    ["an open walk ends at its last stop", {}, "Москва, Тестовая, 2"],
+    ["a chosen destination wins over the last stop", { destination: "Москва, Финишная, 5" }, "Москва, Финишная, 5"],
+    ["a loop returns to its start", { mode: "loop" }, null],
+  ];
+  for (const [name, options, finish] of cases) await t.test(name, t => {
+    const f = fixture(t);
+    f.walk("Прогулка", north(10), options);
+    assert.equal(f.list()[0].finish, finish);
+  });
+});
+
 test("catalog walks qualify by the start of their route", t => {
   const f = fixture(t);
   const catalogStart = { lat: 55.7256731, lon: 37.6484745 };
   const near = f.list(null, { lat: catalogStart.lat + 300 / M_PER_LAT, lon: catalogStart.lon });
   assert.deepEqual(near.map(item => [item.kind, item.id, item.startDistanceM]), [["catalog", CATALOG, 300]]);
   assert.equal(near[0].stopCount > 0 && near[0].walkingMinutes > 0, true);
+  assert.equal(typeof near[0].finish === "string" && !near[0].finish.startsWith("Финиш"), true);
   assert.deepEqual(f.list(null, { lat: catalogStart.lat + (NEARBY_RADIUS_M + 50) / M_PER_LAT, lon: catalogStart.lon }), []);
 });
 
@@ -141,7 +160,7 @@ test("the response carries only a rounded start distance", async t => {
     const f = fixture(t);
     f.launched("account", f.walk("Прогулка", north(10)).id, 3);
     const [item] = f.list();
-    assert.deepEqual(Object.keys(item).sort(), ["distanceM", "id", "kind", "rating", "startDistanceM", "stopCount", "title", "walkingMinutes"]);
+    assert.deepEqual(Object.keys(item).sort(), ["distanceM", "finish", "id", "kind", "rating", "startDistanceM", "stopCount", "title", "walkingMinutes"]);
     assert.doesNotMatch(JSON.stringify(item), /anna|55\.8|37\.5/);
   });
 });

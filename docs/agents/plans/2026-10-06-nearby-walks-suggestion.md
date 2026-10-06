@@ -260,6 +260,8 @@ walk geometry lives only inside `user_walks.snapshot_json`.
   `ratingSummary`, `CATALOG_LISTED_AT`.
 - The SQL bbox prefilter uses meters-per-degree of the same sphere as the haversine. The `111320` constant copied
   from `content-store.mjs` made the box ~0.1 % too small and dropped starts right at the radius edge.
+- Cards also show where the walk ends under the title (user request): the API item has `finish` — the destination
+  or last stop address of an open walk, `null` for a loop. The block is a collapsed `<details>` (user request).
 - `NearbyWalks` renders after the submitting notice (last content element, before the status/error lines).
 - Account-store column/backfill tests live in `backend/walk-nearby.test.mjs`; API tests in
   `backend/walk-nearby-api.test.mjs`; hook and panel jsdom tests in `src/features/walk-builder/nearby-walks.test.ts`.

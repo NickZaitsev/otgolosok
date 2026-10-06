@@ -1,10 +1,16 @@
-import { CATALOG_LISTED_AT, catalogDetails, rankTopWalks, ratingSummary, walkDetails } from "./walk-top.mjs";
+import { CATALOG_LISTED_AT, catalogDocument, rankTopWalks, ratingSummary, walkDetails } from "./walk-top.mjs";
 import { distance } from "./walks.mjs";
 
 export const NEARBY_RADIUS_M = 500;
 export const NEARBY_LIMIT = 5;
 // The public distance is coarse so a response never pinpoints another person's start.
 const DISTANCE_STEP_M = 50;
+
+/**
+ * Where an open walk ends, as on the walk page: the chosen destination, else the last stop.
+ * null for a loop, which returns to its start.
+ */
+export const finishOf = document => document.mode === "loop" ? null : (document.destination ?? document.stops.at(-1)?.place)?.address ?? null;
 
 /**
  * Walks that start near a point, ranked by the top formula: catalog walks, approved public
@@ -41,9 +47,10 @@ export function createNearbyWalks({ accountStore, store, builtinRoutes }) {
         const documents = accountStore.getNearbyDocuments(batch.filter(item => item.kind !== "catalog").map(item => item.walkId), userId);
         for (const item of batch) {
           if (result.length >= NEARBY_LIMIT) break;
-          const meta = item.kind === "catalog" ? catalogDetails(item.route) : walkDetails(documents.get(item.walkId));
+          const document = item.kind === "catalog" ? catalogDocument(item.route) : documents.get(item.walkId);
+          const meta = walkDetails(document);
           if (!meta) continue;
-          result.push({ kind: item.kind, id: item.id, title: item.title, ...meta, rating: ratingSummary(item),
+          result.push({ kind: item.kind, id: item.id, title: item.title, ...meta, finish: finishOf(document), rating: ratingSummary(item),
             startDistanceM: Math.round(item.distanceM / DISTANCE_STEP_M) * DISTANCE_STEP_M });
         }
       }
