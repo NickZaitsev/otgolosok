@@ -5,7 +5,8 @@ import { CATALOG_WALK_ID, record, validateWalkCard, WALK_UUID, type TopWalk } fr
 
 /** Must match NEARBY_RADIUS_M in backend/walk-nearby.mjs. */
 export const NEARBY_RADIUS_M = 500;
-export const NEARBY_LIMIT = 3;
+/** Must match NEARBY_LIMIT in backend/walk-nearby.mjs. */
+export const NEARBY_LIMIT = 5;
 
 /**
  * A walk that starts near the draft's start. `own` is the user's account walk, `local` a walk

@@ -25,7 +25,7 @@ walk geometry lives only inside `user_walks.snapshot_json`.
    (localStorage). Drafts without a built route are excluded (the card needs minutes / km).
 3. **Ranking:** one combined list with the existing top formula (`rankTopWalks` /
    `topScore`). Own walks usually have 0 launches (owner launches are never counted) and sink
-   to the bottom via the tie-breakers. Show at most **3**.
+   to the bottom via the tie-breakers. Show at most **5** (3 in the original plan; raised at the user's request).
 4. **Deduplication:** a user's own walk that is also public and approved is shown once, as
    «Ваша» (opens `/walk?id=`).
 5. **Guest/local walks** are filtered on the client and only fill the slots left after the
@@ -117,7 +117,7 @@ walk geometry lives only inside `user_walks.snapshot_json`.
   duplicating it.
 
 ### 1. Ranking module (`backend/walk-nearby.mjs`, new)
-- `export const NEARBY_RADIUS_M = 500; export const NEARBY_LIMIT = 3;`
+- `export const NEARBY_RADIUS_M = 500; export const NEARBY_LIMIT = 5;`
 - `export function createNearbyWalks({ accountStore, store, builtinRoutes })`, which returns
   `{ list({lat, lon, userId}) }`.
 - **Catalog:** for each published builtin route, compute the JS haversine from `route.walk.start.location`, keep
@@ -186,7 +186,7 @@ walk geometry lives only inside `user_walks.snapshot_json`.
 - `const nearby = useNearbyWalks(w.draft.start?.location ?? null, w.editing, w.loaded && !built && !state.picking)`.
 - Render `<NearbyWalks walks={nearby} />` as the last element of the body content, before the status/error lines,
   only when `!picker && nearby.length > 0`.
-- **Component:** `<section aria-labelledby>` with the heading «Прогулки рядом» and an `<ol>` of up to 3 `Link`s.
+- **Component:** `<section aria-labelledby>` with the heading «Прогулки рядом» and an `<ol>` of up to 5 `Link`s.
   - Each card shows the title, the «Ваша» badge for `own` / `local`, the rating line, and
     `formatTopWalkMeta(walk) · formatStartDistance(walk.startDistanceM)`.
   - Follow `top-walks.tsx` markup and tokens. Do not import its module CSS; create `nearby-walks.module.css`.
@@ -213,7 +213,7 @@ walk geometry lives only inside `user_walks.snapshot_json`.
     - own public approved walk appears once, as `own`;
     - route-less or damaged walk skipped, and the next one fills its slot;
     - ranking uses launches and ratings, and own walks with 0 launches go last;
-    - limit is 3;
+    - limit is 5;
     - `startDistanceM` is rounded to 50;
     - the response has no `lat` / `lon` / `launches` keys.
   - account-store tests:
@@ -253,7 +253,7 @@ walk geometry lives only inside `user_walks.snapshot_json`.
 
 ## Implementation notes (divergences)
 
-- Radius is **500 m**, not 1000 m (user request during implementation). The client keeps a copy of the constant in
+- Radius is **500 m**, not 1000 m, and the limit is **5**, not 3 (user requests during implementation). The client keeps a copy of the constant in
   `nearby-model.ts` for local walks.
 - The bbox constants are exported from `walk-document.mjs` as `WALK_BOUNDS` / `inWalkBounds`; the JS haversine is
   the exported `distance` from `backend/walks.mjs`; `walk-top.mjs` exports `walkDetails`, `catalogDetails`,

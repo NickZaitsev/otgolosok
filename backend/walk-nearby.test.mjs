@@ -86,14 +86,19 @@ test("ranking follows the top formula, own unlaunched walks go last and the list
   const many = f.walk("Много запусков", north(30), { owner: "boris" });
   const rated = f.walk("Высокий рейтинг", north(40), { owner: "boris" });
   const unseen = f.walk("Без запусков", north(50), { owner: "boris" });
+  const once = f.walk("Один запуск", north(60), { owner: "boris" });
+  const onceRated = f.walk("Один запуск с оценкой", north(70), { owner: "boris" });
   f.launched("account", few.id, 2);
   f.launched("account", many.id, 40);
   f.launched("account", rated.id, 2);
   for (let i = 0; i < 10; i++) f.reviewed(rated.id, 5);
   f.reviewed(few.id, 1);
+  f.launched("account", once.id, 1);
+  f.launched("account", onceRated.id, 1);
+  f.reviewed(onceRated.id, 5);
   const items = f.list("anna");
   assert.equal(items.length, NEARBY_LIMIT);
-  assert.deepEqual(items.map(item => item.title), ["Много запусков", "Высокий рейтинг", "Мало запусков"]);
+  assert.deepEqual(items.map(item => item.title), ["Много запусков", "Высокий рейтинг", "Мало запусков", "Один запуск с оценкой", "Один запуск"]);
   assert.deepEqual(items[1].rating, { average: 5, count: 10 });
   assert.equal(items.some(item => item.id === own.id || item.id === unseen.shareToken), false);
 });
@@ -109,9 +114,10 @@ test("a damaged walk gives its slot to the next one", t => {
   const f = fixture(t);
   const broken = f.walk("Повреждённая", north(10), { owner: "boris" });
   f.launched("account", broken.id, 100);
-  for (const [index, title] of ["Вторая", "Третья", "Четвёртая"].entries()) f.launched("account", f.walk(title, north(20 + index), { owner: "boris" }).id, 10 - index);
+  const titles = ["Вторая", "Третья", "Четвёртая", "Пятая", "Шестая"];
+  for (const [index, title] of titles.entries()) f.launched("account", f.walk(title, north(20 + index), { owner: "boris" }).id, 10 - index);
   f.db.prepare("UPDATE user_walks SET snapshot_json='{broken' WHERE id=?").run(broken.id);
-  assert.deepEqual(f.list().map(item => item.title), ["Вторая", "Третья", "Четвёртая"]);
+  assert.deepEqual(f.list().map(item => item.title), titles);
 });
 
 test("catalog walks qualify by the start of their route", t => {

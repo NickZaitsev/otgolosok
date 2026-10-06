@@ -73,12 +73,12 @@ describe("локальные прогулки рядом", () => {
 
 describe("слияние подборки", () => {
   const server = [catalog, shared, own] as NearbyWalk[];
-  const mine = [{ ...card, kind: "local", id: "l1" }, { ...card, kind: "local", id: "l2" }] as NearbyWalk[];
+  const mine = ["l1", "l2", "l3"].map(id => ({ ...card, kind: "local", id })) as NearbyWalk[];
   it.each([
-    ["серверные первыми, лимит 3", server, mine, null, ["msk-walk", TOKEN, OWN]],
-    ["локальные занимают свободные места", [catalog] as NearbyWalk[], mine, null, ["msk-walk", "l1", "l2"]],
-    ["открытая своя прогулка не предлагается", server, mine, { kind: "account", id: OWN.toUpperCase() }, ["msk-walk", TOKEN, "l1"]],
-    ["локальное исключение не трогает серверные", server, mine, { kind: "local", id: OWN }, ["msk-walk", TOKEN, OWN]],
+    ["серверные первыми, лимит 5", server, mine, null, ["msk-walk", TOKEN, OWN, "l1", "l2"]],
+    ["локальные занимают свободные места", [catalog] as NearbyWalk[], mine, null, ["msk-walk", "l1", "l2", "l3"]],
+    ["открытая своя прогулка не предлагается", server, mine, { kind: "account", id: OWN.toUpperCase() }, ["msk-walk", TOKEN, "l1", "l2", "l3"]],
+    ["локальное исключение не трогает серверные", server, mine, { kind: "local", id: OWN }, ["msk-walk", TOKEN, OWN, "l1", "l2"]],
     ["пусто", [], [], null, []],
   ] as const)("%s", (_name, serverWalks, localWalks, exclude, ids) => {
     expect(mergeNearby([...serverWalks], [...localWalks], exclude).map(walk => walk.id)).toEqual(ids);

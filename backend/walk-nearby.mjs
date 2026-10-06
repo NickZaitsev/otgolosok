@@ -2,7 +2,7 @@ import { CATALOG_LISTED_AT, catalogDetails, rankTopWalks, ratingSummary, walkDet
 import { distance } from "./walks.mjs";
 
 export const NEARBY_RADIUS_M = 500;
-export const NEARBY_LIMIT = 3;
+export const NEARBY_LIMIT = 5;
 // The public distance is coarse so a response never pinpoints another person's start.
 const DISTANCE_STEP_M = 50;
 
