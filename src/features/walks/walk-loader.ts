@@ -14,8 +14,11 @@ export type WalkCard = {
   kind: "local" | "account" | "catalog";
 };
 
+const SHARE_TOKEN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
 export class WalkLoadError extends Error {
-  constructor(message: string, public readonly status = 0, public readonly retryable = false, public readonly retryAfterMs = 0) {
+  /** movedToShare: share token of the walk a catalogue walk moved to (HTTP 410 WALK_MOVED), otherwise null. */
+  constructor(message: string, public readonly status = 0, public readonly retryable = false, public readonly retryAfterMs = 0, public readonly movedToShare: string | null = null) {
     super(message);
     this.name = "WalkLoadError";
   }
@@ -37,12 +40,13 @@ function withTimeout(signal: AbortSignal, timeoutMs: number) {
 async function readJson(response: Response) {
   const value = await response.json().catch(() => null) as unknown;
   if (!response.ok) {
-    const record = value && typeof value === "object" ? value as { error?: { message?: string } } : {};
+    const record = value && typeof value === "object" ? value as { error?: { message?: string; code?: string; share?: unknown } } : {};
+    const moved = record.error?.code === "WALK_MOVED" && typeof record.error.share === "string" && SHARE_TOKEN.test(record.error.share) ? record.error.share : null;
     const retryAfter = response.headers.get("retry-after");
     const retryAfterMs = retryAfter && /^\d+(?:\.\d+)?$/.test(retryAfter) ? Number(retryAfter) * 1_000 : 0;
     // A limit that lifts later than the retry budget allows is reported at once instead of retried in vain.
     const retryable = retryableStatus(response.status) && !(response.status === 429 && retryAfterMs > 5_000);
-    throw new WalkLoadError(record.error?.message ?? "Не удалось открыть прогулку.", response.status, retryable, Math.min(5_000, retryAfterMs));
+    throw new WalkLoadError(record.error?.message ?? "Не удалось открыть прогулку.", response.status, retryable, Math.min(5_000, retryAfterMs), moved);
   }
   return value;
 }

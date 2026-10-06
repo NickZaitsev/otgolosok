@@ -72,11 +72,13 @@ export function WalkScreen() {
         const offlineNotice = result.offline ? `Офлайн-копия от ${new Date(result.savedAt).toLocaleDateString("ru-RU")}. Последняя редакция может быть новее.` : "";
         if (!signal.aborted) setLoaded({ keys: [queryKey], mount: queryKey, view: result.view, error: "", offlineNotice, offlineRef });
       } catch (caught) {
+        // A catalogue walk moved to a shared walk: its old link opens the new one.
+        if (!controller.signal.aborted && caught instanceof WalkLoadError && caught.movedToShare) { router.replace(`/walk?share=${caught.movedToShare}`); return; }
         if (!controller.signal.aborted) setLoaded({ keys: [queryKey], mount: queryKey, view: null, error: toUserMessage(caught, "Не удалось открыть прогулку."), offlineNotice: "", offlineRef: null });
       }
     })();
     return () => controller.abort();
-  }, [queryKey, selectedKind, localId, accountId, catalogId, shareToken, edit, queryConflict]);
+  }, [queryKey, selectedKind, localId, accountId, catalogId, shareToken, edit, queryConflict, router]);
 
   const sourceId = selectedKind === "local" ? localId : selectedKind === "id" ? accountId : selectedKind === "catalog" ? catalogId : shareToken;
   const addFood = useCallback(async (place: FoodPlace, signal: AbortSignal) => {

@@ -127,6 +127,8 @@ export type Route = {
   distance_km: number;
   poi_count: number;
   status: "draft" | "published";
+  /** Share token of the published walk this catalogue walk moved to; its stories are catalogue places now. */
+  moved_to_share?: string;
   pois: Poi[];
   notes?: RouteNote[];
   walk?: WalkPlan;

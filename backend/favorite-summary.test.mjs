@@ -14,3 +14,8 @@ test('a favorite story opens on the map', () => {
   const context={userId:'user',accountStore:{getWalk:()=>null},store:{get:id=>id===job.id?job:null},routes:[]};
   assert.deepEqual(favoriteSummary({type:'story',id:job.id},context),{type:'story',id:job.id,title:'Дом на Арбате',href:`/?job=${job.id}`});
 });
+test('a favorite catalogue walk that moved opens its shared walk', () => {
+  const share='901d1133-44a2-4724-a856-2fe8d6c86a44';
+  const context={userId:'user',accountStore:{getWalk:()=>null},store:{get:()=>null},routes:[{id:'moved',title:'Старая',moved_to_share:share}]};
+  assert.deepEqual(favoriteSummary({type:'walk',id:'moved'},context),{type:'walk',id:'moved',title:'Старая',href:`/walk?share=${share}`});
+});

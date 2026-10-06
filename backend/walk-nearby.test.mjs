@@ -26,8 +26,11 @@ const document = (location, { route = true, mode = "open", destination } = {}) =
     route: route ? { geometry: [start.location, stop.location], distanceM: 3200, walkingMinutes: 45, attribution: "OSM" } : null, fieldChecked: false };
 };
 
-/** @param {any} t */
-function fixture(t) {
+// The real catalogue walk moved to a shared walk; a copy without the mark keeps catalogue behaviour testable.
+const LISTED_ROUTES = builtinRoutes.map(({ moved_to_share: _moved, ...route }) => route);
+
+/** @param {any} t @param {any[]} [routes] */
+function fixture(t, routes = LISTED_ROUTES) {
   const db = new DatabaseSync(":memory:");
   db.exec(`CREATE TABLE user (id TEXT PRIMARY KEY, name TEXT, email TEXT);
     INSERT INTO user VALUES ('anna','Анна','anna@example.test'), ('boris','Борис','boris@example.test')`);
@@ -50,7 +53,7 @@ function fixture(t) {
   /** @param {string} id @param {number} rating */
   const reviewed = (id, rating) => db.prepare(`INSERT INTO walk_reviews(id,walk_kind,walk_id,walk_title,walk_revision,guest_key_hash,rating,status,created_at,updated_at)
     VALUES(?, 'account', ?, 'Прогулка', 0, ?, ?, 'published', '2026-10-01', '2026-10-01')`).run(uuid(), id, uuid(), rating);
-  const nearby = createNearbyWalks({ accountStore, store, builtinRoutes });
+  const nearby = createNearbyWalks({ accountStore, store, builtinRoutes: routes });
   /** @param {string | null} [userId] @param {{lat: number, lon: number}} [point] */
   const list = (userId = null, point = ORIGIN) => nearby.list({ ...point, userId });
   return { db, accountStore, walk, launched, reviewed, list };
@@ -146,6 +149,11 @@ test("catalog walks qualify by the start of their route", t => {
   assert.equal(near[0].stopCount > 0 && near[0].walkingMinutes > 0, true);
   assert.equal(typeof near[0].finish === "string" && !near[0].finish.startsWith("Финиш"), true);
   assert.deepEqual(f.list(null, { lat: catalogStart.lat + (NEARBY_RADIUS_M + 50) / M_PER_LAT, lon: catalogStart.lon }), []);
+});
+
+test("a catalogue walk moved to a shared walk is not offered near its start", t => {
+  const f = fixture(t, builtinRoutes);
+  assert.deepEqual(f.list(null, { lat: 55.7256731, lon: 37.6484745 }), []);
 });
 
 test("the response carries only a rounded start distance", async t => {

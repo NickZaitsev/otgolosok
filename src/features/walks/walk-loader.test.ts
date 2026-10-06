@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { loadJson, loadLocalWalkView, WalkLoadError } from "./walk-loader";
+import { loadCatalogWalk, loadJson, loadLocalWalkView, WalkLoadError } from "./walk-loader";
 import type { WalkDocument } from "./model";
 
 describe("загрузка прогулок", () => {
@@ -18,6 +18,18 @@ describe("загрузка прогулок", () => {
     fetcher.mockReset().mockResolvedValue(new Response("{}", { status: 200 }));
     await expect(loadJson("/api/top-walks", new AbortController().signal, walks)).rejects.toMatchObject({ retryable: false });
     expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it("сообщает новую ссылку каталожной прогулки, переехавшей в общую, и не повторяет запрос", async () => {
+    const share = "901d1133-44a2-4724-a856-2fe8d6c86a44";
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ error: { code: "WALK_MOVED", message: "Прогулка переехала по новой ссылке.", share } }), { status: 410 }));
+    vi.stubGlobal("fetch", fetcher);
+    await expect(loadCatalogWalk("old-walk", new AbortController().signal)).rejects.toEqual(expect.objectContaining({ status: 410, movedToShare: share, retryable: false }));
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    for (const error of [{ code: "WALK_MOVED", share: "../other" }, { code: "NOT_FOUND", share }]) {
+      fetcher.mockResolvedValueOnce(new Response(JSON.stringify({ error }), { status: 410 }));
+      await expect(loadCatalogWalk("old-walk", new AbortController().signal)).rejects.toEqual(expect.objectContaining({ movedToShare: null }));
+    }
   });
 
   it("сохраняет статус и Retry-After для временного ответа", async () => {

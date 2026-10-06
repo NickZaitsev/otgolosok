@@ -1,6 +1,14 @@
 import { createHash } from "node:crypto";
 import { validateWalkView } from "./walk-document.mjs";
 
+const SHARE_TOKEN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/** Share token of the published walk a catalogue walk moved to (its stories became catalogue places), else null. */
+export const catalogMovedShare = route => typeof route?.moved_to_share === "string" && SHARE_TOKEN.test(route.moved_to_share) ? route.moved_to_share : null;
+
+/** Catalogue walks offered in lists: with steps and not moved to a shared walk. */
+export const listedCatalogRoutes = routes => routes.filter(route => route.walk?.steps?.length && !catalogMovedShare(route));
+
 // The editorial catalogue remains its own data source. Its public projection
 // uses the same ordered walk view as user-created routes.
 export function catalogWalkView(route) {

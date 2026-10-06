@@ -104,7 +104,7 @@ test("the per-client limit answers 429 and the per-walk IP cap stops counting qu
   assert.deepEqual((await call(launch(open.shareToken), { method: "POST", headers: { "X-Review-Key": keys[3] } })).data, { counted: true });
 });
 
-test("the top lists the catalog and approved public walks only, without private data", async t => {
+test("the top lists approved public walks only, without private data; the catalogue walk moved to a shared walk is left out", async t => {
   const { call, walk, as, accountStore } = await fixture(t);
   const approved = walk("Одобренная", "public", "approve");
   walk("На проверке", "public"); walk("Скрытая", "public", "hide"); walk("Ссылка", "shared"); walk("Личная", "private");
@@ -116,7 +116,7 @@ test("the top lists the catalog and approved public walks only, without private 
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("cache-control"), "no-store");
   const { walks } = response.data;
-  assert.deepEqual(walks.map((/** @type {any} */ item) => [item.kind, item.id]).sort(), [["catalog", CATALOG], ["shared", approved.shareToken]].sort());
+  assert.deepEqual(walks.map((/** @type {any} */ item) => [item.kind, item.id]), [["shared", approved.shareToken]]);
   const item = walks.find((/** @type {any} */ entry) => entry.kind === "shared");
   assert.deepEqual(item, { kind: "shared", id: approved.shareToken, title: "Одобренная", walkingMinutes: 45, distanceM: 3200, stopCount: 1, rating: { average: 5, count: 1 } });
   assert.equal(walks[0].kind, "shared", "a launched walk ranks above one with no launches");

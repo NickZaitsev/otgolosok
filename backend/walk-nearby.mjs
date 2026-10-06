@@ -1,4 +1,5 @@
 import { CATALOG_LISTED_AT, catalogDocument, rankTopWalks, ratingSummary, walkDetails } from "./walk-top.mjs";
+import { listedCatalogRoutes } from "./walk-catalog.mjs";
 import { distance } from "./walks.mjs";
 
 export const NEARBY_RADIUS_M = 500;
@@ -25,7 +26,7 @@ export function createNearbyWalks({ accountStore, store, builtinRoutes }) {
       const origin = { lat, lon };
       const { walks, catalogRatings, priorMean } = accountStore.listNearbyCandidates({ lat, lon, radiusM: NEARBY_RADIUS_M, userId });
       const launches = accountStore.launchTotals();
-      const catalog = builtinRoutes.filter(route => route.walk?.steps?.length).flatMap(route => {
+      const catalog = listedCatalogRoutes(builtinRoutes).flatMap(route => {
         const published = store.getPublishedWalk(route.id);
         const start = published?.walk?.start?.location;
         if (!start) return [];

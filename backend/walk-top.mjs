@@ -1,4 +1,4 @@
-import { catalogWalkView } from "./walk-catalog.mjs";
+import { catalogWalkView, listedCatalogRoutes } from "./walk-catalog.mjs";
 
 export const TOP_LIMIT = 20;
 export const TOP_PRIOR_WEIGHT = 5;
@@ -54,7 +54,7 @@ export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP
     list() {
       const { walks, catalogRatings, priorMean } = accountStore.listTopCandidates();
       const launches = accountStore.launchTotals();
-      const catalog = builtinRoutes.filter(route => route.walk?.steps?.length).flatMap(route => {
+      const catalog = listedCatalogRoutes(builtinRoutes).flatMap(route => {
         const published = store.getPublishedWalk(route.id);
         if (!published) return [];
         const rating = catalogRatings.get(route.id) ?? { ratingSum: 0, ratingCount: 0 };

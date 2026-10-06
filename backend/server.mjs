@@ -38,7 +38,7 @@ import { createPlaceFeedbackRoutes } from "./place-feedback-routes.mjs";
 import { createWalkImprovementRoutes } from "./walk-improvement-routes.mjs";
 import { resolveWalkView } from "./walk-view.mjs";
 import { builtinRoutes } from "./builtin-routes.mjs";
-import { catalogWalkView } from "./walk-catalog.mjs";
+import { catalogMovedShare, catalogWalkView, listedCatalogRoutes } from "./walk-catalog.mjs";
 import { normalizeForSpeech } from "./text-normalizer.mjs";
 import { loadLocalTtsConfig } from "./local-tts.mjs";
 import { createTtsApiClient } from "./tts-api-client.mjs";
@@ -701,7 +701,7 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
         json(res,200,{walks:nearbyWalks.list({lat,lon,userId:session?.user?.id??null})});return;
       }
       const publishedWalk=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})$/.exec(url.pathname);
-      if(req.method==="GET"&&url.pathname==="/api/story-walks"){json(res,200,{walks:builtinRoutes.filter(route=>route.walk?.steps?.length).map(route=>({id:route.id,title:route.title,subtitle:route.subtitle,durationMin:route.duration_min}))});return;}
+      if(req.method==="GET"&&url.pathname==="/api/story-walks"){json(res,200,{walks:listedCatalogRoutes(builtinRoutes).map(route=>({id:route.id,title:route.title,subtitle:route.subtitle,durationMin:route.duration_min}))});return;}
       const sharedWalk=new RegExp(`^/api/story-walks/shared/(${UUID})$`).exec(url.pathname);
       if(req.method==="GET"&&sharedWalk){
         const walk=accountStore?.getSharedWalk(sharedWalk[1]);
@@ -709,7 +709,9 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
         json(res,200,resolveWalkView(walk.snapshot,walk.revision,store));return;
       }
       const catalogView=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})\/view$/.exec(url.pathname);
-      if(req.method==="GET"&&catalogView){const route=store.getPublishedWalk(catalogView[1]);json(res,route?200:404,route?catalogWalkView(route):{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
+      if(req.method==="GET"&&catalogView){const share=catalogMovedShare(builtinRoutes.find(route=>route.id===catalogView[1]));
+        if(share){json(res,410,{error:{code:"WALK_MOVED",message:"Прогулка переехала по новой ссылке.",share}});return;}
+        const route=store.getPublishedWalk(catalogView[1]);json(res,route?200:404,route?catalogWalkView(route):{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
       if(req.method==="GET"&&publishedWalk) {
         const route=store.getPublishedWalk(publishedWalk[1]);
         json(res,route?200:404,route??{error:{code:"NOT_FOUND",message:"Walk not found."}});return;

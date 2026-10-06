@@ -805,3 +805,12 @@ test("server shutdown closes the food index",async t=>{
   // Registered after the fixture cleanup, so it observes the completed shutdown.
   t.after(()=>assert.equal(closed,true));
 });
+
+test("the built-in walk moved to the catalogue places answers with its new shared link and leaves the walk list",async t=>{
+  const f=await fixture(t);
+  const moved=await fetch(`${f.base}/api/story-walks/msk-kozhevniki-zindel-short/view`);
+  assert.equal(moved.status,410);
+  assert.deepEqual(/** @type {any} */ (await moved.json()).error,{code:"WALK_MOVED",message:"Прогулка переехала по новой ссылке.",share:"901d1133-44a2-4724-a856-2fe8d6c86a44"});
+  const list=/** @type {any} */ (await (await fetch(`${f.base}/api/story-walks`)).json());
+  assert.equal(list.walks.some((/** @type {any} */ walk)=>walk.id==="msk-kozhevniki-zindel-short"),false);
+});

@@ -1,10 +1,12 @@
+import { catalogMovedShare } from "./walk-catalog.mjs";
 // Resolve only resources already accessible to the requesting account or public.
 export function favoriteSummary(item, { userId, accountStore, store, routes }) {
   if (item.type === 'walk') {
     const own = accountStore.getWalk(userId, item.id);
     if (own && !own.snapshotError) return {...item, title:own.title, href:`/walk?id=${encodeURIComponent(own.id)}`};
     const route = routes.find(route => route.id === item.id);
-    if (route) return {...item, title:route.title, href:`/walk?catalog=${encodeURIComponent(route.id)}`};
+    const moved = catalogMovedShare(route);
+    if (route) return {...item, title:route.title, href:moved ? `/walk?share=${moved}` : `/walk?catalog=${encodeURIComponent(route.id)}`};
   }
   if (item.type === 'story') {
     const job = store.get(item.id);
