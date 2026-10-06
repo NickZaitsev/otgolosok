@@ -7,7 +7,7 @@ import { ContentAdmin } from "./content-admin";
 import { DraftsAdmin } from "./drafts-admin";
 import { ReviewsAdmin } from "./reviews-admin";
 import { ImprovementsAdmin } from "./improvements-admin";
-import { draftCheck, initialDraft, safeSourceLink, stages, ttsProviderLabels, type AdminApi, type Draft, type Job, type Summary, type TtsProvider } from "./model";
+import { STORY_WORDS, draftCheck, initialDraft, safeSourceLink, stages, ttsProviderLabels, type AdminApi, type Draft, type Job, type Summary, type TtsProvider } from "./model";
 import { skeletonRows } from "./table-skeleton";
 import { readFetch } from "../auth/read-fetch";
 import { csrfHeaders, getSession, signOut } from "../auth/client";
@@ -398,7 +398,7 @@ export function AdminDesk() {
                       {!facts.length && <p>Подтверждённых фактов нет.</p>}
                     </aside>
                   </div>
-                  <section className="admin-publish" aria-labelledby="admin-publish-title"><h3 id="admin-publish-title">Решение редактора</h3><p>{check?.words} слов из 100–250 · {check?.facts} из минимум 5 фактов · {draft.paragraphs.length} абзацев из 2–6.</p><p className="admin-meta">У каждого абзаца должен быть текст и хотя бы один подтверждающий факт. Сохранение не запускает озвучивание.</p>
+                  <section className="admin-publish" aria-labelledby="admin-publish-title"><h3 id="admin-publish-title">Решение редактора</h3><p>{check?.words} слов из {STORY_WORDS.min}–{STORY_WORDS.max} · {check?.facts} из минимум 5 фактов · {draft.paragraphs.length} абзацев из 2–6.</p><p className="admin-meta">У каждого абзаца должен быть текст и хотя бы один подтверждающий факт. Сохранение не запускает озвучивание.</p>
                     <button disabled={Boolean(busy) || !editable || !check?.valid || conflict || (!dirty && Boolean(job.data.editorDraft))} onClick={() => void run("Сохранение текста…", async signal => {
                       accept((await api<{ job: Job }>(`/${job.id}/edit`, signal, { revision: job.revision, draft })).job, true); setNotice("Редакторский текст сохранён. Проверьте его и подтвердите решение перед озвучиванием.");
                     })}>Сохранить текст</button>

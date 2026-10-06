@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { failure, validateDraft, validateFacts } from "./domain.mjs";
 import { validateSourceUrl } from "./safe-fetch.mjs";
 import { isTtsProvider, validVoiceId } from "./tts-voices.mjs";
+import { storyWordsInRange } from "./story-limits.mjs";
 
 // A single fixed-size bucket bounds memory and ignores spoofable proxy headers.
 export function adminAuth(token, now = Date.now) {
@@ -62,7 +63,7 @@ export function hasValidStoryText(value) {
   const paragraphs = story.paragraphs.map((paragraph) => object(paragraph).text);
   if (paragraphs.some((paragraph) => typeof paragraph !== "string" || !paragraph.trim() || paragraph.length > 2000)) return false;
   const wordCount = paragraphs.join(" ").trim().split(/\s+/u).length;
-  return profile==="description-v1"?wordCount>=20&&wordCount<=100:wordCount>=100&&wordCount<=250;
+  return storyWordsInRange(wordCount,profile);
 }
 
 const selectedVoice = (data) => validVoiceId(data.ttsVoice) ? data.ttsVoice

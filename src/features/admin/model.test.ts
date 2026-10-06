@@ -16,6 +16,12 @@ describe("editorial draft requirements", () => {
   it("accepts the minimum word and distinct-fact counts", () => {
     expect(draftCheck(draft, facts)).toEqual({ words: 100, facts: 5, valid: true });
   });
+  it("accepts long editorial stories up to the shared 500-word limit", () => {
+    const long = (count: number) => ({ ...draft, paragraphs: draft.paragraphs.map((p, i) => ({ ...p, text: Array(Math.floor((count + i) / 2)).fill("word").join(" ") })) });
+    expect(draftCheck(long(251), facts).valid).toBe(true);
+    expect(draftCheck(long(500), facts)).toEqual({ words: 500, facts: 5, valid: true });
+    expect(draftCheck(long(501), facts).valid).toBe(false);
+  });
   it("rejects missing evidence, unknown facts and unlinked paragraphs", () => {
     expect(draftCheck(draft, []).valid).toBe(false);
     expect(draftCheck({ ...draft, paragraphs: [draft.paragraphs[0], { ...draft.paragraphs[1], factIds: ["f6"] }] }, facts).valid).toBe(false);
@@ -27,7 +33,7 @@ describe("editorial draft requirements", () => {
     expect(draftCheck({ ...draft, paragraphs: [draft.paragraphs[0]] }, facts).valid).toBe(false);
     expect(draftCheck({ ...draft, paragraphs: Array(7).fill(draft.paragraphs[0]) }, facts).valid).toBe(false);
     expect(draftCheck({ ...draft, paragraphs: draft.paragraphs.map(p => ({ ...p, text: "short" })) }, facts).valid).toBe(false);
-    expect(draftCheck({ ...draft, paragraphs: draft.paragraphs.map(p => ({ ...p, text: Array(126).fill("word").join(" ") })) }, facts).valid).toBe(false);
+    expect(draftCheck({ ...draft, paragraphs: draft.paragraphs.map((p, i) => ({ ...p, text: Array(250 + i).fill("word").join(" ") })) }, facts).valid).toBe(false);
   });
   it("prefers the saved editorial draft and provides two empty paragraphs otherwise", () => {
     const job = { data: { editorDraft: draft, draft: { ...draft, title: "Model" }, draftCandidate: null } } as Job;

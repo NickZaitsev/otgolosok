@@ -1,8 +1,9 @@
 import { failure } from "./domain.mjs";
 import { draftPrompt, reviewPrompt } from "./prompts.mjs";
 import { requestStructured } from "./model-output.mjs";
+import { DESCRIPTION_WORDS, STORY_WORDS } from "./story-limits.mjs";
 
-const limits = profile => profile === "description-v1" ? {minWords:20,maxWords:100,minParagraphs:1,maxParagraphs:3} : {minWords:100,maxWords:250,minParagraphs:2,maxParagraphs:6};
+const limits = profile => profile === "description-v1" ? {minWords:DESCRIPTION_WORDS.min,maxWords:DESCRIPTION_WORDS.max,minParagraphs:1,maxParagraphs:3} : {minWords:STORY_WORDS.min,maxWords:STORY_WORDS.max,minParagraphs:2,maxParagraphs:6};
 
 // The card shows the address on its own; in a text heard on the spot a postal address is filler.
 // A place named in words (a park, a square, a street without a house number) stays allowed.

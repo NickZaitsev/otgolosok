@@ -1,3 +1,6 @@
+import { STORY_WORDS, storyWordsInRange } from "../../../backend/story-limits.mjs";
+
+export { STORY_WORDS };
 export type Draft = { title: string; paragraphs: { text: string; factIds: string[] }[] };
 export type AdminApi = <T>(path: string, signal: AbortSignal, body?: unknown) => Promise<T>;
 export type AdminRun = (label: string, action: (signal: AbortSignal) => Promise<void>) => Promise<void>;
@@ -173,7 +176,7 @@ export function draftCheck(draft: Draft, facts: Fact[]) {
     draft.paragraphs.length >= 2 && draft.paragraphs.length <= 6 &&
     draft.paragraphs.every(p => p.text.trim() && p.text.length <= 2000 && p.factIds.length &&
       p.factIds.every(id => facts.some(f => f.id === id))) &&
-    words >= 100 && words <= 250 && used.size >= 5;
+    storyWordsInRange(words) && used.size >= 5;
   return { words, facts: used.size, valid };
 }
 

@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { STORY_WORDS, storyWordsInRange } from "./story-limits.mjs";
 
 export const PIPELINE_VERSION = "place-history-v6";
 export const EDITORIAL_EVIDENCE_VERSION = 2;
@@ -126,7 +127,7 @@ export function validateDraft(draft, evidence) {
   });
   const script = paragraphs.map((paragraph) => paragraph.text).join("\n\n");
   const wordCount = script.split(/\s+/).length;
-  if (wordCount < 100 || wordCount > 250 || used.size < 1) throw failure("INVALID_DRAFT", `Expected 100-250 words and supported facts; got ${wordCount} words and ${used.size} facts.`);
+  if (!storyWordsInRange(wordCount) || used.size < 1) throw failure("INVALID_DRAFT", `Expected ${STORY_WORDS.min}-${STORY_WORDS.max} words and supported facts; got ${wordCount} words and ${used.size} facts.`);
   return { title: draft.title.trim(), address: evidence.resolvedAddress, paragraphs, wordCount,
     verification: "automatic", sources: evidence.sources.map(({ id, url, title, publisher }) => ({id, url, title, publisher})),
     facts: evidence.facts.filter((fact) => used.has(fact.id)).map((fact) => ({id: fact.id, claim: fact.claim, sourceIds: fact.evidence.map((proof) => proof.sourceId)})) };
