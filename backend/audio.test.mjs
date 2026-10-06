@@ -129,3 +129,21 @@ test("invalid cache namespaces fail before preparation or paid synthesis", async
     await assert.rejects(createNarration({ paragraphs: [{ text: "Рассказ." }] }, provider, directory, undefined, { normalize, cacheNamespace }), { code: "BAD_REQUEST" });
   }
 });
+
+for (const { durationSec, cached } of [{ durationSec: 150, cached: true }, { durationSec: 300, cached: true }, { durationSec: 301, cached: false }]) {
+  test(`address narration of ${durationSec} s ${cached ? "fits" : "exceeds"} the default 5-minute limit`, async t => {
+    const directory = await mkdtemp(join(tmpdir(), "otgolosok-long-audio-"));
+    t.after(() => rm(directory, { recursive: true, force: true }));
+    const story = { paragraphs: [{ text: "Длинный рассказ о доме." }] };
+    const bytes = Buffer.from(`validated narration of ${durationSec} seconds`);
+    const hash = sha256(bytes);
+    const metadata = { sha256: hash, durationSec, url: `/api/story-audio/${hash}.mp3` };
+    const provider = { voice: "marin", ttsModel: "test", speech: async () => { throw new Error("Cached narration rejected"); } };
+    const key = sha256(JSON.stringify({ script: story.paragraphs[0].text, model: provider.ttsModel, voice: provider.voice, version: 2, normalizer: "test" }));
+    await writeFile(join(directory, `${hash}.mp3`), bytes);
+    await writeFile(join(directory, `${key}.json`), JSON.stringify(metadata));
+    const narration = createNarration(story, provider, directory, undefined, { normalize: identityNormalizer });
+    if (cached) assert.deepEqual(await narration, metadata);
+    else await assert.rejects(narration, /Cached narration rejected/);
+  });
+}

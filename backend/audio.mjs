@@ -13,7 +13,7 @@ const exec = promisify(execFile);
  * @param {AbortSignal | undefined} signal
  * @param {{minDurationSec?: number, maxDurationSec?: number, normalize?: ((text: string, options?: {signal?: AbortSignal}) => Promise<string>) & {version?: string}, cacheNamespace?: string}} [options]
  */
-export async function createNarration(story, provider, directory, signal, { minDurationSec = 45, maxDurationSec = 150, normalize = normalizeForSpeech, cacheNamespace } = {}) {
+export async function createNarration(story, provider, directory, signal, { minDurationSec = 45, maxDurationSec = 300, normalize = normalizeForSpeech, cacheNamespace } = {}) {
   if (!Number.isFinite(minDurationSec) || !Number.isFinite(maxDurationSec) || minDurationSec <= 0 || maxDurationSec < minDurationSec || maxDurationSec > 600) throw failure("AUDIO_DURATION");
   if (cacheNamespace !== undefined && (typeof cacheNamespace !== "string" || !/^[A-Za-z0-9][A-Za-z0-9:_-]{0,127}$/.test(cacheNamespace))) throw failure("BAD_REQUEST");
   const script = story.paragraphs.map((paragraph) => paragraph.text).join("\n\n");

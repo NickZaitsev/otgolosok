@@ -50,6 +50,11 @@ function codedError(code, message = code) {
 
 // Published catalog narration keeps the editor's wording and paragraph layout.
 // Generation word-count targets do not apply, but the public story bounds still do.
+/** Longest publishable external recording; a story of up to 500 words fits (see story-limits.mjs). */
+const EXTERNAL_PUBLICATION_LIMIT_SEC = 300;
+/** The limit the input key was computed with until 2026-10-06; frozen so existing keys never change. */
+const LEGACY_KEY_PUBLICATION_LIMIT_SEC = 150;
+
 function catalogNarration(story) {
   const text = (value, limit) => typeof value === "string" && value.trim().length > 0 && value.length <= limit && !/[\p{Cc}\p{Cf}<>]/u.test(value);
   if (!story || !text(story.title, 180) || !Array.isArray(story.paragraphs) || !story.paragraphs.length || story.paragraphs.length > 100
@@ -644,10 +649,13 @@ export function createStore(
         modelSha256:configured.modelSha256??null,speaker:configured.speaker??null,configVersion:configured.configVersion??"1",
         configSha256:configured.configSha256??null,referenceSha256:configured.referenceSha256??null,textPreparation:configured.textPreparation??null,
         chunking:configured.chunking??"sentence-v1",maximumBytes:64*1024*1024,maximumDurationSec:600,
-        maximumPublicationDurationSec:configured.maximumPublicationDurationSec??150,
+        maximumPublicationDurationSec:configured.maximumPublicationDurationSec??EXTERNAL_PUBLICATION_LIMIT_SEC,
         // Only cloud profiles name a model; adding the key to the others would change the keys of their existing jobs.
         ...(configured.model?{model:configured.model}:{})};
-      const inputKey = sha256(JSON.stringify({...(revoiceRequestId ? {revoiceRequestId, revoiceVersion:"external-revoice-v1"} : {}),version:rawContract?"external-audio-v2":"external-audio-v1",sourceJobId,sourceRevision,spokenTextHash,profileId,normalizer:normalizerVersion,profile}));
+      // The limit only checks a finished recording, it does not shape the synthesis. The key keeps the value it was
+      // computed with before the 5-minute limit, so no job queued earlier gets a new key and a second synthesis.
+      const keyProfile={...profile,maximumPublicationDurationSec:configured.maximumPublicationDurationSec??LEGACY_KEY_PUBLICATION_LIMIT_SEC};
+      const inputKey = sha256(JSON.stringify({...(revoiceRequestId ? {revoiceRequestId, revoiceVersion:"external-revoice-v1"} : {}),version:rawContract?"external-audio-v2":"external-audio-v1",sourceJobId,sourceRevision,spokenTextHash,profileId,normalizer:normalizerVersion,profile:keyProfile}));
       return transaction(() => {
         // Normalization is asynchronous: an editor may have changed the approval meanwhile.
         if (catalog && approvedPlaceNarration(sourceJobId) !== script) throw codedError("CONFLICT");

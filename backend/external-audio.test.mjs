@@ -4,6 +4,7 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { createHash } from "node:crypto";
 import { createStore } from "./store.mjs";
 
 const story={title:"Дом",address:"Москва, дом 1",wordCount:104,paragraphs:[
@@ -102,7 +103,7 @@ test("external audio stores the immutable normalized script and profile contract
   const source=store.createOrGet({key:"normalized-source",address:story.address});const ready=store.update(source.id,{stage:"failed",data:{story}},source.revision);
   await store.enqueueExternalAudio({sourceJobId:ready.id,sourceRevision:ready.revision,story,profileId:"silero-ru-v1"});
   const claim=store.claimExternalAudio({workerId:"gpu",requestId:"normalized-0001",profileIds:["silero-ru-v1"]});
-  assert.match(claim.spokenText,/^НОРМАЛИЗОВАНО:/);assert.equal(claim.normalizerVersion,"test-normalizer");assert.equal(claim.profile.chunking,"sentence-v1");assert.equal(claim.profile.maximumBytes,64*1024*1024);assert.equal(claim.profile.maximumPublicationDurationSec,150);
+  assert.match(claim.spokenText,/^НОРМАЛИЗОВАНО:/);assert.equal(claim.normalizerVersion,"test-normalizer");assert.equal(claim.profile.chunking,"sentence-v1");assert.equal(claim.profile.maximumBytes,64*1024*1024);assert.equal(claim.profile.maximumPublicationDurationSec,300);
 });
 
 test("raw profile bypasses server normalization and requires a capable worker",async t=>{
@@ -164,7 +165,7 @@ test("short external audio is accepted even when a frozen legacy profile has a 3
 });
 
 test("external audio still rejects missing, zero and overlong duration",async t=>{
-  for(const [index,durationSec] of [undefined,0,151].entries()) {
+  for(const [index,durationSec] of [undefined,0,301].entries()) {
     const f=await fixture(t),claim=f.store.claimExternalAudio({workerId:"duration-worker",requestId:`duration-boundary-${index}`,profileIds:["silero-ru-v1"]});
     assert.throws(()=>f.store.acceptExternalAudio(claim.id,{workerId:"duration-worker",generation:claim.leaseGeneration,leaseToken:claim.leaseToken,uploadId:`duration-upload-${index}`,uploadSha256:"a".repeat(64),artifact:{sha256:"b".repeat(64),durationSec}}),{code:"AUDIO_DURATION"});
   }
@@ -201,4 +202,44 @@ test("stats aggregate attempt durations and published artifacts",async t=>{
   const stats=f.store.getExternalAudioStats();
   assert.deepEqual(stats.states,{succeeded:1});assert.equal(stats.oldestQueuedAt,null);
   assert.equal(stats.averageAttemptSec,1);assert.equal(stats.artifacts,1);assert.equal(stats.artifactBytes,2048);
+});
+
+// The 5-minute limit must not move the input key of any job queued before it: a changed key would let a
+// repeated enqueue schedule a new synthesis of an already voiced text.
+const legacyProfile=engine=>({id:`${engine==="f5"?"f5":"silero"}-ru-v1`,engine,language:"ru",modelSha256:null,speaker:null,configVersion:"1",configSha256:null,
+  referenceSha256:null,textPreparation:null,chunking:"sentence-v1",maximumBytes:67108864,maximumDurationSec:600,maximumPublicationDurationSec:150});
+for (const engine of ["silero","f5"]) {
+  test(`${engine}: the input key keeps its pre-5-minute formula while new jobs get the 300-second limit`,async t=>{
+    const directory=mkdtempSync(join(tmpdir(),"frozen-key-")),path=join(directory,"jobs.sqlite");
+    const store=createStore(path,{workerLeaseSecret:"test-secret"});t.after(()=>store.close());t.after(()=>rmSync(directory,{recursive:true,force:true}));
+    const original=store.createOrGet({key:`frozen-${engine}`,address:story.address}),source=store.update(original.id,{stage:"failed",data:{story}},original.revision);
+    const profileId=legacyProfile(engine).id;
+    const queued=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story,profileId});
+    const db=new DatabaseSync(path);t.after(()=>db.close());
+    const row=db.prepare("SELECT input_key,payload_json FROM external_audio_jobs WHERE id=?").get(queued.id),payload=JSON.parse(String(row.payload_json));
+    const legacyKey=createHash("sha256").update(JSON.stringify({version:"external-audio-v1",sourceJobId:source.id,sourceRevision:source.revision,
+      spokenTextHash:payload.spokenTextHash,profileId,normalizer:payload.normalizerVersion,profile:legacyProfile(engine)})).digest("hex");
+    assert.equal(row.input_key,legacyKey);
+    assert.equal(payload.profile.maximumPublicationDurationSec,300);
+    assert.equal((await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story,profileId})).id,queued.id);
+    assert.equal(db.prepare("SELECT count(*) n FROM external_audio_jobs").get().n,1);
+    const claim=store.claimExternalAudio({workerId:`${engine}-worker`,requestId:`${engine}-claim-0001`,profileIds:[profileId]});
+    const accept=(durationSec,suffix)=>store.acceptExternalAudio(claim.id,{workerId:`${engine}-worker`,generation:claim.leaseGeneration,leaseToken:claim.leaseToken,
+      uploadId:`${engine}-upload-${suffix}`,uploadSha256:"a".repeat(64),artifact:{sha256:"b".repeat(64),durationSec}});
+    assert.throws(()=>accept(301,"long"),{code:"AUDIO_DURATION"});
+    assert.equal(accept(290,"fits").state,"succeeded");
+  });
+}
+
+test("a job queued before the 5-minute limit keeps its own 150-second check",async t=>{
+  const directory=mkdtempSync(join(tmpdir(),"legacy-limit-")),path=join(directory,"jobs.sqlite");
+  const store=createStore(path,{workerLeaseSecret:"test-secret"});t.after(()=>store.close());t.after(()=>rmSync(directory,{recursive:true,force:true}));
+  const original=store.createOrGet({key:"legacy-limit",address:story.address}),source=store.update(original.id,{stage:"failed",data:{story}},original.revision);
+  const queued=await store.enqueueExternalAudio({sourceJobId:source.id,sourceRevision:source.revision,story});
+  const db=new DatabaseSync(path);
+  db.prepare("UPDATE external_audio_jobs SET payload_json=json_set(payload_json,'$.profile.maximumPublicationDurationSec',150) WHERE id=?").run(queued.id);
+  db.close();
+  const claim=store.claimExternalAudio({workerId:"legacy-worker",requestId:"legacy-limit-claim",profileIds:["silero-ru-v1"]});
+  assert.throws(()=>store.acceptExternalAudio(claim.id,{workerId:"legacy-worker",generation:claim.leaseGeneration,leaseToken:claim.leaseToken,
+    uploadId:"legacy-upload",uploadSha256:"a".repeat(64),artifact:{sha256:"b".repeat(64),durationSec:151}}),{code:"AUDIO_DURATION"});
 });
