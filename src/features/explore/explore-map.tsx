@@ -464,6 +464,8 @@ export function ExploreMap({
         marker
           .setIcon(icon)
           .setZIndexOffset(variant.zIndex);
+        // Leaflet sets the title only on a new element: a reused one would keep the old stop's name.
+        marker.getElement()?.setAttribute("title", item.title);
       } else {
         marker = rt.L.marker(position, {
           icon,

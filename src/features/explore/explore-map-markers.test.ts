@@ -200,3 +200,13 @@ it("draws the route as a green line over a light casing", async () => {
   expect(Number(casing.getAttribute("stroke-width"))).toBeGreaterThan(Number(line.getAttribute("stroke-width")));
   expect(line.getAttribute("stroke-linecap")).toBe("round");
 });
+
+it("renames a reused marker when its title changes, as when a walk is reversed", async () => {
+  await render(items());
+  await vi.waitFor(() => expect(pins()).toHaveLength(2));
+  const [first] = pins();
+
+  await render([{ ...items()[0], title: "Остановка 2: Дом", number: 2 }, { ...items()[1], title: "Остановка 1: Сад", number: 1 }]);
+  expect(pins()[0]).toBe(first);
+  expect(pins().map(pin => pin.title)).toEqual(["Остановка 2: Дом", "Остановка 1: Сад"]);
+});
