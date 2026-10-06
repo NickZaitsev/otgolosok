@@ -12,7 +12,7 @@
 
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
@@ -25,7 +25,10 @@ const CONTAINER = process.env.GENERATOR_CONTAINER ?? "otgolosok-generator-genera
 // never be committed by accident.
 const DUMP_DIR = resolve(ROOT, process.env.DUMP_DIR ?? "backend/data/prod-dump");
 const DATA_DIR = resolve(ROOT, process.env.DATA_DIR ?? "backend/data");
-const REMOTE_SNAPSHOT = "/tmp/otgolosok-dump.sqlite";
+// The snapshot is as large as the database, hundreds of megabytes: /tmp in the generator
+// container is a 64 MB tmpfs, so it goes to the data volume, which the host sees as generator-data.
+const REMOTE_SNAPSHOT_NAME = ".otgolosok-dump.sqlite";
+const REMOTE_SNAPSHOT = `/data/${REMOTE_SNAPSHOT_NAME}`;
 const JOURNAL = ["jobs.sqlite", "jobs.sqlite-wal", "jobs.sqlite-shm"];
 // Files the database refers to by name: story audio and place photos travel with every snapshot.
 const MEDIA_DIRS = ["audio", "place-images"];
@@ -36,25 +39,34 @@ import { DatabaseSync } from "node:sqlite";
 import { rmSync, statSync } from "node:fs";
 const SOURCE = "/data/jobs.sqlite";
 const TARGET = ${JSON.stringify(REMOTE_SNAPSHOT)};
-rmSync(TARGET, { force: true });
-const live = new DatabaseSync(SOURCE, { readOnly: true });
-live.exec("VACUUM INTO '" + TARGET + "'");
-const tables = live.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name").all();
-live.close();
-const snapshot = new DatabaseSync(TARGET, { readOnly: true });
-const integrity = snapshot.prepare("PRAGMA integrity_check").get().integrity_check;
-const counts = tables.map(({ name }) => name + "=" + snapshot.prepare('SELECT count(*) AS n FROM "' + name + '"').get().n);
-snapshot.close();
-if (integrity !== "ok") throw new Error("Snapshot failed integrity check: " + integrity);
-console.log(statSync(TARGET).size + " " + counts.join(" "));
+const clear = () => { for (const path of [TARGET, TARGET + "-journal"]) rmSync(path, { force: true }); };
+clear();
+try {
+  const live = new DatabaseSync(SOURCE, { readOnly: true });
+  live.exec("VACUUM INTO '" + TARGET + "'");
+  const tables = live.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name").all();
+  live.close();
+  const snapshot = new DatabaseSync(TARGET, { readOnly: true });
+  const integrity = snapshot.prepare("PRAGMA integrity_check").get().integrity_check;
+  const counts = tables.map(({ name }) => name + "=" + snapshot.prepare('SELECT count(*) AS n FROM "' + name + '"').get().n);
+  snapshot.close();
+  if (integrity !== "ok") throw new Error("Snapshot failed integrity check: " + integrity);
+  console.log(statSync(TARGET).size + " " + counts.join(" "));
+} catch (error) {
+  // A half-written snapshot must not stay on the production disk.
+  clear();
+  throw error;
+}
 `;
 
 const stamp = () => new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
+class Failure extends Error {}
+
+/** Aborts the command; thrown, so cleanup in `finally` still runs on the server. */
 function fail(message) {
-  process.stderr.write(`${message}\n`);
-  process.exit(1);
+  throw new Failure(message);
 }
 
 function run(command, args, { input, capture = false } = {}) {
@@ -130,13 +142,19 @@ function dump() {
   const summary = ssh(`docker exec -i ${CONTAINER} node --input-type=module`, { input: SNAPSHOT_SCRIPT }).trim();
   process.stdout.write(`  снимок: ${summary}\n`);
 
-  const bytes = ssh(`docker exec ${CONTAINER} cat ${REMOTE_SNAPSHOT}`, { capture: true });
-  const expected = ssh(`docker exec ${CONTAINER} sha256sum ${REMOTE_SNAPSHOT}`).trim().split(/\s+/)[0];
-  // Clear the temporary file before any check can abort the run.
-  ssh(`docker exec ${CONTAINER} rm -f ${REMOTE_SNAPSHOT}`);
-  if (sha256(bytes) !== expected) fail("Контрольные суммы снимка не совпали, выгрузка не сохранена.");
-
-  writeFileSync(join(DUMP_DIR, "jobs.sqlite"), bytes);
+  // rsync from the host side of the data volume: no output buffer limit, and an interrupted
+  // copy lands in a partial file instead of replacing the previous dump.
+  mkdirSync(DUMP_DIR, { recursive: true });
+  const partial = join(DUMP_DIR, "jobs.sqlite.partial");
+  try {
+    const expected = ssh(`docker exec ${CONTAINER} sha256sum ${REMOTE_SNAPSHOT}`).trim().split(/\s+/)[0];
+    run("rsync", ["-a", `${VPS}:${REMOTE_DIR}/generator-data/${REMOTE_SNAPSHOT_NAME}`, partial]);
+    if (sha256(readFileSync(partial)) !== expected) fail("Контрольные суммы снимка не совпали, выгрузка не сохранена.");
+    renameSync(partial, join(DUMP_DIR, "jobs.sqlite"));
+  } finally {
+    rmSync(partial, { force: true });
+    ssh(`docker exec ${CONTAINER} rm -f ${REMOTE_SNAPSHOT} ${REMOTE_SNAPSHOT}-journal`);
+  }
   for (const name of MEDIA_DIRS) {
     mkdirSync(join(DUMP_DIR, name), { recursive: true });
     // place-images appears only after the first photo sync on the server.
@@ -235,7 +253,13 @@ function info() {
 
 const commands = { dump, pack, import: importDump, restore, info };
 const command = process.argv[2];
-if (!Object.hasOwn(commands, command ?? "")) {
-  fail(`Использование: node scripts/prod-db.mjs <${Object.keys(commands).join("|")}>`);
+try {
+  if (!Object.hasOwn(commands, command ?? "")) {
+    fail(`Использование: node scripts/prod-db.mjs <${Object.keys(commands).join("|")}>`);
+  }
+  commands[command]();
+} catch (error) {
+  if (!(error instanceof Failure)) throw error;
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
 }
-commands[command]();
