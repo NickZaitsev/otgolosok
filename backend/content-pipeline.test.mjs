@@ -534,3 +534,75 @@ test("the job deadline during the photo step fails the job as a timeout", async 
   assert.equal(result.error.code, "TIMEOUT");
   assert.equal(f.store.getPublishedPlace("osm:node:1"), null);
 });
+
+for (const mode of ["perplexity_required", "perplexity_deep_required"]) {
+  test(`draft research includes Wikimapia API text and caches it (${mode})`, async t => {
+    const f = searchFixture(t, { found: [{ url: "https://wikimapia.org/123/ru" }, ...urls("pplx", 2)] }), job = f.store.claimContentJob();
+    job.checkpoint = { researchMode: mode };
+    if (mode === "perplexity_deep_required") f.queue.shift();
+    const record = { id: 123, title: "Мемориальная доска Клечковскому", description: "Установлена в 1978 году.",
+      url: "https://wikimapia.org/123/ru", location: job.place.location, deleted: false, categories: [] };
+    const wikimapia = { nearest: async () => [record], detail: async () => record };
+    const provider = { ...f.provider, deepResearchSources: async () => ({ sources: [{ url: record.url }, ...urls("deep", 8)] }) };
+    const result = await runContentJob(job, { store: f.store, provider, wikimapia, fetchPage: async url => {
+      assert.ok(!url.includes("wikimapia.org"), "API text must not be fetched as a web page");
+      return { url, html: plaquePage };
+    } });
+    assert.ok(result.story, JSON.stringify(result.error));
+    assert.equal(f.last().wikimapiaResearch.status, "ok");
+    const source = f.last().sources.find(source => source.publisher === "wikimapia.org");
+    assert.equal(source.url, record.url);
+    assert.equal(f.last().sources.filter(source => source.url === record.url).length, 1);
+    assert.match(source.text, /Установлена в 1978 году/);
+    assert.ok(f.prompts.some(prompt => prompt.includes(record.url) && prompt.includes("Установлена в 1978 году")));
+  });
+}
+
+test("Wikimapia failure is recorded without stopping Perplexity research", async t => {
+  const f = searchFixture(t), job = f.store.claimContentJob();
+  job.checkpoint = { researchMode: "perplexity_required" };
+  const result = await runContentJob(job, { store: f.store, provider: f.provider,
+    wikimapia: { nearest: async () => { throw Object.assign(new Error("private"), { code: "WIKIMAPIA_HTTP_503" }); }, detail: async () => null },
+    fetchPage: readPage(plaquePage) });
+  assert.ok(result.story, JSON.stringify(result.error));
+  assert.equal(f.last().wikimapiaResearch.status, "failed");
+  assert.deepEqual(f.last().wikimapiaResearch.errors, ["WIKIMAPIA_HTTP_503"]);
+  assert.ok(!JSON.stringify(f.last()).includes("private"));
+});
+
+for (const reason of ["empty", "unrelated", "deleted", "far", "short-title", "empty-description"]) {
+  test(`Wikimapia rejects unsuitable candidates: ${reason}`, async t => {
+    const f = searchFixture(t), job = f.store.claimContentJob();
+    job.checkpoint = { researchMode: "perplexity_required" };
+    if (reason === "short-title") job.place.name = "Памятник";
+    const record = { id: 123, title: reason === "unrelated" ? "Другой объект" : "Клечковскому", description: reason === "empty-description" ? "" : "История памятника",
+      url: "https://wikimapia.org/123/ru", location: reason === "far" ? { lat: 56, lon: 38 } : job.place.location, deleted: reason === "deleted", categories: [] };
+    const result = await runContentJob(job, { store: f.store, provider: f.provider,
+      wikimapia: { nearest: async () => reason === "empty" ? [] : [record], detail: async () => record }, fetchPage: readPage(plaquePage) });
+    assert.ok(result.story, JSON.stringify(result.error));
+    assert.equal(f.last().wikimapiaResearch.status, "empty");
+    assert.deepEqual(f.last().wikimapiaResearch.sources, []);
+    assert.ok(f.last().sources.every(source => source.publisher !== "wikimapia.org"));
+  });
+}
+
+test("retry uses saved Wikimapia text and checks its quotes as evidence", async t => {
+  const f = searchFixture(t), job = f.store.claimContentJob();
+  job.checkpoint = { researchMode: "perplexity_required" };
+  const description = "Мемориальная доска Клечковскому Всеволоду Маврикиевичу. Дата установки: 06.06.1978. Шакаров Г.А. (скульптор).";
+  const record = { id: 123, title: "Клечковскому", description, url: "https://wikimapia.org/123/ru", location: job.place.location, deleted: false, categories: [] };
+  let requests = 0;
+  const wikimapia = { nearest: async () => { requests++; return [record]; }, detail: async () => record };
+  const facts = structuredClone(f.factsAnswer);
+  for (const fact of facts.value.facts) fact.evidence[0].sourceId = "w1";
+  f.queue[1] = { value: { ...facts.value, identityConfirmed: false } };
+  const stopped = await runContentJob(job, { store: f.store, provider: f.provider, wikimapia, fetchPage: readPage(plaquePage) });
+  assert.equal(stopped.error.code, "PLACE_UNCLEAR");
+  f.store.retryBatchItem(f.batch.id, "osm:node:1", { restartFrom: "auto" });
+  f.queue.splice(0, f.queue.length, facts, { text: f.text }, f.review);
+  const result = await runContentJob(f.store.claimContentJob(), { store: f.store, provider: f.provider, wikimapia,
+    fetchPage: async () => { throw new Error("saved sources must not be fetched"); } });
+  assert.ok(result.story, JSON.stringify(result.error));
+  assert.equal(requests, 1);
+  assert.ok(f.last().evidence.facts.every(fact => fact.evidence[0].sourceId === "w1"));
+});

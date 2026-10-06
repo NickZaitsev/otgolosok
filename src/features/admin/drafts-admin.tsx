@@ -152,8 +152,8 @@ export function DraftsAdmin({ api, busy, run, onDirtyChange }: DraftsAdminProps)
       ? <form className="admin-row-actions drafts-research" onSubmit={event => { event.preventDefault(); if (countValid) research({ limit: researchCount }); }}>
         <label>Сколько черновиков <input type="number" min={1} max={DRAFT_RESEARCH_LIMIT} step={1} value={Number.isNaN(researchCount) ? "" : researchCount}
           disabled={disabled} onChange={event => setResearchCount(event.currentTarget.valueAsNumber)} /></label>
-        <button type="submit" disabled={disabled || !countValid || !page.unresearched}>Переисследовать через Perplexity</button>
-        <span className="admin-meta">Ещё не проверено через Perplexity: {numbers.format(page.unresearched ?? 0)}. Сначала берутся самые старые черновики; удачный прогон заменяет текст черновика.</span>
+        <button type="submit" disabled={disabled || !countValid || !page.unresearched}>Переисследовать через Perplexity и Wikimapia</button>
+        <span className="admin-meta">Ещё не проверено через Perplexity: {numbers.format(page.unresearched ?? 0)}. Поиск включает Perplexity и Wikimapia. Сначала берутся самые старые черновики; удачный прогон заменяет текст черновика.</span>
       </form>
       : !loading && <p className="admin-meta">Переисследование через Perplexity недоступно: на сервере не задана модель поиска.</p>}
     {page.deepResearchAvailable && <p className="admin-meta">Глубокое исследование запускается для одного черновика и расходует квоту Perplexity Deep Research. Поиск может занять до 10 минут; удачный прогон заменит черновик.</p>}

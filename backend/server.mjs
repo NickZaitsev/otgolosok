@@ -21,6 +21,7 @@ import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
 import { validateWalkResearch, publicWalkResearch, walkResearchKey } from "./walk-research.mjs";
 import { createBackendLogger } from "./logs.mjs";
 import { ingestAudio, sweepAudioTemporaries } from "./audio-ingest.mjs";
+import { createWikimapiaClient } from "./wikimapia-pilot.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
 import { createPlaceImageService, createWikimediaClient, placeImageUserAgent, startPlaceImageWorker } from "./place-images.mjs";
 import { openOsmGeocoder } from "./osm-geocoder.mjs";
@@ -115,6 +116,7 @@ export function parseUserDailyLimit(value) {
  * @property {string} [audioDirectory]
  * @property {string} [imageDirectory] DATA_DIR/place-images
  * @property {ReturnType<typeof createPlaceImageService> | null} [placeImages] null unless PLACE_IMAGE_SYNC=true
+ * @property {ReturnType<typeof createWikimapiaClient> | null} [wikimapia]
  * @property {string} [staticDirectory]
  * @property {boolean} [workerEnabled]
  * @property {ReturnType<typeof loadLocalTtsConfig>} [localTts]
@@ -142,7 +144,7 @@ export function parseUserDailyLimit(value) {
  */
 
 /** @param {CreateAppOptions} options */
-export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),improvementLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000})}) {
+export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,wikimapia=createWikimapiaClient({apiKey:process.env.WIKIMAPIA_API_KEY||"example"}),staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),improvementLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000})}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const speechProviders={openai:provider,yandex:yandexTts,elevenlabs:elevenLabsTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
@@ -152,7 +154,7 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
   const audioProfiles=[{id:localTts.defaultProfile,label:localTts.engine==="f5"?"F5 (локальный TTS)":"Silero (локальный TTS)"},
     ...(elevenLabsTts?[{id:ELEVENLABS_PROFILE_ID,label:"ElevenLabs (с аудиотегами)"}]:[])];
   const worker=(provider||yandexTts)&&workerEnabled?startWorker({store,provider,speechProviders,audioDirectory,discoverResearch,planResearchWalk,logs}):null;
-  const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,logs,resolveLocation:osmGeocoder ? place=>osmGeocoder.resolve(place) : null,concurrency:Number(process.env.CONTENT_WORKER_CONCURRENCY??1),autoApprove:process.env.CONTENT_AUTO_APPROVE==="true",placeImages}):null;
+  const contentWorker=provider&&workerEnabled?startContentWorker({store,provider,wikimapia,logs,resolveLocation:osmGeocoder ? place=>osmGeocoder.resolve(place) : null,concurrency:Number(process.env.CONTENT_WORKER_CONCURRENCY??1),autoApprove:process.env.CONTENT_AUTO_APPROVE==="true",placeImages}):null;
   const placeImageWorker=workerEnabled&&placeImages?startPlaceImageWorker({service:placeImages,logs}):null;
   const ttsApiWorker=workerEnabled&&localTts.transport==="http"&&ttsApiClient?startTtsApiWorker({store,client:ttsApiClient,audioDirectory,profileId:localTts.defaultProfile,logs}):null;
   const elevenLabsWorker=workerEnabled&&elevenLabsTts?startSpeechAudioWorker({store,speechProvider:elevenLabsTts,profileId:ELEVENLABS_PROFILE_ID,audioDirectory,logs}):null;

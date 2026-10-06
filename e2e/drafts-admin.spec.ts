@@ -44,6 +44,8 @@ test("утверждение и переисследование сохраня�
   });
   await page.goto("/admin?section=drafts");
   await expect(page.getByRole("button", { name: "Открыть черновик: Место 1", exact: true })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Переисследовать через Perplexity и Wikimapia", exact: true })).toBeEnabled();
+  await expect(page.getByText(/Поиск включает Perplexity и Wikimapia/)).toBeVisible();
   // A marker on an untouched row detects even a brief unmount followed by reconstruction.
   await page.getByRole("row", { name: /Место 3/ }).evaluate(row => { row.setAttribute("data-preserved", "true"); });
   await page.getByRole("button", { name: "Открыть черновик: Место 1", exact: true }).click();

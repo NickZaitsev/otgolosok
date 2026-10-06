@@ -1,4 +1,4 @@
-import { EDITORIAL_EVIDENCE_VERSION, failure, validateFacts } from "./domain.mjs";
+import { EDITORIAL_EVIDENCE_VERSION, failure, validateFacts, pageText } from "./domain.mjs";
 import { validateSourceUrl, fetchSource } from "./safe-fetch.mjs";
 import { withRetry } from "./retry.mjs";
 import { sourceText } from "./source-text.mjs";
@@ -8,6 +8,7 @@ import { writeStory } from "./story-writing.mjs";
 import { errorMessages, SOURCE_RETRY } from "./pipeline.mjs";
 import { restrictWeakIdentityEvidence } from "./identity-triage.mjs";
 import { PROVIDER_OUTAGE_CODES } from "./provider.mjs";
+import { candidateMatches } from "./wikimapia-pilot.mjs";
 import { openDataSource } from "./open-data.mjs";
 
 /** Codes only this pipeline raises; the shared errorMessages cover the rest. The editor reads these in the batch list. */
@@ -85,11 +86,12 @@ function reviewRound(round,review) {
  *   provider: {writerModel?: string, response: (prompt: string, options?: object) => Promise<any>,
  *     deepResearchModel?: string | null, deepResearchSources?: ((prompt: string, options?: {signal?: AbortSignal}) => Promise<{sources: {url: string, title?: string}[]}>) | null,
  *     searchModel?: string | null, searchSources?: ((prompt: string, options?: {signal?: AbortSignal}) => Promise<{sources: {url: string, title?: string}[]}>) | null},
+ *   wikimapia?: ReturnType<typeof import("./wikimapia-pilot.mjs").createWikimapiaClient> | null,
  *   fetchPage?: (url: string, options?: {signal?: AbortSignal}) => Promise<any>, resolveLocation?: ((place: any) => any) | null,
  *   signal?: AbortSignal, timeoutMs?: number, autoApprove?: boolean, onSearchFailure?: (code: string) => void,
  *   placeImages?: {ensure: (place: any, options?: {signal?: AbortSignal, timeoutMs?: number}) => Promise<unknown>} | null}} options
  */
-export async function runContentJob(job,{store,provider,fetchPage=fetchSource,resolveLocation=null,signal,timeoutMs=job.checkpoint?.researchMode===DEEP_RESEARCH_REQUIRED?DEEP_CONTENT_TIMEOUT_MS:600000,autoApprove=false,onSearchFailure=()=>{},placeImages=null}) {
+export async function runContentJob(job,{store,provider,fetchPage=fetchSource,wikimapia=null,resolveLocation=null,signal,timeoutMs=job.checkpoint?.researchMode===DEEP_RESEARCH_REQUIRED?DEEP_CONTENT_TIMEOUT_MS:600000,autoApprove=false,onSearchFailure=()=>{},placeImages=null}) {
   const deadline=AbortSignal.any([AbortSignal.timeout(timeoutMs),...(signal?[signal]:[])]);let checkpoint=job.checkpoint??{};
   const save=patch=>{checkpoint={...checkpoint,...patch};store.updateContentCheckpoint(job.id,checkpoint);};
   const call=async(prompt,options={})=>{const result=await provider.response(prompt,{...options,signal:deadline});const tokens=usageTokens(result.usage);if(tokens)save({usageTokens:Number(checkpoint.usageTokens??0)+tokens});return result;};
@@ -133,8 +135,28 @@ export async function runContentJob(job,{store,provider,fetchPage=fetchSource,re
       const sources=[...found,...sourcesFrom(research,{seen,origin:perplexity?"search":null})].slice(0,MAX_RESEARCH_SOURCES);
       if(!sources.length&&!openSources.length)throw failure("INSUFFICIENT_EVIDENCE");save({research:{sources,...(perplexity?{perplexity}:{})}});}
     if(checkpoint.perplexityResearch&&checkpoint.research){checkpoint={...checkpoint};delete checkpoint.perplexityResearch;store.updateContentCheckpoint(job.id,checkpoint);}
-    if(!checkpoint.sources){const results=await Promise.allSettled(checkpoint.research.sources.map(async(source,index)=>{const page=await withRetry(()=>fetchPage(source.url,{signal:deadline}),SOURCE_RETRY(deadline));const text=await sourceText(page,{keywords:[job.place.name,job.place.address]});if(text.length<300)throw failure("SOURCE_EMPTY");return{id:`s${index+1}`,url:page.url,title:source.title,publisher:new URL(page.url).hostname.split(".").slice(-2).join("."),text};}));
-      const sources=[...openSources,...results.filter(result=>result.status==="fulfilled").map(result=>result.value)];if(!sources.length)throw failure("SOURCE_ACCESS_FAILED");save({sources,sourceFailures:results.filter(result=>result.status==="rejected").map(result=>result.reason?.code??"SOURCE_FAILED")});}
+    // Wikimapia descriptions come from the API, including short useful texts; ordinary page scraping often hits a bot wall.
+    // Persist before paid extraction so a retry does not repeat API requests. Candidate matching does not prove identity.
+    if(wikimapia && [PERPLEXITY_REQUIRED,DEEP_RESEARCH_REQUIRED].includes(checkpoint.researchMode) && !checkpoint.wikimapiaResearch && !checkpoint.sources){
+      const sources=[],errors=[],wikiDeadline=AbortSignal.any([deadline,AbortSignal.timeout(150000)]);
+      try {
+        const place={...job.place.location,name:job.place.name};
+        const candidates=candidateMatches(place,await wikimapia.nearest(place,{signal:wikiDeadline})).slice(0,3);
+        for(const candidate of candidates){
+          try {
+            const record=await wikimapia.detail(candidate.id,candidate.location,{signal:wikiDeadline});
+            if(!candidateMatches(place,[record]).length)continue;
+            const description=pageText(record.description).trim();
+            if(!description)continue;
+            sources.push({id:`w${sources.length+1}`,url:record.url,title:pageText(record.title),publisher:"wikimapia.org",
+              text:`${pageText(record.title)}\n${description}`.slice(0,14000)});
+          }catch(error){if(deadline.aborted)throw error;errors.push(error?.code??"WIKIMAPIA_FAILED");}
+        }
+      }catch(error){if(deadline.aborted)throw error;errors.push(error?.code??"WIKIMAPIA_FAILED");}
+      save({wikimapiaResearch:{status:errors.length?"failed":sources.length?"ok":"empty",sources,errors}});
+    }
+    if(!checkpoint.sources){const results=await Promise.allSettled(checkpoint.research.sources.filter(source=>!(checkpoint.wikimapiaResearch?.sources??[]).some(saved=>saved.url===source.url)).map(async(source,index)=>{const page=await withRetry(()=>fetchPage(source.url,{signal:deadline}),SOURCE_RETRY(deadline));const text=await sourceText(page,{keywords:[job.place.name,job.place.address]});if(text.length<300)throw failure("SOURCE_EMPTY");return{id:`s${index+1}`,url:page.url,title:source.title,publisher:new URL(page.url).hostname.split(".").slice(-2).join("."),text};}));
+      const sources=[...openSources,...(checkpoint.wikimapiaResearch?.sources??[]),...results.filter(result=>result.status==="fulfilled").map(result=>result.value)];if(!sources.length)throw failure("SOURCE_ACCESS_FAILED");save({sources,sourceFailures:results.filter(result=>result.status==="rejected").map(result=>result.reason?.code??"SOURCE_FAILED")});}
     if(!checkpoint.evidence){
       // A rejection from an earlier attempt must not be mistaken for the outcome of this one.
       if(checkpoint.factsRejection){checkpoint={...checkpoint};delete checkpoint.factsRejection;store.updateContentCheckpoint(job.id,checkpoint);}

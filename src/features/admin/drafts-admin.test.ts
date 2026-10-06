@@ -162,7 +162,7 @@ describe("переисследование черновиков через Perpl
     const count = container.querySelector<HTMLInputElement>(".drafts-research input")!;
     expect(count.value).toBe("20");
     await act(async () => { edit(count, "5"); });
-    await act(async () => { button("Переисследовать через Perplexity").click(); });
+    await act(async () => { button("Переисследовать через Perplexity и Wikimapia").click(); });
     expect(researched).toHaveLength(1);
     expect(researched[0]).toMatchObject({ limit: 5 });
     expect((researched[0] as { requestKey: string }).requestKey.length).toBeGreaterThanOrEqual(8);
@@ -179,7 +179,7 @@ describe("переисследование черновиков через Perpl
     const count = container.querySelector<HTMLInputElement>(".drafts-research input")!;
     for (const value of ["0", "51", ""]) {
       await act(async () => { edit(count, value); });
-      expect(button("Переисследовать через Perplexity").disabled).toBe(true);
+      expect(button("Переисследовать через Perplexity и Wikimapia").disabled).toBe(true);
     }
     expect(researched).toEqual([]);
   });
@@ -187,7 +187,7 @@ describe("переисследование черновиков через Perpl
   it("скрывает кнопки, если на сервере нет модели поиска", async () => {
     await mount();
     expect(container.textContent).toContain("Переисследование через Perplexity недоступно");
-    expect(button("Переисследовать через Perplexity")).toBeUndefined();
+    expect(button("Переисследовать через Perplexity и Wikimapia")).toBeUndefined();
     expect(button("Переисследовать черновик: Место 1")).toBeUndefined();
   });
 

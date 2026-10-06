@@ -41,9 +41,11 @@ export function createWikimapiaClient({ apiKey = "", example = false, intervalMs
   if (!Number.isFinite(intervalMs) || intervalMs < 0) throw fail("WIKIMAPIA_INVALID_INTERVAL");
   const interval = Math.max(key === "example" ? 31000 : 3100, intervalMs);
   let lastStart = -Infinity, queue = Promise.resolve();
-  const request = (method, params) => {
+  const request = (method, params, signal) => {
     const result = queue.then(() => withRetry(async () => {
-      await wait(Math.max(0, interval - (now() - lastStart)));
+      signal?.throwIfAborted();
+      await wait(Math.max(0, interval - (now() - lastStart)), signal);
+      signal?.throwIfAborted();
       lastStart = now();
       const url = new URL("https://api.wikimapia.org/");
       url.search = new URLSearchParams({ key, function: method, language: "ru", format: "json", ...params }).toString();
@@ -51,13 +53,14 @@ export function createWikimapiaClient({ apiKey = "", example = false, intervalMs
       /** @type {any} */
       let data;
       try {
-        response = await fetchImpl(url.href, { signal: AbortSignal.timeout(timeoutMs), redirect: "error" });
+        response = await fetchImpl(url.href, { signal: AbortSignal.any([AbortSignal.timeout(timeoutMs), ...(signal ? [signal] : [])]), redirect: "error" });
         if (!response.ok) {
           await response.body?.cancel();
           throw Object.assign(fail(`WIKIMAPIA_HTTP_${response.status}`), { status: response.status, retryAfter: response.headers.get("retry-after") });
         }
         data = await response.json();
       } catch (error) {
+        if (signal?.aborted) throw signal.reason;
         // No raw fetch error, URL, server message or cause may reveal the API key.
         if (Number.isInteger(error?.status)) throw error;
         throw Object.assign(fail("WIKIMAPIA_TRANSPORT_ERROR"), {
@@ -66,24 +69,26 @@ export function createWikimapiaClient({ apiKey = "", example = false, intervalMs
       }
       if (data?.debug?.code || data?.error) throw fail(`WIKIMAPIA_API_${Number(data?.debug?.code) || "ERROR"}`);
       return data;
-    }, { attempts: 3, baseMs: 2000, maxMs: 60000, wait, isTransient: error =>
+    }, { signal, attempts: 3, baseMs: 2000, maxMs: 60000, wait, isTransient: error =>
       (error instanceof Error && "transient" in error && error.transient === true) || isTransientError(error) }));
     queue = result.then(() => undefined, () => undefined);
     return result;
   };
   return {
-    async nearest(place) {
+    /** @param {any} place @param {{signal?: AbortSignal}} [options] */
+    async nearest(place, { signal } = {}) {
       if (!validLocation(place)) throw fail("WIKIMAPIA_INVALID_INPUT");
-      const data = await request("place.getnearest", { lat: String(place.lat), lon: String(place.lon), count: "50" });
+      const data = await request("place.getnearest", { lat: String(place.lat), lon: String(place.lon), count: "50" }, signal);
       if (!Array.isArray(data?.places)) throw fail("WIKIMAPIA_INVALID_RESPONSE");
       return data.places.flatMap(raw => {
         try { return [sourceRecord(raw)]; }
         catch (error) { if (error?.code === "WIKIMAPIA_INVALID_PLACE") return []; throw error; }
       });
     },
-    async detail(id, fallbackLocation = null) {
+    /** @param {number} id @param {any} [fallbackLocation] @param {{signal?: AbortSignal}} [options] */
+    async detail(id, fallbackLocation = null, { signal } = {}) {
       if (!Number.isSafeInteger(id) || id <= 0) throw fail("WIKIMAPIA_INVALID_ID");
-      const data = await request("place.getbyid", { id: String(id), data_blocks: "main,location" });
+      const data = await request("place.getbyid", { id: String(id), data_blocks: "main,location" }, signal);
       const record = sourceRecord(data, fallbackLocation);
       if (record.id !== id) throw fail("WIKIMAPIA_ID_MISMATCH");
       return record;

@@ -113,3 +113,20 @@ test("CLI resumes entirely from cached sources and reports a reviewed-candidate 
     assert.match(failed.stderr, /Пилот остановлен/);
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
+
+test("cancelling a queued request prevents transport and leaves the client usable", async () => {
+  const controller = new AbortController();
+  let release = () => {};
+  const gate = new Promise(resolve => { release = () => resolve(undefined); });
+  let calls = 0;
+  const { client } = harness([], { fetchImpl: async () => { calls++; await gate; return response({ places: [] }); } });
+  const first = client.nearest(place);
+  const cancelled = client.nearest(place, { signal: controller.signal });
+  controller.abort();
+  release();
+  await first;
+  await assert.rejects(cancelled, { name: "AbortError" });
+  assert.equal(calls, 1);
+  assert.deepEqual(await client.nearest(place), []);
+  assert.equal(calls, 2);
+});
