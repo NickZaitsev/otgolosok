@@ -41,9 +41,12 @@
 .secondary,
 .danger {
   flex: 1 1 8rem;
-  min-height: var(--control-primary-min);
+
+  /* Shown over the walk: the same size as «Дальше» underneath, not larger. */
+  min-height: var(--control-walk-min);
   padding: 0 var(--space-lg);
   font: inherit;
+  font-size: var(--text-control);
   font-weight: var(--weight-bold);
   border-radius: var(--radius-pill);
   cursor: pointer;

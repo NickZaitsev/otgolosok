@@ -24,8 +24,8 @@
 .walk-session-tools [aria-expanded=true]{text-decoration:underline;text-underline-offset:4px}
 .walk-session-tools .walk-session-position{color:#775130}
 /* One row of round 50 px icons and the main action. The action never breaks its label: when the row is too narrow for it, it takes a row of its own (flex-wrap). */
-.walk-session-actions{--walk-action:50px;display:flex;flex:none;flex-wrap:wrap;gap:10px;margin-top:16px}
-.walk-session-primary{display:flex;align-items:center;justify-content:center;gap:12px;flex:1 0 auto;min-height:var(--walk-action,50px);white-space:nowrap;padding:12px 18px;border:0;border-radius:999px;background:#b64b28;color:#fffaf0;font:inherit;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer}
+.walk-session-actions{--walk-action:var(--control-walk-min);display:flex;flex:none;flex-wrap:wrap;gap:10px;margin-top:16px}
+.walk-session-primary{display:flex;align-items:center;justify-content:center;gap:12px;flex:1 0 auto;min-height:var(--walk-action,var(--control-walk-min));white-space:nowrap;padding:12px 18px;border:0;border-radius:999px;background:#b64b28;color:#fffaf0;font:inherit;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer}
 .walk-session-primary:disabled{opacity:.5;cursor:default}
 /* After the walk the review is the main action and the way back to the map is secondary. */
 .walk-session-actions--finish{flex-direction:column}

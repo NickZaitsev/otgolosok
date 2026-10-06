@@ -45,6 +45,9 @@
   --radius-island: 1.5rem;
   --control-min: 2.75rem;
   --control-primary-min: 3.5rem;
+
+  /* Actions of a running walk: three must share one row on a 320 px screen. */
+  --control-walk-min: 3.125rem;
   --content-reading: 43rem;
   --focus-ring: 3px solid var(--focus);
   --space-xs: 0.5rem;

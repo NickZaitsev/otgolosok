@@ -260,6 +260,11 @@ test("крестик в карточке прерывает прогулку т�
   const dialog = page.getByRole("dialog", { name: "Прервать прогулку?" });
   await stop.click();
   await expect(dialog).toBeVisible();
+  // Кнопки подтверждения того же размера, что «Дальше» под ним: не крупнее основного действия прогулки.
+  const shape = (button: import("@playwright/test").Locator) => button.evaluate(el => ({ height: Math.round(el.getBoundingClientRect().height), font: getComputedStyle(el).fontSize }));
+  const next = await shape(page.locator(".walk-session-primary"));
+  expect(await shape(dialog.getByRole("button", { name: "Продолжить" }))).toEqual(next);
+  expect(await shape(dialog.getByRole("button", { name: "Прервать", exact: true }))).toEqual(next);
   await expect(dialog.getByRole("button", { name: "Продолжить" })).toBeFocused();
   await dialog.getByRole("button", { name: "Продолжить" }).click();
   await expect(dialog).toBeHidden();
