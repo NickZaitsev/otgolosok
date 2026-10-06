@@ -1,22 +1,26 @@
 /* «Прогулки рядом» in the creation sheet; follows the «Топ прогулок» cards. */
 .section {
-  display: grid;
-  gap: var(--space-xs);
-  margin-top: var(--space-md);
+  margin: 0;
 }
 
-.heading {
-  margin: 0;
-  font-size: var(--text-control);
-  font-weight: var(--weight-bold);
-  line-height: var(--leading-tight);
+/* Matches the «Остановки · N» disclosure of the creation sheet. */
+.summary {
+  min-height: var(--control-min);
+  padding: var(--space-sm) 0;
+  font-size: var(--text-secondary);
+  cursor: pointer;
+}
+
+.summary:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }
 
 .list {
   display: grid;
   gap: var(--space-xs);
   padding: 0;
-  margin: 0;
+  margin: 0 0 var(--space-xs);
   list-style: none;
 }
 

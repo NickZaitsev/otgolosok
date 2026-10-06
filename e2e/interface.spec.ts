@@ -354,8 +354,13 @@ test("после выбора старта предлагает готовые �
   await page.getByRole("textbox", { name: "Откуда", exact: true }).fill("Дербеневская 3");
   await page.getByRole("textbox", { name: "Откуда", exact: true }).press("Enter");
   const nearby = page.locator('[data-sheet="creation"] [data-sheet-part="body"] [data-creation="nearby"]');
-  await expect(nearby.getByRole("heading", { name: "Прогулки рядом" })).toBeVisible();
+  const summary = nearby.getByText("Прогулки рядом · 3", { exact: true });
+  await expect(summary).toBeVisible();
+  // Collapsed until clicked, so the sheet keeps its height.
+  await expect(nearby.getByRole("link").first()).toBeHidden();
+  await summary.click();
   await expect(nearby.getByRole("link")).toHaveCount(3);
+  await expect(nearby.getByRole("link").first()).toBeVisible();
   expect(queries).toEqual(["?lat=55.72550&lon=37.65131"]);
   await expect(nearby.getByRole("link", { name: /Моя прогулка/ })).toContainText("Ваша");
   await expect(nearby.getByRole("link", { name: /Кожевники/ })).toContainText("старт в 350 м");

@@ -65,7 +65,12 @@ describe("подборка в панели создания", () => {
   it("показывает готовые прогулки рядом с выбранным стартом", async () => {
     await openDraft({ start });
     expect(new URL(nearbyCalls()[0], "http://localhost").search).toBe("?lat=55.75000&lon=37.60000");
-    expect(section()?.querySelector("h2")?.textContent).toBe("Прогулки рядом");
+    // Collapsed by default: only the summary takes height until the user opens it.
+    const details = section() as HTMLDetailsElement;
+    expect(details.open).toBe(false);
+    expect(details.querySelector("summary")?.textContent).toBe("Прогулки рядом · 2");
+    await act(async () => { details.querySelector("summary")?.click(); });
+    expect(details.open).toBe(true);
     const links = [...section()!.querySelectorAll("a")];
     expect(links.map(link => link.getAttribute("href"))).toEqual(["/walk?catalog=msk-walk", `/walk?share=${TOKEN}`]);
     expect(links[0].textContent).toContain("45 мин · 3,2 км · 6 историй · старт в 350 м");
