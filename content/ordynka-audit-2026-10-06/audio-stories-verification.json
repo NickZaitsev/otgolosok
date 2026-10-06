@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-06",
+  "items": [
+    {
+      "placeId": "osm:relation:16467332",
+      "title": "Марфо-Мариинская обитель: помощь за стенами усадьбы",
+      "textId": "e26cc934-d3e8-46bd-be44-e3b0a99ef907",
+      "sha256": "7174329dd6e64d845a4bf649c5277cc3a39f967f73a39f4881a5873c9c5ca634",
+      "bytes": 764781,
+      "durationSec": 95.568,
+      "measuredDurationSec": 95.52
+    },
+    {
+      "placeId": "osm:way:53551259",
+      "title": "Покровский собор: Щусев, Нестеров и Корин",
+      "textId": "76fb7b02-15c7-42d7-86a8-0c61ee48b032",
+      "sha256": "73cb3a47d1ab1b1d5215ef63c59b8183a8a5154ebbf18c85e3b308edd29cc9a2",
+      "bytes": 554925,
+      "durationSec": 69.336,
+      "measuredDurationSec": 69.28
+    },
+    {
+      "placeId": "osm:way:80503341",
+      "title": "Воскресенский храм: два этажа Кадашей",
+      "textId": "3e6a17f3-bf50-49c0-bb30-0f807f42ed91",
+      "sha256": "9cbb521a7e782037fa5ddee1d39119c0e38ded3e9da368866bc44b4f017afd49",
+      "bytes": 566445,
+      "durationSec": 70.776,
+      "measuredDurationSec": 70.72
+    },
+    {
+      "placeId": "osm:relation:7695875",
+      "title": "Екатерина на Всполье: храм с кремлёвской оградой",
+      "textId": "ac288e49-b0bd-4d99-840b-c3aba3afe4cc",
+      "sha256": "e1e4bf38708b7c28074aa8acb680e234b9a0196c45968ab6a4a6a732fba4e63e",
+      "bytes": 529389,
+      "durationSec": 66.144,
+      "measuredDurationSec": 66.08
+    },
+    {
+      "placeId": "osm:node:2868787302",
+      "title": "Театр на Малой Ордынке: от учительского дома к сцене",
+      "textId": "905caf22-8893-4416-9a5b-9a844110be11",
+      "sha256": "3185f5cea48cf04377e47105ac8aa7e3bc335fca8cd648e31dd5d0853df3e1ca",
+      "bytes": 561261,
+      "durationSec": 70.128,
+      "measuredDurationSec": 70.08
+    },
+    {
+      "placeId": "osm:relation:6160617",
+      "title": "Ордынская АТС: телефон без барышни",
+      "textId": "7430f406-a4e6-4fb3-920d-489be2f9b774",
+      "sha256": "39e999b91df9129f12bf4142a51c3fea8475d02c42511d4b9a7dacfc8277dec6",
+      "bytes": 330285,
+      "durationSec": 41.256,
+      "measuredDurationSec": 41.2
+    },
+    {
+      "placeId": "osm:node:5754225235",
+      "title": "Палаты Титовых: старый дом внутри нового двора",
+      "textId": "5f670003-4cc6-4408-afc7-c86d87e75779",
+      "sha256": "5415544378506f441a4a3bb7b0138e701dcf03bb1805d2f2dfec8b882755f154",
+      "bytes": 358509,
+      "durationSec": 44.784,
+      "measuredDurationSec": 44.72
+    }
+  ]
+}

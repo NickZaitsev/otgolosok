@@ -1,0 +1,127 @@
+{
+  "checkedAt": "2026-10-06",
+  "candidateStories": 13,
+  "audioDurationSec": 975.12,
+  "measuredDurationSec": 974.386667,
+  "items": [
+    {
+      "placeId": "osm:relation:7503420",
+      "title": "Палаты в Кадашевской слободе",
+      "textId": "107b4271-e7be-4d0d-b046-67b319edacf0",
+      "sha256": "7c036b701381b0c9cc2660bcf082f7a7f75dfe34b1d9c595ed1adae9dc2458ac",
+      "bytes": 561069,
+      "durationSec": 70.104,
+      "measuredDurationSec": 70.050667
+    },
+    {
+      "placeId": "osm:relation:6897502",
+      "title": "Церковь иконы Божией Матери «Всех скорбящих Радость» (Спаса Преображения) на Большой Ордынке",
+      "textId": "09c22815-eb47-40e3-b033-7c198cbd80f4",
+      "sha256": "33a9e599e18383b509ff78930e026745b939c21c213f0f50edd0dd42a3060b9d",
+      "bytes": 476781,
+      "durationSec": 59.568,
+      "measuredDurationSec": 59.52
+    },
+    {
+      "placeId": "osm:relation:6381244",
+      "title": "Хлудов: дом, который содержал училище",
+      "textId": "aef72280-885b-4e38-a6e7-3a94e72f430b",
+      "sha256": "3ba496c569298a862b63b9afb538d54d72d538171353066a9a6f5ac93ae983a9",
+      "bytes": 709869,
+      "durationSec": 88.704,
+      "measuredDurationSec": 88.64
+    },
+    {
+      "placeId": "osm:relation:8453866",
+      "title": "Храм святителя Николая Чудотворца в Пыжах",
+      "textId": "864ccfc9-2b74-45c1-a092-68e6cf5c00fd",
+      "sha256": "ee6cd5a4554e972c57e56b49f62498d8fd665e4314a88fbe85f65e66c2b57f9a",
+      "bytes": 404205,
+      "durationSec": 50.496,
+      "measuredDurationSec": 50.426667
+    },
+    {
+      "placeId": "osm:way:111136355",
+      "title": "Аршиновы: лаборатория за купеческим фасадом",
+      "textId": "a7160ba2-acdc-4e31-ad60-db516b8916db",
+      "sha256": "331375d5a545d8d8858461cfb8ee2e1655839ef79f598f8bfa56453ee3131d4d",
+      "bytes": 820461,
+      "durationSec": 102.528,
+      "measuredDurationSec": 102.48
+    },
+    {
+      "placeId": "osm:relation:16467332",
+      "title": "Марфо-Мариинская обитель: помощь за стенами усадьбы",
+      "textId": "e26cc934-d3e8-46bd-be44-e3b0a99ef907",
+      "sha256": "7174329dd6e64d845a4bf649c5277cc3a39f967f73a39f4881a5873c9c5ca634",
+      "bytes": 764781,
+      "durationSec": 95.568,
+      "measuredDurationSec": 95.52
+    },
+    {
+      "placeId": "osm:node:1359123836",
+      "title": "Дом-музей А. Н. Островского",
+      "textId": "139e26bb-a534-4fe0-9c94-3e95ecff78d1",
+      "sha256": "aece6560a618f23cceec7e224db3646496fb747ed5a12796e55ebe134d549232",
+      "bytes": 446829,
+      "durationSec": 55.824,
+      "measuredDurationSec": 55.76
+    },
+    {
+      "placeId": "osm:relation:7483246",
+      "title": "Храм Иверской иконы Божией Матери на Всполье",
+      "textId": "25d6ce77-a4f7-4356-a467-4c60177ac864",
+      "sha256": "a59cf32016a3976bb0a160f83123188e2b26b5ec8213e85aedb7daca18a97913",
+      "bytes": 405549,
+      "durationSec": 50.664,
+      "measuredDurationSec": 50.608
+    },
+    {
+      "placeId": "osm:node:1359123449",
+      "title": "Возрождение",
+      "textId": "cb015a9b-6ea1-4b8a-931d-4b492a6fcd0b",
+      "sha256": "757e7dc3f1de968514cd99682b5643485d522337e66ad62b424201d50aad0dff",
+      "bytes": 326253,
+      "durationSec": 40.752,
+      "measuredDurationSec": 40.688
+    },
+    {
+      "placeId": "osm:way:156493115",
+      "title": "Карповы: пятнадцать детей и Шехтель",
+      "textId": "8a86b6f8-4f24-42f3-9b18-9e830bc1d341",
+      "sha256": "f963418d02681b08e90d174a9ea25e2bc55a33a46052937c4f29ab39e0ee784b",
+      "bytes": 817965,
+      "durationSec": 102.216,
+      "measuredDurationSec": 102.16
+    },
+    {
+      "placeId": "osm:way:164210810",
+      "title": "Музей В. А. Тропинина и московских художников его времени",
+      "textId": "002cf8a8-493e-471b-87b7-87d4e2143d07",
+      "sha256": "cf9571935d6221a81ad26a26f663e3fadcc2d6561c82ac6064959354ae4f011e",
+      "bytes": 485613,
+      "durationSec": 60.672,
+      "measuredDurationSec": 60.613333
+    },
+    {
+      "placeId": "osm:relation:8454676",
+      "title": "Училище: уроки, завтрак и врач",
+      "textId": "9157ad07-5071-414a-9817-3fc4e6c44ca9",
+      "sha256": "9530864758ffd208289d3b600ee6ea0b243f6178248e9ada1569f0968954ba79",
+      "bytes": 801261,
+      "durationSec": 100.128,
+      "measuredDurationSec": 100.08
+    },
+    {
+      "placeId": "osm:way:314197370",
+      "title": "Малый театр: кинотеатр становится сценой",
+      "textId": "28e67e16-6ad9-4107-b4f5-29d9d34a6433",
+      "sha256": "483c615f7a2f58afe822789343b177c818376a6f5c559b8baa2638e3cc57cf2f",
+      "bytes": 783405,
+      "durationSec": 97.896,
+      "measuredDurationSec": 97.84
+    }
+  ],
+  "publicationReady": false,
+  "remaining": "Перед публикацией заменить старые маршрутные связки в пяти историях купеческой прогулки; пройти маршрут на месте."
+}

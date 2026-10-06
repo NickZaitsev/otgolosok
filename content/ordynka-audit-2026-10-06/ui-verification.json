@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-10-06",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "convent": {
+    "url": "https://otgolosok.online/?place=osm:relation:16467332",
+    "correctedYearVisible": 1909,
+    "fullTextOpened": true,
+    "audioSha256": "7174329dd6e64d845a4bf649c5277cc3a39f967f73a39f4881a5873c9c5ca634",
+    "audioPaused": false,
+    "timeSamplesSec": [
+      5.894913,
+      24.085796
+    ],
+    "audioError": null
+  },
+  "theatre": {
+    "url": "https://otgolosok.online/?place=osm:node:2868787302",
+    "currentNameVisible": true,
+    "readyState": 4,
+    "audioError": null
+  },
+  "console": "Ошибок нет; повторяются предупреждения существующего сайта о предварительной загрузке CSS.",
+  "fieldChecked": false
+}

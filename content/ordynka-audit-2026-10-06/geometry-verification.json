@@ -1,0 +1,234 @@
+{
+  "checkedAt": "2026-10-06",
+  "method": "Оценка геометрического пересечения: пешеходная линия нового маршрута разбита на отрезки не длиннее 10 м; середина считается общей при расстоянии до линии существующей прогулки не больше 15 м. Локальная метрическая проекция; это оценка, не точное топологическое пересечение.",
+  "sampleStepM": 10,
+  "toleranceM": 15,
+  "candidateLengthM": 3986.0,
+  "walks": [
+    {
+      "title": "Пятницкая: деньги, книги и городская жизнь",
+      "shareToken": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+      "sharedApproxM": 184.7,
+      "candidatePercent": 4.63,
+      "existingLengthM": 3216.9
+    },
+    {
+      "title": "Вокруг Третьяковки: искусство в жилом квартале",
+      "shareToken": "6cacfdd1-defd-4afb-940f-5085356d0315",
+      "sharedApproxM": 282.3,
+      "candidatePercent": 7.08,
+      "existingLengthM": 2374.8
+    },
+    {
+      "title": "От Кожевников к Цинделю",
+      "shareToken": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 632.7
+    },
+    {
+      "title": "Купцы и благотворители Ордынки",
+      "shareToken": "baed220c-72a9-4790-940e-1b1160e02913",
+      "sharedApproxM": 1091.1,
+      "candidatePercent": 27.37,
+      "existingLengthM": 2295.3
+    },
+    {
+      "title": "От «Спартака» до «Тушинской»",
+      "shareToken": "284227ab-a324-47f4-b07f-25617166bb3f",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 6868.9
+    },
+    {
+      "title": "От Чистых прудов до Китай-города",
+      "shareToken": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 6437.8
+    },
+    {
+      "title": "От Трубной через Чистые пруды до Покровских ворот",
+      "shareToken": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 7051.1
+    },
+    {
+      "title": "По бульварному кольцу от Тверской до Трубной",
+      "shareToken": "26216b83-453d-4d81-926d-ec537993f70f",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 3332.8
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Китай-город»",
+      "shareToken": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 1911.4
+    },
+    {
+      "title": "Прогулка на час от метро «Чистые пруды»",
+      "shareToken": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 4649.4
+    },
+    {
+      "title": "Прогулка на час от метро «Динамо»",
+      "shareToken": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 4448.9
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+      "shareToken": "326bc586-4083-4dff-ac35-223ba406265b",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 1903.2
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Красные Ворота»",
+      "shareToken": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 2379.9
+    },
+    {
+      "title": "Прогулка на час от метро «Тургеневская»",
+      "shareToken": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 4728.8
+    },
+    {
+      "title": "Прогулка на час от метро «Охотный ряд»",
+      "shareToken": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 1120.4
+    },
+    {
+      "title": "Прогулка на час от метро «Сретенский бульвар»",
+      "shareToken": "2e8d898b-241b-432d-8408-603ebb965177",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 4514.7
+    },
+    {
+      "title": "Прогулка от метро «Боровицкая» · 60 минут",
+      "shareToken": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 4951.2
+    },
+    {
+      "title": "По бульварному кольцу от Кропоткинской до Тверской",
+      "shareToken": "b2823a83-f861-46f2-834b-b7873960882a",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 5707.0
+    },
+    {
+      "title": "Прогулка на час от метро «Марксистская»",
+      "shareToken": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 4714.8
+    },
+    {
+      "title": "Прогулка на час от метро «Чкаловская»",
+      "shareToken": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 3995.2
+    },
+    {
+      "title": "Прогулка на час от метро «Менделеевская»",
+      "shareToken": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 3824.2
+    },
+    {
+      "title": "Прогулка на час от метро «ЦСКА»",
+      "shareToken": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 4549.9
+    },
+    {
+      "title": "Прогулка на полтора часа от метро «Селигерская»",
+      "shareToken": "674b591a-d868-439d-97f5-369b0dcf3812",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 7596.0
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Красносельская»",
+      "shareToken": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+      "sharedApproxM": 0,
+      "candidatePercent": 0.0,
+      "existingLengthM": 2219.2
+    }
+  ],
+  "approach": [
+    {
+      "placeId": "osm:relation:7503420",
+      "distanceM": 4.25
+    },
+    {
+      "placeId": "osm:relation:6897502",
+      "distanceM": 3.0
+    },
+    {
+      "placeId": "osm:relation:6381244",
+      "distanceM": 4.53
+    },
+    {
+      "placeId": "osm:relation:8453866",
+      "distanceM": 15.23
+    },
+    {
+      "placeId": "osm:way:111136355",
+      "distanceM": 1.69
+    },
+    {
+      "placeId": "osm:relation:16467332",
+      "distanceM": 0.06
+    },
+    {
+      "placeId": "osm:node:1359123836",
+      "distanceM": 3.93
+    },
+    {
+      "placeId": "osm:relation:7483246",
+      "distanceM": 11.45
+    },
+    {
+      "placeId": "osm:node:1359123449",
+      "distanceM": 7.01
+    },
+    {
+      "placeId": "osm:way:156493115",
+      "distanceM": 2.5
+    },
+    {
+      "placeId": "osm:way:164210810",
+      "distanceM": 16.09
+    },
+    {
+      "placeId": "osm:relation:8454676",
+      "distanceM": 2.57
+    },
+    {
+      "placeId": "osm:way:314197370",
+      "distanceM": 5.67
+    }
+  ],
+  "startGapM": 0.04,
+  "destinationGapM": 0.04,
+  "fieldChecked": false
+}
