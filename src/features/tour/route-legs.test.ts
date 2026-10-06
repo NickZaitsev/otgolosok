@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { legFitPoints, legRange, routeLegCuts } from "./route-legs";
+import { legFitPoints, legRange, openingFitPoints, routeLegCuts } from "./route-legs";
 
 // About 31 m per step east along a parallel in Moscow; north steps are 11 m.
 const at = (step: number, north = 0) => ({ lat: 55.75 + north * 0.0001, lon: 37.6 + step * 0.0005 });
@@ -54,5 +54,44 @@ describe("legFitPoints", () => {
     { name: "a leg without length shows its stop", range: null, user: null, points: [at(7)], withUser: false },
   ])("$name", ({ range, user, points, withUser }) => {
     expect(legFitPoints(geometry, range, at(7), user)).toEqual({ points, withUser });
+  });
+});
+
+describe("openingFitPoints", () => {
+  const route = line(9);
+  const start = at(0), first = at(4), later = at(8);
+
+  it("shows the start, the line to the first stop and the stop, not the rest of the route", () => {
+    const points = openingFitPoints(route, routeLegCuts(route, [first, later]), start, first);
+    expect(points).toEqual([start, at(0), at(1), at(2), at(3), at(4), first]);
+    expect(points).not.toContainEqual(later);
+  });
+
+  it("keeps a first stop off the line, where its marker stands", () => {
+    const off = at(4, 9);
+    const points = openingFitPoints(route, routeLegCuts(route, [off]), start, off);
+    expect(points.at(-1)).toEqual(off);
+    expect(points).toContainEqual(at(3));
+  });
+
+  it("keeps a start away from the line's first vertex", () => {
+    const away = at(-1, 5);
+    expect(openingFitPoints(route, routeLegCuts(route, [first]), away, first)[0]).toEqual(away);
+  });
+
+  it.each([
+    ["no route line", [] as ReturnType<typeof line>],
+    ["a one-point line", [at(0)]],
+  ])("shows just the start and the first stop with %s", (_, geometry) => {
+    expect(openingFitPoints(geometry, routeLegCuts(geometry, [first]), start, first)).toEqual([start, first]);
+  });
+
+  it("focuses one point when the first stop is at the start", () => {
+    expect(openingFitPoints(route, routeLegCuts(route, [start]), start, { ...start })).toEqual([start]);
+  });
+
+  it("returns plain coordinates without extra fields", () => {
+    const withAccuracy = { ...start, accuracyM: 5 };
+    expect(openingFitPoints([], [], withAccuracy, first)[0]).toEqual(start);
   });
 });

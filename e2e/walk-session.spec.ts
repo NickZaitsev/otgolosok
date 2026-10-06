@@ -130,12 +130,20 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 
   });
 }
 
-test("прогулка по ссылке открывается на первой остановке, а не на всём маршруте", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  // Остановки в паре километров друг от друга: весь маршрут вписался бы мельче, и первая остановка ушла бы от центра.
-  const far = [{ address: "Москва, Арбат, 3", location: { lat: 55.752, lon: 37.598 } }, { address: "Москва, Маросейка, 2", location: { lat: 55.758, lon: 37.635 } }];
-  const document = draftToWalkDocument({ version: 1, title: "Через центр", start, destination: far[1], mode: "open", minutes: 60,
-    stops: far, route: { stops: far, geometry: [start.location, ...far.map(s => s.location)], distanceM: 2600, walkingMinutes: 35, attribution: "OSM" }, jobs: [], submitting: null }, id);
+test("прогулка по ссылке до старта показывает старт, первую остановку и путь к ней, а не весь маршрут", async ({ page }) => {
+  await page.setViewportSize({ width: 393, height: 852 });
+  // Первая остановка в 800 м от старта: на одной точке в крупном плане старт уходит за край.
+  const far = [
+    { address: "Москва, Петровка, 20", location: { lat: 55.757, lon: 37.604 } },
+    { address: "Москва, Солянка, 1", location: { lat: 55.765, lon: 37.68 } }
+  ];
+  const destination = { address: "Москва, Яузская улица, 1", location: { lat: 55.7685, lon: 37.689 } };
+  const document = draftToWalkDocument({
+    version: 1, title: "Через центр", start, destination,
+    mode: "open", minutes: 60, stops: far,
+    route: { stops: far, geometry: [start.location, { lat: 55.7535, lon: 37.6005 }, ...far.map(s => s.location), destination.location], distanceM: 7000, walkingMinutes: 90, attribution: "OSM" },
+    jobs: [], submitting: null
+  }, id);
   await page.addInitScript(({ id, document }) => {
     localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
   }, { id, document });
@@ -143,16 +151,21 @@ test("прогулка по ссылке открывается на перво�
   await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.goto(`/walk?local=${id}`);
   await expect(page.getByRole("button", { name: "Начать прогулку", exact: true })).toBeVisible();
-  await expect.poll(() => firstStopIsVisible(page)).toBe(true);
-  // Старт и финиш — кольца на концах линии, а не истории с номерами.
-  await expect(page.locator('[data-region="map"] [data-marker="endpoint"]')).toHaveCount(2);
-  const pins = page.locator('[data-region="map"] [data-marker="pin"]');
-  const centerX = (index: number) => pins.nth(index).evaluate(pin => { const box = pin.getBoundingClientRect(); return box.left + box.width / 2; });
-  // Свободная часть карты на телефоне симметрична по горизонтали: первая остановка в её середине.
-  await expect.poll(() => centerX(0)).toBeCloseTo(195, -1);
-  // Вторая остановка в двух километрах — за краем окна: карта приближена к первой, а не показывает весь маршрут.
-  const second = await centerX(1);
-  expect(second < 0 || second > 390).toBe(true);
+  const opening = async (state: string, later: string) => {
+    await expect.poll(() => markerIsFree(page, '[data-marker="endpoint"][title^="Старт:"]'), { message: `старт виден: ${state}` }).toBe(true);
+    await expect.poll(() => firstStopIsVisible(page), { message: `первая остановка видна: ${state}` }).toBe(true);
+    // Дальние остановки не уменьшают карту до обзора всего маршрута.
+    const second = await page.locator(`[data-region="map"] [data-marker="pin"][title="Остановка 2: ${later}"]`).evaluate(pin => {
+      const box = pin.getBoundingClientRect();
+      return box.left + box.width / 2;
+    });
+    expect(second < 0 || second > 393, `вторая остановка за краем: ${state}`).toBe(true);
+  };
+  await opening("вперёд", far[1].address);
+  // Прогулка с конца открывается на своём первом отрезке: от Яузской к Солянке.
+  await page.getByRole("button", { name: "Пройти прогулку с конца" }).click();
+  await expect(page.locator('[data-region="map"] [data-marker="endpoint"][title^="Старт:"]')).toHaveAttribute("title", `Старт: ${destination.address}`);
+  await opening("с конца", far[0].address);
 });
 
 test("маршрут без историй можно пройти и завершить на карте", async ({ page }) => {

@@ -60,3 +60,13 @@ export function legFitPoints(geometry: Coordinates[], range: [number, number] | 
     ? { points: [...points, { lat: user.lat, lon: user.lon }], withUser: true }
     : { points, withUser: false };
 }
+
+/**
+ * What the map shows before the walk starts: the start, the first stop and the line
+ * between them, so the walker sees where to go first rather than all the stops at once.
+ */
+export function openingFitPoints(geometry: Coordinates[], cuts: number[], start: Coordinates, first: Coordinates): Coordinates[] {
+  const range = legRange(cuts, geometry.length, 0);
+  const points = [start, ...(range ? geometry.slice(range[0], range[1] + 1) : []), first].map(({ lat, lon }) => ({ lat, lon }));
+  return points.every(point => point.lat === start.lat && point.lon === start.lon) ? [points[0]] : points;
+}

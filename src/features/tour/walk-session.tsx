@@ -18,7 +18,7 @@ import { MapControlButton } from "../shell/map-controls";
 import { MapNotice } from "../shell/map-status-notice";
 import type { Coordinates, Route } from "./types";
 import { highlightedLeg, type StopStage, type WalkChapter } from "./walk-plan";
-import { legFitPoints, legRange, routeLegCuts } from "./route-legs";
+import { legFitPoints, legRange, openingFitPoints, routeLegCuts } from "./route-legs";
 import type { AdvanceMode } from "./walk-settings";
 import { StopWalkDialog } from "./stop-walk-dialog";
 import type { OwnWalk } from "../walks/own-walk";
@@ -109,18 +109,15 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   // A running walk takes the whole screen: the bottom navigation goes and MapShell lowers the card to the edge.
   // The header still leads out of the walk, and the navigation returns once the walk is stopped or finished.
   useHideNavigation(active);
-  // A walk opens on its first stop; a walk without stops shows the whole route.
-  const [focus, setFocus] = useState<MapFocus | null>(() => {
-    const first = chapters[0];
-    return first ? { ...(first.trigger_location ?? first.location) } : null;
-  });
+  // A walk with stops opens on its first leg (see openingFit below); a walk without stops shows the whole route.
+  const [focus, setFocus] = useState<MapFocus | null>(null);
   const [drawer, setDrawer] = useState<"stops" | "story" | "settings" | "reviews" | "position" | "food" | null>(null);
   const [confirmStop, setConfirmStop] = useState(false);
   const [focusedDirection, setFocusedDirection] = useState(direction);
   if (focusedDirection !== direction) {
     setFocusedDirection(direction);
-    const first = chapters[0];
-    setFocus(first ? { ...(first.trigger_location ?? first.location) } : route.walk?.start.location ?? null);
+    // The reversed walk opens on its own first leg; without stops, on its start.
+    setFocus(chapters.length ? null : route.walk?.start.location ?? null);
   }
   const chapter = chapters[index];
   const geometry = useMemo(() => (route.walk?.path.coordinates ?? []).map(([lon, lat]) => ({ lat, lon })), [route.walk?.path]);
@@ -179,6 +176,15 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   const foodStops = useMemo(() => stops.map(stop => distanceToRoute(stop, geometry, { mode: foodMode })), [stops, geometry, foodMode]);
   const cuts = useMemo(() => routeLegCuts(geometry, stops), [geometry, stops]);
   const leg = highlightedLeg(index, stage, chapters.length);
+  // Before the start the map frames the start, the first stop and the way between them: close enough
+  // to read the streets, wide enough to see where to go. Only until the walk first starts: after a stop
+  // the map stays where the walk left it.
+  const [walked, setWalked] = useState(active);
+  if (active && !walked) setWalked(true);
+  const walkStart = route.walk?.start.location;
+  const openingFit = useMemo<MapFitTarget | null>(() => walkStart && stops.length
+    ? { points: openingFitPoints(geometry, cuts, walkStart, stops[0]), keepUserView: false }
+    : null, [geometry, cuts, walkStart, stops]);
   const foodFromM = vertexDistances[leg === 0 ? 0 : cuts[leg - 1] ?? 0] ?? 0;
   const legPath = active ? legRange(cuts, geometry.length, leg) : null;
   const legEnd = stops[leg] ?? route.walk?.finish.location ?? null;
@@ -296,8 +302,8 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
 
   return <>
     <MapShell navigation={!active} onBrand={() => onStop()}
-      map={{ items: mapItems, selectedId: foodVisible && selectedFood ? selectedFood.id : active ? chapter?.id : undefined, focus, user, geometry, fitGeometry: !focus, tunnels: route.walk?.path.tunnels,
-        activeLeg: legPath, fitTarget: foodVisible && selectedFood ? foodFit : legFit.target, onPoint: noop, mapLabel: "Карта прогулки: пешеходный маршрут и остановки",
+      map={{ items: mapItems, selectedId: foodVisible && selectedFood ? selectedFood.id : active ? chapter?.id : undefined, focus, user, geometry, fitGeometry: !chapters.length && !focus, tunnels: route.walk?.path.tunnels,
+        activeLeg: legPath, fitTarget: foodVisible && selectedFood ? foodFit : walked || completed ? legFit.target : openingFit, onPoint: noop, mapLabel: "Карта прогулки: пешеходный маршрут и остановки",
         onSelect: id => {
           const place = foodVisible ? food.places.find(p => p.id === id) : null;
           if (place) { openFood(place); return; }
