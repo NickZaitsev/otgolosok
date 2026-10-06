@@ -1,6 +1,6 @@
 # Plan: «Прогулки рядом» suggestion in the walk creation sheet
 
-Status: plan, 2026-10-06.
+Status: in progress since 2026-10-06.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -17,7 +17,7 @@ walk geometry lives only inside `user_walks.snapshot_json`.
 
 ## Approved decisions
 
-1. **Radius rule:** a walk qualifies when its **start point** is within **1000 m**
+1. **Radius rule:** a walk qualifies when its **start point** is within **500 m** (changed from 1000 m at the user's request during implementation)
    (haversine) of the draft's start (`w.draft.start.location`). Stops and the route line are
    not considered.
 2. **Sources:** catalog walks, editor-approved public account walks (same set as the top),
@@ -117,11 +117,11 @@ walk geometry lives only inside `user_walks.snapshot_json`.
   duplicating it.
 
 ### 1. Ranking module (`backend/walk-nearby.mjs`, new)
-- `export const NEARBY_RADIUS_M = 1000; export const NEARBY_LIMIT = 3;`
+- `export const NEARBY_RADIUS_M = 500; export const NEARBY_LIMIT = 3;`
 - `export function createNearbyWalks({ accountStore, store, builtinRoutes })`, which returns
   `{ list({lat, lon, userId}) }`.
 - **Catalog:** for each published builtin route, compute the JS haversine from `route.walk.start.location`, keep
-  those `≤ 1000`, and build candidates with `catalogRatings` and `launches.get("catalog:<slug>")`.
+  those `≤ 500`, and build candidates with `catalogRatings` and `launches.get("catalog:<slug>")`.
 - **Account:** take `listNearbyCandidates`. Use key `account:<id>`. Set `kind` to `"own"` when `own`, else
   `"shared"`. For own walks `listedAt` falls back to `updatedAt`.
   - Deduplicate before ranking: one row per walk id, and own wins. This happens naturally if the SQL returns
@@ -162,7 +162,7 @@ walk geometry lives only inside `user_walks.snapshot_json`.
   - All ids are `encodeURIComponent`ed.
 - `formatStartDistance(m)`: under 50 → «старт рядом», otherwise «старт в N м» (rounded to 50).
 - `localNearbyWalks(items: LocalWalkItem[], start: Coordinates, exclude: string | null): NearbyWalk[]`:
-  - Keep items with a route and `distanceMeters(start, document.start.location) ≤ 1000`, minus `exclude`.
+  - Keep items with a route and `distanceMeters(start, document.start.location) ≤ 500`, minus `exclude`.
   - Sort by `updatedAt` desc.
   - Map to `NearbyWalk` with `rating {average:null,count:0}` and `stopCount = document.stops.length`.
 - `mergeNearby(server, local, exclude, limit = 3)`: drop the server item equal to `exclude` (an own account id),
@@ -205,7 +205,7 @@ walk geometry lives only inside `user_walks.snapshot_json`.
 
 - **Backend (`node --test`):**
   - `walk-nearby.test.mjs` with an in-memory DB, table-driven:
-    - start at 999 m included, 1001 m excluded;
+    - start at 499 m included, 501 m excluded;
     - private foreign walk excluded;
     - pending or hidden public walk excluded;
     - own private walk included only with a matching `userId`;
@@ -225,7 +225,7 @@ walk geometry lives only inside `user_walks.snapshot_json`.
     - guest vs signed-in difference;
     - the `Cache-Control` header.
 - **Vitest:**
-  - `nearby-model.test.ts`: validation failure cases, hrefs per kind, `formatStartDistance` boundaries (0, 49, 50, 1000), local filter, exclusion, merge fill order.
+  - `nearby-model.test.ts`: validation failure cases, hrefs per kind, `formatStartDistance` boundaries (0, 49, 50, 500), local filter, exclusion, merge fill order.
   - `use-nearby-walks` / panel jsdom test:
     - the block appears with a start and results;
     - it is hidden while picking, with a picker open, after build, and on an empty result;
