@@ -245,17 +245,14 @@
     }
   ],
   "photos": {
-    "editorial": 18,
+    "editorial": 21,
     "automatic": [
       "osm:way:544516659"
     ],
     "withoutPhoto": [
-      "osm:node:4909347021",
-      "osm:node:1805425906",
-      "osm:way:1359042497",
       "osm:way:813211640"
     ],
-    "note": "Редакционные фото Wikimedia Commons с автором и лицензией в backend/place-images-editorial.json; у Сходненской ГЭС автоматическое фото из Wikidata. Для памятника Черенкову, знака жертвам теракта, места рынка и парашютной фабрики свободных снимков в Commons не найдено.",
+    "note": "Редакционные фото Wikimedia Commons с автором и лицензией в backend/place-images-editorial.json; у Сходненской ГЭС автоматическое фото из Wikidata. Для памятника Черенкову, знака жертвам теракта и места рынка поставлены контекстные снимки с прямой подписью. Без фото — парашютная фабрика.",
     "entries": [
       {
         "placeId": "osm:node:5202107560",
@@ -382,7 +379,103 @@
         "author": "Gaz v pol at Russian Wikipedia",
         "license": "CC BY-SA 3.0",
         "alt": "Корабль «Буран» 2.01 у причала Тушинского завода, 2008 год"
+      },
+      {
+        "placeId": "osm:node:4909347021",
+        "commonsFile": "File:Spartak-Loco (2).jpg",
+        "author": "Дмитрий Садовников",
+        "license": "CC BY-SA 3.0",
+        "alt": "Баннер болельщиков в память о Фёдоре Черенкове на трибуне стадиона «Открытие Арена», 27 октября 2014 года"
+      },
+      {
+        "placeId": "osm:node:1805425906",
+        "commonsFile": "File:Moscow, former Tushino Airfield (16780741981).jpg",
+        "author": "Gennady Grachev from Moscow, Russia",
+        "license": "CC BY 2.0",
+        "alt": "Лётное поле бывшего Тушинского аэродрома, где в 2000–2007 годах проходил фестиваль «Крылья». Снимок 2015 года"
+      },
+      {
+        "placeId": "osm:way:1359042497",
+        "commonsFile": "File:Pokrovskoye-Streshnevo District, Moscow, Russia - panoramio (20).jpg",
+        "author": "karel291",
+        "license": "CC BY 3.0",
+        "alt": "Волоколамское шоссе у огороженной бывшей территории Тушинского рынка, 2013 год"
       }
+    ]
+  },
+  "longRevisions": {
+    "bundleId": "tushino-spartak-long-2026-10-05-v1",
+    "publishedAt": "2026-10-05",
+    "note": "Восемь рассказов прогулки расширены до ~2 минут и озвучены ElevenLabs (elevenlabs-v3, «Отголосок2»); прежние редакции сохранены в истории.",
+    "entries": [
+      {
+        "placeId": "osm:way:863613147",
+        "textId": "4a43d05e-7796-40a3-855c-4677f6b228e6",
+        "audioJobId": "c7100adc-1e5e-427c-8ad3-7fd9b7df5b7c",
+        "sha256": "291b7d3d1a4dc37a9e69629acbe45f37df475fb8987fe68be1a0a9ed7c1ce078",
+        "durationSec": 155.568,
+        "wordCount": 279
+      },
+      {
+        "placeId": "osm:relation:4006864",
+        "textId": "8e26a2d8-9f35-432c-a770-97ef13728e2f",
+        "audioJobId": "3f231f99-ef60-4dd3-bcbe-65ce12279e02",
+        "sha256": "96a6388ea3e669db8374a6ea39e1086e7fb1f03be8f54f95734c2e7b25a722d5",
+        "durationSec": 142.056,
+        "wordCount": 257
+      },
+      {
+        "placeId": "osm:relation:6085904",
+        "textId": "e2634f4e-7ceb-44f1-8826-8a62949978f4",
+        "audioJobId": "d8a0a915-be53-481d-9bbf-3bb549984c3d",
+        "sha256": "5e977c3857dd7a0181bca05fd1e503b0dc654e21eac816151b362caa2780b75d",
+        "durationSec": 141.336,
+        "wordCount": 250
+      },
+      {
+        "placeId": "osm:node:5202107560",
+        "textId": "2b9bea4c-dfc1-41d3-ae25-82983b645b41",
+        "audioJobId": "a4a0a5a7-14f2-45d7-b45c-e23d94c134ed",
+        "sha256": "d16e9ce5735b86e17b00afcfcdbedeaac8e1dc287de671c20dce2434a675cba0",
+        "durationSec": 118.224,
+        "wordCount": 237
+      },
+      {
+        "placeId": "osm:node:296959504",
+        "textId": "90b62b51-605f-4608-ac0f-f4111569962a",
+        "audioJobId": "d2c306f2-7984-4a82-bfe2-c7798ca804c8",
+        "sha256": "bea57ba3b960fb6231302dd891e44cdfe4d387b0e6a4da09c816c76473698b02",
+        "durationSec": 133.344,
+        "wordCount": 231
+      },
+      {
+        "placeId": "osm:way:1241471052",
+        "textId": "86d21cf6-1196-4676-8747-157f78639bfa",
+        "audioJobId": "7ab20692-6c39-494d-b1e8-3aceab741790",
+        "sha256": "9811c4afc0f335672efa1f95007685789fe5af9c7ca63fcf31098e8696a74750",
+        "durationSec": 135.888,
+        "wordCount": 252
+      },
+      {
+        "placeId": "osm:relation:10377512",
+        "textId": "b8c12566-ad73-48a4-bd19-115969029d43",
+        "audioJobId": "39adbfee-bfce-4bf7-8c0f-358194d08316",
+        "sha256": "b3ee68e4e46ce963ca71dfe8dc902d7a54eba2087d3f7b84e90780ad7f07c716",
+        "durationSec": 132.936,
+        "wordCount": 243
+      },
+      {
+        "placeId": "osm:relation:7771761",
+        "textId": "12583d96-71f2-405b-8013-a5e8b0ae1bad",
+        "audioJobId": "484f3b4d-8703-464b-8dd2-72ca5e42dd92",
+        "sha256": "84903a28cba0d92eb3ad3b16456f7b5043b70d9fe67ed3fa740d67a9b14c6781",
+        "durationSec": 149.424,
+        "wordCount": 226
+      }
+    ],
+    "bundleIds": [
+      "tushino-spartak-long-2026-10-05-v1",
+      "tushino-spartak-long-2026-10-05-v2"
     ]
   }
 }
