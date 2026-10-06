@@ -1,0 +1,11 @@
+{
+  "stops": 11,
+  "newPlaces": 7,
+  "words": 2518,
+  "dryRunRollback": true,
+  "concurrentEditRejected": true,
+  "idempotentRepeat": true,
+  "resolvedStories": 11,
+  "distanceM": 3215,
+  "walkingMinutes": 42
+}

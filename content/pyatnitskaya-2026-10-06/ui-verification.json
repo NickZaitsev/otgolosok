@@ -1,0 +1,98 @@
+{
+  "url": "https://otgolosok.online/walk?share=85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "stops": [
+    {
+      "photo": true,
+      "placeId": "osm:relation:20392452",
+      "title": "Сытин: книги выходят на улицу",
+      "text": true,
+      "sources": true,
+      "playbackTested": true
+    },
+    {
+      "photo": true,
+      "placeId": "osm:way:53830791",
+      "title": "Рекк: особняк со львами",
+      "text": true,
+      "sources": true,
+      "playbackTested": false
+    },
+    {
+      "photo": true,
+      "placeId": "osm:relation:7455707",
+      "title": "Вишняки: улица помнит стрельцов",
+      "text": true,
+      "sources": true,
+      "playbackTested": false
+    },
+    {
+      "photo": true,
+      "placeId": "osm:way:111585287",
+      "title": "Лепешкины: усадьба становится научным адресом",
+      "text": true,
+      "sources": true,
+      "playbackTested": false
+    },
+    {
+      "photo": true,
+      "placeId": "osm:way:82591265",
+      "title": "Коробковы: дом меняется вместе с хозяевами",
+      "text": true,
+      "sources": true,
+      "playbackTested": false
+    },
+    {
+      "photo": true,
+      "placeId": "osm:relation:9919623",
+      "title": "Климент: храм и хранилище книг",
+      "text": true,
+      "sources": true,
+      "playbackTested": false
+    },
+    {
+      "photo": true,
+      "placeId": "osm:way:75655995",
+      "title": "Адам и Ева: маленький сад у метро",
+      "text": true,
+      "sources": true,
+      "playbackTested": false
+    },
+    {
+      "photo": true,
+      "placeId": "osm:way:79980545",
+      "title": "Толстой: молодой писатель снимает комнаты",
+      "text": true,
+      "sources": true,
+      "playbackTested": false
+    },
+    {
+      "photo": true,
+      "placeId": "osm:relation:7402492",
+      "title": "Черниговское подворье: два храма и одна встреча",
+      "text": true,
+      "sources": true,
+      "playbackTested": false
+    },
+    {
+      "photo": true,
+      "placeId": "osm:relation:1323532",
+      "title": "Смирнов: фамилия на торговом фасаде",
+      "text": true,
+      "sources": true,
+      "playbackTested": false
+    },
+    {
+      "photo": true,
+      "placeId": "osm:node:595387046",
+      "title": "Новокузнецкая: храм исчез, название осталось",
+      "text": true,
+      "sources": true,
+      "playbackTested": true
+    }
+  ],
+  "pageErrors": []
+}

@@ -1,0 +1,7 @@
+{
+  "routeContinuous": true,
+  "maxTriggerOffsetM": 8.46,
+  "metroStartOffsetM": 0.04,
+  "metroFinishOffsetM": 0.03,
+  "fieldChecked": false
+}

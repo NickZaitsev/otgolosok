@@ -1,0 +1,12 @@
+{
+  "command": "pnpm check",
+  "passed": true,
+  "vitestFiles": 120,
+  "vitestTests": 1758,
+  "backendTests": 966,
+  "pythonTests": 26,
+  "pythonSubtests": 78,
+  "lint": true,
+  "typecheck": true,
+  "build": true
+}
