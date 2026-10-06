@@ -1,6 +1,6 @@
 # Plan: «Прогулки рядом» suggestion in the walk creation sheet
 
-Status: in progress since 2026-10-06.
+Status: implemented 2026-10-06 in branch `feat/promo-walks-stories-only`. Radius changed to 500 m; see "Implementation notes" for divergences.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -143,7 +143,8 @@ walk geometry lives only inside `user_walks.snapshot_json`.
   - Otherwise respond `400 BAD_REQUEST`.
   - Any other method gets `405` with an `Allow` header.
 - If `accountStore` is missing, respond `503 {error:{code:"UNAVAILABLE", message:"Подборка прогулок временно недоступна."}}`.
-- On success: `200 {walks:[...]}` with `Cache-Control: private, no-store`, because the response depends on the session.
+- On success: `200 {walks:[...]}` with `Cache-Control: no-store` (the shared `json()` helper; stricter than the
+  planned `private, no-store`), because the response depends on the session.
 - Own walks are included only when `session?.user?.id` is present. Guests get public walks only.
 - Unexpected errors go through the existing error handler. Never log coordinates together with the user id.
 
@@ -249,6 +250,23 @@ walk geometry lives only inside `user_walks.snapshot_json`.
 - Caching or precomputing the nearby ranking, and rate limiting beyond existing infrastructure.
 - Changes to `/api/top-walks` or to launch accounting.
 - Suggestions on screens other than the creation sheet.
+
+## Implementation notes (divergences)
+
+- Radius is **500 m**, not 1000 m (user request during implementation). The client keeps a copy of the constant in
+  `nearby-model.ts` for local walks.
+- The bbox constants are exported from `walk-document.mjs` as `WALK_BOUNDS` / `inWalkBounds`; the JS haversine is
+  the exported `distance` from `backend/walks.mjs`; `walk-top.mjs` exports `walkDetails`, `catalogDetails`,
+  `ratingSummary`, `CATALOG_LISTED_AT`.
+- The SQL bbox prefilter uses meters-per-degree of the same sphere as the haversine. The `111320` constant copied
+  from `content-store.mjs` made the box ~0.1 % too small and dropped starts right at the radius edge.
+- `NearbyWalks` renders after the submitting notice (last content element, before the status/error lines).
+- Account-store column/backfill tests live in `backend/walk-nearby.test.mjs`; API tests in
+  `backend/walk-nearby-api.test.mjs`; hook and panel jsdom tests in `src/features/walk-builder/nearby-walks.test.ts`.
+- e2e: no separate default mock was added — the existing catch-all `**/api/**` mocks already answer
+  `{walks: []}` (or an invalid shape, which falls back to no local walks), so the block stays hidden.
+- `layout-invariants`: 3 chromium cases «прогулка / … / 568×320» report a KNOWN_LAYOUT_FAILURES entry as already
+  fixed; they concern the walk screen, not the creation sheet, and are not caused by this change.
 
 ---
 **Maintenance note (for the implementing agent):** when this plan is implemented, update the `Status:` line above, e.g. `Status: implemented YYYY-MM-DD in branch `feat/<name>``. If the plan changes during implementation, update the affected sections too — the plan must not lie about what was built.
