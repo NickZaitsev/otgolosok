@@ -39,6 +39,7 @@ export function WalkScreen() {
   const catalogId = query.catalog;
   const shareToken = query.share;
   const edit = search.get("edit") === "1";
+  const fromStop = search.get("fromStop");
   const createIntent = search.get("new") === "1" || search.get("resume") === "1" || search.get("address") !== null || search.get("lat") !== null || search.get("lon") !== null;
   const queryConflict = selected.length > 1 || selected.length === 1 && createIntent || search.get("new") === "1" && search.get("resume") === "1";
 
@@ -73,12 +74,17 @@ export function WalkScreen() {
         if (!signal.aborted) setLoaded({ keys: [queryKey], mount: queryKey, view: result.view, error: "", offlineNotice, offlineRef });
       } catch (caught) {
         // A catalogue walk moved to a shared walk: its old link opens the new one.
-        if (!controller.signal.aborted && caught instanceof WalkLoadError && caught.movedToShare) { router.replace(`/walk?share=${caught.movedToShare}`); return; }
+        if (!controller.signal.aborted && caught instanceof WalkLoadError && caught.movedToShare) {
+          const movedQuery = new URLSearchParams({ share: caught.movedToShare });
+          if (fromStop !== null) movedQuery.set("fromStop", fromStop);
+          router.replace(`/walk?${movedQuery}`);
+          return;
+        }
         if (!controller.signal.aborted) setLoaded({ keys: [queryKey], mount: queryKey, view: null, error: toUserMessage(caught, "Не удалось открыть прогулку."), offlineNotice: "", offlineRef: null });
       }
     })();
     return () => controller.abort();
-  }, [queryKey, selectedKind, localId, accountId, catalogId, shareToken, edit, queryConflict, router]);
+  }, [queryKey, selectedKind, localId, accountId, catalogId, shareToken, edit, queryConflict, router, fromStop]);
 
   const sourceId = selectedKind === "local" ? localId : selectedKind === "id" ? accountId : selectedKind === "catalog" ? catalogId : shareToken;
   const addFood = useCallback(async (place: FoodPlace, signal: AbortSignal) => {
@@ -90,13 +96,16 @@ export function WalkScreen() {
       return "";
     }
     const { kind, id } = result.moved;
-    const nextKey = new URLSearchParams({ [kind]: id }).toString();
+    const nextQuery = new URLSearchParams({ [kind]: id });
+    // Keep the selected entry even if a changed walk removed it: the validation below then explains the error.
+    if (fromStop !== null) nextQuery.set("fromStop", fromStop);
+    const nextKey = nextQuery.toString();
     const user = kind === "id" ? getLastUserId() : null;
     setLoaded(value => ({ ...value, keys: [...value.keys, nextKey], view: result.view, offlineNotice: "", offlineRef: offlineWalkRef(kind, id, user) }));
     // The native History API keeps the page mounted; Next.js syncs useSearchParams with it.
     window.history.replaceState(null, "", `/walk?${nextKey}`);
     return kind === "id" ? "Копия прогулки сохранена в «Моих прогулках»." : "Копия прогулки сохранена на этом устройстве.";
-  }, [selectedKind, sourceId]);
+  }, [selectedKind, sourceId, fromStop]);
 
   if (queryConflict) return <WalkError message="Ссылка содержит конфликтующие параметры." />;
   if (edit && (selected.length !== 1 || !["local", "id"].includes(selected[0]))) return <WalkError message="Редактировать можно только свою прогулку." />;
@@ -110,10 +119,11 @@ export function WalkScreen() {
     : selectedKind === "id" ? { kind: "account", id: accountId } : null;
   if (current?.error) return <WalkError message={current.error} />;
   if (!current?.view) return <main className="walk-screen"><p role="status">Открываем прогулку…</p></main>;
+  if (fromStop !== null && !current.view.document.stops.some(stop => stop.id === fromStop)) return <WalkError message="Точка начала больше не входит в эту прогулку. Откройте подборку заново." />;
   // Only walks saved on this device or in the viewer's account lead back to the builder.
   const own: OwnWalk | null = selectedKind === "local" ? { editHref: ownWalkEditHref("local", localId), notes: ownWalkNotes(current.view) }
     : selectedKind === "id" ? { editHref: ownWalkEditHref("id", accountId), notes: ownWalkNotes(current.view) } : null;
-  return <TourExperience key={current.mount} walk={current.view} onAddFood={addFood} offline={current.offlineRef} offlineNotice={current.offlineNotice} reviewTarget={reviewTarget} launchTarget={launchesPath(reviewTarget) ? reviewTarget : null} own={own} />;
+  return <TourExperience key={current.mount} walk={current.view} fromStop={fromStop} onAddFood={addFood} offline={current.offlineRef} offlineNotice={current.offlineNotice} reviewTarget={reviewTarget} launchTarget={launchesPath(reviewTarget) ? reviewTarget : null} own={own} />;
 }
 
 function WalkError({ message }: { message: string }) {

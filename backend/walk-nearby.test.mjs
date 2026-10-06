@@ -16,14 +16,15 @@ const uuid = () => `00000000-0000-4000-8000-${String(++ids).padStart(12, "0")}`;
 const north = (/** @type {number} */ meters) => ({ lat: ORIGIN.lat + meters / M_PER_LAT, lon: ORIGIN.lon });
 /**
  * @param {{lat: number, lon: number}} location
- * @param {{route?: boolean, mode?: "open" | "loop", destination?: string}} [options]
+ * @param {{route?: boolean, mode?: "open" | "loop", destination?: string,
+ *   stopLocation?: {lat:number,lon:number}, geometry?: Array<{lat:number,lon:number}>}} [options]
  */
-const document = (location, { route = true, mode = "open", destination } = {}) => {
-  const start = { address: "Москва, Тестовая, 1", location }, stop = { address: "Москва, Тестовая, 2", location: { lat: location.lat + 0.001, lon: location.lon } };
+const document = (location, { route = true, mode = "open", destination, stopLocation, geometry } = {}) => {
+  const start = { address: "Москва, Тестовая, 1", location }, stop = { address: "Москва, Тестовая, 2", location: stopLocation ?? { lat: location.lat + 0.001, lon: location.lon } };
   return { version: 2, id: uuid(), title: "Прогулка", description: "", city: "Москва", mode, minutes: 30, start,
     ...(destination ? { destination: { address: destination, location: { lat: location.lat + 0.002, lon: location.lon } } } : {}),
     stops: [{ id: uuid(), place: stop, storyRef: null, transition: "", nextHint: "" }],
-    route: route ? { geometry: [start.location, stop.location], distanceM: 3200, walkingMinutes: 45, attribution: "OSM" } : null, fieldChecked: false };
+    route: route ? { geometry: geometry ?? [start.location, stop.location], distanceM: 3200, walkingMinutes: 45, attribution: "OSM" } : null, fieldChecked: false };
 };
 
 // The real catalogue walk moved to a shared walk; a copy without the mark keeps catalogue behaviour testable.
@@ -39,10 +40,11 @@ function fixture(t, routes = LISTED_ROUTES) {
   let key = 0;
   /**
    * @param {string} title @param {{lat: number, lon: number}} location
-   * @param {{owner?: string, visibility?: "private" | "shared" | "public", decision?: "approve" | "hide" | null, route?: boolean, mode?: "open" | "loop", destination?: string}} [options]
+   * @param {{owner?: string, visibility?: "private" | "shared" | "public", decision?: "approve" | "hide" | null, route?: boolean, mode?: "open" | "loop", destination?: string,
+   *   stopLocation?: {lat:number,lon:number}, geometry?: Array<{lat:number,lon:number}>}} [options]
    */
-  const walk = (title, location, { owner = "anna", visibility = "public", decision = "approve", route = true, mode = "open", destination } = {}) => {
-    const created = accountStore.createWalk(owner, { title, snapshot: document(location, { route, mode, destination }), idempotencyKey: `nearby-walk-${key++}` });
+  const walk = (title, location, { owner = "anna", visibility = "public", decision = "approve", route = true, mode = "open", destination, stopLocation, geometry } = {}) => {
+    const created = accountStore.createWalk(owner, { title, snapshot: document(location, { route, mode, destination, stopLocation, geometry }), idempotencyKey: `nearby-walk-${key++}` });
     if (visibility === "private") return created;
     const result = accountStore.setWalkVisibility(owner, created.id, created.revision, visibility);
     if (visibility === "public" && decision) accountStore.moderateWalkListing(result.id, { action: decision, revision: result.revision });
@@ -84,6 +86,29 @@ test("an own public approved walk appears once, as own", t => {
   const walk = f.walk("Моя публичная", north(100));
   assert.deepEqual(f.list("anna").map(item => [item.kind, item.id]), [["own", walk.id]]);
   assert.deepEqual(f.list(null).map(item => [item.kind, item.id]), [["shared", walk.shareToken]]);
+});
+
+test("passing candidates preserve public and owner visibility without decoding snapshots", t => {
+  const f = fixture(t);
+  f.walk("Публичная", north(900), { owner: "boris" });
+  f.walk("Своя приватная", north(900), { visibility: "private" });
+  f.walk("Чужая приватная", north(900), { owner: "boris", visibility: "private" });
+  f.walk("Чужая по ссылке", north(900), { owner: "boris", visibility: "shared" });
+  const guest = f.accountStore.listPassingCandidates({}).walks;
+  assert.deepEqual(guest.map(item => [item.title, item.own]), [["Публичная", false]]);
+  const owner = f.accountStore.listPassingCandidates({ userId: "anna" }).walks;
+  assert.deepEqual(owner.map(item => [item.title, item.own]).sort(), [["Публичная", false], ["Своя приватная", true]].sort());
+});
+
+test("a walk can be joined where its route passes nearby even when its start is far away", t => {
+  const f = fixture(t);
+  f.walk("Через текущую точку", north(-1000), { stopLocation: north(1000), geometry: [north(-1000), north(1000)] });
+  const [item] = f.list();
+  assert.equal(item.title, "Через текущую точку");
+  assert.equal(item.startDistanceM, 0);
+  assert.equal(item.stopCount, 1);
+  assert.ok(item.distanceM > 1400 && item.distanceM < 1800);
+  assert.ok(item.walkingMinutes > 20 && item.walkingMinutes < 25);
 });
 
 test("ranking follows the top formula, own unlaunched walks go last and the list stops at the limit", t => {
@@ -141,7 +166,7 @@ test("the card names where the walk ends", async t => {
   });
 });
 
-test("catalog walks qualify by the start of their route", t => {
+test("catalog walks qualify where their route passes nearby", t => {
   const f = fixture(t);
   const catalogStart = { lat: 55.7256731, lon: 37.6484745 };
   const near = f.list(null, { lat: catalogStart.lat + 300 / M_PER_LAT, lon: catalogStart.lon });
@@ -151,12 +176,23 @@ test("catalog walks qualify by the start of their route", t => {
   assert.deepEqual(f.list(null, { lat: catalogStart.lat + (NEARBY_RADIUS_M + 50) / M_PER_LAT, lon: catalogStart.lon }), []);
 });
 
+test("catalog audio totals include only stops from the selected entry point", t => {
+  const f = fixture(t);
+  const route = LISTED_ROUTES.find(item => item.id === CATALOG);
+  const entry = route.walk.steps[2];
+  const [item] = f.list(null, entry.location);
+  assert.equal(item.entryStopId, entry.id);
+  assert.equal(item.stopCount, 2);
+  assert.equal(item.audioMinutes, 3);
+  assert.equal(item.audioComplete, true);
+});
+
 test("a catalogue walk moved to a shared walk is not offered near its start", t => {
   const f = fixture(t, builtinRoutes);
   assert.deepEqual(f.list(null, { lat: 55.7256731, lon: 37.6484745 }), []);
 });
 
-test("the response carries only a rounded start distance", async t => {
+test("the response carries only a rounded approach distance", async t => {
   /** @type {Array<[number, number]>} */
   const cases = [[0, 0], [24, 0], [26, 50], [374, 350], [376, 400], [499, 500]];
   for (const [meters, expected] of cases) await t.test(`${meters} m → ${expected} m`, t => {
@@ -168,7 +204,9 @@ test("the response carries only a rounded start distance", async t => {
     const f = fixture(t);
     f.launched("account", f.walk("Прогулка", north(10)).id, 3);
     const [item] = f.list();
-    assert.deepEqual(Object.keys(item).sort(), ["distanceM", "finish", "id", "kind", "rating", "startDistanceM", "stopCount", "title", "walkingMinutes"]);
+    assert.deepEqual(Object.keys(item).sort(), ["audioComplete", "audioMinutes", "distanceM", "entryStopId", "finish", "id", "kind", "rating", "startDistanceM", "stopCount", "title", "walkingMinutes"]);
+    assert.equal(item.audioMinutes, 0);
+    assert.equal(item.audioComplete, false);
     assert.doesNotMatch(JSON.stringify(item), /anna|55\.8|37\.5/);
   });
 });

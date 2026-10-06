@@ -60,7 +60,7 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean) {
   return hasAudio && advance === "place" ? "Начнётся, когда подойдёте" : "";
 }
 
-export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1,
+export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1, openingIndex = 0,
   titleRef, startRef, onStart, onSelect, onStop, player, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
   positionDenied = false, onRetryPosition = noop, direction = "forward", foodMode: documentFoodMode, onDirectionChange, onAddFood = null }: {
   direction?: WalkDirection;
@@ -77,6 +77,8 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   user: (Coordinates & { accuracyM: number }) | null; positionFailed: boolean; resume: boolean;
   /** The stop the saved walk stopped at, marked in «Остановки» before «Продолжить прогулку»; -1 when unknown. */
   resumeIndex?: number;
+  /** Initial route leg selected by an explicit intermediate entry. */
+  openingIndex?: number;
   titleRef: RefObject<HTMLHeadingElement | null>; startRef: RefObject<HTMLButtonElement | null>;
   /** Starts the walk: from the saved place, or from stop `index` when the walker picked one in «Остановки». */
   onStart: (index?: number) => void; onSelect: (index: number) => void; onStop: (completed?: boolean) => void;
@@ -182,9 +184,12 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   const [walked, setWalked] = useState(active);
   if (active && !walked) setWalked(true);
   const walkStart = route.walk?.start.location;
-  const openingFit = useMemo<MapFitTarget | null>(() => walkStart && stops.length
-    ? { points: openingFitPoints(geometry, cuts, walkStart, stops[0]), keepUserView: false }
-    : null, [geometry, cuts, walkStart, stops]);
+  const openingFit = useMemo<MapFitTarget | null>(() => {
+    if (!walkStart || !stops.length) return null;
+    const target = stops[openingIndex];
+    if (openingIndex > 0 && target) return { points: legFitPoints(geometry, legRange(cuts, geometry.length, openingIndex), target, null).points, keepUserView: false };
+    return { points: openingFitPoints(geometry, cuts, walkStart, stops[0]), keepUserView: false };
+  }, [geometry, cuts, walkStart, stops, openingIndex]);
   const foodFromM = vertexDistances[leg === 0 ? 0 : cuts[leg - 1] ?? 0] ?? 0;
   const legPath = active ? legRange(cuts, geometry.length, leg) : null;
   const legEnd = stops[leg] ?? route.walk?.finish.location ?? null;

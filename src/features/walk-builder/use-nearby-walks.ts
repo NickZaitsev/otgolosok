@@ -34,7 +34,7 @@ function readLocalWalks(): LocalWalkItem[] {
 }
 
 /**
- * Ready walks that start near `start`, for the creation sheet. The suggestion is optional:
+ * Ready walks that pass near `start`, for the creation sheet. The suggestion is optional:
  * a failed request falls back to this browser's walks without an error.
  */
 export function useNearbyWalks(start: Coordinates | null, exclude: EditingWalk | null, enabled: boolean): NearbyWalk[] {

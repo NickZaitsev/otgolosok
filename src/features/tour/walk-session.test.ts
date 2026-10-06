@@ -10,8 +10,8 @@ import { getWalkChapters } from "./walk-plan";
 import type { Route } from "./types";
 import type { OwnWalk } from "../walks/own-walk";
 
-const mapInput = vi.hoisted(() => ({ items: [] as Array<{ id: string; location: { lat: number; lon: number } }> }));
-vi.mock("../explore/explore-map", () => ({ ExploreMap: (props: typeof mapInput) => { mapInput.items = props.items; return null; } }));
+const mapInput = vi.hoisted(() => ({ items: [] as Array<{ id: string; location: { lat: number; lon: number } }>, fitTarget: null as { points: Array<{ lat: number; lon: number }> } | null }));
+vi.mock("../explore/explore-map", () => ({ ExploreMap: (props: typeof mapInput) => { mapInput.items = props.items; mapInput.fitTarget = props.fitTarget; return null; } }));
 
 const route = routeData as Route;
 const title = "По бульварному кольцу от Кропоткинской до Тверской";
@@ -394,4 +394,24 @@ it("адрес остановки показывается в «Читать и�
   await act(async () => root.unmount());
   container.remove();
   vi.unstubAllGlobals();
+});
+
+
+it("карта перед промежуточным стартом показывает выбранный участок, оставляя начало маршрута за кадром", () => {
+  const geometry = [0, 1, 2, 3, 4].map(i => ({ lat: 55.7 + i * .01, lon: 37.6 }));
+  const entryChapters = chapters.slice(0, 3).map((chapter, i) => ({ ...chapter, location: geometry[i + 1], trigger_location: undefined }));
+  const entryRoute: Route = { ...route, walk: { ...route.walk!, start: { ...route.walk!.start, location: geometry[0] }, path: { ...route.walk!.path, coordinates: geometry.map(point => [point.lon, point.lat]) } } };
+  renderToStaticMarkup(createElement(WalkSession, {
+    route: entryRoute, chapters: entryChapters, index: 2, openingIndex: 2, active: false, completed: false,
+    user: null, positionFailed: false, resume: false,
+    titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
+    onStart: () => {}, onSelect: () => {}, onStop: () => {}, player: null, story: null, settings: null, audioError: "",
+  }));
+  const shownPoints = mapInput.fitTarget!.points;
+  const south = Math.min(...shownPoints.map(point => point.lat));
+  const north = Math.max(...shownPoints.map(point => point.lat));
+  expect(south).toBeLessThanOrEqual(entryChapters[2].location.lat);
+  expect(north).toBeGreaterThanOrEqual(entryChapters[2].location.lat);
+  expect(south).toBeGreaterThan(entryRoute.walk!.start.location.lat);
+  expect(south).toBeGreaterThan(entryChapters[0].location.lat);
 });

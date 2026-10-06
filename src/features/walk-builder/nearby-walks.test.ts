@@ -15,10 +15,12 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace:
 
 const TOKEN = "22222222-2222-4222-8222-222222222222";
 const START = { lat: 55.75, lon: 37.6 };
-const card = { walkingMinutes: 45, distanceM: 3200, stopCount: 6, rating: { average: 4.5, count: 2 }, startDistanceM: 350, finish: "Москва, Садовническая улица, 5" };
+const card = { walkingMinutes: 32, distanceM: 2400, stopCount: 7, rating: { average: 4.5, count: 2 }, startDistanceM: 20,
+  entryStopId: "tverskaya-16", audioMinutes: 18, audioComplete: true, finish: "Москва, Садовническая улица, 5" };
 const walks = [
   { ...card, kind: "catalog", id: "msk-walk", title: "Кожевники" },
-  { ...card, kind: "shared", id: TOKEN, title: "Арбат", rating: { average: null, count: 0 }, startDistanceM: 0, finish: null },
+  { ...card, kind: "shared", id: TOKEN, title: "Арбат", rating: { average: null, count: 0 }, startDistanceM: 0,
+    entryStopId: "arbat-2", distanceM: 1050, stopCount: 2, audioMinutes: 7, audioComplete: false, finish: null },
 ];
 
 let root: Root;
@@ -72,12 +74,14 @@ describe("подборка в панели создания", () => {
     await act(async () => { details.querySelector("summary")?.click(); });
     expect(details.open).toBe(true);
     const links = [...section()!.querySelectorAll("a")];
-    expect(links.map(link => link.getAttribute("href"))).toEqual(["/walk?catalog=msk-walk", `/walk?share=${TOKEN}`]);
-    expect(links[0].textContent).toContain("45 мин · 3,2 км · 6 историй · старт в 350 м");
-    expect(links[1].textContent).toContain("Пока без оценок");
-    expect(links[1].textContent).toContain("старт рядом");
-    expect(links[0].textContent).toContain("до Садовническая улица, 5");
-    expect(links[1].textContent).toContain("по кругу, обратно к старту");
+    expect(links.map(link => link.getAttribute("href"))).toEqual([
+      "/walk?catalog=msk-walk&fromStop=tverskaya-16", `/walk?share=${TOKEN}&fromStop=arbat-2`,
+    ]);
+    expect(links[0].textContent).toContain("Осталось 2,4 км · 7 точек · 18 мин озвучки");
+    expect(links[1].textContent).toContain("Осталось 1,1 км · 2 точки · 7 мин готовой озвучки");
+    expect(links[0].textContent).not.toContain("32 мин");
+    expect(links[0].textContent).not.toContain("Садовническая");
+    expect(links[0].textContent).not.toContain("4,5");
     expect(links[0].textContent).not.toContain("Ваша");
   });
 
@@ -111,8 +115,9 @@ describe("подборка в панели создания", () => {
     expect(new URL(nearbyCalls()[0], "http://localhost").search).toBe("?lat=55.72620&lon=37.64850");
     expect(section()?.querySelector("summary")?.textContent).toBe("Близко к вам · 2");
     const links = [...section()!.querySelectorAll("a")];
-    expect(links[0].textContent).toContain("в 350 м от вас");
-    expect(links[1].textContent).toContain("рядом с вами");
+    expect(links[0].textContent).toContain("Осталось 2,4 км");
+    expect(links[1].textContent).toContain("Осталось 1,1 км");
+    expect(links[0].textContent).not.toContain("от вас");
   });
 
   it("не спрашивает геолокацию ради подборки и не берёт слишком грубую точку", async () => {
@@ -139,6 +144,12 @@ describe("подборка в панели создания", () => {
     await openDraft({ start });
     expect(nearbyCalls()).toHaveLength(1);
     expect(section()).toBeNull();
+  });
+
+  it("честно показывает отсутствие готовой озвучки", async () => {
+    nearby = async () => Response.json({ walks: [{ ...walks[0], audioMinutes: 0, audioComplete: false }] });
+    await openDraft({ start });
+    expect(section()?.querySelector("a")?.textContent).toContain("Озвучка пока не готова");
   });
 });
 

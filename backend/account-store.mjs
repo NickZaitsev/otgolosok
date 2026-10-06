@@ -289,7 +289,23 @@ export function createAccountStore(db, now = Date.now) {
           distanceM:Number(row.distance_m),ratingSum:Number(row.rating_sum),ratingCount:Number(row.rating_count)}));
       return {walks,...ratingContext()};
     },
-    /** Decoded documents of nearby account walks visible to userId (published or own), null for damaged ones. */
+    /**
+     * Account walks that may pass a point: approved public walks plus, for a signed-in user,
+     * all of their own walks. Snapshots stay encoded here and are decoded later in ranked
+     * batches, because proximity depends on the route geometry rather than its start column.
+     * @param {{userId?: string | null}} options
+     */
+    listPassingCandidates({userId=null}={}) {
+      const walks=db.prepare(`SELECT w.id,w.title,w.share_token,w.listing_updated_at,w.updated_at,w.user_id=? AS own,
+          COALESCE(r.sum,0) AS rating_sum,COALESCE(r.count,0) AS rating_count
+        FROM user_walks w ${ACCOUNT_RATINGS}
+        WHERE (${PUBLISHED_WALK}) OR w.user_id=?`)
+        .all(userId,userId)
+        .map(row=>({id:row.id,title:row.title,shareToken:row.share_token,own:Boolean(row.own),listedAt:row.listing_updated_at,updatedAt:row.updated_at,
+          ratingSum:Number(row.rating_sum),ratingCount:Number(row.rating_count)}));
+      return {walks,...ratingContext()};
+    },
+    /** Decoded candidate documents visible to userId (published or own), null for damaged ones. */
     getNearbyDocuments(ids,userId=null) {
       const select=db.prepare(`SELECT w.id,w.title,w.snapshot_json FROM user_walks w WHERE w.id=? AND ((${PUBLISHED_WALK}) OR w.user_id=?)`);
       return new Map(ids.map(id=>{const row=select.get(id,userId);return [id,row?documentOf(row):null];}));

@@ -1,4 +1,4 @@
-import { distanceMeters } from "@/lib/geo/distance";
+import { computeWalkEntry } from "../../../backend/walk-entry.mjs";
 import type { Coordinates } from "../tour/types";
 import type { LocalWalkItem } from "./local-store";
 import type { WalkDocument } from "./model";
@@ -10,13 +10,16 @@ export const NEARBY_RADIUS_M = 500;
 export const NEARBY_LIMIT = 5;
 
 /**
- * A walk that starts near the draft's start. `own` is the user's account walk, `local` a walk
- * saved in this browser; both are the user's own («Ваша»). Only the rounded start distance is
- * known for other people's walks.
+ * A walk that passes near the chosen point. `own` is the user's account walk, `local` a walk
+ * saved in this browser; both are the user's own («Ваша»). New responses describe the remaining
+ * route from `entryStopId`; fields omitted by an older backend remain valid.
  */
 export type NearbyWalk = Omit<TopWalk, "kind"> & {
   kind: "catalog" | "shared" | "own" | "local";
   startDistanceM: number;
+  entryStopId?: string;
+  audioMinutes?: number;
+  audioComplete?: boolean;
   /** Address where an open walk ends; null for a loop back to the start. */
   finish: string | null;
 };
@@ -35,7 +38,21 @@ function validateNearbyWalk(raw: unknown): NearbyWalk {
   if (!Number.isSafeInteger(item.startDistanceM) || (item.startDistanceM as number) < 0) throw new TypeError("Неверное расстояние до старта.");
   const finish = item.finish;
   if (finish !== null && (typeof finish !== "string" || !finish.trim() || finish.length > 180)) throw new TypeError("Неверный адрес финиша.");
-  return { kind: item.kind, id, ...validateWalkCard(item), startDistanceM: item.startDistanceM as number, finish };
+  const entryStopId = item.entryStopId;
+  if (entryStopId !== undefined && (typeof entryStopId !== "string" || !(ACCOUNT_ID.test(entryStopId) || CATALOG_WALK_ID.test(entryStopId)))) {
+    throw new TypeError("Неверная точка начала прогулки.");
+  }
+  const audioMinutes = item.audioMinutes;
+  if (audioMinutes !== undefined && (!Number.isSafeInteger(audioMinutes) || (audioMinutes as number) < 0)) throw new TypeError("Неверная длительность озвучки.");
+  const audioComplete = item.audioComplete;
+  if (audioComplete !== undefined && typeof audioComplete !== "boolean") throw new TypeError("Неверный статус озвучки.");
+  if ((audioMinutes === undefined) !== (audioComplete === undefined)) throw new TypeError("Неполные данные об озвучке.");
+  return {
+    kind: item.kind, id, ...validateWalkCard(item), startDistanceM: item.startDistanceM as number, finish,
+    ...(entryStopId === undefined ? {} : { entryStopId }),
+    ...(audioMinutes === undefined ? {} : { audioMinutes: audioMinutes as number }),
+    ...(audioComplete === undefined ? {} : { audioComplete }),
+  };
 }
 
 export function validateNearbyWalks(value: unknown): NearbyWalk[] {
@@ -46,8 +63,9 @@ export function validateNearbyWalks(value: unknown): NearbyWalk[] {
 
 const HREF_PARAM = { catalog: "catalog", shared: "share", own: "id", local: "local" } as const;
 
-export function nearbyWalkHref(walk: Pick<NearbyWalk, "kind" | "id">) {
-  return `/walk?${HREF_PARAM[walk.kind]}=${encodeURIComponent(walk.id)}`;
+export function nearbyWalkHref(walk: Pick<NearbyWalk, "kind" | "id" | "entryStopId">) {
+  const href = `/walk?${HREF_PARAM[walk.kind]}=${encodeURIComponent(walk.id)}`;
+  return walk.entryStopId ? `${href}&fromStop=${encodeURIComponent(walk.entryStopId)}` : href;
 }
 
 export const isOwnNearbyWalk = (walk: Pick<NearbyWalk, "kind">) => walk.kind === "own" || walk.kind === "local";
@@ -73,16 +91,30 @@ export function formatStartDistance(meters: number, origin: "start" | "you" = "s
   return meters < 50 ? "старт рядом" : `старт в ${rounded} м`;
 }
 
-/** Built walks of this browser that start within the radius, newest first. */
+const pointPlural = new Intl.PluralRules("ru");
+const pointWords: Record<string, string> = { one: "точка", few: "точки", many: "точек", other: "точки" };
+
+/** The only details needed before starting a nearby walk: remaining route, points and narration. */
+export function formatNearbyWalkMeta(walk: Pick<NearbyWalk, "distanceM" | "stopCount" | "audioMinutes" | "audioComplete">) {
+  const km = (walk.distanceM / 1000).toLocaleString("ru-RU", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const points = `${walk.stopCount} ${pointWords[pointPlural.select(walk.stopCount)]}`;
+  let audio = "нет данных об озвучке";
+  if (walk.audioMinutes !== undefined) {
+    if (walk.audioMinutes === 0) audio = "Озвучка пока не готова";
+    else audio = walk.audioComplete === false ? `${walk.audioMinutes} мин готовой озвучки` : `${walk.audioMinutes} мин озвучки`;
+  }
+  return `Осталось ${km} км · ${points} · ${audio}`;
+}
+
+/** Built walks of this browser that pass within the radius, newest first. */
 export function localNearbyWalks(items: LocalWalkItem[], start: Coordinates, exclude: string | null): NearbyWalk[] {
   return items.flatMap(({ document, updatedAt }) => {
-    const location = document.start?.location;
-    if (!document.route || !location || document.id === exclude) return [];
-    const distance = distanceMeters(start, location);
-    if (!(distance <= NEARBY_RADIUS_M)) return [];
+    if (document.id === exclude) return [];
+    const entry = computeWalkEntry(document, start, NEARBY_RADIUS_M);
+    if (!entry) return [];
     return [{ updatedAt: updatedAt ?? "", walk: { kind: "local" as const, id: document.id, title: document.title,
-      walkingMinutes: document.route.walkingMinutes, distanceM: document.route.distanceM, stopCount: document.stops.length,
-      rating: { average: null, count: 0 }, startDistanceM: Math.round(distance), finish: walkFinish(document) } }];
+      walkingMinutes: entry.walkingMinutes, distanceM: entry.distanceM, stopCount: entry.stopCount,
+      rating: { average: null, count: 0 }, startDistanceM: entry.startDistanceM, entryStopId: entry.entryStopId, finish: walkFinish(document) } }];
   }).sort((a, b) => a.updatedAt < b.updatedAt ? 1 : a.updatedAt > b.updatedAt ? -1 : 0).map(item => item.walk);
 }
 

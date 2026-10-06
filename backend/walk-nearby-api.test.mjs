@@ -64,6 +64,6 @@ test("own walks reach only their signed-in owner and the response is never cache
   assert.match(guest.headers.get("cache-control") ?? "", /no-store/);
   as("anna");
   const owner = await call(NEAR);
-  assert.deepEqual(owner.data.walks.map((/** @type {any} */ item) => [item.kind, item.id, item.startDistanceM]), [["own", walk.id, 100]]);
+  assert.deepEqual(owner.data.walks.map((/** @type {any} */ item) => [item.kind, item.id, item.startDistanceM]), [["own", walk.id, 50]]);
   assert.match(owner.headers.get("cache-control") ?? "", /no-store/);
 });

@@ -339,7 +339,7 @@ test("ручной адрес подтверждается кнопкой без
 });
 
 test("после выбора старта предлагает готовые прогулки рядом и открывает выбранную", async ({ page }) => {
-  const card = { walkingMinutes: 45, distanceM: 3200, stopCount: 6, rating: { average: 4.6, count: 12 }, finish: "Москва, Садовническая улица, 5" };
+  const card = { entryStopId: "44444444-4444-4444-8444-444444444444", audioMinutes: 18, audioComplete: true, walkingMinutes: 45, distanceM: 3200, stopCount: 6, rating: { average: 4.6, count: 12 }, finish: "Москва, Садовническая улица, 5" };
   const walks = [
     { ...card, kind: "catalog", id: "msk-kozhevniki-zindel-short", title: "Кожевники", startDistanceM: 350 },
     { ...card, kind: "shared", id: "22222222-2222-4222-8222-222222222222", title: "Арбат", startDistanceM: 0 },
@@ -363,10 +363,10 @@ test("после выбора старта предлагает готовые �
   await expect(nearby.getByRole("link").first()).toBeVisible();
   expect(queries).toEqual(["?lat=55.72550&lon=37.65131"]);
   await expect(nearby.getByRole("link", { name: /Моя прогулка/ })).toContainText("Ваша");
-  await expect(nearby.getByRole("link", { name: /Кожевники/ })).toContainText("старт в 350 м");
-  await expect(nearby.getByRole("link", { name: /Кожевники/ })).toContainText("до Садовническая улица, 5");
+  await expect(nearby.getByRole("link", { name: /Кожевники/ })).toContainText("Осталось 3,2 км · 6 точек · 18 мин озвучки");
+  await expect(nearby.getByRole("link", { name: /Кожевники/ })).not.toContainText("45 мин");
   await nearby.getByRole("link", { name: /Кожевники/ }).click();
-  await expect(page).toHaveURL(/\/walk\?catalog=msk-kozhevniki-zindel-short$/);
+  await expect(page).toHaveURL(/\/walk\?catalog=msk-kozhevniki-zindel-short&fromStop=44444444-4444-4444-8444-444444444444$/);
 });
 
 test("без старта при разрешённой геолокации предлагает прогулки близко к пользователю", async ({ page, context }) => {
@@ -381,7 +381,7 @@ test("без старта при разрешённой геолокации п�
   await page.goto("/?walk=create");
   const nearby = page.locator('[data-sheet="creation"] [data-creation="nearby"]');
   await nearby.getByText("Близко к вам · 1", { exact: true }).click();
-  await expect(nearby.getByRole("link", { name: /Кожевники/ })).toContainText("в 350 м от вас");
+  await expect(nearby.getByRole("link", { name: /Кожевники/ })).toContainText("3,2 км · 6 точек");
   expect(queries).toEqual(["?lat=55.72620&lon=37.64850"]);
 });
 
