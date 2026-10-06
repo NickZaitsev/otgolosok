@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-06",
+  "database": "isolated SQLite; «Кожевники» recreated from the public API, placeHash equal to production",
+  "conflict": "rejected: Concurrent story edit osm:node:2330688388",
+  "dryRun": { "newPlaces": 3, "published": 4, "rolledBack": true },
+  "apply": { "newPlaces": 3, "published": 4, "backup": true },
+  "reapply": { "published": 0, "skipped": 4 },
+  "mapCell55_37": ["osm:node:2330688388", "osm:way:192584381", "osm:way:56460859", "osm:way:48346310"],
+  "publishedTextsEqualBundle": true
+}
