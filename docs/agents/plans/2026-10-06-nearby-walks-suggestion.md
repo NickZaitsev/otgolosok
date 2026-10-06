@@ -262,6 +262,8 @@ walk geometry lives only inside `user_walks.snapshot_json`.
   from `content-store.mjs` made the box ~0.1 % too small and dropped starts right at the radius edge.
 - Cards also show where the walk ends under the title (user request): the API item has `finish` — the destination
   or last stop address of an open walk, `null` for a loop. The block is a collapsed `<details>` (user request).
+- Without a chosen start, if geolocation access is already granted, the device position (one coarse fix, no permission
+  prompt, accuracy ≤ 500 m, inside Moscow) is used and the block is titled «Близко к вам» (user request).
 - `NearbyWalks` renders after the submitting notice (last content element, before the status/error lines).
 - Account-store column/backfill tests live in `backend/walk-nearby.test.mjs`; API tests in
   `backend/walk-nearby-api.test.mjs`; hook and panel jsdom tests in `src/features/walk-builder/nearby-walks.test.ts`.

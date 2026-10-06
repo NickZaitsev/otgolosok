@@ -63,10 +63,14 @@ export function formatFinish(finish: string | null) {
   return finish === null ? "по кругу, обратно к старту" : `до ${finish.replace(/^Москва,\s*/, "")}`;
 }
 
-/** «старт рядом» below 50 m, otherwise «старт в 350 м» rounded to 50 m. */
-export function formatStartDistance(meters: number) {
-  if (meters < 50) return "старт рядом";
-  return `старт в ${(Math.round(meters / 50) * 50).toLocaleString("ru-RU")} м`;
+/**
+ * Distance to the walk's start, rounded to 50 m: from the chosen start («старт в 350 м», «старт рядом»)
+ * or from the user («в 350 м от вас», «рядом с вами»).
+ */
+export function formatStartDistance(meters: number, origin: "start" | "you" = "start") {
+  const rounded = (Math.round(meters / 50) * 50).toLocaleString("ru-RU");
+  if (origin === "you") return meters < 50 ? "рядом с вами" : `в ${rounded} м от вас`;
+  return meters < 50 ? "старт рядом" : `старт в ${rounded} м`;
 }
 
 /** Built walks of this browser that start within the radius, newest first. */

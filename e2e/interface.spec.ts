@@ -369,6 +369,22 @@ test("после выбора старта предлагает готовые �
   await expect(page).toHaveURL(/\/walk\?catalog=msk-kozhevniki-zindel-short$/);
 });
 
+test("без старта при разрешённой геолокации предлагает прогулки близко к пользователю", async ({ page, context }) => {
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: 55.7262, longitude: 37.6485, accuracy: 30 });
+  const queries: string[] = [];
+  await page.route("**/api/walks/nearby?*", route => {
+    queries.push(new URL(route.request().url()).search);
+    return route.fulfill({ json: { walks: [{ kind: "catalog", id: "msk-kozhevniki-zindel-short", title: "Кожевники", walkingMinutes: 45, distanceM: 3200, stopCount: 6,
+      rating: { average: null, count: 0 }, startDistanceM: 350, finish: "Москва, Садовническая улица, 5" }] } });
+  });
+  await page.goto("/?walk=create");
+  const nearby = page.locator('[data-sheet="creation"] [data-creation="nearby"]');
+  await nearby.getByText("Близко к вам · 1", { exact: true }).click();
+  await expect(nearby.getByRole("link", { name: /Кожевники/ })).toContainText("в 350 м от вас");
+  expect(queries).toEqual(["?lat=55.72620&lon=37.64850"]);
+});
+
 test("время имеет мягкий акцент и сразу позволяет построить прогулку", async ({ page }) => {
   await page.goto("/?walk=create");
   await page.getByRole("button", { name: "Куда", exact: true }).click();

@@ -98,6 +98,42 @@ describe("подборка в панели создания", () => {
     expect(section()).toBeNull();
   });
 
+  function allowGeolocation(state: PermissionState, accuracy = 30) {
+    const getCurrentPosition = vi.fn((success: PositionCallback) => success({ coords: { latitude: 55.7262, longitude: 37.6485, accuracy }, timestamp: 0 } as GeolocationPosition));
+    vi.stubGlobal("navigator", { ...navigator, geolocation: { getCurrentPosition, watchPosition: () => 1, clearWatch: () => {} }, permissions: { query: async () => ({ state }) } });
+    return getCurrentPosition;
+  }
+
+  it("без старта показывает прогулки близко к пользователю, если геолокация уже разрешена", async () => {
+    allowGeolocation("granted");
+    await openDraft({});
+    await vi.waitFor(() => expect(section()).not.toBeNull());
+    expect(new URL(nearbyCalls()[0], "http://localhost").search).toBe("?lat=55.72620&lon=37.64850");
+    expect(section()?.querySelector("summary")?.textContent).toBe("Близко к вам · 2");
+    const links = [...section()!.querySelectorAll("a")];
+    expect(links[0].textContent).toContain("в 350 м от вас");
+    expect(links[1].textContent).toContain("рядом с вами");
+  });
+
+  it("не спрашивает геолокацию ради подборки и не берёт слишком грубую точку", async () => {
+    const asked = allowGeolocation("prompt");
+    await openDraft({});
+    expect(asked).not.toHaveBeenCalled();
+    await act(async () => { root.unmount(); });
+    root = createRoot(container);
+    allowGeolocation("granted", 2_000);
+    await openDraft({});
+    expect(nearbyCalls()).toEqual([]);
+    expect(section()).toBeNull();
+  });
+
+  it("с выбранным стартом считает от старта, а не от пользователя", async () => {
+    const asked = allowGeolocation("granted");
+    await openDraft({ start });
+    expect(asked).not.toHaveBeenCalled();
+    expect(section()?.querySelector("summary")?.textContent).toBe("Прогулки рядом · 2");
+  });
+
   it("без результатов блок не показывается", async () => {
     nearby = async () => Response.json({ walks: [] });
     await openDraft({ start });

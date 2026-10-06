@@ -2,11 +2,31 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { Coordinates } from "../tour/types";
+import { isMoscowPoint } from "../explore/map-jobs";
+import { positionIfGranted } from "@/lib/position/locate";
 import { listLocalWalks, type LocalWalkItem } from "../walks/local-store";
 import { loadJson } from "../walks/walk-loader";
-import { localNearbyWalks, mergeNearby, validateNearbyWalks, type EditingWalk, type NearbyWalk } from "../walks/nearby-model";
+import { localNearbyWalks, mergeNearby, NEARBY_RADIUS_M, validateNearbyWalks, type EditingWalk, type NearbyWalk } from "../walks/nearby-model";
 
 const coordinate = (value: number) => value.toFixed(5);
+
+/**
+ * The device position for «Близко к вам», only when geolocation access is already granted:
+ * the builder never shows a permission prompt for a suggestion. A fix coarser than the search
+ * radius, or outside Moscow, would suggest the wrong walks, so it is dropped.
+ */
+export function useGrantedPosition(enabled: boolean): Coordinates | null {
+  const [position, setPosition] = useState<Coordinates | null>(null);
+  useEffect(() => {
+    if (!enabled) return;
+    const controller = new AbortController();
+    void positionIfGranted(controller.signal).then(fix => {
+      if (fix && fix.accuracyM <= NEARBY_RADIUS_M && isMoscowPoint(fix)) setPosition({ lat: fix.lat, lon: fix.lon });
+    });
+    return () => controller.abort();
+  }, [enabled]);
+  return enabled ? position : null;
+}
 
 /** Walks of this browser; damaged storage gives none because the builder reports storage errors itself. */
 function readLocalWalks(): LocalWalkItem[] {

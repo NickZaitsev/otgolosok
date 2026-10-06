@@ -57,6 +57,10 @@ it.each([[0, "старт рядом"], [49, "старт рядом"], [50, "ст
   expect(formatStartDistance(meters)).toBe(text);
 });
 
+it.each([[0, "рядом с вами"], [49, "рядом с вами"], [50, "в 50 м от вас"], [376, "в 400 м от вас"]])("расстояние от пользователя %i м", (meters, text) => {
+  expect(formatStartDistance(meters, "you")).toBe(text);
+});
+
 // Meters per degree of latitude on the haversine sphere.
 const M_PER_LAT = 6_371_000 * Math.PI / 180;
 const START = { lat: 55.75, lon: 37.6 };
