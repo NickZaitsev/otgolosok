@@ -1,6 +1,6 @@
 # План: рассказы мест до 500 слов и 5 минут звука
 
-Status: in progress since 2026-10-06.
+Status: implemented 2026-10-06 in branch `main`. Deployment to production is not part of this plan and was not done.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -57,3 +57,11 @@ Status: in progress since 2026-10-06.
 3. Записать итог в `docs/agents/` (короткая заметка: пределы, темп голоса, ловушка ключа) и строку в `docs/agents/README.md`. Закрыть план.
 
 Выкладка — штатная, в фоне, из чистого worktree; платной озвучки этот план не запускает.
+
+## Implementation notes (2026-10-06)
+
+- Two more 250-word checks existed beyond the table above and were moved to the shared module too: `validateDraft` (`backend/domain.mjs`) and `hasValidStoryText` (`backend/admin.mjs`). Shared limits live in `backend/story-limits.mjs` (dependency-free, imported by the admin editor as well).
+- The 2000-character paragraph limit is unchanged; 500 words need at least ~3 paragraphs of real Russian text.
+- The input key uses `LEGACY_KEY_PUBLICATION_LIMIT_SEC = 150` while new payloads get `EXTERNAL_PUBLICATION_LIMIT_SEC = 300` (`backend/store.mjs`).
+- Isolated end-to-end check: an editorial catalog story of 520 words was approved, queued for ElevenLabs, a 310 s artifact was rejected and a 290 s one accepted. Catalog stories have no word limit (`catalogNarration`).
+- The note is in `docs/agents/story-length-limits.md`.
