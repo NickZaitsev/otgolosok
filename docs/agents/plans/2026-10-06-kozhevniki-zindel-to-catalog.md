@@ -1,6 +1,6 @@
 # План: перенос прогулки «От Кожевников к Цинделю» на места каталога
 
-Status: in progress since 2026-10-06.
+Status: implemented 2026-10-06 in branch `main`, except deploying the redirect code (phase 4.4): the user postponed the deploy because `main` also carries unfinished work of parallel agents. Until then the old `?catalog=` link on production still opens the built-in walk.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
 
@@ -94,3 +94,13 @@ Status: in progress since 2026-10-06.
 - Объединённый текст «Кожевников» — новая редакторская работа: каждое утверждение из прежнего автоматического текста нуждается в источнике. Прежняя редакция остаётся в бэкапе и истории `place_texts`.
 - Прежнее аудио «Кожевников» перестанет соответствовать тексту; новая озвучка в фазе 4.3 его заменит.
 - Пока второй план не выполнен, тексты прогулки лежат в двух местах (`places` и `paveletskaya.json`). Правки делать только в `places`.
+
+## Implementation notes (2026-10-06)
+
+- Places: Дербеневская улица `osm:way:192584381` (a point at the stop, not a line), Дербеневская ул., 14 к2 `osm:way:56460859`, Дербеневская наб., 7 с22 `osm:way:48346310` (no OSM object for the whole factory site). OSM data came from the OSM map API; Overpass answered 406.
+- Merged «Кожевники» story: 221 words. The old automatic text dated the bell tower and refectory to 1686–1689 together with the church; Wikipedia gives 1722 and the early 18th century, the new text is corrected. The mos.ru church PDF could not be fetched (Russian CA not trusted locally, TLS check kept).
+- The 5-minute limits plan did not need to be deployed: catalogue texts approved by the import script have no word limit, ElevenLabs already allowed 300 s.
+- `createWalkPlanner` accepts only 30/60/90 minutes; planned with 30, the document keeps 15. Tunnels found with the public Valhalla `trace_attributes`: `[[29, 30]]`, same as before.
+- Production: import with backup, idempotent repeat, walk `?share=901d1133-44a2-4724-a856-2fe8d6c86a44`, four ElevenLabs recordings (300.9 s) verified. Audio was queued right after the import because the old F5 recording of «Кожевники» kept playing until the new one was ready.
+- Redirect: static export (`output: "export"`) ignores `next.config` redirects, so the API answers `410 WALK_MOVED` and `walk-screen.tsx` replaces the URL. Deviation: the admin walk desk still lists the moved walk (its tests use the real data; the subsystem goes away in the second plan).
+- Second plan stub: `docs/agents/plans/2026-10-06-retire-builtin-catalog-tour.md`. Note: `docs/agents/kozhevniki-zindel-to-catalog.md`.
