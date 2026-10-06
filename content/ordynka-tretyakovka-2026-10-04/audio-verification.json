@@ -1,36 +1,58 @@
 {
-  "verifiedAt": "2026-10-04T19:58:32.704769+00:00",
+  "verifiedAt": "2026-10-06T15:24:19.263922+00:00",
   "shareUrl": "https://otgolosok.online/walk?share=6cacfdd1-defd-4afb-940f-5085356d0315",
   "voiceName": "Отголосок2",
   "voiceId": "9ivxhQ6xIsHd6R3Xc635",
   "provider": "elevenlabs",
-  "model": "eleven_v3",
-  "ready": 7,
-  "total": 7,
-  "durationSec": 641.208,
-  "durationMinutes": 10.69,
+  "models": [
+    "eleven_v3",
+    "eleven_v4"
+  ],
+  "ready": 12,
+  "total": 12,
+  "durationSec": 932.832,
+  "measuredDurationSec": 932.16,
+  "durationMinutes": 15.54,
   "checks": {
-    "currentTextIds": true,
     "storiesMatchBundle": true,
-    "previousVersionAudioRejected": true,
+    "originalSevenAudioPreserved": true,
     "downloadedAllFiles": true,
     "sha256AndBytes": true,
     "ffprobeDuration": true,
-    "publicWalkAudioReady": 7,
-    "mobileViewport": {
-      "width": 390,
-      "height": 844
-    },
-    "mobileStopsAndSources": 7,
-    "playPauseStops": [
-      1,
-      6,
-      7
-    ],
-    "audioErrors": false,
-    "fieldChecked": false
+    "minimumTenStops": true,
+    "minimumFifteenMinutes": true,
+    "fieldChecked": false,
+    "publicWalkAudioReady": 12
   },
   "rows": [
+    {
+      "placeId": "osm:way:75650837",
+      "textId": "4d0a57df-dbd9-432c-b268-3018a3d0c8c3",
+      "ready": true,
+      "url": "/api/story-audio/a5e83e8873a0d112679bcb8ab581111df6b82da0c13a21c648da9d9b2c5fd8bf.mp3",
+      "sha256": "a5e83e8873a0d112679bcb8ab581111df6b82da0c13a21c648da9d9b2c5fd8bf",
+      "bytes": 650349,
+      "durationSec": 81.264,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true,
+      "measuredDurationSec": 81.2
+    },
+    {
+      "placeId": "osm:relation:6897502",
+      "textId": "09c22815-eb47-40e3-b033-7c198cbd80f4",
+      "ready": true,
+      "url": "/api/story-audio/33a9e599e18383b509ff78930e026745b939c21c213f0f50edd0dd42a3060b9d.mp3",
+      "sha256": "33a9e599e18383b509ff78930e026745b939c21c213f0f50edd0dd42a3060b9d",
+      "bytes": 476781,
+      "durationSec": 59.568,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true,
+      "measuredDurationSec": 59.52
+    },
     {
       "placeId": "osm:node:8044478986",
       "textId": "1d513461-e6eb-4740-9867-7b823ea20092",
@@ -42,20 +64,22 @@
       "model": "eleven_v3",
       "voice": "9ivxhQ6xIsHd6R3Xc635",
       "provider": "elevenlabs",
-      "synthetic": true
+      "synthetic": true,
+      "measuredDurationSec": 88.24
     },
     {
       "placeId": "osm:node:1378700996",
       "textId": "a59baa16-8451-4a26-a1ad-ad32477ce6ed",
       "ready": true,
-      "url": "/api/story-audio/5403c4f1853252b4f888e31fb3ee1c43a6bd729d4164d9c482e51daaefc2eab9.mp3",
-      "sha256": "5403c4f1853252b4f888e31fb3ee1c43a6bd729d4164d9c482e51daaefc2eab9",
-      "bytes": 702189,
-      "durationSec": 87.744,
-      "model": "eleven_v3",
+      "url": "/api/story-audio/75d9ee2381d46f2dc18a6984851d20456d0db145cb0d9abc8b12a5a7f0b0d559.mp3",
+      "sha256": "75d9ee2381d46f2dc18a6984851d20456d0db145cb0d9abc8b12a5a7f0b0d559",
+      "bytes": 658605,
+      "durationSec": 82.296,
+      "model": "eleven_v4",
       "voice": "9ivxhQ6xIsHd6R3Xc635",
       "provider": "elevenlabs",
-      "synthetic": true
+      "synthetic": true,
+      "measuredDurationSec": 82.24
     },
     {
       "placeId": "osm:relation:20429251",
@@ -68,7 +92,8 @@
       "model": "eleven_v3",
       "voice": "9ivxhQ6xIsHd6R3Xc635",
       "provider": "elevenlabs",
-      "synthetic": true
+      "synthetic": true,
+      "measuredDurationSec": 87.44
     },
     {
       "placeId": "osm:way:53548437",
@@ -81,7 +106,8 @@
       "model": "eleven_v3",
       "voice": "9ivxhQ6xIsHd6R3Xc635",
       "provider": "elevenlabs",
-      "synthetic": true
+      "synthetic": true,
+      "measuredDurationSec": 92.72
     },
     {
       "placeId": "osm:way:52435403",
@@ -94,7 +120,8 @@
       "model": "eleven_v3",
       "voice": "9ivxhQ6xIsHd6R3Xc635",
       "provider": "elevenlabs",
-      "synthetic": true
+      "synthetic": true,
+      "measuredDurationSec": 93.36
     },
     {
       "placeId": "osm:relation:1907261",
@@ -107,7 +134,8 @@
       "model": "eleven_v3",
       "voice": "9ivxhQ6xIsHd6R3Xc635",
       "provider": "elevenlabs",
-      "synthetic": true
+      "synthetic": true,
+      "measuredDurationSec": 104.64
     },
     {
       "placeId": "osm:way:52435420",
@@ -120,36 +148,50 @@
       "model": "eleven_v3",
       "voice": "9ivxhQ6xIsHd6R3Xc635",
       "provider": "elevenlabs",
-      "synthetic": true
-    }
-  ],
-  "browserAudio": [
-    {
-      "stop": 1,
-      "playing": true,
-      "currentTime": 0.305117,
-      "duration": 88.24,
-      "error": null,
-      "source": "https://otgolosok.online/api/story-audio/920a6338597d3b347303fe5494343a916e3d8344b6d310bbd45d5d83a3acc26a.mp3",
-      "paused": true
+      "synthetic": true,
+      "measuredDurationSec": 86.72
     },
     {
-      "stop": 6,
-      "playing": true,
-      "currentTime": 0.309337,
-      "duration": 104.64,
-      "error": null,
-      "source": "https://otgolosok.online/api/story-audio/68b712e417b89d57f892fc29933c1eafdd899bef07851ec2bae5c887d447fa95.mp3",
-      "paused": true
+      "placeId": "osm:node:4595636713",
+      "textId": "d7bcea47-cae8-4a59-aa3f-a1c32e159dd1",
+      "ready": true,
+      "url": "/api/story-audio/dd3763b8c33c8f3c69a64deef9a03bbffea0cdd419280f0d5a21fe4b49c05ba6.mp3",
+      "sha256": "dd3763b8c33c8f3c69a64deef9a03bbffea0cdd419280f0d5a21fe4b49c05ba6",
+      "bytes": 453741,
+      "durationSec": 56.688,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true,
+      "measuredDurationSec": 56.64
     },
     {
-      "stop": 7,
-      "playing": true,
-      "currentTime": 0.307843,
-      "duration": 86.72,
-      "error": null,
-      "source": "https://otgolosok.online/api/story-audio/3a3fe3cb6deec361e05797c82edb6e6c82e714443c558b77d7cad4d061555ab4.mp3",
-      "paused": true
+      "placeId": "osm:way:642091604",
+      "textId": "a93c9720-d881-4afc-9822-2f30e7a8a5cb",
+      "ready": true,
+      "url": "/api/story-audio/08035f7a7d3c769fc04ef18744f60cc61b9d51df1baa8f14aaef2f6116cc93d8.mp3",
+      "sha256": "08035f7a7d3c769fc04ef18744f60cc61b9d51df1baa8f14aaef2f6116cc93d8",
+      "bytes": 431469,
+      "durationSec": 53.904,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true,
+      "measuredDurationSec": 53.84
+    },
+    {
+      "placeId": "osm:relation:11661228",
+      "textId": "b01f8b41-c03e-4e73-b244-03e5d5556563",
+      "ready": true,
+      "url": "/api/story-audio/361fd80ce7e9539f4bdb4d318ed64d205fb8d61456036f4774523ecf0a45d9af.mp3",
+      "sha256": "361fd80ce7e9539f4bdb4d318ed64d205fb8d61456036f4774523ecf0a45d9af",
+      "bytes": 365421,
+      "durationSec": 45.648,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true,
+      "measuredDurationSec": 45.6
     }
   ]
 }
