@@ -1,6 +1,6 @@
 [
   {
-    "stop": 1,
+    "stop": 3,
     "placeId": "osm:node:8044478986",
     "commonsFile": "И.С. Шмелёву.jpg",
     "thumbnail": "/images/places/node-8044478986-1effe7406c96.jpg",
@@ -16,7 +16,7 @@
     "modifications": "Фото уменьшено для веб и обрезано до горизонтального кадра с бюстом; превью дополнительно обрезается при показе."
   },
   {
-    "stop": 2,
+    "stop": 4,
     "placeId": "osm:node:1378700996",
     "commonsFile": "Vdohnovenie (Inspiration) fountain in Moscow Russia 2018 June.jpg",
     "thumbnail": "/images/places/node-1378700996-3f290fdfbe13.jpg",
@@ -32,7 +32,7 @@
     "modifications": "Фото уменьшено для веб; превью обрезается при показе."
   },
   {
-    "stop": 3,
+    "stop": 5,
     "placeId": "osm:relation:20429251",
     "commonsFile": "Demidov Estate Main House Tolmachevskiy Bol 3 str 5 2016-04-19 2699.jpg",
     "thumbnail": "/images/places/relation-20429251-237a1ed746f5.jpg",
@@ -48,7 +48,7 @@
     "modifications": "Фото уменьшено для веб; превью обрезается при показе."
   },
   {
-    "stop": 4,
+    "stop": 6,
     "placeId": "osm:way:53548437",
     "commonsFile": "Church of Saint Nicholas in Tolmachy 02 by shakko.jpg",
     "thumbnail": "/images/places/way-53548437-c0e123222f84.jpg",
@@ -64,7 +64,7 @@
     "modifications": "Фото уменьшено для веб; превью обрезается при показе."
   },
   {
-    "stop": 5,
+    "stop": 7,
     "placeId": "osm:way:52435403",
     "commonsFile": "Moscow Lavrushinsky17s2 9712.jpg",
     "thumbnail": "/images/places/way-52435403-b6e3c40caa53.jpg",
@@ -80,7 +80,7 @@
     "modifications": "Фото уменьшено для веб; превью обрезается при показе."
   },
   {
-    "stop": 6,
+    "stop": 8,
     "placeId": "osm:relation:1907261",
     "commonsFile": "Moscow 05-2012 TretyakovGallery.jpg",
     "thumbnail": "/images/places/relation-1907261-3ed37cd3b56a.jpg",
@@ -96,7 +96,7 @@
     "modifications": "Фото уменьшено для веб; превью обрезается при показе."
   },
   {
-    "stop": 7,
+    "stop": 9,
     "placeId": "osm:way:52435420",
     "commonsFile": "Moscow, Lavrushinsky 3-8 Nov 2010 01.JPG",
     "thumbnail": "/images/places/way-52435420-040a8565b94d.jpg",
@@ -110,5 +110,21 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "retrievedAt": "2026-10-05",
     "modifications": "Фото уменьшено для веб; превью обрезается при показе."
+  },
+  {
+    "stop": 12,
+    "placeId": "osm:node:1359108784",
+    "commonsFile": "Moscow, Bolshaya Yakimanka Street (31040897071).jpg",
+    "thumbnail": "/images/places/node-1359108784-a83cddf5d9dc.jpg",
+    "src": "/images/places/node-1359108784-90b09fb4928e.jpg",
+    "width": 960,
+    "height": 640,
+    "alt": "Памятник Георгию Димитрову на гранитном постаменте в Якиманском сквере",
+    "author": "Gennady Grachev",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Bolshaya_Yakimanka_Street_(31040897071).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "retrievedAt": "2026-10-06",
+    "modifications": "Фото обрезано вокруг памятника и уменьшено для веб. Превью подготовлено отдельным широким кадром, чтобы фигура и постамент помещались в карточке."
   }
 ]

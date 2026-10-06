@@ -35,3 +35,24 @@ test("Прогулка от Третьяковской до Полянки со�
   assert.match(document.start.address, /Третьяковская/);
   assert.match(document.destination.address, /Полянка/);
 });
+
+test("Памятник Димитрову расположен между новым корпусом и храмом и имеет расширенный рассказ, фото и звук", () => {
+  const document = read("walk.json");
+  assert.deepEqual(document.stops.slice(10).map(stop => stop.storyRef.id), [
+    "osm:way:642091604", "osm:node:1359108784", "osm:relation:11661228",
+  ]);
+  const story = read("extension-stories.json").entries.find(entry => entry.placeId === "osm:node:1359108784")?.story;
+  assert.ok(story?.wordCount >= 220, "Нужен расширенный рассказ о памятнике");
+  assert.equal(story.verification, "editorial");
+  const photo = read("previews.json").find(row => row.placeId === "osm:node:1359108784");
+  assert.equal(photo?.stop, 12);
+  assert.ok(photo.author && photo.license && photo.licenseUrl);
+  assert.match(photo.sourceUrl, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+  for (const field of ["thumbnail", "src"]) {
+    assert.match(photo[field], /^\/images\/places\/node-1359108784-[a-f0-9]{12}\.jpg$/);
+    const bytes = readFileSync(new URL(`../public${photo[field]}`, new URL("../", root)));
+    assert.deepEqual([...bytes.subarray(0, 3)], [0xff, 0xd8, 0xff]);
+  }
+  const audio = read("audio-verification.json").rows.find(row => row.placeId === "osm:node:1359108784");
+  assert.ok(audio?.ready && audio.durationSec >= 90, "Расширенный рассказ должен быть озвучен");
+});

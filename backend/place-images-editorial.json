@@ -3443,5 +3443,18 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
     "retrievedAt": "2026-10-05",
     "modifications": "Размер уменьшен; превью обрезается при показе."
+  },
+  "osm:node:1359108784": {
+    "thumbnail": "/images/places/node-1359108784-a83cddf5d9dc.jpg",
+    "src": "/images/places/node-1359108784-90b09fb4928e.jpg",
+    "width": 960,
+    "height": 640,
+    "alt": "Памятник Георгию Димитрову на гранитном постаменте в Якиманском сквере",
+    "author": "Gennady Grachev",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Bolshaya_Yakimanka_Street_(31040897071).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "retrievedAt": "2026-10-06",
+    "modifications": "Фото обрезано вокруг памятника и уменьшено для веб. Превью подготовлено отдельным широким кадром, чтобы фигура и постамент помещались в карточке."
   }
 }

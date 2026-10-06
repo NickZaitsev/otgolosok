@@ -1,8 +1,8 @@
 {
-  "verifiedAt": "2026-10-05",
-  "photosReady": 7,
-  "filesVerified": 14,
-  "audioReady": 7,
+  "verifiedAt": "2026-10-06",
+  "photosReady": 8,
+  "filesVerified": 16,
+  "audioReady": 13,
   "places": [
     {
       "placeId": "osm:node:8044478986",
@@ -59,6 +59,14 @@
         "src": "844443177bb9f8326467e233ad85641a9585a762aaa860b7ade1508c8bbbf50a"
       },
       "photoMatched": true
+    },
+    {
+      "placeId": "osm:node:1359108784",
+      "files": {
+        "thumbnail": "a83cddf5d9dc3ea37d18e4296c1f2037d80aa76f835cf4d8152bd96110131f68",
+        "src": "90b09fb4928e66951e5efa700d2e549cccfe1072aed91f2cac063f532772a4a2"
+      },
+      "photoMatched": true
     }
   ],
   "browser": {
@@ -71,6 +79,8 @@
     "creditsAndLicenseLinksChecked": 7,
     "photoErrors": 0,
     "geolocationUnavailable": true,
-    "shmelevCropRechecked": true
+    "shmelevCropRechecked": true,
+    "dimitrovPhotoLoaded": true,
+    "dimitrovCreditAndLicenseChecked": true
   }
 }

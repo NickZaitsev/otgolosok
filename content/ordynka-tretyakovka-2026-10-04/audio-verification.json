@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-10-06T15:24:19.263922+00:00",
+  "verifiedAt": "2026-10-06T15:42:33.716966+00:00",
   "shareUrl": "https://otgolosok.online/walk?share=6cacfdd1-defd-4afb-940f-5085356d0315",
   "voiceName": "Отголосок2",
   "voiceId": "9ivxhQ6xIsHd6R3Xc635",
@@ -8,11 +8,11 @@
     "eleven_v3",
     "eleven_v4"
   ],
-  "ready": 12,
-  "total": 12,
-  "durationSec": 932.832,
-  "measuredDurationSec": 932.16,
-  "durationMinutes": 15.54,
+  "ready": 13,
+  "total": 13,
+  "durationSec": 1071.216,
+  "measuredDurationSec": 1070.48,
+  "durationMinutes": 17.84,
   "checks": {
     "storiesMatchBundle": true,
     "originalSevenAudioPreserved": true,
@@ -22,7 +22,9 @@
     "minimumTenStops": true,
     "minimumFifteenMinutes": true,
     "fieldChecked": false,
-    "publicWalkAudioReady": 12
+    "originalTwelveAudioPreserved": true,
+    "publicWalkAudioReady": 13,
+    "mobileDimitrovPlayback": true
   },
   "rows": [
     {
@@ -178,6 +180,20 @@
       "provider": "elevenlabs",
       "synthetic": true,
       "measuredDurationSec": 53.84
+    },
+    {
+      "placeId": "osm:node:1359108784",
+      "textId": "39127309-d5f0-46b7-87b8-0a5b4742e445",
+      "ready": true,
+      "url": "/api/story-audio/f641e1269d0a9032787a777df70a80f512a7fe79da785455f267f460525ffefc.mp3",
+      "sha256": "f641e1269d0a9032787a777df70a80f512a7fe79da785455f267f460525ffefc",
+      "bytes": 1107309,
+      "durationSec": 138.384,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true,
+      "measuredDurationSec": 138.32
     },
     {
       "placeId": "osm:relation:11661228",

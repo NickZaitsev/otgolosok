@@ -2,27 +2,31 @@
   "owner": "promo-walks",
   "id": "b7e15c0d-3840-49ba-9f5e-44acb654e6fc",
   "title": "Вокруг Третьяковки: искусство в жилом квартале",
-  "revision": 5,
+  "revision": 7,
   "shareUrl": "https://otgolosok.online/walk?share=6cacfdd1-defd-4afb-940f-5085356d0315",
-  "stops": 12,
-  "distanceM": 2243,
-  "walkingMinutes": 29,
+  "stops": 13,
+  "distanceM": 2371,
+  "walkingMinutes": 31,
   "checks": {
     "productionDryRunRollback": true,
     "backupBeforeApply": true,
-    "publishedStoriesMatched": 12,
+    "publishedStoriesMatched": 13,
     "listedInTop": true,
     "mobileStopsAndSources": 7,
     "fieldChecked": false,
-    "audioReady": 12,
+    "audioReady": 13,
     "metroEndpointsVerified": true,
-    "maxStopOffsetM": 6.0,
+    "maxStopOffsetM": 6.86,
     "fullProjectCheck": true,
     "originalSevenAudioPreserved": true,
     "minimumTenStops": true,
-    "minimumFifteenMinutes": true
+    "minimumFifteenMinutes": true,
+    "originalTwelveAudioPreserved": true,
+    "addedPreviewVerified": true,
+    "mobileDimitrovPlayback": true,
+    "mobileThirteenStops": true
   },
-  "recordedAt": "2026-10-06T15:26:16.837947+00:00",
+  "recordedAt": "2026-10-06T15:48:15.974451+00:00",
   "start": {
     "address": "Москва, метро «Третьяковская», выход на Большую Ордынку",
     "location": {
@@ -37,5 +41,5 @@
       "lon": 37.6186837
     }
   },
-  "audioDurationSec": 932.832
+  "audioDurationSec": 1071.216
 }
