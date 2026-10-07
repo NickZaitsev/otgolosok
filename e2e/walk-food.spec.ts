@@ -240,3 +240,24 @@ test("без геометрии функция отсутствует", async ({
   await expect(page.getByRole("button", { name: "Начать прогулку", exact: true })).toBeDisabled();
   await expect(foodButton(page)).toHaveCount(0);
 });
+
+// В боковой колонке низкого экрана список кафе прокручивает не свой ящик, а панель. Карточка, открытая
+// из прокрученного списка, должна начинаться с названия и «Назад к списку», а не с середины.
+test("карточка из прокрученного списка открывается с начала на 568×320", async ({ page }) => {
+  await page.setViewportSize({ width: 568, height: 320 });
+  await open(page);
+  await foodButton(page).click();
+  await expect(row(page, places[3].name)).toBeAttached();
+  await row(page, places[3].name).scrollIntoViewIfNeeded();
+  const scrolled = await drawer(page).evaluate(el => {
+    let node: Element | null = el;
+    let total = 0;
+    while (node) { total += node.scrollTop; node = node.parentElement; }
+    return total;
+  });
+  expect(scrolled, "список должен быть прокручен, иначе тест ничего не проверяет").toBeGreaterThan(0);
+  await row(page, places[3].name).click();
+  const card = page.getByRole("region", { name: "Заведение", exact: true });
+  await expect(card.getByRole("heading", { name: places[3].name })).toBeInViewport({ ratio: 1 });
+  await expect(card.getByRole("button", { name: "Назад к списку" })).toBeInViewport({ ratio: 1 });
+});

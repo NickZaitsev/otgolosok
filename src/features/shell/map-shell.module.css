@@ -140,6 +140,13 @@
     --sheet-pad: 0.75rem;
     --sheet-gap: 0.5rem;
     --text-sheet-title: var(--text-body);
+
+    /* The narrow side column cannot fit a second scroller between header and pinned footer:
+       the parts of a sheet that would scroll on their own stay in the flow, and the sheet scrolls whole. */
+    --sheet-part-flex: none;
+    --sheet-part-max: none;
+    --sheet-part-overflow: visible;
+    --sheet-part-gutter: 0px;
   }
 }
 

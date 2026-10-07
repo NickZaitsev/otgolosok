@@ -136,7 +136,19 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   useEffect(() => () => addController.current?.abort(), []);
   const foodButton = geometry.length > 1 && food.manifest && !food.unavailable ? <button type="button" className={foodStyles.button} aria-label="Поесть рядом" aria-expanded={foodVisible} onClick={() => { setSelectedFood(null); setFoodStatus(""); setDrawer(foodVisible ? null : "food"); }}><ExploreIcon name="cup" /></button> : null;
   const [foodFit, setFoodFit] = useState<MapFitTarget | null>(null);
-  useLayoutEffect(() => { if (drawer === "food" && drawerRef.current) drawerRef.current.scrollTop = 0; }, [drawer, selectedFood?.id]);
+  useLayoutEffect(() => {
+    const element = drawerRef.current;
+    if (drawer !== "food" || !element) return;
+    element.scrollTop = 0;
+    // In the side column of a low screen the drawer does not scroll itself (walk-session.css): its scrolling
+    // ancestors may be left past its top, so a card opened from a scrolled list would start mid-way.
+    for (let node = element.parentElement; node; node = node.parentElement) {
+      const { overflowY } = getComputedStyle(node);
+      if (overflowY !== "auto" && overflowY !== "scroll") continue;
+      const above = element.getBoundingClientRect().top - node.getBoundingClientRect().top;
+      if (above < 0) node.scrollTop += above;
+    }
+  }, [drawer, selectedFood?.id]);
   const foodManifestError = geometry.length > 1 && food.error && !food.manifest && !food.unavailable;
   const vertexDistances = useMemo(() => routeVertexDistances(geometry), [geometry]);
   const items = useMemo(() => [

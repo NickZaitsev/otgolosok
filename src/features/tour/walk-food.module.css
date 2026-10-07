@@ -46,12 +46,13 @@
   display: contents;
 }
 
+/* In the side column of a low phone map-shell keeps this in the flow (--sheet-part-*): the panel scrolls whole. */
 .bodyScrollable {
   display: flex;
-  flex: 0 1 auto;
+  flex: var(--sheet-part-flex, 0 1 auto);
   flex-direction: column;
   min-height: 0;
-  overflow-y: auto;
+  overflow-y: var(--sheet-part-overflow, auto);
   overscroll-behavior: contain;
 }
 
