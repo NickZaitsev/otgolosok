@@ -11,18 +11,18 @@
 .walk-session-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .walk-session-heading>div{min-width:0}
 .walk-session-heading h1{font-family:inherit;font-size:22px;font-weight:700;line-height:1.25;letter-spacing:-.03em;margin:4px 0 0;overflow-wrap:anywhere}
-.walk-session-meta,.walk-session-muted{font-size:13px;line-height:1.4;color:#687770;margin:0}
+.walk-session-meta,.walk-session-muted{font-size:13px;line-height:1.4;color:var(--map-muted);margin:0}
 .walk-session-muted{margin-top:10px}
 .walk-session-heading-actions{display:flex;flex:none;gap:8px}
 .walk-session-icon{flex:none;width:var(--control-min);height:var(--control-min);display:grid;place-items:center;border:0;border-radius:50%;color:inherit;background:#203e380a;cursor:pointer}
-.walk-session-address{font-size:14px;line-height:1.5;margin:0 0 8px;color:#687770;overflow-wrap:anywhere}
+.walk-session-address{font-size:14px;line-height:1.5;margin:0 0 8px;color:var(--map-muted);overflow-wrap:anywhere}
 .walk-session-tools{display:flex;align-items:center;flex-wrap:wrap;gap:0 16px}
 .walk-session-tools:has(button,a){margin-top:12px}
 .walk-session-tools a{display:flex;align-items:center;min-height:var(--control-min);color:inherit;font-size:14px;text-underline-offset:4px}
 .walk-session-tools button{display:flex;align-items:center;gap:6px;min-height:var(--control-min);padding:0;border:0;background:none;color:inherit;font:inherit;font-size:14px;cursor:pointer}
 .walk-session-tools svg{width:18px;height:18px}
 .walk-session-tools [aria-expanded=true]{text-decoration:underline;text-underline-offset:4px}
-.walk-session-tools .walk-session-position{color:#775130}
+.walk-session-tools .walk-session-position{color:var(--warning-ink)}
 /* One row of round 50 px icons and the main action. The action never breaks its label: when the row is too narrow for it, it takes a row of its own (flex-wrap). */
 .walk-session-actions{--walk-action:var(--control-primary-min);display:flex;flex:none;flex-wrap:wrap;gap:10px;margin-top:16px}
 /* When the panel has to scroll as a last resort (a landscape phone), the actions stay pinned to its bottom;
@@ -39,7 +39,7 @@
 @container (width < 360px){.walk-session-actions .walk-session-primary svg{display:none}}
 .walk-session-drawer{flex:0 1 auto;min-height:64px;margin-top:12px;border-top:1px solid #203e3818;padding-top:12px;max-height:26dvh;overflow-y:auto;overscroll-behavior:contain;font-size:15px;line-height:1.6}
 .walk-session-stops{margin:0;padding:0;list-style:none}
-.walk-session-endpoint{margin:0;padding:4px 8px;font-size:14px;line-height:1.4;color:#687770;overflow-wrap:anywhere}
+.walk-session-endpoint{margin:0;padding:4px 8px;font-size:14px;line-height:1.4;color:var(--map-muted);overflow-wrap:anywhere}
 .walk-session-stops+.walk-session-endpoint,.walk-session-drawer .walk-session-offline{margin-top:4px}
 .walk-session-stops button,.walk-session-stops p{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;padding:8px;border:0;border-radius:12px;background:none;text-align:left;color:inherit;font:inherit;margin:0}
 .walk-session-stops button{cursor:pointer}
@@ -60,11 +60,11 @@
 .walk-session-rating:hover{text-decoration-color:currentColor}
 .walk-session-rate{display:flex;align-items:center;min-height:44px;margin-top:8px;padding:0;border:0;background:none;color:inherit;font:inherit;font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .walk-session-stops span{flex:none;color:#b64b28;font-weight:700}
-.walk-session-notice{margin:10px 0 0;font-size:13px;line-height:1.4;color:#775130}
+.walk-session-notice{margin:10px 0 0;font-size:13px;line-height:1.4;color:var(--warning-ink)}
 .walk-session-settings,.walk-session-offline{display:grid;gap:12px}
 .walk-session-settings label{display:grid;gap:6px;font-size:14px}
 /* 16 px: on a smaller font Safari on iPhone zooms the page into the focused field. */
-.walk-session-settings select{width:100%;min-height:var(--field-min);padding:0 12px;border:1px solid #203e3828;border-radius:12px;background:#fffefa;color:inherit;font:inherit;font-size:16px;font-weight:400;line-height:1.4}
+.walk-session-settings select{width:100%;min-height:var(--field-min);padding:0 12px;border:1px solid #203e3828;border-radius:12px;background:var(--field-surface);color:inherit;font:inherit;font-size:16px;font-weight:400;line-height:1.4}
 .walk-session-settings button,.walk-session-offline button{min-height:var(--control-min);border:0;background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}
 .walk-session :is(button,a,select,input):focus-visible{outline:3px solid #246b90;outline-offset:3px}
 .walk-session .story-text p{font-size:15px;line-height:1.65;margin-bottom:12px}
