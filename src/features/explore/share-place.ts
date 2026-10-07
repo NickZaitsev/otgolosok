@@ -20,8 +20,8 @@ export function browserShareEnvironment(): ShareEnvironment {
  * The system share sheet where there is one (phones), else the clipboard. A sheet the user closed is not a failure;
  * any other refusal (no user activation, an unsupported payload) falls back to copying the link.
  */
-export async function sharePlace({ title, url }: { title: string; url: string }, env: ShareEnvironment): Promise<ShareOutcome> {
-  const data: ShareData = { title, text: `${title} — история в «Отголоске»`, url };
+export async function sharePlace({ title, url }: { title: string; url: string }, env: ShareEnvironment, locale: Locale = "ru"): Promise<ShareOutcome> {
+  const data: ShareData = { title, text: translate(locale, "{title} — история в «Отголоске»", { title }), url };
   if (env.share && env.canShare?.(data) !== false) {
     try {
       await env.share(data);
@@ -38,3 +38,5 @@ export async function sharePlace({ title, url }: { title: string; url: string },
     return "manual";
   }
 }
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/translate";

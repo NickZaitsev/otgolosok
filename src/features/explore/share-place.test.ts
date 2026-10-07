@@ -24,3 +24,9 @@ it("shares the title in the text and the shared link as the URL", async () => {
   await sharePlace(place, { share });
   expect(share).toHaveBeenCalledWith({ title: "Дом Пашкова", text: "Дом Пашкова — история в «Отголоске»", url: place.url });
 });
+
+it("localizes the share text while preserving the story title", async () => {
+  const share = vi.fn(async (data: ShareData) => { void data; });
+  await sharePlace(place, { share }, "zh");
+  expect(share).toHaveBeenCalledWith({ title: "Дом Пашкова", text: "Дом Пашкова — Otgolosok 上的故事", url: place.url });
+});

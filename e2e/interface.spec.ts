@@ -644,7 +644,7 @@ test("кнопка «Моё местоположение» объясняет з
 });
 
 for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1280, height: 800 }]) {
-  test(`шапка карты в одну строку с кнопками карты на ${viewport.width}×${viewport.height}`, async ({ page }) => {
+  test(`шапка карты и кнопки помещаются без обрезания на ${viewport.width}×${viewport.height}`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await mockMapCatalog(page, []);
     await page.goto("/");
@@ -654,13 +654,16 @@ for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }
     const head = (await header.boundingBox())!;
     for (const name of ["Моё местоположение", "Отдалить", "Приблизить"]) {
       const control = (await page.getByRole("button", { name, exact: true }).boundingBox())!;
-      expect(Math.abs(control.y - head.y), name).toBeLessThanOrEqual(1);
+      const sameRow = Math.abs(control.y - head.y) <= 1;
+      if (viewport.width === 1280) expect(sameRow, name).toBe(true);
+      expect(sameRow ? control.x >= head.x + head.width : control.y >= head.y + head.height + 7, `${name} не перекрывает шапку`).toBe(true);
       expect(Math.abs(control.height - head.height), name).toBeLessThanOrEqual(1);
-      expect(control.x, `${name} правее шапки`).toBeGreaterThanOrEqual(head.x + head.width);
+      expect(control.x + control.width, `${name} внутри экрана`).toBeLessThanOrEqual(viewport.width);
     }
     const link = (await header.getByRole("link").boundingBox())!;
     expect(head.width - link.width, "остров шапки по ширине логотипа").toBeLessThanOrEqual(34);
     const mark = header.locator(".brand-mark");
     expect(await mark.evaluate(element => element.scrollWidth <= element.parentElement!.clientWidth), "логотип не обрезан").toBe(true);
+    await expect(page.getByRole("combobox", { name: "Язык интерфейса" })).toBeVisible();
   });
 }

@@ -15,9 +15,11 @@ import { useGrantedPosition, useNearbyWalks } from "./use-nearby-walks";
 import { describeLocateError, locateOnce } from "@/lib/position/locate";
 import { Sheet } from "../shell/sheet";
 import styles from "./walk-creation-panel.module.css";
+import { useI18n } from "@/lib/i18n/provider";
 
 export type CreationMap = { items: MapItem[]; geometry?: Coordinates[]; tunnels?: Array<[number, number]>; focus: Coordinates | null; picking: boolean };
 export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => void; onMap: (value: CreationMap) => void; picked: Coordinates | null }) {
+  const { path, t } = useI18n();
   const w = useWalkDraft();
   const [state, dispatch] = useReducer(creationReducer, { step: "location", picking: false });
   const [chosenMode, setMode] = useState<"destination" | "time" | null>(null);
@@ -48,12 +50,12 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     // As in the walk session: the start and the finish are rings, stops are numbered like the stop list.
     const start = w.draft.start, stops = w.draft.stops, destination = w.draft.destination;
     const items: MapItem[] = [
-      ...(start ? [{ id: "creation-start", title: `Старт: ${start.address}`, location: start.location, endpoint: true }] : []),
-      ...stops.map((p, i) => ({ id: `creation-stop-${i}`, title: `Остановка ${i + 1}: ${p.address}`, location: p.location, number: i + 1 })),
-      ...(destination ? [{ id: "creation-finish", title: `Финиш: ${destination.address}`, location: destination.location, endpoint: true }] : []),
+      ...(start ? [{ id: "creation-start", title: t("Старт: {address}", { address: start.address }), location: start.location, endpoint: true }] : []),
+      ...stops.map((p, i) => ({ id: `creation-stop-${i}`, title: t("Остановка {number}: {address}", { number: i + 1, address: p.address }), location: p.location, number: i + 1 })),
+      ...(destination ? [{ id: "creation-finish", title: t("Финиш: {address}", { address: destination.address }), location: destination.location, endpoint: true }] : []),
     ];
     onMap({ items, geometry: w.draft.route?.geometry, tunnels: w.draft.route?.tunnels, focus: w.focus, picking: state.picking });
-  }, [w.draft.start, w.draft.stops, w.draft.destination, w.draft.route, w.focus, state.picking, onMap]);
+  }, [w.draft.start, w.draft.stops, w.draft.destination, w.draft.route, w.focus, state.picking, onMap, t]);
 
   // Адрес ищем один раз — по итоговой, самой точной точке.
   function locate() {
@@ -62,7 +64,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     locating.current = locateOnce(update => {
       if (update.type === "fix" && !update.final) return;
       locating.current = null; setGeoBusy(false);
-      if (update.type === "error") { w.setError(`${describeLocateError(update.code)} Выберите точку на карте или введите адрес.`); return; }
+      if (update.type === "error") { w.setError(`${t(describeLocateError(update.code))} ${t("Выберите точку на карте или введите адрес.")}`); return; }
       void w.resolve({ lat: update.fix.lat, lon: update.fix.lon });
     });
   }
@@ -84,7 +86,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     else if (target === "destination") w.edit({ destination: place, mode: "open" });
     else {
       const stops = [...w.draft.stops, place];
-      if (!validStops(w.draft.start, stops, w.draft.destination)) { w.setError("Эту остановку нельзя добавить: проверьте расстояние и число остановок."); return; }
+      if (!validStops(w.draft.start, stops, w.draft.destination)) { w.setError(t("Эту остановку нельзя добавить: проверьте расстояние и число остановок.")); return; }
       w.edit({ stops });
     }
     w.setCandidate(null); setPicker(null);
@@ -95,45 +97,45 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     w.setCandidate(null); w.setQuery(""); w.setError(""); setPicker(null);
     requestAnimationFrame(() => panel.current?.querySelector<HTMLButtonElement>(`[data-endpoint="${w.target}"]`)?.focus());
   }
-  const inlineAddress = <AddressInput onCancel={cancelAddress} disabled={busy} key={w.target} label={w.target === "start" ? "Откуда" : w.target === "destination" ? "Куда" : "Остановка"} initialValue={w.target === "start" ? w.draft.start?.address : w.target === "destination" ? w.draft.destination?.address : ""} onResolve={async query => { const place = await w.resolve(query); if (place) selectAddress(place); }} />;
+  const inlineAddress = <AddressInput onCancel={cancelAddress} disabled={busy} key={w.target} label={t(w.target === "start" ? "Откуда" : w.target === "destination" ? "Куда" : "Остановка")} initialValue={w.target === "start" ? w.draft.start?.address : w.target === "destination" ? w.draft.destination?.address : ""} onResolve={async query => { const place = await w.resolve(query); if (place) selectAddress(place); }} />;
   const addressPicker = picker && (picker !== "address" || w.candidate) && <div id="creation-picker" className={styles.picker}>
             {picker === "choices" && <div className={styles.options}>
-              <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker("address"); }}>Ввести адрес</button>
-              <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker(null); dispatch({ type: "pick" }); }}>Выбрать на карте</button>
-              {w.target === "destination" ? <button onClick={() => { if (mode !== "time") changeMode("time"); setPicker("time"); }}>По времени</button> : <button onClick={() => { setPicker("address"); locate(); }}>Моё местоположение</button>}
+              <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker("address"); }}>{t("Ввести адрес")}</button>
+              <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker(null); dispatch({ type: "pick" }); }}>{t("Выбрать на карте")}</button>
+              {w.target === "destination" ? <button onClick={() => { if (mode !== "time") changeMode("time"); setPicker("time"); }}>{t("По времени")}</button> : <button onClick={() => { setPicker("address"); locate(); }}>{t("Моё местоположение")}</button>}
             </div>}
 
-            {w.candidate && <div className={styles.candidate}><p>{w.candidate.address}</p><button className="ui-button" onClick={() => { w.confirmPlace(); setPicker(null); }}>Выбрать эту точку</button></div>}
-            {picker === "time" && <><fieldset className={styles.time} disabled={busy}><legend>Время пешком</legend><div>{([30, 60, 90] as const).map(minutes => <button type="button" key={minutes} aria-pressed={w.draft.minutes === minutes} onClick={() => w.edit({ minutes })}>{minutes} мин</button>)}</div></fieldset><label className={styles.switch}><span>Вернуться к началу</span><input type="checkbox" checked={w.draft.mode === "loop"} onChange={e => w.edit({ mode: e.target.checked ? "loop" : "open" })} /></label></>}
+            {w.candidate && <div className={styles.candidate}><p>{w.candidate.address}</p><button className="ui-button" onClick={() => { w.confirmPlace(); setPicker(null); }}>{t("Выбрать эту точку")}</button></div>}
+            {picker === "time" && <><fieldset className={styles.time} disabled={busy}><legend>{t("Время пешком")}</legend><div>{([30, 60, 90] as const).map(minutes => <button type="button" key={minutes} aria-pressed={w.draft.minutes === minutes} onClick={() => w.edit({ minutes })}>{t("{minutes} мин", { minutes })}</button>)}</div></fieldset><label className={styles.switch}><span>{t("Вернуться к началу")}</span><input type="checkbox" checked={w.draft.mode === "loop"} onChange={e => w.edit({ mode: e.target.checked ? "loop" : "open" })} /></label></>}
           </div>;
   const step = state.picking ? "picking" : "form";
-  const footer = w.loaded && built && w.openHref ? <button className={`ui-button ${styles.footerAction}`} disabled={busy || !!w.storageError} onClick={() => void w.openWalk()}>Открыть прогулку</button>
+  const footer = w.loaded && built && w.openHref ? <button className={`ui-button ${styles.footerAction}`} disabled={busy || !!w.storageError} onClick={() => void w.openWalk()}>{t("Открыть прогулку")}</button>
     : w.loaded && !built && !state.picking && w.draft.start && (mode === "time" || w.draft.destination)
-      ? <button className={`ui-button ${styles.footerAction}`} disabled={busy || !w.draft.start || (mode === "destination" && !w.draft.destination) || !!w.candidate || !!w.storageError} onClick={() => void build()}>Построить прогулку</button>
+      ? <button className={`ui-button ${styles.footerAction}`} disabled={busy || !w.draft.start || (mode === "destination" && !w.draft.destination) || !!w.candidate || !!w.storageError} onClick={() => void build()}>{t("Построить прогулку")}</button>
       : null;
 
   return <Sheet name="creation" state={step} labelledBy="creation-title" sheetRef={panel} className={styles.panel}
-    header={<div className={styles.heading}><h1 id="creation-title" className={styles.title} ref={title} tabIndex={-1}>{state.picking ? "Куда идём?" : "Прогулка"}</h1><button type="button" className={styles.close} onClick={onClose} aria-label="Закрыть создание прогулки"><ExploreIcon name="close" /></button></div>}
+    header={<div className={styles.heading}><h1 id="creation-title" className={styles.title} ref={title} tabIndex={-1}>{t(state.picking ? "Куда идём?" : "Прогулка")}</h1><button type="button" className={styles.close} onClick={onClose} aria-label={t("Закрыть создание прогулки")}><ExploreIcon name="close" /></button></div>}
     footer={footer}>
-      {!w.loaded ? <p role="status">Открываем черновик…</p> : <>
+      {!w.loaded ? <p role="status">{t("Открываем черновик…")}</p> : <>
         {!state.picking && <>
           <div className={styles.endpoints} data-creation="endpoints">
-            {(["start", "destination"] as const).map(target => <div className={styles.endpoint} key={target}>{w.target === target && picker === "address" ? inlineAddress : <button data-endpoint={target} aria-label={target === "start" ? "Откуда" : "Куда"} aria-expanded={w.target === target && picker !== null} aria-controls="creation-picker" disabled={busy} onClick={() => { w.setTarget(target); w.setCandidate(null); w.setQuery(""); setPicker(w.target === target && picker ? null : "choices"); }}><span><small>{target === "start" ? "Откуда" : "Куда"}</small><strong>{target === "start" ? w.draft.start?.address ?? "Выберите начало" : mode === "time" ? `${w.draft.minutes} мин пешком${w.draft.mode === "loop" ? " · с возвращением" : ""}` : w.draft.destination?.address ?? "Выберите место или время"}</strong></span><svg className={styles.chevron} aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg></button>}{w.target === target && addressPicker}</div>)}
+            {(["start", "destination"] as const).map(target => <div className={styles.endpoint} key={target}>{w.target === target && picker === "address" ? inlineAddress : <button data-endpoint={target} aria-label={t(target === "start" ? "Откуда" : "Куда")} aria-expanded={w.target === target && picker !== null} aria-controls="creation-picker" disabled={busy} onClick={() => { w.setTarget(target); w.setCandidate(null); w.setQuery(""); setPicker(w.target === target && picker ? null : "choices"); }}><span><small>{t(target === "start" ? "Откуда" : "Куда")}</small><strong>{target === "start" ? w.draft.start?.address ?? t("Выберите начало") : mode === "time" ? t(w.draft.mode === "loop" ? "{minutes} мин пешком · с возвращением" : "{minutes} мин пешком", { minutes: w.draft.minutes }) : w.draft.destination?.address ?? t("Выберите место или время")}</strong></span><svg className={styles.chevron} aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg></button>}{w.target === target && addressPicker}</div>)}
           </div>
         </>}
-        {state.picking && <div className={styles.mapPick}><p>Нажмите на карту в нужном месте.</p><button className="ui-button quiet" onClick={() => dispatch({ type: "return" })}>Отменить</button></div>}
-        {built && w.draft.stops.length > 0 && <details className={styles.details}><summary>Остановки · {w.draft.stops.length}</summary><ol className={styles.stops} data-creation="stops">{w.draft.stops.map((stop, i) => <li key={`${stop.address}-${i}`}>{stop.address}</li>)}</ol>
-          {w.nextPlace && <label className={styles.consent}><input type="checkbox" checked={w.reviewed} onChange={e => w.setReviewed(e.target.checked)} />Подготовить историю выбранной остановки с помощью ИИ. Факты будут проверены по источникам.</label>}
-          {w.nextPlace && <button className="ui-button secondary" disabled={busy || !w.reviewed || !!w.activeJob || !!w.draft.submitting || !!w.storageError} onClick={() => void w.prepareNext()}>Подготовить историю</button>}
-          {w.draft.jobs.length > 0 && <div className={styles.jobs}>{w.draft.jobs.map(job => <Link key={job.id} href={`/?job=${job.id}`}>История: {job.place.address} →</Link>)}</div>}
+        {state.picking && <div className={styles.mapPick}><p>{t("Нажмите на карту в нужном месте.")}</p><button className="ui-button quiet" onClick={() => dispatch({ type: "return" })}>{t("Отменить")}</button></div>}
+        {built && w.draft.stops.length > 0 && <details className={styles.details}><summary>{t("Остановки · {count}", { count: w.draft.stops.length })}</summary><ol className={styles.stops} data-creation="stops">{w.draft.stops.map((stop, i) => <li key={`${stop.address}-${i}`}>{stop.address}</li>)}</ol>
+          {w.nextPlace && <label className={styles.consent}><input type="checkbox" checked={w.reviewed} onChange={e => w.setReviewed(e.target.checked)} />{t("Подготовить историю выбранной остановки с помощью ИИ. Факты будут проверены по источникам.")}</label>}
+          {w.nextPlace && <button className="ui-button secondary" disabled={busy || !w.reviewed || !!w.activeJob || !!w.draft.submitting || !!w.storageError} onClick={() => void w.prepareNext()}>{t("Подготовить историю")}</button>}
+          {w.draft.jobs.length > 0 && <div className={styles.jobs}>{w.draft.jobs.map(job => <Link key={job.id} href={path(`/?job=${job.id}`)}>{t("История: {address} →", { address: job.place.address })}</Link>)}</div>}
         </details>}
         <ResearchPanel draft={w.draft} current={w.current} persist={w.persist} offered={w.researchOffered} disabled={busy || !!w.storageError} chooseStartDisabled={busy} action={w.action} setBusy={w.setBusy} onApply={() => void w.openWalk()} onChooseStart={() => { w.setTarget("start"); w.edit({}); }} />
-        {w.draft.submitting && <div className="ui-notice"><p>Результат отправки неизвестен. Введите ID истории из раздела запросов профиля.</p><label className="ui-field">ID истории<input value={w.recoveryId} onChange={e => w.setRecoveryId(e.target.value)} /></label><button className="ui-button secondary" onClick={() => void w.recoverJob()}>Восстановить</button></div>}
+        {w.draft.submitting && <div className="ui-notice"><p>{t("Результат отправки неизвестен. Введите ID истории из раздела запросов профиля.")}</p><label className="ui-field">{t("ID истории")}<input value={w.recoveryId} onChange={e => w.setRecoveryId(e.target.value)} /></label><button className="ui-button secondary" onClick={() => void w.recoverJob()}>{t("Восстановить")}</button></div>}
         {!state.picking && !picker && nearby.length > 0 && <NearbyWalks walks={nearby} origin={nearbyOrigin} />}
       </>}
-      {w.storageError && <div role="alert" className="ui-notice">{w.storageError}<button className={styles.textButton} onClick={w.download}>Скачать черновик</button></div>}
+      {w.storageError && <div role="alert" className="ui-notice">{w.storageError}<button className={styles.textButton} onClick={w.download}>{t("Скачать черновик")}</button></div>}
       {w.error && <p className="ui-notice" role="alert">{w.error}</p>}
       {w.message && <p className="ui-notice" role="status">{w.message}</p>}
-      {busy && <p role="status" className="ui-muted">{w.busy || "Определяем местоположение…"}</p>}
+      {busy && <p role="status" className="ui-muted">{w.busy || t("Определяем местоположение…")}</p>}
   </Sheet>;
 }

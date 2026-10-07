@@ -78,3 +78,9 @@ compose.override.yaml
 
 # Local design-system audit scratch (screenshots, reports)
 /.audit/
+
+# Локальный кеш Vitest
+/.vitest/
+
+# Артефакты проверки статического экспорта
+/test-results-static/

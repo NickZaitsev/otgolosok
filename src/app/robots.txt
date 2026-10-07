@@ -4,3 +4,8 @@ Disallow: /admin
 Disallow: /account
 Disallow: /login
 Disallow: /api/
+
+Disallow: /en/account
+Disallow: /en/login
+Disallow: /zh/account
+Disallow: /zh/login

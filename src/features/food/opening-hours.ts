@@ -97,12 +97,16 @@ export function parsedOpeningHoursStatus(parsed: ParsedHours | null, value: stri
   }
   return { state: "closed", holidayCaveat };
 }
-export function formatHoursStatus(status: HoursStatus): string {
-  if (status.state === "unknown") return "Часы не указаны";
-  if (status.state === "open") return status.roundTheClock ? "Открыто круглосуточно" : status.until === "00:00" ? "Открыто до полуночи" : `Открыто до ${status.until}`;
-  if (!status.opensAt) return "Закрыто";
+export function formatHoursStatus(status: HoursStatus, locale: Locale = "ru"): string {
+  if (status.state === "unknown") return translate(locale, "Часы не указаны");
+  if (status.state === "open") return status.roundTheClock ? translate(locale, "Открыто круглосуточно") : status.until === "00:00" ? translate(locale, "Открыто до полуночи") : translate(locale, "Открыто до {time}", { time: status.until! });
+  if (!status.opensAt) return translate(locale, "Закрыто");
   const { day, time, daysAhead } = status.opensAt;
   const at = time.replace(/^0(?=\d)/, "");
-  return `Закрыто, откроется ${daysAhead === 0 ? `в ${at}` : daysAhead === 1 ? `завтра в ${at}` : `в ${day} ${at}`}`;
+  if (daysAhead === 0) return translate(locale, "Закрыто, откроется в {time}", { time: at });
+  if (daysAhead === 1) return translate(locale, "Закрыто, откроется завтра в {time}", { time: at });
+  return translate(locale, "Закрыто, откроется в {day} {time}", { day: translate(locale, day), time: at });
 }
-export const formatHolidayCaveat = (status: HoursStatus) => status.holidayCaveat ? "В праздники часы работы могут отличаться" : null;
+export const formatHolidayCaveat = (status: HoursStatus, locale: Locale = "ru") => status.holidayCaveat ? translate(locale, "В праздники часы работы могут отличаться") : null;
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/translate";

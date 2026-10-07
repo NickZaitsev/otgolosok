@@ -1,3 +1,6 @@
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/translate";
+
 export type GenerationStage = "queued" | "researching" | "verifying" | "writing" | "voicing" | "ready" | "insufficient_evidence" | "review_required" | "failed";
 export type GeneratedStory = {
   title: string; address: string; wordCount: number; verification: "automatic" | "editorial";
@@ -19,3 +22,5 @@ export const stageLabels: Record<GenerationStage,string> = {
   queued:"Ждём своей очереди",researching:"Ищем источники",verifying:"Проверяем факты",writing:"Готовим рассказ",voicing:"Озвучиваем",ready:"История готова",
   insufficient_evidence:"Не хватило подтверждений",review_required:"Нужна проверка редактора",failed:"Подготовка прервалась",
 };
+
+export const stageLabel = (stage: GenerationStage, locale: Locale = "ru") => translate(locale, stageLabels[stage]);

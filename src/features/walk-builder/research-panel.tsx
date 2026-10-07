@@ -6,6 +6,7 @@ import { applyResearch, readResearchJob, researchKey, researchLookup, researchMa
 import { request, RequestError } from "./request";
 import { toUserMessage } from "@/lib/errors/user-message";
 import styles from "./walk-creation-panel.module.css";
+import { useI18n } from "@/lib/i18n/provider";
 
 const phases = { discovery: "Ищем адреса поблизости", research: "Проверяем источники об адресах", routing: "Соединяем подтверждённые остановки", narration: "Готовим тексты и аудио", complete: "Прогулка готова" };
 
@@ -14,6 +15,7 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
   offered: boolean; disabled: boolean; chooseStartDisabled: boolean; action: RefObject<AbortController | null>;
   setBusy: (value: string) => void; onApply: () => void; onChooseStart: () => void;
 }) {
+  const { locale, t } = useI18n();
   const [job, setJob] = useState<ResearchJob | null>(null);
   const [error, setError] = useState("");
   const [missing, setMissing] = useState(false);
@@ -52,10 +54,10 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
         if (controller.signal.aborted) return;
         if (caught instanceof RequestError && caught.code === "NOT_FOUND") {
           setJob(null);
-          setMissing(true); setError(expected.id ? "Сохранённая задача не найдена. Её ID остаётся в черновике." : "Сервер не нашёл задачу для сохранённой отправки. Можно явно попробовать снова.");
+          setMissing(true); setError(t(expected.id ? "Сохранённая задача не найдена. Её ID остаётся в черновике." : "Сервер не нашёл задачу для сохранённой отправки. Можно явно попробовать снова."));
           return;
         }
-        setError(`${toUserMessage(caught, "Связь прервалась.")} Продолжим проверять статус; работа на сервере не отменена.`);
+        setError(t("{error} Продолжим проверять статус; работа на сервере не отменена.", { error: toUserMessage(caught, "Связь прервалась.", locale) }));
         timer = setTimeout(() => void poll(), Math.min(60000, 3000 * 2 ** Math.min(++failures, 5)));
       }
     };
@@ -71,7 +73,7 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
     if (retry ? !job?.canRetry || latest.research?.id !== job.id : !(offered || (missing && latest.research && researchMatches(latest, latest.research))) || !latest.start || (latest.research && !missing && researchMatches(latest, latest.research))) return;
     posting.current = true;
     const controller = new AbortController(); actionRef.current = controller;
-    setBusy(retry ? "Продолжаем исследование…" : "Отправляем исследование…"); setError("");
+    setBusy(t(retry ? "Продолжаем исследование…" : "Отправляем исследование…")); setError("");
     try {
       const snapshot = { start: latest.start!, ...(latest.destination ? {destination:latest.destination} : {}), mode: latest.mode, minutes: latest.minutes };
       const expected: ResearchRef = retry ? latest.research! : { request: snapshot, stops: latest.stops, id: null, recoveryToken: latest.research && researchKey(latest.research.request) === researchKey(snapshot) ? latest.research.recoveryToken : crypto.randomUUID() };
@@ -87,7 +89,7 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
         const rejected = caught instanceof RequestError && (caught.status < 500 || caught.status === 503);
         // An explicit HTTP rejection did not create a new job. Unknown transport outcomes retain intent.
         if (!retry && rejected) setMissing(true);
-        setError(`${toUserMessage(caught, "Ответ не получен.")}${rejected ? "" : " Результат отправки неизвестен. Нажмите «Проверить статус» или вернитесь позже: новой отправки не будет."}`);
+        setError(rejected ? toUserMessage(caught, "Ответ не получен.", locale) : t("{error} Результат отправки неизвестен. Нажмите «Проверить статус» или вернитесь позже: новой отправки не будет.", { error: toUserMessage(caught, "Ответ не получен.", locale) }));
         if (retry) setRestore(n => n + 1);
       }
     } finally {
@@ -101,27 +103,27 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
   const matches = !!ref && researchMatches(draft, ref);
   const canStart = (offered && (!ref || !matches || missing)) || (missing && matches);
   return <section className={styles.research} aria-labelledby="walk-research">
-    <h2 id="walk-research">Исследование района</h2>
-    {offered ? <p>Можем найти и проверить истории ещё нескольких зданий рядом. Это займёт время, и прогулка может не получиться.</p> : null}
-    {ref ? <p>Начало исследования: <strong>{ref.request.start.address}</strong>. {ref.request.minutes} мин пешком, {ref.request.mode === "loop" ? "с возвращением" : "без возвращения"}.</p> : null}
-    {visibleJob ? <div role="status" aria-live="polite"><p><strong>{terminalStages.has(visibleJob.stage) && visibleJob.stage !== "ready" ? "Исследование остановлено" : visibleJob.stage === "queued" ? "Ждём своей очереди" : phases[visibleJob.phase]}</strong></p>{visibleJob.progress.total > 0 ? <p>Проверено адресов: {visibleJob.progress.checked} из {visibleJob.progress.total}. С подтверждениями: {visibleJob.progress.accepted}.</p> : null}{visibleJob.error ? <p className={styles.warning}>{visibleJob.error.message}</p> : null}</div> : ref && !missing ? <p role="status">{ref.id ? "Проверяем сохранённое исследование…" : "Отправка сохранена. Можно проверить статус сейчас или при возвращении, без новой отправки."}</p> : null}
+    <h2 id="walk-research">{t("Исследование района")}</h2>
+    {offered ? <p>{t("Можем найти и проверить истории ещё нескольких зданий рядом. Это займёт время, и прогулка может не получиться.")}</p> : null}
+    {ref ? <p>{t("Начало исследования:")} <strong>{ref.request.start.address}</strong>. {t("{minutes} мин пешком, {returnMode}.", { minutes: ref.request.minutes, returnMode: t(ref.request.mode === "loop" ? "с возвращением" : "без возвращения") })}</p> : null}
+    {visibleJob ? <div role="status" aria-live="polite"><p><strong>{t(terminalStages.has(visibleJob.stage) && visibleJob.stage !== "ready" ? "Исследование остановлено" : visibleJob.stage === "queued" ? "Ждём своей очереди" : phases[visibleJob.phase])}</strong></p>{visibleJob.progress.total > 0 ? <p>{t("Проверено адресов: {checked} из {total}. С подтверждениями: {accepted}.", { checked: visibleJob.progress.checked, total: visibleJob.progress.total, accepted: visibleJob.progress.accepted })}</p> : null}{visibleJob.error ? <p className={styles.warning}>{toUserMessage(new Error(visibleJob.error.message), "Исследование остановлено.", locale)}</p> : null}</div> : ref && !missing ? <p role="status">{t(ref.id ? "Проверяем сохранённое исследование…" : "Отправка сохранена. Можно проверить статус сейчас или при возвращении, без новой отправки.")}</p> : null}
     {ref && !ref.id ? <button onClick={() => {
       if (actionRef.current || posting.current) return;
       initial.current = current.current.research;
       setRestore(n => n + 1);
-    }}>Проверить статус</button> : null}
+    }}>{t("Проверить статус")}</button> : null}
     {error ? <p className={styles.warning} role="alert">{error}</p> : null}
-    {ref ? <details className={styles.details}><summary>Как продолжить позже</summary><p>Исследование продолжается после закрытия страницы. Вернитесь к прогулке из истории в этом браузере. Если сохранить черновик не удалось, скачайте его перед уходом.</p>{ref.id && <p className={styles.muted}>ID исследования: {ref.id}</p>}</details> : null}
-    {ref && !matches && !draft.researchApplied ? <p>Параметры или остановки изменены. Сохранённое исследование остаётся доступно, но его маршрут нельзя применить к этой версии прогулки.</p> : null}
+    {ref ? <details className={styles.details}><summary>{t("Как продолжить позже")}</summary><p>{t("Исследование продолжается после закрытия страницы. Вернитесь к прогулке из истории в этом браузере. Если сохранить черновик не удалось, скачайте его перед уходом.")}</p>{ref.id && <p className={styles.muted}>{t("ID исследования: {id}", { id: ref.id })}</p>}</details> : null}
+    {ref && !matches && !draft.researchApplied ? <p>{t("Параметры или остановки изменены. Сохранённое исследование остаётся доступно, но его маршрут нельзя применить к этой версии прогулки.")}</p> : null}
     {canStart || visibleJob?.canRetry ? <>
-      <div className={styles.actions}>{canStart ? <button className={styles.primaryAction} disabled={disabled} onClick={() => void submit()}>Найти истории рядом</button> : null}{visibleJob?.canRetry ? <button disabled={disabled} onClick={() => void submit(true)}>Продолжить поиск</button> : null}</div>
-      <p className={styles.muted}>Адреса уйдут сервисам поиска и озвучки.</p>
+      <div className={styles.actions}>{canStart ? <button className={styles.primaryAction} disabled={disabled} onClick={() => void submit()}>{t("Найти истории рядом")}</button> : null}{visibleJob?.canRetry ? <button disabled={disabled} onClick={() => void submit(true)}>{t("Продолжить поиск")}</button> : null}</div>
+      <p className={styles.muted}>{t("Адреса уйдут сервисам поиска и озвучки.")}</p>
     </> : null}
-    {visibleJob?.stage === "ready" && !draft.researchApplied ? <><p>Применение сохранит готовый маршрут и ссылки на истории. Новые исследования, тексты или аудио при этом не заказываются.</p><button className={styles.primaryAction} disabled={disabled || !matches} onClick={() => {
+    {visibleJob?.stage === "ready" && !draft.researchApplied ? <><p>{t("Применение сохранит готовый маршрут и ссылки на истории. Новые исследования, тексты или аудио при этом не заказываются.")}</p><button className={styles.primaryAction} disabled={disabled || !matches} onClick={() => {
       try { if (persist(applyResearch(current.current, visibleJob))) onApply(); }
-      catch (caught) { setError(toUserMessage(caught, "Не удалось применить прогулку.")); }
-    }}>Использовать прогулку</button></> : null}
-    {draft.researchApplied ? <p role="status">Исследованная прогулка применена. Готовые истории находятся ниже; дополнительных заказов нет.</p> : null}
-    <button disabled={chooseStartDisabled} onClick={onChooseStart}>Выбрать другое начало</button>
+      catch (caught) { setError(toUserMessage(caught, "Не удалось применить прогулку.", locale)); }
+    }}>{t("Использовать прогулку")}</button></> : null}
+    {draft.researchApplied ? <p role="status">{t("Исследованная прогулка применена. Готовые истории находятся ниже; дополнительных заказов нет.")}</p> : null}
+    <button disabled={chooseStartDisabled} onClick={onChooseStart}>{t("Выбрать другое начало")}</button>
   </section>;
 }

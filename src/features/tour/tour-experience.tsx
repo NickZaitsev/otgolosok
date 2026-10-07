@@ -40,6 +40,8 @@ import type { OwnWalk } from "../walks/own-walk";
 import { orientWalk, type WalkDirection } from "./walk-direction";
 import { useWalkDirection } from "./use-walk-direction";
 import type { FoodPlace } from "../food/types";
+import { useI18n } from "@/lib/i18n/provider";
+import { LanguageSwitcher } from "@/lib/i18n/language-switcher";
 
 export type AddFood = (place: FoodPlace, signal: AbortSignal) => Promise<string>;
 
@@ -52,14 +54,16 @@ export function TourExperience({ route, walk, offline = null, offlineNotice = ""
   onAddFood?: AddFood | null;
   /** Stable stop selected from the nearby-walk suggestions. */
   fromStop?: string | null }) {
+  const { path, t } = useI18n();
   // A universal walk changes in place when a venue joins it, so its route follows the view.
   const resolvedRoute = useMemo(() => walk ? walkViewToRoute(walk) : route, [walk, route]);
-  if (!resolvedRoute) return <main className="shell"><section className="hero-copy"><h1>Прогулка не найдена</h1><p className="dek">Откройте ссылку ещё раз или вернитесь к списку прогулок.</p></section></main>;
-  if (fromStop !== null && !resolvedRoute.walk?.steps.some(stop => stop.id === fromStop)) return <main className="walk-screen"><p role="alert">Точка начала больше не входит в эту прогулку. Откройте подборку заново.</p><Link href="/">На карту</Link></main>;
+  if (!resolvedRoute) return <main className="shell"><section className="hero-copy"><h1>{t("Прогулка не найдена")}</h1><p className="dek">{t("Откройте ссылку ещё раз или вернитесь к списку прогулок.")}</p></section></main>;
+  if (fromStop !== null && !resolvedRoute.walk?.steps.some(stop => stop.id === fromStop)) return <main className="walk-screen"><p role="alert">{t("Точка начала больше не входит в эту прогулку. Откройте подборку заново.")}</p><Link href={path("/")}>{t("На карту")}</Link></main>;
   return <AvailableTour fromStop={fromStop} route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} offlineNotice={walk ? offlineNotice : ""} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} onAddFood={walk ? onAddFood : null} />;
 }
 
 function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, offlineNotice = "", reviewTarget, launchTarget, own, onAddFood, fromStop }: { fromStop: string | null; route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; offlineNotice?: string; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null; onAddFood: AddFood | null }) {
+  const { languageTag, locale, path, t } = useI18n();
   const [loadedRoute, setRoute] = useState(initialRoute);
   const publishedRoute = universal ? initialRoute : loadedRoute;
   const { direction: preferredDirection, setDirection } = useWalkDirection(initialRoute.id);
@@ -206,11 +210,11 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     });
     media.setTrack({
       title: chapterTitle ?? walkContent.story.opening,
-      artist: chapterPlace ? `Часть ${chapterIndex + 1} из ${chapters.length} · ${chapterPlace}` : route.title,
+      artist: chapterPlace ? t("Часть {current} из {total} · {place}", { current: chapterIndex + 1, total: chapters.length, place: chapterPlace }) : route.title,
       album: route.title,
       artwork: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml" }],
     });
-  }, [mediaRef, phase, chapterIndex, chapters.length, chapterTitle, chapterPlace, walkContent.story.opening, route.title]);
+  }, [mediaRef, phase, chapterIndex, chapters.length, chapterTitle, chapterPlace, walkContent.story.opening, route.title, t]);
 
   function startTour(resumeSaved = true, requestedIndex?: number) {
     if (phase !== "reading" || sessionActiveRef.current) return;
@@ -379,27 +383,28 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   }, [darkScreen]);
   const duration = mediaDuration || chapter?.audio?.duration_sec || walkContent.story.duration_sec;
   const canSeek = !walkUsesTestAudio && mediaDuration > 0 && !["loading", "unlocking", "locked"].includes(audioStatus);
-  const audioButtonLabel = audioStatus === "loading" ? "Отменить запуск" : audioStatus === "playing" ? "Пауза" : audioStatus === "paused" ? "Продолжить" : audioStatus === "ended" ? "Слушать ещё раз" : audioStatus === "unlocking" ? "Включить звук" : audioStatus === "blocked" || audioStatus === "error" ? "Повторить запуск звука" : walkUsesTestAudio ? "Проверить звук" : walkAudioUrl ? "Слушать историю" : "Аудио ещё не готово";
+  const audioButtonLabel = t(audioStatus === "loading" ? "Отменить запуск" : audioStatus === "playing" ? "Пауза" : audioStatus === "paused" ? "Продолжить" : audioStatus === "ended" ? "Слушать ещё раз" : audioStatus === "unlocking" ? "Включить звук" : audioStatus === "blocked" || audioStatus === "error" ? "Повторить запуск звука" : walkUsesTestAudio ? "Проверить звук" : walkAudioUrl ? "Слушать историю" : "Аудио ещё не готово");
   const player: PlayerState = { status: audioStatus, position: playbackTime, duration, canSeek, label: audioButtonLabel, source: walkAudioUrl, testTone: walkUsesTestAudio };
   const toggleSources = () => setShowSources((value) => !value);
   // During the walk it sits in the settings, before the start in «Остановки», where the settings button is gone.
   const offlineControls = offlineRef || shellStatus ? <>
     {offlineRef ? <OfflineCopyControls copy={offlineCopy} statusClassName="walk-session-muted" /> : null}
-    {shellStatus ? <p className="walk-session-muted" role="status">{shellStatus}</p> : null}
+    {shellStatus ? <p className="walk-session-muted" role="status">{t(shellStatus)}</p> : null}
   </> : null;
 
   return (
     <main className={universal ? "walk-session" : isWalking ? "shell" : undefined} data-mode={isWalking ? "walk" : "reading"}>
       {!universal && isWalking ? <header className="masthead">
-        <Link className="wordmark" href="/" aria-label="Отголосок, на главную">
+        <Link className="wordmark" href={path("/")} aria-label={t("Отголосок, на главную")}>
           <BrandMark />
         </Link>
-        <p className="privacy-note"><i aria-hidden="true" /> Координаты остаются на устройстве</p>
+        <p className="privacy-note"><i aria-hidden="true" /> {t("Координаты остаются на устройстве")}</p>
+        <LanguageSwitcher compact />
       </header> : null}
 
-      {universal && reviewTarget ? <ReviewDialog reviews={reviews} open={rateOpen} onClose={() => setRateOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
-      {universal && reviewTarget ? <ImprovementDialog target={reviewTarget} open={improveOpen} onClose={() => setImproveOpen(false)} walkTitle={route.title.trim() || "Ваш маршрут"} /> : null}
-      {universal ? <WalkSession notice={[offlineNotice, fromStop !== null ? `Начало с остановки «${chapters.find(item => item.id === fromStop)?.title ?? ""}».` : ""].filter(Boolean).join(" ")} route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg}
+      {universal && reviewTarget ? <ReviewDialog reviews={reviews} open={rateOpen} onClose={() => setRateOpen(false)} walkTitle={route.title.trim() || t("Ваш маршрут")} /> : null}
+      {universal && reviewTarget ? <ImprovementDialog target={reviewTarget} open={improveOpen} onClose={() => setImproveOpen(false)} walkTitle={route.title.trim() || t("Ваш маршрут")} /> : null}
+      {universal ? <WalkSession notice={[offlineNotice, fromStop !== null ? t("Начало с остановки «{title}».", { title: chapters.find(item => item.id === fromStop)?.title ?? "" }) : ""].filter(Boolean).join(" ")} route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg}
         openingIndex={fromStop === null ? 0 : Math.max(0, chapters.findIndex(item => item.id === fromStop))} direction={direction} foodMode={view?.document.mode} onDirectionChange={fromStop !== null ? undefined : value => {
           if (sessionActiveRef.current) return;
           setDirection(value);
@@ -410,16 +415,16 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
         user={position.diagnostics.lastFix} positionFailed={positionFailed(position.diagnostics)}
         positionDenied={position.diagnostics.sourceStatus === "permission-denied"} onRetryPosition={position.retry} resume={fromStop === null && Boolean(savedCheckpoint)} resumeIndex={fromStop === null ? savedChapterIndex : -1} titleRef={walkTitleRef} startRef={startButtonRef}
         onStart={index => startTour(true, index)} onSelect={selectChapter} onStop={stopTour} own={own} onAddFood={onAddFood}
-        ratingLabel={formatRatingSummary(reviews.summary)}
+        ratingLabel={formatRatingSummary(reviews.summary, locale)}
         hasReview={Boolean(reviews.mine)} ratingCount={reviews.summary?.count ?? null} reviews={reviewTarget ? <WalkReviews reviews={reviews} onRate={() => setRateOpen(true)} /> : null} onRate={() => setRateOpen(true)}
         onImprove={reviewTarget ? () => setImproveOpen(true) : null}
-        audioError={audioStatus === "blocked" || audioStatus === "error" ? "Не удалось включить аудио. Нажмите «Повторить запуск звука»." : ""}
+        audioError={audioStatus === "blocked" || audioStatus === "error" ? t("Не удалось включить аудио. Нажмите «Повторить запуск звука».") : ""}
         player={walkAudioUrl ? <AudioPlayerControls compact position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
           label={audioButtonLabel} rate={settings.rate} onToggle={toggleAudio} onSeek={audio.seek} onRate={rate => updateSettings({ rate })} /> : null}
         story={<><StoryText story={walkContent.story} />{walkContent.sources.length ? <StorySources content={walkContent} open={showSources} onToggle={toggleSources} /> : null}</>}
         settings={<div className="walk-session-settings">
-          <label>Переключение остановок<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{advanceModeLabels[mode]}</option>)}</select></label>
-          <label>Скорость аудио<select value={settings.rate} onChange={event => updateSettings({ rate: Number(event.target.value) as PlaybackRate })}>{playbackRates.map(rate => <option key={rate} value={rate}>{String(rate).replace(".", ",")}×</option>)}</select></label>
+          <label>{t("Переключение остановок")}<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{t(advanceModeLabels[mode])}</option>)}</select></label>
+          <label>{t("Скорость аудио")}<select value={settings.rate} onChange={event => updateSettings({ rate: Number(event.target.value) as PlaybackRate })}>{playbackRates.map(rate => <option key={rate} value={rate}>{rate.toLocaleString(languageTag)}×</option>)}</select></label>
           {offlineControls}
         </div>} offline={offlineControls ? <div className="walk-session-offline">{offlineControls}</div> : null} /> : isWalking ? (
         <ClassicWalkView route={route} chapters={chapters} chapterIndex={chapterIndex} titleRef={walkTitleRef}
@@ -432,7 +437,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
           onStart={(index) => startTour(false, index)} updateAvailable={updateAvailable} />
       )}
 
-      <audio ref={audioRef} preload="auto" aria-label="Аудиогид" {...audioHandlers} />
+      <audio ref={audioRef} preload="auto" aria-label={t("Аудиогид")} {...audioHandlers} />
     </main>
   );
 }

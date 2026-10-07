@@ -2,6 +2,21 @@
 // old cache-first worker must fetch it, so recovery needs no new app code.
 const statusElement = document.getElementById("update-status");
 const retryButton = document.getElementById("retry-update");
+const requestedLanguage = new URLSearchParams(window.location.search ?? "").get("lang");
+const language = requestedLanguage === "en" || requestedLanguage === "zh" ? requestedLanguage : "ru";
+const home = language === "ru" ? "/#top" : `/${language}#top`;
+const copy = {
+  ru: { title: "Обновление · Отголосок", heading: "Открываем новую версию", loading: "Загружаем обновление. Затем откроется первая история.", retry: "Попробовать ещё раз", back: "Вернуться к прогулке", failed: "Не удалось загрузить обновление. Проверьте интернет и попробуйте ещё раз. Сохранённая история остаётся доступной." },
+  en: { title: "Update · Otgolosok", heading: "Opening the new version", loading: "Downloading the update. The first story will open next.", retry: "Try again", back: "Back to the walk", failed: "Unable to download the update. Check your connection and try again. Your saved story is still available." },
+  zh: { title: "更新 · Otgolosok", heading: "正在打开新版本", loading: "正在下载更新，随后将打开第一个故事。", retry: "重试", back: "返回漫步", failed: "无法下载更新。请检查网络后重试。已保存的故事仍可使用。" },
+}[language];
+if (document.documentElement) document.documentElement.lang = language === "zh" ? "zh-Hans" : language;
+document.title = copy.title;
+const heading = document.getElementById("update-heading");
+const back = document.getElementById("back-to-walk");
+if (heading) heading.textContent = copy.heading;
+if (back) { back.textContent = copy.back; back.href = home; }
+retryButton.textContent = copy.retry;
 
 function waitFor(target, event, predicate, signal) {
   return new Promise((resolve, reject) => {
@@ -22,7 +37,7 @@ function waitFor(target, event, predicate, signal) {
 
 async function update() {
   retryButton.hidden = true;
-  statusElement.textContent = "Загружаем обновление. Затем откроется первая история.";
+  statusElement.textContent = copy.loading;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25000);
   const signal = controller.signal;
@@ -35,7 +50,7 @@ async function update() {
 
   try {
     if (!("serviceWorker" in navigator)) {
-      window.location.replace("/#top");
+      window.location.replace(home);
       return;
     }
     const registration = await abortable(navigator.serviceWorker.register("/sw.js", {
@@ -58,9 +73,9 @@ async function update() {
       if (worker.state === "redundant") throw new Error("Activation failed");
     }
     await waitFor(navigator.serviceWorker, "controllerchange", () => navigator.serviceWorker.controller === worker, signal);
-    window.location.replace("/#top");
+    window.location.replace(home);
   } catch {
-    statusElement.textContent = "Не удалось загрузить обновление. Проверьте интернет и попробуйте ещё раз. Сохранённая история остаётся доступной.";
+    statusElement.textContent = copy.failed;
     retryButton.hidden = false;
   } finally {
     clearTimeout(timeout);

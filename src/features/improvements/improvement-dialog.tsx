@@ -9,6 +9,7 @@ import reviewStyles from "../reviews/walk-reviews.module.css";
 import { loadImprovement, saveImprovement } from "./api";
 import { canonicalIssues, type ImprovementIssue, type MyImprovement } from "./model";
 import { ImprovementFields } from "./improvement-fields";
+import { useI18n } from "@/lib/i18n/provider";
 
 /** How long the thank-you message stays before the window closes itself. */
 export const IMPROVEMENT_SENT_CLOSE_MS = 3000;
@@ -20,6 +21,7 @@ type Loaded = { reviewer: Reviewer; mine: MyImprovement | null };
  * One request per viewer and walk; sending again replaces it, unticking everything withdraws it.
  */
 export function ImprovementDialog({ target, open, onClose, walkTitle }: { target: ReviewTarget; open: boolean; onClose: () => void; walkTitle: string }) {
+  const { locale, t } = useI18n();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
@@ -92,9 +94,9 @@ export function ImprovementDialog({ target, open, onClose, walkTitle }: { target
     try {
       const result = await saveImprovement(targetRef.current, loaded.reviewer, issues, mounted.current.signal);
       setLoaded({ ...loaded, mine: result.mine });
-      setSent(result.mine ? "Спасибо! Передали редакции — постараемся улучшить прогулку." : "Запрос отозван.");
+      setSent(t(result.mine ? "Спасибо! Передали редакции — постараемся улучшить прогулку." : "Запрос отозван."));
     } catch (cause) {
-      setError(toUserMessage(cause, "Не удалось отправить запрос. Повторите попытку."));
+      setError(toUserMessage(cause, "Не удалось отправить запрос. Повторите попытку.", locale));
     } finally {
       if (!mounted.current.signal.aborted) setBusy(false);
     }
@@ -109,23 +111,23 @@ export function ImprovementDialog({ target, open, onClose, walkTitle }: { target
     }}>
     <header className={reviewStyles.dialogHeader}>
       <div>
-        <h2 id={titleId}>Что улучшить в прогулке?</h2>
+        <h2 id={titleId}>{t("Что улучшить в прогулке?")}</h2>
         <p>{walkTitle}</p>
       </div>
-      <button type="button" className={reviewStyles.close} aria-label="Закрыть" onClick={onClose}><ExploreIcon name="close" /></button>
+      <button type="button" className={reviewStyles.close} aria-label={t("Закрыть")} onClick={onClose}><ExploreIcon name="close" /></button>
     </header>
     {!open ? null : sent !== null ? <p className={reviewStyles.sent} role="status">{sent}</p>
       : loadFailed ? <div className={reviewStyles.root}>
-        <p className={reviewStyles.message} role="status">Не удалось загрузить форму.</p>
-        <button type="button" className={reviewStyles.secondary} onClick={() => { setLoadFailed(false); setAttempt(value => value + 1); }}>Повторить</button>
-      </div> : !loaded ? <p className={reviewStyles.message} role="status">Загружаем…</p>
+        <p className={reviewStyles.message} role="status">{t("Не удалось загрузить форму.")}</p>
+        <button type="button" className={reviewStyles.secondary} onClick={() => { setLoadFailed(false); setAttempt(value => value + 1); }}>{t("Повторить")}</button>
+      </div> : !loaded ? <p className={reviewStyles.message} role="status">{t("Загружаем…")}</p>
       : <form className={reviewStyles.form} onSubmit={event => void submit(event)} aria-labelledby={titleId}>
-        {mine?.status === "resolved" ? <p className={reviewStyles.message}>Редакция уже поработала над вашим прошлым запросом. Если проблема осталась, отправьте его снова.</p> : null}
+        {mine?.status === "resolved" ? <p className={reviewStyles.message}>{t("Редакция уже поработала над вашим прошлым запросом. Если проблема осталась, отправьте его снова.")}</p> : null}
         <ImprovementFields selected={selected} busy={busy} onChange={setSelected} />
-        {mine?.status === "open" ? <p className={reviewStyles.hint}>Ваш запрос уже у редакции. Измените отметки или снимите все, чтобы отозвать его.</p> : null}
+        {mine?.status === "open" ? <p className={reviewStyles.hint}>{t("Ваш запрос уже у редакции. Измените отметки или снимите все, чтобы отозвать его.")}</p> : null}
         {error ? <p className={reviewStyles.error} role="alert">{error}</p> : null}
         <button type="submit" className={reviewStyles.primary} disabled={busy || unchanged || (withdraw && !mine)}>
-          {busy ? "Отправляем…" : error ? "Повторить" : withdraw && mine ? "Отозвать запрос" : mine?.status === "open" ? "Сохранить изменения" : "Отправить"}
+          {t(busy ? "Отправляем…" : error ? "Повторить" : withdraw && mine ? "Отозвать запрос" : mine?.status === "open" ? "Сохранить изменения" : "Отправить")}
         </button>
       </form>}
   </dialog>;

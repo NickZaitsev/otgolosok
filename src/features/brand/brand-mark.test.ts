@@ -36,7 +36,7 @@ describe("единый логотип", () => {
     expect(update).toContain('href="/icon.svg"');
     expect(update).toContain('<span class="brand-mark">Отголосок<span aria-hidden="true">.</span></span>');
     expect(read("../../../public/update.css")).toContain('.brand-mark > span { color: var(--brand-accent); }');
-    expect(read("../../app/layout.tsx")).toContain('icon: "/icon.svg"');
+    expect(read("../../lib/i18n/root-document.tsx")).toContain('icon: "/icon.svg"');
     expect(read("../../../scripts/service-worker-manifest.mjs")).not.toContain('"favicon.ico"');
   });
 });

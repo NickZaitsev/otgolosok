@@ -6,6 +6,7 @@ import { REVIEW_TEXT_MAX, type MyReview, type ReviewStatus, type ReviewTarget } 
 import type { ReviewActionResult } from "./use-walk-reviews";
 import type { Reviewer } from "./api";
 import styles from "./walk-reviews.module.css";
+import { useI18n } from "@/lib/i18n/provider";
 
 const starLabels = ["1 звезда из 5", "2 звезды из 5", "3 звезды из 5", "4 звезды из 5", "5 звёзд из 5"];
 export const reviewStatusMessages: Record<ReviewStatus, string> = {
@@ -30,6 +31,7 @@ export type ReviewFormProps = {
 };
 
 export function ReviewForm({ target, reviewer, mine, save, remove, loginHref, labelledBy, onSent }: ReviewFormProps) {
+  const { t, path } = useI18n();
   const id = useId();
   // A draft left by a failed send wins over the stored review: it holds the user's latest intent.
   const [initial] = useState(() => loadReviewDraft(target) ?? (mine ? { rating: mine.rating, text: mine.text } : { rating: 0, text: "" }));
@@ -44,8 +46,8 @@ export function ReviewForm({ target, reviewer, mine, save, remove, loginHref, la
 
   if (keyMissing) {
     return <div className={styles.form}>
-      <p className={styles.message} role="status">Браузер не даёт сохранить ключ отзыва. Войдите, чтобы оставить отзыв.</p>
-      <a className={styles.secondary} href={loginHref}>Войти</a>
+      <p className={styles.message} role="status">{t("Браузер не даёт сохранить ключ отзыва. Войдите, чтобы оставить отзыв.")}</p>
+      <a className={styles.secondary} href={path(loginHref)}>{t("Войти")}</a>
     </div>;
   }
 
@@ -56,50 +58,50 @@ export function ReviewForm({ target, reviewer, mine, save, remove, loginHref, la
     const result = await save({ rating, text: text.trim() });
     setBusy(false);
     if (result.ok) {
-      const message = result.status ? reviewStatusMessages[result.status] : "";
+      const message = result.status ? t(reviewStatusMessages[result.status]) : "";
       if (onSent) onSent(message); else setStatus(message);
     }
-    else setError(result.message);
+    else setError(t(result.message));
   }
 
   async function confirmDelete() {
     setBusy(true); setError(""); setStatus("");
     const result = await remove();
     setBusy(false); setConfirming(false);
-    if (result.ok) { setRating(0); setText(""); setStatus("Отзыв удалён."); }
-    else setError(result.message);
+    if (result.ok) { setRating(0); setText(""); setStatus(t("Отзыв удалён.")); }
+    else setError(t(result.message));
   }
 
   return <form className={styles.form} onSubmit={event => void submit(event)} aria-labelledby={labelledBy ?? `${id}-title`}>
-    {labelledBy ? null : <h2 id={`${id}-title`} className={styles.formTitle}>{mine ? "Ваш отзыв" : "Оцените прогулку"}</h2>}
-    {mine?.status === "pending" ? <p className={styles.badge}>На модерации</p> : null}
-    {mine?.status === "hidden" ? <p className={styles.badge}>Скрыт редакцией</p> : null}
+    {labelledBy ? null : <h2 id={`${id}-title`} className={styles.formTitle}>{t(mine ? "Ваш отзыв" : "Оцените прогулку")}</h2>}
+    {mine?.status === "pending" ? <p className={styles.badge}>{t("На модерации")}</p> : null}
+    {mine?.status === "hidden" ? <p className={styles.badge}>{t("Скрыт редакцией")}</p> : null}
     <fieldset className={styles.stars}>
-      <legend>Оценка</legend>
+      <legend>{t("Оценка")}</legend>
       <div className={styles.starRow}>
         {starLabels.map((label, index) => {
           const value = index + 1;
           return <label key={value} className={styles.star} data-filled={value <= rating ? "true" : undefined} data-checked={value === rating ? "true" : undefined}>
-            <input type="radio" name={`${id}-rating`} value={value} checked={value === rating} onChange={() => setRating(value)} aria-label={label} />
+            <input type="radio" name={`${id}-rating`} value={value} checked={value === rating} onChange={() => setRating(value)} aria-label={t(label)} />
             <span aria-hidden="true">{value <= rating ? "★" : "☆"}</span>
           </label>;
         })}
       </div>
     </fieldset>
-    <label className={styles.textLabel} htmlFor={`${id}-text`}>Отзыв (необязательно)</label>
+    <label className={styles.textLabel} htmlFor={`${id}-text`}>{t("Отзыв (необязательно)")}</label>
     <textarea id={`${id}-text`} className={styles.textarea} value={text} maxLength={REVIEW_TEXT_MAX} rows={3}
       onChange={event => setText(event.target.value)} aria-describedby={`${id}-counter ${id}-disclosure`} />
     <p id={`${id}-counter`} className={styles.counter} aria-live="polite">{codePoints(text)} / {REVIEW_TEXT_MAX}</p>
     <p id={`${id}-disclosure`} className={styles.hint}>{reviewer?.kind === "user"
-      ? `Отзыв будет опубликован с именем «${reviewer.name}».`
-      : "Отзыв будет опубликован от имени «Гость». Изменить его можно только в этом браузере."}</p>
+      ? t("Отзыв будет опубликован с именем «{name}».", { name: reviewer.name })
+      : t("Отзыв будет опубликован от имени «Гость». Изменить его можно только в этом браузере.")}</p>
     {error ? <p className={styles.error} role="alert">{error}</p> : null}
     {status ? <p className={styles.message} role="status">{status}</p> : null}
-    <button type="submit" className={styles.primary} disabled={!rating || busy}>{busy ? "Отправляем…" : error ? "Повторить" : mine && !onSent ? "Сохранить изменения" : "Отправить отзыв"}</button>
-    {mine && !onSent ? confirming ? <div className={styles.confirm} role="group" aria-label="Подтверждение удаления">
-      <span>Удалить отзыв?</span>
-      <button type="button" className={styles.danger} disabled={busy} onClick={() => void confirmDelete()}>Удалить</button>
-      <button type="button" className={styles.secondary} disabled={busy} onClick={() => setConfirming(false)}>Отмена</button>
-    </div> : <button type="button" className={styles.secondary} disabled={busy} onClick={() => setConfirming(true)}>Удалить отзыв</button> : null}
+    <button type="submit" className={styles.primary} disabled={!rating || busy}>{t(busy ? "Отправляем…" : error ? "Повторить" : mine && !onSent ? "Сохранить изменения" : "Отправить отзыв")}</button>
+    {mine && !onSent ? confirming ? <div className={styles.confirm} role="group" aria-label={t("Подтверждение удаления")}>
+      <span>{t("Удалить отзыв?")}</span>
+      <button type="button" className={styles.danger} disabled={busy} onClick={() => void confirmDelete()}>{t("Удалить")}</button>
+      <button type="button" className={styles.secondary} disabled={busy} onClick={() => setConfirming(false)}>{t("Отмена")}</button>
+    </div> : <button type="button" className={styles.secondary} disabled={busy} onClick={() => setConfirming(true)}>{t("Удалить отзыв")}</button> : null}
   </form>;
 }

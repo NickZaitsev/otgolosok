@@ -37,6 +37,13 @@ describe("модель топа", () => {
   it("собирает строку времени, длины и историй", () => {
     expect(formatTopWalkMeta(catalog)).toBe("45 мин · 3,2 км · 6 историй");
   });
+
+  it.each([
+    ["en", "45 min · 3.2 km · 6 stories"],
+    ["zh", "45 分钟 · 3.2 公里 · 6 个故事"],
+  ] as const)("форматирует описание прогулки для %s", (locale, text) => {
+    expect(formatTopWalkMeta(catalog, locale)).toBe(text);
+  });
 });
 
 describe("список топа", () => {

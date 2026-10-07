@@ -11,6 +11,8 @@ import {
   WALK_REPLAY_INTERVAL_MS,
 } from "@/lib/position";
 import type { PositionSourceKind, PositionSourceStatus, StopPositionSource } from "@/lib/position";
+import { translate } from "@/lib/i18n/translate";
+import type { Locale } from "@/lib/i18n/locale";
 import type { Coordinates } from "./types";
 
 export type Diagnostics = {
@@ -138,13 +140,13 @@ export function signalTone(diagnostics: Diagnostics, maxAccuracyM: number): "goo
   return positionFailed(diagnostics) ? "warning" : reliableFix ? "good" : diagnostics.lastFix ? "warning" : "neutral";
 }
 
-export function getStatusText(diagnostics: Diagnostics, maxAccuracyM: number) {
-  if (diagnostics.sourceStatus === "permission-denied") return "Нет доступа к геолокации · звук доступен по кнопке";
-  if (diagnostics.sourceStatus === "unavailable" || diagnostics.sourceStatus === "error") return "Нет сигнала GPS · звук доступен по кнопке";
-  if (diagnostics.sourceStatus === "complete") return "Тестовый трек завершён";
-  if (!diagnostics.lastFix) return "Ищем сигнал GPS…";
-  if (diagnostics.lastFix.accuracyM > maxAccuracyM) return `Уточняем позицию · ±${Math.round(diagnostics.lastFix.accuracyM)} м`;
-  if (diagnostics.trigger.phase === "inside") return "Вы у точки";
-  if (diagnostics.trigger.phase === "cooldown") return "Точка пройдена";
-  return `Слушаем город · ±${Math.round(diagnostics.lastFix.accuracyM)} м`;
+export function getStatusText(diagnostics: Diagnostics, maxAccuracyM: number, locale: Locale = "ru") {
+  if (diagnostics.sourceStatus === "permission-denied") return translate(locale, "Нет доступа к геолокации · звук доступен по кнопке");
+  if (diagnostics.sourceStatus === "unavailable" || diagnostics.sourceStatus === "error") return translate(locale, "Нет сигнала GPS · звук доступен по кнопке");
+  if (diagnostics.sourceStatus === "complete") return translate(locale, "Тестовый трек завершён");
+  if (!diagnostics.lastFix) return translate(locale, "Ищем сигнал GPS…");
+  if (diagnostics.lastFix.accuracyM > maxAccuracyM) return translate(locale, "Уточняем позицию · ±{distance} м", { distance: Math.round(diagnostics.lastFix.accuracyM) });
+  if (diagnostics.trigger.phase === "inside") return translate(locale, "Вы у точки");
+  if (diagnostics.trigger.phase === "cooldown") return translate(locale, "Точка пройдена");
+  return translate(locale, "Слушаем город · ±{distance} м", { distance: Math.round(diagnostics.lastFix.accuracyM) });
 }

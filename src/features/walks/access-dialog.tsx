@@ -4,6 +4,9 @@ import { useEffect, useId, useRef, useState } from "react";
 import { accountApi } from "../auth/client";
 import { ExploreIcon } from "../explore/icons";
 import { toUserMessage } from "@/lib/errors/user-message";
+import { useI18n } from "@/lib/i18n/provider";
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/translate";
 import type { WalkCard } from "./walk-loader";
 import styles from "./access-dialog.module.css";
 
@@ -17,12 +20,12 @@ const OPTIONS: Array<{ value: WalkVisibility; label: string; hint: string }> = [
 ];
 
 /** Access line of an account card, in words: the state is never shown by colour alone. */
-export function accessLabel(card: Pick<WalkCard, "visibility" | "listingStatus">) {
-  if (card.visibility === "shared") return "По ссылке";
-  if (card.visibility !== "public") return "Только я";
-  if (card.listingStatus === "approved") return "Всем · в топе";
-  if (card.listingStatus === "hidden") return "Всем · скрыта редакцией из топа";
-  return "Всем · на проверке";
+export function accessLabel(card: Pick<WalkCard, "visibility" | "listingStatus">, locale: Locale = "ru") {
+  if (card.visibility === "shared") return translate(locale, "По ссылке");
+  if (card.visibility !== "public") return translate(locale, "Только я");
+  if (card.listingStatus === "approved") return translate(locale, "Всем · в топе");
+  if (card.listingStatus === "hidden") return translate(locale, "Всем · скрыта редакцией из топа");
+  return translate(locale, "Всем · на проверке");
 }
 
 /**
@@ -30,6 +33,7 @@ export function accessLabel(card: Pick<WalkCard, "visibility" | "listingStatus">
  * `onSaved` receives the updated walk from the server.
  */
 export function AccessDialog({ card, onClose, onSaved }: { card: AccessCard | null; onClose: () => void; onSaved: (walk: WalkCard) => void }) {
+  const { locale, t } = useI18n();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const hintId = useId();
@@ -60,8 +64,8 @@ export function AccessDialog({ card, onClose, onSaved }: { card: AccessCard | nu
     } catch (caught) {
       const status = (caught as { status?: number }).status, code = (caught as { code?: string | null }).code;
       setError(status === 409 && code !== "WALK_NOT_READY"
-        ? "Прогулка изменилась на другом устройстве. Обновите страницу и повторите."
-        : toUserMessage(caught, "Не удалось изменить доступ."));
+        ? t("Прогулка изменилась на другом устройстве. Обновите страницу и повторите.")
+        : toUserMessage(caught, "Не удалось изменить доступ.", locale));
       setBusy(false);
     }
   }
@@ -75,29 +79,29 @@ export function AccessDialog({ card, onClose, onSaved }: { card: AccessCard | nu
     }}>
     <header className={styles.header}>
       <div>
-        <h2 id={titleId}>Доступ к прогулке</h2>
+        <h2 id={titleId}>{t("Доступ к прогулке")}</h2>
         {card && <p>{card.title}</p>}
       </div>
-      <button type="button" className={styles.close} aria-label="Закрыть" onClick={onClose}><ExploreIcon name="close" /></button>
+      <button type="button" className={styles.close} aria-label={t("Закрыть")} onClick={onClose}><ExploreIcon name="close" /></button>
     </header>
     {card && <form onSubmit={event => { event.preventDefault(); void save(); }}>
       <fieldset className={styles.options} disabled={busy}>
-        <legend className={styles.legend}>Кто может открыть прогулку</legend>
+        <legend className={styles.legend}>{t("Кто может открыть прогулку")}</legend>
         {OPTIONS.map(option => {
           const blocked = option.value === "public" && card.draft;
           return <label key={option.value} className={styles.option}>
             <input type="radio" name="visibility" value={option.value} checked={choice === option.value} disabled={blocked}
               aria-describedby={blocked ? hintId : undefined} onChange={() => setChoice(option.value)} />
-            <span><strong>{option.label}</strong><span>{option.hint}</span>
-              {blocked && <span id={hintId} className={styles.blocked}>Сначала постройте маршрут.</span>}</span>
+            <span><strong>{t(option.label)}</strong><span>{t(option.hint)}</span>
+              {blocked && <span id={hintId} className={styles.blocked}>{t("Сначала постройте маршрут.")}</span>}</span>
           </label>;
         })}
       </fieldset>
-      {card.visibility === "public" && card.listingStatus === "hidden" && <p className={styles.note}>Редакция скрыла прогулку из топа. Ссылка продолжает работать.</p>}
+      {card.visibility === "public" && card.listingStatus === "hidden" && <p className={styles.note}>{t("Редакция скрыла прогулку из топа. Ссылка продолжает работать.")}</p>}
       {error && <p role="alert" className={styles.error}>{error}</p>}
       <div className={styles.actions}>
-        <button type="button" className={styles.secondary} onClick={onClose}>Отмена</button>
-        <button type="submit" className={styles.primary} disabled={busy}>{busy ? "Сохраняем…" : "Сохранить"}</button>
+        <button type="button" className={styles.secondary} onClick={onClose}>{t("Отмена")}</button>
+        <button type="submit" className={styles.primary} disabled={busy}>{t(busy ? "Сохраняем…" : "Сохранить")}</button>
       </div>
     </form>}
   </dialog>;

@@ -1,5 +1,7 @@
 import { distanceMeters } from "../../lib/geo/distance";
 import type { Coordinates, Route } from "../tour/types";
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/translate";
 
 export const nearbyRadii = [100, 200, 300] as const;
 export type NearbyRadius = typeof nearbyRadii[number];
@@ -43,7 +45,7 @@ export function nearbyStoryCatalog(route: Route): NearbyStory[] {
   });
 }
 
-export function recommendNearbyStories(center: Coordinates, radiusM: NearbyRadius, catalog: NearbyStory[]): NearbyRecommendation[] {
+export function recommendNearbyStories(center: Coordinates, radiusM: NearbyRadius, catalog: NearbyStory[], locale: Locale = "ru"): NearbyRecommendation[] {
   return catalog
     .map((story) => ({ ...story, distanceM: distanceMeters(center, story.location) }))
     .filter((story) => story.distanceM <= radiusM)
@@ -57,7 +59,7 @@ export function recommendNearbyStories(center: Coordinates, radiusM: NearbyRadiu
     .map((story, index) => ({
       ...story,
       reason: index === 0
-        ? `Лучший подтверждённый рассказ: ${story.factCount} фактов и ${story.sourceCount} источников.`
-        : `${Math.round(story.distanceM)} м по прямой · готовая история.`,
+        ? translate(locale, "Лучший подтверждённый рассказ: {facts} фактов и {sources} источников.", { facts: story.factCount, sources: story.sourceCount })
+        : translate(locale, "{distance} м по прямой · готовая история.", { distance: Math.round(story.distanceM) }),
     }));
 }

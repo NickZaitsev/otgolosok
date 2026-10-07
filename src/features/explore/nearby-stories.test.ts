@@ -20,6 +20,13 @@ describe("nearby story recommendations", () => {
     }])).toHaveLength(3);
   });
 
+  it("localizes recommendation reasons without translating story content", () => {
+    const [best, alternative] = recommendNearbyStories({ lat: 55.75, lon: 37.6 }, 200, catalog, "zh");
+    expect(best.reason).toBe("最佳已核实故事：5 条事实，4 个资料来源。");
+    expect(alternative.reason).toContain("故事已完成");
+    expect(best.title).toBe("Подтверждённее");
+  });
+
   it("only exposes unique, publication-ready POIs", () => {
     const route = {
       pois: [

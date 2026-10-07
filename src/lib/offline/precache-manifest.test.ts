@@ -21,3 +21,11 @@ describe("precache manifest", () => {
     expect(files.map(precacheUrl)).toEqual(["/_next/static/app.css", "/_next/static/chunks/app.js", "/audio/walk/chapter.mp3", "/data/maps/map.json", "/", "/walk"]);
   });
 });
+
+
+describe("языковые офлайн-страницы", () => {
+  it("сохраняет страницы и manifests всех языков, исключает редакцию и неизвестные страницы", () => {
+    const files = ["en.html", "en/walk.html", "en/login.html", "zh.html", "zh/history.html", "zh/account.html", "en/manifest.webmanifest", "zh/manifest.webmanifest", "en/admin.html", "zh/unknown.html"];
+    expect(selectPrecacheFiles(files).map(precacheUrl)).toEqual(["/en", "/en/login", "/en/manifest.webmanifest", "/en/walk", "/zh", "/zh/account", "/zh/history", "/zh/manifest.webmanifest"]);
+  });
+});

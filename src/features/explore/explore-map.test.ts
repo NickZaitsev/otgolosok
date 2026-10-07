@@ -24,6 +24,9 @@ vi.mock("react", () => ({
   useState: () => [true, vi.fn()],
   useEffect: (effect: () => void | (() => void)) => mock.effects.push(effect),
 }));
+vi.mock("@/lib/i18n/provider", () => ({
+  useI18n: () => ({ locale: "ru", languageTag: "ru-RU", t: (source: string) => source, path: (href: string) => href }),
+}));
 vi.mock("./map-clusters", () => ({
   loadMapLibrary: () => import("leaflet"),
   createMapClusters: () => ({

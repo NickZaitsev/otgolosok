@@ -1,4 +1,5 @@
 "use client";
+import { useI18n } from "@/lib/i18n/provider";
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 import styles from "./map-attribution.module.css";
@@ -12,6 +13,7 @@ export const ATTRIBUTION_COLLAPSE_MS = 5_000;
  * `surface` is the map: touching, scrolling or using the keyboard on it folds the credit at once.
  */
 export function MapAttribution({ surface }: { surface?: RefObject<HTMLElement | null> }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(true);
   const link = useRef<HTMLAnchorElement>(null);
   const focusLink = useRef(false);
@@ -37,7 +39,7 @@ export function MapAttribution({ surface }: { surface?: RefObject<HTMLElement | 
   return <p className={styles.attribution} data-region="attribution">
     {open
       ? <a ref={link} href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>
-      : <button type="button" aria-label="Источник данных карты" onClick={() => { focusLink.current = true; setOpen(true); }}>
+      : <button type="button" aria-label={t("Источник данных карты")} onClick={() => { focusLink.current = true; setOpen(true); }}>
         <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" /><path d="M8 7.25v4M8 4.75v.01" /></svg>
       </button>}
   </p>;

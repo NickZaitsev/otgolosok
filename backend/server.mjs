@@ -46,7 +46,7 @@ import { createTtsApiClient } from "./tts-api-client.mjs";
 import { startTtsApiWorker } from "./tts-api-worker.mjs";
 import { serializeCell } from "./map-cells.mjs";
 import { sendCacheable, sendCacheableJson } from "./http-cache.mjs";
-import { SHARE_NOT_FOUND_HTML, SHARE_PAGE_CSP, renderPlaceSharePage, shareUnavailableHtml, sharePathToPlaceId } from "./place-share.mjs";
+import { SHARE_NOT_FOUND_HTML, SHARE_PAGE_CSP, renderPlaceSharePage, shareLocale, shareUnavailableHtml, sharePathToPlaceId } from "./place-share.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 // Digests keep the comparison constant-time regardless of the candidate length.
@@ -657,10 +657,11 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
       // The shared link of a place: its preview tags for messengers, then the map (backend/place-share.mjs).
       if(readMethod&&url.pathname.startsWith("/place/")) {
         const placeId=sharePathToPlaceId(url.pathname);
+        const locale=shareLocale(url.searchParams.get("lang"));
         let page;
         // A person following the link gets a page, not the JSON error: the map retries on its own.
-        try {page=placeId?renderPlaceSharePage({id:placeId,place:store.getPublishedPlace(placeId),origin}):{status:404,html:SHARE_NOT_FOUND_HTML};}
-        catch(error) {logs?.captureException(error,{operation:"place share page",context:{placeId}});page={status:503,html:shareUnavailableHtml(/** @type {string} */ (placeId))};}
+        try {page=placeId?renderPlaceSharePage({id:placeId,place:store.getPublishedPlace(placeId),origin,locale}):{status:404,html:SHARE_NOT_FOUND_HTML};}
+        catch(error) {logs?.captureException(error,{operation:"place share page",context:{placeId}});page={status:503,html:shareUnavailableHtml(/** @type {string} */ (placeId),locale)};}
         if(page.status===200){sendCacheable(req,res,page.html,"text/html; charset=utf-8",{"Content-Security-Policy":SHARE_PAGE_CSP});return;}
         res.writeHead(page.status,{"Content-Type":"text/html; charset=utf-8","Cache-Control":page.status===503?"no-store":"no-cache","X-Content-Type-Options":"nosniff","Content-Security-Policy":SHARE_PAGE_CSP});
         res.end(req.method==="HEAD"?undefined:page.html);return;

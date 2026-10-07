@@ -7,12 +7,14 @@ import { placeShareUrl } from "./place-link";
 import { appShareEnvironment } from "./app-share";
 import { sharePlace, type ShareOutcome } from "./share-place";
 import a from "./around.module.css";
+import { useI18n } from "@/lib/i18n/provider";
 
 /**
  * «Поделиться» for a catalog place: the shared link (`/place/<type>/<number>`) carries a preview with the title and
  * the photo. Key it by the place so the result of sharing never outlives its place.
  */
 export function SharePlaceButton({ placeId, title }: { placeId: string; title: string }) {
+  const { locale, t } = useI18n();
   const [outcome, setOutcome] = useState<ShareOutcome | null>(null);
   const busy = useRef(false);
   const [url, setUrl] = useState("");
@@ -27,16 +29,16 @@ export function SharePlaceButton({ placeId, title }: { placeId: string; title: s
     // The share sheet is open: a second tap must not stack another one.
     if (busy.current) return;
     busy.current = true;
-    const link = placeShareUrl(placeId, location.origin);
+    const link = placeShareUrl(placeId, location.origin, locale);
     setUrl(link);
     setOutcome(null);
-    try { setOutcome(await sharePlace({ title, url: link }, appShareEnvironment())); }
+    try { setOutcome(await sharePlace({ title, url: link }, appShareEnvironment(locale), locale)); }
     finally { busy.current = false; }
   }
   return <>
-    <button type="button" className={cx(a.secondary, a.bodyAction)} onClick={() => void share()}>Поделиться <ExploreIcon name="share" /></button>
-    {outcome === "copied" ? <p ref={copied} className={cx(a.text, a.bodyAction)} role="status">Ссылка скопирована.</p> : null}
-    {outcome === "manual" ? <label className={cx("ui-field", a.bodyAction)}>Скопируйте ссылку
+    <button type="button" className={cx(a.secondary, a.bodyAction)} onClick={() => void share()}>{t("Поделиться")} <ExploreIcon name="share" /></button>
+    {outcome === "copied" ? <p ref={copied} className={cx(a.text, a.bodyAction)} role="status">{t("Ссылка скопирована.")}</p> : null}
+    {outcome === "manual" ? <label className={cx("ui-field", a.bodyAction)}>{t("Скопируйте ссылку")}
       <input ref={field} readOnly value={url} onFocus={event => event.currentTarget.select()} />
     </label> : null}
   </>;

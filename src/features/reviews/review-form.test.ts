@@ -1,20 +1,22 @@
 // @vitest-environment jsdom
-import { act, createElement } from "react";
+import { act, createElement, type ComponentProps } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { ReviewForm, type ReviewFormProps } from "./review-form";
 import { saveReviewDraft } from "./device";
+import { I18nProvider } from "@/lib/i18n/provider";
+import type { Locale } from "@/lib/i18n/locale";
 
 const target = { kind: "catalog" as const, id: "arbat" };
 let root: Root, container: HTMLDivElement;
 
-async function mount(props: Partial<ReviewFormProps> = {}) {
+async function mount(props: Partial<ReviewFormProps> = {}, locale: Locale = "ru") {
   const full: ReviewFormProps = {
     target, reviewer: { kind: "guest" }, mine: null, loginHref: "/login?returnTo=%2Fwalk",
     save: vi.fn().mockResolvedValue({ ok: true, status: "published" }), remove: vi.fn().mockResolvedValue({ ok: true, status: null }),
     ...props,
   };
-  await act(async () => root.render(createElement(ReviewForm, full)));
+  await act(async () => root.render(createElement(I18nProvider, { locale } as ComponentProps<typeof I18nProvider>, createElement(ReviewForm, full))));
   return full;
 }
 const button = (text: string) => [...container.querySelectorAll("button")].find(item => item.textContent === text);
@@ -74,6 +76,18 @@ it("keeps the draft after a failed save and offers a retry", async () => {
   await act(async () => button("Повторить")!.click());
   expect(save).toHaveBeenCalledTimes(2);
   expect(container.querySelector("[role=alert]")).toBeNull();
+});
+
+it.each([
+  ["en", "Could not submit the review. Please try again.", "Try again"],
+  ["zh", "无法提交评价。请重试。", "重试"],
+] as const)("localizes review failure controls in %s", async (locale, message, retry) => {
+  const save = vi.fn().mockResolvedValue({ ok: false, message: "Не удалось отправить отзыв. Повторите попытку." });
+  await mount({ save }, locale);
+  await act(async () => container.querySelector<HTMLInputElement>('input[value="4"]')!.click());
+  await submit();
+  expect(container.querySelector("[role=alert]")?.textContent).toBe(message);
+  expect(button(retry)).toBeTruthy();
 });
 
 it("confirms deletion inline", async () => {

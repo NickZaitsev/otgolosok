@@ -1,3 +1,5 @@
+import { localeTag, type Locale } from "@/lib/i18n/locale";
+
 export const REVIEW_TEXT_MAX = 1000;
 
 export type ReviewTarget = { kind: "catalog"; id: string } | { kind: "share"; token: string } | { kind: "account"; id: string };
@@ -61,16 +63,17 @@ export function validateReviewWrite(value: unknown): ReviewWrite {
   return { summary: validateSummary(item.summary), mine: validateMine(item.mine) };
 }
 
-const plural = new Intl.PluralRules("ru");
 const ratingWords: Record<string, string> = { one: "оценка", few: "оценки", many: "оценок", other: "оценки" };
 
-export function ratingCountLabel(count: number) {
-  return `${count} ${ratingWords[plural.select(count)]}`;
+export function ratingCountLabel(count: number, locale: Locale = "ru") {
+  if (locale === "zh") return `${count} 次评分`;
+  if (locale === "en") return `${count} ${count === 1 ? "rating" : "ratings"}`;
+  return `${count} ${ratingWords[new Intl.PluralRules("ru").select(count)]}`;
 }
 
 /** «★ 4,6 · 12 оценок», or "" while there is nothing to show. */
-export function formatRatingSummary(summary: ReviewSummary | null) {
+export function formatRatingSummary(summary: ReviewSummary | null, locale: Locale = "ru") {
   if (!summary || summary.count === 0 || summary.average === null) return "";
-  const average = summary.average.toLocaleString("ru-RU", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  return `★ ${average} · ${ratingCountLabel(summary.count)}`;
+  const average = summary.average.toLocaleString(localeTag[locale], { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  return `★ ${average} · ${ratingCountLabel(summary.count, locale)}`;
 }

@@ -1,0 +1,23 @@
+.select {
+  max-width: 8rem;
+  min-width: 0;
+  min-height: var(--control-min);
+  padding: 0 0.35rem;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-pill);
+  background: var(--raised);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-secondary);
+  cursor: pointer;
+}
+
+.select:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.select[data-compact] {
+  flex-shrink: 0;
+  width: 4rem;
+}

@@ -1,27 +1,28 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n/provider";
 import { useEffect } from "react";
 import { hasNativePlugin, nativePlatform } from "@/lib/native/platform";
 import { isWalkInProgress } from "../tour/walk-activity";
 import { listenForAppLinks } from "./app-links";
 
-const confirmLeave = () => !isWalkInProgress() || window.confirm("Прервать прогулку и открыть ссылку?");
 
 /**
  * Glue between the site and the Android app (docs/agents/mobile-app.md): links that open the app, the hardware Back
  * button and the launch splash. Renders nothing and does nothing on the web.
  */
 export function NativeShell() {
+  const { t } = useI18n();
   useEffect(() => {
     if (!nativePlatform()) return;
-    const stopLinks = listenForAppLinks({ confirmLeave });
+    const stopLinks = listenForAppLinks({ confirmLeave: () => !isWalkInProgress() || window.confirm(t("Прервать прогулку и открыть ссылку?")) });
     const stopBack = listenForBackButton();
     void hideSplash();
     return () => {
       stopLinks();
       stopBack();
     };
-  }, []);
+  }, [t]);
   return null;
 }
 

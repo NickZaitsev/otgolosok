@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 const script = readFileSync(new URL("../../../public/sw.js", import.meta.url), "utf8");
 const origin = "https://otgolosok.test";
-const assets = ["/", "/walk", "/_next/static/app.js", "/_next/static/app.css", "/_next/static/font.woff2", "/audio/story.wav"];
+const assets = ["/en", "/en/walk", "/zh", "/zh/history", "/", "/walk", "/_next/static/app.js", "/_next/static/app.css", "/_next/static/font.woff2", "/audio/story.wav"];
 
 function setup() {
   const handlers: Record<string, (event: unknown) => void> = {};
@@ -218,5 +218,19 @@ describe("offline service worker", () => {
     expect(response?.status).toBe(206);expect(await response?.text()).toBe("2345");
     expect(fetch).not.toHaveBeenCalled();
     expect(request("/api/story-jobs",{method:"POST"})).toBeUndefined();
+  });
+});
+
+
+describe("языковой кеш оболочки", () => {
+  it.each([
+    ["/en", "/en"], ["/en/", "/en"], ["/en.html", "/en"], ["/en/walk/", "/en/walk"], ["/en/walk.html", "/en/walk"],
+    ["/zh?place=osm:node:123", "/zh"], ["/zh/", "/zh"], ["/zh.html", "/zh"], ["/zh/history.html", "/zh/history"],
+  ])("открывает %s без сети из правильного языкового кеша", async (url, expected) => {
+    const { request } = setup();
+    expect(await (await request(url))?.text()).toBe(expected);
+  });
+  it.each(["/en/admin", "/zh/unknown.html", "/api/me", "/api/auth/session"])("не перехватывает %s", url => {
+    expect(setup().request(url)).toBeUndefined();
   });
 });

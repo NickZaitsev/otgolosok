@@ -650,6 +650,15 @@ test("a shared place link serves its preview page, revalidated by ETag, ahead of
   assert.match(html,/<meta property="og:title" content="История: Сад">/);
   assert.match(html,/<meta property="og:url" content="https:\/\/otgolosok\.test\/place\/node\/8">/);
   assert.match(html,/<a id="open" href="\/\?place=osm:node:8">/);
+  for(const [lang,target] of [["en","/en?place=osm:node:8"],["zh","/zh?place=osm:node:8"]]) {
+    const localized=await raw(f.base,`/place/node/8?lang=${lang}`);
+    assert.equal(localized.status,200);
+    assert.match(localized.body.toString(),new RegExp(`<meta property="og:url" content="https://otgolosok\\.test/place/node/8\\?lang=${lang}">`));
+    assert.match(localized.body.toString(),new RegExp(`<a id="open" href="${target.replace(/[?]/g,"\\?")}">`));
+  }
+  const unknownLanguage=await raw(f.base,"/place/node/8?lang=de");
+  assert.match(unknownLanguage.body.toString(),/<meta property="og:url" content="https:\/\/otgolosok\.test\/place\/node\/8">/);
+  assert.match(unknownLanguage.body.toString(),/<a id="open" href="\/\?place=osm:node:8">/);
   const again=await raw(f.base,"/place/node/8",{"If-None-Match":response.headers.etag});
   assert.equal(again.status,304);assert.equal(again.body.length,0);
   const head=await raw(f.base,"/place/node/8",{},"HEAD");

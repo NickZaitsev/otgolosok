@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 
-import { act, createElement } from "react";
+import { act, createElement, type ComponentProps } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { WalkCard } from "./walk-loader";
+import { I18nProvider } from "@/lib/i18n/provider";
+import type { Locale } from "@/lib/i18n/locale";
 
 const auth = vi.hoisted(() => ({
   user: null as null | { id: string; name: string },
@@ -29,11 +31,11 @@ const { accessLabel } = await import("./access-dialog");
 let root: Root;
 let container: HTMLDivElement;
 
-async function render() {
+async function render(locale: Locale = "ru") {
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
-  await act(async () => { root.render(createElement(WalkLibrary)); });
+  await act(async () => { root.render(createElement(I18nProvider, { locale } as ComponentProps<typeof I18nProvider>, createElement(WalkLibrary))); });
 }
 
 const accountWalk = (patch: Partial<WalkCard & { draft: boolean }> = {}): WalkCard & { draft: boolean } => ({
@@ -67,6 +69,14 @@ describe("пустая история прогулок", () => {
     expect(empty?.querySelector("br")).not.toBeNull();
     // На ширине до 699px CSS прячет <br>, поэтому пробел должен быть в самом тексте.
     expect(empty?.textContent).toContain("начало маршрута. Сохранённые прогулки");
+  });
+
+  it("показывает английский интерфейс и сохраняет язык в ссылках", async () => {
+    history.replaceState(null, "", "/en/history?tab=mine");
+    await render("en");
+    expect(container.querySelector("h1")?.textContent).toBe("Walk history");
+    expect(container.textContent).toContain("Start your own city story");
+    expect(container.querySelector<HTMLAnchorElement>(".history-empty a")?.getAttribute("href")).toBe("/en?walk=create");
   });
 });
 
@@ -128,6 +138,10 @@ describe("доступ к прогулке", () => {
     [{ visibility: "public", listingStatus: "approved" }, "Всем · в топе"],
     [{ visibility: "public", listingStatus: "hidden" }, "Всем · скрыта редакцией из топа"],
   ] as const)("%o → «%s»", (card, label) => { expect(accessLabel(card)).toBe(label); });
+
+  it("переводит состояния доступа на упрощённый китайский", () => {
+    expect(accessLabel({ visibility: "public", listingStatus: "pending" }, "zh")).toBe("所有人可见 · 审核中");
+  });
 
   it("сохраняет «Доступно всем», копирует ссылку и обновляет карточку", async () => {
     auth.user = { id: "anna", name: "Анна" }; auth.walks = [accountWalk()];

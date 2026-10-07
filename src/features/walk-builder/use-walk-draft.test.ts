@@ -4,11 +4,31 @@ import { createRoot } from "react-dom/client";
 import { afterEach, expect, it, vi } from "vitest";
 import { useWalkDraft } from "./use-walk-draft";
 import { DRAFT_KEY, emptyDraft } from "./model";
+import { I18nProvider } from "@/lib/i18n/provider";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace: () => {} }) }));
 vi.mock("../auth/client", () => ({ getSession: async () => null }));
 vi.mock("./request", async importOriginal => ({ ...await importOriginal<object>(), request: async () => ({ id: "11111111-1111-4111-8111-111111111111", stage: "ready" }) }));
 afterEach(() => { localStorage.clear(); vi.unstubAllGlobals(); });
+
+it.each([
+  ["en", true], ["zh", true], ["en", false], ["zh", false],
+] as const)("%s: язык не меняет заголовок маршрута (точка входа: %s)", async (locale, incoming) => {
+  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  const address = "Москва, Арбат, 1";
+  history.replaceState(null, "", `/${locale}?walk=create${incoming ? `&address=${encodeURIComponent(address)}&lat=55.75&lon=37.6` : ""}`);
+  let hook: ReturnType<typeof useWalkDraft>;
+  function Harness() { hook = useWalkDraft(); return null; }
+  const root = createRoot(document.createElement("div"));
+  try {
+    await act(async () => { root.render(createElement(I18nProvider, { locale }, createElement(Harness))); });
+    expect(hook!.storageError).toBe("");
+    const expected = incoming ? `Прогулка от ${address}` : "Моя прогулка";
+    expect(hook!.draft.title).toBe(expected);
+    await act(async () => hook!.edit({ minutes: 60 }));
+    expect(JSON.parse(localStorage.getItem(DRAFT_KEY)!).title).toBe(expected);
+  } finally { await act(async () => root.unmount()); history.replaceState(null, "", "/"); }
+});
 
 it("не записывает сорок первую главу и сохраняет возможность редактировать прогулку", async () => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);

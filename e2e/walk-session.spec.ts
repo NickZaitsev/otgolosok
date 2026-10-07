@@ -498,9 +498,11 @@ for (const [width, height] of [[390, 844], [320, 568], [667, 375], [568, 320], [
       // и метка может зайти под карточку — как на стартовой карте; на остальных экранах она видна.
       if (height > 568) await expect.poll(() => firstStopIsVisible(page), { message: `первая остановка видна: ${state}` }).toBe(true);
       await expect(page.locator('[data-region="header"]').getByRole("link", { name: "Отголосок, на главную" }), state).toBeVisible();
-      const header = await edges(page, '[data-region="header"]');
-      const zoom = await edges(page, 'button[aria-label="Приблизить"]');
-      expect(Math.abs(zoom.top - header.top), `кнопки карты в строке шапки: ${state}`).toBeLessThanOrEqual(1);
+      const header = (await page.locator('[data-region="header"]').boundingBox())!;
+      const zoom = (await page.getByRole("button", { name: "Приблизить", exact: true }).boundingBox())!;
+      const sameRow = Math.abs(zoom.y - header.y) <= 1;
+      if (width >= 844) expect(sameRow, `широкая шапка в одну строку: ${state}`).toBe(true);
+      expect(sameRow ? zoom.x >= header.x + header.width : zoom.y >= header.y + header.height + 7, `кнопки карты не перекрывают шапку: ${state}`).toBe(true);
       const panel = await edges(page, ".walk-session-panel");
       const nav = page.locator('[data-region="nav"]');
       if (state === "до старта") {

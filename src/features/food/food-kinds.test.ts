@@ -24,3 +24,7 @@ it("formats the category with translated cuisine only", () => {
   expect(formatFoodCategory("restaurant", "georgian;unknown")).toBe("Ресторан · Грузинская кухня");
   expect(formatFoodCategory("coffee", "unknown")).toBe("Кофейня");
 });
+it("formats categories in English and simplified Chinese without leaking raw OSM tags", () => {
+  expect(formatFoodCategory("restaurant", "georgian;unknown", "en")).toBe("Restaurant · Georgian cuisine");
+  expect(formatFoodCategory("coffee", "chinese", "zh")).toBe("咖啡店 · 中国菜");
+});

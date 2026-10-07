@@ -1,4 +1,5 @@
 import type { TriggerConfig, TriggerState } from "@/lib/geo/types";
+import { useI18n } from "@/lib/i18n/provider";
 import type { PositionSourceKind, PositionSourceStatus } from "@/lib/position";
 import type { WakeLockStatus } from "@/lib/wake-lock";
 import type { AudioStatus } from "./use-walk-audio";
@@ -51,20 +52,21 @@ export function WalkDiagnostics({ diagnostics, replay, distanceLabel, triggerCon
   audioStatus: AudioStatus;
   wakeStatus: WakeLockStatus;
 }) {
+  const { t } = useI18n();
   const candidateCount = diagnostics.trigger.recentInside.filter(Boolean).length;
   return <details className="debug-panel" open={replay || undefined}>
-    <summary>Диагностика {replay ? "· replay" : ""}</summary>
+    <summary>{t("Диагностика")}{replay ? " · replay" : ""}</summary>
     <dl>
-      <DebugValue label="Источник" value={diagnostics.source ? sourceKindLabels[diagnostics.source] : "—"} />
-      <DebugValue label="Геопозиция" value={sourceLabels[diagnostics.sourceStatus]} />
-      <DebugValue label="Точность" value={diagnostics.lastFix ? `${Math.round(diagnostics.lastFix.accuracyM)} м` : "—"} />
-      <DebugValue label={distanceLabel} value={diagnostics.distanceM === null ? "—" : `${Math.round(diagnostics.distanceM)} м`} />
-      <DebugValue label="Зона входа" value={`${triggerConfig.enterM} м`} />
-      <DebugValue label="Кандидаты" value={`${candidateCount} / ${diagnostics.trigger.recentInside.length || triggerConfig.windowSize}`} />
-      <DebugValue label="Триггер" value={triggerPhaseLabels[diagnostics.trigger.phase]} />
-      <DebugValue label="Переход" value={advanceModeLabels[advance]} />
-      <DebugValue label="Аудио" value={audioLabels[audioStatus]} />
-      <DebugValue label="Экран" value={wakeLabels[wakeStatus]} />
+      <DebugValue label={t("Источник")} value={diagnostics.source ? t(sourceKindLabels[diagnostics.source]) : "—"} />
+      <DebugValue label={t("Геопозиция")} value={t(sourceLabels[diagnostics.sourceStatus])} />
+      <DebugValue label={t("Точность")} value={diagnostics.lastFix ? t("{distance} м", { distance: Math.round(diagnostics.lastFix.accuracyM) }) : "—"} />
+      <DebugValue label={t(distanceLabel)} value={diagnostics.distanceM === null ? "—" : t("{distance} м", { distance: Math.round(diagnostics.distanceM) })} />
+      <DebugValue label={t("Зона входа")} value={t("{distance} м", { distance: triggerConfig.enterM })} />
+      <DebugValue label={t("Кандидаты")} value={`${candidateCount} / ${diagnostics.trigger.recentInside.length || triggerConfig.windowSize}`} />
+      <DebugValue label={t("Триггер")} value={t(triggerPhaseLabels[diagnostics.trigger.phase])} />
+      <DebugValue label={t("Переход")} value={t(advanceModeLabels[advance])} />
+      <DebugValue label={t("Аудио")} value={t(audioLabels[audioStatus])} />
+      <DebugValue label={t("Экран")} value={t(wakeLabels[wakeStatus])} />
     </dl>
     {diagnostics.sourceError ? <p className="debug-error">{diagnostics.sourceError}</p> : null}
   </details>;

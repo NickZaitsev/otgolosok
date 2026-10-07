@@ -13,6 +13,7 @@ import { draftToWalkDocument, walkDocumentToDraft } from "../walks/adapters";
 import { getLocalWalk, migrateLocalWalks, saveLocalWalk } from "../walks/local-store";
 import { creationInputError } from "./creation-location";
 import { toUserMessage } from "@/lib/errors/user-message";
+import { useI18n } from "@/lib/i18n/provider";
 
 function readJob(value: unknown): GenerationJob {
   if (!value || typeof value !== "object" || !("id" in value) || !("stage" in value) || !isJobId(value.id) || !isStage(value.stage)) throw new Error("Не удалось прочитать состояние истории.");
@@ -20,6 +21,7 @@ function readJob(value: unknown): GenerationJob {
 }
 
 export function useWalkDraft() {
+  const { locale, path, t } = useI18n();
   const router=useRouter();
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const current = useRef(draft);
@@ -91,11 +93,11 @@ export function useWalkDraft() {
         // Session lookup is bounded; local editing remains available if the service is offline.
         let user = null;
         try { user = await getSession(); }
-        catch (caught) { if (walkId) throw caught; if (active) setError("Не удалось проверить вход. Локальный черновик доступен."); }
+        catch (caught) { if (walkId) throw caught; if (active) setError(t("Не удалось проверить вход. Локальный черновик доступен.")); }
         if (!active) return;
         setAccountUser(user);
         if (walkId) {
-          if (!user) { router.replace(`/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`); return; }
+          if (!user) { router.replace(path(`/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`)); return; }
           const data = await accountApi(`/api/me/walks/${encodeURIComponent(walkId)}`);
           if (!active) return;
           if (data.walk.snapshotError) throw new Error(data.walk.snapshotError);
@@ -116,7 +118,7 @@ export function useWalkDraft() {
         setSelection(restored.stops.length ? "manual" : "auto");
         setFocus(restored.start?.location ?? null); setLocalIdForView(localWalkId.current);
         if (!hasSaved && isPlace(incoming)) persist(restored);
-      } catch (caught) { if (active) { setDraft(current.current); setStorageError(toUserMessage(caught, "Не удалось открыть черновик.")); } }
+      } catch (caught) { if (active) { setDraft(current.current); setStorageError(toUserMessage(caught, "Не удалось открыть черновик.", locale)); } }
       finally { if (active) setLoaded(true); }
     }
     void restore();
@@ -127,7 +129,7 @@ export function useWalkDraft() {
 
   function persist(next: Draft) {
     if (next.stops.length > manualStopLimit(next.start, next.jobs)) {
-      setError(`В прогулке может быть не больше ${manualStopLimit(next.start, next.jobs)} остановок с учётом истории начальной точки.`);
+      setError(t("В прогулке может быть не больше {count} остановок с учётом истории начальной точки.", { count: manualStopLimit(next.start, next.jobs) }));
       return false;
     }
     current.current = next; setDraft(next);
@@ -147,7 +149,7 @@ export function useWalkDraft() {
       setStorageError(""); return true;
     } catch (caught) {
       writable.current = false;
-      setStorageError(toUserMessage(caught, "Не удалось сохранить. Не закрывайте страницу; скачайте копию."));
+      setStorageError(toUserMessage(caught, "Не удалось сохранить. Не закрывайте страницу; скачайте копию.", locale));
       return false;
     }
   }
@@ -178,7 +180,7 @@ export function useWalkDraft() {
   const refreshOnFocus = useEffectEvent(() => {
     if (action.current || !writable.current) return;
     void refreshJobs().catch(caught => {
-      if (caught instanceof Error && caught.name !== "AbortError") setError(caught.message);
+      if (caught instanceof Error && caught.name !== "AbortError") setError(toUserMessage(caught, "Не удалось обновить статусы.", locale));
     });
   });
   useEffect(() => {
@@ -204,17 +206,17 @@ export function useWalkDraft() {
         if (!job || terminalStages.has(job.stage)) { setPollId(null); return; }
         timer = setTimeout(() => void poll(), 3000);
       } catch (caught) {
-        if (!controller.signal.aborted) { setError(toUserMessage(caught, "Связь прервалась. Обновите статус кнопкой.")); setPollId(null); }
+        if (!controller.signal.aborted) { setError(toUserMessage(caught, "Связь прервалась. Обновите статус кнопкой.", locale)); setPollId(null); }
       }
     };
     void poll();
     return () => { controller.abort(); clearTimeout(timer); };
-  }, [pollId]);
+  }, [pollId, locale]);
 
   async function resolve(value: Coordinates | string) {
     if (action.current) return;
     setReviewed(false); setCandidate(null); setError("");
-    const controller = new AbortController(); action.current = controller; setBusy("Ищем адрес…");
+    const controller = new AbortController(); action.current = controller; setBusy(t("Ищем адрес…"));
     try {
       const params = new URLSearchParams(typeof value === "string" ? { q: value } : { lat: String(value.lat), lon: String(value.lon) });
       const found = await request(`/api/story-place?${params}`, controller.signal);
@@ -223,7 +225,7 @@ export function useWalkDraft() {
       const place = { address: found.address, location: { lat: found.location.lat, lon: found.location.lon } };
       setCandidate(place); setFocus(place.location);
       return place;
-    } catch (caught) { if (!controller.signal.aborted) setError(toUserMessage(caught, "Не удалось найти адрес.")); }
+    } catch (caught) { if (!controller.signal.aborted) setError(toUserMessage(caught, "Не удалось найти адрес.", locale)); }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
   }
   function confirmPlace() {
@@ -232,7 +234,7 @@ export function useWalkDraft() {
     else if (target === "destination") edit({ destination: candidate, mode: "open" });
     else {
       const stops = [...draft.stops, candidate];
-      if (!validStops(draft.start, stops, draft.destination, draft.jobs)) { setError(`Добавьте от 1 до ${manualStopLimit(draft.start, draft.jobs)} разных мест, не совпадающих друг с другом.`); return; }
+      if (!validStops(draft.start, stops, draft.destination, draft.jobs)) { setError(t("Добавьте от 1 до {count} разных мест, не совпадающих друг с другом.", { count: manualStopLimit(draft.start, draft.jobs) })); return; }
       edit({ stops }); setSelection("manual");
     }
     setCandidate(null); setQuery("");
@@ -241,7 +243,7 @@ export function useWalkDraft() {
   async function plan(): Promise<boolean> {
     if (!draft.start || action.current || candidate) return false;
     const snapshot = current.current;
-    const controller = new AbortController(); action.current = controller; setBusy("Строим пешеходный маршрут…");
+    const controller = new AbortController(); action.current = controller; setBusy(t("Строим пешеходный маршрут…"));
     setReviewed(false); setError(""); setResearchOffered(false); persist({ ...snapshot, route: null, researchApplied: false });
     try {
       const result = await request("/api/walk-plan", controller.signal, { start: snapshot.start, mode: snapshot.mode, minutes: snapshot.minutes, ...(snapshot.destination ? {destination:snapshot.destination} : {}), ...(selection === "manual" ? { stops: snapshot.stops } : {}) });
@@ -253,7 +255,7 @@ export function useWalkDraft() {
     } catch (caught) { if (!controller.signal.aborted) {
       const insufficient = shouldOfferResearch(selection, caught);
       setResearchOffered(insufficient);
-      setError(insufficient ? "Рядом пока мало готовых историй." : toUserMessage(caught, "Маршрут недоступен."));
+      setError(insufficient ? t("Рядом пока мало готовых историй.") : toUserMessage(caught, "Маршрут недоступен.", locale));
     } }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
     return false;
@@ -263,12 +265,12 @@ export function useWalkDraft() {
   const activeJob = draft.jobs.find(j => !terminalStages.has(j.stage));
   async function prepareNext() {
     if (action.current || !reviewed || !draft.route || draft.researchApplied || candidate || !nextPlace || activeJob || draft.submitting || !writable.current) return;
-    const controller = new AbortController(); action.current = controller; setBusy("Создаём одну историю…"); setError("");
+    const controller = new AbortController(); action.current = controller; setBusy(t("Создаём одну историю…")); setError("");
     try {
       await refreshJobs();
       controller.signal.throwIfAborted();
       if (current.current.jobs.some(j => !terminalStages.has(j.stage))) {
-        setMessage("Другая история ещё готовится, возможно после повтора. Дождитесь завершения."); return;
+        setMessage(t("Другая история ещё готовится, возможно после повтора. Дождитесь завершения.")); return;
       }
       // Record the intent only after revalidating every known job, before POST.
       if (!persist({ ...current.current, submitting: nextPlace })) return;
@@ -277,20 +279,20 @@ export function useWalkDraft() {
       const saved = persist({ ...current.current, submitting: null, jobs: rememberStory(current.current.jobs, { place: nextPlace, id: job.id, stage: job.stage }) });
       rememberMapJob(job, nextPlace);
       if (saved && !terminalStages.has(job.stage)) setPollId(job.id);
-      setMessage("Ссылка на историю сохранена. Следующую можно подготовить после завершения этой.");
+      setMessage(t("Ссылка на историю сохранена. Следующую можно подготовить после завершения этой."));
     } catch (caught) {
       if (!controller.signal.aborted) {
         if (caught instanceof RejectedRequest) {
           persist({ ...current.current, submitting: null });
-          setError(caught.message);
-        } else setError(`${toUserMessage(caught, "Запрос прервался.")} ${current.current.submitting ? "Результат отправки неизвестен. Не повторяем её автоматически." : "Новая история не отправлена. Обновите статусы и повторите действие."}`);
+          setError(toUserMessage(caught, "Не удалось подготовить историю.", locale));
+        } else setError(t(current.current.submitting ? "{error} Результат отправки неизвестен. Не повторяем её автоматически." : "{error} Новая история не отправлена. Обновите статусы и повторите действие.", { error: toUserMessage(caught, "Запрос прервался.", locale) }));
       }
     }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
   }
   async function recoverJob() {
     if (!draft.submitting || !isJobId(recoveryId) || action.current) return;
-    const controller = new AbortController(); action.current = controller; setBusy("Проверяем историю…"); setError("");
+    const controller = new AbortController(); action.current = controller; setBusy(t("Проверяем историю…")); setError("");
     try {
       await refreshJobs();
       controller.signal.throwIfAborted();
@@ -298,7 +300,7 @@ export function useWalkDraft() {
       if (controller.signal.aborted) return;
       if (job.id !== recoveryId || typeof job.address !== "string" || storyAddressKey(job.address) !== storyAddressKey(draft.submitting.address)) throw new Error("История относится к другому адресу.");
       persist({ ...current.current, submitting: null, jobs: rememberStory(current.current.jobs, { place: draft.submitting, id: job.id, stage: job.stage }) });
-    } catch (caught) { if (!controller.signal.aborted) setError(toUserMessage(caught, "Не удалось проверить историю.")); }
+    } catch (caught) { if (!controller.signal.aborted) setError(toUserMessage(caught, "Не удалось проверить историю.", locale)); }
     finally { if (!controller.signal.aborted) { action.current = null; setBusy(""); } }
   }
   function download() {
@@ -307,8 +309,8 @@ export function useWalkDraft() {
   }
   /** Saves the walk to the account: "saved", "review" when a public walk went back to the editors, or null on failure. */
   async function saveToAccount(): Promise<"saved" | "review" | null> {
-    if(!accountUser){router.push(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`);return null;}
-    setBusy("Сохраняем прогулку…");setError("");
+    if(!accountUser){router.push(path(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`));return null;}
+    setBusy(t("Сохраняем прогулку…"));setError("");
     try {
       let awaitsReview = false;
       const id = serverWalk?.id ?? documentRef.current?.id ?? localWalkId.current ?? crypto.randomUUID();
@@ -333,18 +335,18 @@ export function useWalkDraft() {
         setServerWalk({id:data.walk.id,revision:data.walk.revision});
         localStorage.setItem("otgolosok:walk:active-account",data.walk.id);
         localStorage.setItem("otgolosok:walk:active-revision",String(data.walk.revision));
-        if(!new URLSearchParams(location.search).get("id"))history.replaceState(null,"",`/?walk=create&id=${data.walk.id}&edit=1`);
+        if(!new URLSearchParams(location.search).get("id"))history.replaceState(null,"",path(`/?walk=create&id=${data.walk.id}&edit=1`));
       }
       localWalkId.current = null;
       accountDirty.current = false;
-      setMessage(awaitsReview ? "Прогулка сохранена. В топе она появится после проверки редакцией." : "Прогулка сохранена в личном кабинете.");
+      setMessage(t(awaitsReview ? "Прогулка сохранена. В топе она появится после проверки редакцией." : "Прогулка сохранена в личном кабинете."));
       return awaitsReview ? "review" : "saved";
-    } catch(caught) { setError(toUserMessage(caught, "Не удалось сохранить прогулку.")); return null; }
+    } catch(caught) { setError(toUserMessage(caught, "Не удалось сохранить прогулку.", locale)); return null; }
     finally {setBusy("");}
   }
   // The walk open in the builder; nearby suggestions never offer it to itself.
   const editing = serverWalk ? { kind: "account" as const, id: serverWalk.id } : localIdForView ? { kind: "local" as const, id: localIdForView } : null;
-  const openHref = serverWalk ? `/walk?id=${serverWalk.id}` : localIdForView ? `/walk?local=${localIdForView}` : null;
+  const openHref = serverWalk ? path(`/walk?id=${serverWalk.id}`) : localIdForView ? path(`/walk?local=${localIdForView}`) : null;
   /**
    * Opens the walk page for the built route. An edited account walk is saved first.
    * If saving fails, or a public walk went back to the editors, the builder stays open with that message.

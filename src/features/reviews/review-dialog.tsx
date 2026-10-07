@@ -5,6 +5,7 @@ import { ExploreIcon } from "../explore/icons";
 import { ReviewForm } from "./review-form";
 import type { WalkReviewsModel } from "./use-walk-reviews";
 import styles from "./walk-reviews.module.css";
+import { useI18n } from "@/lib/i18n/provider";
 
 /** How long the thank-you message stays before the window closes itself. */
 export const REVIEW_SENT_CLOSE_MS = 3000;
@@ -18,6 +19,7 @@ function currentWalkHref() {
  * after a successful send it thanks the author and closes itself.
  */
 export function ReviewDialog({ reviews, open, onClose, walkTitle }: { reviews: WalkReviewsModel; open: boolean; onClose: () => void; walkTitle: string }) {
+  const { t, path } = useI18n();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const { target, state, mine, reviewer } = reviews;
@@ -57,17 +59,17 @@ export function ReviewDialog({ reviews, open, onClose, walkTitle }: { reviews: W
     }}>
     <header className={styles.dialogHeader}>
       <div>
-        <h2 id={titleId}>{title}</h2>
+        <h2 id={titleId}>{t(title)}</h2>
         <p>{walkTitle}</p>
       </div>
-      <button type="button" className={styles.close} aria-label="Закрыть" onClick={onClose}><ExploreIcon name="close" /></button>
+      <button type="button" className={styles.close} aria-label={t("Закрыть")} onClick={onClose}><ExploreIcon name="close" /></button>
     </header>
-    {!open ? null : sent !== null ? <p className={styles.sent} role="status">{sent || "Спасибо!"}</p>
+    {!open ? null : sent !== null ? <p className={styles.sent} role="status">{sent || t("Спасибо!")}</p>
       : state === "unavailable" ? <div className={styles.root}>
-        <p className={styles.message} role="status">Отзывы сейчас недоступны.</p>
-        <button type="button" className={styles.secondary} onClick={reviews.reload}>Повторить</button>
-      </div> : state !== "ready" ? <p className={styles.message} role="status">Загружаем отзывы…</p>
+        <p className={styles.message} role="status">{t("Отзывы сейчас недоступны.")}</p>
+        <button type="button" className={styles.secondary} onClick={reviews.reload}>{t("Повторить")}</button>
+      </div> : state !== "ready" ? <p className={styles.message} role="status">{t("Загружаем отзывы…")}</p>
       : <ReviewForm target={target} reviewer={reviewer} mine={mine} save={reviews.save} remove={reviews.remove}
-        loginHref={`/login?returnTo=${encodeURIComponent(currentWalkHref())}`} labelledBy={titleId} onSent={setSent} />}
+        loginHref={path(`/login?returnTo=${encodeURIComponent(currentWalkHref())}`)} labelledBy={titleId} onSent={setSent} />}
   </dialog>;
 }

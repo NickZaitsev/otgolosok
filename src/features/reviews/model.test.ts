@@ -46,6 +46,8 @@ describe("модель отзывов", () => {
   it("форматирует итог с одним знаком после запятой", () => {
     expect(formatRatingSummary({ average: 4.56, count: 12 })).toBe("★ 4,6 · 12 оценок");
     expect(formatRatingSummary({ average: 5, count: 1 })).toBe("★ 5,0 · 1 оценка");
+    expect(formatRatingSummary({ average: 4.56, count: 12 }, "en")).toBe("★ 4.6 · 12 ratings");
+    expect(formatRatingSummary({ average: 5, count: 1 }, "zh")).toBe("★ 5.0 · 1 次评分");
     expect(formatRatingSummary({ average: null, count: 0 })).toBe("");
     expect(formatRatingSummary(null)).toBe("");
   });

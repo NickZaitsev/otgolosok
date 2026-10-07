@@ -38,3 +38,12 @@ it("keeps the id readable in the map URL and maps it to the shared path", () => 
   expect(placeShareUrl("osm:relation:6", "https://otgolosok.online")).toBe("https://otgolosok.online/place/relation/6");
   expect(() => placeSharePath("long-story")).toThrow();
 });
+
+it.each([
+  ["ru" as const, "/place/node/123", "https://otgolosok.online/place/node/123"],
+  ["en" as const, "/place/node/123?lang=en", "https://otgolosok.online/place/node/123?lang=en"],
+  ["zh" as const, "/place/node/123?lang=zh", "https://otgolosok.online/place/node/123?lang=zh"],
+])("keeps the %s UI language in shared links", (locale, path, url) => {
+  expect(placeSharePath("osm:node:123", locale)).toBe(path);
+  expect(placeShareUrl("osm:node:123", "https://otgolosok.online", locale)).toBe(url);
+});

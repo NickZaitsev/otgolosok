@@ -5,6 +5,7 @@ import { useId, useRef, useState, type CSSProperties } from "react";
 import { ExploreIcon } from "./icons";
 import type { PlacePhoto } from "./place-story";
 import styles from "./place-photo.module.css";
+import { useI18n } from "@/lib/i18n/provider";
 
 export type { PlacePhoto };
 
@@ -20,6 +21,7 @@ export const TALLEST_RATIO = 4 / 5;
  * viewer, and it is no separate control, since keyboard users have the card's own handle.
  */
 export function PlacePhotoBanner({ photo, pending = false, title, onPreview }: { photo?: PlacePhoto; pending?: boolean; title: string; onPreview?: () => void }) {
+  const { locale, t } = useI18n();
   const [bannerFailed, setBannerFailed] = useState(false);
   const [open, setOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -53,11 +55,11 @@ export function PlacePhotoBanner({ photo, pending = false, title, onPreview }: {
 
   return <>
     <button ref={trigger} type="button" className={styles.banner} style={ratio} onClick={showPhoto} data-photo-banner
-      aria-label={`Открыть фото: ${title}`} aria-haspopup="dialog">
+      aria-label={t("Открыть фото: {title}", { title })} aria-haspopup="dialog">
       {/* The full copy: the 250 px preview would be blurry stretched across the card, and the viewer then opens from cache. */}
       {image}
     </button>
-    {openFailed ? <p className={styles.status} role="status">Не удалось открыть фотографию. Попробуйте ещё раз.</p> : null}
+    {openFailed ? <p className={styles.status} role="status">{t("Не удалось открыть фотографию. Попробуйте ещё раз.")}</p> : null}
     <dialog ref={dialog} className={styles.viewer} aria-labelledby={dialogTitle}
       onClose={() => { setOpen(false); trigger.current?.focus({ preventScroll: true }); }}
       onClick={event => {
@@ -66,15 +68,15 @@ export function PlacePhotoBanner({ photo, pending = false, title, onPreview }: {
         if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.current?.close();
       }}>
       <header className={styles.viewerHeader}>
-        <h3 id={dialogTitle}>{title}</h3>
-        <button ref={closeButton} type="button" className={styles.close} aria-label="Закрыть фото" onClick={() => dialog.current?.close()}><ExploreIcon name="close" /></button>
+        <h3 id={dialogTitle} lang={locale === "ru" ? undefined : "ru"}>{title}</h3>
+        <button ref={closeButton} type="button" className={styles.close} aria-label={t("Закрыть фото")} onClick={() => dialog.current?.close()}><ExploreIcon name="close" /></button>
       </header>
       {open ? imageFailed ? <div className={styles.error} role="status">
-        <p>Фотография не загрузилась. Проверьте подключение и попробуйте ещё раз.</p>
-        <button type="button" onClick={() => { setAttempt(value => value + 1); setImageFailed(false); }}>Повторить</button>
+        <p>{t("Фотография не загрузилась. Проверьте подключение и попробуйте ещё раз.")}</p>
+        <button type="button" onClick={() => { setAttempt(value => value + 1); setImageFailed(false); }}>{t("Повторить")}</button>
       </div> : <Image key={attempt} unoptimized src={photo.src} width={photo.width} height={photo.height}
         loading="eager" alt={photo.alt} className={styles.full} onError={() => setImageFailed(true)} /> : null}
-      <p className={styles.credit}>Фото: {photo.author ? `${photo.author}. ` : null}<a href={photo.sourceUrl} target="_blank" rel="noopener noreferrer">Wikimedia Commons</a> · <a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer">{photo.license}</a></p>
+      <p className={styles.credit}>{t("Фото:")} {photo.author ? `${photo.author}. ` : null}<a href={photo.sourceUrl} target="_blank" rel="noopener noreferrer">Wikimedia Commons</a> · <a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer">{photo.license}</a></p>
     </dialog>
   </>;
 }

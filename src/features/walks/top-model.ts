@@ -1,4 +1,6 @@
 import type { ReviewSummary } from "../reviews/model";
+import { localeTag, type Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/translate";
 
 /** One entry of the public «Топ прогулок»: no launch counts and no author by design. */
 export type TopWalk = {
@@ -56,15 +58,19 @@ export function topWalkHref(walk: Pick<TopWalk, "kind" | "id">) {
   return walk.kind === "catalog" ? `/walk?catalog=${encodeURIComponent(walk.id)}` : `/walk?share=${encodeURIComponent(walk.id)}`;
 }
 
-const plural = new Intl.PluralRules("ru");
 const storyWords: Record<string, string> = { one: "история", few: "истории", many: "историй", other: "истории" };
 
-export function storyCountLabel(count: number) {
-  return `${count} ${storyWords[plural.select(count)]}`;
+export function storyCountLabel(count: number, locale: Locale = "ru") {
+  if (locale === "en") return translate(locale, count === 1 ? "{count} история" : "{count} историй", { count });
+  if (locale === "zh") return translate(locale, "{count} историй", { count });
+  const word = storyWords[new Intl.PluralRules(localeTag[locale]).select(count)];
+  return `${count} ${word}`;
 }
 
 /** «45 мин · 3,2 км · 6 историй». */
-export function formatTopWalkMeta(walk: Pick<TopWalk, "walkingMinutes" | "distanceM" | "stopCount">) {
-  const km = (walk.distanceM / 1000).toLocaleString("ru-RU", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  return `${Math.round(walk.walkingMinutes)} мин · ${km} км · ${storyCountLabel(walk.stopCount)}`;
+export function formatTopWalkMeta(walk: Pick<TopWalk, "walkingMinutes" | "distanceM" | "stopCount">, locale: Locale = "ru") {
+  const km = (walk.distanceM / 1000).toLocaleString(localeTag[locale], { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  return translate(locale, "{minutes} мин · {distance} км · {stories}", {
+    minutes: Math.round(walk.walkingMinutes), distance: km, stories: storyCountLabel(walk.stopCount, locale),
+  });
 }

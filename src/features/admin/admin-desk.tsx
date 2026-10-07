@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useEffect, useRef, useState } from "react";
 import { BrandMark } from "../brand/brand-mark";
@@ -302,7 +303,7 @@ export function AdminDesk() {
         <div className="admin-login">
           <p className="admin-context">Доступ для редактора</p><h2>Войти в редакцию</h2>
           <p id="admin-token-note">Войдите по email аккаунтом с ролью редактора.</p>
-          <a className="admin-primary" href="/login?returnTo=/admin" aria-describedby="admin-token-note">Войти</a>
+          <Link className="admin-primary" href="/login?returnTo=/admin" aria-describedby="admin-token-note">Войти</Link>
         </div>
       ) : (
         <div className="admin-workspace" aria-busy={Boolean(busy)}>

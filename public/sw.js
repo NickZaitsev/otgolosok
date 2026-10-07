@@ -115,7 +115,10 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (request.headers.has("authorization") || /^\/admin(?:\/|\.|$)/.test(url.pathname) || url.pathname.startsWith("/api/story-admin")) return;
-  const path = url.pathname === "/index.html" ? "/" : ["/walk.html","/walk/"].includes(url.pathname) ? "/walk" : ["/history.html","/history/"].includes(url.pathname) ? "/history" : url.pathname;
+  const path = url.pathname === "/index.html" ? "/"
+    : /^\/(?:en|zh)(?:\/(?:login|account|walk|history))?\.html$/.test(url.pathname) ? url.pathname.slice(0, -5)
+    : /^\/(?:(?:en|zh)(?:\/(?:login|account|walk|history))?|walk|history)\/$/.test(url.pathname) ? url.pathname.slice(0, -1)
+    : ["/walk.html", "/history.html"].includes(url.pathname) ? url.pathname.slice(0, -5) : url.pathname;
   if (path.startsWith("/api/auth/") || path === "/api/me" || path.startsWith("/api/me/")) return;
   if (/^\/api\/story-(?:jobs\/[a-f0-9-]{36}|audio\/[a-f0-9]{64}\.mp3)$/.test(path)) {
     event.respondWith(savedStoryResponse(request,path,path.startsWith("/api/story-audio/")));

@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import { ExploreMap, type ExploreMapProps, type MapHandle, type ZoomLimits } from "../explore/explore-map";
 import { MapAttribution } from "./map-attribution";
+import { LanguageSwitcher } from "@/lib/i18n/language-switcher";
 import { MapBrand } from "./map-brand";
 import { MapControls } from "./map-controls";
 import { mapStatusText, MapStatusNotice, type MapStatus } from "./map-status-notice";
@@ -56,7 +57,7 @@ export function MapShell({ map, onBrand, navigation = true, controls, notices, s
     {sheetExpanded ? <div className={styles.scrim} aria-hidden="true" data-scrim onClick={onCollapseSheet} /> : null}
     <div className={styles.frame} data-dock={hasDock ? undefined : "none"} data-nav={navigation ? undefined : "none"} data-sheet-mode={sheetExpanded ? "expanded" : undefined}>
       <div className={styles.top} inert={sheetExpanded}>
-        <header className={styles.header} data-region="header"><MapBrand onClick={onBrand} /></header>
+        <div className={styles.identity}><header className={styles.header} data-region="header"><MapBrand onClick={onBrand} /></header><LanguageSwitcher compact /></div>
         <MapControls zoom={{ zoomIn, zoomOut, ...limits }}>{controls}</MapControls>
       </div>
       <div className={styles.attribution}><MapAttribution surface={mapCell} /></div>

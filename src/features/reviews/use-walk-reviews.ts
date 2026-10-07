@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toUserMessage } from "@/lib/errors/user-message";
+import { useI18n } from "@/lib/i18n/provider";
 import { deleteReview, loadReviews, resolveReviewer, saveReview, type Reviewer } from "./api";
 import { clearReviewDraft, saveReviewDraft } from "./device";
 import { targetKey, type MyReview, type PublicReview, type ReviewInput, type ReviewStatus, type ReviewSummary, type ReviewTarget } from "./model";
@@ -29,6 +30,7 @@ const empty = (key: string, state: ReviewsState): Data => ({ key, state, reviewe
 
 /** Reviews never break the walk: any load failure, network or schema, ends in "unavailable". */
 export function useWalkReviews(target: ReviewTarget | null): WalkReviewsModel {
+  const { locale, t } = useI18n();
   const key = target ? targetKey(target) : "";
   // The target object may be recreated on every render; only its key restarts loading.
   const targetRef = useRef(target);
@@ -79,7 +81,7 @@ export function useWalkReviews(target: ReviewTarget | null): WalkReviewsModel {
 
   const write = useCallback(async (input: ReviewInput | null): Promise<ReviewActionResult> => {
     const active = targetRef.current;
-    if (!active) return { ok: false, message: "Отзывы к этой прогулке недоступны." };
+    if (!active) return { ok: false, message: t("Отзывы к этой прогулке недоступны.") };
     const reviewer = data.reviewer ?? await resolveReviewer();
     if (input) saveReviewDraft(active, input);
     try {
@@ -90,9 +92,9 @@ export function useWalkReviews(target: ReviewTarget | null): WalkReviewsModel {
       setData(previous => previous.key !== key ? previous : { ...previous, reviewer, summary: result.summary, mine: result.mine });
       return { ok: true, status: result.mine?.status ?? null };
     } catch (error) {
-      return { ok: false, message: toUserMessage(error, input ? "Не удалось отправить отзыв. Повторите попытку." : "Не удалось удалить отзыв. Повторите попытку.") };
+      return { ok: false, message: toUserMessage(error, input ? "Не удалось отправить отзыв. Повторите попытку." : "Не удалось удалить отзыв. Повторите попытку.", locale) };
     }
-  }, [data.reviewer, key]);
+  }, [data.reviewer, key, locale, t]);
 
   return {
     target, state: current.state, reviewer: current.reviewer, summary: current.summary, reviews: current.reviews, nextCursor: current.nextCursor, mine: current.mine,

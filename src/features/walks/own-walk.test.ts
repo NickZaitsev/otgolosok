@@ -36,4 +36,9 @@ describe("own walk", () => {
   ] as const)("notes for %s", (_, input, notes) => {
     expect(ownWalkNotes(view(input))).toEqual(notes);
   });
+
+  it("uses English plural rules instead of Russian rules for 21 stops", () => {
+    const walk = view({ statuses: Array<Status>(21).fill("not_requested") });
+    expect(ownWalkNotes(walk, "en")).toEqual(["21 stops do not have stories yet."]);
+  });
 });

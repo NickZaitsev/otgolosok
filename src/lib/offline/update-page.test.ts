@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 const script = readFileSync(new URL("../../../public/update.js", import.meta.url), "utf8");
 
-function setup(register: () => Promise<unknown>) {
+function setup(register: () => Promise<unknown>, language = "ru") {
   const status = { textContent: "" };
   const button = { hidden: true, addEventListener: vi.fn() };
   const replace = vi.fn();
@@ -12,8 +12,8 @@ function setup(register: () => Promise<unknown>) {
   runInNewContext(script, {
     document: { getElementById: (id: string) => id === "update-status" ? status : button },
     navigator: { serviceWorker },
-    window: { location: { replace } },
-    setTimeout, clearTimeout, AbortController,
+    window: { location: { replace, search: `?lang=${language}` } },
+    setTimeout, clearTimeout, AbortController, URLSearchParams,
   });
   return { status, button, replace, serviceWorker };
 }
@@ -71,5 +71,26 @@ describe("standalone update recovery", () => {
     expect(oldWaiting.postMessage).not.toHaveBeenCalled();
     expect(button.hidden).toBe(false);
     expect(replace).not.toHaveBeenCalled();
+  });
+});
+
+
+describe("язык ручного обновления", () => {
+  it.each(["en", "zh"])("показывает локализованную ошибку в %s", async language => {
+    vi.useFakeTimers();
+    const { status, button } = setup(() => Promise.reject(new Error("Offline")), language);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(status.textContent).not.toMatch(/[А-Яа-яЁё]/);
+    expect(status.textContent).toContain(language === "en" ? "Check your connection" : "请检查网络");
+    expect(button.hidden).toBe(false);
+  });
+  it("возвращается на выбранную языковую страницу после активации", async () => {
+    vi.useFakeTimers();
+    const worker = Object.assign(new EventTarget(), { state: "activated" });
+    const registration = { update: vi.fn().mockResolvedValue(undefined), waiting: null, installing: null, active: worker };
+    const { serviceWorker, replace } = setup(async () => registration, "zh");
+    serviceWorker.controller = worker;
+    await vi.advanceTimersByTimeAsync(0);
+    expect(replace).toHaveBeenCalledExactlyOnceWith("/zh#top");
   });
 });

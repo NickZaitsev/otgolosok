@@ -13,6 +13,7 @@
 }
 
 .banner {
+  min-height: var(--control-min);
   padding: 0;
   overflow: hidden;
   background: var(--control-soft);

@@ -8,6 +8,9 @@ import { navigationSection } from "./app-navigation-state";
 const location = vi.hoisted(() => ({ pathname: "/" }));
 vi.mock("next/navigation", () => ({ usePathname: () => location.pathname }));
 
+import { I18nProvider } from "@/lib/i18n/provider";
+import { localeFromPath } from "@/lib/i18n/locale";
+import type { ComponentProps } from "react";
 import { AppNavigation } from "./app-navigation";
 import { useHideNavigation } from "./navigation-visibility";
 
@@ -21,7 +24,7 @@ let container: HTMLDivElement;
 
 async function render(pathname: string, props: Parameters<typeof AppNavigation>[0] = {}) {
   location.pathname = pathname;
-  await act(async () => { root.render(createElement(AppNavigation, props)); });
+  await act(async () => { root.render(createElement(I18nProvider, { locale: localeFromPath(pathname) } as ComponentProps<typeof I18nProvider>, createElement(AppNavigation, props))); });
   return container.querySelector("nav");
 }
 
@@ -115,5 +118,18 @@ describe("скрытие навигации экраном", () => {
     location.pathname = "/";
     expect(await show([true], { embedded: true, active: "nearby" })).toBeNull();
     expect(await show([false], { embedded: true, active: "nearby" })).not.toBeNull();
+  });
+});
+
+
+describe("языковая навигация", () => {
+  it.each([["/en/history", "History", "/en?walk=create"], ["/zh/history", "历史记录", "/zh?walk=create"]])("сохраняет язык на %s", async (pathname, label, createUrl) => {
+    await render(pathname);
+    expect(current()).toBe(label);
+    expect([...container.querySelectorAll("a")].some(link => link.getAttribute("href") === createUrl)).toBe(true);
+    expect(navigationSection(pathname)).toBe("history");
+  });
+  it.each(["/en", "/zh", "/en/login", "/zh/login"])("не дублирует навигацию на %s", async pathname => {
+    expect(await render(pathname)).toBeNull();
   });
 });

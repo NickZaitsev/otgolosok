@@ -24,6 +24,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import styles from "./explore-map.module.css";
+import { useI18n } from "@/lib/i18n/provider";
 
 /** Raster basemap for browsers without WebGL, which the vector basemap requires. */
 export const FALLBACK_TILE_URL =
@@ -200,6 +201,7 @@ export function ExploreMap({
   onStatus,
   ref,
 }: ExploreMapProps) {
+  const { locale, t } = useI18n();
   const container = useRef<HTMLDivElement>(null);
   const runtime = useRef<{
     L: typeof Leaflet;
@@ -369,7 +371,7 @@ export function ExploreMap({
           clusters: createMapClusters(L, {
             className: styles.cluster,
             spiderLegColor: routeColor,
-          }).addTo(map),
+          }, {}, locale).addTo(map),
           markerById: new Map(),
           position: L.layerGroup().addTo(map),
           route: L.layerGroup().addTo(map),
@@ -419,7 +421,7 @@ export function ExploreMap({
       }
       runtime.current = null;
     };
-  }, [viewState]);
+  }, [viewState, locale]);
 
   // Markers are updated by id instead of being rebuilt: playback re-renders the
   // map often, and a rebuilt marker would drop keyboard focus.
@@ -624,7 +626,7 @@ export function ExploreMap({
       role="region"
       aria-label={
         mapLabel ??
-        "Карта историй. Выберите отметку или нажмите на дом, чтобы подготовить историю."
+        t("Карта историй. Выберите отметку или нажмите на дом, чтобы подготовить историю.")
       }
     />
   );

@@ -1,3 +1,4 @@
+import { siteMetadata } from "@/lib/i18n/root-document";
 import { Suspense } from "react";
 import { WalkLibrary } from "@/features/walks/walk-library";
 
@@ -5,3 +6,5 @@ import { WalkLibrary } from "@/features/walks/walk-library";
 export default function HistoryPage() {
   return <Suspense fallback={<main className="ui-page history-page"><p role="status">Открываем прогулки…</p></main>}><WalkLibrary /></Suspense>;
 }
+
+export const metadata = siteMetadata("ru", "/history");

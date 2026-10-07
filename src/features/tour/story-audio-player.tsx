@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n/provider";
 import { AudioPlayerControls } from "./audio-player-controls";
 import styles from "./audio-player-controls.module.css";
 
@@ -15,6 +16,7 @@ const labels: Record<Status, string> = {
  * hidden audio element. Closing the card stops the sound — a detached element would keep playing.
  */
 export function StoryAudioPlayer({ src, className }: { src: string; className?: string }) {
+  const { t } = useI18n();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [position, setPosition] = useState(0);
@@ -47,7 +49,7 @@ export function StoryAudioPlayer({ src, className }: { src: string; className?: 
   };
 
   return <div className={className}>
-    <audio ref={audioRef} src={src} preload="metadata" aria-label="Озвучка истории"
+    <audio ref={audioRef} src={src} preload="metadata" aria-label={t("Озвучка истории")}
       onLoadedMetadata={event => setDuration(event.currentTarget.duration)}
       onDurationChange={event => setDuration(event.currentTarget.duration)}
       onTimeUpdate={event => setPosition(event.currentTarget.currentTime)}
@@ -56,8 +58,8 @@ export function StoryAudioPlayer({ src, className }: { src: string; className?: 
       onEnded={() => setStatus("ended")}
       onError={() => { if (status === "idle") preloadFailed.current = true; else setStatus("error"); }} />
     <AudioPlayerControls compact className={styles.flush} position={position} duration={duration} canSeek={Number.isFinite(duration) && duration > 0}
-      playing={status === "playing" || status === "loading"} label={labels[status]}
+      playing={status === "playing" || status === "loading"} label={t(labels[status])}
       onToggle={toggle} onSeek={seek} />
-    {status === "error" ? <p className={styles.error} role="alert">Не удалось включить запись. Проверьте соединение и попробуйте ещё раз.</p> : null}
+    {status === "error" ? <p className={styles.error} role="alert">{t("Не удалось включить запись. Проверьте соединение и попробуйте ещё раз.")}</p> : null}
   </div>;
 }

@@ -21,3 +21,22 @@ describe("toUserMessage", () => {
     expect(toUserMessage(error, fallback)).toBe(expected);
   });
 });
+
+
+describe("ошибки в иностранном интерфейсе", () => {
+  it.each(["en", "zh"] as const)("не показывает неизвестную русскую ошибку в %s", locale => {
+    const result = toUserMessage(new Error("Служебная русская ошибка сервера"), fallback, locale);
+    expect(result).not.toMatch(/[А-Яа-яЁё]/);
+    expect(result).toBe(locale === "en" ? "Unable to complete the action." : "无法完成操作。");
+  });
+  it("переводит сетевые ошибки и известные коды, а не детали сервера", () => {
+    expect(toUserMessage(new TypeError("Failed to fetch"), fallback, "zh")).toBe("无法连接服务器。请检查网络后重试。");
+    expect(toUserMessage(Object.assign(new Error("Server details"), { code: "PASSWORD_INVALID" }), fallback, "en")).toBe("Incorrect password.");
+    expect(toUserMessage(new DOMException("timed out", "TimeoutError"), fallback, "en")).toBe("The server is taking too long to respond. Try again.");
+  });
+});
+
+
+it("не воспринимает свойства Object.prototype как коды ошибок", () => {
+  for (const code of ["toString", "constructor", "__proto__"]) expect(toUserMessage(Object.assign(new Error("internal"), { code }), fallback, "en")).toBe("Unable to complete the action.");
+});

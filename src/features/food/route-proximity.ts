@@ -1,5 +1,7 @@
 import type { Coordinates } from "../tour/types";
 import type { FoodPlace } from "./types";
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/translate";
 
 const M_PER_DEG = 111320;
 const scaleX = (lat: number) => M_PER_DEG * Math.cos(lat * Math.PI / 180);
@@ -100,16 +102,16 @@ export function cellsForRoute(geometry: Coordinates[], cellSize = 0.05, bufferM 
   }
   return [...keys].sort((a, b) => { const aa = a.split(":").map(Number), bb = b.split(":").map(Number); return aa[0] - bb[0] || aa[1] - bb[1]; });
 }
-export const formatRouteDistance = (distanceM: number) => `≈ ${Math.round(distanceM)} м от маршрута`;
+export const formatRouteDistance = (distanceM: number, locale: Locale = "ru") => translate(locale, "≈ {distance} м от маршрута", { distance: Math.round(distanceM) });
 export function nearestStop(alongM: number, stops: Array<{ alongM: number }>): number | null {
   if (!stops.length) return null;
   let best = 0;
   for (let i = 1; i < stops.length; i += 1) if (Math.abs(stops[i].alongM - alongM) < Math.abs(stops[best].alongM - alongM)) best = i;
   return best;
 }
-export function formatNearbyStop(alongM: number, stops: Array<{ alongM: number }>): string | null {
+export function formatNearbyStop(alongM: number, stops: Array<{ alongM: number }>, locale: Locale = "ru"): string | null {
   const index = nearestStop(alongM, stops);
-  return index === null ? null : `рядом с остановкой ${index + 1}`;
+  return index === null ? null : translate(locale, "рядом с остановкой {number}", { number: index + 1 });
 }
 
 /** Cumulative vertex distances use the same segment lengths as place projections. */

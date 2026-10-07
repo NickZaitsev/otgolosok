@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { SHARE_PAGE_CSP, renderPlaceSharePage, shareDescription, sharePathToPlaceId } from "./place-share.mjs";
+import { SHARE_PAGE_CSP, renderPlaceSharePage, shareDescription, shareLocale, sharePathToPlaceId, shareUnavailableHtml } from "./place-share.mjs";
 
 const origin = "https://otgolosok.test";
 const paragraph = text => ({ text, factIds: ["f1"] });
@@ -19,6 +19,12 @@ for (const [path, id] of [
   ["/place/node/0", null], ["/place/node/0123", null], ["/place/node/12345678901234567890", null], ["/place/area/1", null],
   ["/place/node/1/", null], ["/place/node/", null], ["/place/node/1.5", null], ["/place/osm:node:1", null],
 ]) test(`share path ${path} → ${id}`, () => assert.equal(sharePathToPlaceId(path), id));
+
+test("shared-link locale accepts only public UI languages", () => {
+  assert.equal(shareLocale("en"), "en");
+  assert.equal(shareLocale("zh"), "zh");
+  for (const value of [null, undefined, "", "ru", "EN", "unknown"]) assert.equal(shareLocale(value), "ru");
+});
 
 test("the description is the first paragraph, cut at a word for a messenger preview", () => {
   assert.equal(shareDescription({ paragraphs: [paragraph("  Короткий\n рассказ.  ")] }, "адрес"), "Короткий рассказ.");
@@ -46,6 +52,17 @@ test("a published place carries its title, text, photo and the map link", () => 
   assert.match(html, /<title>Дом Пашкова — Отголосок<\/title>/);
   assert.match(html, /<link rel="canonical" href="https:\/\/otgolosok\.test\/place\/way\/5">/);
   assert.match(html, /<a id="open" href="\/\?place=osm:way:5">Открыть историю на карте<\/a>/);
+});
+
+test("English and Chinese shared links keep their UI language while story metadata stays Russian", () => {
+  for (const locale of ["en", "zh"]) {
+    const { html } = renderPlaceSharePage({ id: "osm:way:5", place: published(), origin, locale });
+    assert.equal(tag(html, "og:title"), "Дом Пашкова");
+    assert.equal(tag(html, "og:description"), "Дворец на холме напротив Кремля.");
+    assert.equal(tag(html, "og:url"), `${origin}/place/way/5?lang=${locale}`);
+    assert.match(html, new RegExp(`<a id="open" href="/${locale}\\?place=osm:way:5">`));
+  }
+  assert.match(shareUnavailableHtml("osm:node:8", "zh"), /href="\/zh\?place=osm:node:8"/);
 });
 
 test("the inline redirect is the one script the page policy allows", () => {

@@ -1,4 +1,6 @@
 import type * as Leaflet from "leaflet";
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/translate";
 
 export async function loadMapLibrary() {
   // The plugin extends Leaflet's CommonJS object and its browser global.
@@ -41,6 +43,7 @@ export function createMapClusters(
   L: typeof Leaflet,
   { className, spiderLegColor }: { className: string; spiderLegColor: string },
   { now = () => performance.now() }: { now?: () => number } = {},
+  locale: Locale = "ru",
 ): MapClusters {
   // The plugin's own chunkedLoading cannot cancel a marker that is waiting for its chunk:
   // removeLayer ignores it and the chunk adds it later, leaving a ghost or duplicated pin.
@@ -58,7 +61,7 @@ export function createMapClusters(
     },
     iconCreateFunction(cluster) {
       const count = cluster.getChildCount();
-      const label = `Мест: ${count}. Нажмите, чтобы раскрыть группу`;
+      const label = translate(locale, "Мест: {count}. Нажмите, чтобы раскрыть группу", { count });
       Object.assign(cluster.options, { title: label, alt: label });
       const icon = L.divIcon({
         className,

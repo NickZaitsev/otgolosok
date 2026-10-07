@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n/provider";
 import { ExploreMap, type MapHandle, type ZoomLimits } from "../explore/explore-map";
 import { MapAttribution } from "../shell/map-attribution";
 import { MapControls } from "../shell/map-controls";
@@ -11,9 +12,11 @@ import styles from "./walk-map.module.css";
 
 const noop = () => {};
 
-function distanceLabel(meters: number | null) {
+function distanceLabel(meters: number | null, languageTag: string, t: (source: string, values?: Record<string, string | number>) => string) {
   if (meters === null || !Number.isFinite(meters)) return null;
-  return meters < 1000 ? `${Math.max(10, Math.round(meters / 10) * 10)} м` : `${(meters / 1000).toFixed(1).replace(".", ",")} км`;
+  return meters < 1000
+    ? t("{distance} м", { distance: Math.max(10, Math.round(meters / 10) * 10).toLocaleString(languageTag) })
+    : t("{distance} км", { distance: (meters / 1000).toLocaleString(languageTag, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) });
 }
 
 export function WalkMap({ chapters, index, path, user, distanceToNextM, onSelect }: {
@@ -24,6 +27,7 @@ export function WalkMap({ chapters, index, path, user, distanceToNextM, onSelect
   distanceToNextM: number | null;
   onSelect: (index: number) => void;
 }) {
+  const { languageTag, t } = useI18n();
   const [open, setOpen] = useState(true);
   const handle = useRef<MapHandle>(null);
   const [status, setStatus] = useState<MapStatus>({ phase: "loading", tilesOffline: false });
@@ -38,21 +42,21 @@ export function WalkMap({ chapters, index, path, user, distanceToNextM, onSelect
   const items = useMemo(
     () => chapters.map((chapter, position) => ({
       id: chapter.id,
-      title: `Часть ${position + 1}: ${chapter.title}. ${chapter.place}`,
+      title: t("Часть {number}: {title}. {place}", { number: position + 1, title: chapter.title, place: chapter.place }),
       location: chapter.trigger_location ?? chapter.location,
       number: position + 1,
     })),
-    [chapters],
+    [chapters, t],
   );
   if (!chapters.length) return null;
   const next = chapters[index + 1];
-  const distance = distanceLabel(distanceToNextM);
+  const distance = distanceLabel(distanceToNextM, languageTag, t);
 
   return <section className="walk-map" aria-labelledby="walk-map-title">
     <div className="walk-map-head">
-      <h2 id="walk-map-title">Где вы</h2>
+      <h2 id="walk-map-title">{t("Где вы")}</h2>
       <button type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
-        {open ? "Скрыть карту" : "Показать карту"}
+        {t(open ? "Скрыть карту" : "Показать карту")}
       </button>
     </div>
     {open ? <div className={`walk-map-canvas ${styles.canvas}`}>
@@ -61,7 +65,7 @@ export function WalkMap({ chapters, index, path, user, distanceToNextM, onSelect
           const position = chapters.findIndex((chapter) => chapter.id === id);
           if (position >= 0) onSelect(position);
         }} onPoint={noop}
-        mapLabel="Карта прогулки: линия пути, отметки частей по порядку и ваше положение. Нажмите отметку, чтобы слушать эту часть." />
+        mapLabel={t("Карта прогулки: линия пути, отметки частей по порядку и ваше положение. Нажмите отметку, чтобы слушать эту часть.")} />
       <div className={styles.overlay}>
         <MapStatusNotice status={status} />
         <div className={styles.row}>
@@ -72,8 +76,8 @@ export function WalkMap({ chapters, index, path, user, distanceToNextM, onSelect
     </div> : null}
     <p className="walk-map-next" role="status">
       {next
-        ? <>Дальше: {index + 2}. {next.title}{distance ? <> · {distance} по прямой</> : null}</>
-        : <>Финиш: {chapters[index]?.place}</>}
+        ? <>{t("Дальше: {number}. {title}", { number: index + 2, title: next.title })}{distance ? <> · {t("{distance} по прямой", { distance })}</> : null}</>
+        : <>{t("Финиш: {place}", { place: chapters[index]?.place ?? "" })}</>}
     </p>
   </section>;
 }

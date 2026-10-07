@@ -1,3 +1,4 @@
+import { isLocale, localizedPath, unlocalizedPath } from "@/lib/i18n/locale";
 import { hasNativePlugin } from "@/lib/native/platform";
 import { isPlaceId, placeMapUrl } from "../explore/place-link";
 
@@ -20,9 +21,12 @@ export function inAppPathFromUrl(url: string, appOrigin: string): string | null 
   const share = PLACE_SHARE_PATH.exec(parsed.pathname);
   if (share) {
     const id = `osm:${share[1]}:${share[2]}`;
-    return isPlaceId(id) ? placeMapUrl(id) : null;
+    const requestedLocale = parsed.searchParams.get("lang");
+    const locale = requestedLocale && isLocale(requestedLocale) ? requestedLocale : "ru";
+    return isPlaceId(id) ? localizedPath(placeMapUrl(id), locale) : null;
   }
-  if (parsed.pathname === "/" || parsed.pathname === "/walk") return `${parsed.pathname}${parsed.search}`;
+  const pathname = unlocalizedPath(parsed.pathname).replace(/\/+$/, "") || "/";
+  if (pathname === "/" || pathname === "/walk") return `${parsed.pathname}${parsed.search}`;
   return null;
 }
 
@@ -38,7 +42,7 @@ export type AppLinkOptions = {
 export function openInAppPath(path: string, options: AppLinkOptions, page: Pick<Location, "pathname" | "search" | "assign"> = location): void {
   if (path === `${page.pathname}${page.search}`) return;
   const target = new URL(path, "https://app.invalid");
-  if (target.pathname === "/" && page.pathname === "/" && target.searchParams.has("place")) {
+  if (unlocalizedPath(target.pathname) === "/" && target.pathname === page.pathname && target.searchParams.has("place")) {
     history.pushState({}, "", path);
     return;
   }

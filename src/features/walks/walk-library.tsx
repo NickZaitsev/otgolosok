@@ -12,6 +12,7 @@ import { mergePage } from "../account/pagination";
 import "./history.css";
 import styles from "./walk-library.module.css";
 import { toUserMessage } from "@/lib/errors/user-message";
+import { useI18n } from "@/lib/i18n/provider";
 type Card = WalkCard & { distanceM?: number; walkingMinutes?: number; draft?: boolean };
 type Tab = "mine" | "top";
 const TABS: Array<{ id: Tab; title: string }> = [{ id: "mine", title: "Мои прогулки" }, { id: "top", title: "Топ прогулок" }];
@@ -27,6 +28,7 @@ export function selectedTab(param: string | null, loading: boolean, ownCount: nu
 }
 
 export function WalkLibrary() {
+  const { languageTag, locale, path, t } = useI18n();
   const params = useSearchParams();
   const [local, setLocal] = useState<Card[]>([]);
   const [account, setAccount] = useState<Card[]>([]);
@@ -43,7 +45,7 @@ export function WalkLibrary() {
   const tabRefs = useRef<Record<Tab, HTMLButtonElement | null>>({ mine: null, top: null });
   useEffect(() => {
     let active = true;
-    const fail = (key: string, caught: unknown) => { if (active) setErrors(current => ({ ...current, [key]: toUserMessage(caught, "Не удалось открыть прогулки.") })); };
+    const fail = (key: string, caught: unknown) => { if (active) setErrors(current => ({ ...current, [key]: toUserMessage(caught, "Не удалось открыть прогулки.", locale) })); };
     void (async () => {
       try {
         migrateLocalWalks(localStorage);
@@ -56,25 +58,25 @@ export function WalkLibrary() {
       if (active) setLoading(false);
     })();
     return () => { active = false; };
-  }, [attempt]);
+  }, [attempt, locale]);
   async function more() {
     if (!cursor || busy) return; setBusy("page");
     try {
       const data = await accountApi(`/api/me/walks?cursor=${encodeURIComponent(cursor)}`);
       setAccount(current => mergePage(current, data.walks.map((item: WalkCard) => ({ ...item, kind: "account" })), (item: Card) => item.id)); setCursor(data.nextCursor ?? null);
-    } catch (caught) { setErrors(current => ({ ...current, page: toUserMessage(caught, "Не удалось загрузить следующую страницу.") })); }
+    } catch (caught) { setErrors(current => ({ ...current, page: toUserMessage(caught, "Не удалось загрузить следующую страницу.", locale) })); }
     finally { setBusy(null); }
   }
-  async function copy(token: string, done = "Ссылка скопирована.") {
-    const url = `${location.origin}/walk?share=${encodeURIComponent(token)}`;
-    try { await navigator.clipboard.writeText(url); setNotice(done); } catch { setNotice(`Скопируйте ссылку: ${url}`); }
+  async function copy(token: string, done = t("Ссылка скопирована.")) {
+    const url = `${location.origin}${path(`/walk?share=${encodeURIComponent(token)}`)}`;
+    try { await navigator.clipboard.writeText(url); setNotice(done); } catch { setNotice(t("Скопируйте ссылку: {url}", { url })); }
   }
   async function accessSaved(previous: Card, walk: WalkCard) {
     setAccessCard(null);
     setAccount(current => current.map(item => item.id === previous.id ? { ...item, ...walk, kind: "account" } : item));
-    if (!walk.shareToken) { setNotice("Доступ закрыт: прогулку видите только вы."); return; }
+    if (!walk.shareToken) { setNotice(t("Доступ закрыт: прогулку видите только вы.")); return; }
     const awaitsReview = walk.visibility === "public" && walk.listingStatus === "pending" && !(previous.visibility === "public" && previous.listingStatus === "pending");
-    await copy(walk.shareToken, awaitsReview ? "Ссылка скопирована. Прогулка появится в топе после проверки." : "Ссылка скопирована.");
+    await copy(walk.shareToken, t(awaitsReview ? "Ссылка скопирована. Прогулка появится в топе после проверки." : "Ссылка скопирована."));
   }
   const cards = [...account, ...local].sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
   const visible = cards.filter(card => filter === "all" || card.draft);
@@ -98,20 +100,35 @@ export function WalkLibrary() {
     selectTab(next.id, true);
   }
   return <main className="ui-page history-page"><AppHeader />
-    <header className="history-heading"><div><p className="ui-eyebrow">Ваши маршруты</p><h1>История прогулок</h1><p className="ui-muted">Знакомые места. Новые открытия. Всё, к чему хочется вернуться.</p></div></header>
-    <div role="tablist" aria-label="Прогулки" className={styles.tabs}>
+    <header className="history-heading"><div><p className="ui-eyebrow">{t("Ваши маршруты")}</p><h1>{t("История прогулок")}</h1><p className="ui-muted">{t("Знакомые места. Новые открытия. Всё, к чему хочется вернуться.")}</p></div></header>
+    <div role="tablist" aria-label={t("Прогулки")} className={styles.tabs}>
       {TABS.map(item => <button key={item.id} ref={element => { tabRefs.current[item.id] = element; }} type="button" role="tab" id={`history-tab-${item.id}`}
         aria-selected={tab === item.id} aria-controls={`history-panel-${item.id}`} tabIndex={tab === item.id || (tab === null && item.id === "mine") ? 0 : -1}
-        className={styles.tab} onClick={() => selectTab(item.id)} onKeyDown={tabKeys}>{item.title}</button>)}
+        className={styles.tab} onClick={() => selectTab(item.id)} onKeyDown={tabKeys}>{t(item.title)}</button>)}
     </div>
     <section role="tabpanel" id="history-panel-mine" aria-labelledby="history-tab-mine" hidden={tab === "top"}>
-      <div className={styles.toolbar}><div className="history-filters"><button aria-pressed={filter === "all"} onClick={() => setFilter("all")}>Все прогулки</button><button aria-pressed={filter === "draft"} onClick={() => setFilter("draft")}>Черновики</button></div><Link href="/?walk=create" className="ui-button">Новая прогулка <span aria-hidden="true">＋</span></Link></div>
-      {Object.entries(errors).map(([key, message]) => <p key={key} role="alert" className="ui-notice">{message} <button className="history-retry" onClick={() => { setErrors({}); setLoading(true); setAttempt(value => value + 1); }}>Повторить</button></p>)}
-      {loading ? <p role="status" className="ui-muted">Загружаем ваши прогулки…</p> : <>
-        {visible.length ? <ul className="history-grid">{visible.map(card => <li key={`${card.kind}:${card.id}`}><article className="history-card"><div className="history-card-body"><span className="history-badge">{card.draft ? "Черновик" : card.kind === "local" ? "На устройстве" : "В аккаунте"}</span><Link className="history-card-title" href={`/walk?${card.kind === "local" ? "local" : "id"}=${encodeURIComponent(card.id)}`}><h2>{card.title}</h2></Link>{card.subtitle && <p>{card.subtitle}</p>}<p className="ui-muted">{[card.walkingMinutes ? `${card.walkingMinutes} мин пешком` : null, card.distanceM ? `${(card.distanceM / 1000).toFixed(1)} км` : null, card.updatedAt ? new Date(card.updatedAt).toLocaleDateString("ru-RU") : null].filter(Boolean).join(" · ")}</p>{card.kind === "account" && <p className={styles.access}>Доступ: {accessLabel(card)}</p>}<div className="history-actions"><Link href={`/?walk=create&${card.kind === "local" ? "local" : "id"}=${encodeURIComponent(card.id)}&edit=1`}>Редактировать</Link>{card.kind === "account" && <button disabled={busy !== null} aria-haspopup="dialog" onClick={() => { setNotice(""); setAccessCard(card); }}>Доступ</button>}{card.shareToken && <button onClick={() => void copy(card.shareToken!)}>Скопировать ссылку</button>}</div></div></article></li>)}</ul> : <section className="history-empty"><span aria-hidden="true">↗</span><h2>{filter === "draft" ? "Нет незаконченных прогулок" : "Начните свою историю города"}</h2><p>Выберите дом на карте или задайте начало маршрута.{" "}<br />Сохранённые прогулки появятся здесь.</p><Link className="ui-button" href="/?walk=create">Создать прогулку</Link></section>}
-        {cursor && <button className="ui-button secondary" disabled={busy !== null} onClick={() => void more()}>Показать ещё</button>}
+      <div className={styles.toolbar}><div className="history-filters"><button aria-pressed={filter === "all"} onClick={() => setFilter("all")}>{t("Все прогулки")}</button><button aria-pressed={filter === "draft"} onClick={() => setFilter("draft")}>{t("Черновики")}</button></div><Link href={path("/?walk=create")} className="ui-button">{t("Новая прогулка")} <span aria-hidden="true">＋</span></Link></div>
+      {Object.entries(errors).map(([key, message]) => <p key={key} role="alert" className="ui-notice">{message} <button className="history-retry" onClick={() => { setErrors({}); setLoading(true); setAttempt(value => value + 1); }}>{t("Повторить")}</button></p>)}
+      {loading ? <p role="status" className="ui-muted">{t("Загружаем ваши прогулки…")}</p> : <>
+        {visible.length ? <ul className="history-grid">{visible.map(card => <li key={`${card.kind}:${card.id}`}><article className="history-card"><div className="history-card-body">
+          <span className="history-badge">{t(card.draft ? "Черновик" : card.kind === "local" ? "На устройстве" : "В аккаунте")}</span>
+          <Link className="history-card-title" href={path(`/walk?${card.kind === "local" ? "local" : "id"}=${encodeURIComponent(card.id)}`)}><h2>{card.title}</h2></Link>
+          {card.subtitle && <p>{card.subtitle}</p>}
+          <p className="ui-muted">{[
+            card.walkingMinutes ? t("{minutes} мин пешком", { minutes: card.walkingMinutes }) : null,
+            card.distanceM ? t("{distance} км", { distance: (card.distanceM / 1000).toLocaleString(languageTag, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) }) : null,
+            card.updatedAt ? new Date(card.updatedAt).toLocaleDateString(languageTag) : null,
+          ].filter(Boolean).join(" · ")}</p>
+          {card.kind === "account" && <p className={styles.access}>{t("Доступ: {access}", { access: accessLabel(card, locale) })}</p>}
+          <div className="history-actions">
+            <Link href={path(`/?walk=create&${card.kind === "local" ? "local" : "id"}=${encodeURIComponent(card.id)}&edit=1`)}>{t("Редактировать")}</Link>
+            {card.kind === "account" && <button disabled={busy !== null} aria-haspopup="dialog" onClick={() => { setNotice(""); setAccessCard(card); }}>{t("Доступ")}</button>}
+            {card.shareToken && <button onClick={() => void copy(card.shareToken!)}>{t("Скопировать ссылку")}</button>}
+          </div>
+        </div></article></li>)}</ul> : <section className="history-empty"><span aria-hidden="true">↗</span><h2>{t(filter === "draft" ? "Нет незаконченных прогулок" : "Начните свою историю города")}</h2><p>{t("Выберите дом на карте или задайте начало маршрута.")}{" "}<br />{t("Сохранённые прогулки появятся здесь.")}</p><Link className="ui-button" href={path("/?walk=create")}>{t("Создать прогулку")}</Link></section>}
+        {cursor && <button className="ui-button secondary" disabled={busy !== null} onClick={() => void more()}>{t("Показать ещё")}</button>}
         {notice && <p className="ui-notice" role="status">{notice}</p>}
-        {guest && <aside className="history-signin"><div><h2>Ваши прогулки — с вами</h2><p>Войдите, чтобы открывать их на других устройствах и делиться ссылками.</p></div><Link className="ui-button quiet" href="/login?returnTo=/history">Войти</Link></aside>}
+        {guest && <aside className="history-signin"><div><h2>{t("Ваши прогулки — с вами")}</h2><p>{t("Войдите, чтобы открывать их на других устройствах и делиться ссылками.")}</p></div><Link className="ui-button quiet" href={path(`/login?returnTo=${encodeURIComponent(path("/history"))}`)}>{t("Войти")}</Link></aside>}
       </>}
     </section>
     <section role="tabpanel" id="history-panel-top" aria-labelledby="history-tab-top" hidden={tab !== "top"}>

@@ -56,3 +56,7 @@ it("returns the next opening within a week with structured day and time", () => 
   expect(at("Mo 09:00-10:00", "2026-10-05T10:00:00+03:00").opensAt).toEqual({ day: "пн", time: "09:00", daysAhead: 7 });
   expect(parseOpeningHours("Mo-Fr,Su 09:00-22:00")?.minutes.length).toBe(10080);
 });
+it("formats open and next-opening states in English and simplified Chinese", () => {
+  expect(formatHoursStatus(at("Mo-Su 09:00-22:00", "2026-10-05T12:00:00+03:00"), "en")).toBe("Open until 22:00");
+  expect(formatHoursStatus(at("Sa,Su 09:00-22:00", "2026-10-05T12:00:00+03:00"), "zh")).toBe("已打烊，周六 9:00 开门");
+});

@@ -1,8 +1,9 @@
 import { useId } from "react";
+import { useI18n } from "@/lib/i18n/provider";
 import type { HistoricalContent } from "./types";
 
 export function StoryText({ story }: { story: HistoricalContent["story"] }) {
-  return <div className="story-text">
+  return <div className="story-text" lang="ru">
     {story.paragraphs.map((paragraph) => <p key={paragraph.id}>{paragraph.text}</p>)}
   </div>;
 }
@@ -12,25 +13,26 @@ export function StorySources({ content, open, onToggle }: {
   open: boolean;
   onToggle: () => void;
 }) {
+  const { languageTag, t } = useI18n();
   const sourcesId = useId();
   const checkedAt = content.story.checked_at && !Number.isNaN(new Date(content.story.checked_at).getTime())
-    ? new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(content.story.checked_at))
+    ? new Intl.DateTimeFormat(languageTag, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(content.story.checked_at))
     : null;
   return <div className="source-control">
     <button type="button" onClick={onToggle} aria-expanded={open} aria-controls={sourcesId}>
-      {open ? "Скрыть источники" : "Откуда это известно?"}
+      {t(open ? "Скрыть источники" : "Откуда это известно?")}
     </button>
     <div id={sourcesId} hidden={!open}>
-      {checkedAt ? <p className="source-note">Проверено по публикациям {checkedAt}</p> : <p className="source-note">Дата проверки не указана.</p>}
-      <ol className="source-list">{content.sources.map((source) => (
+      {checkedAt ? <p className="source-note">{t("Проверено по публикациям {date}", { date: checkedAt })}</p> : <p className="source-note">{t("Дата проверки не указана.")}</p>}
+      <ol className="source-list" lang="ru">{content.sources.map((source) => (
         <li key={source.id}><a href={source.url} target="_blank" rel="noreferrer">{source.title}</a></li>
       ))}</ol>
       <details className="fact-details">
-        <summary>Факты и подтверждения · {content.facts.length}</summary>
-        <ol className="fact-list">{content.facts.map((fact) => (
+        <summary>{t("Факты и подтверждения · {count}", { count: content.facts.length })}</summary>
+        <ol className="fact-list" lang="ru">{content.facts.map((fact) => (
           <li key={fact.id}>
             <p>{fact.claim}</p>
-            {fact.confidence !== "verified" ? <p className="source-note">{fact.confidence === "legend" ? "Легенда" : "Требует проверки"}</p> : null}
+            {fact.confidence !== "verified" ? <p className="source-note">{t(fact.confidence === "legend" ? "Легенда" : "Требует проверки")}</p> : null}
             {fact.evidence.map((evidence) => {
               const sourceIndex = content.sources.findIndex((source) => source.id === evidence.source_id);
               const source = content.sources[sourceIndex];
@@ -45,7 +47,7 @@ export function StorySources({ content, open, onToggle }: {
           </li>
         ))}</ol>
       </details>
-      <p className="source-note">{content.editorial_note}</p>
+      <p className="source-note" lang="ru">{content.editorial_note}</p>
     </div>
   </div>;
 }

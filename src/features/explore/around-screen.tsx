@@ -32,6 +32,9 @@ import a from "./around.module.css";
 import styles from "./around-screen.module.css";
 import { toUserMessage } from "@/lib/errors/user-message";
 import { describeLocateError, locateOnce } from "@/lib/position/locate";
+import { useI18n } from "@/lib/i18n/provider";
+import { unlocalizedPath, type Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/translate";
 
 type Place = {label:string; address:string|null; location:Coordinates};
 // Keep the nearby viewport across client-side navigation, independently of walk maps.
@@ -42,19 +45,20 @@ function distance(a:Coordinates,b:Coordinates){
 }
 const walkChapterAt=(route:Route,index?:number)=>index===undefined?undefined:getWalkChapters(route)[index];
 /** The card of a story the user ordered: its text and recording once ready, otherwise how far preparation got. */
-export function jobPin(item:MapJob,job:GenerationJob|undefined):StoryPin{
-  const story=job?.story,pending=job?!terminalStages.has(job.stage):false,label=job?stageLabels[job.stage]:"Загружаем состояние истории";
-  const note=!story?undefined:story.verification==="editorial"?"Рассказ проверен и подтверждён редактором."
-    :`Подготовлено автоматически: факты сопоставлены с источниками, редактор ещё не проверял рассказ.${job?.audio?" Озвучено синтетическим голосом.":pending?" Запись появится после озвучки.":""}`;
+export function jobPin(item:MapJob,job:GenerationJob|undefined,locale:Locale="ru"):StoryPin{
+  const story=job?.story,pending=job?!terminalStages.has(job.stage):false,label=translate(locale,job?stageLabels[job.stage]:"Загружаем состояние истории");
+  const note=!story?undefined:story.verification==="editorial"?translate(locale,"Рассказ проверен и подтверждён редактором.")
+    :translate(locale, job?.audio ? "Подготовлено автоматически: факты сопоставлены с источниками, редактор ещё не проверял рассказ. Озвучено синтетическим голосом." : pending ? "Подготовлено автоматически: факты сопоставлены с источниками, редактор ещё не проверял рассказ. Запись появится после озвучки." : "Подготовлено автоматически: факты сопоставлены с источниками, редактор ещё не проверял рассказ.");
   return {...item,jobId:item.id,title:story?.title??item.address,duration:job?.audio?.durationSec,pending,status:label,
     paragraphs:story?.paragraphs.map(paragraph=>paragraph.text),audioUrl:job?.audio?.url,
     attribution:openDataAttribution(story?.sources),sources:story?.sources,
-    progress:{label,pending:!job||pending,note,error:job?.error?.message,canRetry:job?.canRetry??false,retryLabel:story?"Повторить озвучку":"Повторить подготовку"}};
+    progress:{label,pending:!job||pending,note,error:job?.error?.message,canRetry:job?.canRetry??false,retryLabel:translate(locale,story?"Повторить озвучку":"Повторить подготовку")}};
 }
 
 // openChapter — часть, на которой остановили прогулку: карта открывается с её карточкой,
 // а startRef получает кнопку «Слушать эту часть», чтобы вернуть на неё фокус.
 export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef}: {route:Route;onStart:(chapter?:number)=>void;updateAvailable:boolean;openChapter?:number;startRef?:Ref<HTMLButtonElement>}) {
+  const { locale, path, t } = useI18n();
   const router = useRouter();
   const params = useSearchParams();
   const creating = isWalkCreation(params);
@@ -68,7 +72,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const [selected,setSelected]=useState(()=>walkChapterAt(route,openChapter)?.id);
   const {urlPlace,invalid:invalidLink,openPlace,leavePlace,replaceUrl}=usePlaceUrl();
   // Leaving the builder returns to the story it was opened from, with that story's URL; no router navigation.
-  const closeCreation = useCallback(() => { replaceUrl(selected&&isPlaceId(selected)?placeMapUrl(selected):"/"); setPicked(null); setTimeout(() => opener.current?.focus(), 0); }, [replaceUrl,selected]);
+  const closeCreation = useCallback(() => { replaceUrl(path(selected&&isPlaceId(selected)?placeMapUrl(selected):"/")); setPicked(null); setTimeout(() => opener.current?.focus(), 0); }, [path,replaceUrl,selected]);
   const [place,setPlace]=useState<Place|null>(null),[placeBusy,setPlaceBusy]=useState(false),[placeError,setPlaceError]=useState("");
   const [focus,setFocus]=useState<MapFocus|null>(()=>{const chapter=walkChapterAt(route,openChapter);return chapter?{...chapter.location}:null;});
   const [user,setUser]=useState<(Coordinates&{accuracyM:number})|null>(null);
@@ -147,9 +151,9 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
         setTracked(current=>[found,...current.filter(item=>item.id!==id)]);
         setJobs(current=>({...current,[id]:job}));
         setPlace(null);setPrompt(false);setSelectedFood(null);setSelected(id);setFocus({...found.location});
-      }catch(error){if(!controller.signal.aborted)setGeoMessage(toUserMessage(error,"Не удалось открыть историю."));}
+      }catch(error){if(!controller.signal.aborted)setGeoMessage(toUserMessage(error,"Не удалось открыть историю.",locale));}
     })();
-  },[params,pathname,router]);
+  },[params,pathname,router,locale]);
 
   // The URL names the selected catalog place: a link, Back/Forward or the "Рядом" tab change it, the screen follows.
   // The walk builder has its own URL and keeps the story it was opened from.
@@ -165,23 +169,23 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
 
   const pins=useMemo<StoryPin[]>(()=>{
     const chapters=getWalkChapters(route).flatMap((chapter,index)=>index===openChapter?[{id:chapter.id,title:chapter.title,address:chapter.place,location:chapter.location,duration:chapter.audio?.duration_sec,chapter:index,number:index+1}]:[]);
-    const own=tracked.map(item=>jobPin(item,jobs[item.id]));
-    const places=catalog.map(catalogPin);
+    const own=tracked.map(item=>jobPin(item,jobs[item.id],locale));
+    const places=catalog.map(item=>catalogPin(item,locale));
     return [...chapters,...own,...places.filter(place=>![...chapters,...own].some(existing=>existing.id===place.id))];
-  },[route,openChapter,tracked,jobs,catalog]);
+  },[route,openChapter,tracked,jobs,catalog,locale]);
   // A linked place outside the loaded map cells opens from its detail; its catalog pin replaces it once the cell loads.
   const linkedId=selected&&isPlaceId(selected)&&!pins.some(pin=>pin.id===selected)?selected:undefined;
   const linked=usePlaceStory(linkedId);
   const linkedHeader=linkedId&&linked.status==="ready"?linked.story?.place:undefined;
-  const linkedPin=useMemo(()=>linkedId&&linkedHeader&&linked.story?linkedPlacePin(linkedId,linkedHeader,linked.story):undefined,[linkedId,linkedHeader,linked.story]);
+  const linkedPin=useMemo(()=>linkedId&&linkedHeader&&linked.story?linkedPlacePin(linkedId,linkedHeader,linked.story,locale):undefined,[linkedId,linkedHeader,linked.story,locale]);
   const storyPins=useMemo(()=>linkedPin?[...pins,linkedPin]:pins,[pins,linkedPin]);
-  const linkFailure=invalidLink?"Ссылка на историю повреждена.":linkedId&&linked.status==="missing"?"Эта история больше недоступна.":"";
+  const linkFailure=invalidLink?t("Ссылка на историю повреждена."):linkedId&&linked.status==="missing"?t("Эта история больше недоступна."):"";
   if(linkFailure&&linkNotice!==linkFailure)setLinkNotice(linkFailure);
   // A damaged or unpublished link leaves the URL without adding a step.
   useEffect(()=>{if(linkFailure)leavePlace({replace:true});},[linkFailure,leavePlace]);
   const focusPin=focusPlace?storyPins.find(value=>value.id===focusPlace):undefined;
   if(focusPin){setFocusPlace(null);setFocus({...focusPin.location});}
-  const recommendations=useMemo(()=>nearbyCenter?recommendNearbyStories(nearbyCenter,nearbyRadius,catalog.flatMap(place=>place.durationSec!=null?[{id:place.id,title:place.title,address:place.address,location:place.location,durationSec:place.durationSec,sourceCount:place.sources,factCount:place.facts}]:[])):[],[nearbyCenter,nearbyRadius,catalog]);
+  const recommendations=useMemo(()=>nearbyCenter?recommendNearbyStories(nearbyCenter,nearbyRadius,catalog.flatMap(place=>place.durationSec!=null?[{id:place.id,title:place.title,address:place.address,location:place.location,durationSec:place.durationSec,sourceCount:place.sources,factCount:place.facts}]:[]),locale):[],[nearbyCenter,nearbyRadius,catalog,locale]);
   const visible=useMemo(()=>[...storyPins].sort((a,b)=>user?distance(user,a.location)-distance(user,b.location):0),[storyPins,user]);
   const creationItems=useMemo(()=>[
     ...visible.filter(pin=>!creationMap.items.some(point=>distance(pin.location,point.location)<15)).map(pin=>({...pin,compact:true})),
@@ -190,7 +194,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const active=storyPins.find(pin=>pin.id===selected);
   const explorePanel=selectExplorePanel({nearbyCenter:Boolean(nearbyCenter),place:Boolean(place),placeBusy,placeError:Boolean(placeError)});
   const foodItems=useMemo(()=>food.places.map(value=>({id:`food:${value.id}`,title:value.name,location:{lat:value.lat,lon:value.lon},foodKind:value.kind})),[food.places]);
-  const mapItems=useMemo(()=>[...visible,...foodItems,...(place?[{id:"picked-place",title:place.address??"Выбранное место",location:place.location,pending:true}]:[])],[visible,foodItems,place]);
+  const mapItems=useMemo(()=>[...visible,...foodItems,...(place?[{id:"picked-place",title:place.address??t("Выбранное место"),location:place.location,pending:true}]:[])],[visible,foodItems,place,t]);
   const foodPlace = food.visible ? selectedFood : null;
   function selectFood(value: FoodPlace){
     lookup.current?.abort();prepareRequest.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setPreparing(false);setPrepareError("");setNearbyCenter(null);setSelected(undefined);setRetryError("");setLinkNotice("");setPrompt(false);leavePlace();setSelectedFood(value);setFocus({lat:value.lat,lon:value.lon});
@@ -212,7 +216,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     leavePlace();
     setPrompt(false);setSelectedFood(null);setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);
     setFocus({...value});setNearbyCenter(value);
-    if(!isMoscowPoint(value)){setPlaceBusy(false);setPlaceError("Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку.");return;}
+    if(!isMoscowPoint(value)){setPlaceBusy(false);setPlaceError(t("Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку."));return;}
     const timer=setTimeout(()=>controller.abort("timeout"),12000);
     try {
       const params=new URLSearchParams({lat:String(value.lat),lon:String(value.lon)});
@@ -222,7 +226,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       if(lookup.current!==controller||controller.signal.aborted)return;
       setPlace(result);setFocus(result.location);setNearbyCenter(result.location);
     }catch(error){
-      if(lookup.current===controller&&(!controller.signal.aborted||controller.signal.reason==="timeout"))setPlaceError(controller.signal.aborted?"Адрес определялся слишком долго. Нажмите на дом ещё раз.":toUserMessage(error,"Не удалось определить адрес."));
+      if(lookup.current===controller&&(!controller.signal.aborted||controller.signal.reason==="timeout"))setPlaceError(controller.signal.aborted?t("Адрес определялся слишком долго. Нажмите на дом ещё раз."):toUserMessage(error,"Не удалось определить адрес.",locale));
     }finally{clearTimeout(timer);if(lookup.current===controller)setPlaceBusy(false);}
   }
   // Сначала показываем грубую точку, затем уточняем её; поиск рядом запускаем по итоговой.
@@ -235,7 +239,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
         locating.current=null;
         const denied=update.code==="permission-denied";
         setGeo(denied?"denied":"error");
-        setGeoMessage(`${describeLocateError(update.code)} ${denied?"Можно разрешить его в настройках или выбрать место на карте.":"Выберите дом на карте или повторите попытку."}`);
+        setGeoMessage(`${t(describeLocateError(update.code))} ${t(denied?"Можно разрешить его в настройках или выбрать место на карте.":"Выберите дом на карте или повторите попытку.")}`);
         if(denied)setPrompt(false);
         return;
       }
@@ -249,7 +253,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       setGeo("ready");setPrompt(false);setGeoOutside(!inMoscow);
       if(inMoscow&&radius){setNearbyRadius(current=>current>=radius?current:radius);setNearbyCenter(point);}
       else setNearbyCenter(null);
-      setGeoMessage(!inMoscow?"Вы сейчас за пределами нашего каталога.":radius?"":`Положение приблизительное${Number.isFinite(point.accuracyM)?`: точность около ${Math.round(point.accuracyM)} м`:""}. Выберите точку на карте, чтобы точно искать рядом.`);
+      setGeoMessage(!inMoscow?t("Вы сейчас за пределами нашего каталога."):radius?"":Number.isFinite(point.accuracyM)?t("Положение приблизительное: точность около {accuracy} м. Выберите точку на карте, чтобы точно искать рядом.",{accuracy:Math.round(point.accuracyM)}):t("Положение приблизительное. Выберите точку на карте, чтобы точно искать рядом."));
     });
   }
   function showMoscow(){setFocus({...MOSCOW_CENTER,zoom:MOSCOW_ZOOM});setGeoMessage("");setGeoOutside(false);}
@@ -269,8 +273,8 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       lookup.current?.abort();setPlace(null);setNearbyCenter(null);setRetryError("");leavePlace();setSelected(job.id);
     }catch(error){
       if(controller.signal.aborted)return;
-      if((error as {status?:number}).status===401){router.push(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`);return;}
-      setPrepareError(toUserMessage(error,"Не удалось начать подготовку истории."));
+      if((error as {status?:number}).status===401){router.push(path(`/login?returnTo=${encodeURIComponent(location.pathname+location.search)}`));return;}
+      setPrepareError(toUserMessage(error,"Не удалось начать подготовку истории.",locale));
     }finally{if(prepareRequest.current===controller){prepareRequest.current=null;setPreparing(false);}}
   }
   async function retryStory(){
@@ -282,11 +286,11 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       setJobs(current=>({...current,[value.id]:value}));
       // A new list restarts polling, which has already stopped watching this finished job.
       setTracked(current=>[...current]);
-    }catch(error){setRetryError(toUserMessage(error,"Не удалось повторить."));}
+    }catch(error){setRetryError(toUserMessage(error,"Не удалось повторить.",locale));}
     finally{setRetrying(false);}
   }
   // A point without a house number still starts a walk: the builder needs a readable label, so it gets a neutral one.
-  const walkStart=place?{address:place.address??"Точка на карте",location:place.location}:active;
+  const walkStart=place?{address:place.address??t("Точка на карте"),location:place.location}:active;
   const walkHref=walkStart?.address?`/?${new URLSearchParams({walk:"create",address:walkStart.address,lat:String(walkStart.location.lat),lon:String(walkStart.location.lon)})}`:"/?walk=create";
   function closePlace(){lookup.current?.abort();prepareRequest.current?.abort();setPlace(null);setPlaceBusy(false);setPlaceError("");setPreparing(false);setPrepareError("");setNearbyCenter(null);}
 
@@ -318,16 +322,16 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     : null;
   // An empty slot must stay null: the shell gives the dock room only when there is something to show.
   const noticeList = [
-    !creating&&food.zoomHint?<p key="food-zoom" className={a.notice} role="status">Приблизьте карту, чтобы увидеть заведения</p>:null,
-    !creating&&food.error?<div key="food-error" className={styles.catalogStatus} role="status"><span>Не удалось загрузить заведения</span><button type="button" onClick={()=>void food.retry()}>Повторить загрузку заведений</button></div>:null,
-    !creating&&food.loading?<p key="food-loading" className={a.notice} role="status">Загружаем заведения…</p>:null,
-    catalogStatus!=="ready"||catalogMaintenance?<div key="catalog" className={styles.catalogStatus} data-region="catalog-status"><span role="status" aria-atomic="true">{catalogMaintenance?"Сервис обновляется. Карта загрузится автоматически.":catalogStatus==="error"?"Не все места загрузились.":"Загружаем места…"}</span>{catalogStatus==="loading"&&!catalogMaintenance?<progress aria-label="Загрузка мест на карте"/>:null}{catalogStatus==="error"&&!catalogMaintenance?<button type="button" onClick={retryCatalog}>Повторить загрузку мест</button>:null}</div>:null,
-    !creating&&linkedId&&linked.status==="loading"?<LinkNotice key="link" message="Открываем историю…" onClose={()=>leavePlace({replace:true})} />
-    :!creating&&linkedId&&(linked.status==="error"||(linked.status==="ready"&&!linkedHeader))?<LinkNotice key="link" message="Не удалось открыть историю." alert onRetry={linked.status==="error"?linked.retry:undefined} onClose={()=>leavePlace({replace:true})} />
+    !creating&&food.zoomHint?<p key="food-zoom" className={a.notice} role="status">{t("Приблизьте карту, чтобы увидеть заведения")}</p>:null,
+    !creating&&food.error?<div key="food-error" className={styles.catalogStatus} role="status"><span>{t("Не удалось загрузить заведения")}</span><button type="button" onClick={()=>void food.retry()}>{t("Повторить загрузку заведений")}</button></div>:null,
+    !creating&&food.loading?<p key="food-loading" className={a.notice} role="status">{t("Загружаем заведения…")}</p>:null,
+    catalogStatus!=="ready"||catalogMaintenance?<div key="catalog" className={styles.catalogStatus} data-region="catalog-status"><span role="status" aria-atomic="true">{t(catalogMaintenance?"Сервис обновляется. Карта загрузится автоматически.":catalogStatus==="error"?"Не все места загрузились.":"Загружаем места…")}</span>{catalogStatus==="loading"&&!catalogMaintenance?<progress aria-label={t("Загрузка мест на карте")}/>:null}{catalogStatus==="error"&&!catalogMaintenance?<button type="button" onClick={retryCatalog}>{t("Повторить загрузку мест")}</button>:null}</div>:null,
+    !creating&&linkedId&&linked.status==="loading"?<LinkNotice key="link" message={t("Открываем историю…")} onClose={()=>leavePlace({replace:true})} />
+    :!creating&&linkedId&&(linked.status==="error"||(linked.status==="ready"&&!linkedHeader))?<LinkNotice key="link" message={t("Не удалось открыть историю.")} alert onRetry={linked.status==="error"?linked.retry:undefined} onClose={()=>leavePlace({replace:true})} />
     :!creating&&linkNotice?<LinkNotice key="link" message={linkNotice} onClose={()=>setLinkNotice("")} />:null,
     !creating&&geoMessage?<GeoNotice key="geo" message={geoMessage} outside={geoOutside} denied={geo==="denied"} onMoscow={showMoscow} onRetry={locate} onClose={()=>{setGeoMessage("");setGeoOutside(false);}} />:null,
     !creating&&!sheet&&mapHintVisible?<MapHintNotice key="hint" onClose={()=>setMapHintVisible(false)} />:null,
-    !creating&&updateAvailable?<a key="update" className={a.notice} href="/update.html">Доступна новая версия · обновить</a>:null,
+    !creating&&updateAvailable?<a key="update" className={a.notice} href={`/update.html?lang=${locale}`}>{t("Доступна новая версия · обновить")}</a>:null,
   ].filter(Boolean);
   const notices = noticeList.length ? noticeList : null;
 
@@ -336,9 +340,9 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       map={{onViewport:handleViewport,viewState:nearbyMapView,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:foodPlace?`food:${foodPlace.id}`:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
         onSelect:id=>{const value=food.places.find(value=>`food:${value.id}`===id);if(!creating&&value){selectFood(value);return;}const pin=storyPins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
         onPoint:point=>creating?setPicked(point):void findPlace(point)}}
-      controls={creating?null:<>{!food.unavailable&&food.manifest?<MapControlButton aria-label="Еда" aria-pressed={food.enabled} className={styles.foodToggle} onClick={()=>{setSelectedFood(null);food.toggle();}}><ExploreIcon name="cup"/></MapControlButton>:null}<MapControlButton aria-label="Моё местоположение" onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton></>}
+      controls={creating?null:<>{!food.unavailable&&food.manifest?<MapControlButton aria-label={t("Еда")} aria-pressed={food.enabled} className={styles.foodToggle} onClick={()=>{setSelectedFood(null);food.toggle();}}><ExploreIcon name="cup"/></MapControlButton>:null}<MapControlButton aria-label={t("Моё местоположение")} onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton></>}
       notices={notices}
       sheet={sheet} sheetExpanded={reading.expanded&&storyShown} onCollapseSheet={reading.collapse} />
-    {pathname === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();}} />}
+    {unlocalizedPath(pathname) === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();}} />}
   </>;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
+import { useI18n } from "@/lib/i18n/provider";
 import styles from "./stop-walk-dialog.module.css";
 
 /**
@@ -8,6 +9,7 @@ import styles from "./stop-walk-dialog.module.css";
  * Escape, a click on the backdrop and «Продолжить» keep walking; only «Прервать» calls `onConfirm`.
  */
 export function StopWalkDialog({ open, onCancel, onConfirm }: { open: boolean; onCancel: () => void; onConfirm: () => void }) {
+  const { t } = useI18n();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const textId = useId();
@@ -28,12 +30,12 @@ export function StopWalkDialog({ open, onCancel, onConfirm }: { open: boolean; o
       const bounds = event.currentTarget.getBoundingClientRect();
       if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) onCancel();
     }}>
-    <h2 id={titleId}>Прервать прогулку?</h2>
-    <p id={textId}>Звук остановится, и вы вернётесь к описанию маршрута. Начать заново можно в любой момент.</p>
+    <h2 id={titleId}>{t("Прервать прогулку?")}</h2>
+    <p id={textId}>{t("Звук остановится, и вы вернётесь к описанию маршрута. Начать заново можно в любой момент.")}</p>
     <div className={styles.actions}>
       {/* The safe answer comes first and takes the initial focus. */}
-      <button type="button" className={styles.secondary} autoFocus onClick={onCancel}>Продолжить</button>
-      <button type="button" className={styles.danger} onClick={onConfirm}>Прервать</button>
+      <button type="button" className={styles.secondary} autoFocus onClick={onCancel}>{t("Продолжить")}</button>
+      <button type="button" className={styles.danger} onClick={onConfirm}>{t("Прервать")}</button>
     </div>
   </dialog>;
 }

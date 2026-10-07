@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 /**
  * The shared link of a catalog place, `/place/<type>/<number>` (src/features/explore/place-link.ts keeps the same
  * mapping). The static site has one index.html, so a messenger would show the same preview for every place: this
- * page carries the place's Open Graph tags and sends people on to the map URL `/?place=osm:<type>:<number>`.
+ * page carries the place's Open Graph tags and sends people on to the map URL for the requested UI language.
  */
 export const SHARE_PATH = /^\/place\/(node|way|relation)\/([1-9]\d{0,18})$/;
 
@@ -24,6 +24,17 @@ export function sharePathToPlaceId(pathname) {
   const match = SHARE_PATH.exec(pathname);
   return match ? `osm:${match[1]}:${match[2]}` : null;
 }
+
+/** @param {unknown} value @returns {"ru" | "en" | "zh"} */
+export function shareLocale(value) {
+  return value === "en" || value === "zh" ? value : "ru";
+}
+
+/** @param {string} id @param {unknown} locale */
+const placeMapUrl = (id, locale) => {
+  const normalized = shareLocale(locale);
+  return `${normalized === "ru" ? "/" : `/${normalized}`}?place=${id}`;
+};
 
 /** @param {unknown} value */
 const text = value => typeof value === "string" && value.trim() ? value.replace(/\s+/g, " ").trim() : undefined;
@@ -54,13 +65,14 @@ export function shareDescription(story, fallback) {
 /**
  * The preview page of a shared place. An unknown or unpublished place answers 404 with the site's own tags and still
  * leads to the map, which explains that the story is gone.
- * @param {{id: string, place: PublishedPlace | null, origin: string}} input
+ * @param {{id: string, place: PublishedPlace | null, origin: string, locale?: unknown}} input
  * @returns {{status: 200 | 404, html: string}}
  */
-export function renderPlaceSharePage({ id, place, origin }) {
+export function renderPlaceSharePage({ id, place, origin, locale = "ru" }) {
+  locale = shareLocale(locale);
   const [, type, number] = /** @type {RegExpExecArray} */ (/^osm:(node|way|relation):(\d+)$/.exec(id));
-  const shareUrl = `${origin}/place/${type}/${number}`;
-  const mapUrl = `/?place=${id}`;
+  const shareUrl = `${origin}/place/${type}/${number}${locale === "ru" ? "" : `?lang=${locale}`}`;
+  const mapUrl = placeMapUrl(id, locale);
   const story = place?.text?.story ?? null;
   const name = text(place?.name);
   const title = place ? text(story?.title) ?? name ?? SITE_TITLE : SITE_TITLE;
@@ -110,12 +122,13 @@ ${meta("twitter:card", large ? "summary_large_image" : "summary")}
  * The place could not be read (the store failed): no preview tags, so a messenger does not cache a broken preview, and
  * the same way on to the map, which retries on its own.
  * @param {string} id
+ * @param {unknown} [locale]
  */
-export function shareUnavailableHtml(id) {
+export function shareUnavailableHtml(id, locale = "ru") {
   return `<!doctype html>
 <html lang="ru">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${SITE_TITLE}</title></head>
-<body><h1>Не удалось загрузить историю.</h1><p><a id="open" href="${escape(`/?place=${id}`)}">Открыть историю на карте</a></p></body>
+<body><h1>Не удалось загрузить историю.</h1><p><a id="open" href="${escape(placeMapUrl(id, locale))}">Открыть историю на карте</a></p></body>
 </html>
 `;
 }

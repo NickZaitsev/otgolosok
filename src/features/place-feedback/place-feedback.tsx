@@ -10,9 +10,11 @@ import reviewStyles from "../reviews/walk-reviews.module.css";
 import { loadPlaceFeedback, savePlaceFeedback } from "./api";
 import { PLACE_FEEDBACK_TEXT_MAX, type PlaceFeedback as Feedback, type PlaceFeedbackInput, type PlaceRating } from "./model";
 import styles from "./place-feedback.module.css";
+import { useI18n } from "@/lib/i18n/provider";
 
 /** Parent keys this component by place ID: drafts and requests never cross between places. */
 export function PlaceFeedback({ placeId, title }: { placeId: string; title: string }) {
+  const { locale, t } = useI18n();
   const [loaded, setLoaded] = useState<{ reviewer: Reviewer; mine: Feedback | null } | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [failed, setFailed] = useState(false);
@@ -61,7 +63,7 @@ export function PlaceFeedback({ placeId, title }: { placeId: string; title: stri
       const result = await savePlaceFeedback(placeId, loaded.reviewer, input, controller.signal);
       if (!controller.signal.aborted) { setLoaded({ ...loaded, mine: result.mine }); after(result.mine); }
     } catch (cause) {
-      if (!controller.signal.aborted) setError(toUserMessage(cause, "Не удалось сохранить оценку. Повторите попытку."));
+      if (!controller.signal.aborted) setError(toUserMessage(cause, "Не удалось сохранить оценку. Повторите попытку.", locale));
     } finally {
       writing.current = false;
       if (!controller.signal.aborted) setBusy(false);
@@ -73,20 +75,20 @@ export function PlaceFeedback({ placeId, title }: { placeId: string; title: stri
     const next = loaded?.mine?.rating === rating ? null : rating;
     void save({ rating: next, issues: [], text: "" }, mine => {
       if (next === -1) improve(mine);
-      else setNotice(next === 1 ? "Спасибо за оценку!" : "Оценка снята.");
+      else setNotice(t(next === 1 ? "Спасибо за оценку!" : "Оценка снята."));
     });
   }
 
   const issues = canonicalIssues(selected), cleanText = text.trim();
   const unchanged = issues.join() === (loaded?.mine?.issues ?? []).join() && cleanText === (loaded?.mine?.text ?? "");
   return <div className={styles.root}>
-    <div className={styles.actions} role="group" aria-label="Оценка места">
-      <button type="button" disabled={!loaded || busy} aria-pressed={loaded?.mine?.rating === 1} onClick={event => rate(1, event.currentTarget)}><ExploreIcon name="thumbUp" />Нравится</button>
-      <button type="button" disabled={!loaded || busy} aria-pressed={loaded?.mine?.rating === -1} onClick={event => rate(-1, event.currentTarget)}><ExploreIcon name="thumbDown" />Не нравится</button>
+    <div className={styles.actions} role="group" aria-label={t("Оценка места")}>
+      <button type="button" disabled={!loaded || busy} aria-pressed={loaded?.mine?.rating === 1} onClick={event => rate(1, event.currentTarget)}><ExploreIcon name="thumbUp" />{t("Нравится")}</button>
+      <button type="button" disabled={!loaded || busy} aria-pressed={loaded?.mine?.rating === -1} onClick={event => rate(-1, event.currentTarget)}><ExploreIcon name="thumbDown" />{t("Не нравится")}</button>
     </div>
-    {loaded?.mine?.rating === -1 ? <button type="button" className={styles.explain} disabled={busy} onClick={event => { opener.current = event.currentTarget; improve(loaded.mine); }}>Что можно улучшить?</button> : null}
-    {failed ? <p className={styles.message} role="alert">Не удалось загрузить оценку. <button type="button" className={styles.explain} onClick={() => { setFailed(false); setAttempt(value => value + 1); }}>Повторить</button></p> : null}
-    {!loaded && !failed ? <p className={styles.message} role="status">Загружаем оценку…</p> : null}
+    {loaded?.mine?.rating === -1 ? <button type="button" className={styles.explain} disabled={busy} onClick={event => { opener.current = event.currentTarget; improve(loaded.mine); }}>{t("Что можно улучшить?")}</button> : null}
+    {failed ? <p className={styles.message} role="alert">{t("Не удалось загрузить оценку.")} <button type="button" className={styles.explain} onClick={() => { setFailed(false); setAttempt(value => value + 1); }}>{t("Повторить")}</button></p> : null}
+    {!loaded && !failed ? <p className={styles.message} role="status">{t("Загружаем оценку…")}</p> : null}
     {notice ? <p className={styles.message} role="status">{notice}</p> : null}
     {error && !open ? <p className={reviewStyles.error} role="alert">{error}</p> : null}
     <dialog ref={dialog} className={reviewStyles.dialog} aria-labelledby={titleId} onClose={() => { setOpen(false); opener.current?.focus(); }} onClick={event => {
@@ -94,22 +96,22 @@ export function PlaceFeedback({ placeId, title }: { placeId: string; title: stri
       const bounds = event.currentTarget.getBoundingClientRect();
       if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) setOpen(false);
     }}>
-      <header className={reviewStyles.dialogHeader}><div><h2 id={titleId}>Что улучшить в этом месте?</h2><p>{title}</p></div>
-        <button type="button" className={reviewStyles.close} aria-label="Закрыть" onClick={() => setOpen(false)}><ExploreIcon name="close" /></button>
+      <header className={reviewStyles.dialogHeader}><div><h2 id={titleId}>{t("Что улучшить в этом месте?")}</h2><p>{title}</p></div>
+        <button type="button" className={reviewStyles.close} aria-label={t("Закрыть")} onClick={() => setOpen(false)}><ExploreIcon name="close" /></button>
       </header>
       {open ? <form className={reviewStyles.form} onSubmit={event => {
         event.preventDefault();
         if (unchanged || (!issues.length && !cleanText && !loaded?.mine?.text && !loaded?.mine?.issues.length)) return;
-        void save({ rating: -1, issues, text: cleanText }, () => { setOpen(false); setNotice("Спасибо! Передали редакции, что можно улучшить."); });
+        void save({ rating: -1, issues, text: cleanText }, () => { setOpen(false); setNotice(t("Спасибо! Передали редакции, что можно улучшить.")); });
       }}>
         <ImprovementFields selected={selected} busy={busy} onChange={setSelected} />
-        <label className={styles.comment} htmlFor={textId}>Ваш комментарий <span>(необязательно)</span>
+        <label className={styles.comment} htmlFor={textId}>{t("Ваш комментарий")} <span>{t("(необязательно)")}</span>
           <textarea id={textId} rows={3} maxLength={PLACE_FEEDBACK_TEXT_MAX} value={text} disabled={busy} onChange={event => setText(event.target.value)} />
           <span>{text.length} / {PLACE_FEEDBACK_TEXT_MAX}</span>
         </label>
-        <p className={reviewStyles.hint}>Можно выбрать причину или написать своими словами. Дизлайк уже сохранён.</p>
+        <p className={reviewStyles.hint}>{t("Можно выбрать причину или написать своими словами. Дизлайк уже сохранён.")}</p>
         {error ? <p className={reviewStyles.error} role="alert">{error}</p> : null}
-        <button type="submit" className={reviewStyles.primary} disabled={busy || unchanged}>{busy ? "Отправляем…" : "Отправить"}</button>
+        <button type="submit" className={reviewStyles.primary} disabled={busy || unchanged}>{t(busy ? "Отправляем…" : "Отправить")}</button>
       </form> : null}
     </dialog>
   </div>;
