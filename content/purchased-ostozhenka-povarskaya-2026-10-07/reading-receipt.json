@@ -5,528 +5,611 @@
     {
       "tourId": "75e6",
       "chapterCount": 86,
-      "fullTextReadCount": 0,
-      "previewReadCount": 84,
-      "unavailableChapters": [
-        39,
-        57
-      ],
+      "fullTextReadCount": 86,
+      "previewReadCount": 0,
+      "unavailableChapters": [],
       "chapterEvidence": [
         {
           "number": 1,
-          "textSha256": "5256caa96abeca14a08cce27693c4d208ba63df9a29c697f8bb1b841ff8c8947",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "9081313d03a865db90de559277a2a9300f241ef52d857245905908e4864cdd7a",
+          "characterCount": 871,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 2,
-          "textSha256": "2c4be99e4f9ae9dfd0cfbc76d3d4dcb849676c076239120a6719aa25275036ef",
-          "characterCount": 221,
-          "access": "preview"
+          "textSha256": "45778c02416fec5e5e3bbb672752e5f147c7439e96c3deb37983d3399c15be07",
+          "characterCount": 1896,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 3,
-          "textSha256": "0f75f40c1bb1d65038d0eaa27e2030e481698a317afe80860e4d490fef576dcf",
-          "characterCount": 219,
-          "access": "preview"
+          "textSha256": "1fead0b7d2d28159883ba897a1ab6029378ab3a6091462710f8e38ce9371f695",
+          "characterCount": 982,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 4,
-          "textSha256": "fa1b76adcb487a63fa6b0b49e8b784d855c8f022bbbba4a8e91b5c238aedab47",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "fd9eeab66c45c317c8061177aa484d60969b8e0464e382dc76539a255e15c397",
+          "characterCount": 1335,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 5,
-          "textSha256": "c73f46698744c5043283d3d533b6afeb93099bf16ed7e812a98405b59db72055",
-          "characterCount": 217,
-          "access": "preview"
+          "textSha256": "d35784355438b700e4cb430c92892437e2ceb087aa60788c97c073b3997602d4",
+          "characterCount": 522,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 6,
-          "textSha256": "c030bd51c3420fe410b2c1b4d2013d0a1a7566742846f7bac55ec9339cd886bb",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "e67ffcbcfd932a093bb6a41bb713b3472f5d2a81603a6757e1fdbeea556d45f8",
+          "characterCount": 505,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 7,
-          "textSha256": "b5643d725bba9332663cb4342e18e1ddb220e282582f3bb0ea5c2bad5bca1731",
-          "characterCount": 222,
-          "access": "preview"
+          "textSha256": "bf5d7a0e16cfe29c8d991e29d18eda7a37f160bfc9951a1415aa69f432943a6f",
+          "characterCount": 395,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 8,
-          "textSha256": "844f70648848a65baa08145c573a41d132ad728d34fc6c29b24aacbe02843d86",
-          "characterCount": 218,
-          "access": "preview"
+          "textSha256": "6c010b440bcd8f14796883d927b897f2ec67ac726530785e4a4072dac9b3bf71",
+          "characterCount": 890,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 9,
-          "textSha256": "7dd33eda200edcca1392ca84003e72482d8d09a17a53b335db770faae5eb7945",
-          "characterCount": 222,
-          "access": "preview"
+          "textSha256": "92b4a8e115a4f11c007b1d6e35dac7ebd4409b66defb8c38e2f9ecea9b9cc995",
+          "characterCount": 752,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 10,
-          "textSha256": "0e75e66bf0779325b6c55c875836ec5fd0279405cf8c27c98dc2524297694805",
-          "characterCount": 221,
-          "access": "preview"
+          "textSha256": "e7a0f09d0f87a6c3d33118eec4af9384713fe4e24fdfe3c21827b7ab43c530ba",
+          "characterCount": 2065,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 11,
-          "textSha256": "e4bd88579f77938159ae0e6fbc372377e5009caf01a7858d0ed99e022b1d7411",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "c77c7f87838da8842caff26018a8f83130813eb4322c90d0c0b9ad3869702b4b",
+          "characterCount": 398,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 12,
-          "textSha256": "6849f079071e1bd2241632d8b4d5a21db0d190bcb188a866301847ec541916c3",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "a8fe34b6d8e8b7ee9dde499b373b76946d3e97f206faaefd686b7596dd555e96",
+          "characterCount": 363,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 13,
-          "textSha256": "b0039c29acd7569ff82c8dbd327a4bbd13d56a82c6174073efd73a329acb8a54",
-          "characterCount": 216,
-          "access": "preview"
+          "textSha256": "2c1ceb287e6a9748e2c0e2b127c3d07322a9fbe9b147378b8522abebccee95a1",
+          "characterCount": 1800,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 14,
-          "textSha256": "6a2ec5027b670a93c18ffc199bff4da293378924a40d0c8af8df093652ddf503",
-          "characterCount": 222,
-          "access": "preview"
+          "textSha256": "7c9c4329a1893629016b3b3a7c8361f7f58a4a6b668f7dc3dae0ac975a8525cf",
+          "characterCount": 881,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 15,
-          "textSha256": "6990bcf8f6a575713f18db13de5e1a84aaefcd90d6b09f56a12fa5772f9ca577",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "d2ffff24cf21de43e676ce064a5abf8e5518ffadff13f1753d0da9d390037f9d",
+          "characterCount": 310,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 16,
-          "textSha256": "5ceb700b2f37858a7c2aef393f1a0082cc7daa12dcaf65fda0acc1d797a5b18c",
-          "characterCount": 220,
-          "access": "preview"
+          "textSha256": "6a11c1c95eaf6f0bf35ca6afac699e607bd62cfddf5ab0191095de8acf7d42f0",
+          "characterCount": 569,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 17,
-          "textSha256": "c4029f43e1709c78fa744e11a114c6250a6768b0e3c2e5ad31b544a51d55bb47",
-          "characterCount": 219,
-          "access": "preview"
+          "textSha256": "c12732e46ef029e0b14b00d06474abe1eb39d750e14831aa432d2fbdc022abe3",
+          "characterCount": 2080,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 18,
-          "textSha256": "24776595e12431d50911d082b2d5c70370403f881468bd84531b7bd6cdc65ca6",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "0c59adcf5cfc830429f36734c92811977decb6c04ce4fde528ad92417e30640e",
+          "characterCount": 343,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 19,
-          "textSha256": "b2fb20935c6fe2dfd1af2516ecbcca55adbce6a168517de9a9c0def2ff30429e",
-          "characterCount": 222,
-          "access": "preview"
+          "textSha256": "3d932723072cb56fe64de41ce1462ba9d05a8b9ae4dfb9529f953955dbad4f84",
+          "characterCount": 750,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 20,
-          "textSha256": "0ef6cf424131254e08db3310f9b9e25ccb1b78168f1232c947e2e471ae077be2",
-          "characterCount": 222,
-          "access": "preview"
+          "textSha256": "3dad96674e3172bbb6c830e45ab0a0ca5d7f00ae8ef257ae0edb75188bad97d2",
+          "characterCount": 1122,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 21,
-          "textSha256": "f138e7370e08586bde5eadc76c71dea2f70a667d8bac9aaae2c6c8fe218cbff9",
-          "characterCount": 218,
-          "access": "preview"
+          "textSha256": "9c0f48c6176d4afa82974648daed3e5180bad1f0fcd8cb3a1971e611b5d1d5ed",
+          "characterCount": 1465,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 22,
-          "textSha256": "da037c9327d2967b7f5be761cbd87ce2e7e693439cadfeb795030684f8b6c6a3",
-          "characterCount": 218,
-          "access": "preview"
+          "textSha256": "d2f9ad6894bb47301dd05050a5a9074e6cdbcd3533b21966322a9d654090e0b4",
+          "characterCount": 1040,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 23,
-          "textSha256": "38d99748e9427e55fdb7fdf80bf356daac55ae1bd9baff90a7007a4084915f66",
-          "characterCount": 217,
-          "access": "preview"
+          "textSha256": "ba1adad00f97a8fa04232e84648eba8741ea736bdfdf23d3be1fb431c29abbd6",
+          "characterCount": 1310,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 24,
-          "textSha256": "d5b955e8fddf05bbecd4619e94c0751fe37e87d1e31785c1c3631317182ebd60",
-          "characterCount": 217,
-          "access": "preview"
+          "textSha256": "53f88cb1f9c841fcadf04077cce43258616117d26f5b9436626e0e1e252b02fe",
+          "characterCount": 358,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 25,
-          "textSha256": "219d45d8587ada0d635332993b290030921c50789367c11dfdcf6b21c1dfe181",
-          "characterCount": 222,
-          "access": "preview"
+          "textSha256": "b9c0b0a8a6e64bcde7af5b22032f253ae1172e700818b8f5d98e5a165e352b99",
+          "characterCount": 293,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 26,
-          "textSha256": "6fef83221360c271a694c47d4a645f951c42557691dcd3cab9ce54a8492dd3b6",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "63a2dd42c55201b2cdc310c95f5aadf77b0710b6a7d62274ed8f3e564eae5e51",
+          "characterCount": 276,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 27,
-          "textSha256": "2a4de85e663e8550626d4cc83a489b459b8da5b314859865b8eece67c0837b9a",
-          "characterCount": 217,
-          "access": "preview"
+          "textSha256": "af45cc142a0061f50ceb020cb33b31905b482cf60777fffb99c33f48229a24b3",
+          "characterCount": 968,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 28,
-          "textSha256": "0b2f8ba3214e6856c587e7af6110153e07c5347a0f3677a00cfdc56eb8322ee5",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "4e56d49a90b5530c7dfa59529d45b48ec3be8617ed66b1a0278f6f3a90ab4629",
+          "characterCount": 882,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 29,
-          "textSha256": "86662ac37acefa171acff98dd6959e3276921bf07beb38f4ef922b503a5901f4",
-          "characterCount": 219,
-          "access": "preview"
+          "textSha256": "6fd017669e2c02e2a4fc6f739fa77d2b77610225d3b38dccee9fce63caa8c8a5",
+          "characterCount": 783,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 30,
-          "textSha256": "e9797a1f35a36b07ca5aac508cee7a65830b04b160aa654ff8395f4ca8ba1b22",
-          "characterCount": 175,
-          "access": "preview"
+          "textSha256": "1a25006b7dd4f767ddc3a8ac9b20e9213284312208128d325b42c1130816d219",
+          "characterCount": 171,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 31,
-          "textSha256": "6a5c15c925f9afed9298de9c3ee33aaebdb32748439742f1466faeae79c1440a",
-          "characterCount": 216,
-          "access": "preview"
+          "textSha256": "1fb187545ea2f5cfc402282b6a5023f14add2a84ce1a306dfb7a2c431cdbc076",
+          "characterCount": 870,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 32,
-          "textSha256": "ee9639d5aa85011d559003590c5b84b99395b07112196c487535b7a48eaadfc1",
-          "characterCount": 216,
-          "access": "preview"
+          "textSha256": "f8d07bfab8a81cab35c266df8ff9a26b54269678fcc5d9d59c271774e924eb15",
+          "characterCount": 1837,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 33,
-          "textSha256": "f3c7bd610f90ff7e4554ddc86bb34640d2cf8cd5a6f9a98ea353276edb00b84d",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "677941649bf684762c10d8ad7500146930a88e8eca32d8c1db3fae3c3e2b6a10",
+          "characterCount": 395,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 34,
-          "textSha256": "aa7ec8c4ca0ea97e46e5b3b840a19fb1c36345b9917ce0b662a688a2f10563c9",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "6f8c780638510e650a70ba9e2d5abcc7d820ae428bf0e45190591bc4311cb6bf",
+          "characterCount": 426,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 35,
-          "textSha256": "f56547794be36a181fe4c17e5a9f386142c1f8279ea5e6c6f3d0557683cd6767",
-          "characterCount": 221,
-          "access": "preview"
+          "textSha256": "1b8ea9677a131e799f276016dc7771a0ca3b2535c02477356372481987460642",
+          "characterCount": 304,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 36,
-          "textSha256": "525fb1fee35440fdf00a4d86863733e72597f66a3f0f86d600fcf3b5ce2cb398",
-          "characterCount": 212,
-          "access": "preview"
+          "textSha256": "4f18442778a62f3a29b6a428b994a9c890aae35d5bed508bcf5114b36bc21465",
+          "characterCount": 1329,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 37,
-          "textSha256": "948b9de660d759e4c11cbd00510c4538568071be568eef4021433b654a67dda4",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "a5bcd27c7772828419fd41445743290fa684b8839e583a3ce95f2e3b7c92a637",
+          "characterCount": 803,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 38,
-          "textSha256": "96903ee4b050e2858114c629eafff36268163d33384466e9f21af2d7d03c0da7",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "41dde17c3ad86dba3560fc4e239d52a8b16bb03ed471b0deb159a82e99f4d426",
+          "characterCount": 1022,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 39,
-          "textSha256": null,
-          "characterCount": 0,
-          "access": "unavailable"
+          "textSha256": "4ea69a995bbacdba2c8806df68a7e13a572bf44ecbbc69539ea0468de9a0c2de",
+          "characterCount": 376,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 40,
-          "textSha256": "26864f7d0c6550f5c1442eeed8203c8b3e65ff35dc0b2ad8ce6b062b8b988b20",
-          "characterCount": 218,
-          "access": "preview"
+          "textSha256": "848c370c2df9674f81269a48548204e354f45c84e80069d057370e447a6d7243",
+          "characterCount": 1130,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 41,
-          "textSha256": "e59e92112274050edba62a195fbc35d8999c21a776b00f91d16762782dbcef74",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "22a9f8808590b5fd1b1829c1bba19b99a46baf1ffe338fa6fade9ca5993d9c2f",
+          "characterCount": 837,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 42,
-          "textSha256": "4c307876cf34532e4f58901b1a56538a3d7c7c2b226143a528f50c2a6b0c8af2",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "ea8928dee0d05e436db1bfc5f5796b74c41645be0b3d48323dbfd4e3689b1956",
+          "characterCount": 391,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 43,
-          "textSha256": "43165e906e70c2f0c323e542cb0a3fabb0e6aa67c88c803d6242e3968f975fcc",
-          "characterCount": 217,
-          "access": "preview"
+          "textSha256": "f2c5bf50b1a10729b6f42886be5147b2c15001f1ef31ebdf70b8e016c1859929",
+          "characterCount": 359,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 44,
-          "textSha256": "36c93a60359fd70d053ca385be96dc743b74cf06b66d21aafaeca72f9cdc797b",
-          "characterCount": 219,
-          "access": "preview"
+          "textSha256": "ee41547cccb9528e4b5367178798244aac426cf13920f59e22213efc5ef4d31f",
+          "characterCount": 564,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 45,
-          "textSha256": "a6fff4dedf20bcd828d5e921ebbbc2acdb731bfdd108425614deb954ed16e536",
-          "characterCount": 221,
-          "access": "preview"
+          "textSha256": "4328f2576501aa2f9c0232a5b4085164ebab6577d2c67e9df9bb44122fa6bfdf",
+          "characterCount": 515,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 46,
-          "textSha256": "616ada3676a6c44b006e1869e64bac87a5049452efc065c50db1662c2ca91a89",
-          "characterCount": 222,
-          "access": "preview"
+          "textSha256": "525d8d65fe5bcd654bdaa2602733a3e391943cc26e49bcf2cd8ebfe7724dabe3",
+          "characterCount": 820,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 47,
-          "textSha256": "3112a75705fd69fa236ae3640c5606837bc26bd1c0846cd06b9a9108a9d647fd",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "90534414e206730556ae1019e5ab4abad61147ebca06f076a6d23d993d40398c",
+          "characterCount": 778,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 48,
-          "textSha256": "e0ae5dd81d524191ba8d7b9b17150c3e167148a0292b54ed5f9402abf2cc381f",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "e3dabe7b06a80d98a8422cb5e1048f2f318e6c8b16bc7ce9e6a570cce56e6197",
+          "characterCount": 242,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 49,
-          "textSha256": "96117d4762da75b468bf51a94ff7e52b99542f416965a2bd25dfd3b09d141e1c",
-          "characterCount": 222,
-          "access": "preview"
+          "textSha256": "688641174b1c3e20328b679f78ae3b453a434c741ebfc5489529d4dcd75e29ef",
+          "characterCount": 381,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 50,
-          "textSha256": "03b7c2e5eca29988e0cc6af6321ef8812cdabcb7b477a283d49116b78942fe63",
-          "characterCount": 220,
-          "access": "preview"
+          "textSha256": "e471a34f3b6f2236fce48f191a2b47476a0d5f443698f6177301fde57b1ec945",
+          "characterCount": 907,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 51,
-          "textSha256": "a56c3c01941865d4dad68122c48a96d84e46b0fa0ddacfd6bd1339c3655cbff1",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "4f0795e95f1947eadd3e0d0385d4a0e4d91dcad106fef1d8bb2dca8b56fdafa0",
+          "characterCount": 643,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 52,
-          "textSha256": "6e94c8a7adf09b259b03a6a37dcde80727c5a85193070963555ce9835bf74b7a",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "b9d982b8fbb50132687f8f59375184149a2dd8bdbb32d4f0966498c31e21a6d7",
+          "characterCount": 290,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 53,
-          "textSha256": "8e01d6effbe4d4524c62fc5c974cc2e6ca54c8435bba46b4bdc0f4c6fe78befd",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "5a8a70c3f75ccde4450004a99edea5ab1d49bef2e11c88c31df465b7110fbff5",
+          "characterCount": 644,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 54,
-          "textSha256": "44aedd5354fafea137d180d90341dd2109361c746fbc8eedc7d60260067b6872",
-          "characterCount": 205,
-          "access": "preview"
+          "textSha256": "972c5f2f341e9d7fe3d8f48764a4071176e439259fbe7f8a58215d9e2cac3bb0",
+          "characterCount": 201,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 55,
-          "textSha256": "b1c340407954c1e0e34bf56dbbbaf568a740afc75220098a3e1f600f9163a140",
-          "characterCount": 216,
-          "access": "preview"
+          "textSha256": "fa3dbad52797f276dfc04e366b80fc003053d8fc07452b6aad6d0d687f892103",
+          "characterCount": 1068,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 56,
-          "textSha256": "5d05c42d736d0f39dc0e144219c8b16583dd8ebafcef05d819574e769669340b",
-          "characterCount": 215,
-          "access": "preview"
+          "textSha256": "0e5fadb02ee0c556a5d456748ae953c1ba8edc0504924d1ad1e8d9a1f733ea6d",
+          "characterCount": 553,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 57,
-          "textSha256": null,
-          "characterCount": 0,
-          "access": "unavailable"
+          "textSha256": "dd88b48ce1b6a81dfc6c401b6d870fe146edb39cc27601f2103ffe2f9c0bbf23",
+          "characterCount": 199,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 58,
-          "textSha256": "9cf40c9efb14e2f15cca7d5d69365f2d16d9d9f9ff40107f5c84b55df808067c",
-          "characterCount": 219,
-          "access": "preview"
+          "textSha256": "4129cb407d138908da449780ca3dbfdb836ae6c92117fb865d605753c567f191",
+          "characterCount": 391,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 59,
-          "textSha256": "6a460e82cd6c239e9f04b475791eb0c774e48f8670d2e3dfffd0735630b9afcf",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "ce4132c766e7ff27440937d8f4da61066e2bc10de22a9267d2f135ef55898a1b",
+          "characterCount": 659,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 60,
-          "textSha256": "056ac6c1ec8e3d50bb880acba3f9c99c33c2ddcbf25e17a1705b09dd549ab148",
-          "characterCount": 219,
-          "access": "preview"
+          "textSha256": "ac2a715d08b909f368b52afe20107a67c6ea72604746aa2f295127876b683504",
+          "characterCount": 479,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 61,
-          "textSha256": "74a0be0bc50f9b282be38de38e3a2bed6143b0aa1980220ced35970d9ee3e2b4",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "90556747470fe38f4e06ce705aceda26de4bd9ea11f7c0a750ffa00e0b41e38e",
+          "characterCount": 592,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 62,
-          "textSha256": "32a1b70ee36674db02b5cb959f711266e0284cb009d81c1706f198e246e18547",
-          "characterCount": 220,
-          "access": "preview"
+          "textSha256": "805063af8da6b686d9a2806fea4d00944daa020ffec7757ebd4ecda6dc053d07",
+          "characterCount": 512,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 63,
-          "textSha256": "52ab0bc695e35034cd7139a0a11ce9724ad5dfc30f92862ec8cb9bbaad87c2d9",
-          "characterCount": 217,
-          "access": "preview"
+          "textSha256": "636113952d7adf0f3d515eea7788f3ec42cf5dd05e54430c4cca20a397abde5e",
+          "characterCount": 1243,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 64,
-          "textSha256": "c3adbe02e1dbba0be543c6c54185ef1cc04aa4c0938727ccc4ab9a3359c55f1e",
-          "characterCount": 218,
-          "access": "preview"
+          "textSha256": "7a462837edf872460f3720722806e7194aea56b3b8606eed619046595fa3754a",
+          "characterCount": 987,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 65,
-          "textSha256": "edaace3f0ab1882ef4698bf0a627776f38c36eaf612f3e632592508edd111100",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "eac3eb7ff645c4128b36eab3b31f0f49b9b485b3c86383efb40b33fb6432659e",
+          "characterCount": 371,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 66,
-          "textSha256": "cdc41417b41af7fd6e7251e6d7dca944c6b0f1d223e0c5616aa1cd917a2f4fcb",
-          "characterCount": 221,
-          "access": "preview"
+          "textSha256": "7251673c55fa7b14aff74d02af9acb4b4ff118d5862fe8087cad1fe9a88a1c6f",
+          "characterCount": 906,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 67,
-          "textSha256": "ab528ebb2609b0dee57d713009c6871b87b182df7ce98dac872443d1badfe2d6",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "6276ef5beef92237fea21c8c5fdd7beff8c4eb3599a6e883bd9de0d852dd7c0d",
+          "characterCount": 1672,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 68,
-          "textSha256": "d40273816bc00f24d4b984f7c4665823036234081417433c2cadb54ac6ffcce7",
-          "characterCount": 220,
-          "access": "preview"
+          "textSha256": "87c0d2eef4a0ae4423ef45ac13c456c4bc337458fa0c7729019bc960e596adeb",
+          "characterCount": 574,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 69,
-          "textSha256": "09d56e49eb8dbb5a0dc4f6dce55df2e2c4a75dba853b33c966766e4c611230fe",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "3933110aae945fa47c683e766d4ba5057c7522a6358040d81b7767e3cd78bedb",
+          "characterCount": 436,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 70,
-          "textSha256": "7e7beabe40799b1fbaec524984d9d6b3eadabad76869114184191ff48ca86fa2",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "0b0661a184c073d8729171f1a610ab6cf19b624e4af8d70b5bf315f27be041ad",
+          "characterCount": 673,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 71,
-          "textSha256": "8c4d69ce34527c0cab862dcde9e4489e18bd04a26d6a8105a206e329e42d8918",
-          "characterCount": 221,
-          "access": "preview"
+          "textSha256": "727743f3914b891847b07079e31a11761eb7fe446ca7b16cae0465e858906d06",
+          "characterCount": 400,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 72,
-          "textSha256": "30952d3ac9501f4e44592b42b021fb1a0249989ff3608d7d1b34b5d420f40fb5",
-          "characterCount": 222,
-          "access": "preview"
+          "textSha256": "194224b8d09ca7a2f8db5730123a0380bb34efe9cb0e8e20953d95f8ec2b9034",
+          "characterCount": 724,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 73,
-          "textSha256": "61ed9fd859c303c97052f7ac0ae3705473015d4e5406229f0e40b0259ff13592",
-          "characterCount": 218,
-          "access": "preview"
+          "textSha256": "42258aad30d9230db460662e9ff45115f06e80099d23ee3931065358cbcb18cf",
+          "characterCount": 614,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 74,
-          "textSha256": "582d86265a9a5c9148c5d82dd542d3b0cfc3d7779542c93e380a7e20d9a266b5",
-          "characterCount": 221,
-          "access": "preview"
+          "textSha256": "791006006ea3b50b4c9f03cd72083ee45119f9141594af24fcea5e6b85a81e1f",
+          "characterCount": 424,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 75,
-          "textSha256": "4de1a960ed2ff302b8c620390d1e17eddef261c31a11d1c2d9927cc0b10c158d",
-          "characterCount": 218,
-          "access": "preview"
+          "textSha256": "5f0b9a602c3e0aaa2d3b73c1ec09e7a29bb8b56b10235e17b6b8caf035205edb",
+          "characterCount": 442,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 76,
-          "textSha256": "710734901de2ca527107637f448f8a5092d5653bc86d3c14971bcb198dfd2a71",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "1644abe4ff61aa57fcfd69264e1d8aea05fbc9fff9b73c37ad2a721868f9f556",
+          "characterCount": 773,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 77,
-          "textSha256": "e899c958472f62a8f0d011186547498e3d50f44bdb3fed0c11f491ce17141e46",
-          "characterCount": 184,
-          "access": "preview"
+          "textSha256": "9dcf5bb252d61c01ceb1be8e53fc2b34646727bf24c309428137ef3edbab43a6",
+          "characterCount": 180,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 78,
-          "textSha256": "84a53c78018c2eecafcfe99e09b4d17dec3d9ece5d60f312422678c304532eac",
-          "characterCount": 223,
-          "access": "preview"
+          "textSha256": "ebdb3302fa9047a014507756c21411c9e559be62b7550efce3a0e925618669fb",
+          "characterCount": 1730,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 79,
-          "textSha256": "beeca55f19a16747555314d97206258d2e5e990515e9d1c0d6913ee119e2d451",
-          "characterCount": 221,
-          "access": "preview"
+          "textSha256": "c6db07f5110eaa457a9faddf712f45a6cfc277f09a9879738a926ba2747fd5c9",
+          "characterCount": 503,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 80,
-          "textSha256": "430865ae6ee4c35117184563b6b8545db7a41cacbc99ee3e73dce8c3ab045d14",
-          "characterCount": 216,
-          "access": "preview"
+          "textSha256": "e8cdbb66475b2d9523cc772978194a32aa4e2c2e6a2e22f244c96874eae77e11",
+          "characterCount": 906,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 81,
-          "textSha256": "734644dbe907ad4f7839ddbd75de8e8cf969e271dc23eb8862814d3351ab7cd7",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "1d14b6890bf7509e836c4457dc20caccee89c808e4f320ca63fc8498c245a334",
+          "characterCount": 1800,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 82,
-          "textSha256": "c8c3c7885560f7468ebbc2aa13ff530afb545edbdc34820c2e07080c949db2bf",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "bcab3931d79dbddf59ca2910ffca486b40cb4bb8b038229f5f0c41fa7371cf07",
+          "characterCount": 361,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 83,
-          "textSha256": "ca04fb827b5ce76dc1b0167cbc3f9f8d62e96e58078ca730f90c73efeb4ab766",
-          "characterCount": 220,
-          "access": "preview"
+          "textSha256": "547c37c4a31184022cb5ce5bc3148617d6f0ea43d64556c6a54c98cd78f3ee5c",
+          "characterCount": 1797,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 84,
-          "textSha256": "142f9c8e367c1588cada789bd9bfc1729e69c0a5c4b144f40e441ba82e09574d",
-          "characterCount": 221,
-          "access": "preview"
+          "textSha256": "2781eac95cf4aa789b25cc1ad695b8ac7eaf8b3eb4fa26ef1a9ff730c96c5edd",
+          "characterCount": 627,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 85,
-          "textSha256": "4515fe1ff5f80b6ecab23e4df73bfc2ab2e633d8b647896881ddde7c4eabe51b",
-          "characterCount": 224,
-          "access": "preview"
+          "textSha256": "160eea1538fed168956a5aed70f03847d2d81fefbaceda602ea4fbd51d2ef2a7",
+          "characterCount": 1319,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         },
         {
           "number": 86,
-          "textSha256": "7747b3f3ea476f93dc54adb459f124b68e89993c4c5d14c614c3c7422387a384",
-          "characterCount": 217,
-          "access": "preview"
+          "textSha256": "285a2bfc06fd02254564254f5a95476164f29e7f9ecca0d8ad1504f098976244",
+          "characterCount": 783,
+          "access": "full_text",
+          "purchaseBlockPresent": false
         }
       ]
     },
@@ -1003,8 +1086,18 @@
     }
   ],
   "limitations": [
-    "Отметка «Приобретённый» у тура не доказывает доступ к полным главам: Остоженка возвращала paidcontent и усечённые превью.",
-    "Текст глав Поварской прочитан, но все утверждения аудиогида не проверены и его звук не прослушан.",
-    "Копии текстов для личного анализа остаются только в игнорируемом artifacts; публичный пакет содержит метаданные и собственные черновики."
-  ]
+    "До входа пользователя значок покупки не подтверждал доступ внутри глав; после входа все86глав получены без paidcontent и усечения",
+    "Полные тексты 163 глав получены; аудиозаписи не прослушаны и не все исторические утверждения независимо проверены",
+    "Локальные копии платного содержания остаются только в игнорируемом artifacts; публичный пакет содержит метаданные и собственные черновики"
+  ],
+  "previousAccess": {
+    "fullTextReadCount": 77,
+    "previewReadCount": 84,
+    "unavailableChapters": [
+      39,
+      57
+    ],
+    "note": "Состояние до входа пользователя; сохранено как история проверки, не текущий блокер"
+  },
+  "fullAccessConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
 }

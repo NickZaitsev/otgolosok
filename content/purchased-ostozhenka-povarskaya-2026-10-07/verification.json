@@ -1,13 +1,13 @@
 {
-  "checkedAt": "2026-10-07T13:23:29.976459+00:00",
+  "checkedAt": "2026-10-07T14:57:45.567308+00:00",
   "chapterCount": 163,
-  "fullTextReadCount": 77,
-  "previewReadCount": 84,
-  "unavailableChapters": 2,
+  "fullTextReadCount": 163,
+  "previewReadCount": 0,
+  "unavailableChapters": 0,
   "matchedChapterCount": 32,
-  "draftCount": 6,
+  "draftCount": 8,
   "additionalWordCounts": {
-    "R02": 446,
+    "R02": 708,
     "R04": 420
   },
   "routeCount": 13,
@@ -18,19 +18,19 @@
   "routesChanged": false,
   "published": false,
   "audioCreated": false,
-  "planDataSha256": "e421d8dbb7a881303ef8aeed8ac8ef82bfddb3bb5005a505adf689e42d9276d4",
+  "planDataSha256": "685a9a198351c7aecc958e83c5be6f51b06e7d0f7031e5e98181e16f5fc2646d",
   "filesSha256": {
-    "75e6-chapters.json": "5ed05b3ff900416f18c70b6804469985b33f36d01c38585df5c4cd8f34d7c4ab",
-    "README.md": "b0c26b3aa7eeab2fec3723a3bef151e85d144ebb87730da12fcd5977ae0c4a73",
+    "75e6-chapters.json": "81fbb877f6f21137d6cd9d0a8f95fc87ee724e5394284aabca4d21c84fc36c40",
+    "README.md": "835f51ef1b84efe35383e6b2284dc5ac324b206d949889cba341ccea5c0344f2",
     "ab77-chapters.json": "c389786b771aebb89a60fbc3c9bf4a666480c82078d4d7070e0445891a0b745a",
     "audit-receipt.json": "2211c6fb5f66f0ead279f47e0576f38bd9a3dccaa55994001bc2fad8e05f6849",
-    "chapter-review.json": "59854144329a72b49510e6ff4cddb3fb559482ce60a20900971cfabeeebb4564",
+    "chapter-review.json": "9ef156533aa1b8ae08de504d6cac97f70c62b9d6b7bea4fe1f2b2b1df3f4ed0a",
     "claude-audit-original.md": "6d82d4e13f865a8552a07748bdd927a322ca0fa5d7fc45a5109cfb225c442e6e",
     "claude-audit.md": "baf1110c2c92e520867aa1d6c0f249e7b1e6c17504b1a885cf5acd851608ebdb",
-    "drafts.md": "cee3b32501fdb31d2169ef39e7ade3d772ab75d3a5331809f766bc1e7ee18522",
-    "editorial-drafts.json": "cb39b093da08ee98fbcf5ad77d7be7bd86ba113938fe1880fde4f2945ef61d3c",
-    "reading-receipt.json": "4db85412b601b2a14584c9ef0f3886e5e8fc012a638e51ee8f3adb56e262760c",
-    "route-stop-review.md": "58f4cc32b0e88d661b1be616b2c9401fd6e65403c770a04f9bdad3e6be60b648"
+    "drafts.md": "88bc88bf0c9a5c9295262ee70a7c4081c0bccd6fe3d4d39478e2f77a93fcaf85",
+    "editorial-drafts.json": "30af360f594cc73998da445c9427798c017658e3e9a3562bd2ca2af91cbe9a32",
+    "reading-receipt.json": "51322a510fafcbec7d4d9a12bb40acfb9e23107d1a4befd242bdc16f815abb03",
+    "route-stop-review.md": "025f80df1bdc62edd32eb703701b77d3bf0bdd05ff4da8b83d6c35dc5c8f6380"
   },
   "projectCheck": {
     "command": "pnpm check",
@@ -39,22 +39,33 @@
     "backendTestsPassed": 978,
     "pythonTestsPassed": 26,
     "pythonSubtestsPassed": 78,
-    "productionBuild": "passed"
+    "productionBuild": "passed",
+    "checkedAt": "2026-10-07T14:57:45.567308+00:00"
   },
   "passed": [
     "Количество и последовательность глав в оглавлениях проверены",
-    "Уровни доступа:77 полных,84 превью,2 недоступных",
+    "Уровни доступа:163 полных текста,0превью,0недоступных",
     "32 ID сопоставленных карточек существуют; ошибочная привязка Бройдо исключена",
-    "Шесть черновиков: все абзацы имеют источники, ID принадлежат выбранным маршрутам",
+    "Восемь черновиков: все абзацы имеют источники, ID принадлежат выбранным маршрутам",
     "13 вариантов: центры внутри контура,10+ ID,325 сравнений и78 пар пересчитаны",
     "Ссылки на локальные файлы разрешаются; платные тексты не включены в публичную сверку"
   ],
   "notVerified": [
-    "Полные платные главы Остоженки",
     "Пешеходные линии,выходы метро и уличные триггеры",
     "Полевой доступ и видимость деталей",
     "Фактическая длительность и воспроизведение окончательных MP3",
     "Изменения production-каталога после первоначального снимка",
     "Независимая верификация всех фактов аудиогида"
-  ]
+  ],
+  "previousEditorialVerification": {
+    "checkedAt": "2026-10-07T13:23:29.976459+00:00",
+    "fullTextReadCount": 77,
+    "previewReadCount": 84,
+    "unavailableChapters": 2,
+    "draftCount": 6,
+    "additionalWordCounts": {
+      "R02": 446,
+      "R04": 420
+    }
+  }
 }

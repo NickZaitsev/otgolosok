@@ -6,25 +6,25 @@
       "ab77": 77
     },
     "matchStatusCounts": {
-      "matched_public_metadata": 15,
+      "matched_chapter_identity": 32,
       "requires_identity_review": 70,
       "navigation_or_area": 32,
       "priority_candidate_requires_osm_review": 6,
       "commercial_name_requires_update": 16,
       "context_of_existing_object": 6,
-      "identity_conflict": 1,
-      "matched_chapter_identity": 17
+      "identity_conflict": 1
     },
     "uniqueMatchedPlaceIds": 32,
     "markerOutsideCount": 12,
-    "paidChaptersRead": 77,
+    "paidChaptersRead": 163,
     "notes": [
-      "Полные тексты доступны для 77 глав Поварской; фактическая проверка всех утверждений этих глав не выполнена",
-      "Остоженка: 86 пунктов оглавления, 84 превью и два сбоя загрузки; превью не считается прочитанной платной главой",
-      "32 адресные привязки к каталогу; nearestCandidates — очередь проверки, отсутствие привязки не доказывает отсутствие карточки",
+      "После входа пользователя полные тексты всех 163 глав доступны:86 Остоженка и77 Поварская",
+      "Фактическая проверка каждого утверждения аудиогидов не выполнена; звук не прослушан",
+      "32 привязки к карточкам подтверждены по полным текстам; nearestCandidates остаются очередью проверки",
       "Остановки R02/R04 сохранены; проценты исходного плана не изменены"
     ],
-    "previewChaptersRead": 84
+    "previewChaptersRead": 0,
+    "fullAccessConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
   },
   "chapters": [
     {
@@ -38,11 +38,11 @@
         "lng": 37.601274
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:node:916076746",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
       "nearestCandidates": [
         {
@@ -71,9 +71,10 @@
       "catalogAddress": null,
       "textStatus": "approved",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "1 Памятник Энгельсу"
+      "fullTitle": "1 Памятник Энгельсу",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -86,7 +87,7 @@
         "lng": 37.601081
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -116,9 +117,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "2 Красные палаты"
+      "fullTitle": "2 Красные палаты",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -131,7 +133,7 @@
         "lng": 37.6015307976227
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -161,9 +163,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "3 Улица Остоженка"
+      "fullTitle": "3 Улица Остоженка",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -176,7 +179,7 @@
         "lng": 37.601681245369
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -206,9 +209,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "4 Доходный дом Филатова"
+      "fullTitle": "4 Доходный дом Филатова",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -221,7 +225,7 @@
         "lng": 37.6019538134918
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -251,9 +255,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "5 Дом архитектора Нирнзее"
+      "fullTitle": "5 Дом архитектора Нирнзее",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -266,7 +271,7 @@
         "lng": 37.601280245369
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -296,9 +301,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "6 Доходный дом графа Баранова"
+      "fullTitle": "6 Доходный дом графа Баранова",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -311,7 +317,7 @@
         "lng": 37.6008890000001
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -341,9 +347,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "7 Остоженка, 7"
+      "fullTitle": "7 Остоженка, 7",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -356,7 +363,7 @@
         "lng": 37.6023680000001
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -386,9 +393,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "8 Доходный дом Г.Е. Бройдо"
+      "fullTitle": "8 Доходный дом Г.Е. Бройдо",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -401,7 +409,7 @@
         "lng": 37.6031653313523
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -431,9 +439,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "9 Обыденские переулки"
+      "fullTitle": "9 Обыденские переулки",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -446,12 +455,12 @@
         "lng": 37.603722810745
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:relation:18096252",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
-      "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
+      "note": "Идентичность храма подтверждена. Утверждение аудиогида о Василии III в конце XVI века внутренне противоречиво; эту легенду не переносить в новый текст без проверки. Названия икон и историю богослужений также проверять отдельно.",
       "nearestCandidates": [
         {
           "id": "osm:relation:18096252",
@@ -481,9 +490,10 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "10 Церковь Илии Обыденного"
+      "fullTitle": "10 Церковь Илии Обыденного",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -496,7 +506,7 @@
         "lng": 37.604945898056
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -526,9 +536,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "11 Соймоновский проезд"
+      "fullTitle": "11 Соймоновский проезд",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -541,7 +552,7 @@
         "lng": 37.6058793067934
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -571,9 +582,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "12 Курсовой переулок"
+      "fullTitle": "12 Курсовой переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -586,11 +598,11 @@
         "lng": 37.606239
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:node:7428358397",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
       "nearestCandidates": [
         {
@@ -621,9 +633,10 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "13 Доходный дом З.А. Перцовой"
+      "fullTitle": "13 Доходный дом З.А. Перцовой",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -636,7 +649,7 @@
         "lng": 37.6064327116394
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "priority_candidate_requires_osm_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -668,9 +681,10 @@
       "verifiedAddress": "Пречистенская набережная, 35",
       "identitySourceUrl": "https://mansions.updk.ru/mansions/155983/",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "14 Особняк А.А. Левенсона"
+      "fullTitle": "14 Особняк А.А. Левенсона",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -683,7 +697,7 @@
         "lng": 37.6064266269836
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "priority_candidate_requires_osm_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -715,9 +729,10 @@
       "verifiedAddress": "Курсовой переулок, 5",
       "identitySourceUrl": "https://mansions.updk.ru/mansions/159703/",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "15 Особняк И.А. Мазурина"
+      "fullTitle": "15 Особняк И.А. Мазурина",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -730,7 +745,7 @@
         "lng": 37.6063941779098
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -760,9 +775,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "16 Водокачка Сандуновских бань"
+      "fullTitle": "16 Водокачка Сандуновских бань",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -775,12 +791,12 @@
         "lng": 37.606628
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:way:52434941",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
-      "note": "Это здание особняка Цветкова, а не расположенная на нём мемориальная доска osm:node:7428358398. Исторический заголовок опубликованного рассказа уже корректен; название OSM про посольство нельзя переносить в заголовок прогулки.",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
+      "note": "Дом Цветкова, не отдельная доска. В аудиогиде ошибочно сказано, что собрание не приняли в дар; источник ГлавУпДК подтверждает передачу Москве в 1909. Оставить проверенную версию действующего рассказа.",
       "nearestCandidates": [
         {
           "id": "osm:node:7428358398",
@@ -810,9 +826,10 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "17 Цветковская галерея"
+      "fullTitle": "17 Цветковская галерея",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -825,7 +842,7 @@
         "lng": 37.6068688148193
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -855,9 +872,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "18 Пречистенская набережная"
+      "fullTitle": "18 Пречистенская набережная",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -870,7 +888,7 @@
         "lng": 37.6089098981477
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -901,9 +919,10 @@
       ],
       "routeScopeDecision": "Другой берег относительно основной линии R02; не включать в эту прогулку автоматически",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "19 Фабрика «Красный Октябрь»"
+      "fullTitle": "19 Фабрика «Красный Октябрь»",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -916,11 +935,11 @@
         "lng": 37.608311
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:way:191679568",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
       "nearestCandidates": [
         {
@@ -950,9 +969,10 @@
       "textStatus": "approved",
       "routeScopeDecision": "Другой берег относительно основной линии R02; не включать в эту прогулку автоматически",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "20 Памятник Петру I"
+      "fullTitle": "20 Памятник Петру I",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -965,12 +985,12 @@
         "lng": 37.6054779999999
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:node:12233205875",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
-      "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
+      "note": "Остановка о рабочих курсах опирается на уже существующую карточку доски на Курсовом, 17 с1. Один физический визит, а не две точки. Акт наследия здания называет период 1908–1921; доска — 1908–1922. Не смешивать датировку учреждения, здания и надписи.",
       "nearestCandidates": [
         {
           "id": "osm:node:12233205875",
@@ -1000,9 +1020,13 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "21 Пречистенские рабочие курсы"
+      "fullTitle": "21 Пречистенские рабочие курсы",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00",
+      "factCheckSourceUrls": [
+        "https://www.mos.ru/upload/documents/files/3085/AktKyrsovoiper17MerisECP.pdf"
+      ]
     },
     {
       "tourId": "75e6",
@@ -1015,7 +1039,7 @@
         "lng": 37.6036799999999
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1045,9 +1069,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "22 Пожарский переулок"
+      "fullTitle": "22 Пожарский переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1060,7 +1085,7 @@
         "lng": 37.6022407374344
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1090,9 +1115,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "23 Усадьба Савеловых"
+      "fullTitle": "23 Усадьба Савеловых",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1105,7 +1131,7 @@
         "lng": 37.6027602625657
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1135,9 +1161,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "24 Культурный центр «На Остожье»"
+      "fullTitle": "24 Культурный центр «На Остожье»",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1150,7 +1177,7 @@
         "lng": 37.6011
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1180,9 +1207,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "25 Пожарский, 12"
+      "fullTitle": "25 Пожарский, 12",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1195,7 +1223,7 @@
         "lng": 37.5996577731553
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1225,9 +1253,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "26 Всеволожский переулок"
+      "fullTitle": "26 Всеволожский переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1240,7 +1269,7 @@
         "lng": 37.5993086613769
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "commercial_name_requires_update",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1270,9 +1299,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "27 Ресторан «Генацвале»"
+      "fullTitle": "27 Ресторан «Генацвале»",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1285,7 +1315,7 @@
         "lng": 37.5989460193256
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "commercial_name_requires_update",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1315,9 +1345,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "28 Traveler's Coffee"
+      "fullTitle": "28 Traveler's Coffee",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1330,7 +1361,7 @@
         "lng": 37.5995816944428
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1360,9 +1391,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "29 Дом купца Шустова"
+      "fullTitle": "29 Дом купца Шустова",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1375,7 +1407,7 @@
         "lng": 37.5991111375731
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1405,9 +1437,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "30 Лопухинский переулок"
+      "fullTitle": "30 Лопухинский переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1420,7 +1453,7 @@
         "lng": 37.5995814642487
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1450,9 +1483,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "31 Зачатьевские переулки"
+      "fullTitle": "31 Зачатьевские переулки",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1465,7 +1499,7 @@
         "lng": 37.599528
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1495,9 +1529,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "32 Зачатьевский женский монастырь"
+      "fullTitle": "32 Зачатьевский женский монастырь",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1510,7 +1545,7 @@
         "lng": 37.6001271951066
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1540,9 +1575,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "33 Усадьба Бухвостовых"
+      "fullTitle": "33 Усадьба Бухвостовых",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1555,7 +1591,7 @@
         "lng": 37.6009266481628
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1585,9 +1621,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "34 «Золотая миля» Остоженки"
+      "fullTitle": "34 «Золотая миля» Остоженки",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1600,7 +1637,7 @@
         "lng": 37.6010238868942
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1630,9 +1667,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "35 Молочный переулок"
+      "fullTitle": "35 Молочный переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1645,7 +1683,7 @@
         "lng": 37.601098
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1675,9 +1713,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "36 Дом Виктора Попкова"
+      "fullTitle": "36 Дом Виктора Попкова",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1690,7 +1729,7 @@
         "lng": 37.6014160833282
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1720,9 +1759,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "37 Вилла «Остоженка»"
+      "fullTitle": "37 Вилла «Остоженка»",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1735,7 +1775,7 @@
         "lng": 37.6031439999999
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1765,9 +1805,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "38 Cooper House (Купер-Хаус)"
+      "fullTitle": "38 Cooper House (Купер-Хаус)",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1780,7 +1821,7 @@
         "lng": 37.603281
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1810,8 +1851,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "unavailable",
-      "factsVerifiedForPublication": false
+      "contentAccess": "full_text",
+      "factsVerifiedForPublication": false,
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00",
+      "fullTitle": "39 Бутиковский переулок"
     },
     {
       "tourId": "75e6",
@@ -1824,7 +1867,7 @@
         "lng": 37.607974829361
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "context_of_existing_object",
       "canonicalPlaceId": null,
       "candidatePlaceId": "osm:relation:3224482",
@@ -1855,9 +1898,10 @@
       ],
       "routeScopeDecision": "Другой берег относительно основной линии R02; не включать в эту прогулку автоматически",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "40 Парк «Музеон»"
+      "fullTitle": "40 Парк «Музеон»",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1870,7 +1914,7 @@
         "lng": 37.603357
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1900,9 +1944,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "41 Ермаковское училище"
+      "fullTitle": "41 Ермаковское училище",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1915,7 +1960,7 @@
         "lng": 37.6033319986725
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1945,9 +1990,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "42 Москва-река"
+      "fullTitle": "42 Москва-река",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -1960,7 +2006,7 @@
         "lng": 37.6004
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -1990,9 +2036,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "43 Коробейников переулок"
+      "fullTitle": "43 Коробейников переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2005,11 +2052,11 @@
         "lng": 37.599569
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:way:52434908",
       "candidatePlaceId": null,
-      "decision": "Подготовить первый рассказ в существующую карточку",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
       "nearestCandidates": [
         {
@@ -2038,9 +2085,10 @@
       "catalogAddress": "Москва, Коробейников переулок, 9 с1",
       "textStatus": "none",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "44 Посольство Кот д'Ивуара"
+      "fullTitle": "44 Посольство Кот д'Ивуара",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2053,7 +2101,7 @@
         "lng": 37.599166
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2083,9 +2131,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "45 Посольство Хорватии"
+      "fullTitle": "45 Посольство Хорватии",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2098,7 +2147,7 @@
         "lng": 37.598005
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2128,9 +2177,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "46 Дом Шаляпина"
+      "fullTitle": "46 Дом Шаляпина",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2143,12 +2193,12 @@
         "lng": 37.598475
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "identity_conflict",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
       "decision": "Не связывать с МАММ на Остоженке, 16; проверить отдельное здание",
-      "note": "Превью главы прямо называет дом № 20 с фризом горных туров. Ближайший маркер МАММ в 10,5 м не доказывает совпадение и относится к дому № 16.",
+      "note": "Полный текст прямо называет Остоженку, 20, и фриз горных туров. МАММ находится на доме 16; близость маркера не доказывает совпадение. У Бройдо есть и другое владение во 2-м Обыденском переулке (глава 8).",
       "nearestCandidates": [
         {
           "id": "osm:way:193498236",
@@ -2176,10 +2226,11 @@
       "catalogAddress": "Москва, улица Остоженка, 16",
       "textStatus": "approved",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
       "fullTitle": "47 Доходный дом Бройдо",
-      "verifiedAddress": "улица Остоженка, 20"
+      "verifiedAddress": "улица Остоженка, 20",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2192,7 +2243,7 @@
         "lng": 37.5981243829422
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2222,9 +2273,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "48 Барыковский переулок"
+      "fullTitle": "48 Барыковский переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2237,11 +2289,11 @@
         "lng": 37.5984109999999
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:way:47978268",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Доходный дом Остоженка, 19, отдельный от личного особняка Кекушевой на Остоженке, 21 (глава 50).",
       "nearestCandidates": [
         {
@@ -2272,9 +2324,10 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "49 Доходный дом Кекушевой"
+      "fullTitle": "49 Доходный дом Кекушевой",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2287,7 +2340,7 @@
         "lng": 37.59811
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "priority_candidate_requires_osm_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2319,9 +2372,10 @@
       "verifiedAddress": "Остоженка, 21",
       "identitySourceUrl": "https://mansions.updk.ru/",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "50 Особняк А.И. Кекушевой"
+      "fullTitle": "50 Особняк А.И. Кекушевой",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2334,7 +2388,7 @@
         "lng": 37.5975877962951
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2364,9 +2418,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "51 Центр оперного пения Галины Вишневской"
+      "fullTitle": "51 Центр оперного пения Галины Вишневской",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2379,7 +2434,7 @@
         "lng": 37.5968779166717
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2409,9 +2464,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "52 Сеченовский переулок"
+      "fullTitle": "52 Сеченовский переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2424,7 +2480,7 @@
         "lng": 37.5964750000001
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "commercial_name_requires_update",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2454,9 +2510,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "53 Лайт-хаус"
+      "fullTitle": "53 Лайт-хаус",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2469,7 +2526,7 @@
         "lng": 37.596587
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2499,9 +2556,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "54 Сеченовский, 8"
+      "fullTitle": "54 Сеченовский, 8",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2514,7 +2572,7 @@
         "lng": 37.5968507876969
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "commercial_name_requires_update",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2544,9 +2602,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "55 Опера-хаус"
+      "fullTitle": "55 Опера-хаус",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2559,7 +2618,7 @@
         "lng": 37.5961084662704
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "commercial_name_requires_update",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2589,9 +2648,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "56 Гостиница «Кебур-Палас»"
+      "fullTitle": "56 Гостиница «Кебур-Палас»",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2604,7 +2664,7 @@
         "lng": 37.5959123267364
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2634,8 +2694,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "unavailable",
-      "factsVerifiedForPublication": false
+      "contentAccess": "full_text",
+      "factsVerifiedForPublication": false,
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00",
+      "fullTitle": "57 Мансуровский переулок"
     },
     {
       "tourId": "75e6",
@@ -2648,7 +2710,7 @@
         "lng": 37.5957601951065
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "commercial_name_requires_update",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2678,9 +2740,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "58 Ресторан «Тифлисский дворик»"
+      "fullTitle": "58 Ресторан «Тифлисский дворик»",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2693,7 +2756,7 @@
         "lng": 37.595327
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2723,9 +2786,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "59 Дом Вахтангова"
+      "fullTitle": "59 Дом Вахтангова",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2738,11 +2802,11 @@
         "lng": 37.5952150000001
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:way:45818762",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
       "nearestCandidates": [
         {
@@ -2771,9 +2835,10 @@
       "catalogAddress": "Москва, Мансуровский переулок, 4 с1",
       "textStatus": "approved",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "60 Доходный дом П.В. Лоськова"
+      "fullTitle": "60 Доходный дом П.В. Лоськова",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2786,7 +2851,7 @@
         "lng": 37.594257
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2816,9 +2881,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "61 Домик Мастера"
+      "fullTitle": "61 Домик Мастера",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2831,7 +2897,7 @@
         "lng": 37.59398
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2861,9 +2927,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "62 Усадьба А.В. Кузнецова"
+      "fullTitle": "62 Усадьба А.В. Кузнецова",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2876,7 +2943,7 @@
         "lng": 37.5963618379592
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2906,9 +2973,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "63 Хилков переулок"
+      "fullTitle": "63 Хилков переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2921,7 +2989,7 @@
         "lng": 37.5955739999999
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2951,9 +3019,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "64 Здание Московского совета детских приютов"
+      "fullTitle": "64 Здание Московского совета детских приютов",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -2966,7 +3035,7 @@
         "lng": 37.5957072394256
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -2996,9 +3065,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "65 Еропкинский переулок"
+      "fullTitle": "65 Еропкинский переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3011,12 +3081,12 @@
         "lng": 37.59615
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:way:76618921",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
-      "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
+      "note": "Полный текст называет проживание Варвары Тургеневой 1839–1851. Сайт музея указывает 1840–1850 и смерть в ноябре 1850. В действующем рассказе уже корректные даты; не менять их по аудиогиду.",
       "nearestCandidates": [
         {
           "id": "osm:node:8920679001",
@@ -3046,9 +3116,13 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "66 Дом И.С. Тургенева"
+      "fullTitle": "66 Дом И.С. Тургенева",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00",
+      "factCheckSourceUrls": [
+        "https://www.pushkinmuseum.ru/filialy/dom-muzey-i-s-turgeneva/"
+      ]
     },
     {
       "tourId": "75e6",
@@ -3061,7 +3135,7 @@
         "lng": 37.5950556527787
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3091,9 +3165,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "67 Дом П.Д. Еропкина"
+      "fullTitle": "67 Дом П.Д. Еропкина",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3106,7 +3181,7 @@
         "lng": 37.595961
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3136,9 +3211,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "68 Учебные мастерские"
+      "fullTitle": "68 Учебные мастерские",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3151,11 +3227,11 @@
         "lng": 37.5952088981476
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:node:2821784588",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
       "nearestCandidates": [
         {
@@ -3184,9 +3260,10 @@
       "catalogAddress": null,
       "textStatus": "approved",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "69 Памятник ополченцам"
+      "fullTitle": "69 Памятник ополченцам",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3199,7 +3276,7 @@
         "lng": 37.5949410555725
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3229,9 +3306,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "70 Померанцев переулок"
+      "fullTitle": "70 Померанцев переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3244,7 +3322,7 @@
         "lng": 37.59442
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3274,9 +3352,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "71 Доходный дом Фокиных"
+      "fullTitle": "71 Доходный дом Фокиных",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3289,7 +3368,7 @@
         "lng": 37.595152
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3319,9 +3398,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "72 Остоженка, 40"
+      "fullTitle": "72 Остоженка, 40",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3334,12 +3414,12 @@
         "lng": 37.5957089999999
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:relation:1850015",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
-      "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
+      "note": "Дом Всеволожского соответствует карточке. Совет аудиогида войти в открытый двор не используется: открытая калитка сама по себе не подтверждает разрешённый публичный доступ.",
       "nearestCandidates": [
         {
           "id": "osm:relation:1850015",
@@ -3369,9 +3449,10 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "73 Дом А.В. Всеволожского"
+      "fullTitle": "73 Дом А.В. Всеволожского",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3384,11 +3465,11 @@
         "lng": 37.5955730000001
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:way:76633316",
       "candidatePlaceId": null,
-      "decision": "Подготовить первый рассказ в существующую карточку",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Глава «Усадьба Н.О. Косыревой» соответствует усадьбе Скосыревой–Абрикосова на Остоженке, 51. По городскому акту главный дом датируется 1834 годом, в популярной литературе встречаются 1820-е. Не переносить раннюю дату без оговорки.",
       "nearestCandidates": [
         {
@@ -3419,9 +3500,10 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "74 Усадьба Н.О. Косыревой"
+      "fullTitle": "74 Усадьба Н.О. Косыревой",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3434,7 +3516,7 @@
         "lng": 37.5948181289749
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3464,9 +3546,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "75 Кропоткинский переулок"
+      "fullTitle": "75 Кропоткинский переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3479,7 +3562,7 @@
         "lng": 37.5964134146805
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3509,9 +3592,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "76 Бассейн «Чайка»"
+      "fullTitle": "76 Бассейн «Чайка»",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3524,7 +3608,7 @@
         "lng": 37.5971665727386
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3554,9 +3638,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "77 Турчанинов переулок"
+      "fullTitle": "77 Турчанинов переулок",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3569,11 +3654,11 @@
         "lng": 37.5979170000001
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:way:76633314",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
       "nearestCandidates": [
         {
@@ -3604,9 +3689,10 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "78 Храм Покрова Богоматери"
+      "fullTitle": "78 Храм Покрова Богоматери",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3619,7 +3705,7 @@
         "lng": 37.5998401203766
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3649,9 +3735,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "79 Пречистенская набережная"
+      "fullTitle": "79 Пречистенская набережная",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3664,7 +3751,7 @@
         "lng": 37.6044523715971
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3695,9 +3782,10 @@
       ],
       "routeScopeDecision": "Другой берег относительно основной линии R02; не включать в эту прогулку автоматически",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "80 Центральный дом художника"
+      "fullTitle": "80 Центральный дом художника",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3710,7 +3798,7 @@
         "lng": 37.599098
       },
       "markerInsideGardenRing": false,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3742,9 +3830,10 @@
       "routeScopeDecision": "Другой берег относительно основной линии R02; не включать в эту прогулку автоматически",
       "boundaryDecision": "Маркер тура вне внутреннего контура; реальный объект/внешний подход проверить отдельно",
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "81 Крымский мост"
+      "fullTitle": "81 Крымский мост",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3757,7 +3846,7 @@
         "lng": 37.597232
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "navigation_or_area",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3787,9 +3876,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "82 Новокрымский проезд"
+      "fullTitle": "82 Новокрымский проезд",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3802,7 +3892,7 @@
         "lng": 37.5955020601883
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3832,9 +3922,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "83 Катковский лицей"
+      "fullTitle": "83 Катковский лицей",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3847,7 +3938,7 @@
         "lng": 37.5954590760574
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3877,9 +3968,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "84 Дом служащих Катковского лицея"
+      "fullTitle": "84 Дом служащих Катковского лицея",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3892,11 +3984,11 @@
         "lng": 37.5943594748687
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
-      "matchStatus": "matched_public_metadata",
+      "chapterTextReviewed": true,
+      "matchStatus": "matched_chapter_identity",
       "canonicalPlaceId": "osm:relation:6011324",
       "candidatePlaceId": null,
-      "decision": "Рассмотреть обогащение после чтения главы",
+      "decision": "Идентичность подтверждена по полному тексту; утверждения аудиогида проверять по независимым источникам",
       "note": "Совпадают тема/историческое имя, адрес карточки и близкое положение маркера; перед импортом перечитать текущую карточку.",
       "nearestCandidates": [
         {
@@ -3927,9 +4019,10 @@
       "usedInPlannedRoutes": [
         "R02"
       ],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "85 Провиантские склады"
+      "fullTitle": "85 Провиантские склады",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "75e6",
@@ -3942,7 +4035,7 @@
         "lng": 37.595048
       },
       "markerInsideGardenRing": true,
-      "chapterTextReviewed": false,
+      "chapterTextReviewed": true,
       "matchStatus": "requires_identity_review",
       "canonicalPlaceId": null,
       "candidatePlaceId": null,
@@ -3972,9 +4065,10 @@
         }
       ],
       "usedInPlannedRoutes": [],
-      "contentAccess": "preview",
+      "contentAccess": "full_text",
       "factsVerifiedForPublication": false,
-      "fullTitle": "86 Павильон станции метро «Парк культуры»"
+      "fullTitle": "86 Павильон станции метро «Парк культуры»",
+      "fullTextConfirmedAt": "2026-10-07T14:54:42.623559+00:00"
     },
     {
       "tourId": "ab77",

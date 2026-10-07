@@ -1,6 +1,6 @@
 {
   "checkedAt": "2026-10-07T09:36:35.385187+00:00",
-  "planDataSha256": "e421d8dbb7a881303ef8aeed8ac8ef82bfddb3bb5005a505adf689e42d9276d4",
+  "planDataSha256": "685a9a198351c7aecc958e83c5be6f51b06e7d0f7031e5e98181e16f5fc2646d",
   "routeCount": 13,
   "existingWalkCount": 25,
   "stopOccurrences": 174,
@@ -70,7 +70,6 @@
   "notVerified": [
     "Пешеходные линии и выходы метро",
     "Фактическая длительность MP3 и воспроизведение в новом порядке",
-    "Полные платные главы Остоженки;77 глав Поварской прочитаны",
     "Полевая доступность всех точек"
   ],
   "purchaseMetadataUpdate": {
@@ -105,6 +104,26 @@
       "pythonTestsPassed": 26,
       "pythonSubtestsPassed": 78,
       "productionBuild": "passed"
+    }
+  },
+  "paidTourFullAccessUpdate": {
+    "checkedAt": "2026-10-07T14:57:45.567308+00:00",
+    "routeDataUnchanged": true,
+    "fullTextReadCount": 163,
+    "additionalWordCounts": {
+      "R02": 708,
+      "R04": 420
+    },
+    "reviewFile": "content/purchased-ostozhenka-povarskaya-2026-10-07/verification.json",
+    "projectCheck": {
+      "command": "pnpm check",
+      "exitCode": 0,
+      "frontendTestsPassed": 1840,
+      "backendTestsPassed": 978,
+      "pythonTestsPassed": 26,
+      "pythonSubtestsPassed": 78,
+      "productionBuild": "passed",
+      "checkedAt": "2026-10-07T14:57:45.567308+00:00"
     }
   }
 }
