@@ -8,10 +8,13 @@
         "id": "osm:relation:7503420"
       },
       "title": "Палаты в Кадашевской слободе",
-      "sha256": "7c036b701381b0c9cc2660bcf082f7a7f75dfe34b1d9c595ed1adae9dc2458ac",
-      "bytes": 561069,
-      "durationSec": 70.104,
-      "measuredDurationSec": 70.050667
+      "sha256": "b01183ceeca605d257d9fc734edacd3ec841c1dcc4f5ebd25269b179cd5970fc",
+      "bytes": 510189,
+      "durationSec": 63.744,
+      "measuredDurationSec": 63.68,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:relation:6897502",
@@ -23,7 +26,10 @@
       "sha256": "33a9e599e18383b509ff78930e026745b939c21c213f0f50edd0dd42a3060b9d",
       "bytes": 476781,
       "durationSec": 59.568,
-      "measuredDurationSec": 59.52
+      "measuredDurationSec": 59.52,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:relation:6381244",
@@ -35,7 +41,10 @@
       "sha256": "ae1a627c324ee9ef29403619dc4915e46ba4f3cd27fb11cb3b9769f044d3dbb1",
       "bytes": 782061,
       "durationSec": 97.728,
-      "measuredDurationSec": 97.68
+      "measuredDurationSec": 97.68,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:relation:8453866",
@@ -44,10 +53,13 @@
         "id": "osm:relation:8453866"
       },
       "title": "Храм святителя Николая Чудотворца в Пыжах",
-      "sha256": "ee6cd5a4554e972c57e56b49f62498d8fd665e4314a88fbe85f65e66c2b57f9a",
-      "bytes": 404205,
-      "durationSec": 50.496,
-      "measuredDurationSec": 50.426667
+      "sha256": "675232f291618a5acba8942ad89ba8db832e19f4f3ace7a2e0829f363b0dcbb6",
+      "bytes": 376365,
+      "durationSec": 47.016,
+      "measuredDurationSec": 46.96,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:way:111136355",
@@ -59,7 +71,10 @@
       "sha256": "d1b31cff5ad9eeacd007b2c348729439434729dde5a70913662bd7736ce004d4",
       "bytes": 908205,
       "durationSec": 113.496,
-      "measuredDurationSec": 113.44
+      "measuredDurationSec": 113.44,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:relation:16467332",
@@ -71,7 +86,10 @@
       "sha256": "7174329dd6e64d845a4bf649c5277cc3a39f967f73a39f4881a5873c9c5ca634",
       "bytes": 764781,
       "durationSec": 95.568,
-      "measuredDurationSec": 95.52
+      "measuredDurationSec": 95.52,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:node:1359123836",
@@ -80,10 +98,13 @@
         "id": "osm:node:1359123836"
       },
       "title": "Дом-музей А. Н. Островского",
-      "sha256": "aece6560a618f23cceec7e224db3646496fb747ed5a12796e55ebe134d549232",
-      "bytes": 446829,
-      "durationSec": 55.824,
-      "measuredDurationSec": 55.76
+      "sha256": "d243cd43a853ba38acb08a6ceec2d5336fd4e3d65dc0cff2538efe91aa9f53a8",
+      "bytes": 389229,
+      "durationSec": 48.624,
+      "measuredDurationSec": 48.56,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:relation:7483246",
@@ -92,10 +113,13 @@
         "id": "osm:relation:7483246"
       },
       "title": "Храм Иверской иконы Божией Матери на Всполье",
-      "sha256": "a59cf32016a3976bb0a160f83123188e2b26b5ec8213e85aedb7daca18a97913",
-      "bytes": 405549,
-      "durationSec": 50.664,
-      "measuredDurationSec": 50.608
+      "sha256": "17f56cbd2a6b55f6237d3d7d8124d6a41d9345675de647053c9e9d49f2a5e1f0",
+      "bytes": 359085,
+      "durationSec": 44.856,
+      "measuredDurationSec": 44.8,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:node:1359123449",
@@ -104,10 +128,13 @@
         "id": "osm:node:1359123449"
       },
       "title": "Возрождение",
-      "sha256": "757e7dc3f1de968514cd99682b5643485d522337e66ad62b424201d50aad0dff",
-      "bytes": 326253,
-      "durationSec": 40.752,
-      "measuredDurationSec": 40.688
+      "sha256": "121954722303a657d65f8877db6756a26890ff950537c39abc9eff5895914877",
+      "bytes": 313581,
+      "durationSec": 39.168,
+      "measuredDurationSec": 39.12,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:way:156493115",
@@ -119,7 +146,10 @@
       "sha256": "53b82333a1d101043700516b6a48b0ce22263420cf67f53dbe7c7e998e4df853",
       "bytes": 864045,
       "durationSec": 107.976,
-      "measuredDurationSec": 107.92
+      "measuredDurationSec": 107.92,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:way:164210810",
@@ -128,10 +158,13 @@
         "id": "osm:way:164210810"
       },
       "title": "Музей В. А. Тропинина и московских художников его времени",
-      "sha256": "cf9571935d6221a81ad26a26f663e3fadcc2d6561c82ac6064959354ae4f011e",
-      "bytes": 485613,
-      "durationSec": 60.672,
-      "measuredDurationSec": 60.613333
+      "sha256": "0cebba1685ede641b7691a7decc5e1903bf121572eeaf5c53e295ea019be2488",
+      "bytes": 432621,
+      "durationSec": 54.048,
+      "measuredDurationSec": 54.0,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:relation:8454676",
@@ -143,7 +176,10 @@
       "sha256": "8b56d4eefc1f8836a3d6bc3182667b74f0bdaff3068bfae34f936f6ebad9642a",
       "bytes": 834669,
       "durationSec": 104.304,
-      "measuredDurationSec": 104.24
+      "measuredDurationSec": 104.24,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     },
     {
       "placeId": "osm:way:314197370",
@@ -155,11 +191,14 @@
       "sha256": "3753894af8b83e84e0b0a073385ebfd2c41a027e8ecd3cd078b68de252060a34",
       "bytes": 889581,
       "durationSec": 111.168,
-      "measuredDurationSec": 111.12
+      "measuredDurationSec": 111.12,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635"
     }
   ],
-  "audioDurationSec": 1018.3199999999999,
-  "measuredDurationSec": 1017.586667,
+  "audioDurationSec": 987.264,
+  "measuredDurationSec": 986.56,
   "verified": 13,
   "newRecordings": 5,
   "voiceId": "9ivxhQ6xIsHd6R3Xc635",

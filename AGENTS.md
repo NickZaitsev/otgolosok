@@ -16,6 +16,8 @@ Never commit secrets or .env files; never print secrets to logs, error messages,
 YAGNI: Do not add infrastructure or integrations nobody asked for (monitoring, metrics, tracing, admin panels). Propose first; add only after explicit approval.
 Whenever you identify a workaround, defect, or reliability risk, please highlight it and suggest a proper fix.
 
+Новые записи для всех промопрогулок создавать через ElevenLabs v4 (`provider: elevenlabs`, `model: eleven_v4`), голос «Отголосок2». Уже готовые записи ElevenLabs v3 сохранять и переиспользовать, без переозвучки ради смены модели. Все записи F5 в промопрогулках заменять на ElevenLabs v4, сохраняя текущий текст и доступность прежнего звука до готовности замены. Перед публикацией проверять провайдера, модель и голос каждой записи, включая переиспользованные: статус `ready`, доступность MP3 и длительность сами по себе недостаточны.
+
 ## Commits and branches
 
 - Please make git atomic commits by yourself when a task or phase is finished. Follow the repository's existing commit conventions and contribution guidelines, if present (for example, CONTRIBUTING.md, AGENTS.md, or conventions evident from recent commit history). If the repository does not define its own commit-message convention, use Conventional Commits. 

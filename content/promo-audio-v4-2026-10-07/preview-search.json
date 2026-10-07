@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-07",
+  "placeId": "osm:node:1359123449",
+  "title": "Возрождение",
+  "candidates": [
+    {
+      "sourceUrl": "https://fotokto.ru/photo/view/7306437.html",
+      "imageUrl": "https://s1.fotokto.ru/photo/full/730/7306437.jpg",
+      "author": "Надежда Лаптева",
+      "license": "Разрешение на использование не подтверждено",
+      "decision": "Кандидат; на production не опубликован"
+    },
+    {
+      "sourceUrl": "https://fotokto.ru/photo/view/8348151.html",
+      "author": "Татьяна Помогалова",
+      "license": "Разрешение на использование не подтверждено",
+      "decision": "Кандидат; на production не опубликован"
+    },
+    {
+      "sourceUrl": "https://meduza.io/feature/2016/08/10/skulptor-skorbi-chelovek-svobody",
+      "author": "stargal / Фотобанк Лори",
+      "license": "Платная фотография, разрешение на использование не приобреталось",
+      "decision": "Кандидат для приобретения лицензии"
+    }
+  ],
+  "commonsSearches": 9,
+  "commonsDecision": "Проверенные снимки Большой Ордынки, 41 изображают усадьбу, а не памятник. Для карточки памятника не подходят.",
+  "published": false,
+  "additionalSources": [
+    "https://ru.wikipedia.org/wiki/Возрождение_(памятник)",
+    "https://moscowwalks.ru/2011/08/18/detali-ordynka/",
+    "https://mosday.ru/photos/gallery.php?alt=8&author=pere&extraview=1&page=7&rows=all&size=9"
+  ]
+}

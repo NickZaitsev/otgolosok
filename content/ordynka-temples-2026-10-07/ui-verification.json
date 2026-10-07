@@ -11,10 +11,10 @@
       "placeId": "osm:relation:7503420",
       "textChecked": true,
       "audio": {
-        "sha256": "7c036b701381b0c9cc2660bcf082f7a7f75dfe34b1d9c595ed1adae9dc2458ac",
+        "sha256": "b01183ceeca605d257d9fc734edacd3ec841c1dcc4f5ebd25269b179cd5970fc",
         "playing": [
           {
-            "timeSec": 1.019675,
+            "timeSec": 1.011609,
             "paused": false,
             "error": null
           }
@@ -25,7 +25,18 @@
     {
       "stop": 2,
       "placeId": "osm:relation:6897502",
-      "textChecked": true
+      "textChecked": true,
+      "audio": {
+        "sha256": "33a9e599e18383b509ff78930e026745b939c21c213f0f50edd0dd42a3060b9d",
+        "playing": [
+          {
+            "timeSec": 1.016802,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
     },
     {
       "stop": 3,
@@ -35,7 +46,7 @@
         "sha256": "ae1a627c324ee9ef29403619dc4915e46ba4f3cd27fb11cb3b9769f044d3dbb1",
         "playing": [
           {
-            "timeSec": 1.012473,
+            "timeSec": 1.018503,
             "paused": false,
             "error": null
           }
@@ -46,7 +57,18 @@
     {
       "stop": 4,
       "placeId": "osm:relation:8453866",
-      "textChecked": true
+      "textChecked": true,
+      "audio": {
+        "sha256": "675232f291618a5acba8942ad89ba8db832e19f4f3ace7a2e0829f363b0dcbb6",
+        "playing": [
+          {
+            "timeSec": 1.009093,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
     },
     {
       "stop": 5,
@@ -56,7 +78,7 @@
         "sha256": "d1b31cff5ad9eeacd007b2c348729439434729dde5a70913662bd7736ce004d4",
         "playing": [
           {
-            "timeSec": 1.012604,
+            "timeSec": 1.011314,
             "paused": false,
             "error": null
           }
@@ -67,22 +89,66 @@
     {
       "stop": 6,
       "placeId": "osm:relation:16467332",
-      "textChecked": true
+      "textChecked": true,
+      "audio": {
+        "sha256": "7174329dd6e64d845a4bf649c5277cc3a39f967f73a39f4881a5873c9c5ca634",
+        "playing": [
+          {
+            "timeSec": 1.012696,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
     },
     {
       "stop": 7,
       "placeId": "osm:node:1359123836",
-      "textChecked": true
+      "textChecked": true,
+      "audio": {
+        "sha256": "d243cd43a853ba38acb08a6ceec2d5336fd4e3d65dc0cff2538efe91aa9f53a8",
+        "playing": [
+          {
+            "timeSec": 1.004649,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
     },
     {
       "stop": 8,
       "placeId": "osm:relation:7483246",
-      "textChecked": true
+      "textChecked": true,
+      "audio": {
+        "sha256": "17f56cbd2a6b55f6237d3d7d8124d6a41d9345675de647053c9e9d49f2a5e1f0",
+        "playing": [
+          {
+            "timeSec": 1.011603,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
     },
     {
       "stop": 9,
       "placeId": "osm:node:1359123449",
-      "textChecked": true
+      "textChecked": true,
+      "audio": {
+        "sha256": "121954722303a657d65f8877db6756a26890ff950537c39abc9eff5895914877",
+        "playing": [
+          {
+            "timeSec": 1.015677,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
     },
     {
       "stop": 10,
@@ -92,7 +158,7 @@
         "sha256": "53b82333a1d101043700516b6a48b0ce22263420cf67f53dbe7c7e998e4df853",
         "playing": [
           {
-            "timeSec": 1.019775,
+            "timeSec": 1.020317,
             "paused": false,
             "error": null
           }
@@ -103,7 +169,18 @@
     {
       "stop": 11,
       "placeId": "osm:way:164210810",
-      "textChecked": true
+      "textChecked": true,
+      "audio": {
+        "sha256": "0cebba1685ede641b7691a7decc5e1903bf121572eeaf5c53e295ea019be2488",
+        "playing": [
+          {
+            "timeSec": 1.003733,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
     },
     {
       "stop": 12,
@@ -113,7 +190,7 @@
         "sha256": "8b56d4eefc1f8836a3d6bc3182667b74f0bdaff3068bfae34f936f6ebad9642a",
         "playing": [
           {
-            "timeSec": 1.017398,
+            "timeSec": 1.009047,
             "paused": false,
             "error": null
           }
@@ -129,7 +206,7 @@
         "sha256": "3753894af8b83e84e0b0a073385ebfd2c41a027e8ecd3cd078b68de252060a34",
         "playing": [
           {
-            "timeSec": 1.006344,
+            "timeSec": 1.012634,
             "paused": false,
             "error": null
           }
@@ -142,7 +219,11 @@
   "javascriptErrors": [],
   "audioHttp": [
     {
-      "url": "https://otgolosok.online/api/story-audio/7c036b701381b0c9cc2660bcf082f7a7f75dfe34b1d9c595ed1adae9dc2458ac.mp3",
+      "url": "https://otgolosok.online/api/story-audio/b01183ceeca605d257d9fc734edacd3ec841c1dcc4f5ebd25269b179cd5970fc.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/33a9e599e18383b509ff78930e026745b939c21c213f0f50edd0dd42a3060b9d.mp3",
       "status": 206
     },
     {
@@ -150,11 +231,35 @@
       "status": 206
     },
     {
+      "url": "https://otgolosok.online/api/story-audio/675232f291618a5acba8942ad89ba8db832e19f4f3ace7a2e0829f363b0dcbb6.mp3",
+      "status": 206
+    },
+    {
       "url": "https://otgolosok.online/api/story-audio/d1b31cff5ad9eeacd007b2c348729439434729dde5a70913662bd7736ce004d4.mp3",
       "status": 206
     },
     {
+      "url": "https://otgolosok.online/api/story-audio/7174329dd6e64d845a4bf649c5277cc3a39f967f73a39f4881a5873c9c5ca634.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/d243cd43a853ba38acb08a6ceec2d5336fd4e3d65dc0cff2538efe91aa9f53a8.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/17f56cbd2a6b55f6237d3d7d8124d6a41d9345675de647053c9e9d49f2a5e1f0.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/121954722303a657d65f8877db6756a26890ff950537c39abc9eff5895914877.mp3",
+      "status": 206
+    },
+    {
       "url": "https://otgolosok.online/api/story-audio/53b82333a1d101043700516b6a48b0ce22263420cf67f53dbe7c7e998e4df853.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/0cebba1685ede641b7691a7decc5e1903bf121572eeaf5c53e295ea019be2488.mp3",
       "status": 206
     },
     {

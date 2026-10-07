@@ -76,6 +76,9 @@ test('Ордынка: готовые MP3 покрывают все остано�
   assert(measured >= 900);
   assert(Math.abs(measured - audio.measuredDurationSec) < 0.01);
   for (const [index, a] of audio.items.entries()) {
+    assert.equal(a.provider, 'elevenlabs', a.title);
+    assert.equal(a.model, 'eleven_v4', a.title);
+    assert.equal(a.voice, '9ivxhQ6xIsHd6R3Xc635', a.title);
     assert.match(a.sha256, /^[a-f0-9]{64}$/);
     assert(a.bytes > 1000 && a.measuredDurationSec > 0);
     assert(Math.abs(a.measuredDurationSec - a.durationSec) < 1);
