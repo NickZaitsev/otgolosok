@@ -79,14 +79,14 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    min-height: 48px;
-    padding: 12px 20px;
+    min-height: var(--control-primary-min);
+    padding: 0.5rem 20px;
     border: 1px solid transparent;
-    border-radius: 14px;
+    border-radius: var(--radius-pill);
     background: var(--map-green);
     color: var(--on-dark);
     font:
-      600 var(--text-control) / 1.4 var(--font-body),
+      var(--weight-bold) var(--text-control) / 1.4 var(--font-body),
       sans-serif;
     cursor: pointer;
     text-decoration: none;
@@ -127,8 +127,8 @@
 
   .ui-field input {
     width: 100%;
-    min-height: 52px;
-    padding: 12px 14px;
+    min-height: var(--field-min);
+    padding: 11px 14px;
     border: 1px solid var(--field-border);
     border-radius: 12px;
     background: var(--field-surface);

@@ -43,7 +43,7 @@
   flex: 1 1 8rem;
 
   /* Shown over the walk: the same size as «Дальше» underneath, not larger. */
-  min-height: var(--control-walk-min);
+  min-height: var(--control-primary-min);
   padding: 0 var(--space-lg);
   font: inherit;
   font-size: var(--text-control);

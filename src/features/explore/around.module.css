@@ -61,11 +61,11 @@
   justify-content: center;
   width: 100%;
   min-height: var(--sheet-action-h, var(--control-primary-min));
-  padding: var(--sheet-action-pad, 0.625rem) 1.125rem;
+  padding: 0 1.125rem;
   border-radius: var(--radius-pill);
   font: inherit;
   font-size: var(--text-control);
-  font-weight: 750;
+  font-weight: var(--weight-bold);
   line-height: 1.2;
   text-align: center;
   text-decoration: none;

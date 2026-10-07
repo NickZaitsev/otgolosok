@@ -57,8 +57,8 @@
   gap: var(--space-sm);
   align-items: center;
   width: 100%;
-  min-height: 4rem;
-  padding: 0.75rem;
+  min-height: 3.5rem;
+  padding: 0.625rem 0.75rem;
   color: var(--map-green);
   background: transparent;
   border: 0;
@@ -274,8 +274,8 @@
   flex-direction: column;
   gap: 0.25rem;
   min-width: 0;
-  min-height: 4rem;
-  padding: 0.75rem var(--space-xs) 0.75rem var(--space-md);
+  min-height: 3.5rem;
+  padding: 0.625rem var(--space-xs) 0.625rem var(--space-md);
 }
 
 .addressLabel > span {
@@ -291,9 +291,11 @@
   background: transparent;
   border: 0;
   font: inherit;
-  font-size: var(--text-secondary);
+
+  /* 16 px at least: on a smaller font Safari on iPhone zooms the page into the focused field. */
+  font-size: var(--text-control);
   font-weight: 500;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .addressLabel:focus-within {
