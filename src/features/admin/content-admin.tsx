@@ -432,7 +432,7 @@ export function ContentAdmin({ api, busy, run, onDirtyChange }: ContentAdminProp
             const next = event.target.value as ContentPlaceStatusFilter; setPlaceStatus(next);
             void run("Фильтрация мест…", signal => loadPlaces(0, signal, { status: next }));
           }}>{placeStatusOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-          <button className="admin-filter-submit" type="submit" disabled={disabled}>Найти</button>
+          <button className="admin-filter-submit admin-primary" type="submit" disabled={disabled}>Найти</button>
         </form>
         <p className="admin-meta" role="status">{loading.places
           ? "Загружаем места…"

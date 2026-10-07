@@ -344,7 +344,7 @@ export function AdminDesk() {
                   const next = event.target.value as RelevanceFilter; setRelevanceFilter(next);
                   void run("Фильтрация адресов…", signal => loadQueue(0, signal, { relevance: next }));
                 }}><option value="active">Активные</option><option value="irrelevant">Нерелевантные</option><option value="all">Все</option></select></label>
-                <button className="admin-filter-submit" type="submit" disabled={Boolean(busy)}>Найти</button>
+                <button className="admin-filter-submit admin-primary" type="submit" disabled={Boolean(busy)}>Найти</button>
               </form>
 
               <div className="admin-table-wrap" aria-busy={queueLoading}><table className="admin-table">

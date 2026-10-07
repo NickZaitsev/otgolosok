@@ -93,6 +93,11 @@
   --field-surface: #fff;
   --notice-surface: #edf2ed;
   --alert-surface: #fff0eb;
+
+  /* Warning state («нужна редактура», «ждёт проверки»): mark, text and surface. */
+  --warning-mark: #8a6420;
+  --warning-ink: #735313;
+  --warning-surface: #f1e5cc;
   --alert-ink: #8b3023;
   --danger-ink: #982e24;
 

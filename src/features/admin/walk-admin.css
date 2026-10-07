@@ -53,15 +53,15 @@
 }
 
 .walk-admin__message--dirty {
-  background: #f1e5cc;
-  border-color: #8a6420;
-  color: #674811;
+  background: var(--warning-surface);
+  border-color: var(--warning-mark);
+  color: var(--warning-ink);
 }
 
 .walk-admin__message--error {
-  background: #f4e1dc;
+  background: var(--alert-surface);
   border-color: var(--accent);
-  color: #6f2114;
+  color: var(--alert-ink);
 }
 
 .walk-admin__message button { margin-left: auto; }
@@ -167,7 +167,7 @@
 .walk-admin__state[data-state="researching"],
 .walk-admin__state[data-state="verifying"],
 .walk-admin__state[data-state="writing"],
-.walk-admin__state[data-state="voicing"] { color: #735313; }
+.walk-admin__state[data-state="voicing"] { color: var(--warning-ink); }
 
 .walk-admin__chapters { margin-bottom: 2rem; }
 .walk-admin__chapters caption { padding: 0.75rem; color: var(--muted); font-size: var(--text-secondary); font-weight: 700; text-align: left; }

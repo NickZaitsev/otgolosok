@@ -115,7 +115,7 @@ export function IdentityCandidates({ api, busy, run, onPilotCreated }: Props) {
             <label><span>Задание</span><select value={filters.queue} disabled={disabled} onChange={event => filter({ queue: event.target.value as IdentityQueueFilter })}>
               {identityQueueOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select></label>
-            <button className="admin-filter-submit" type="submit" disabled={disabled}>Найти</button>
+            <button className="admin-filter-submit admin-primary" type="submit" disabled={disabled}>Найти</button>
           </form>
 
           <p className="admin-meta" role="status">{loading ? "Загружаем кандидатов…" : `Показано ${pageRange(offset, page.items.length, page.total)} мест.`}</p>

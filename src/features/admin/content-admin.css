@@ -12,9 +12,9 @@
 /* Outlines rather than a grid-gap background, so a partly filled last row stays empty instead of grey. */
 .content-stats > div { display: flex; flex-direction: column; gap: .15rem; padding: .85rem 1rem; background: var(--raised); box-shadow: 0 0 0 1px var(--line); }
 .content-stats dt { color: var(--muted); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
-.content-stats dd { margin: 0; color: var(--admin-green); font-size: 1.375rem; font-weight: 750; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-.content-stats dd small { font-size: .875rem; font-weight: 650; }
-.content-stats dd.content-stats-date { font-size: .95rem; font-weight: 650; overflow-wrap: anywhere; }
+.content-stats dd { margin: 0; color: var(--admin-green); font-size: 1.375rem; font-weight: var(--weight-bold); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.content-stats dd small { font-size: .875rem; font-weight: var(--weight-medium); }
+.content-stats dd.content-stats-date { font-size: .95rem; font-weight: var(--weight-medium); overflow-wrap: anywhere; }
 .content-stats span { color: var(--muted); font-size: .75rem; }
 .content-stats-loading { display: flex; align-items: center; gap: .65rem; min-height: 7rem; margin: 1.25rem 0 1.75rem; padding: 1rem; color: var(--muted); background: var(--raised); box-shadow: 0 0 0 1px var(--line); font-size: .85rem; }
 .content-loading-spinner { width: 1rem; height: 1rem; flex: 0 0 auto; border: 2px solid var(--line); border-top-color: var(--admin-green); border-radius: 50%; animation: content-loading-spin .8s linear infinite; }
@@ -31,7 +31,7 @@
 .content-progress span { min-width: 2px; }
 .content-progress [data-segment=ready] { background: var(--teal); }
 .content-progress [data-segment=working] { background: var(--admin-green); }
-.content-progress [data-segment=waiting] { background: #8a6420; }
+.content-progress [data-segment=waiting] { background: var(--warning-mark); }
 .content-progress [data-segment=stopped] { background: var(--admin-orange); }
 
 /* Each count opens the job list filtered to that bucket, so it reads as a link, not a label. */
@@ -40,7 +40,7 @@
   min-height: 0; padding: .1rem .2rem; border: 0; border-radius: .2rem; color: var(--muted);
   font-size: .78rem; font-weight: 500; text-align: left;
 }
-.content-admin .content-counts button b { color: var(--ink); font-weight: 750; font-variant-numeric: tabular-nums; }
+.content-admin .content-counts button b { color: var(--ink); font-weight: var(--weight-bold); font-variant-numeric: tabular-nums; }
 .content-admin .content-counts button:hover:not(:disabled) { background: transparent; color: var(--admin-orange); text-decoration: underline; text-underline-offset: .2em; }
 .content-admin .content-counts button:hover:not(:disabled) b { color: var(--admin-orange); }
 .content-admin .content-counts button:disabled { opacity: 1; color: var(--muted); }
@@ -52,12 +52,12 @@
 
 .content-admin .admin-stage { font-size: .78rem; }
 .content-batch-state-running::before { background: var(--admin-green); }
-.content-batch-state-paused::before { background: #8a6420; }
+.content-batch-state-paused::before { background: var(--warning-mark); }
 .content-batch-state-cancelled::before { background: var(--muted); }
 .content-text-approved::before { background: var(--teal); }
-.content-text-draft::before { background: #8a6420; }
+.content-text-draft::before { background: var(--warning-mark); }
 .content-text-none::before { background: var(--muted); }
-.admin-stage-working::before, .admin-stage-queued::before, .admin-stage-retry_wait::before { background: #8a6420; }
+.admin-stage-working::before, .admin-stage-queued::before, .admin-stage-retry_wait::before { background: var(--warning-mark); }
 .admin-stage-cancelled::before { background: var(--muted); }
 .admin-stage-review_required::before { background: var(--admin-orange); }
 
@@ -84,7 +84,7 @@
 .content-admin .identity-tiers button[aria-pressed=true] { color: var(--ink); text-decoration: underline; text-underline-offset: .2em; }
 .content-admin .identity-filters { grid-template-columns: minmax(12rem, 1fr) minmax(10rem, .6fr) minmax(8rem, .4fr) auto; }
 .identity-tier-auto::before { background: var(--teal); }
-.identity-tier-enrich::before { background: #8a6420; }
+.identity-tier-enrich::before { background: var(--warning-mark); }
 .identity-tier-manual::before { background: var(--admin-orange); }
 .identity-reasons { color: var(--admin-orange); }
 .identity-pilot { margin-top: 1.5rem; padding-left: 1rem; border-left: 3px solid var(--admin-green); }

@@ -174,3 +174,31 @@ test("подпись кнопки в две строки на 320 px не выл
   const tall = await buttons.evaluateAll(list => list.some(el => el.getBoundingClientRect().height > 48));
   expect(tall, "на 320 px хотя бы одна подпись переносится — иначе тест ничего не проверяет").toBe(true);
 });
+
+// Админка — рабочий инструмент, но тот же язык: основное действие 48 px, остальные кнопки — капсулы
+// не меньше зоны нажатия 44 px, поля как везде.
+for (const viewport of [VIEWPORTS[0], { width: 1440, height: 900 }]) {
+  test(`кнопки и поля админки по дизайн-системе, ${viewport.width}×${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.route("**/api/**", route => {
+      const path = new URL(route.request().url()).pathname;
+      if (path === "/api/auth/session") return route.fulfill({ json: { user: { id: "editor", role: "editor", name: "Редактор", email: "editor@example.test" }, csrfToken: "test-csrf" } });
+      if (path === "/api/story-admin/jobs") return route.fulfill({ json: { jobs: [], hasMore: false } });
+      return route.fulfill({ json: {} });
+    });
+    await page.goto("/admin?section=addresses");
+    await expectPrimary(page.getByRole("button", { name: "Найти", exact: true }));
+    for (const name of ["Обновить", "Выйти"]) {
+      const button = page.getByRole("button", { name, exact: true });
+      await expect(button).toBeVisible();
+      const { height, font, weight, radius } = await shape(button);
+      expect({ height: height >= 44, font, weight, pill: radius >= height / 2 }).toEqual({ height: true, font: 16, weight: 700, pill: true });
+    }
+    const fields = page.locator(".admin-desk :is(input:not([type=checkbox]), select)");
+    await expect(fields.first()).toBeVisible();
+    for (const field of await fields.all()) {
+      const { height, font, weight } = await shape(field);
+      expect({ height, font: font >= FIELD.minFont, weight }).toEqual({ height: FIELD.height, font: true, weight: FIELD.weight });
+    }
+  });
+}
