@@ -417,6 +417,12 @@ make db-dump && make db-pack
 pnpm build && pnpm generator:dev   # http://127.0.0.1:4175
 ```
 
+## Дизайн-система
+
+Токены, правила, компоненты и знак приложения: https://claude.ai/artifact/SG2QhmVSonjqnEWXkDbCh8 (открыта по ссылке).
+
+Источник значений — `src/styles/tokens.css`: дизайн-система описывает его и не заменяет. Цвета вне палитры ловит `src/styles/palette.test.ts`, пары текста и фона — `src/styles/contrast.test.ts`, размеры кнопок и полей на телефоне — `e2e/mobile-controls.spec.ts`. Меняя токен или правило, обновляйте и дизайн-систему. Итоги сверки экранов с системой — в `docs/agents/mobile-density.md`.
+
 ## Структура
 
 - `src/app` — App Router, метаданные и PWA manifest.
