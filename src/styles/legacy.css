@@ -91,7 +91,7 @@
 .dek {
   max-width: 38rem;
   margin: var(--space-xl) 0;
-  color: #37312c;
+  color: var(--muted);
   font-size: var(--text-body);
   line-height: 1.65;
 }
