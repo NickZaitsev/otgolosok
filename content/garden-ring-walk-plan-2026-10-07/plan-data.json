@@ -1,0 +1,6398 @@
+{
+  "checkedAt": "2026-10-07T09:01:26.805Z",
+  "catalogFetchedDate": "2026-10-07",
+  "scope": "Внутри внутреннего контура Садового; подходы к метро с внешней стороны разрешены пользователем",
+  "boundaryFile": "content/garden-ring-intros-2026-10-03/boundary.geojson",
+  "bbox": {
+    "west": 37.57,
+    "south": 55.72,
+    "east": 37.66,
+    "north": 55.79
+  },
+  "bboxPlaceCount": 2453,
+  "insidePlaceCount": 1850,
+  "approvedInsideCount": 752,
+  "audioInsideCount": 751,
+  "overlapFormula": "100 * intersection(canonical physical place IDs) / min(unique physical stop counts)",
+  "currentAudioSource": "Сумма audio.durationSec текущих опубликованных карточек; не ffprobe и не финальная озвучка маршрута",
+  "existingWalks": [
+    {
+      "title": "Прогулка на час от метро «Охотный ряд»",
+      "url": "https://otgolosok.online/walk?share=21e06a2b-dece-424e-b603-6ae79d5377a7",
+      "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+      "stopCount": 4,
+      "placeIds": [
+        "osm:relation:365169",
+        "osm:relation:5968416",
+        "osm:relation:6210565",
+        "osm:way:46512994"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "По бульварному кольцу от Тверской до Трубной",
+      "url": "https://otgolosok.online/walk?share=26216b83-453d-4d81-926d-ec537993f70f",
+      "share": "26216b83-453d-4d81-926d-ec537993f70f",
+      "stopCount": 17,
+      "placeIds": [
+        "osm:node:416562789",
+        "osm:node:416562790",
+        "osm:node:4948146040",
+        "osm:relation:15685250",
+        "osm:relation:18420802",
+        "osm:relation:2985852",
+        "osm:relation:3138564",
+        "osm:relation:3366117",
+        "osm:relation:6478948",
+        "osm:relation:6668708",
+        "osm:relation:6741551",
+        "osm:relation:6957070",
+        "osm:way:46846651",
+        "osm:way:46846669",
+        "osm:way:47138172",
+        "osm:way:52609039",
+        "osm:way:52613443"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "От «Спартака» до «Тушинской»",
+      "url": "https://otgolosok.online/walk?share=284227ab-a324-47f4-b07f-25617166bb3f",
+      "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+      "stopCount": 16,
+      "placeIds": [
+        "osm:node:1805425906",
+        "osm:node:296959504",
+        "osm:node:4076834974",
+        "osm:node:4235760493",
+        "osm:node:4909347021",
+        "osm:node:5202107560",
+        "osm:relation:10377512",
+        "osm:relation:4006864",
+        "osm:relation:6085904",
+        "osm:relation:7113936",
+        "osm:relation:7771761",
+        "osm:way:1098823594",
+        "osm:way:1241471052",
+        "osm:way:1359042497",
+        "osm:way:552402456",
+        "osm:way:863613147"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на час от метро «Сретенский бульвар»",
+      "url": "https://otgolosok.online/walk?share=2e8d898b-241b-432d-8408-603ebb965177",
+      "share": "2e8d898b-241b-432d-8408-603ebb965177",
+      "stopCount": 6,
+      "placeIds": [
+        "osm:node:3502941745",
+        "osm:node:4740630721",
+        "osm:node:5610265141",
+        "osm:relation:7998457",
+        "osm:way:42503311"
+      ],
+      "unresolvedStops": [
+        {
+          "address": "Москва, В.И. Ленину",
+          "location": {
+            "lat": 55.7671101,
+            "lon": 37.6438574
+          }
+        }
+      ]
+    },
+    {
+      "title": "Ордынка: храмы и городские судьбы",
+      "url": "https://otgolosok.online/walk?share=2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+      "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+      "stopCount": 13,
+      "placeIds": [
+        "osm:node:1359123449",
+        "osm:node:1359123836",
+        "osm:relation:16467332",
+        "osm:relation:6381244",
+        "osm:relation:6897502",
+        "osm:relation:7483246",
+        "osm:relation:7503420",
+        "osm:relation:8453866",
+        "osm:relation:8454676",
+        "osm:way:111136355",
+        "osm:way:156493115",
+        "osm:way:164210810",
+        "osm:way:314197370"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+      "url": "https://otgolosok.online/walk?share=326bc586-4083-4dff-ac35-223ba406265b",
+      "share": "326bc586-4083-4dff-ac35-223ba406265b",
+      "stopCount": 4,
+      "placeIds": [
+        "osm:node:5333481710",
+        "osm:relation:19819961",
+        "osm:relation:8016233",
+        "osm:way:45892322"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "От Трубной через Чистые пруды до Покровских ворот",
+      "url": "https://otgolosok.online/walk?share=4a106748-0443-4066-8bd9-a20ae7d6902f",
+      "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+      "stopCount": 28,
+      "placeIds": [
+        "osm:node:13245906707",
+        "osm:node:4948146040",
+        "osm:node:8892457359",
+        "osm:relation:15393022",
+        "osm:relation:15671458",
+        "osm:relation:15685250",
+        "osm:relation:17305841",
+        "osm:relation:288619",
+        "osm:relation:2985852",
+        "osm:relation:418691",
+        "osm:relation:6668708",
+        "osm:way:10618794",
+        "osm:way:1164348040",
+        "osm:way:22143842",
+        "osm:way:301719335",
+        "osm:way:372502321",
+        "osm:way:42503311",
+        "osm:way:45256537",
+        "osm:way:47642637",
+        "osm:way:50379934",
+        "osm:way:51259798",
+        "osm:way:52661703",
+        "osm:way:52673166",
+        "osm:way:530343541",
+        "osm:way:533065231",
+        "osm:way:697116263",
+        "osm:way:81443652",
+        "osm:way:986249013"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на час от метро «Менделеевская»",
+      "url": "https://otgolosok.online/walk?share=5830272b-9714-4577-9fd8-5a3a2b074b74",
+      "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+      "stopCount": 8,
+      "placeIds": [
+        "osm:node:12330459484",
+        "osm:node:12728742378",
+        "osm:node:8209683163",
+        "osm:relation:8264136",
+        "osm:way:37130963"
+      ],
+      "unresolvedStops": [
+        {
+          "address": "Москва, Песня Родины",
+          "location": {
+            "lat": 55.7801481,
+            "lon": 37.606397
+          }
+        },
+        {
+          "address": "Москва, Д. В. Шурпенко",
+          "location": {
+            "lat": 55.7787255,
+            "lon": 37.6056012
+          }
+        },
+        {
+          "address": "Москва, В. А. Туманову",
+          "location": {
+            "lat": 55.7781537,
+            "lon": 37.6026917
+          }
+        }
+      ]
+    },
+    {
+      "title": "Прогулка на полтора часа от метро «Селигерская»",
+      "url": "https://otgolosok.online/walk?share=674b591a-d868-439d-97f5-369b0dcf3812",
+      "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+      "stopCount": 8,
+      "placeIds": [
+        "osm:node:4864402568",
+        "osm:relation:1232271",
+        "osm:way:230808640"
+      ],
+      "unresolvedStops": [
+        {
+          "address": "Москва, С.Н. Фёдорову",
+          "location": {
+            "lat": 55.8664319,
+            "lon": 37.5489044
+          }
+        },
+        {
+          "address": "Москва, Орловский сад",
+          "location": {
+            "lat": 55.8691143,
+            "lon": 37.5438795
+          }
+        },
+        {
+          "address": "Москва, Г. А. Кузнецову",
+          "location": {
+            "lat": 55.8682404,
+            "lon": 37.5267473
+          }
+        },
+        {
+          "address": "Москва, Путейская улица, 3",
+          "location": {
+            "lat": 55.8679395,
+            "lon": 37.515188
+          }
+        },
+        {
+          "address": "Москва, Путейская улица, 25",
+          "location": {
+            "lat": 55.8684299,
+            "lon": 37.5136439
+          }
+        }
+      ]
+    },
+    {
+      "title": "Прогулка на час от метро «Марксистская»",
+      "url": "https://otgolosok.online/walk?share=69f00305-a8f3-4d7f-9def-6f7621018a71",
+      "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+      "stopCount": 6,
+      "placeIds": [
+        "osm:relation:8451735",
+        "osm:way:136577481",
+        "osm:way:296889188",
+        "osm:way:43321786",
+        "osm:way:53446406"
+      ],
+      "unresolvedStops": [
+        {
+          "address": "Москва, Владимир Высоцкий",
+          "location": {
+            "lat": 55.743768,
+            "lon": 37.653642
+          }
+        }
+      ]
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Китай-город»",
+      "url": "https://otgolosok.online/walk?share=6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+      "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+      "stopCount": 4,
+      "placeIds": [
+        "osm:relation:19558831",
+        "osm:relation:7458555",
+        "osm:relation:9854949",
+        "osm:way:52504840"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Вокруг Третьяковки: искусство в жилом квартале",
+      "url": "https://otgolosok.online/walk?share=6cacfdd1-defd-4afb-940f-5085356d0315",
+      "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+      "stopCount": 13,
+      "placeIds": [
+        "osm:node:1359108784",
+        "osm:node:1378700996",
+        "osm:node:4595636713",
+        "osm:node:8044478986",
+        "osm:relation:11661228",
+        "osm:relation:1907261",
+        "osm:relation:20429251",
+        "osm:relation:6897502",
+        "osm:way:52435403",
+        "osm:way:52435420",
+        "osm:way:53548437",
+        "osm:way:642091604",
+        "osm:way:75650837"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Красные Ворота»",
+      "url": "https://otgolosok.online/walk?share=83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+      "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+      "stopCount": 3,
+      "placeIds": [
+        "osm:node:5333481710",
+        "osm:way:130850432",
+        "osm:way:37757051"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Пятницкая: деньги, книги и городская жизнь",
+      "url": "https://otgolosok.online/walk?share=85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+      "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+      "stopCount": 11,
+      "placeIds": [
+        "osm:node:595387046",
+        "osm:relation:1323532",
+        "osm:relation:20392452",
+        "osm:relation:7402492",
+        "osm:relation:7455707",
+        "osm:relation:9919623",
+        "osm:way:111585287",
+        "osm:way:53830791",
+        "osm:way:75655995",
+        "osm:way:79980545",
+        "osm:way:82591265"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на час от метро «Чкаловская»",
+      "url": "https://otgolosok.online/walk?share=8a99f025-e3fa-4842-ac63-52de8e43674b",
+      "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+      "stopCount": 5,
+      "placeIds": [
+        "osm:relation:15449241",
+        "osm:relation:55214",
+        "osm:way:37771185",
+        "osm:way:52387427"
+      ],
+      "unresolvedStops": [
+        {
+          "address": "Москва, Е. А. Жерлыгину",
+          "location": {
+            "lat": 55.753868,
+            "lon": 37.6557088
+          }
+        }
+      ]
+    },
+    {
+      "title": "От Кожевников к Цинделю",
+      "url": "https://otgolosok.online/walk?share=901d1133-44a2-4724-a856-2fe8d6c86a44",
+      "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+      "stopCount": 4,
+      "placeIds": [
+        "osm:node:2330688388",
+        "osm:way:192584381",
+        "osm:way:48346310",
+        "osm:way:56460859"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "От Чистых прудов до Китай-города",
+      "url": "https://otgolosok.online/walk?share=9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+      "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+      "stopCount": 29,
+      "placeIds": [
+        "osm:node:2331521772",
+        "osm:node:8892457359",
+        "osm:relation:12198830",
+        "osm:relation:12819470",
+        "osm:relation:14277905",
+        "osm:relation:15671458",
+        "osm:relation:17305841",
+        "osm:relation:17361977",
+        "osm:relation:17361989",
+        "osm:relation:288619",
+        "osm:relation:418691",
+        "osm:relation:9854949",
+        "osm:way:1164348040",
+        "osm:way:131753188",
+        "osm:way:22143842",
+        "osm:way:25059224",
+        "osm:way:37769553",
+        "osm:way:37771187",
+        "osm:way:40444262",
+        "osm:way:40444265",
+        "osm:way:40444274",
+        "osm:way:42503311",
+        "osm:way:45256537",
+        "osm:way:49009576",
+        "osm:way:52521245",
+        "osm:way:530343541",
+        "osm:way:533065211",
+        "osm:way:533065231",
+        "osm:way:81443652"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "По бульварному кольцу от Кропоткинской до Тверской",
+      "url": "https://otgolosok.online/walk?share=b2823a83-f861-46f2-834b-b7873960882a",
+      "share": "b2823a83-f861-46f2-834b-b7873960882a",
+      "stopCount": 28,
+      "placeIds": [
+        "osm:node:1352865160",
+        "osm:node:253043145",
+        "osm:node:2623288251",
+        "osm:node:416562790",
+        "osm:node:416562791",
+        "osm:node:4948141391",
+        "osm:relation:2150666",
+        "osm:relation:2156517",
+        "osm:relation:2833814",
+        "osm:relation:3339829",
+        "osm:relation:3365908",
+        "osm:relation:3366074",
+        "osm:relation:3366106",
+        "osm:relation:3366117",
+        "osm:relation:5371132",
+        "osm:relation:5507696",
+        "osm:relation:5507698",
+        "osm:relation:7239516",
+        "osm:relation:7314898",
+        "osm:way:129213001",
+        "osm:way:25006967",
+        "osm:way:255069618",
+        "osm:way:312412195",
+        "osm:way:35814561",
+        "osm:way:45048841",
+        "osm:way:46178921",
+        "osm:way:46966391",
+        "osm:way:47675276"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на час от метро «Чистые пруды»",
+      "url": "https://otgolosok.online/walk?share=b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+      "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+      "stopCount": 6,
+      "placeIds": [
+        "osm:node:3502941745",
+        "osm:node:4740630721",
+        "osm:relation:7998457",
+        "osm:relation:9241422",
+        "osm:way:42503311",
+        "osm:way:45892322"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Купцы и благотворители Ордынки",
+      "url": "https://otgolosok.online/walk?share=baed220c-72a9-4790-940e-1b1160e02913",
+      "share": "baed220c-72a9-4790-940e-1b1160e02913",
+      "stopCount": 11,
+      "placeIds": [
+        "osm:relation:6381244",
+        "osm:relation:8454676",
+        "osm:way:111136355",
+        "osm:way:156493115",
+        "osm:way:283084311",
+        "osm:way:314197370",
+        "osm:way:48172598",
+        "osm:way:48172698",
+        "osm:way:53816187",
+        "osm:way:53830787",
+        "osm:way:75650837"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Красносельская»",
+      "url": "https://otgolosok.online/walk?share=d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+      "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+      "stopCount": 3,
+      "placeIds": [
+        "osm:node:10732775405",
+        "osm:node:5076035172",
+        "osm:node:7643406849"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на час от метро «Тургеневская»",
+      "url": "https://otgolosok.online/walk?share=d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+      "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+      "stopCount": 6,
+      "placeIds": [
+        "osm:node:3502941745",
+        "osm:node:416562786",
+        "osm:node:4740630721",
+        "osm:relation:7998457",
+        "osm:way:42503311",
+        "osm:way:45892322"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на час от метро «ЦСКА»",
+      "url": "https://otgolosok.online/walk?share=e4e2ff09-116a-4258-98a0-dc92f54941d8",
+      "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+      "stopCount": 8,
+      "placeIds": [
+        "osm:node:1274515687",
+        "osm:node:1274515741",
+        "osm:relation:2880798",
+        "osm:relation:391480",
+        "osm:relation:391481",
+        "osm:relation:7783092",
+        "osm:way:26232926",
+        "osm:way:491294128"
+      ],
+      "unresolvedStops": []
+    },
+    {
+      "title": "Прогулка на час от метро «Динамо»",
+      "url": "https://otgolosok.online/walk?share=f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+      "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+      "stopCount": 6,
+      "placeIds": [
+        "osm:node:1274515741",
+        "osm:node:3955565253",
+        "osm:way:26136957",
+        "osm:way:57970156",
+        "osm:way:879170818"
+      ],
+      "unresolvedStops": [
+        {
+          "address": "Москва, Спортивный парк \"Динамо\"",
+          "location": {
+            "lat": 55.7911517,
+            "lon": 37.5618666
+          }
+        }
+      ]
+    },
+    {
+      "title": "Прогулка от метро «Боровицкая» · 60 минут",
+      "url": "https://otgolosok.online/walk?share=f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+      "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+      "stopCount": 4,
+      "placeIds": [
+        "osm:node:1994968044",
+        "osm:node:2390706732",
+        "osm:relation:1359337",
+        "osm:relation:15344966"
+      ],
+      "unresolvedStops": []
+    }
+  ],
+  "routes": [
+    {
+      "id": "R01",
+      "title": "Пречистенка: коллекционеры и особняки",
+      "startMetro": "Кропоткинская",
+      "finishMetro": "Смоленская",
+      "stops": [
+        {
+          "id": "osm:way:45818589",
+          "name": "Белые палаты на улице Пречистенке",
+          "title": "Белые палаты",
+          "address": "Москва, улица Пречистенка, дом 3, строение 1",
+          "lat": 55.743864,
+          "lon": 37.6001994,
+          "sec": 70.92,
+          "words": 119,
+          "status": "approved",
+          "boundaryDistanceM": 981.1
+        },
+        {
+          "id": "osm:relation:9464684",
+          "name": "Усадьба Хрущёвых-Селезнёвых",
+          "title": "Усадьба Хрущёвых-Селезнёвых",
+          "address": "Москва, улица Пречистенка, 12 / Хрущёвский переулок, 2",
+          "lat": 55.7435766,
+          "lon": 37.5980146,
+          "sec": 65.352,
+          "words": 102,
+          "status": "approved",
+          "boundaryDistanceM": 858.4
+        },
+        {
+          "id": "osm:node:2798179186",
+          "name": "Государственный музей Л.Н. Толстого",
+          "title": "Государственный музей-заповедник Л. Н. Толстого — Литературная экспозиция на Пречистенке",
+          "address": "119034, г. Москва, ул. Пречистенка, д. 11/8",
+          "lat": 55.7428122,
+          "lon": 37.5969685,
+          "sec": 61.32,
+          "words": 104,
+          "status": "approved",
+          "boundaryDistanceM": 772.0
+        },
+        {
+          "id": "osm:way:129212972",
+          "name": "Центральный дом учёных",
+          "title": "Центральный дом учёных",
+          "address": "Москва, улица Пречистенка, 16",
+          "lat": 55.7436365,
+          "lon": 37.5960227,
+          "sec": 63.216,
+          "words": 102,
+          "status": "approved",
+          "boundaryDistanceM": 737.7
+        },
+        {
+          "id": "osm:way:412738928",
+          "name": "Усадьба Давыдова",
+          "title": "Флигель городской усадьбы Бибиковых — Д. В. Давыдова",
+          "address": "Москва, улица Пречистенка, дом 17/8, строение 5",
+          "lat": 55.7417006,
+          "lon": 37.5945938,
+          "sec": 73.872,
+          "words": 113,
+          "status": "approved",
+          "boundaryDistanceM": 585.6
+        },
+        {
+          "id": "osm:relation:8914102",
+          "name": "Усадьба Морозова на Пречистенке",
+          "title": null,
+          "address": "Москва, улица Пречистенка, 21/1",
+          "lat": 55.7411053,
+          "lon": 37.592894,
+          "sec": 0,
+          "words": 0,
+          "status": "none",
+          "boundaryDistanceM": 469.9
+        },
+        {
+          "id": "osm:node:8898082919",
+          "name": "Доходный дом И. П. Исакова",
+          "title": null,
+          "address": null,
+          "lat": 55.7413137,
+          "lon": 37.5927968,
+          "sec": 0,
+          "words": 0,
+          "status": "none",
+          "boundaryDistanceM": 483.9
+        },
+        {
+          "id": "osm:node:5591184668",
+          "name": "Усадьба Охотниковых",
+          "title": "Усадьба Охотниковых",
+          "address": "Москва, улица Пречистенка, дом 32/1",
+          "lat": 55.7408059,
+          "lon": 37.5904968,
+          "sec": 69.84,
+          "words": 102,
+          "status": "approved",
+          "boundaryDistanceM": 329.9
+        },
+        {
+          "id": "osm:way:104202024",
+          "name": "Усадьба Самсонова",
+          "title": "Усадьба Самсонова — главный дом",
+          "address": "Москва, улица Пречистенка, дом 35, строение 1",
+          "lat": 55.7394644,
+          "lon": 37.5889993,
+          "sec": 59.208,
+          "words": 98,
+          "status": "approved",
+          "boundaryDistanceM": 179.5
+        },
+        {
+          "id": "osm:way:47584795",
+          "name": "посольство Дании",
+          "title": "Дом М. К. Морозовой — посольство Королевства Дания",
+          "address": "Москва, Пречистенский переулок, дом 9",
+          "lat": 55.743635,
+          "lon": 37.591927,
+          "sec": 53.472,
+          "words": 88,
+          "status": "approved",
+          "boundaryDistanceM": 486.6
+        },
+        {
+          "id": "osm:relation:10967050",
+          "name": "Храм Успения Пресвятой Богородицы на Могильцах",
+          "title": "Храм Успения Пресвятой Богородицы на Могильцах",
+          "address": "119034, Москва, Большой Власьевский переулок, дом 2/2",
+          "lat": 55.7438406,
+          "lon": 37.590782,
+          "sec": 73.416,
+          "words": 121,
+          "status": "approved",
+          "boundaryDistanceM": 421.2
+        },
+        {
+          "id": "osm:way:47513393",
+          "name": "посольство Италии",
+          "title": "Особняк Берга — Посольство Италии в России",
+          "address": "Москва, Денежный переулок, дом 5",
+          "lat": 55.7429224,
+          "lon": 37.5876217,
+          "sec": 50.304,
+          "words": 87,
+          "status": "approved",
+          "boundaryDistanceM": 206.3
+        },
+        {
+          "id": "osm:node:4088301220",
+          "name": "Мемориальная квартира-музей Е. Б. Вахтангова",
+          "title": "Музей-квартира Евгения Вахтангова",
+          "address": "Москва, Денежный переулок, дом 12, квартира 1",
+          "lat": 55.7436859,
+          "lon": 37.5878856,
+          "sec": 46.728,
+          "words": 81,
+          "status": "approved",
+          "boundaryDistanceM": 240.4
+        },
+        {
+          "id": "osm:way:47512415",
+          "name": "Особняк Маргариты Морозовой",
+          "title": "Особняк Маргариты Морозовой",
+          "address": "Москва, Смоленский бульвар, д. 26/9, стр. 1",
+          "lat": 55.7436922,
+          "lon": 37.5843507,
+          "sec": 70.8,
+          "words": 119,
+          "status": "approved",
+          "boundaryDistanceM": 24.5
+        }
+      ],
+      "currentAudioSec": 758.448,
+      "targetAudioSec": 1080,
+      "tours": [
+        "5934"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 2177,
+      "newOverlaps": [
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 2,
+      "audioDeficitTo15Sec": 141.552,
+      "audioDeficitTo18Sec": 321.552,
+      "boundaryReview": [
+        {
+          "id": "osm:way:47512415",
+          "name": "Особняк Маргариты Морозовой",
+          "m": 24.5
+        }
+      ],
+      "maxExistingOverlapPercent": 0.0,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R02",
+      "title": "Остоженка: искусство и частная жизнь",
+      "startMetro": "Кропоткинская",
+      "finishMetro": "Парк культуры",
+      "stops": [
+        {
+          "id": "osm:node:7428358397",
+          "name": "Доходный жилой дом (З. А. Перцевой)",
+          "title": "Доходный жилой дом З. А. Перцевой (Жилой дом Перцевой)",
+          "address": "Москва, Курсовой переулок, дом 1",
+          "lat": 55.7427293,
+          "lon": 37.6060455,
+          "sec": 55.704,
+          "words": 93,
+          "status": "approved",
+          "boundaryDistanceM": 1057.6
+        },
+        {
+          "id": "osm:relation:18096252",
+          "name": "Церковь Илии Пророка Обыденная",
+          "title": "Церковь Ильи Пророка Обыденная, Трапезная, Колокольня",
+          "address": "г. Москва, 2-й Обыденский пер., д. 6/3, стр. 1",
+          "lat": 55.7422172,
+          "lon": 37.6039117,
+          "sec": 64.248,
+          "words": 105,
+          "status": "approved",
+          "boundaryDistanceM": 941.8
+        },
+        {
+          "id": "osm:way:52434941",
+          "name": "Посольство Ливана. Резиденция",
+          "title": "Особняк Ивана Цветкова",
+          "address": "Москва, Пречистенская набережная, дом 29, строение 1",
+          "lat": 55.7415831,
+          "lon": 37.6066422,
+          "sec": 52.56,
+          "words": 88,
+          "status": "approved",
+          "boundaryDistanceM": 965.9
+        },
+        {
+          "id": "osm:node:12233205875",
+          "name": "Пречистенские вечерние классы для рабочих",
+          "title": "Мемориальная доска в память о размещении Пречистенских вечерних классов для рабочих",
+          "address": "Москва, Курсовой переулок, дом 17, строение 1",
+          "lat": 55.7401511,
+          "lon": 37.6052698,
+          "sec": 63.528,
+          "words": 107,
+          "status": "approved",
+          "boundaryDistanceM": 784.8
+        },
+        {
+          "id": "osm:node:12236419787",
+          "name": "С. И. Мицкевичу",
+          "title": "Мемориальная доска Сергею Ивановичу Мицкевичу",
+          "address": "Москва, 1-й Зачатьевский переулок, дом 13",
+          "lat": 55.739746,
+          "lon": 37.6025464,
+          "sec": 65.808,
+          "words": 112,
+          "status": "approved",
+          "boundaryDistanceM": 660.4
+        },
+        {
+          "id": "osm:way:193498236",
+          "name": "Мультимедиа Арт Музей",
+          "title": "Мультимедиа Арт Музей (Московский дом фотографии)",
+          "address": "Москва, улица Остоженка, дом 16",
+          "lat": 55.7414426,
+          "lon": 37.5985264,
+          "sec": 73.296,
+          "words": 114,
+          "status": "approved",
+          "boundaryDistanceM": 696.1
+        },
+        {
+          "id": "osm:way:47978268",
+          "name": "Доходный дом архитектора Л. Кекушева",
+          "title": "Доходный дом Кекушевой",
+          "address": "Москва, улица Остоженка, дом 19, строение 1",
+          "lat": 55.7408651,
+          "lon": 37.5985397,
+          "sec": 55.944,
+          "words": 94,
+          "status": "approved",
+          "boundaryDistanceM": 641.3
+        },
+        {
+          "id": "osm:way:76618921",
+          "name": "Дом-музей И. С. Тургенева",
+          "title": "Дом-музей И. С. Тургенева",
+          "address": "Москва, ул. Остоженка, д. 37/7, стр. 1",
+          "lat": 55.7385999,
+          "lon": 37.5962056,
+          "sec": 77.88,
+          "words": 133,
+          "status": "approved",
+          "boundaryDistanceM": 349.9
+        },
+        {
+          "id": "osm:relation:1850015",
+          "name": "Особняк Всеволожских",
+          "title": "Дом Всеволожского (особняк Всеволожских)",
+          "address": "Москва, улица Остоженка, дом 49, строение 1",
+          "lat": 55.7377058,
+          "lon": 37.5958419,
+          "sec": 52.8,
+          "words": 97,
+          "status": "approved",
+          "boundaryDistanceM": 253.1
+        },
+        {
+          "id": "osm:way:76633316",
+          "name": "Особняк Абрикосовых",
+          "title": null,
+          "address": "Москва, улица Остоженка, 51 с1",
+          "lat": 55.737234,
+          "lon": 37.5957724,
+          "sec": 0,
+          "words": 0,
+          "status": "none",
+          "boundaryDistanceM": 206.4
+        },
+        {
+          "id": "osm:way:76633314",
+          "name": "Церковь Покрова Пресвятой Богородицы",
+          "title": "Храм Сретения Владимирской иконы Пресвятой Богородицы на Остоженке (храм Покрова Пресвятой Богородицы на Остоженке)",
+          "address": "Москва, Турчанинов переулок, дом 4, строение 1",
+          "lat": 55.7367093,
+          "lon": 37.5978386,
+          "sec": 83.424,
+          "words": 121,
+          "status": "approved",
+          "boundaryDistanceM": 220.7
+        },
+        {
+          "id": "osm:relation:6011324",
+          "name": "Музей Москвы",
+          "title": "Музей Москвы",
+          "address": "Москва, Зубовский бульвар, 2, ансамбль Провиантских складов",
+          "lat": 55.7368647,
+          "lon": 37.5940847,
+          "sec": 45.36,
+          "words": 74,
+          "status": "approved",
+          "boundaryDistanceM": 115.8
+        }
+      ],
+      "currentAudioSec": 690.552,
+      "targetAudioSec": 1080,
+      "tours": [
+        "75e6"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 1892,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 1,
+      "audioDeficitTo15Sec": 209.448,
+      "audioDeficitTo18Sec": 389.448,
+      "boundaryReview": [],
+      "maxExistingOverlapPercent": 0.0,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R03",
+      "title": "Знаменка и Волхонка: от усадеб к музеям",
+      "startMetro": "Боровицкая",
+      "finishMetro": "Кропоткинская",
+      "stops": [
+        {
+          "id": "osm:relation:5969167",
+          "name": "Дом Пашкова",
+          "title": "Дом Пашкова",
+          "address": "Москва, ул. Воздвиженка, д. 3/5, стр. 1",
+          "lat": 55.7495727,
+          "lon": 37.6085104,
+          "sec": 58.176,
+          "words": 89,
+          "status": "approved",
+          "boundaryDistanceM": 1594.6
+        },
+        {
+          "id": "osm:node:5630505421",
+          "name": "Галерея Александра Шилова",
+          "title": "Галерея Александра Шилова",
+          "address": "Москва, улица Знаменка, дом 5",
+          "lat": 55.7490545,
+          "lon": 37.608298,
+          "sec": 65.16,
+          "words": 104,
+          "status": "approved",
+          "boundaryDistanceM": 1587.1
+        },
+        {
+          "id": "osm:way:47853856",
+          "name": "Усадьба Апраксиных-Бутурлиных",
+          "title": "Усадьба Апраксиных — Бутурлиных, дом Бутурлина",
+          "address": "Москва, улица Знаменка, дом 12/2, строение 3",
+          "lat": 55.7507351,
+          "lon": 37.6055842,
+          "sec": 61.968,
+          "words": 101,
+          "status": "approved",
+          "boundaryDistanceM": 1399.3
+        },
+        {
+          "id": "osm:way:32693719",
+          "name": "Усадьба Вяземских-Долгоруковых",
+          "title": "Усадьба Вяземских-Долгоруковых",
+          "address": "Москва, Малый Знаменский переулок, 3/5, строение 1",
+          "lat": 55.7473021,
+          "lon": 37.6028304,
+          "sec": 56.688,
+          "words": 97,
+          "status": "approved",
+          "boundaryDistanceM": 1244.0
+        },
+        {
+          "id": "osm:way:32693359",
+          "name": "Усадьба Лопухиных",
+          "title": "Главный дом усадьбы Лопухиных («Дом с палатами»)",
+          "address": "Москва, Малый Знаменский переулок, дом 3/5, строение 4",
+          "lat": 55.7466309,
+          "lon": 37.6036856,
+          "sec": 59.784,
+          "words": 96,
+          "status": "approved",
+          "boundaryDistanceM": 1278.5
+        },
+        {
+          "id": "osm:relation:2424377",
+          "name": "Храм Священномученика Антипы на Колымажном дворе",
+          "title": "Храм священномученика Антипы на Колымажном дворе",
+          "address": "119019, Москва, Колымажный переулок, дом 8/4, строение 1",
+          "lat": 55.7480362,
+          "lon": 37.6055264,
+          "sec": 50.16,
+          "words": 78,
+          "status": "approved",
+          "boundaryDistanceM": 1422.9
+        },
+        {
+          "id": "osm:relation:2421978",
+          "name": "Государственный музей изобразительных искусств имени А. С. Пушкина",
+          "title": "Главное здание Государственного музея изобразительных искусств имени А. С. Пушкина",
+          "address": "Москва, улица Волхонка, 12, строение 1",
+          "lat": 55.7475618,
+          "lon": 37.605501,
+          "sec": 68.544,
+          "words": 105,
+          "status": "approved",
+          "boundaryDistanceM": 1413.3
+        },
+        {
+          "id": "osm:node:273354762",
+          "name": "Галерея искусства стран Европы и Америки XIX—XX веков",
+          "title": "Галерея искусства стран Европы и Америки XIX—XX веков",
+          "address": "Москва, улица Волхонка, 14",
+          "lat": 55.7464881,
+          "lon": 37.6053051,
+          "sec": 59.736,
+          "words": 90,
+          "status": "approved",
+          "boundaryDistanceM": 1373.6
+        },
+        {
+          "id": "osm:node:2322476565",
+          "name": "В. А. Тропинину",
+          "title": "Мемориальная доска Василию Андреевичу Тропинину",
+          "address": "Москва, улица Волхонка, дом 9, строение 1",
+          "lat": 55.7471848,
+          "lon": 37.6075246,
+          "sec": 51.912,
+          "words": 80,
+          "status": "approved",
+          "boundaryDistanceM": 1526.8
+        },
+        {
+          "id": "osm:relation:10048315",
+          "name": "Галерея Ильи Глазунова",
+          "title": "Галерея Ильи Глазунова",
+          "address": "Галерея Ильи Глазунова, Россия, Москва, улица Волхонка, 13, 119019",
+          "lat": 55.7464122,
+          "lon": 37.6071561,
+          "sec": 57.144,
+          "words": 90,
+          "status": "approved",
+          "boundaryDistanceM": 1448.2
+        },
+        {
+          "id": "osm:relation:2150666",
+          "name": "Институт русского языка РАН",
+          "title": "Дом Института русского языка РАН",
+          "address": "Москва, улица Волхонка, 18/2",
+          "lat": 55.7451115,
+          "lon": 37.6030377,
+          "sec": 74.544,
+          "words": 120,
+          "status": "approved",
+          "boundaryDistanceM": 1191.6
+        },
+        {
+          "id": "osm:relation:7314898",
+          "name": "Храм Христа Спасителя",
+          "title": "Храм Христа Спасителя",
+          "address": "Москва, улица Волхонка, 15",
+          "lat": 55.7439394,
+          "lon": 37.6070525,
+          "sec": 54.456,
+          "words": 104,
+          "status": "approved",
+          "boundaryDistanceM": 1205.8
+        }
+      ],
+      "currentAudioSec": 718.272,
+      "targetAudioSec": 1080,
+      "tours": [
+        "8e38"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 2,
+          "ids": [
+            "osm:relation:2150666",
+            "osm:relation:7314898"
+          ],
+          "percent": 16.666666666666668
+        },
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 2018,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 0,
+      "audioDeficitTo15Sec": 181.728,
+      "audioDeficitTo18Sec": 361.728,
+      "boundaryReview": [],
+      "maxExistingOverlapPercent": 16.666666666666668,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R04",
+      "title": "Поварская: литература, музыка и особняки",
+      "startMetro": "Арбатская",
+      "finishMetro": "Баррикадная",
+      "stops": [
+        {
+          "id": "osm:way:47294368",
+          "name": "Посольство Норвегии",
+          "title": "Главный дом городской усадьбы Грачёвых (здание Посольства Норвегии)",
+          "address": "Москва, Поварская улица, д. 7, стр. 1",
+          "lat": 55.7536517,
+          "lon": 37.5966802,
+          "sec": 41.112,
+          "words": 79,
+          "status": "approved",
+          "boundaryDistanceM": 813.8
+        },
+        {
+          "id": "osm:way:300426887",
+          "name": "Дом-музей М. Ю. Лермонтова",
+          "title": "Дом-музей М. Ю. Лермонтова",
+          "address": "Дом-музей М. Ю. Лермонтова, Москва, улица Малая Молчановка, 2",
+          "lat": 55.7535904,
+          "lon": 37.594037,
+          "sec": 58.92,
+          "words": 91,
+          "status": "approved",
+          "boundaryDistanceM": 649.7
+        },
+        {
+          "id": "osm:node:3423510101",
+          "name": "Мемориальный музей-квартира Е.Ф.Гнесиной",
+          "title": null,
+          "address": null,
+          "lat": 55.7552658,
+          "lon": 37.5922172,
+          "sec": 0,
+          "words": 0,
+          "status": "draft",
+          "boundaryDistanceM": 512.8
+        },
+        {
+          "id": "osm:way:160317025",
+          "name": "Посольство Литвы",
+          "title": "Посольство Литвы в Москве",
+          "address": "Москва, Борисоглебский переулок, 10",
+          "lat": 55.7547153,
+          "lon": 37.590943,
+          "sec": 62.496,
+          "words": 94,
+          "status": "approved",
+          "boundaryDistanceM": 441.2
+        },
+        {
+          "id": "osm:way:300426888",
+          "name": "Дом-музей Марины Цветаевой",
+          "title": "Дом-музей Марины Цветаевой",
+          "address": "Москва, Борисоглебский переулок, дом 6, строение 1",
+          "lat": 55.7541405,
+          "lon": 37.59017,
+          "sec": 77.928,
+          "words": 118,
+          "status": "approved",
+          "boundaryDistanceM": 402.6
+        },
+        {
+          "id": "osm:way:32783700",
+          "name": "Посольство Монголии",
+          "title": "Посольство Монголии",
+          "address": "Москва, Борисоглебский переулок, 11А, строение 1",
+          "lat": 55.7547346,
+          "lon": 37.5882785,
+          "sec": 54.048,
+          "words": 82,
+          "status": "approved",
+          "boundaryDistanceM": 276.0
+        },
+        {
+          "id": "osm:node:3466483914",
+          "name": "Дом И.С. Остроухова в Трубниках",
+          "title": "Дом И.С. Остроухова в Трубниках",
+          "address": "Москва, Трубниковский переулок, д. 17",
+          "lat": 55.7548346,
+          "lon": 37.5866715,
+          "sec": 60.096,
+          "words": 94,
+          "status": "approved",
+          "boundaryDistanceM": 174.9
+        },
+        {
+          "id": "osm:way:47296416",
+          "name": "Музей-квартира А. М. Горького",
+          "title": "Литературная экспозиция Музея А. М. Горького на Поварской",
+          "address": "Москва, улица Поварская, дом 25А",
+          "lat": 55.7556508,
+          "lon": 37.5889977,
+          "sec": 47.832,
+          "words": 78,
+          "status": "approved",
+          "boundaryDistanceM": 307.3
+        },
+        {
+          "id": "osm:relation:18626008",
+          "name": "Дом Шереметьевых",
+          "title": "Дом Шереметьева",
+          "address": "Москва, Поварская ул., д. 27",
+          "lat": 55.7562033,
+          "lon": 37.588933,
+          "sec": 50.544,
+          "words": 81,
+          "status": "approved",
+          "boundaryDistanceM": 295.8
+        },
+        {
+          "id": "osm:way:47296531",
+          "name": "Посольство Афганистана",
+          "title": "Городская усадьба М. Г. Понизовского (Посольство Афганистана)",
+          "address": "Москва, Поварская улица, дом 42, строение 1",
+          "lat": 55.7567637,
+          "lon": 37.5893284,
+          "sec": 52.704,
+          "words": 84,
+          "status": "approved",
+          "boundaryDistanceM": 312.7
+        },
+        {
+          "id": "osm:way:46525731",
+          "name": "Мастерская «12»",
+          "title": "Мастерская «12» Никиты Михалкова",
+          "address": "Москва, Поварская улица, дом 33, строение 1",
+          "lat": 55.7570887,
+          "lon": 37.586621,
+          "sec": 70.2,
+          "words": 115,
+          "status": "approved",
+          "boundaryDistanceM": 139.9
+        },
+        {
+          "id": "osm:way:47031092",
+          "name": "Городская усадьба Долгоруких",
+          "title": "Усадьба Долгоруковых — Сологуба",
+          "address": "Москва, Поварская улица, 52/55, строение 1",
+          "lat": 55.7581943,
+          "lon": 37.5865913,
+          "sec": 60.36,
+          "words": 95,
+          "status": "approved",
+          "boundaryDistanceM": 123.1
+        },
+        {
+          "id": "osm:way:47031131",
+          "name": "Центральный дом литераторов",
+          "title": "Центральный дом литераторов",
+          "address": "Москва, Большая Никитская улица, 53",
+          "lat": 55.7577598,
+          "lon": 37.5878146,
+          "sec": 48.024,
+          "words": 74,
+          "status": "approved",
+          "boundaryDistanceM": 205.0
+        }
+      ],
+      "currentAudioSec": 684.264,
+      "targetAudioSec": 1080,
+      "tours": [
+        "ab77"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 1490,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 1,
+      "audioDeficitTo15Sec": 215.736,
+      "audioDeficitTo18Sec": 395.736,
+      "boundaryReview": [],
+      "maxExistingOverlapPercent": 0.0,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R05",
+      "title": "Воздвиженка и Кисловские переулки",
+      "startMetro": "Библиотека имени Ленина",
+      "finishMetro": "Арбатская",
+      "stops": [
+        {
+          "id": "osm:relation:4168584",
+          "name": "Главное здание РГБ",
+          "title": "Главное здание Российской государственной библиотеки",
+          "address": "Москва, улица Воздвиженка, 3/5, строение 5",
+          "lat": 55.7521397,
+          "lon": 37.6080369,
+          "sec": 70.8,
+          "words": 106,
+          "status": "approved",
+          "boundaryDistanceM": 1538.4
+        },
+        {
+          "id": "osm:way:32693733",
+          "name": "Государственный музей архитектуры им. А. В. Щусева",
+          "title": "Государственный научно-исследовательский музей архитектуры имени А. В. Щусева",
+          "address": "119019, Москва, ул. Воздвиженка, 5/25",
+          "lat": 55.7523865,
+          "lon": 37.6076819,
+          "sec": 63.72,
+          "words": 100,
+          "status": "approved",
+          "boundaryDistanceM": 1513.6
+        },
+        {
+          "id": "osm:way:252370791",
+          "name": "Храм иконы Божией Матери «Знамение»",
+          "title": "Храм иконы Божией Матери «Знамение» на Шереметевом дворе",
+          "address": "Москва, Романов переулок, д. 2/6, стр. 8",
+          "lat": 55.7539847,
+          "lon": 37.6096804,
+          "sec": 53.904,
+          "words": 77,
+          "status": "approved",
+          "boundaryDistanceM": 1616.1
+        },
+        {
+          "id": "osm:node:10572977039",
+          "name": "Мемориальный музей-квартира Тимирязева Климента Аркадьевича",
+          "title": "Мемориальный музей-квартира К. А. Тимирязева",
+          "address": "Москва, Романов переулок, дом 4, строение 2, помещение IX (комнаты 17, 18)",
+          "lat": 55.754143,
+          "lon": 37.6095016,
+          "sec": 50.064,
+          "words": 75,
+          "status": "approved",
+          "boundaryDistanceM": 1602.8
+        },
+        {
+          "id": "osm:relation:15344965",
+          "name": "Храм мученицы Татианы при МГУ",
+          "title": "Храм мученицы Татианы при МГУ",
+          "address": "Москва, Большая Никитская улица, 1",
+          "lat": 55.7545287,
+          "lon": 37.6118673,
+          "sec": 52.512,
+          "words": 80,
+          "status": "approved",
+          "boundaryDistanceM": 1744.6
+        },
+        {
+          "id": "osm:way:52444324",
+          "name": "Факультет психологии МГУ — лабораторный корпус",
+          "title": "Лабораторный корпус факультета психологии МГУ",
+          "address": "Москва, Большая Никитская улица, 4",
+          "lat": 55.7553032,
+          "lon": 37.6109201,
+          "sec": 60.744,
+          "words": 103,
+          "status": "approved",
+          "boundaryDistanceM": 1675.2
+        },
+        {
+          "id": "osm:way:31497220",
+          "name": "Центральная тяговая подстанция Т-3 Московского метрополитена",
+          "title": "Центральная тяговая подстанция Т-3 Московского метрополитена",
+          "address": "Москва, Большая Никитская улица, дом 7, строение 1",
+          "lat": 55.7554018,
+          "lon": 37.6077317,
+          "sec": 50.808,
+          "words": 87,
+          "status": "approved",
+          "boundaryDistanceM": 1475.6
+        },
+        {
+          "id": "osm:way:251330231",
+          "name": "сквер Строителей Москвы",
+          "title": "сквер Строителей Москвы",
+          "address": "Москва, район Арбат, у пересечения Большого Кисловского переулка и Большой Никитской улицы",
+          "lat": 55.7555974,
+          "lon": 37.6084341,
+          "sec": 64.536,
+          "words": 105,
+          "status": "approved",
+          "boundaryDistanceM": 1516.6
+        },
+        {
+          "id": "osm:way:52813016",
+          "name": "Посольство Эстонии",
+          "title": "Жилой дом, 1903 г., архитектор А. М. Щеглов — Посольство Эстонии",
+          "address": "Москва, Малый Кисловский переулок, 5/8А",
+          "lat": 55.7553688,
+          "lon": 37.6015716,
+          "sec": 69,
+          "words": 100,
+          "status": "approved",
+          "boundaryDistanceM": 1093.0
+        },
+        {
+          "id": "osm:way:52813020",
+          "name": "Посольство Нидерландов",
+          "title": "Посольство Королевства Нидерландов в городской усадьбе В. В. Думнова — Н. Л. Маркова",
+          "address": "Москва, Калашный переулок, дом 6, строение 1",
+          "lat": 55.7546074,
+          "lon": 37.6024825,
+          "sec": 64.056,
+          "words": 105,
+          "status": "approved",
+          "boundaryDistanceM": 1160.1
+        },
+        {
+          "id": "osm:relation:5371125",
+          "name": "Особняк Арсения Морозова",
+          "title": "Особняк Арсения Морозова",
+          "address": "Москва, улица Воздвиженка, дом 16, строение 1",
+          "lat": 55.753152,
+          "lon": 37.6038536,
+          "sec": 57.696,
+          "words": 96,
+          "status": "approved",
+          "boundaryDistanceM": 1266.5
+        },
+        {
+          "id": "osm:relation:5371134",
+          "name": "Усадьба Шаховского-Краузе-Осиповых",
+          "title": "Усадьба Шаховского — Краузе — Осиповских",
+          "address": "Москва, улица Воздвиженка, дом 18/9",
+          "lat": 55.7533999,
+          "lon": 37.6030112,
+          "sec": 62.4,
+          "words": 108,
+          "status": "approved",
+          "boundaryDistanceM": 1210.8
+        },
+        {
+          "id": "osm:way:35814561",
+          "name": "Художественный",
+          "title": "Кинотеатр «Художественный»",
+          "address": "Москва, Арбатская площадь, дом 14, строение 1",
+          "lat": 55.7521984,
+          "lon": 37.6022289,
+          "sec": 62.784,
+          "words": 109,
+          "status": "approved",
+          "boundaryDistanceM": 1175.7
+        }
+      ],
+      "currentAudioSec": 783.024,
+      "targetAudioSec": 1080,
+      "tours": [
+        "2ccd"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 1,
+          "ids": [
+            "osm:way:35814561"
+          ],
+          "percent": 7.6923076923076925
+        },
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 1700,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 0,
+      "audioDeficitTo15Sec": 116.976,
+      "audioDeficitTo18Sec": 296.976,
+      "boundaryReview": [],
+      "maxExistingOverlapPercent": 7.6923076923076925,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R06",
+      "title": "От Никитских ворот к Патриаршим",
+      "startMetro": "Арбатская",
+      "finishMetro": "Маяковская",
+      "stops": [
+        {
+          "id": "osm:relation:5371132",
+          "name": "Музей Н. В. Гоголя",
+          "title": "Дом Н. В. Гоголя — мемориальный музей и научная библиотека",
+          "address": "Москва, Никитский бульвар, 7а",
+          "lat": 55.7541226,
+          "lon": 37.6001866,
+          "sec": 59.664,
+          "words": 122,
+          "status": "approved",
+          "boundaryDistanceM": 1024.0
+        },
+        {
+          "id": "osm:node:2613597034",
+          "name": "Музей искусства народов Востока",
+          "title": "Государственный музей Востока",
+          "address": "Москва, Никитский бульвар, 12А",
+          "lat": 55.7563931,
+          "lon": 37.5998947,
+          "sec": 67.272,
+          "words": 106,
+          "status": "approved",
+          "boundaryDistanceM": 974.8
+        },
+        {
+          "id": "osm:relation:9326509",
+          "name": "Храм преподобного Феодора Студита у Никитских Ворот",
+          "title": "Храм преподобного Феодора Студита у Никитских ворот",
+          "address": "Москва, ул. Большая Никитская, 29, стр. 2",
+          "lat": 55.7569498,
+          "lon": 37.5978378,
+          "sec": 81.672,
+          "words": 118,
+          "status": "approved",
+          "boundaryDistanceM": 839.3
+        },
+        {
+          "id": "osm:way:32045644",
+          "name": "Храм Большое Вознесение у Никитских ворот",
+          "title": "Храм Вознесения Господня у Никитских ворот («Большое Вознесение»)",
+          "address": "Москва, Большая Никитская улица, 36, стр. 1",
+          "lat": 55.75789,
+          "lon": 37.5956853,
+          "sec": 53.184,
+          "words": 80,
+          "status": "approved",
+          "boundaryDistanceM": 683.5
+        },
+        {
+          "id": "osm:node:4692951498",
+          "name": "Мемориальный музей-квартира А. М. Горького",
+          "title": "Мемориальный музей-квартира А. М. Горького",
+          "address": "Москва, Малая Никитская улица, дом 6/2, строение 5",
+          "lat": 55.7582421,
+          "lon": 37.5963004,
+          "sec": 69.456,
+          "words": 115,
+          "status": "approved",
+          "boundaryDistanceM": 705.8
+        },
+        {
+          "id": "osm:node:2219502268",
+          "name": "Мемориальный музей-квартира А. Н. Толстого",
+          "title": "Музей-квартира А. Н. Толстого",
+          "address": "Москва, ул. Спиридоновка, 2, стр. 1",
+          "lat": 55.7585382,
+          "lon": 37.5966937,
+          "sec": 65.112,
+          "words": 103,
+          "status": "approved",
+          "boundaryDistanceM": 716.4
+        },
+        {
+          "id": "osm:way:32045642",
+          "name": "Жилые палаты Гранатного двора",
+          "title": "Палаты («Гранатный двор»)",
+          "address": "Москва, улица Спиридоновка, дом 3–5, строение 1",
+          "lat": 55.7587016,
+          "lon": 37.5952957,
+          "sec": 25.992,
+          "words": 42,
+          "status": "approved",
+          "boundaryDistanceM": 628.4
+        },
+        {
+          "id": "osm:way:51049346",
+          "name": "Особняк Зинаиды Морозовой",
+          "title": "Особняк Зинаиды Морозовой",
+          "address": "Москва, улица Спиридоновка, дом 17, строение 1",
+          "lat": 55.761297,
+          "lon": 37.591652,
+          "sec": 60.288,
+          "words": 106,
+          "status": "approved",
+          "boundaryDistanceM": 306.1
+        },
+        {
+          "id": "osm:relation:16682979",
+          "name": "Дом Г. А. Тарасова",
+          "title": "Дом Г. А. Тарасова",
+          "address": "Москва, улица Спиридоновка, 30/1",
+          "lat": 55.7625872,
+          "lon": 37.5910179,
+          "sec": 58.728,
+          "words": 104,
+          "status": "approved",
+          "boundaryDistanceM": 211.6
+        },
+        {
+          "id": "osm:relation:6897180",
+          "name": "Патриаршие пруды",
+          "title": "Патриаршие пруды",
+          "address": "Москва, Пресненский район, пруд и сквер у Малого и Большого Патриарших переулков",
+          "lat": 55.7633035,
+          "lon": 37.5930595,
+          "sec": 54.984,
+          "words": 94,
+          "status": "approved",
+          "boundaryDistanceM": 284.2
+        },
+        {
+          "id": "osm:relation:18530505",
+          "name": "Типография Левенсона",
+          "title": "Типография Левенсона",
+          "address": "Москва, Трёхпрудный переулок, дом 9",
+          "lat": 55.7653777,
+          "lon": 37.5970063,
+          "sec": 78.12,
+          "words": 118,
+          "status": "approved",
+          "boundaryDistanceM": 336.0
+        },
+        {
+          "id": "osm:node:3361538621",
+          "name": "Музей М. А. Булгакова",
+          "title": "Музей М. А. Булгакова",
+          "address": "Москва, Большая Садовая улица, дом 10",
+          "lat": 55.7670276,
+          "lon": 37.5939442,
+          "sec": 55.2,
+          "words": 90,
+          "status": "approved",
+          "boundaryDistanceM": 71.2
+        },
+        {
+          "id": "osm:relation:16682984",
+          "name": "Концертный зал им. П. И. Чайковского",
+          "title": "Концертный зал имени П. И. Чайковского",
+          "address": "Москва, Тверская улица, д. 31/4, стр. 1",
+          "lat": 55.7692746,
+          "lon": 37.5966657,
+          "sec": 81.264,
+          "words": 134,
+          "status": "approved",
+          "boundaryDistanceM": 29.4
+        }
+      ],
+      "currentAudioSec": 810.936,
+      "targetAudioSec": 1080,
+      "tours": [
+        "7bb4"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 1,
+          "ids": [
+            "osm:relation:5371132"
+          ],
+          "percent": 7.6923076923076925
+        },
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 2327,
+      "newOverlaps": [
+        {
+          "id": "R12",
+          "common": 1,
+          "ids": [
+            "osm:relation:16682984"
+          ],
+          "percent": 7.6923076923076925
+        },
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 0,
+      "audioDeficitTo15Sec": 89.064,
+      "audioDeficitTo18Sec": 269.064,
+      "boundaryReview": [
+        {
+          "id": "osm:relation:16682984",
+          "name": "Концертный зал им. П. И. Чайковского",
+          "m": 29.4
+        }
+      ],
+      "maxExistingOverlapPercent": 7.6923076923076925,
+      "maxNewOverlapPercent": 7.6923076923076925
+    },
+    {
+      "id": "R07",
+      "title": "Полянка и Якиманка: слободы и новая Москва",
+      "startMetro": "Полянка",
+      "finishMetro": "Октябрьская",
+      "stops": [
+        {
+          "id": "osm:relation:11661228",
+          "name": "Церковь Григория Неокесарийского в Дербицах",
+          "title": "Церковь Григория Неокесарийского в Дербицах",
+          "address": "Москва, улица Большая Полянка, 29А",
+          "lat": 55.7376322,
+          "lon": 37.619709,
+          "sec": 45.648,
+          "words": 79,
+          "status": "approved",
+          "boundaryDistanceM": 876.1
+        },
+        {
+          "id": "osm:node:11780094310",
+          "name": "Рудно-петрографический музей",
+          "title": "Рудно-петрографический музей ИГЕМ РАН",
+          "address": "Москва, Старомонетный переулок, дом 35",
+          "lat": 55.7376382,
+          "lon": 37.6212785,
+          "sec": 74.688,
+          "words": 117,
+          "status": "approved",
+          "boundaryDistanceM": 873.7
+        },
+        {
+          "id": "osm:node:6617755692",
+          "name": "Ф. В. Токареву",
+          "title": "Мемориальная доска Фёдору Токареву",
+          "address": "Москва, Большая Полянка, 7/10, строение 1",
+          "lat": 55.7409847,
+          "lon": 37.6167994,
+          "sec": 62.304,
+          "words": 103,
+          "status": "approved",
+          "boundaryDistanceM": 1224.2
+        },
+        {
+          "id": "osm:node:1359108784",
+          "name": "Георгию Димитрову",
+          "title": "Димитров: оратор в Якиманском сквере",
+          "address": "Москва, Якиманский сквер, памятник Георгию Димитрову",
+          "lat": 55.7390942,
+          "lon": 37.616914,
+          "sec": 138.384,
+          "words": 263,
+          "status": "approved",
+          "boundaryDistanceM": 1043.3
+        },
+        {
+          "id": "osm:node:9610774317",
+          "name": "Музей Павла и Сергея Третьяковых",
+          "title": "Музей Павла и Сергея Третьяковых",
+          "address": "Москва, 1-й Голутвинский переулок, дом 16, строение 1",
+          "lat": 55.7376273,
+          "lon": 37.611529,
+          "sec": 48.024,
+          "words": 84,
+          "status": "approved",
+          "boundaryDistanceM": 735.7
+        },
+        {
+          "id": "osm:relation:3224482",
+          "name": "Парк искусств Музеон",
+          "title": "Парк искусств «Музеон»",
+          "address": "Москва, ул. Крымский Вал, д. 2",
+          "lat": 55.7345275,
+          "lon": 37.6096061,
+          "sec": 82.512,
+          "words": 127,
+          "status": "approved",
+          "boundaryDistanceM": 376.5
+        },
+        {
+          "id": "osm:way:42766205",
+          "name": "Президент-Отель",
+          "title": "Президент-Отель",
+          "address": "119134, Москва, улица Большая Якиманка, дом 24",
+          "lat": 55.7371123,
+          "lon": 37.6122007,
+          "sec": 59.28,
+          "words": 90,
+          "status": "approved",
+          "boundaryDistanceM": 707.0
+        },
+        {
+          "id": "osm:relation:15469780",
+          "name": "Церковь преподобного Марона Пустынника",
+          "title": "Храм преподобного Марона Пустынника в Старых Панех",
+          "address": "Москва, ул. Большая Якиманка, д. 32, стр. 2",
+          "lat": 55.7351589,
+          "lon": 37.6119468,
+          "sec": 51.96,
+          "words": 81,
+          "status": "approved",
+          "boundaryDistanceM": 510.1
+        },
+        {
+          "id": "osm:way:160191365",
+          "name": "Государственный академический университет гуманитарных наук",
+          "title": "Государственный академический университет гуманитарных наук (ГАУГН)",
+          "address": "119049, Москва, Мароновский переулок, 26",
+          "lat": 55.7324943,
+          "lon": 37.6089823,
+          "sec": 62.496,
+          "words": 87,
+          "status": "approved",
+          "boundaryDistanceM": 160.5
+        },
+        {
+          "id": "osm:relation:15457013",
+          "name": "Церковь Иоанна Воина",
+          "title": null,
+          "address": "Москва, улица Большая Якиманка, 46",
+          "lat": 55.7327824,
+          "lon": 37.6114616,
+          "sec": 0,
+          "words": 0,
+          "status": "none",
+          "boundaryDistanceM": 264.9
+        },
+        {
+          "id": "osm:relation:16561997",
+          "name": "Дом купца Игумнова",
+          "title": null,
+          "address": "Москва, улица Большая Якиманка, 43 с1",
+          "lat": 55.7329419,
+          "lon": 37.6132547,
+          "sec": 0,
+          "words": 0,
+          "status": "none",
+          "boundaryDistanceM": 333.7
+        },
+        {
+          "id": "osm:relation:6913366",
+          "name": "Церковь Казанской Божией Матери",
+          "title": "Храм Казанской иконы Божией Матери на Калужской площади",
+          "address": "Москва, Житная улица, 18",
+          "lat": 55.7304934,
+          "lon": 37.612965,
+          "sec": 64.08,
+          "words": 97,
+          "status": "approved",
+          "boundaryDistanceM": 69.1
+        }
+      ],
+      "currentAudioSec": 689.376,
+      "targetAudioSec": 1080,
+      "tours": [
+        "9859",
+        "acac",
+        "56ee"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 2,
+          "ids": [
+            "osm:node:1359108784",
+            "osm:relation:11661228"
+          ],
+          "percent": 16.666666666666668
+        },
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 2960,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 2,
+      "audioDeficitTo15Sec": 210.624,
+      "audioDeficitTo18Sec": 390.624,
+      "boundaryReview": [],
+      "maxExistingOverlapPercent": 16.666666666666668,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R08",
+      "title": "Остров: палаты, набережные и город XX века",
+      "startMetro": "Кропоткинская",
+      "finishMetro": "Новокузнецкая",
+      "stops": [
+        {
+          "id": "osm:way:48859891",
+          "name": "Палаты Аверкия Кириллова",
+          "title": "Палаты Аверкия Кириллова",
+          "address": "Москва, Берсеневская набережная, 18–20–22, строение 3",
+          "lat": 55.7436716,
+          "lon": 37.6101696,
+          "sec": 70.968,
+          "words": 117,
+          "status": "approved",
+          "boundaryDistanceM": 1277.8
+        },
+        {
+          "id": "osm:way:42766224",
+          "name": "Дом на набережной",
+          "title": "Дом на набережной",
+          "address": "Москва, улица Серафимовича, 2 (Берсеневская набережная, 20)",
+          "lat": 55.7434507,
+          "lon": 37.6140347,
+          "sec": 111.288,
+          "words": 182,
+          "status": "approved",
+          "boundaryDistanceM": 1376.7
+        },
+        {
+          "id": "osm:relation:1794442",
+          "name": "Большой Каменный мост",
+          "title": "Большой Каменный мост",
+          "address": "Москва, Большой Каменный мост",
+          "lat": 55.7465664,
+          "lon": 37.6124159,
+          "sec": 67.128,
+          "words": 112,
+          "status": "approved",
+          "boundaryDistanceM": 1627.2
+        },
+        {
+          "id": "osm:way:92227425",
+          "name": "Храм Софии Премудрости Божией в Средних Садовниках",
+          "title": "Храм Софии Премудрости Божией в Средних Садовниках",
+          "address": "Москва, Софийская набережная, 32 с14",
+          "lat": 55.7477327,
+          "lon": 37.6221166,
+          "sec": 66.336,
+          "words": 102,
+          "status": "approved",
+          "boundaryDistanceM": 1974.5
+        },
+        {
+          "id": "osm:relation:20346140",
+          "name": "Кокоревское подворье",
+          "title": "Кокоревское подворье",
+          "address": "Москва, Софийская набережная, 34 с1",
+          "lat": 55.7481002,
+          "lon": 37.6225979,
+          "sec": 63.72,
+          "words": 105,
+          "status": "approved",
+          "boundaryDistanceM": 1977.5
+        },
+        {
+          "id": "osm:way:44185735",
+          "name": "Балчуг Кемпински",
+          "title": "Отель «Балчуг Кемпински Москва»",
+          "address": "Москва, улица Балчуг, 1",
+          "lat": 55.7482256,
+          "lon": 37.6256396,
+          "sec": 66.288,
+          "words": 104,
+          "status": "approved",
+          "boundaryDistanceM": 1840.0
+        },
+        {
+          "id": "osm:way:161280389",
+          "name": "Большой Москворецкий мост",
+          "title": "Большой Москворецкий мост",
+          "address": "Москва, Большой Москворецкий мост",
+          "lat": 55.7490811,
+          "lon": 37.6245119,
+          "sec": 56.136,
+          "words": 104,
+          "status": "approved",
+          "boundaryDistanceM": 1946.0
+        },
+        {
+          "id": "osm:relation:9969079",
+          "name": "Храм Великомученика Георгия Победоносца в Ендове",
+          "title": "Храм Георгия Победоносца в Ендове",
+          "address": "Москва, Садовническая улица, 6 с11",
+          "lat": 55.7474343,
+          "lon": 37.6272186,
+          "sec": 68.136,
+          "words": 110,
+          "status": "approved",
+          "boundaryDistanceM": 1707.6
+        },
+        {
+          "id": "osm:way:385991667",
+          "name": "Ведомственный дом МОГЭС",
+          "title": "Ведомственный дом МОГЭС",
+          "address": "Москва, Садовническая улица, 11 с10",
+          "lat": 55.7474502,
+          "lon": 37.629606,
+          "sec": 63.192,
+          "words": 106,
+          "status": "approved",
+          "boundaryDistanceM": 1593.9
+        },
+        {
+          "id": "osm:node:6303242526",
+          "name": "Мемориальная музей-квартира Г.М. Кржижановского",
+          "title": "Мемориальная музей-квартира Г. М. Кржижановского",
+          "address": "г. Москва, ул. Садовническая, д. 30",
+          "lat": 55.7462895,
+          "lon": 37.6333277,
+          "sec": 47.832,
+          "words": 80,
+          "status": "approved",
+          "boundaryDistanceM": 1331.3
+        },
+        {
+          "id": "osm:relation:9529826",
+          "name": "Церковь Николая Чудотворца в Заяицком",
+          "title": "Церковь Николая Чудотворца в Заяицком",
+          "address": "Москва, 2-й Раушский переулок, 1 с8",
+          "lat": 55.7468588,
+          "lon": 37.635661,
+          "sec": 65.064,
+          "words": 100,
+          "status": "approved",
+          "boundaryDistanceM": 1232.0
+        },
+        {
+          "id": "osm:relation:8443298",
+          "name": "Храм Михаила Архангела",
+          "title": "Храм Архангела Михаила (Покрова Пресвятой Богородицы) в Овчинниках",
+          "address": "Москва, Средний Овчинниковский переулок, д. 7",
+          "lat": 55.7446776,
+          "lon": 37.6331003,
+          "sec": 53.088,
+          "words": 82,
+          "status": "approved",
+          "boundaryDistanceM": 1228.1
+        },
+        {
+          "id": "osm:way:53854158",
+          "name": "Палаты в Овчинниках",
+          "title": "Палаты в Среднем Овчинниковском переулке",
+          "address": "Москва, Средний Овчинниковский переулок, дом 10, строение 1",
+          "lat": 55.7443883,
+          "lon": 37.6310778,
+          "sec": 61.272,
+          "words": 97,
+          "status": "approved",
+          "boundaryDistanceM": 1304.8
+        },
+        {
+          "id": "osm:way:51988398",
+          "name": "Дом. Культурный центр",
+          "title": "Московский Дом самодеятельного творчества, строение 4",
+          "address": "115184, Москва, Большой Овчинниковский переулок, дом 24, строение 4",
+          "lat": 55.7441964,
+          "lon": 37.6297776,
+          "sec": 80.808,
+          "words": 131,
+          "status": "approved",
+          "boundaryDistanceM": 1353.7
+        },
+        {
+          "id": "osm:relation:1323532",
+          "name": "Дом Петра Смирнова",
+          "title": "Смирнов: фамилия на торговом фасаде",
+          "address": "Москва, Пятницкая улица, 1/2 с1",
+          "lat": 55.745768850000005,
+          "lon": 37.626953799999995,
+          "sec": 115.248,
+          "words": 237,
+          "status": "approved",
+          "boundaryDistanceM": 1601.7
+        }
+      ],
+      "currentAudioSec": 1056.504,
+      "targetAudioSec": 1080,
+      "tours": [
+        "ca0a"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 1,
+          "ids": [
+            "osm:relation:1323532"
+          ],
+          "percent": 9.090909090909092
+        },
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 3167,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 0,
+      "audioDeficitTo15Sec": 0,
+      "audioDeficitTo18Sec": 23.496,
+      "boundaryReview": [],
+      "maxExistingOverlapPercent": 9.090909090909092,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R09",
+      "title": "Новокузнецкая и Татарская: вера, театр и слободы",
+      "startMetro": "Павелецкая",
+      "finishMetro": "Новокузнецкая",
+      "stops": [
+        {
+          "id": "osm:node:273356351",
+          "name": "Государственный центральный театральный музей им. А. А. Бахрушина",
+          "title": null,
+          "address": null,
+          "lat": 55.7317886,
+          "lon": 37.6380937,
+          "sec": 0,
+          "words": 0,
+          "status": "draft",
+          "boundaryDistanceM": 22.3
+        },
+        {
+          "id": "osm:relation:12344757",
+          "name": "Древлеправославный храм в честь Покрова Пресвятой Богородицы",
+          "title": "Собор Покрова Пресвятой Богородицы Русской древлеправославной церкви",
+          "address": "Москва, Новокузнецкая улица, дом 38, строение 1",
+          "lat": 55.7325999,
+          "lon": 37.6345376,
+          "sec": 56.952,
+          "words": 87,
+          "status": "approved",
+          "boundaryDistanceM": 185.9
+        },
+        {
+          "id": "osm:way:53830818",
+          "name": "Российский музей леса",
+          "title": "Российский музей леса",
+          "address": "Российский музей леса, 115054, Москва, 5-й Монетчиковский переулок, д. 4",
+          "lat": 55.7326728,
+          "lon": 37.6337568,
+          "sec": 64.392,
+          "words": 109,
+          "status": "approved",
+          "boundaryDistanceM": 203.4
+        },
+        {
+          "id": "osm:node:4992691359",
+          "name": "9-й Московской стрелковой дивизии народного ополчения",
+          "title": "Мемориальная доска памяти 9-й Московской стрелковой дивизии народного ополчения",
+          "address": "Москва, 2-й Новокузнецкий переулок, 13/15, стр. 4",
+          "lat": 55.7339815,
+          "lon": 37.6307803,
+          "sec": 49.032,
+          "words": 85,
+          "status": "approved",
+          "boundaryDistanceM": 382.5
+        },
+        {
+          "id": "osm:way:534370303",
+          "name": "Храм Спаса Преображения",
+          "title": "Храм Спаса Преображения на Болвановке",
+          "address": "Москва, 2-й Новокузнецкий переулок, дом 10, строение 1",
+          "lat": 55.7345785,
+          "lon": 37.6317918,
+          "sec": 50.736,
+          "words": 77,
+          "status": "approved",
+          "boundaryDistanceM": 435.8
+        },
+        {
+          "id": "osm:relation:7672227",
+          "name": "сквер Ополченцев Замоскворечья",
+          "title": "сквер Ополченцев Замоскворечья",
+          "address": "Москва, район Замоскворечье, Новокузнецкая улица",
+          "lat": 55.7342582,
+          "lon": 37.6346885,
+          "sec": 64.248,
+          "words": 102,
+          "status": "approved",
+          "boundaryDistanceM": 365.1
+        },
+        {
+          "id": "osm:way:129306472",
+          "name": "Центр детского творчества \"Замоскворечье\"",
+          "title": "Городская усадьба М. Ф. Михайлова (Центр детского творчества «Замоскворечье»)",
+          "address": "Москва, улица Бахрушина, дом 17, строение 1",
+          "lat": 55.7349447,
+          "lon": 37.6360858,
+          "sec": 57.48,
+          "words": 94,
+          "status": "approved",
+          "boundaryDistanceM": 360.4
+        },
+        {
+          "id": "osm:way:110894021",
+          "name": "Храм Святителя Николая в Кузнецкой Слободе",
+          "title": "Храм Святителя Николая в Кузнецкой слободе",
+          "address": "Москва, Вишняковский переулок, 15",
+          "lat": 55.7366955,
+          "lon": 37.632953,
+          "sec": 43.896,
+          "words": 69,
+          "status": "approved",
+          "boundaryDistanceM": 636.9
+        },
+        {
+          "id": "osm:relation:20397973",
+          "name": "ТВ Центр",
+          "title": "Офис телеканала «ТВ Центр»",
+          "address": "Москва, Большая Татарская улица, дом 33, строение 1",
+          "lat": 55.7380785,
+          "lon": 37.6352344,
+          "sec": 68.232,
+          "words": 113,
+          "status": "approved",
+          "boundaryDistanceM": 648.6
+        },
+        {
+          "id": "osm:relation:7418784",
+          "name": "Историческая мечеть",
+          "title": "Историческая (Замоскворецкая) мечеть Москвы",
+          "address": "Москва, Большая Татарская улица, дом 28, строение 2",
+          "lat": 55.7390174,
+          "lon": 37.6331337,
+          "sec": 57.768,
+          "words": 88,
+          "status": "approved",
+          "boundaryDistanceM": 814.8
+        },
+        {
+          "id": "osm:node:1367901767",
+          "name": "Габдулле Тукаю",
+          "title": "Памятник Габдулле Тукаю",
+          "address": "Москва, Новокузнецкая улица, 13/15–17/19",
+          "lat": 55.7372629,
+          "lon": 37.6313247,
+          "sec": 44.928,
+          "words": 77,
+          "status": "approved",
+          "boundaryDistanceM": 734.5
+        },
+        {
+          "id": "osm:way:110675960",
+          "name": "Посольство Индонезии",
+          "title": "Особняк Урусовой — здание Посольства Индонезии",
+          "address": "Москва, Новокузнецкая улица, дом 12–14, строение 5",
+          "lat": 55.7380869,
+          "lon": 37.6302225,
+          "sec": 39.456,
+          "words": 61,
+          "status": "approved",
+          "boundaryDistanceM": 838.0
+        },
+        {
+          "id": "osm:way:75655995",
+          "name": "Фонтан «Адам и Ева»",
+          "title": "Адам и Ева: маленький сад у метро",
+          "address": "Москва, Сквер у метро «Новокузнецкая», фонтан «Адам и Ева»",
+          "lat": 55.7419492,
+          "lon": 37.629008150000004,
+          "sec": 102.216,
+          "words": 217,
+          "status": "approved",
+          "boundaryDistanceM": 1229.8
+        }
+      ],
+      "currentAudioSec": 699.336,
+      "targetAudioSec": 1080,
+      "tours": [
+        "43a7"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 1,
+          "ids": [
+            "osm:way:75655995"
+          ],
+          "percent": 9.090909090909092
+        },
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 2352,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 1,
+      "audioDeficitTo15Sec": 200.664,
+      "audioDeficitTo18Sec": 380.664,
+      "boundaryReview": [
+        {
+          "id": "osm:node:273356351",
+          "name": "Государственный центральный театральный музей им. А. А. Бахрушина",
+          "m": 22.3
+        }
+      ],
+      "maxExistingOverlapPercent": 9.090909090909092,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R10",
+      "title": "Швивая горка и устье Яузы",
+      "startMetro": "Таганская",
+      "finishMetro": "Китай-город",
+      "stops": [
+        {
+          "id": "osm:node:2715045290",
+          "name": "Дом Высоцкого на Таганке",
+          "title": "Дом Высоцкого на Таганке",
+          "address": "Москва, улица Высоцкого, дом 3",
+          "lat": 55.7444769,
+          "lon": 37.6518177,
+          "sec": 54.504,
+          "words": 91,
+          "status": "approved",
+          "boundaryDistanceM": 202.1
+        },
+        {
+          "id": "osm:node:1733057309",
+          "name": "Музей холодной войны (экспозиционный комплекс Бункер-42)",
+          "title": "Музей холодной войны «Бункер-42»",
+          "address": "Москва, 5-й Котельнический переулок, 11",
+          "lat": 55.7416458,
+          "lon": 37.6491082,
+          "sec": 44.616,
+          "words": 79,
+          "status": "approved",
+          "boundaryDistanceM": 237.8
+        },
+        {
+          "id": "osm:relation:7968458",
+          "name": "Храм Успения Пресвятой Богородицы",
+          "title": "Храм Успения Пресвятой Богородицы в Гончарах",
+          "address": "Москва, Гончарная улица, д. 29/7, стр. 1",
+          "lat": 55.7421463,
+          "lon": 37.650627,
+          "sec": 48.96,
+          "words": 76,
+          "status": "approved",
+          "boundaryDistanceM": 194.7
+        },
+        {
+          "id": "osm:relation:14352897",
+          "name": "Храм Святителя Николая в Котельниках",
+          "title": "Храм святителя Николая в Котельниках",
+          "address": "Москва, 1-й Котельнический переулок, д. 8, стр. 1",
+          "lat": 55.7444925,
+          "lon": 37.6450622,
+          "sec": 80.04,
+          "words": 122,
+          "status": "approved",
+          "boundaryDistanceM": 620.1
+        },
+        {
+          "id": "osm:way:37771167",
+          "name": "Институт философии РАН",
+          "title": "Дом Тутолмина — здание Института философии РАН",
+          "address": "Москва, ул. Гончарная, д. 12, стр. 1",
+          "lat": 55.7450355,
+          "lon": 37.645449,
+          "sec": 59.352,
+          "words": 98,
+          "status": "approved",
+          "boundaryDistanceM": 605.7
+        },
+        {
+          "id": "osm:way:151077511",
+          "name": "Храм Великомученика Никиты",
+          "title": "Храм святого великомученика Никиты за Яузой",
+          "address": "Москва, Гончарная улица, 6",
+          "lat": 55.7458917,
+          "lon": 37.6448925,
+          "sec": 56.832,
+          "words": 84,
+          "status": "approved",
+          "boundaryDistanceM": 647.6
+        },
+        {
+          "id": "osm:way:151077489",
+          "name": "Музей русской иконы",
+          "title": "Музей русской иконы им. Михаила Абрамова",
+          "address": "Музей русской иконы им. Михаила Абрамова, Москва, ул. Гончарная, 3, стр. 1 и 3",
+          "lat": 55.7463928,
+          "lon": 37.645408,
+          "sec": 51.552,
+          "words": 86,
+          "status": "approved",
+          "boundaryDistanceM": 619.2
+        },
+        {
+          "id": "osm:node:266720662",
+          "name": "Жилой дом на Котельнической набережной",
+          "title": "Жилой дом на Котельнической набережной",
+          "address": "Москва, Котельническая набережная, д. 1/15",
+          "lat": 55.7470836,
+          "lon": 37.6426543,
+          "sec": 68.928,
+          "words": 115,
+          "status": "approved",
+          "boundaryDistanceM": 796.7
+        },
+        {
+          "id": "osm:node:3008136198",
+          "name": "Дмитрию Донскому",
+          "title": "Памятник Дмитрию Донскому",
+          "address": "Москва, сквер на пересечении Николо-Ямской и Яузской улиц",
+          "lat": 55.7477449,
+          "lon": 37.6470775,
+          "sec": 51.84,
+          "words": 96,
+          "status": "approved",
+          "boundaryDistanceM": 525.3
+        },
+        {
+          "id": "osm:way:37769988",
+          "name": "Храм Симеона Столпника за Яузой",
+          "title": "Храм преподобного Симеона Столпника за Яузой",
+          "address": "109240 Москва, ул. Николоямская, 10-12, стр. 8",
+          "lat": 55.7470745,
+          "lon": 37.65019,
+          "sec": 58.8,
+          "words": 89,
+          "status": "approved",
+          "boundaryDistanceM": 325.6
+        },
+        {
+          "id": "osm:relation:55214",
+          "name": "Всероссийская государственная библиотека иностранной литературы имени М. И. Рудомино",
+          "title": "Всероссийская государственная библиотека иностранной литературы имени М. И. Рудомино",
+          "address": "Российская Федерация, 109240, г. Москва, ул. Николоямская, 1",
+          "lat": 55.7485268,
+          "lon": 37.6474747,
+          "sec": 81.96,
+          "words": 123,
+          "status": "approved",
+          "boundaryDistanceM": 506.6
+        },
+        {
+          "id": "osm:relation:17443827",
+          "name": "Храм Троицы Живоначальной в Серебряниках",
+          "title": "Храм Троицы Живоначальной в Серебряниках",
+          "address": "Москва, Серебрянический переулок, дом 1А, строение 10",
+          "lat": 55.750167,
+          "lon": 37.6452036,
+          "sec": 67.08,
+          "words": 111,
+          "status": "approved",
+          "boundaryDistanceM": 658.9
+        },
+        {
+          "id": "osm:relation:17361989",
+          "name": "Московский Воспитательный дом",
+          "title": "Воспитательный дом: огромный замысел и трудная жизнь",
+          "address": "Москва, Китайгородский проезд, 9 с1",
+          "lat": 55.7503552,
+          "lon": 37.6350582,
+          "sec": 123.336,
+          "words": 226,
+          "status": "approved",
+          "boundaryDistanceM": 1294.6
+        },
+        {
+          "id": "osm:relation:9854949",
+          "name": "Храм Всех Святых на Кулишках",
+          "title": "Всех Святых на Кулишках: храм рядом с метро",
+          "address": "Москва, Славянская площадь, 2",
+          "lat": 55.7535745,
+          "lon": 37.6352891,
+          "sec": 116.544,
+          "words": 236,
+          "status": "approved",
+          "boundaryDistanceM": 1297.2
+        }
+      ],
+      "currentAudioSec": 964.344,
+      "targetAudioSec": 1080,
+      "tours": [
+        "1407"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 1,
+          "ids": [
+            "osm:relation:9854949"
+          ],
+          "percent": 25.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 1,
+          "ids": [
+            "osm:relation:55214"
+          ],
+          "percent": 20.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 2,
+          "ids": [
+            "osm:relation:17361989",
+            "osm:relation:9854949"
+          ],
+          "percent": 14.285714285714286
+        },
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [
+        {
+          "walk": "Прогулка на час от метро «Марксистская»",
+          "old": "Москва, Владимир Высоцкий",
+          "candidate": "Дом Высоцкого на Таганке",
+          "m": 139
+        }
+      ],
+      "minPolylineM": 3280,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 0,
+      "audioDeficitTo15Sec": 0,
+      "audioDeficitTo18Sec": 115.656,
+      "boundaryReview": [],
+      "maxExistingOverlapPercent": 25.0,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R11",
+      "title": "Китай-город: торговля, печать и старая Москва",
+      "startMetro": "Театральная",
+      "finishMetro": "Китай-город",
+      "stops": [
+        {
+          "id": "osm:relation:85761",
+          "name": "Метрополь",
+          "title": "Гостиница «Метрополь»",
+          "address": "Москва, Театральный проезд, дом 2",
+          "lat": 55.7581844,
+          "lon": 37.6214052,
+          "sec": 47.976,
+          "words": 88,
+          "status": "approved",
+          "boundaryDistanceM": 1719.9
+        },
+        {
+          "id": "osm:node:916076835",
+          "name": "Ивану Фёдорову",
+          "title": "Памятник первопечатнику Ивану Фёдорову",
+          "address": "Москва, у Театрального проезда, рядом с Третьяковским проездом",
+          "lat": 55.7589978,
+          "lon": 37.6235051,
+          "sec": 68.352,
+          "words": 97,
+          "status": "approved",
+          "boundaryDistanceM": 1611.6
+        },
+        {
+          "id": "osm:node:13352615294",
+          "name": "Доходный дом и аптека В.К. Феррейна",
+          "title": "Доходный дом и аптека В. К. Феррейна",
+          "address": "Москва, Никольская улица, дом 19–21, строение 2",
+          "lat": 55.758649,
+          "lon": 37.624349,
+          "sec": 46.152,
+          "words": 78,
+          "status": "approved",
+          "boundaryDistanceM": 1636.4
+        },
+        {
+          "id": "osm:relation:9303001",
+          "name": "Историко-архивный институт РГГУ",
+          "title": "Историко-архивный институт РГГУ",
+          "address": "Москва, Никольская улица, дом 15, строение 1",
+          "lat": 55.75767,
+          "lon": 37.6222555,
+          "sec": 49.536,
+          "words": 80,
+          "status": "approved",
+          "boundaryDistanceM": 1774.0
+        },
+        {
+          "id": "osm:way:84690464",
+          "name": "Собор Спаса Нерукотворного Образа в Заиконоспасском монастыре",
+          "title": "Собор Спаса Нерукотворного Образа в Заиконоспасском монастыре",
+          "address": "Москва, Никольская улица, 7-9, стр. 3",
+          "lat": 55.7566848,
+          "lon": 37.6211128,
+          "sec": 58.176,
+          "words": 86,
+          "status": "approved",
+          "boundaryDistanceM": 1886.0
+        },
+        {
+          "id": "osm:node:928056489",
+          "name": "Богоявленский монастырь",
+          "title": "Богоявленский монастырь",
+          "address": "Богоявленский монастырь, Богоявленский переулок, Китай-город, Москва",
+          "lat": 55.755722,
+          "lon": 37.6232681,
+          "sec": 86.112,
+          "words": 135,
+          "status": "approved",
+          "boundaryDistanceM": 1968.9
+        },
+        {
+          "id": "osm:relation:9308383",
+          "name": "Церковь Космы и Дамиана в Старых Панех",
+          "title": "Церковь Космы и Дамиана в Старых Панех",
+          "address": "Москва, Старопанский переулок, д. 4, стр. 2",
+          "lat": 55.7561481,
+          "lon": 37.6260616,
+          "sec": 65.688,
+          "words": 104,
+          "status": "approved",
+          "boundaryDistanceM": 1881.9
+        },
+        {
+          "id": "osm:way:84632785",
+          "name": "Церковь Ильи Пророка на Новгородском подворье",
+          "title": "Церковь Ильи Пророка в Новгородском подворье",
+          "address": "Москва, улица Ильинка, 3/8, строение 2",
+          "lat": 55.7544471,
+          "lon": 37.6239106,
+          "sec": 62.904,
+          "words": 105,
+          "status": "approved",
+          "boundaryDistanceM": 2016.3
+        },
+        {
+          "id": "osm:way:50885565",
+          "name": "Торгово-промышленная палата РФ",
+          "title": "Московская товарная биржа",
+          "address": "Москва, ул. Ильинка, 6/1, стр. 1",
+          "lat": 55.7548504,
+          "lon": 37.6263324,
+          "sec": 32.016,
+          "words": 55,
+          "status": "approved",
+          "boundaryDistanceM": 1871.3
+        },
+        {
+          "id": "osm:relation:19079948",
+          "name": "Храм Варвары Великомученицы на Варварке",
+          "title": "Храм Варвары Великомученицы на Варварке",
+          "address": "Москва, улица Варварка, дом 2",
+          "lat": 55.7523107,
+          "lon": 37.6261095,
+          "sec": 53.256,
+          "words": 91,
+          "status": "approved",
+          "boundaryDistanceM": 1863.4
+        },
+        {
+          "id": "osm:relation:19075670",
+          "name": "Старый Английский Двор",
+          "title": "Старый Английский двор",
+          "address": "Москва, улица Варварка, 4А",
+          "lat": 55.7522477,
+          "lon": 37.6269918,
+          "sec": 53.184,
+          "words": 90,
+          "status": "approved",
+          "boundaryDistanceM": 1807.9
+        },
+        {
+          "id": "osm:relation:19083613",
+          "name": "Храм Максима Блаженного на Варварке",
+          "title": "Храм Максима Блаженного на Варварке",
+          "address": "Москва, улица Варварка, 4",
+          "lat": 55.752505,
+          "lon": 37.6275631,
+          "sec": 53.712,
+          "words": 91,
+          "status": "approved",
+          "boundaryDistanceM": 1773.2
+        },
+        {
+          "id": "osm:relation:19080710",
+          "name": "Собор иконы Божией Матери «Знамение»",
+          "title": "Собор иконы Божией Матери «Знамение» (Знаменский собор)",
+          "address": "Москва, улица Варварка, дом 8, строение 1",
+          "lat": 55.7523957,
+          "lon": 37.6290936,
+          "sec": 68.04,
+          "words": 105,
+          "status": "approved",
+          "boundaryDistanceM": 1676.9
+        },
+        {
+          "id": "osm:relation:19077852",
+          "name": "Палаты бояр Романовых",
+          "title": "Палаты бояр Романовых",
+          "address": "109012, Москва, ул. Варварка, д. 10",
+          "lat": 55.7526893,
+          "lon": 37.6291549,
+          "sec": 58.32,
+          "words": 93,
+          "status": "approved",
+          "boundaryDistanceM": 1674.3
+        },
+        {
+          "id": "osm:relation:7596233",
+          "name": "Храм святителя Николая Чудотворца \"Красный звон\"",
+          "title": "Храм святителя Николая Мирликийского «Красный звон»",
+          "address": "Москва, Никольский переулок, 9А, стр. 1",
+          "lat": 55.7536947,
+          "lon": 37.6294233,
+          "sec": 75.792,
+          "words": 112,
+          "status": "approved",
+          "boundaryDistanceM": 1664.3
+        },
+        {
+          "id": "osm:way:52467191",
+          "name": "Церковь Троицы в Никитниках",
+          "title": "Церковь Троицы Живоначальной в Никитниках",
+          "address": "Москва, Никитников переулок, 3",
+          "lat": 55.7540894,
+          "lon": 37.631609,
+          "sec": 52.488,
+          "words": 86,
+          "status": "approved",
+          "boundaryDistanceM": 1532.5
+        }
+      ],
+      "currentAudioSec": 931.704,
+      "targetAudioSec": 1080,
+      "tours": [
+        "d97e"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 2042,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 0,
+      "audioDeficitTo15Sec": 0,
+      "audioDeficitTo18Sec": 148.296,
+      "boundaryReview": [],
+      "maxExistingOverlapPercent": 0.0,
+      "maxNewOverlapPercent": 0.0
+    },
+    {
+      "id": "R12",
+      "title": "Тверская: переезды домов и культурная жизнь",
+      "startMetro": "Охотный Ряд",
+      "finishMetro": "Маяковская",
+      "stops": [
+        {
+          "id": "osm:relation:225031",
+          "name": "Националь",
+          "title": "Гостиница «Националь»",
+          "address": "Москва, улица Моховая, дом 15/1, строение 1",
+          "lat": 55.7568237,
+          "lon": 37.614377,
+          "sec": 52.776,
+          "words": 88,
+          "status": "approved",
+          "boundaryDistanceM": 1781.2
+        },
+        {
+          "id": "osm:way:31482145",
+          "name": "The Carlton Moscow",
+          "title": "The Carlton Moscow (в источниках — «The Ritz-Carlton, Moscow» / «Ритц-Карлтон»)",
+          "address": "Москва, Тверская улица, на месте бывшей гостиницы «Интурист»",
+          "lat": 55.7571128,
+          "lon": 37.6134441,
+          "sec": 47.64,
+          "words": 74,
+          "status": "approved",
+          "boundaryDistanceM": 1715.4
+        },
+        {
+          "id": "osm:relation:451292",
+          "name": "Центральный телеграф",
+          "title": "Центральный телеграф",
+          "address": "Москва, Тверская улица, 7",
+          "lat": 55.7585899,
+          "lon": 37.6111021,
+          "sec": 68.544,
+          "words": 105,
+          "status": "approved",
+          "boundaryDistanceM": 1498.0
+        },
+        {
+          "id": "osm:relation:451293",
+          "name": "Саввинское архиерейское подворье",
+          "title": "Саввинское подворье",
+          "address": "Москва, Тверская улица, 6, строение 6",
+          "lat": 55.7606337,
+          "lon": 37.6118808,
+          "sec": 39.36,
+          "words": 70,
+          "status": "approved",
+          "boundaryDistanceM": 1374.8
+        },
+        {
+          "id": "osm:relation:2669481",
+          "name": "Московский художественный театр им. А. П. Чехова",
+          "title": "Московский Художественный театр имени А. П. Чехова",
+          "address": "Москва, Камергерский переулок, дом 3, строение 1",
+          "lat": 55.7604877,
+          "lon": 37.6132462,
+          "sec": 46.008,
+          "words": 81,
+          "status": "approved",
+          "boundaryDistanceM": 1424.1
+        },
+        {
+          "id": "osm:relation:2669538",
+          "name": "Храм Космы и Дамиана в Шубине",
+          "title": "Храм бессребреников Космы и Дамиана в Шубине",
+          "address": "Москва, Столешников переулок, дом 2-4, строение 6",
+          "lat": 55.7617496,
+          "lon": 37.6117693,
+          "sec": 85.968,
+          "words": 122,
+          "status": "approved",
+          "boundaryDistanceM": 1261.0
+        },
+        {
+          "id": "osm:node:253124200",
+          "name": "Юрию Долгорукому",
+          "title": "Памятник Юрию Долгорукому",
+          "address": "Москва, Тверская площадь, д. 3/1",
+          "lat": 55.7618096,
+          "lon": 37.6101609,
+          "sec": 63.96,
+          "words": 102,
+          "status": "approved",
+          "boundaryDistanceM": 1209.2
+        },
+        {
+          "id": "osm:node:5181346005",
+          "name": "Музей-квартира А. Б. Гольденвейзера",
+          "title": "Музей-квартира А. Б. Гольденвейзера",
+          "address": "Москва, Тверская улица, дом 17, квартиры 109–110",
+          "lat": 55.7632313,
+          "lon": 37.6070257,
+          "sec": 61.704,
+          "words": 100,
+          "status": "approved",
+          "boundaryDistanceM": 963.0
+        },
+        {
+          "id": "osm:way:31560938",
+          "name": "Дом Нирнзее",
+          "title": "Дом Нирнзее",
+          "address": "Москва, Большой Гнездниковский переулок, дом 10",
+          "lat": 55.7635709,
+          "lon": 37.6060401,
+          "sec": 59.424,
+          "words": 98,
+          "status": "approved",
+          "boundaryDistanceM": 893.9
+        },
+        {
+          "id": "osm:relation:3366117",
+          "name": "Пушкинская площадь и исчезнувшие здания",
+          "title": "Пушкинская площадь: икона, монастырь и исчезнувшие дома",
+          "address": "Москва, Пушкинская площадь",
+          "lat": 55.7651224,
+          "lon": 37.6059591,
+          "sec": 151.104,
+          "words": 276,
+          "status": "approved",
+          "boundaryDistanceM": 759.2
+        },
+        {
+          "id": "osm:relation:7583383",
+          "name": "Храм Рождества Пресвятой Богородицы",
+          "title": "Храм Рождества Богородицы в Путинках",
+          "address": "Москва, улица Малая Дмитровка, 2с2",
+          "lat": 55.766998,
+          "lon": 37.6071149,
+          "sec": 75.696,
+          "words": 130,
+          "status": "approved",
+          "boundaryDistanceM": 608.1
+        },
+        {
+          "id": "osm:way:52597841",
+          "name": "Ленком",
+          "title": "Ленком",
+          "address": "Москва, улица Малая Дмитровка, д. 6, стр. 1",
+          "lat": 55.7676073,
+          "lon": 37.6065187,
+          "sec": 61.968,
+          "words": 88,
+          "status": "approved",
+          "boundaryDistanceM": 530.7
+        },
+        {
+          "id": "osm:relation:16685841",
+          "name": "Государственный центральный музей современной истории России",
+          "title": "Государственный центральный музей современной истории России",
+          "address": "Москва, Тверская улица, 21",
+          "lat": 55.7660685,
+          "lon": 37.602478,
+          "sec": 65.352,
+          "words": 109,
+          "status": "approved",
+          "boundaryDistanceM": 537.7
+        },
+        {
+          "id": "osm:relation:16682984",
+          "name": "Концертный зал им. П. И. Чайковского",
+          "title": "Концертный зал имени П. И. Чайковского",
+          "address": "Москва, Тверская улица, д. 31/4, стр. 1",
+          "lat": 55.7692746,
+          "lon": 37.5966657,
+          "sec": 81.264,
+          "words": 134,
+          "status": "approved",
+          "boundaryDistanceM": 29.4
+        }
+      ],
+      "currentAudioSec": 960.768,
+      "targetAudioSec": 1080,
+      "tours": [
+        "5741"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 1,
+          "ids": [
+            "osm:relation:3366117"
+          ],
+          "percent": 7.142857142857143
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 1,
+          "ids": [
+            "osm:relation:3366117"
+          ],
+          "percent": 7.142857142857143
+        },
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 2487,
+      "newOverlaps": [
+        {
+          "id": "R06",
+          "common": 1,
+          "ids": [
+            "osm:relation:16682984"
+          ],
+          "percent": 7.6923076923076925
+        },
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R13",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 0,
+      "audioDeficitTo15Sec": 0,
+      "audioDeficitTo18Sec": 119.232,
+      "boundaryReview": [
+        {
+          "id": "osm:relation:16682984",
+          "name": "Концертный зал им. П. И. Чайковского",
+          "m": 29.4
+        }
+      ],
+      "maxExistingOverlapPercent": 7.142857142857143,
+      "maxNewOverlapPercent": 7.6923076923076925
+    },
+    {
+      "id": "R13",
+      "title": "Ивановская горка: дворы, палаты и конфессии",
+      "startMetro": "Чистые пруды",
+      "finishMetro": "Китай-город",
+      "stops": [
+        {
+          "id": "osm:way:1164348040",
+          "name": "Храм Архангела Гавриила",
+          "title": "Меншикова башня: московское соревнование с небом",
+          "address": "Москва, Архангельский переулок, 15А с9",
+          "lat": 55.7632186,
+          "lon": 37.6390945,
+          "sec": 122.616,
+          "words": 232,
+          "status": "approved",
+          "boundaryDistanceM": 820.7
+        },
+        {
+          "id": "osm:way:45777816",
+          "name": "Главный дом городской усадьбы Головиных",
+          "title": "Дом усадьбы Головиных",
+          "address": "Москва, Потаповский переулок, д. 8/12, стр. 2",
+          "lat": 55.7605779,
+          "lon": 37.6409186,
+          "sec": 55.32,
+          "words": 93,
+          "status": "approved",
+          "boundaryDistanceM": 983.0
+        },
+        {
+          "id": "osm:way:41087037",
+          "name": "Палаты Сверчковых",
+          "title": "Палаты Сверчковых",
+          "address": "Москва, Сверчков переулок, дом 8, строение 3",
+          "lat": 55.7599483,
+          "lon": 37.6400889,
+          "sec": 58.44,
+          "words": 94,
+          "status": "approved",
+          "boundaryDistanceM": 1067.9
+        },
+        {
+          "id": "osm:way:52504840",
+          "name": "Церковь Космы и Дамиана на Маросейке",
+          "title": "Церковь Космы и Дамиана на Маросейке",
+          "address": "Москва, ул. Маросейка, дом 14/2, строение 3",
+          "lat": 55.7579516,
+          "lon": 37.6386708,
+          "sec": 54.048,
+          "words": 98,
+          "status": "approved",
+          "boundaryDistanceM": 1184.8
+        },
+        {
+          "id": "osm:relation:7524307",
+          "name": "Кафедральный собор Святых Петра и Павла",
+          "title": "Евангелическо-лютеранский кафедральный собор Святых Петра и Павла",
+          "address": "Москва, Старосадский переулок, д. 7/10, стр. 10",
+          "lat": 55.7566819,
+          "lon": 37.641204,
+          "sec": 62.496,
+          "words": 96,
+          "status": "approved",
+          "boundaryDistanceM": 1004.7
+        },
+        {
+          "id": "osm:relation:9037250",
+          "name": "Палаты Мазепы",
+          "title": "Палаты Мазепы",
+          "address": "Москва, Колпачный переулок, 10/7, строения 2 и 4",
+          "lat": 55.7563489,
+          "lon": 37.6417764,
+          "sec": 53.664,
+          "words": 99,
+          "status": "approved",
+          "boundaryDistanceM": 961.0
+        },
+        {
+          "id": "osm:relation:8043044",
+          "name": "Храм Святой Живоначальной Троицы в Хохлах",
+          "title": "Храм Живоначальной Троицы в Хохлах",
+          "address": "Москва, Хохловский переулок, дом 14, строение 5",
+          "lat": 55.756737,
+          "lon": 37.6442469,
+          "sec": 57.096,
+          "words": 91,
+          "status": "approved",
+          "boundaryDistanceM": 819.0
+        },
+        {
+          "id": "osm:relation:7151077",
+          "name": "Морозовский сад",
+          "title": "Морозовский сад",
+          "address": "Москва, Большой Трёхсвятительский переулок, дом 1",
+          "lat": 55.75579,
+          "lon": 37.6446769,
+          "sec": 51.576,
+          "words": 90,
+          "status": "approved",
+          "boundaryDistanceM": 769.7
+        },
+        {
+          "id": "osm:relation:7623552",
+          "name": "Храм Трёх Святителей на Кулишках",
+          "title": "Храм Трёх Святителей на Кулишках",
+          "address": "Москва, Малый Трёхсвятительский переулок, дом 4/6, строение 5",
+          "lat": 55.7541761,
+          "lon": 37.6449582,
+          "sec": 76.08,
+          "words": 112,
+          "status": "approved",
+          "boundaryDistanceM": 709.9
+        },
+        {
+          "id": "osm:way:46096643",
+          "name": "Палаты Шуйских",
+          "title": "Палаты Шуйских",
+          "address": "Москва, Подкопаевский переулок, дом 5",
+          "lat": 55.7543065,
+          "lon": 37.6426034,
+          "sec": 60.384,
+          "words": 110,
+          "status": "approved",
+          "boundaryDistanceM": 857.0
+        },
+        {
+          "id": "osm:node:4489277689",
+          "name": "О. Э. Мандельштаму",
+          "title": "Памятник Осипу Мандельштаму",
+          "address": "Москва, Басманный район, сквер Мандельштама у пересечения улицы Забелина и Старосадского переулка",
+          "lat": 55.7551076,
+          "lon": 37.6388748,
+          "sec": 55.032,
+          "words": 86,
+          "status": "approved",
+          "boundaryDistanceM": 1104.7
+        },
+        {
+          "id": "osm:node:3500887936",
+          "name": "Музей Императорского православного палестинского общества",
+          "title": "Музей истории Императорского Православного Палестинского Общества",
+          "address": "г. Москва, ул. Забелина, д. 3, стр. 2",
+          "lat": 55.7551257,
+          "lon": 37.6381335,
+          "sec": 52.752,
+          "words": 82,
+          "status": "approved",
+          "boundaryDistanceM": 1150.3
+        },
+        {
+          "id": "osm:way:45768173",
+          "name": "Московская хоральная синагога",
+          "title": "Московская хоральная синагога",
+          "address": "Москва, Большой Спасоглинищевский переулок, д. 10, стр. 1",
+          "lat": 55.755597,
+          "lon": 37.6353012,
+          "sec": 54.504,
+          "words": 92,
+          "status": "approved",
+          "boundaryDistanceM": 1335.1
+        }
+      ],
+      "currentAudioSec": 814.008,
+      "targetAudioSec": 1080,
+      "tours": [
+        "1272"
+      ],
+      "existingOverlaps": [
+        {
+          "title": "Прогулка на полчаса от метро «Китай-город»",
+          "share": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+          "common": 1,
+          "ids": [
+            "osm:way:52504840"
+          ],
+          "percent": 25.0
+        },
+        {
+          "title": "От Трубной через Чистые пруды до Покровских ворот",
+          "share": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+          "common": 1,
+          "ids": [
+            "osm:way:1164348040"
+          ],
+          "percent": 7.6923076923076925
+        },
+        {
+          "title": "От Чистых прудов до Китай-города",
+          "share": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+          "common": 1,
+          "ids": [
+            "osm:way:1164348040"
+          ],
+          "percent": 7.6923076923076925
+        },
+        {
+          "title": "Прогулка на час от метро «Охотный ряд»",
+          "share": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Тверской до Трубной",
+          "share": "26216b83-453d-4d81-926d-ec537993f70f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От «Спартака» до «Тушинской»",
+          "share": "284227ab-a324-47f4-b07f-25617166bb3f",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Сретенский бульвар»",
+          "share": "2e8d898b-241b-432d-8408-603ebb965177",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Ордынка: храмы и городские судьбы",
+          "share": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+          "share": "326bc586-4083-4dff-ac35-223ba406265b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Менделеевская»",
+          "share": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полтора часа от метро «Селигерская»",
+          "share": "674b591a-d868-439d-97f5-369b0dcf3812",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Марксистская»",
+          "share": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Вокруг Третьяковки: искусство в жилом квартале",
+          "share": "6cacfdd1-defd-4afb-940f-5085356d0315",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красные Ворота»",
+          "share": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Пятницкая: деньги, книги и городская жизнь",
+          "share": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чкаловская»",
+          "share": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "От Кожевников к Цинделю",
+          "share": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "По бульварному кольцу от Кропоткинской до Тверской",
+          "share": "b2823a83-f861-46f2-834b-b7873960882a",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Чистые пруды»",
+          "share": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Купцы и благотворители Ордынки",
+          "share": "baed220c-72a9-4790-940e-1b1160e02913",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на полчаса от метро «Красносельская»",
+          "share": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Тургеневская»",
+          "share": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «ЦСКА»",
+          "share": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка на час от метро «Динамо»",
+          "share": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "title": "Прогулка от метро «Боровицкая» · 60 минут",
+          "share": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "unresolvedNearby": [],
+      "minPolylineM": 1986,
+      "newOverlaps": [
+        {
+          "id": "R01",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R02",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R03",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R04",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R05",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R06",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R07",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R08",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R09",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R10",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R11",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        },
+        {
+          "id": "R12",
+          "common": 0,
+          "ids": [],
+          "percent": 0.0
+        }
+      ],
+      "missingAudioCount": 0,
+      "audioDeficitTo15Sec": 85.992,
+      "audioDeficitTo18Sec": 265.992,
+      "boundaryReview": [],
+      "maxExistingOverlapPercent": 25.0,
+      "maxNewOverlapPercent": 0.0
+    }
+  ],
+  "tourPurchases": [
+    {
+      "id": "ab77",
+      "title": "Поварская и Новый Арбат",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru",
+      "recommendation": "Первая очередь",
+      "benefit": "R04: 11:24 готового звука; нужен рассказ о Гнесиной и более содержательные истории об усадьбах. В оглавлении есть особняки Грачёва, Дункер, Столыпина и дом Балтрушайтиса: последние три — кандидаты для проверки каталога, а не уже доказанные новые места.",
+      "evidence": "77 глав заявлено, первые 20 видны; платные главы не прочитаны"
+    },
+    {
+      "id": "2ccd",
+      "title": "Воздвиженка",
+      "url": "https://izi.travel/ru/2ccd-moskva-vozdvizhenka/ru",
+      "recommendation": "По остаточному дефициту",
+      "benefit": "R05: РГБ, музей Щусева, Знаменская церковь, особняк Арсения Морозова. Полезен для обогащения; Романов переулок и Военторг — темы для проверки дополнительных карточек.",
+      "evidence": "39 глав заявлено, первые 20 видны"
+    },
+    {
+      "id": "75e6",
+      "title": "Остоженка",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru",
+      "recommendation": "Первая очередь",
+      "benefit": "R02: дом Перцовой и набережная уже представлены короткими рассказами; нужен текст об Абрикосовых. Особняки Левенсона, Мазурина и Цветковская галерея из видимого оглавления — кандидаты на сопоставление. Наличие главы об Абрикосовых не подтверждено.",
+      "evidence": "Прочитано начало оглавления, 20 пунктов; полный состав не установлен"
+    },
+    {
+      "id": "43a7",
+      "title": "Новокузнецкая и Татарская",
+      "url": "https://izi.travel/ru/43a7-moskva-novokuzneckaya-i-tatarskaya/ru",
+      "recommendation": "Следующая покупка",
+      "benefit": "R09: храм Николы в Кузнецах и фонтан уже есть, музей Бахрушина пока в черновике. Дом Асадуллаева, Дом мёда, особняки Урусовой и Татищева видны в оглавлении: могут заменить менее сильные остановки после проверки идентичности и доступности.",
+      "evidence": "61 глава заявлена, первые 20 видны; музей Бахрушина упомянут в описании"
+    },
+    {
+      "id": "8e38",
+      "title": "Знаменка и Волхонка",
+      "url": "https://izi.travel/ru/8e38-moskva-znamenka-i-volkhonka/ru",
+      "recommendation": "После проверки усадеб",
+      "benefit": "R03: дом Пашкова и галерея Шилова подтверждены в оглавлении. Дома Шамшиной, Арафелова, Стуловых и училище Мазинга — адресные кандидаты для создания/обогащения; наличие наших остальных остановок в туре ещё проверить.",
+      "evidence": "Видны 12 пунктов; счётчик «2 sights» противоречит списку и не используется"
+    },
+    {
+      "id": "5934",
+      "title": "Пречистенка",
+      "url": "https://izi.travel/ru/5934-progulka-po-prechistenke-s-vokrug-sveta/ru",
+      "recommendation": "Вторая очередь",
+      "benefit": "R01: Белые палаты и музей Пушкина подтверждены. Для двух пробелов — дома Исакова и усадьбы Морозова — главы пока не подтверждены; сначала независимые источники.",
+      "evidence": "Видны 12 пунктов; полный состав не получен"
+    },
+    {
+      "id": "ca0a",
+      "title": "Садовнический остров",
+      "url": "https://izi.travel/ru/ca0a-moskva-sadovnicheskiy-ostrov/ru",
+      "recommendation": "Отложить",
+      "benefit": "R08 уже имеет 17:37 аудио. Полезен для Софийского храма, Кокоревского подворья, Балчуга, Георгия в Ендове; новые покупки не нужны для минимального хронометража.",
+      "evidence": "43 главы заявлено, первые 20 видны"
+    },
+    {
+      "id": "d97e",
+      "title": "Китай-город и площади",
+      "url": "https://izi.travel/ru/d97e-moskva-kitay-gorod-i-ploschadi/ru",
+      "recommendation": "Отложить",
+      "benefit": "R11 имеет 15:32; запас всего 32 секунды, нужен контроль готовых файлов. В видимой части преобладают театральные площади и «Метрополь»; пригодность глав Никольской/Варварки оценить после получения полного оглавления. Не покупать только из-за 94 глав.",
+      "evidence": "94 главы заявлено, первые 20 видны"
+    },
+    {
+      "id": "1407",
+      "title": "Таганка. Швивая горка",
+      "url": "https://izi.travel/ru/1407-moskva-taganka-shvivaya-gorka/ru",
+      "recommendation": "Отложить; оценка условная",
+      "benefit": "R10 уже имеет 16:04. География совпадает с нашей темой, но сопоставление глав не выполнено; покупку привязать к конкретным пробелам, а не к названию тура.",
+      "evidence": "Карточка/отдельная глава найдены, полное оглавление недоступно"
+    },
+    {
+      "id": "5741",
+      "title": "Тверская",
+      "url": "https://izi.travel/ru/5741-moskva-tverskaya/ru",
+      "recommendation": "Отложить; оценка условная",
+      "benefit": "R12 уже имеет 16:01. Нужен только при содержательных пробелах после чтения наших историй. Англоязычный бесплатный тур другого ID не считается проверкой этого русского тура.",
+      "evidence": "Предложенный URL не удалось прочитать"
+    },
+    {
+      "id": "9859",
+      "title": "Полянка",
+      "url": "https://izi.travel/ru/9859-moskva-polyanka/ru",
+      "recommendation": "Выбрать один из трёх после сверки",
+      "benefit": "R07: потенциальный источник для Полянки, Старомонетного переулка и их домов. Это географическая гипотеза: главы о названных объектах не подтверждены.",
+      "evidence": "Предложенный URL не удалось прочитать"
+    },
+    {
+      "id": "acac",
+      "title": "Якиманка",
+      "url": "https://izi.travel/ru/acac-moskva-yakimanka/ru",
+      "recommendation": "Выбрать один из трёх после сверки",
+      "benefit": "Сравнить с 9859 и 56ee на нужных для R07 объектах. Не покупать одновременно оба тура про Якиманку без проверки состава.",
+      "evidence": "Тур присутствует в каталоге издателя; оглавление недоступно"
+    },
+    {
+      "id": "56ee",
+      "title": "Якиманка и Крымская набережная",
+      "url": "https://izi.travel/ru/56ee-moskva-yakimanka-i-krymskaya-naberezhnaya/ru",
+      "recommendation": "Выбрать один из трёх после сверки",
+      "benefit": "Кандидат для R07, особенно дома Игумнова, храма Иоанна Воина и северной части набережной; наличие нужных глав проверить. Материалы за Крымским Валом отсеять; проверить, что оплачиваемые главы добавляют факты к выбранным точкам, а не только внешний участок.",
+      "evidence": "70 глав заявлено; описание и начало списка доступны, полный состав не получен"
+    },
+    {
+      "id": "4fb4",
+      "title": "Пятницкая и Овчинная",
+      "url": "https://izi.travel/ru/4fb4-moskva-pyatnickaya-i-ovchinnaya/ru",
+      "recommendation": "Отложить",
+      "benefit": "Уже опубликована 11-точечная Пятницкая; R08 заканчивается в Овчинниках, но сначала использовать имеющиеся рассказы. Покупка оправданна лишь конкретными новыми объектами.",
+      "evidence": "Предложенный URL не удалось прочитать"
+    },
+    {
+      "id": "7cce",
+      "title": "Кремль",
+      "url": "https://izi.travel/ru/7cce-moskva-kreml/ru",
+      "recommendation": "Отложить",
+      "benefit": "Для уличной серии метро—метро не приоритет: внутренние объекты требуют отдельного маршрута с проверкой режима посещения.",
+      "evidence": "URL не прочитан; наличие тура подтверждено каталогом"
+    },
+    {
+      "id": "9d43",
+      "title": "Вокруг Кремля",
+      "url": "https://izi.travel/ru/9d43-moskva-vokrug-kremlya/ru",
+      "recommendation": "Отложить",
+      "benefit": "Возможная следующая серия; для нынешних 13 вариантов не устраняет подтверждённый пробел.",
+      "evidence": "Предложенный URL не удалось прочитать"
+    }
+  ]
+}

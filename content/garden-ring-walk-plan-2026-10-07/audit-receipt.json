@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-07",
+  "model": [
+    "claude-opus-5-5"
+  ],
+  "subtype": "success",
+  "isError": false,
+  "durationMs": 389718,
+  "packetSha256": "51a2da7c6532c926537184cfcbda0f87eb02713941775282d6d3038819cf68d3",
+  "responseTextSha256": "eeecf02dea246103f1b24e9e488a7b173497d4297fa6b12b1390c58d7edaa111",
+  "calls": 1,
+  "toolsEnabled": false,
+  "finalRevisionReaudited": false
+}

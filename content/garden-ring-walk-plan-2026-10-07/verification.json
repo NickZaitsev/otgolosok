@@ -1,0 +1,76 @@
+{
+  "checkedAt": "2026-10-07T09:36:35.385187+00:00",
+  "planDataSha256": "11ab2ed5970632075fb1308828fb772d284e25d5f9fcf63fbd75e8e0e7765261",
+  "routeCount": 13,
+  "existingWalkCount": 25,
+  "stopOccurrences": 174,
+  "uniqueSelectedPlaceIds": 173,
+  "existingComparisonCount": 325,
+  "newPairCount": 78,
+  "maxExistingOverlapPercent": 25.0,
+  "maxNewOverlapPercent": 7.6923076923076925,
+  "routesWithAtLeast900SecMetadata": [
+    "R08",
+    "R10",
+    "R11",
+    "R12"
+  ],
+  "missingAudio": [
+    {
+      "route": "R01",
+      "id": "osm:relation:8914102",
+      "name": "Усадьба Морозова на Пречистенке"
+    },
+    {
+      "route": "R01",
+      "id": "osm:node:8898082919",
+      "name": "Доходный дом И. П. Исакова"
+    },
+    {
+      "route": "R02",
+      "id": "osm:way:76633316",
+      "name": "Особняк Абрикосовых"
+    },
+    {
+      "route": "R04",
+      "id": "osm:node:3423510101",
+      "name": "Мемориальный музей-квартира Е.Ф.Гнесиной"
+    },
+    {
+      "route": "R07",
+      "id": "osm:relation:15457013",
+      "name": "Церковь Иоанна Воина"
+    },
+    {
+      "route": "R07",
+      "id": "osm:relation:16561997",
+      "name": "Дом купца Игумнова"
+    },
+    {
+      "route": "R09",
+      "id": "osm:node:273356351",
+      "name": "Государственный центральный театральный музей им. А. А. Бахрушина"
+    }
+  ],
+  "passed": [
+    "Все ID существуют в снимке каталога",
+    "Все выбранные центры внутри сохранённого контура",
+    "В каждом варианте минимум 10 уникальных ID",
+    "Длительности совпадают с метаданными карточек, суммы и дефициты пересчитаны",
+    "325 сравнений с текущими и 78 пар новых пересчитаны; порог 50% соблюдён"
+  ],
+  "projectCheck": {
+    "command": "pnpm check",
+    "exitCode": 0,
+    "backendTestsPassed": 978,
+    "pythonTestsPassed": 26,
+    "pythonSubtestsPassed": 78,
+    "productionBuild": "passed"
+  },
+  "notVerified": [
+    "Пешеходные линии и выходы метро",
+    "Фактическая длительность MP3 и воспроизведение в новом порядке",
+    "Полный текст платных туров",
+    "Полевая доступность всех точек"
+  ]
+}
