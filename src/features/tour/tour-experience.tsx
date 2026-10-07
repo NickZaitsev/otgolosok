@@ -54,12 +54,12 @@ export function TourExperience({ route, walk, offline = null, offlineNotice = ""
   onAddFood?: AddFood | null;
   /** Stable stop selected from the nearby-walk suggestions. */
   fromStop?: string | null }) {
-  const { path, t } = useI18n();
+  const { locale, path, t } = useI18n();
   // A universal walk changes in place when a venue joins it, so its route follows the view.
   const resolvedRoute = useMemo(() => walk ? walkViewToRoute(walk) : route, [walk, route]);
   if (!resolvedRoute) return <main className="shell"><section className="hero-copy"><h1>{t("Прогулка не найдена")}</h1><p className="dek">{t("Откройте ссылку ещё раз или вернитесь к списку прогулок.")}</p></section></main>;
   if (fromStop !== null && !resolvedRoute.walk?.steps.some(stop => stop.id === fromStop)) return <main className="walk-screen"><p role="alert">{t("Точка начала больше не входит в эту прогулку. Откройте подборку заново.")}</p><Link href={path("/")}>{t("На карту")}</Link></main>;
-  return <AvailableTour fromStop={fromStop} route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} offlineNotice={walk ? offlineNotice : ""} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} onAddFood={walk ? onAddFood : null} />;
+  return <AvailableTour key={locale} fromStop={fromStop} route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} offlineNotice={walk ? offlineNotice : ""} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} onAddFood={walk ? onAddFood : null} />;
 }
 
 function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, offlineNotice = "", reviewTarget, launchTarget, own, onAddFood, fromStop }: { fromStop: string | null; route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; offlineNotice?: string; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null; onAddFood: AddFood | null }) {
@@ -123,7 +123,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     if (universal) return;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 20000);
-    void loadPublishedRoute(initialRoute, controller.signal)
+    void loadPublishedRoute(initialRoute, controller.signal, { requestedLocale: locale })
       .then(value => {
         // A listening session keeps its exact text, audio and resume offsets.
         if (!controller.signal.aborted) setRoute(current => sessionActiveRef.current ? current : value);
@@ -131,7 +131,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
       .catch(() => { /* The bundled walk remains available offline. */ })
       .finally(() => clearTimeout(timer));
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [initialRoute, universal]);
+  }, [initialRoute, universal, locale]);
   // Stable between playback updates, so the map and plan do not rebuild on every tick.
   const chapters = useMemo(() => getWalkChapters(route, universal), [route, universal]);
   // A stop added during the walk shifts the numbering (see followChapter).
@@ -148,10 +148,12 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   // On the way to the finish (index chapters.length) the player keeps the last stop's story.
   const storyChapter = chapter ?? (universal ? chapters.at(-1) : undefined);
   const walkContent = storyChapter?.content ?? firstPoi;
-  const walkAudioUrl = storyChapter?.audio?.url ?? walkContent.story.audio_url;
+  const trustedAudio = universal || locale === "ru" || route.requested_locale === locale;
+  const walkAudioUrl = trustedAudio ? storyChapter?.audio?.url ?? walkContent.story.audio_url : null;
+  const contentLocale = storyChapter?.localization?.contentLocale ?? route.content_locale ?? "ru";
   const walkUsesTestAudio = !universal && !walkAudioUrl;
   const { savedCheckpoint, saveCheckpoint, clearCheckpoint } = usePlaybackProgress(route.id,
-    chapters.flatMap((item) => item.audio ? [{ id: item.id, audioUrl: item.audio.url, durationSec: item.audio.duration_sec }] : []), direction);
+    trustedAudio ? chapters.flatMap((item) => item.audio ? [{ id: item.id, audioUrl: item.audio.url, durationSec: item.audio.duration_sec }] : []) : [], direction, locale);
   const savedChapterIndex = savedCheckpoint ? chapters.findIndex((item) => item.id === savedCheckpoint.chapterId) : -1;
   const finish = route.walk?.finish.location ?? firstPoi.viewpoint ?? firstPoi.location;
   const baseTriggerConfig: TriggerConfig = {
@@ -167,7 +169,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const triggerConfig = arrivalTriggerConfig(chapters, chapterIndex, stage, baseTriggerConfig);
   // A universal walk whose finish lies past the last stop has one more step: the way there.
   const finishLeg = universal && Boolean(route.walk) && hasFinishLeg(chapters, finish, baseTriggerConfig.enterM);
-  const chapterSource = (index: number) => chapters[index]?.audio?.url ?? chapters[index]?.content.story.audio_url ?? null;
+  const chapterSource = (index: number) => trustedAudio ? chapters[index]?.audio?.url ?? chapters[index]?.content.story.audio_url ?? null : null;
   const chapterTitle = chapter?.title ?? null;
   const chapterPlace = chapter?.place ?? null;
 
@@ -231,7 +233,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
     requestedIndex ??= entryIndex;
     const initialIndex = requestedIndex !== undefined && requestedIndex >= 0 && requestedIndex < chapters.length ? requestedIndex : resumeSaved && savedChapterIndex >= 0 ? savedChapterIndex : 0;
     const initialPosition = requestedIndex === undefined && resumeSaved && savedCheckpoint ? savedCheckpoint.positionSec : 0;
-    const startAudioUrl = chapterSource(initialIndex) ?? firstPoi.story.audio_url;
+    const startAudioUrl = chapterSource(initialIndex) ?? (trustedAudio ? firstPoi.story.audio_url : null);
     // A universal walk starts on the way to the stop, unless the walker listens at
     // home in a row or continues a story they had already been listening to.
     const initialStage: StopStage = universal && settings.advance !== "sequence" && initialPosition < 1 ? "approach" : "stop";
@@ -404,7 +406,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
 
       {universal && reviewTarget ? <ReviewDialog reviews={reviews} open={rateOpen} onClose={() => setRateOpen(false)} walkTitle={route.title.trim() || t("Ваш маршрут")} /> : null}
       {universal && reviewTarget ? <ImprovementDialog target={reviewTarget} open={improveOpen} onClose={() => setImproveOpen(false)} walkTitle={route.title.trim() || t("Ваш маршрут")} /> : null}
-      {universal ? <WalkSession notice={[offlineNotice, fromStop !== null ? t("Начало с остановки «{title}».", { title: chapters.find(item => item.id === fromStop)?.title ?? "" }) : ""].filter(Boolean).join(" ")} route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg}
+      {universal ? <WalkSession notice={[offlineNotice, fromStop !== null ? t("Начало с остановки «{title}».", { title: chapters.find(item => item.id === fromStop)?.title ?? "" }) : ""].filter(Boolean).join(" ")} route={route} chapters={chapters} index={chapterIndex} stage={stage} advance={settings.advance} active={isWalking} completed={completed} finishLeg={finishLeg} contentLocale={contentLocale} audioAvailable={Boolean(walkAudioUrl)}
         openingIndex={fromStop === null ? 0 : Math.max(0, chapters.findIndex(item => item.id === fromStop))} direction={direction} foodMode={view?.document.mode} onDirectionChange={fromStop !== null ? undefined : value => {
           if (sessionActiveRef.current) return;
           setDirection(value);
@@ -421,13 +423,13 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
         audioError={audioStatus === "blocked" || audioStatus === "error" ? t("Не удалось включить аудио. Нажмите «Повторить запуск звука».") : ""}
         player={walkAudioUrl ? <AudioPlayerControls compact position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
           label={audioButtonLabel} rate={settings.rate} onToggle={toggleAudio} onSeek={audio.seek} onRate={rate => updateSettings({ rate })} /> : null}
-        story={<><StoryText story={walkContent.story} />{walkContent.sources.length ? <StorySources content={walkContent} open={showSources} onToggle={toggleSources} /> : null}</>}
+        story={<><StoryText story={walkContent.story} contentLocale={contentLocale} />{walkContent.sources.length ? <StorySources content={walkContent} contentLocale={contentLocale} open={showSources} onToggle={toggleSources} /> : null}</>}
         settings={<div className="walk-session-settings">
           <label>{t("Переключение остановок")}<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{t(advanceModeLabels[mode])}</option>)}</select></label>
           <label>{t("Скорость аудио")}<select value={settings.rate} onChange={event => updateSettings({ rate: Number(event.target.value) as PlaybackRate })}>{playbackRates.map(rate => <option key={rate} value={rate}>{rate.toLocaleString(languageTag)}×</option>)}</select></label>
           {offlineControls}
         </div>} offline={offlineControls ? <div className="walk-session-offline">{offlineControls}</div> : null} /> : isWalking ? (
-        <ClassicWalkView route={route} chapters={chapters} chapterIndex={chapterIndex} titleRef={walkTitleRef}
+        <ClassicWalkView route={route} chapters={chapters} chapterIndex={chapterIndex} titleRef={walkTitleRef} contentLocale={contentLocale}
           diagnostics={position.diagnostics} triggerConfig={triggerConfig} player={player} wakeStatus={wakeStatus}
           settings={settings} onSettings={updateSettings} showSources={showSources} onToggleSources={toggleSources}
           debug={{ show: showDiagnostics, replay: isReplay }}

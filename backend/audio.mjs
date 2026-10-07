@@ -6,6 +6,11 @@ import { failure, sha256 } from "./domain.mjs";
 import { normalizeForSpeech } from "./text-normalizer.mjs";
 
 const exec = promisify(execFile);
+const LANGUAGES = new Set(["ru", "en", "zh"]);
+const verbatimSpeechText = Object.assign(async text => {
+  if (typeof text !== "string" || !text.trim()) throw failure("TTS_FAILED");
+  return text;
+}, { version: "multilingual-verbatim-v1" });
 /**
  * @param {any} story
  * @param {any} provider
@@ -13,23 +18,29 @@ const exec = promisify(execFile);
  * @param {AbortSignal | undefined} signal
  * @param {{minDurationSec?: number, maxDurationSec?: number, normalize?: ((text: string, options?: {signal?: AbortSignal}) => Promise<string>) & {version?: string}, cacheNamespace?: string}} [options]
  */
-export async function createNarration(story, provider, directory, signal, { minDurationSec = 45, maxDurationSec = 300, normalize = normalizeForSpeech, cacheNamespace } = {}) {
+export async function createNarration(story, provider, directory, signal, { minDurationSec = 45, maxDurationSec = 300, normalize: selectedNormalizer, cacheNamespace } = {}) {
   if (!Number.isFinite(minDurationSec) || !Number.isFinite(maxDurationSec) || minDurationSec <= 0 || maxDurationSec < minDurationSec || maxDurationSec > 600) throw failure("AUDIO_DURATION");
   if (cacheNamespace !== undefined && (typeof cacheNamespace !== "string" || !/^[A-Za-z0-9][A-Za-z0-9:_-]{0,127}$/.test(cacheNamespace))) throw failure("BAD_REQUEST");
+  const language = provider.ttsLanguage ?? "ru";
+  if (!LANGUAGES.has(language)) throw failure("TTS_LANGUAGE_UNSUPPORTED");
+  const ttsProvider = provider.ttsProvider ?? "openai";
+  if (language !== "ru" && ttsProvider !== "elevenlabs") throw failure("TTS_LANGUAGE_UNSUPPORTED");
+  const normalize = selectedNormalizer ?? (language === "ru" ? normalizeForSpeech : verbatimSpeechText);
   const script = story.paragraphs.map((paragraph) => paragraph.text).join("\n\n");
   const spokenScript = await normalize(script, { signal });
-  const ttsProvider = provider.ttsProvider ?? "openai";
   const key = sha256(JSON.stringify({script:spokenScript,model:provider.ttsModel,voice:provider.voice,version:2,normalizer:normalize.version ?? "custom",
     ...(ttsProvider === "openai" ? {} : {provider:ttsProvider}),...(provider.scriptVersion ? {scriptVersion:provider.scriptVersion} : {}),
+    ...(language === "ru" ? {} : {language}),
     ...(cacheNamespace === undefined ? {} : {cacheNamespace})}));
   await mkdir(directory, { recursive: true });
   const metadataPath = join(directory, `${key}.json`);
   try {
     const metadata = JSON.parse(await readFile(metadataPath, "utf8"));
     const bytes = await readFile(join(directory, `${metadata.sha256}.mp3`));
-    if (sha256(bytes) === metadata.sha256 && (metadata.durationSec === undefined || (metadata.durationSec >= minDurationSec && metadata.durationSec <= maxDurationSec))) return metadata;
+    const matchingProvenance = language === "ru" || (metadata.language === language && metadata.provider === ttsProvider && metadata.model === provider.ttsModel && metadata.voice === provider.voice);
+    if (matchingProvenance && sha256(bytes) === metadata.sha256 && (metadata.durationSec === undefined || (metadata.durationSec >= minDurationSec && metadata.durationSec <= maxDurationSec))) return metadata;
   } catch { /* No complete previously validated asset. */ }
-  const bytes = await provider.speech(spokenScript, {signal,voice:provider.voice});
+  const bytes = await provider.speech(spokenScript, {signal,voice:provider.voice,...(language === "ru" ? {} : {language})});
   const sourcePath = join(directory, `${key}.source.tmp`);
   const outputPath = join(directory, `${key}.encoded.tmp.mp3`);
   try {
@@ -42,7 +53,7 @@ export async function createNarration(story, provider, directory, signal, { minD
     const hash = sha256(encoded);
     await rename(outputPath, join(directory, `${hash}.mp3`));
     const metadata = {url:`/api/story-audio/${hash}.mp3`,sha256:hash,bytes:(await stat(join(directory,`${hash}.mp3`))).size,
-      durationSec,model:provider.ttsModel,voice:provider.voice,provider:ttsProvider,synthetic:true};
+      durationSec,model:provider.ttsModel,voice:provider.voice,provider:ttsProvider,...(language === "ru" ? {} : {language}),synthetic:true};
     await writeFile(`${metadataPath}.tmp`, JSON.stringify(metadata), {mode:0o600});
     await rename(`${metadataPath}.tmp`, metadataPath);
     return metadata;

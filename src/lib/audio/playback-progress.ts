@@ -8,8 +8,10 @@ export type PlaybackCheckpoint = {
   positionSec: number;
 };
 
-export function playbackStorageKey(routeId: string) {
-  return `otgolosok:playback:${routeId}`;
+export type PlaybackLocale = "ru" | "en" | "zh";
+
+export function playbackStorageKey(routeId: string, locale: PlaybackLocale = "ru") {
+  return `otgolosok:playback:${routeId}${locale === "ru" ? "" : `:${locale}`}`;
 }
 
 /** Only a checkpoint for the same recording may restore an audio offset. */

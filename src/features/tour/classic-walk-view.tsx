@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/i18n/provider";
 import type { TriggerConfig } from "@/lib/geo/types";
 import type { WakeLockStatus } from "@/lib/wake-lock";
 import { formatPlaybackTime } from "@/lib/audio/playback-progress";
-import type { Route, WalkStep } from "./types";
+import type { ContentLocale, Route, WalkStep } from "./types";
 import { StorySources, StoryText } from "./story-content";
 import { RouteNotes } from "./route-notes";
 import { WalkMap } from "./walk-map";
@@ -29,10 +29,11 @@ export type PlayerState = {
 
 /** The bundled walk while it is running: status, story, player, chapters and the walk map. */
 export function ClassicWalkView({
-  route, chapters, chapterIndex, titleRef, diagnostics, triggerConfig, player, wakeStatus,
+  route, chapters, chapterIndex, titleRef, diagnostics, triggerConfig, player, wakeStatus, contentLocale,
   settings, onSettings, showSources, onToggleSources, debug, onToggle, onSeek, onSelect, onStop,
 }: {
   route: Route;
+  contentLocale: ContentLocale;
   chapters: WalkChapter[];
   chapterIndex: number;
   titleRef: RefObject<HTMLHeadingElement | null>;
@@ -65,7 +66,7 @@ export function ClassicWalkView({
   const chapterNarrative = chapter ? <>
     {chapter.transition ? <p className="walk-transition">{chapter.transition}</p> : null}
     {chapter.status && !["ready", "text_ready"].includes(chapter.status) ? <p className="walk-note" role="status">{t(walkStatusLabel(chapter.status))}</p> : null}
-    {walkContent.story.paragraphs.length ? <StoryText story={walkContent.story} /> : null}
+    {walkContent.story.paragraphs.length ? <StoryText story={walkContent.story} contentLocale={contentLocale} /> : null}
     <p className="walk-next-hint">{chapter.next_hint}</p>
   </> : null;
 
@@ -82,7 +83,7 @@ export function ClassicWalkView({
         <p className="walk-eyebrow">{chapter?.title ?? firstPoi.eyebrow}</p>
         <h1 id="walk-title" ref={titleRef} tabIndex={-1}>{walkContent.story.opening}</h1>
         <p className="walk-place">{chapter?.place ?? firstPoi.name}</p>
-        <ContentLanguageNote />
+        <ContentLanguageNote contentLocale={contentLocale} audioAvailable={Boolean(player.source)} />
         {chapter?.audio ? <details key={chapter.id} className="walk-transcript">
           <summary>{t("Текст этой части")}</summary>
           {chapterNarrative}
@@ -154,10 +155,10 @@ export function ClassicWalkView({
       </p>
       {hasStoryText && !chapter ? <details className="walk-transcript">
         <summary>{t("Читать историю · около {minutes} мин", { minutes: storyMinutes })}</summary>
-        <StoryText story={firstPoi.story} />
+        <StoryText story={firstPoi.story} contentLocale={contentLocale} />
       </details> : null}
-      {walkContent.story.text_status === "ready" && walkContent.sources.length ? <StorySources content={walkContent} open={showSources} onToggle={onToggleSources} /> : null}
-      {!chapter ? <RouteNotes notes={readyNotes} /> : null}
+      {walkContent.story.text_status === "ready" && walkContent.sources.length ? <StorySources content={walkContent} contentLocale={contentLocale} open={showSources} onToggle={onToggleSources} /> : null}
+      {!chapter ? <RouteNotes notes={readyNotes} contentLocale={contentLocale} /> : null}
 
       {debug.show ? <WalkDiagnostics diagnostics={diagnostics} replay={debug.replay}
         distanceLabel={chapter ? hasNextChapter ? "До следующей части" : "До финиша" : "До точки"}

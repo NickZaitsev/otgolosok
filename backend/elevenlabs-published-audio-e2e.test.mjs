@@ -57,7 +57,7 @@ test("HTTP approval, restart, deliberate synthesis and publication retry protect
     store = createStore(databasePath, { now: () => now, random: () => 0,
       externalTtsProfiles: { [ELEVENLABS_PROFILE_ID]: elevenLabsProfile("Отголосок2", model) },
       normalizeExternalText: Object.assign(async text => text, { version: "fixture-local" }) });
-    const speechProvider = { ttsProvider: "elevenlabs", ttsModel: model, voice: "Отголосок2", voices: [], scriptVersion: `fixture-tagging-${model}`, speech: async (script, options) => {
+    const speechProvider = { ttsProvider: "elevenlabs", ttsModel: model, ttsLanguage: /** @type {const} */ ("ru"), voice: "Отголосок2", voices: [], scriptVersion: `fixture-tagging-${model}`, speech: async (script, options) => {
       assert.ok(script.includes(paragraph));
       assert.equal(options.voice, "Отголосок2");
       calls++;

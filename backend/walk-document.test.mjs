@@ -80,10 +80,41 @@ test("public view rejects hidden fields and unrelated chapters", () => {
   const document = walk();
   const view = { document, revision: 0, contentVersion: "1", chapters: [{ id: chapter, status: "preparing", story: null, audio: null }] };
   assert.deepEqual(validateWalkView(view), view);
+  assert.deepEqual(validateWalkView({ ...view, chapters: [{ ...view.chapters[0], localization: null }] }).chapters[0].localization, null);
   assert.throws(() => validateWalkView({ ...view, recoveryToken: "secret" }), { code: "BAD_REQUEST" });
   assert.throws(() => validateWalkView({ ...view, chapters: [] }), { code: "BAD_REQUEST" });
   assert.throws(() => validateWalkView({ ...view, chapters: [{ ...view.chapters[0], story: { recoveryToken: "secret" } }] }), { code: "BAD_REQUEST" });
   assert.throws(() => validateWalkView({ ...view, chapters: [{ ...view.chapters[0], audio: { url: "https://other.example/audio", sha256: "x", durationSec: 1 } }] }), { code: "BAD_REQUEST" });
+});
+
+test("localized public views identify fallback content and never attach audio in another language", () => {
+  const document = walk();
+  const story = { title: "A place", address: document.stops[0].place.address, paragraphs: [{ text: "A translated story.", factIds: [] }], sources: [], facts: [] };
+  const localized = { document, revision: 0, contentVersion: "en-1", requestedLocale: "en", chapters: [{ id: chapter, status: "text_ready", story, audio: null,
+    localization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null } }] };
+  assert.deepEqual(validateWalkView(localized), localized);
+  const fallback = { ...localized, chapters: [{ ...localized.chapters[0], status: "ready", localization: { requestedLocale: "en", contentLocale: "ru", fallbackReason: "missing" },
+    audio: { url: `/audio/walk/${chapter}.mp3`, sha256: "a".repeat(64), durationSec: 60 } }] };
+  assert.deepEqual(validateWalkView(fallback), fallback);
+  assert.throws(() => validateWalkView({ ...localized, chapters: [{ ...localized.chapters[0], audio: { url: `/audio/walk/${chapter}.mp3`, sha256: "a".repeat(64), durationSec: 60 } }] }), { code: "BAD_REQUEST" });
+  assert.throws(() => validateWalkView({ ...localized, chapters: [{ ...localized.chapters[0], localization: { requestedLocale: "en", contentLocale: "ru", fallbackReason: null } }] }), { code: "BAD_REQUEST" });
+  assert.throws(() => validateWalkView({ ...localized, chapters: [{ ...localized.chapters[0], localization: undefined }] }), { code: "BAD_REQUEST" });
+});
+
+test("localized walk labels keep an immutable source document for later mutations", () => {
+  const sourceDocument = walk();
+  const document = { ...sourceDocument, title: "A walk", description: "Translated description",
+    stops: sourceDocument.stops.map(item => ({ ...item, transition: "Continue straight.", nextHint: "The house is on the left." })) };
+  const view = { document, sourceDocument, documentLocalization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null },
+    revision: 0, contentVersion: "en-document", requestedLocale: "en", chapters: [{ id: chapter, status: "not_requested", story: null, audio: null,
+      localization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null } }] };
+  assert.deepEqual(validateWalkView(view), view);
+  assert.throws(() => validateWalkView({ ...view, sourceDocument: { ...sourceDocument, id: "other-walk" } }), { code: "BAD_REQUEST" });
+  assert.throws(() => validateWalkView({ ...view, sourceDocument: { ...sourceDocument, stops: sourceDocument.stops.map(item => ({ ...item,
+    place: { ...item.place, location: { ...item.place.location, lat: item.place.location.lat + 0.001 } } })) } }), { code: "BAD_REQUEST" });
+  assert.throws(() => validateWalkView({ ...view, documentLocalization: { requestedLocale: "en", contentLocale: "ru", fallbackReason: "stale" } }), { code: "BAD_REQUEST" });
+  assert.throws(() => validateWalkView({ ...view, sourceDocument: document }), { code: "BAD_REQUEST" });
+  assert.throws(() => validateWalkView({ ...view, requestedLocale: undefined }), { code: "BAD_REQUEST" });
 });
 
 test("long public views preserve chapter order and reject duplicates or swapped chapters", () => {

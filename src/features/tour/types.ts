@@ -3,6 +3,9 @@ export type Coordinates = {
   lon: number;
 };
 
+export type ContentLocale = "ru" | "en" | "zh";
+export type ContentLocalization = { requestedLocale: ContentLocale; contentLocale: ContentLocale; fallbackReason: null | "missing" | "draft" | "stale" };
+
 export type HistoricalContent = {
   story: {
     opening: string;
@@ -88,6 +91,7 @@ export type WalkStep = {
   place_id?: string;
   // Universal walk views keep stops visible while their story is preparing.
   status?: "not_requested" | "preparing" | "text_ready" | "ready" | "failed" | "review_required" | "insufficient_evidence" | "unavailable";
+  localization?: ContentLocalization;
   audio?: {
     url: string;
     duration_sec: number;
@@ -97,6 +101,7 @@ export type WalkStep = {
     script_sha256: string;
     audio_sha256: string;
     generated_at: string;
+    language?: ContentLocale;
   };
 };
 
@@ -127,6 +132,9 @@ export type Route = {
   distance_km: number;
   poi_count: number;
   status: "draft" | "published";
+  requested_locale?: ContentLocale;
+  content_locale?: ContentLocale;
+  fallback_reason?: null | "missing" | "draft" | "stale";
   /** Share token of the published walk this catalogue walk moved to; its stories are catalogue places now. */
   moved_to_share?: string;
   pois: Poi[];

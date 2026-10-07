@@ -42,12 +42,17 @@ const story = value => value === null || (fields(value, ["title", "address", "pa
   Array.isArray(value.sources) && value.sources.length <= 100 && value.sources.every(item => fields(item, ["id", "title", "url", "publisher"]) && string(item.id, 128) && string(item.title, 500) && storyUrl(item.url) && string(item.publisher, 500, true)) &&
   Array.isArray(value.facts) && value.facts.length <= 100 && value.facts.every(item => fields(item, ["id", "claim", "sourceIds"]) && string(item.id, 128) && string(item.claim, 2000) && Array.isArray(item.sourceIds) && item.sourceIds.length <= 100 && item.sourceIds.every(id => string(id, 128))) &&
   (value.checkedAt === undefined || (typeof value.checkedAt === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value.checkedAt))));
-const audio = value => value === null || (fields(value, ["url", "sha256", "durationSec"]) && typeof value.url === "string" && /^\/(?:audio\/walk\/[a-zA-Z0-9-]+\.mp3|api\/story-audio\/[a-f0-9]{64}\.mp3)$/.test(value.url) && typeof value.sha256 === "string" && /^[a-f0-9]{64}$/.test(value.sha256) && Number.isFinite(value.durationSec) && value.durationSec > 0 && value.durationSec <= 7200);
+const locales = new Set(["ru", "en", "zh"]);
+const audio = value => value === null || (fields(value, ["url", "sha256", "durationSec", "language"]) && typeof value.url === "string" && /^\/(?:audio\/walk\/[a-zA-Z0-9-]+\.mp3|api\/story-audio\/[a-f0-9]{64}\.mp3)$/.test(value.url) && typeof value.sha256 === "string" && /^[a-f0-9]{64}$/.test(value.sha256) && Number.isFinite(value.durationSec) && value.durationSec > 0 && value.durationSec <= 7200 && (value.language === undefined || locales.has(value.language)));
+const fallbackReasons = new Set(["missing", "draft", "stale"]);
+const localization = value => value === null || fields(value, ["requestedLocale", "contentLocale", "fallbackReason"]) && locales.has(value.requestedLocale) && locales.has(value.contentLocale)
+  && (value.fallbackReason === null || fallbackReasons.has(value.fallbackReason))
+  && (value.requestedLocale === value.contentLocale ? value.fallbackReason === null : value.contentLocale === "ru" && value.fallbackReason !== null);
 
 /** @typedef {{lat:number,lon:number}} Coordinates */
 /** @typedef {{address:string,location:Coordinates}} WalkPlace */
 /** @typedef {{version:2,id:string,title:string,description:string,city:string,mode:'open'|'loop',minutes:number,start:WalkPlace|null,stops:Array<{id:string,place:WalkPlace,storyRef:null|{kind:'job'|'osm'|'catalog',id:string},placeId?:string,transition:string,nextHint:string,triggerLocation?:Coordinates}>,route:null|{geometry:Coordinates[],distanceM:number,walkingMinutes:number,attribution:string,tunnels?:Array<[number,number]>},fieldChecked:boolean}} WalkDocument */
-/** @typedef {{document:WalkDocument,revision:number,contentVersion:string,chapters:Array<{id:string,status:string,story:object|null,audio:object|null}>}} WalkView */
+/** @typedef {{document:WalkDocument,sourceDocument?:WalkDocument,documentLocalization?:null|{requestedLocale:'ru'|'en'|'zh',contentLocale:'ru'|'en'|'zh',fallbackReason:null|'missing'|'draft'|'stale'},revision:number,contentVersion:string,requestedLocale?:'ru'|'en'|'zh',chapters:Array<{id:string,status:string,story:object|null,audio:object|null,localization?:null|{requestedLocale:'ru'|'en'|'zh',contentLocale:'ru'|'en'|'zh',fallbackReason:null|'missing'|'draft'|'stale'}}>}} WalkView */
 
 export function validateWalkDocument(value) {
   if (!fields(value, ["version", "id", "title", "description", "city", "mode", "minutes", "start", "destination", "stops", "route", "fieldChecked"]) || value.version !== 2 || !(uuid(value.id) || /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id)) || !string(value.title, 120) || !string(value.description, 1000, true) || value.city !== "Москва" || !["open", "loop"].includes(value.mode) || ![15, 30, 60, 90].includes(value.minutes) || !(value.start === null || place(value.start)) || (value.destination != null && (value.mode !== "open" || !place(value.destination))) || !Array.isArray(value.stops) || value.stops.length > MAX_WALK_STOPS || !value.stops.every(stop) || (value.start === null && value.stops.length !== 0) || new Set(value.stops.map(item => item.id)).size !== value.stops.length || !route(value.route) || (value.route !== null && (value.start === null || (value.stops.length === 0 && !value.destination))) || typeof value.fieldChecked !== "boolean" || JSON.stringify(value).length > 100000) throw invalid();
@@ -81,8 +86,23 @@ export function migrateLegacyDraft(value, walkId) {
 }
 
 const statuses = new Set(["not_requested", "preparing", "text_ready", "ready", "failed", "review_required", "insufficient_evidence", "unavailable"]);
+const canonical = value => Array.isArray(value) ? value.map(canonical)
+  : object(value) ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
+const immutableDocument = value => canonical({ ...value, title: "", description: "", stops: value.stops.map(item => ({ ...item, transition: "", nextHint: "" })) });
 export function validateWalkView(value) {
   const document = validateWalkDocument(value?.document);
-  if (!fields(value, ["document", "revision", "contentVersion", "chapters"]) || !Number.isSafeInteger(value.revision) || value.revision < 0 || !string(value.contentVersion, 120) || !Array.isArray(value.chapters) || value.chapters.length !== document.stops.length || value.chapters.some((item, index) => !fields(item, ["id", "status", "story", "audio"]) || item.id !== document.stops[index].id || !statuses.has(item.status) || !story(item.story) || !audio(item.audio) || (item.audio !== null && item.story === null)) || JSON.stringify(value).length > 200000) throw invalid();
+  const sourceDocument = value?.sourceDocument === undefined ? undefined : validateWalkDocument(value.sourceDocument);
+  const requestedLocale = value?.requestedLocale ?? "ru";
+  if (!fields(value, ["document", "sourceDocument", "documentLocalization", "revision", "contentVersion", "requestedLocale", "chapters"]) || !locales.has(requestedLocale) || !Number.isSafeInteger(value.revision) || value.revision < 0 || !string(value.contentVersion, 120)
+      || value.documentLocalization !== undefined && value.documentLocalization !== null && (!localization(value.documentLocalization) || value.documentLocalization.requestedLocale !== requestedLocale)
+      || sourceDocument !== undefined && (requestedLocale === "ru" || !value.documentLocalization || value.documentLocalization.contentLocale !== requestedLocale || value.documentLocalization.fallbackReason !== null
+        || JSON.stringify(immutableDocument(sourceDocument)) !== JSON.stringify(immutableDocument(document)) || JSON.stringify(sourceDocument) === JSON.stringify(document))
+      || !Array.isArray(value.chapters) || value.chapters.length !== document.stops.length || value.chapters.some((item, index) => {
+    if (!fields(item, ["id", "status", "story", "audio", "localization"]) || item.id !== document.stops[index].id || !statuses.has(item.status) || !story(item.story) || !audio(item.audio) || (item.audio !== null && item.story === null)) return true;
+    if (requestedLocale !== "ru" && (!item.localization || !localization(item.localization) || item.localization.requestedLocale !== requestedLocale)) return true;
+    if (item.localization != null && (!localization(item.localization) || item.localization.requestedLocale !== requestedLocale)) return true;
+    const contentLocale = item.localization?.contentLocale ?? "ru";
+    return item.audio !== null && (item.audio.language ?? "ru") !== contentLocale;
+  }) || JSON.stringify(value).length > (sourceDocument ? 300000 : 200000)) throw invalid();
   return value;
 }

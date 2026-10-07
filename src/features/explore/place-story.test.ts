@@ -3,6 +3,7 @@
 import { StrictMode, act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import type { Locale } from "@/lib/i18n/locale";
 
 const revalidate = vi.fn(async () => {});
 vi.mock("./map-cells", () => ({ mapCellStore: { revalidate } }));
@@ -19,11 +20,11 @@ const detail = (id: string, overrides: Record<string, unknown> = {}) => Response
   audio: { url: "/api/story-audio/a.mp3", durationSec: 61 }, ...overrides,
 } } });
 
-function Probe({ id }: { id?: string }) {
-  latest = placeStory.usePlaceStory(id);
+function Probe({ id, locale = "ru" }: { id?: string; locale?: Locale }) {
+  latest = placeStory.usePlaceStory(id, locale);
   return null;
 }
-const show = (id?: string) => act(async () => root.render(createElement(Probe, { id })));
+const show = (id?: string, locale: Locale = "ru") => act(async () => root.render(createElement(Probe, { id, locale })));
 
 beforeEach(async () => {
   vi.resetModules();
@@ -48,7 +49,7 @@ it("maps the published text, attribution and audio, and serves a reopened story 
   expect(latest.story).toEqual({
     paragraphs: ["Первый абзац.", "Второй абзац."],
     attribution: { url: "https://data.mos.ru/opendata/1", label: "Портал открытых данных Правительства Москвы" },
-    audioUrl: "/api/story-audio/a.mp3", durationSec: 61,
+    audioUrl: "/api/story-audio/a.mp3", durationSec: 61, actualLocale: "ru",
   });
   expect(fetcher.mock.calls[0][0]).toBe("/api/content/places/osm:node:1");
   expect(fetcher.mock.calls[0][1]).toMatchObject({ cache: "no-cache" });
@@ -62,7 +63,58 @@ it("maps the published text, attribution and audio, and serves a reopened story 
 it("keeps a story without audio free of a player", async () => {
   vi.stubGlobal("fetch", vi.fn(async () => detail("osm:node:2", { audio: null })));
   await show("osm:node:2");
-  expect(latest.story).toEqual({ paragraphs: ["Первый абзац.", "Второй абзац."], attribution: expect.anything() });
+  expect(latest.story).toEqual({ paragraphs: ["Первый абзац.", "Второй абзац."], attribution: expect.anything(), actualLocale: "ru" });
+});
+
+it("requests and caches each localized story separately", async () => {
+  const localized = (locale: "en" | "zh", title: string, paragraph: string) => Response.json({ place: {
+    id: "osm:node:20", name: "Дом", address: "Москва", location: { lat: 55.75, lon: 37.61 },
+    text: {
+      story: { title, paragraphs: [{ text: paragraph }], sources: [] },
+      audio: { url: `/api/story-audio/${locale}.mp3`, durationSec: 42, language: locale },
+      localization: { requestedLocale: locale, contentLocale: locale, fallbackReason: null },
+    },
+  } });
+  const fetcher = vi.fn(async (path: string) => path.endsWith("lang=en")
+    ? localized("en", "A house in Moscow", "English text.")
+    : localized("zh", "莫斯科的一座房子", "中文文本。"));
+  vi.stubGlobal("fetch", fetcher);
+
+  await show("osm:node:20", "en");
+  expect(latest.story).toMatchObject({ actualLocale: "en", paragraphs: ["English text."], place: { title: "A house in Moscow" } });
+  await show("osm:node:20", "zh");
+  expect(latest.story).toMatchObject({ actualLocale: "zh", paragraphs: ["中文文本。"], place: { title: "莫斯科的一座房子" } });
+  await show("osm:node:20", "en");
+
+  expect(fetcher.mock.calls.map(([path]) => path)).toEqual([
+    "/api/content/places/osm:node:20?lang=en",
+    "/api/content/places/osm:node:20?lang=zh",
+  ]);
+  expect(latest.story?.actualLocale).toBe("en");
+});
+
+it.each([
+  { case: "the response belongs to another request", localization: { requestedLocale: "zh", contentLocale: "zh", fallbackReason: null }, audioLanguage: "zh" },
+  { case: "a fallback does not identify Russian content", localization: { requestedLocale: "en", contentLocale: "zh", fallbackReason: "missing" }, audioLanguage: "zh" },
+  { case: "a fallback has no reason", localization: { requestedLocale: "en", contentLocale: "ru", fallbackReason: null }, audioLanguage: "ru" },
+  { case: "matching content has a fallback reason", localization: { requestedLocale: "en", contentLocale: "en", fallbackReason: "stale" }, audioLanguage: "en" },
+  { case: "the audio language differs from the text", localization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null }, audioLanguage: "ru" },
+])("rejects invalid localization metadata when $case", ({ localization, audioLanguage }) => {
+  expect(() => placeStory.parsePlaceStory({ place: { text: {
+    story: { paragraphs: [{ text: "Text." }] },
+    audio: { url: "/api/story-audio/a.mp3", durationSec: 10, language: audioLanguage },
+    localization,
+  } } }, "en")).toThrow("Некорректный ответ рассказа.");
+});
+
+it("accepts Russian legacy data but requires an explicit language for translated audio", () => {
+  expect(placeStory.parsePlaceStory({ place: { text: {
+    story: { paragraphs: [{ text: "Русский текст." }] }, audio: { url: "/api/story-audio/ru.mp3", durationSec: 10 },
+  } } }, "en").actualLocale).toBe("ru");
+  expect(() => placeStory.parsePlaceStory({ place: { text: {
+    story: { paragraphs: [{ text: "English text." }] }, audio: { url: "/api/story-audio/en.mp3", durationSec: 10 },
+    localization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null },
+  } } }, "en")).toThrow("Некорректный ответ рассказа.");
 });
 
 it("reports an unpublished story as missing and refreshes the map index", async () => {
@@ -118,8 +170,8 @@ it("reads the place photo, including an editorial copy and a photo without an au
   const editorial = { ...photo, thumbnail: "/images/places/way-1-7bb38a14d975.jpg", src: "/images/places/way-1-46765eae7280.jpg" };
   expect(storyWith(editorial).photo).toEqual(editorial);
   expect(storyWith({ ...photo, author: null }).photo).toEqual({ ...photo, author: null });
-  expect(storyWith(undefined)).toEqual({ paragraphs: ["Абзац."] });
-  expect(storyWith(null)).toEqual({ paragraphs: ["Абзац."] });
+  expect(storyWith(undefined)).toEqual({ paragraphs: ["Абзац."], actualLocale: "ru" });
+  expect(storyWith(null)).toEqual({ paragraphs: ["Абзац."], actualLocale: "ru" });
 });
 
 it.each([
@@ -134,7 +186,7 @@ it.each([
   ["a relative license link", { licenseUrl: "/license" }],
   ["a numeric author", { author: 7 }],
 ])("drops a photo with %s and keeps the story", (_, broken) => {
-  expect(storyWith({ ...photo, ...broken })).toEqual({ paragraphs: ["Абзац."] });
+  expect(storyWith({ ...photo, ...broken })).toEqual({ paragraphs: ["Абзац."], actualLocale: "ru" });
 });
 
 const withHeader = (place: Record<string, unknown>, title?: string) =>

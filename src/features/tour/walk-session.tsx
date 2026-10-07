@@ -16,7 +16,7 @@ import { useHideNavigation } from "../navigation/navigation-visibility";
 import { MapShell } from "../shell/map-shell";
 import { MapControlButton } from "../shell/map-controls";
 import { MapNotice } from "../shell/map-status-notice";
-import type { Coordinates, Route } from "./types";
+import type { ContentLocale, Coordinates, Route } from "./types";
 import { highlightedLeg, type StopStage, type WalkChapter } from "./walk-plan";
 import { legFitPoints, legRange, openingFitPoints, routeLegCuts } from "./route-legs";
 import type { AdvanceMode } from "./walk-settings";
@@ -67,13 +67,15 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean, locale: Lo
 
 export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1, openingIndex = 0,
   titleRef, startRef, onStart, onSelect, onStop, player, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
-  positionDenied = false, onRetryPosition = noop, direction = "forward", foodMode: documentFoodMode, onDirectionChange, onAddFood = null }: {
+  positionDenied = false, onRetryPosition = noop, direction = "forward", foodMode: documentFoodMode, onDirectionChange, onAddFood = null, contentLocale = "ru", audioAvailable = false }: {
   direction?: WalkDirection;
   foodMode?: "open" | "loop";
   onDirectionChange?: (direction: WalkDirection) => void;
   /** A message for the map notices, e.g. that the walk opened from its offline copy. */
   notice?: string;
   route: Route; chapters: WalkChapter[]; index: number; active: boolean; completed: boolean;
+  contentLocale?: ContentLocale;
+  audioAvailable?: boolean;
   /** The finish lies past the last stop: index `chapters.length` is the way there, ended by «Завершить». */
   finishLeg?: boolean;
   /** On the way to stop `index` or arrived there (see StopStage). */
@@ -295,7 +297,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         </div> : drawer === "story" ? <>
           {/* The address belongs to the story: on the card it only pushes the player and the map down. */}
           {chapter && chapter.title !== chapter.place ? <p className="walk-session-address">{chapter.place}</p> : null}
-          <ContentLanguageNote />
+          <ContentLanguageNote contentLocale={contentLocale} audioAvailable={audioAvailable} />
           {story}
         </> : drawer === "reviews" ? reviews : <>
           {settings}

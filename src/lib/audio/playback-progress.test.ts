@@ -8,6 +8,8 @@ describe("Playback checkpoint", () => {
   it("restores the selected chapter and offset without storing a position on the map", () => {
     expect(parsePlaybackCheckpoint(JSON.stringify(checkpoint), "walk", chapters)).toEqual(checkpoint);
     expect(playbackStorageKey("walk")).toBe("otgolosok:playback:walk");
+    expect(playbackStorageKey("walk", "en")).toBe("otgolosok:playback:walk:en");
+    expect(playbackStorageKey("walk", "zh")).toBe("otgolosok:playback:walk:zh");
   });
 
   it("discards offsets belonging to another route, chapter or recording version", () => {

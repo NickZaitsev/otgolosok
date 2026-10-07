@@ -8,6 +8,7 @@ export const ELEVENLABS_API = "https://api.elevenlabs.io/v1";
 export const ELEVENLABS_MODEL = "eleven_v4";
 // Eleven v4 accepts up to 10,000 characters per request (v3, still selectable, 5,000); a margin keeps tags and long paragraphs inside both.
 const MAX_REQUEST_CHARS = 3000;
+const LANGUAGES = new Set(["ru", "en", "zh"]);
 const RETRY = { attempts: 3, baseMs: 1000, maxMs: 10000 };
 // An exhausted key is skipped for a while instead of being asked first on every request; credits return with the
 // next billing period or a top-up, and the key is tried again after the pause.
@@ -34,7 +35,9 @@ export function speechChunks(script, limit = MAX_REQUEST_CHARS) {
     if (paragraph.length <= limit) return [paragraph];
     const parts = [];
     let current = "";
-    for (const sentence of paragraph.match(/[^.!?…]+(?:[.!?…]+["»)]*\s*|$)/g) ?? []) {
+    const sentences = paragraph.match(/[^.!?…。！？]+(?:[.!?…。！？]+["'»”’」』》〉〕】）)}]*\s*|$)/gu) ?? [];
+    if (!sentences.length || sentences.join("") !== paragraph) throw failure("TTS_FAILED");
+    for (const sentence of sentences) {
       if (sentence.length > limit) throw failure("TTS_FAILED");
       if (current && current.length + sentence.length > limit) { parts.push(current.trim()); current = ""; }
       current += sentence;
@@ -111,22 +114,23 @@ export async function listElevenLabsVoices({ apiKey, baseUrl = ELEVENLABS_API, p
  * Speech through ElevenLabs (Eleven v4 by default). The narration first gets audio tags ([warmly], [short pause]…) from `tagNarration`.
  * Several keys are used in order: a key whose credits ran out hands the request to the next one. A key with its own
  * voice speaks the default voice with it and does not serve the other voices of the first account.
- * @param {{apiKeys: {apiKey: string, voice?: string | null}[], voice: string, tagNarration: ((script: string, options: {signal?: AbortSignal}) => Promise<string>) & {version?: string},
- *   voices?: {id: string, label: string}[], model?: string, baseUrl?: string, proxyToken?: string, fetchImpl?: typeof fetch, now?: () => number}} options
+ * @param {{apiKeys: {apiKey: string, voice?: string | null}[], voice: string, tagNarration: ((script: string, options: {signal?: AbortSignal, language?: "ru"|"en"|"zh"}) => Promise<string>) & {version?: string},
+ *   voices?: {id: string, label: string}[], model?: string, language?: "ru"|"en"|"zh", baseUrl?: string, proxyToken?: string, fetchImpl?: typeof fetch, now?: () => number}} options
  */
-export function createElevenLabsTts({ apiKeys, voice, tagNarration, voices = [], model = ELEVENLABS_MODEL, baseUrl = ELEVENLABS_API, proxyToken, fetchImpl = fetch, now = Date.now }) {
+export function createElevenLabsTts({ apiKeys, voice, tagNarration, voices = [], model = ELEVENLABS_MODEL, language = "ru", baseUrl = ELEVENLABS_API, proxyToken, fetchImpl = fetch, now = Date.now }) {
   if (!Array.isArray(apiKeys) || !apiKeys.length || apiKeys.some(key => typeof key?.apiKey !== "string" || !key.apiKey.trim()
     || (key.voice != null && !validVoiceId(key.voice))) || !validVoiceId(voice) || typeof tagNarration !== "function") throw failure("PROVIDER_CONFIG");
+  if (!LANGUAGES.has(language)) throw failure("TTS_LANGUAGE_UNSUPPORTED");
   const exhaustedUntil = apiKeys.map(() => 0);
 
   /** One chunk through the first key that still has credits. */
-  async function synthesize(text, selectedVoice, signal) {
+  async function synthesize(text, selectedVoice, selectedLanguage, signal) {
     for (const [index, { apiKey, voice: ownVoice }] of apiKeys.entries()) {
       if (exhaustedUntil[index] > now() || (ownVoice && selectedVoice !== voice)) continue;
       const response = await request(fetchImpl, `${baseUrl}/text-to-speech/${ownVoice ?? selectedVoice}?output_format=mp3_44100_128`, {
         method: "POST", signal,
         headers: { "xi-api-key": apiKey, "Content-Type": "application/json", Accept: "audio/mpeg", ...proxyHeaders(proxyToken) },
-        body: JSON.stringify({ text, model_id: model, language_code: "ru" }),
+        body: JSON.stringify({ text, model_id: model, language_code: selectedLanguage }),
       });
       if (response.ok) return response;
       const error = await rejection(response);
@@ -138,15 +142,16 @@ export function createElevenLabsTts({ apiKeys, voice, tagNarration, voices = [],
     throw failure("TTS_QUOTA_EXCEEDED");
   }
 
-  /** @param {string} script @param {{signal?: AbortSignal, voice?: string}} [options] */
-  async function speech(script, { signal, voice: selectedVoice = voice } = {}) {
+  /** @param {string} script @param {{signal?: AbortSignal, voice?: string, language?: "ru"|"en"|"zh"}} [options] */
+  async function speech(script, { signal, voice: selectedVoice = voice, language: selectedLanguage = language } = {}) {
     if (!validVoiceId(selectedVoice)) throw failure("TTS_FAILED");
+    if (!LANGUAGES.has(selectedLanguage)) throw failure("TTS_LANGUAGE_UNSUPPORTED");
     const deadline = AbortSignal.any([AbortSignal.timeout(300000), ...(signal ? [signal] : [])]);
-    const tagged = await tagNarration(script, { signal: deadline });
+    const tagged = await tagNarration(script, { signal: deadline, language: selectedLanguage });
     const audio = [];
     let size = 0;
     for (const text of speechChunks(tagged)) {
-      const response = await synthesize(text, selectedVoice, deadline);
+      const response = await synthesize(text, selectedVoice, selectedLanguage, deadline);
       if (!response.headers.get("content-type")?.startsWith("audio/")) { await response.body?.cancel(); throw failure("TTS_FAILED"); }
       const bytes = await boundedBody(response, 15000000, deadline);
       size += bytes.length;
@@ -155,5 +160,5 @@ export function createElevenLabsTts({ apiKeys, voice, tagNarration, voices = [],
     }
     return Buffer.concat(audio);
   }
-  return { speech, ttsProvider: "elevenlabs", ttsModel: model, voice, voices, scriptVersion: tagNarration.version ?? "custom" };
+  return { speech, ttsProvider: "elevenlabs", ttsModel: model, ttsLanguage: language, voice, voices, scriptVersion: tagNarration.version ?? "custom" };
 }

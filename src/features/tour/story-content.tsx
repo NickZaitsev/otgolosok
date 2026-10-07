@@ -1,17 +1,20 @@
 import { useId } from "react";
 import { useI18n } from "@/lib/i18n/provider";
-import type { HistoricalContent } from "./types";
+import type { ContentLocale, HistoricalContent } from "./types";
 
-export function StoryText({ story }: { story: HistoricalContent["story"] }) {
-  return <div className="story-text" lang="ru">
+const contentLanguageTag = (locale: ContentLocale) => locale === "zh" ? "zh-Hans" : locale;
+
+export function StoryText({ story, contentLocale = "ru" }: { story: HistoricalContent["story"]; contentLocale?: ContentLocale }) {
+  return <div className="story-text" lang={contentLanguageTag(contentLocale)}>
     {story.paragraphs.map((paragraph) => <p key={paragraph.id}>{paragraph.text}</p>)}
   </div>;
 }
 
-export function StorySources({ content, open, onToggle }: {
+export function StorySources({ content, open, onToggle, contentLocale = "ru" }: {
   content: HistoricalContent;
   open: boolean;
   onToggle: () => void;
+  contentLocale?: ContentLocale;
 }) {
   const { languageTag, t } = useI18n();
   const sourcesId = useId();
@@ -29,7 +32,7 @@ export function StorySources({ content, open, onToggle }: {
       ))}</ol>
       <details className="fact-details">
         <summary>{t("Факты и подтверждения · {count}", { count: content.facts.length })}</summary>
-        <ol className="fact-list" lang="ru">{content.facts.map((fact) => (
+        <ol className="fact-list" lang={contentLanguageTag(contentLocale)}>{content.facts.map((fact) => (
           <li key={fact.id}>
             <p>{fact.claim}</p>
             {fact.confidence !== "verified" ? <p className="source-note">{t(fact.confidence === "legend" ? "Легенда" : "Требует проверки")}</p> : null}
@@ -38,16 +41,16 @@ export function StorySources({ content, open, onToggle }: {
               const source = content.sources[sourceIndex];
               if (!source) return null;
               return <p className="fact-evidence" key={`${evidence.source_id}:${evidence.locator}`}>
-                <a href={source.url} target="_blank" rel="noreferrer" aria-label={`${source.title}. ${evidence.locator}`}>
+                <a lang="ru" href={source.url} target="_blank" rel="noreferrer" aria-label={`${source.title}. ${evidence.locator}`}>
                   [{sourceIndex + 1}] {evidence.locator}
                 </a>
-                <span>{evidence.summary}</span>
+                <span lang={contentLanguageTag(contentLocale)}>{evidence.summary}</span>
               </p>;
             })}
           </li>
         ))}</ol>
       </details>
-      <p className="source-note" lang="ru">{content.editorial_note}</p>
+      <p className="source-note" lang={contentLanguageTag(contentLocale)}>{content.editorial_note}</p>
     </div>
   </div>;
 }

@@ -7,6 +7,8 @@ import { jobPin } from "./around-screen";
 import type { NearbyRecommendation } from "./nearby-stories";
 import { catalogPin, isExpandableStory, isLinkablePlace, linkedPlacePin } from "./story-pin";
 import type { GenerationJob } from "../generator/types";
+import { I18nProvider } from "@/lib/i18n/provider";
+import type { Locale } from "@/lib/i18n/locale";
 
 const story: NearbyRecommendation = {
   id: "story-1", title: "Дом Смирнова", address: "ул. Пятницкая, 1", location: { lat: 55.74, lon: 37.63 },
@@ -143,12 +145,12 @@ it.each([
   expect(isExpandableStory(pin)).toBe(expandable);
 });
 
-async function renderReading(pin: ReturnType<typeof jobPin>, expanded: boolean, onExpand = vi.fn(), onCollapse = vi.fn()) {
+async function renderReading(pin: ReturnType<typeof jobPin>, expanded: boolean, onExpand = vi.fn(), onCollapse = vi.fn(), locale: Locale = "ru") {
   const container = document.createElement("div");
   const root = createRoot(container);
-  await act(async () => root.render(createElement(StorySheet, {
+  await act(async () => root.render(createElement(I18nProvider, { locale }, createElement(StorySheet, {
     story: pin, walkHref: "/?walk=create", onStart: () => {}, onClose: () => {}, onWalk: () => {}, expanded, onExpand, onCollapse,
-  })));
+  }))));
   const handle = container.querySelector<HTMLButtonElement>("[data-sheet-part='handle'] button");
   return { container, handle, unmount: () => act(async () => root.unmount()) };
 }
@@ -239,6 +241,68 @@ it("готовая заказанная история не предлагает
 });
 
 it.each([
+  { locale: "en" as const, title: "A house in Moscow", paragraph: "English story text.", audio: "/api/story-audio/en.mp3" },
+  { locale: "zh" as const, title: "莫斯科的一座房子", paragraph: "中文故事文本。", audio: "/api/story-audio/zh.mp3" },
+])("localized $locale place detail replaces the Russian map heading and marks the content language", async ({ locale, title, paragraph, audio }) => {
+  const id = `osm:way:${locale === "en" ? 501 : 502}`;
+  const pin = { ...catalogPlace, id, placeId: id, title: "Дом на Арбате" };
+  vi.stubGlobal("fetch", vi.fn(async () => Response.json({ place: {
+    id, name: "Дом", address: "Москва, Арбат, 5", location: { lat: 55.75, lon: 37.59 },
+    text: {
+      story: { title, paragraphs: [{ text: paragraph }] },
+      audio: { url: audio, durationSec: 40, language: locale },
+      localization: { requestedLocale: locale, contentLocale: locale, fallbackReason: null },
+    },
+  } })));
+  const { container, unmount } = await renderReading(pin, true, vi.fn(), vi.fn(), locale);
+  await act(async () => { await vi.waitFor(() => expect(texts(container)).toContain(paragraph)); });
+
+  expect(container.querySelector("#selected-place-title")?.textContent).toBe(title);
+  expect(container.querySelector("#selected-place-title")?.getAttribute("lang")).toBe(locale === "zh" ? "zh-Hans" : "en");
+  expect(container.querySelector(".story")?.getAttribute("lang")).toBe(locale === "zh" ? "zh-Hans" : "en");
+  expect(container.querySelector("audio")?.getAttribute("src")).toBe(audio);
+  expect(container.querySelector("[role='note']")).toBeNull();
+  expect((globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0]).toBe(`/api/content/places/${id}?lang=${locale}`);
+  await unmount();
+});
+
+it("shows a translated audio-pending notice without claiming that English text is Russian", async () => {
+  const id = "osm:way:503";
+  const pin = { ...catalogPlace, id, placeId: id };
+  vi.stubGlobal("fetch", vi.fn(async () => Response.json({ place: {
+    id, name: "Дом", address: "Москва, Арбат, 5", location: { lat: 55.75, lon: 37.59 },
+    text: {
+      story: { title: "A house in Moscow", paragraphs: [{ text: "English story text." }] }, audio: null,
+      localization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null },
+    },
+  } })));
+  const { container, unmount } = await renderReading(pin, true, vi.fn(), vi.fn(), "en");
+  await act(async () => { await vi.waitFor(() => expect(texts(container)).toContain("English story text.")); });
+  expect(container.querySelector("[role='note']")?.textContent).toBe("Narration in your selected language is being prepared.");
+  expect(container.textContent).not.toContain("Russian only");
+  await unmount();
+});
+
+it("marks and explains a Russian fallback in the Chinese interface", async () => {
+  const id = "osm:way:504";
+  const pin = { ...catalogPlace, id, placeId: id };
+  vi.stubGlobal("fetch", vi.fn(async () => Response.json({ place: {
+    id, name: "Дом", address: "Москва, Арбат, 5", location: { lat: 55.75, lon: 37.59 },
+    text: {
+      story: { title: "Дом на Арбате", paragraphs: [{ text: "Русский текст." }] },
+      audio: { url: "/api/story-audio/ru.mp3", durationSec: 40, language: "ru" },
+      localization: { requestedLocale: "zh", contentLocale: "ru", fallbackReason: "stale" },
+    },
+  } })));
+  const { container, unmount } = await renderReading(pin, true, vi.fn(), vi.fn(), "zh");
+  await act(async () => { await vi.waitFor(() => expect(texts(container)).toContain("Русский текст.")); });
+  expect(container.querySelector("#selected-place-title")?.getAttribute("lang")).toBe("ru");
+  expect(container.querySelector(".story")?.getAttribute("lang")).toBe("ru");
+  expect(container.querySelector("[role='note']")?.textContent).toBe("本故事的文字和音频目前仅提供俄语版本。");
+  await unmount();
+});
+
+it.each([
   { case: "место каталога", pin: catalogPlace, linkable: true },
   { case: "место с чужим идентификатором", pin: { ...catalogPlace, id: "long-story", placeId: "long-story" }, linkable: false },
   { case: "заказанная история", pin: { ...place, jobId: point.id, placeId: "osm:way:5" }, linkable: false },
@@ -250,6 +314,6 @@ it.each([
 it("место по ссылке выглядит на карте так же, как точка каталога", () => {
   const point = { id: "osm:way:5", location: { lat: 55.75, lon: 37.59 }, title: "Дом на Арбате", address: "ул. Арбат, 5", durationSec: 90, facts: 2, sources: 1, photo: true };
   const photo = { src: "/images/places/way-5-000000000000.jpg", thumbnail: "/images/places/way-5-111111111111.jpg", width: 1, height: 1, alt: "Дом", author: null, sourceUrl: "https://a.test", license: "CC0", licenseUrl: "https://b.test" };
-  expect(linkedPlacePin(point.id, { title: point.title, address: point.address, location: point.location }, { paragraphs: [], durationSec: 90, photo })).toEqual(catalogPin(point));
+  expect(linkedPlacePin(point.id, { title: point.title, address: point.address, location: point.location }, { paragraphs: [], actualLocale: "ru", durationSec: 90, photo })).toEqual(catalogPin(point));
   expect(catalogPin({ ...point, durationSec: null, photo: false }).status).toBe("Текст готов");
 });

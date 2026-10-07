@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/provider";
 import { StorySources, StoryText } from "./story-content";
-import type { RouteNote } from "./types";
+import type { ContentLocale, RouteNote } from "./types";
 
-export function RouteNotes({ notes }: { notes: RouteNote[] }) {
+export function RouteNotes({ notes, contentLocale = "ru" }: { notes: RouteNote[]; contentLocale?: ContentLocale }) {
   const { t } = useI18n();
   if (notes.length === 0) return null;
 
@@ -14,12 +14,12 @@ export function RouteNotes({ notes }: { notes: RouteNote[] }) {
       <p>{t("Короткие заметки, каждая до минуты. Выберите, о чём прочитать.")}</p>
     </header>
     <div className="route-notes-list">
-      {notes.map((note) => <Note key={note.id} note={note} />)}
+      {notes.map((note) => <Note key={note.id} note={note} contentLocale={contentLocale} />)}
     </div>
   </section>;
 }
 
-function Note({ note }: { note: RouteNote }) {
+function Note({ note, contentLocale }: { note: RouteNote; contentLocale: ContentLocale }) {
   const { t } = useI18n();
   const [showSources, setShowSources] = useState(false);
 
@@ -30,9 +30,9 @@ function Note({ note }: { note: RouteNote }) {
       <span className="route-note-duration">{t("Читать · около {seconds} сек", { seconds: note.story.duration_sec })} <span aria-hidden="true" className="route-note-arrow">↓</span></span>
     </summary>
     <div className="route-note-body">
-      <StoryText story={note.story} />
+      <StoryText story={note.story} contentLocale={contentLocale} />
       <p className="source-note">{t("Запись аудио готовится.")}</p>
-      <StorySources content={note} open={showSources} onToggle={() => setShowSources((value) => !value)} />
+      <StorySources content={note} contentLocale={contentLocale} open={showSources} onToggle={() => setShowSources((value) => !value)} />
     </div>
   </details>;
 }

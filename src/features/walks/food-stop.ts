@@ -131,7 +131,9 @@ export function insertFoodStop(document: WalkDocument, place: FoodPlace, leg: Fo
 export function viewWithDocument(view: WalkView, document: WalkDocument, revision: number, contentVersion: string): WalkView {
   const chapters = new Map(view.chapters.map(chapter => [chapter.id, chapter]));
   return validateWalkView({
-    document, revision, contentVersion,
-    chapters: document.stops.map(stop => chapters.get(stop.id) ?? { id: stop.id, status: "not_requested", story: null, audio: null }),
+    document, revision, contentVersion, ...(view.requestedLocale ? { requestedLocale: view.requestedLocale,
+      documentLocalization: { requestedLocale: view.requestedLocale, contentLocale: "ru", fallbackReason: "stale" as const } } : {}),
+    chapters: document.stops.map(stop => chapters.get(stop.id) ?? { id: stop.id, status: "not_requested", story: null, audio: null,
+      ...(view.requestedLocale ? { localization: { requestedLocale: view.requestedLocale, contentLocale: view.requestedLocale, fallbackReason: null } } : {}) }),
   });
 }

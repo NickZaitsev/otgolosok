@@ -6,6 +6,8 @@ export type CatalogFixture = {
   id: string; title: string; address?: string; lat: number; lon: number;
   durationSec?: number | null; facts?: number; sources?: number;
   paragraphs?: string[]; audioUrl?: string; storySources?: unknown[];
+  /** Approved localized detail; when absent, a non-Russian request receives an explicit Russian fallback. */
+  translations?: Partial<Record<"en" | "zh", { title: string; paragraphs: string[]; audioUrl?: string; durationSec?: number }>>;
   /** Served in the detail; the index flags the point unless `indexPhoto` says otherwise (a photo removed after the index loaded). */
   photo?: PlacePhoto; indexPhoto?: boolean;
 };
@@ -50,9 +52,9 @@ export async function mockMapCatalog(page: Page, places: CatalogFixture[], { int
     if (route.request().method() !== "GET") return route.fallback();
     return route.fulfill({ json: { mine: null } });
   });
-  await page.route(/\/api\/content\/(map-cells(\/-?\d+\/-?\d+)?|places\/[^/?]+)$/, async route => {
-    const path = new URL(route.request().url()).pathname;
-    requests.push(path);
+  await page.route(/\/api\/content\/(map-cells(\/-?\d+\/-?\d+)?|places\/[^/?]+)(?:\?[^#]*)?$/, async route => {
+    const url = new URL(route.request().url()), path = url.pathname;
+    requests.push(`${path}${url.search}`);
     if (await intercept?.(path, route)) return;
     if (path === "/api/content/map-cells") {
       const manifest = [...cells().keys()].sort().map(key => {
@@ -66,9 +68,16 @@ export async function mockMapCatalog(page: Page, places: CatalogFixture[], { int
     const id = decodeURIComponent(path.slice("/api/content/places/".length));
     const place = places.find(item => item.id === id);
     if (!place) return route.fulfill({ status: 404, json: { error: { code: "NOT_FOUND", message: "Place text not found." } } });
+    const requested = url.searchParams.get("lang");
+    const locale = requested === "en" || requested === "zh" ? requested : "ru";
+    const translation = locale === "ru" ? undefined : place.translations?.[locale];
+    const story = translation ?? place;
+    const audioUrl = translation ? translation.audioUrl : place.audioUrl;
+    const durationSec = translation?.durationSec ?? place.durationSec ?? 60;
     return respond(route, JSON.stringify({ place: { id: place.id, name: place.title, address: place.address ?? null, location: { lat: place.lat, lon: place.lon }, text: {
-      story: { title: place.title, paragraphs: (place.paragraphs ?? []).map(text => ({ text })), sources: place.storySources ?? [], facts: [] },
-      audio: place.audioUrl ? { url: place.audioUrl, durationSec: place.durationSec ?? 60 } : null,
+      story: { title: story.title, paragraphs: (story.paragraphs ?? []).map(text => ({ text })), sources: place.storySources ?? [], facts: [] },
+      audio: audioUrl ? { url: audioUrl, durationSec, ...(locale === "ru" ? {} : { language: translation ? locale : "ru" }) } : null,
+      ...(locale === "ru" ? {} : { localization: { requestedLocale: locale, contentLocale: translation ? locale : "ru", fallbackReason: translation ? null : "missing" } }),
     }, photo: place.photo ?? null } }));
   });
   return requests;

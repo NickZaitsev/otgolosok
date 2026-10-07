@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import { parsePlaybackCheckpoint, playbackStorageKey, type PlaybackChapter, type PlaybackCheckpoint } from "@/lib/audio/playback-progress";
+import { parsePlaybackCheckpoint, playbackStorageKey, type PlaybackChapter, type PlaybackCheckpoint, type PlaybackLocale } from "@/lib/audio/playback-progress";
 
 const changeEvent = "otgolosok-playback-change";
 const serverSnapshot = () => null;
@@ -15,8 +15,8 @@ function subscribe(onChange: () => void) {
   };
 }
 
-export function usePlaybackProgress(routeId: string, chapters: PlaybackChapter[], direction: "forward" | "reverse" = "forward") {
-  const key = playbackStorageKey(routeId) + (direction === "reverse" ? ":reverse" : "");
+export function usePlaybackProgress(routeId: string, chapters: PlaybackChapter[], direction: "forward" | "reverse" = "forward", locale: PlaybackLocale = "ru") {
+  const key = playbackStorageKey(routeId, locale) + (direction === "reverse" ? ":reverse" : "");
   const getSnapshot = useCallback(() => {
     try { return window.localStorage.getItem(key); } catch { return null; }
   }, [key]);

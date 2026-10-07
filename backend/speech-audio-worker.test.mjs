@@ -10,8 +10,8 @@ const paragraph = ("Проверенный рассказ о московско�
 const story = { title: "Парк", paragraphs: [{ text: paragraph, factIds: ["f1"] }, { text: paragraph, factIds: ["f2"] }] };
 const artifact = { url: `/api/story-audio/${"e".repeat(64)}.mp3`, sha256: "e".repeat(64), bytes: 100, durationSec: 120, model: "eleven_v4", voice: "RuVoice1", provider: "elevenlabs", synthetic: true };
 
-async function queuedPlace(t, model = "eleven_v4", path = ":memory:", options = {}) {
-  const store = createStore(path, { ...options, externalTtsProfiles: { [ELEVENLABS_PROFILE_ID]: elevenLabsProfile("RuVoice1", model) },
+async function queuedPlace(t, model = "eleven_v4", path = ":memory:", options = {}, language = "ru") {
+  const store = createStore(path, { ...options, externalTtsProfiles: { [ELEVENLABS_PROFILE_ID]: elevenLabsProfile("RuVoice1", model, language) },
     normalizeExternalText: Object.assign(async text => text.replace("1930", "тысяча девятьсот тридцатом"), { version: "test" }) });
   t.after(() => { try { store.close(); } catch { /* Closed by the test. */ } });
   store.importPlaces({ source: "fixture", sourceSha256: "a".repeat(64), rulesVersion: "v1", coverage: "fixture",
@@ -38,11 +38,45 @@ test("catalog audio queued for ElevenLabs is voiced with the profile voice and a
   assert.equal(audio.sha256, artifact.sha256);
   assert.equal(calls.length, 1);
   assert.equal(calls[0].provider.voice, "RuVoice1");
+  assert.equal(calls[0].provider.ttsLanguage, "ru");
   assert.equal(calls[0].options.maxDurationSec, 300);
   assert.equal(calls[0].options.cacheNamespace, undefined);
   // The queue already normalized the text: the worker passes it through unchanged.
   assert.equal(calls[0].normalized, "Дом 1930");
   assert.equal(calls[0].value.paragraphs[0].text, `${paragraph}\n\n${paragraph}`);
+});
+
+test("the worker derives Chinese narration language from the claimed profile", async t => {
+  const { store } = await queuedPlace(t, "eleven_v4", ":memory:", {}, "zh");
+  const calls = [];
+  const worker = startSpeechAudioWorker({ store, profileId: ELEVENLABS_PROFILE_ID, audioDirectory: "unused", pollMs: 5,
+    speechProvider: { ttsProvider: "elevenlabs", ttsLanguage: "ru", voice: "OtherVoice" },
+    narrate: async (_value, provider) => { calls.push(provider); return { ...artifact, language: "zh" }; } });
+  t.after(() => worker.stop());
+  await until(() => store.getPlace("osm:node:7").text.audio);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].ttsLanguage, "zh");
+  assert.equal(calls[0].voice, "RuVoice1");
+  assert.equal(store.getPlace("osm:node:7").text.audio.language, "zh");
+});
+
+test("the worker rejects a non-Russian profile on an unsupported provider before narration", async t => {
+  const { store, audioJob } = await queuedPlace(t, "eleven_v4", ":memory:", {}, "zh");
+  let calls = 0;
+  const worker = startSpeechAudioWorker({ store, profileId: ELEVENLABS_PROFILE_ID, audioDirectory: "unused", pollMs: 5,
+    speechProvider: { ttsProvider: "f5", ttsLanguage: "ru", voice: "RuVoice1" },
+    narrate: async () => { calls++; return artifact; } });
+  t.after(() => worker.stop());
+  const failed = await until(() => { const value = store.getExternalAudio(audioJob.id); return value.error ? value : null; });
+  await worker.stop();
+  assert.equal(failed.error.code, "TTS_LANGUAGE_UNSUPPORTED");
+  assert.equal(calls, 0);
+});
+
+test("ElevenLabs profiles accept only supported languages and keep Russian defaults", () => {
+  assert.equal(elevenLabsProfile("RuVoice1", "eleven_v3").language, "ru");
+  assert.equal(elevenLabsProfile("Otgolosok2", "eleven_v4", "en").language, "en");
+  assert.throws(() => elevenLabsProfile("Voice", "eleven_v4", "fr"), { code: "TTS_LANGUAGE_UNSUPPORTED" });
 });
 
 test("a failed synthesis returns the job to the queue with its error code and no audio", async t => {

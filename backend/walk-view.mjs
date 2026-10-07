@@ -48,10 +48,11 @@ function safeAudio(value) {
   const isCatalogAudio = typeof value.url === "string" && /^\/audio\/walk\/[a-zA-Z0-9-]+\.mp3$/.test(value.url);
   if (!isApiAudio && !isCatalogAudio) return null;
   if (isApiAudio && value.sha256 !== value.url.slice(-68, -4)) return null;
-  return { url: value.url, sha256: value.sha256, durationSec: value.durationSec };
+  return { url: value.url, sha256: value.sha256, durationSec: value.durationSec,
+    ...(["ru", "en", "zh"].includes(value.language) ? { language: value.language } : {}) };
 }
 
-function catalogChapter(store, stop) {
+function catalogChapter(store, stop, requestedLocale) {
   const match = /^([a-z0-9][a-z0-9-]{0,127})--([a-z0-9][a-z0-9-]{0,127})$/.exec(stop.storyRef.id);
   if (!match) return null;
   const route = store.getPublishedWalk?.(match[1]);
@@ -60,40 +61,75 @@ function catalogChapter(store, stop) {
     Math.hypot((step.location.lat - stop.place.location.lat) * 111320,
       (step.location.lon - stop.place.location.lon) * 111320 * Math.cos(step.location.lat * Math.PI / 180)) <= 100);
   if (stepIndex < 0) return null;
-  const view = catalogWalkView(route);
+  const view = catalogWalkView(route, { requestedLocale });
   const chapter = view.chapters[stepIndex];
-  return chapter ? { story: chapter.story, audio: chapter.audio ? safeAudio(chapter.audio) : null } : null;
+  return chapter ? { story: chapter.story, audio: chapter.audio ? safeAudio(chapter.audio) : null, localization: chapter.localization } : null;
+}
+
+const localized = (requestedLocale, contentLocale = requestedLocale, fallbackReason = null) => requestedLocale === "ru" ? {}
+  : { localization: { requestedLocale, contentLocale, fallbackReason } };
+
+function placeLocalization(place, requestedLocale) {
+  if (requestedLocale === "ru") return null;
+  const value = place?.text?.localization;
+  if (value?.requestedLocale === requestedLocale && ["ru", "en", "zh"].includes(value.contentLocale)
+      && (value.fallbackReason === null || ["missing", "draft", "stale"].includes(value.fallbackReason))) return value;
+  return { requestedLocale, contentLocale: "ru", fallbackReason: "missing" };
 }
 
 // Resolving a view is deliberately synchronous: opening a walk never queues
 // research or narration and only exposes already published content.
-export function resolveWalkView(raw, revision, store) {
+export function resolveWalkView(raw, revision, store, { requestedLocale = "ru" } = {}) {
   const document = validateWalkDocument(raw);
   const chapters = document.stops.map(stop => {
-    if (!stop.storyRef) return { id: stop.id, status: "not_requested", story: null, audio: null };
+    if (!stop.storyRef) return { id: stop.id, status: "not_requested", story: null, audio: null, ...localized(requestedLocale) };
     if (stop.storyRef.kind === "osm") {
-      const place = store.getPublishedPlace(stop.storyRef.id);
+      const place = store.getPublishedPlace(stop.storyRef.id, ...(requestedLocale === "ru" ? [] : [{ requestedLocale }]));
+      const localization = placeLocalization(place, requestedLocale);
       const story = publishedPlaceStory(place, stop);
-      const audio = story ? safeAudio(place.text.audio) : null;
-      return { id: stop.id, status: story ? audio ? "ready" : "text_ready" : "unavailable", story, audio };
+      const candidateAudio = story ? safeAudio(place.text.audio) : null;
+      const contentLocale = localization?.contentLocale ?? "ru";
+      const audio = candidateAudio && (candidateAudio.language ?? "ru") === contentLocale ? candidateAudio : null;
+      return { id: stop.id, status: story ? audio ? "ready" : "text_ready" : "unavailable", story, audio,
+        ...(localization ? { localization } : {}) };
     }
     if (stop.storyRef.kind === "catalog") {
-      const chapter = catalogChapter(store, stop);
-      return { id: stop.id, status: chapter?.story ? chapter.audio ? "ready" : "text_ready" : "unavailable", story: chapter?.story ?? null, audio: chapter?.audio ?? null };
+      const chapter = catalogChapter(store, stop, requestedLocale);
+      return { id: stop.id, status: chapter?.story ? chapter.audio ? "ready" : "text_ready" : "unavailable", story: chapter?.story ?? null, audio: chapter?.audio ?? null,
+        ...(requestedLocale === "ru" ? {} : { localization: chapter?.localization ?? { requestedLocale, contentLocale: "ru", fallbackReason: "missing" } }) };
     }
-    if (stop.storyRef.kind !== "job") return { id: stop.id, status: "unavailable", story: null, audio: null };
+    if (stop.storyRef.kind !== "job") return { id: stop.id, status: "unavailable", story: null, audio: null, ...localized(requestedLocale) };
     const saved = store.get(stop.storyRef.id);
-    if (!saved || (saved.kind ?? "address") !== "address" || saved.irrelevant) return { id: stop.id, status: "unavailable", story: null, audio: null };
+    if (!saved || (saved.kind ?? "address") !== "address" || saved.irrelevant) return { id: stop.id, status: "unavailable", story: null, audio: null, ...localized(requestedLocale, "ru", "missing") };
     let job;
     try { job = publicJob(saved); }
-    catch { return { id: stop.id, status: "unavailable", story: null, audio: null }; }
-    if (job.address.normalize("NFKC").toLocaleLowerCase("ru").replace(/\W/gu, "") !== stop.place.address.normalize("NFKC").toLocaleLowerCase("ru").replace(/\W/gu, "")) return { id: stop.id, status: "unavailable", story: null, audio: null };
+    catch { return { id: stop.id, status: "unavailable", story: null, audio: null, ...localized(requestedLocale, "ru", "missing") }; }
+    if (job.address.normalize("NFKC").toLocaleLowerCase("ru").replace(/\W/gu, "") !== stop.place.address.normalize("NFKC").toLocaleLowerCase("ru").replace(/\W/gu, "")) return { id: stop.id, status: "unavailable", story: null, audio: null, ...localized(requestedLocale, "ru", "missing") };
     const story = job.stage === "ready" ? safeStory(job) : null;
     const audio = story ? safeAudio(job.audio) : null;
+    const localizedAudio = requestedLocale === "ru" || !audio ? audio : { ...audio, language: "ru" };
     const status = story ? audio ? "ready" : "text_ready"
       : ["failed", "review_required", "insufficient_evidence"].includes(job.stage) ? job.stage : "preparing";
-    return { id: stop.id, status, story, audio };
+    return { id: stop.id, status, story, audio: localizedAudio, ...localized(requestedLocale, "ru", "missing") };
   });
-  const contentVersion = createHash("sha256").update(JSON.stringify(chapters)).digest("hex");
-  return validateWalkView({ document, revision, contentVersion, chapters });
+  let responseDocument = document;
+  let documentLocalization;
+  if (requestedLocale !== "ru") {
+    if (typeof store.getWalkLocalization === "function") {
+      const result = store.getWalkLocalization(document, requestedLocale);
+      responseDocument = validateWalkDocument(result?.document);
+      documentLocalization = result?.localization;
+    } else if (typeof store.localizeWalkDocument === "function") {
+      responseDocument = validateWalkDocument(store.localizeWalkDocument(document, requestedLocale));
+      const translated = JSON.stringify(responseDocument) !== JSON.stringify(document);
+      documentLocalization = { requestedLocale, contentLocale: translated ? requestedLocale : "ru", fallbackReason: translated ? null : "missing" };
+    } else {
+      documentLocalization = { requestedLocale, contentLocale: "ru", fallbackReason: "missing" };
+    }
+  }
+  const sourceDocument = requestedLocale !== "ru" && JSON.stringify(responseDocument) !== JSON.stringify(document) ? document : undefined;
+  const localizedView = requestedLocale === "ru" ? chapters : { requestedLocale, document: responseDocument, sourceDocument, documentLocalization, chapters };
+  const contentVersion = createHash("sha256").update(JSON.stringify(localizedView)).digest("hex");
+  return validateWalkView({ document: responseDocument, ...(sourceDocument ? { sourceDocument } : {}),
+    ...(requestedLocale === "ru" ? {} : { requestedLocale, documentLocalization }), revision, contentVersion, chapters });
 }

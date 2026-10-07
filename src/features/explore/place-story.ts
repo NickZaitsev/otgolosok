@@ -3,6 +3,7 @@ import type { Coordinates } from "../tour/types";
 import { RequestError, fetchWithRetry } from "../walk-builder/request";
 import { mapCellStore } from "./map-cells";
 import { openDataAttribution, type SourceAttribution, type StorySourceRef } from "./source-attribution";
+import { isLocale, type Locale } from "@/lib/i18n/locale";
 
 /** A place photo served from our own origin, with the author and license credit shown under the full image. */
 export type PlacePhoto = {
@@ -18,16 +19,27 @@ export type PlacePhoto = {
 };
 /** What the map index knows about a point (backend/map-cells.mjs `toMapPoint`): enough to open a linked place before its cell loads. */
 export type PlaceHeader = { title: string; address: string; location: Coordinates };
-export type PlaceStory = { paragraphs: string[]; attribution?: SourceAttribution; audioUrl?: string; durationSec?: number; photo?: PlacePhoto; place?: PlaceHeader };
+export type PlaceStory = {
+  paragraphs: string[];
+  /** Language of the returned editorial text; legacy responses are Russian. */
+  actualLocale: Locale;
+  attribution?: SourceAttribution;
+  audioUrl?: string;
+  durationSec?: number;
+  photo?: PlacePhoto;
+  place?: PlaceHeader;
+};
 export type PlaceStoryState = { status: "idle" | "loading" | "ready" | "missing" | "error"; story?: PlaceStory; retry: () => void };
 
 const CACHE_LIMIT = 100;
 // Reopening a story within the session makes no request; the browser HTTP cache revalidates the rest by ETag.
 const stories = new Map<string, PlaceStory>();
 
-function remember(id: string, story: PlaceStory) {
-  stories.delete(id);
-  stories.set(id, story);
+const storyKey = (id: string, locale: Locale) => `${locale}:${id}`;
+
+function remember(key: string, story: PlaceStory) {
+  stories.delete(key);
+  stories.set(key, story);
   if (stories.size > CACHE_LIMIT) stories.delete(stories.keys().next().value as string);
 }
 
@@ -63,33 +75,54 @@ function parsePlaceHeader(place: { name?: unknown; address?: unknown; location?:
   return { title: text(storyTitle) ?? name, address: text(place.address) ?? name, location: { lat, lon } };
 }
 
+const fallbackReasons = new Set(["missing", "draft", "stale"]);
+const validLocale = (value: unknown): value is Locale => typeof value === "string" && isLocale(value);
+const invalidStory = () => new Error("Некорректный ответ рассказа.");
+
+/** Validates the server's localization decision. An omitted block is a legacy Russian response. */
+function contentLocale(value: unknown, requestedLocale: Locale): Locale {
+  if (value === undefined) return "ru";
+  if (!value || typeof value !== "object") throw invalidStory();
+  const localization = value as Record<string, unknown>;
+  const requested = localization.requestedLocale, content = localization.contentLocale, fallback = localization.fallbackReason;
+  if (!validLocale(requested) || !validLocale(content) || requested !== requestedLocale) throw invalidStory();
+  if (requested === content) {
+    if (fallback !== null) throw invalidStory();
+  } else if (content !== "ru" || typeof fallback !== "string" || !fallbackReasons.has(fallback)) throw invalidStory();
+  return content;
+}
+
 /** Maps `GET /api/content/places/:id` to the sheet body; a body without a published text is malformed. */
-export function parsePlaceStory(value: unknown): PlaceStory {
-  const place = (value as { place?: { name?: unknown; address?: unknown; location?: unknown; text?: { story?: unknown; audio?: unknown }; photo?: unknown } } | null)?.place;
+export function parsePlaceStory(value: unknown, requestedLocale: Locale = "ru"): PlaceStory {
+  const place = (value as { place?: { name?: unknown; address?: unknown; location?: unknown; text?: { story?: unknown; audio?: unknown; localization?: unknown }; photo?: unknown } } | null)?.place;
   const placeText = place?.text;
   const story = placeText?.story as { title?: unknown; paragraphs?: unknown; sources?: unknown } | null | undefined;
-  if (!story || typeof story !== "object" || !Array.isArray(story.paragraphs)) throw new Error("Некорректный ответ рассказа.");
+  if (!story || typeof story !== "object" || !Array.isArray(story.paragraphs)) throw invalidStory();
+  const actualLocale = contentLocale(placeText?.localization, requestedLocale);
   const paragraphs = (story.paragraphs as Array<{ text?: unknown } | null>)
     .map(paragraph => paragraph?.text).filter((paragraph): paragraph is string => typeof paragraph === "string" && paragraph.trim().length > 0);
-  const audio = placeText?.audio as { url?: unknown; durationSec?: unknown } | null | undefined;
+  const audio = placeText?.audio as { url?: unknown; durationSec?: unknown; language?: unknown } | null | undefined;
+  if (audio?.language !== undefined && !validLocale(audio.language)) throw invalidStory();
   const audioUrl = typeof audio?.url === "string" && audio.url ? audio.url : undefined;
+  if (audioUrl && (audio?.language ?? "ru") !== actualLocale) throw invalidStory();
   const durationSec = audioUrl && typeof audio?.durationSec === "number" && Number.isFinite(audio.durationSec) && audio.durationSec > 0 ? audio.durationSec : undefined;
   const attribution = openDataAttribution(Array.isArray(story.sources) ? story.sources as StorySourceRef[] : undefined);
   const photo = parsePlacePhoto(place?.photo);
   const header = place ? parsePlaceHeader(place, story.title) : undefined;
-  return { paragraphs, ...(attribution ? { attribution } : {}), ...(audioUrl ? { audioUrl } : {}), ...(durationSec ? { durationSec } : {}), ...(photo ? { photo } : {}),
+  return { paragraphs, actualLocale, ...(attribution ? { attribution } : {}), ...(audioUrl ? { audioUrl } : {}), ...(durationSec ? { durationSec } : {}), ...(photo ? { photo } : {}),
     ...(header ? { place: header } : {}) };
 }
 
 /** null: the story was unpublished after the map index was loaded. */
-export async function loadPlaceStory(id: string, signal: AbortSignal): Promise<PlaceStory | null> {
-  const cached = stories.get(id);
-  if (cached) { remember(id, cached); return cached; }
+export async function loadPlaceStory(id: string, signal: AbortSignal, locale: Locale = "ru"): Promise<PlaceStory | null> {
+  const key = storyKey(id, locale), cached = stories.get(key);
+  if (cached) { remember(key, cached); return cached; }
   try {
     // no-cache: the browser revalidates its copy with the server ETag and hands a 304 back as the cached 200.
-    const response = await fetchWithRetry(`/api/content/places/${id}`, signal, { cache: "no-cache" });
-    const story = parsePlaceStory(await response.json());
-    remember(id, story);
+    const url = `/api/content/places/${id}${locale === "ru" ? "" : `?lang=${locale}`}`;
+    const response = await fetchWithRetry(url, signal, { cache: "no-cache" });
+    const story = parsePlaceStory(await response.json(), locale);
+    remember(key, story);
     return story;
   } catch (error) {
     if (error instanceof RequestError && error.status === 404) return null;
@@ -104,13 +137,14 @@ const pending = new Map<string, Pending>();
  * One request per place for every open consumer. The abort is deferred by a microtask so a StrictMode
  * remount or a second sheet of the same place picks the running request up instead of starting another.
  */
-function acquireStory(id: string) {
-  let entry = pending.get(id);
+function acquireStory(id: string, locale: Locale) {
+  const key = storyKey(id, locale);
+  let entry = pending.get(key);
   if (!entry) {
     const controller = new AbortController();
-    const created: Pending = { controller, users: 0, promise: loadPlaceStory(id, controller.signal) };
-    created.promise.then(() => undefined, () => undefined).finally(() => { if (pending.get(id) === created) pending.delete(id); });
-    pending.set(id, created);
+    const created: Pending = { controller, users: 0, promise: loadPlaceStory(id, controller.signal, locale) };
+    created.promise.then(() => undefined, () => undefined).finally(() => { if (pending.get(key) === created) pending.delete(key); });
+    pending.set(key, created);
     entry = created;
   }
   const held = entry;
@@ -125,35 +159,36 @@ function acquireStory(id: string) {
       queueMicrotask(() => {
         if (held.users > 0) return;
         held.controller.abort();
-        if (pending.get(id) === held) pending.delete(id);
+        if (pending.get(key) === held) pending.delete(key);
       });
     },
   };
 }
 
-export function usePlaceStory(placeId: string | undefined): PlaceStoryState {
+export function usePlaceStory(placeId: string | undefined, locale: Locale = "ru"): PlaceStoryState {
+  const key = placeId ? storyKey(placeId, locale) : undefined;
   // The result belongs to one place and one attempt: anything else is still loading.
-  const [state, setState] = useState<{ id: string; attempt: number; status: "ready" | "missing" | "error"; story?: PlaceStory } | null>(null);
+  const [state, setState] = useState<{ key: string; attempt: number; status: "ready" | "missing" | "error"; story?: PlaceStory } | null>(null);
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => setAttempt(value => value + 1), []);
   useEffect(() => {
-    if (!placeId || stories.has(placeId)) return;
+    if (!placeId || !key || stories.has(key)) return;
     let disposed = false;
-    const request = acquireStory(placeId);
+    const request = acquireStory(placeId, locale);
     request.promise.then(story => {
       if (disposed) return;
-      if (story) { setState({ id: placeId, attempt, status: "ready", story }); return; }
-      setState({ id: placeId, attempt, status: "missing" });
+      if (story) { setState({ key, attempt, status: "ready", story }); return; }
+      setState({ key, attempt, status: "missing" });
       // The index still shows a gone story: refresh it so the marker disappears.
       void mapCellStore.revalidate();
     }, () => {
-      if (!disposed) setState({ id: placeId, attempt, status: "error" });
+      if (!disposed) setState({ key, attempt, status: "error" });
     });
     return () => { disposed = true; request.release(); };
-  }, [placeId, attempt]);
+  }, [placeId, key, locale, attempt]);
   if (!placeId) return { status: "idle", retry };
-  const cached = stories.get(placeId);
+  const cached = key ? stories.get(key) : undefined;
   if (cached) return { status: "ready", story: cached, retry };
-  if (state?.id === placeId && state.attempt === attempt) return { status: state.status, story: state.story, retry };
+  if (state && state.key === key && state.attempt === attempt) return { status: state.status, story: state.story, retry };
   return { status: "loading", retry };
 }

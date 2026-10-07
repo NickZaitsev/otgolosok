@@ -82,6 +82,31 @@ describe("published route cache", () => {
     expect(fetch).toHaveBeenCalledOnce();
   });
 
+  it("uses a separate localized URL and strips bundled Russian audio when the request fails", async () => {
+    vi.stubGlobal("caches", undefined);
+    const network = vi.fn().mockRejectedValue(new TypeError("offline"));
+    vi.stubGlobal("fetch", network);
+    const result = await loadPublishedRoute(route, new AbortController().signal, { requestedLocale: "en" });
+    expect(network).toHaveBeenCalledWith(`${manifestUrl}?lang=en`, expect.objectContaining({ cache: "no-store" }));
+    expect(result.requested_locale).toBe("en");
+    expect(result.content_locale).toBe("ru");
+    expect(result.walk!.steps.every(step => step.audio === undefined)).toBe(true);
+    expect(result.pois.every(item => item.story.audio_url === null)).toBe(true);
+  });
+
+  it("keeps an explicit Russian fallback publication with its actual audio language", async () => {
+    const fallback = structuredClone(route) as Route;
+    fallback.requested_locale = "zh";
+    fallback.content_locale = "ru";
+    fallback.fallback_reason = "missing";
+    vi.stubGlobal("caches", undefined);
+    vi.stubGlobal("fetch", vi.fn(async input => String(input) === `${manifestUrl}?lang=zh`
+      ? new Response(JSON.stringify(fallback)) : new Response("{}", { status: 503 })));
+    const result = await loadPublishedRoute(route, new AbortController().signal, { requestedLocale: "zh" });
+    expect(result.walk!.steps[0].audio?.language).toBe("ru");
+    expect(result.content_locale).toBe("ru");
+  });
+
   it("commits generated audio before the matching route snapshot", async () => {
     const cache = new MemoryCache();
     const update = await publication();

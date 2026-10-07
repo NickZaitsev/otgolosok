@@ -5,7 +5,7 @@ import { playbackStorageKey } from "@/lib/audio/playback-progress";
 import { FoodStopError, foodLegRequest, foodStopLeg, insertFoodStop, viewWithDocument } from "./food-stop";
 import { saveLocalWalk } from "./local-store";
 import { loadJson, WalkLoadError } from "./walk-loader";
-import { validateWalkDocument, type WalkDocument, type WalkView } from "./model";
+import { validateWalkDocument, walkRequestedLocale, type ContentLocale, type WalkDocument, type WalkView } from "./model";
 
 /** Where the open walk lives: the viewer's own walks are changed in place, the others are copied. */
 export type FoodStopSource = { kind: "local" | "id" | "catalog" | "share"; id: string };
@@ -37,22 +37,25 @@ function savedWalk(value: unknown): { id: string; revision: number } {
 }
 
 /** The copy keeps the walker's direction and the place in the story they were listening to. */
-function carryOver(storage: StoragePort, from: string, to: string) {
+function carryOver(storage: StoragePort, from: string, to: string, locale: ContentLocale) {
   try {
     const direction = storage.getItem(`otgolosok:walk-direction:${from}`);
     if (direction !== null) storage.setItem(`otgolosok:walk-direction:${to}`, direction);
     for (const suffix of ["", ":reverse"]) {
-      const raw = storage.getItem(playbackStorageKey(from) + suffix);
+      const raw = storage.getItem(playbackStorageKey(from, locale) + suffix);
       if (raw === null) continue;
       const checkpoint = JSON.parse(raw) as Record<string, unknown>;
-      if (checkpoint?.routeId === from) storage.setItem(playbackStorageKey(to) + suffix, JSON.stringify({ ...checkpoint, routeId: to }));
+      if (checkpoint?.routeId === from) storage.setItem(playbackStorageKey(to, locale) + suffix, JSON.stringify({ ...checkpoint, routeId: to }));
     }
   } catch { /* Without storage the copy starts from the beginning, as any new walk. */ }
 }
 
 /** Routes the way through the venue between its neighbouring stops and saves the walk with it. */
 export async function addFoodStop(view: WalkView, source: FoodStopSource, place: FoodPlace, signal: AbortSignal, deps: Deps = defaults()): Promise<FoodStopResult> {
-  const leg = foodStopLeg(view.document, place);
+  // A localized view may carry translated display labels. Mutations always start
+  // from the source document so translated labels are never persisted as Russian.
+  const sourceDocument = view.sourceDocument ?? view.document;
+  const leg = foodStopLeg(sourceDocument, place);
   const request = foodLegRequest(leg, place);
   let plan = null;
   if (request) {
@@ -65,7 +68,7 @@ export async function addFoodStop(view: WalkView, source: FoodStopSource, place:
     plan = value;
   }
   signal.throwIfAborted();
-  const changed = insertFoodStop(view.document, place, leg, plan, deps.newId());
+  const changed = insertFoodStop(sourceDocument, place, leg, plan, deps.newId());
   if (source.kind === "local") {
     const item = saveLocalWalk(deps.storage, changed, view.revision);
     return { view: viewWithDocument(view, item.document, item.revision, `local:${item.revision}`), moved: null };
@@ -82,10 +85,10 @@ export async function addFoodStop(view: WalkView, source: FoodStopSource, place:
     const walk = savedWalk(value);
     // The server assigns a fresh ID when the document's ID is taken.
     const document = validateWalkDocument({ ...copy, id: walk.id });
-    carryOver(deps.storage, view.document.id, walk.id);
+    carryOver(deps.storage, view.document.id, walk.id, walkRequestedLocale(view));
     return { view: viewWithDocument(view, document, walk.revision, `account:${walk.revision}`), moved: { kind: "id", id: walk.id } };
   }
   const item = saveLocalWalk(deps.storage, copy, null);
-  carryOver(deps.storage, view.document.id, copy.id);
+  carryOver(deps.storage, view.document.id, copy.id, walkRequestedLocale(view));
   return { view: viewWithDocument(view, item.document, item.revision, `local:${item.revision}`), moved: { kind: "local", id: copy.id } };
 }

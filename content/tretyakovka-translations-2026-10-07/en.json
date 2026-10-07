@@ -1,0 +1,300 @@
+{
+  "version": 1,
+  "locale": "en",
+  "status": "draft",
+  "sourceBundleSha256": "9f51bb3e7f7af28ee1dc9f8995506f4f13fd7b0c5185698614f0059bd8a088aa",
+  "entries": [
+    {
+      "placeId": "osm:way:75650837",
+      "sourceTextId": "4d0a57df-dbd9-432c-b268-3018a3d0c8c3",
+      "sourceStorySha256": "29cdf039be5ea4870334ab9109b3a0bbd23c35caf80b74f0f288959ac292f650",
+      "title": "The Dolgovs: A House Opposite Their Gift",
+      "paragraphs": [
+        "At 21/16 Bolshaya Ordynka, the main house stands at the back of the courtyard. You can examine it from the street: columns mark the centre of the facade. The house was built in the 1770s for the Dolgov merchant family, incorporating older vaulted rooms. The authorship of the original design remains disputed. After the fire of 1812, the house was remodelled with the involvement of Osip Bove. Its present appearance therefore tells the story of two eras in Moscow at once.",
+        "Opposite stands the Church of the Icon of the Mother of God “Joy of All Who Sorrow.” Afanasy Dolgov paid for the rebuilding of its western section and commissioned Vasily Bazhenov. The merchant lived across the road and could see every day what his money had made possible. Here, philanthropy quite literally acquired an address: you need only shift your gaze from the estate to the church. From our position by the street, both sides of this story are visible.",
+        "In the mid-nineteenth century, the estate passed to the Zhemochkin family. At the beginning of the following century, a girls’ gymnasium took over the main house, while the owners moved into a wing. A formal residence became a place of education. We will encounter more changes like this: Ordynka retained its merchants’ facades while the rooms behind them changed purpose to meet the city’s needs."
+      ],
+      "facts": {
+        "m1_f1": "The main house was built in the 1770s and remodelled with the involvement of Osip Bove after the fire of 1812. The estate later belonged to the Zhemochkin family, and a girls’ gymnasium occupied the main house.",
+        "m1_f2": "Afanasy Dolgov financed the rebuilding of the western section of the church opposite and commissioned Vasily Bazhenov."
+      }
+    },
+    {
+      "placeId": "osm:relation:6897502",
+      "sourceTextId": "09c22815-eb47-40e3-b033-7c198cbd80f4",
+      "sourceStorySha256": "8bf0749a25d8c6fe1f6c4c574e1594c6c130e237fb6de11bb7ed1dfc6af3931d",
+      "title": "Church of the Icon of the Mother of God “Joy of All Who Sorrow” (Church of the Transfiguration) on Bolshaya Ordynka",
+      "paragraphs": [
+        "The earliest known mention of the Church of the Icon of the Mother of God “Joy of All Who Sorrow” on Bolshaya Ordynka dates to 1625. Before the present church, a wooden Church of St Varlaam of Khutyn stood on this site.",
+        "The architectural ensemble took shape over several periods. In the 1790s, Vasily Bazhenov designed the refectory and bell tower; in the 1830s, Osip Bove designed the summer church. The interiors preserve seventeenth-century icons, altar screens and paintings dating from the eighteenth century to the first third of the nineteenth, as well as decorations and church utensils from the mid-nineteenth century.",
+        "In the second half of the 1930s, the church was closed and transferred to the Tretyakov Gallery for use as storage. In 2012–2013, specialists reinforced its white-stone columns and decoration, and regilded the domes and crosses."
+      ],
+      "facts": {
+        "f1": "The site is the Church of the Icon of the Mother of God “Joy of All Who Sorrow” (Church of the Transfiguration) on Bolshaya Ordynka.",
+        "f2": "The earliest known mention of the church dates to 1625.",
+        "f3": "Vasily Bazhenov designed the church’s refectory and bell tower in the 1790s.",
+        "f4": "Osip Bove designed the summer church in the 1830s.",
+        "f5": "The church interiors preserve seventeenth-century icons, altar screens and paintings dating from the eighteenth century to the first third of the nineteenth, as well as mid-nineteenth-century decorations and church utensils.",
+        "f6": "Before the present church, a wooden Church of St Varlaam of Khutyn stood on this site.",
+        "f7": "In the second half of the 1930s, the church was closed and transferred to the Tretyakov Gallery for use as storage.",
+        "f8": "In 2012–2013, restorers reinforced the church’s white-stone columns and decoration and regilded its domes and crosses."
+      }
+    },
+    {
+      "placeId": "osm:node:8044478986",
+      "sourceTextId": "1d513461-e6eb-4740-9867-7b823ea20092",
+      "sourceStorySha256": "f86e733f6f3ddc7646f76fdccd1b32ce90b545ebc21f008fe211ec0cabf17e2b",
+      "title": "Ivan Shmelyov: An Essay Instead of a Reprimand",
+      "paragraphs": [
+        "We begin at the monument to Ivan Shmelyov. His former gymnasium is only a few steps away: it occupied the Demidov estate in Bolshoy Tolmachyovsky Lane. The school journal for the 1884–1885 academic year preserves a reprimand given to the future writer. He had carved up a desk. A detail like this immediately narrows the distance between the bronze portrait and the living boy who found it hard to sit still in class.",
+        "Shmelyov remembered his literature teacher, Fyodor Tsvetaev, very differently. The teacher allowed his pupils to write freely and set them topics from nature: a morning in the forest, a thunderstorm, a fishing trip. Writing essays became a pleasure for the schoolboy. By the monument, it is fitting to recall this very turn: schoolwork could begin with punishment over a desk and end with the joy of finding the right words.",
+        "The Moscow of his childhood later entered The Summer of the Lord. The House of Russia Abroad dates the novel’s first publications to 1933. By then, Shmelyov was living in France. He reconstructed the daily life of old Moscow from memory. Today, a real neighbourhood surrounds us; the book preserves another way to return to it—through voices, festivals and everyday pursuits. Ahead, we will see houses where people in the arts studied, lived and worked."
+      ],
+      "facts": {
+        "o_f1": "We begin at the monument to Ivan Shmelyov. His former gymnasium is only a few steps away: it occupied the Demidov estate in Bolshoy Tolmachyovsky Lane. The school journal for the 1884–1885 academic year preserves a reprimand given to the future writer. He had carved up a desk. A detail like this immediately narrows the distance between the bronze portrait and the living boy who found it hard to sit still in class.",
+        "o_f2": "Shmelyov remembered his literature teacher, Fyodor Tsvetaev, very differently. The teacher allowed his pupils to write freely and set them topics from nature: a morning in the forest, a thunderstorm, a fishing trip. Writing essays became a pleasure for the schoolboy. By the monument, it is fitting to recall this very turn: schoolwork could begin with punishment over a desk and end with the joy of finding the right words.",
+        "o_f3": "The Moscow of his childhood later entered The Summer of the Lord. The House of Russia Abroad dates the novel’s first publications to 1933. By then, Shmelyov was living in France. He reconstructed the daily life of old Moscow from memory. Today, a real neighbourhood surrounds us; the book preserves another way to return to it—through voices, festivals and everyday pursuits. Ahead, we will see houses where people in the arts studied, lived and worked."
+      }
+    },
+    {
+      "placeId": "osm:node:1378700996",
+      "sourceTextId": "a59baa16-8451-4a26-a1ad-ad32477ce6ed",
+      "sourceStorySha256": "a5215b2051195fc2a42d3eeb8868eb8eb5f9118e7324322778912a5e5d1a7a3f",
+      "title": "The Inspiration Fountain: Paintings Step into the Street",
+      "paragraphs": [
+        "At the fountain, you can begin discovering the Tretyakov Gallery before you even enter the museum. The composition contains three frames. Within them are fragments of the world of art: a tree, a silhouette and the objects of a still life. It is a small game of recognition. First look at each frame separately, then step back until you can see them together.",
+        "The fountain appeared in 2006, for the Tretyakov Gallery’s 150th anniversary. It was created by Alexander and Filipp Rukavishnikov. The three frames are associated with three genres of painting: portrait, landscape and still life. You can recognise imagery from Viktor Vasnetsov’s Tsar Ivan the Terrible, Arkhip Kuindzhi’s Birch Grove and Ilya Mashkov’s Moscow Food: Breads. The sculptors translated painting into three dimensions, so these are free evocations of the pictures rather than exact copies.",
+        "This stop works well without a museum ticket. Walk around the fountain along the accessible path and compare how the frames overlap from different sides. In a gallery, we usually stand in front of a canvas; here, we choose the distance and viewing angle ourselves. After the walk, you can find images of the three works and see which details the artists carried over into sculpture. Now let us turn towards the estate, where the history of art meets the history of a school."
+      ],
+      "facts": {
+        "o_f1": "At the fountain, you can begin discovering the Tretyakov Gallery before you even enter the museum. The composition contains three frames. Within them are fragments of the world of art: a tree, a silhouette and the objects of a still life. It is a small game of recognition. First look at each frame separately, then step back until you can see them together.",
+        "o_f2": "The fountain appeared in 2006, for the Tretyakov Gallery’s 150th anniversary. It was created by Alexander and Filipp Rukavishnikov. The three frames are associated with three genres of painting: portrait, landscape and still life. You can recognise imagery from Viktor Vasnetsov’s Tsar Ivan the Terrible, Arkhip Kuindzhi’s Birch Grove and Ilya Mashkov’s Moscow Food: Breads. The sculptors translated painting into three dimensions, so these are free evocations of the pictures rather than exact copies.",
+        "o_f3": "This stop works well without a museum ticket. Walk around the fountain along the accessible path and compare how the frames overlap from different sides. In a gallery, we usually stand in front of a canvas; here, we choose the distance and viewing angle ourselves. After the walk, you can find images of the three works and see which details the artists carried over into sculpture. Now let us turn towards the estate, where the history of art meets the history of a school."
+      }
+    },
+    {
+      "placeId": "osm:relation:20429251",
+      "sourceTextId": "dca585fb-7890-4c77-ac74-7367683fd26f",
+      "sourceStorySha256": "23cb3ac5747a1cd5d9e7c95e5e067ed0e0cbab4affb6e88d33820ee1c80e934a",
+      "title": "The Demidov Estate: A House Finds New Audiences",
+      "paragraphs": [
+        "In front of the estate, pause by the cast-iron fence. According to an account published by the Ushinsky Library, it was cast in the eighteenth century and probably moved here later. The gates are especially remarkable: each leaf was cast in a single piece. Notice how delicate a pattern could be made from such a heavy material. For this stop, the view from the street is enough; there is no need to go beyond the fence.",
+        "In the nineteenth century, the house belonged to Maria Sollogub. After she was widowed, she established a literary salon here. Its guests included Turgenev, Khomyakov and the Kireyevsky brothers. In a house like this, conversation became part of daily life: people visited one another, discussed books and returned to the debate at their next meeting.",
+        "The rooms later found another purpose. From 1882 to 1915, the estate housed Moscow’s Sixth Gymnasium, where Shmelyov studied. During the First World War, the school had to give way to a hospital. In 1942, the building was transferred to a pedagogical library. The same address gathered, in turn, salon guests, pupils, patients and readers. The life inside the house changed while its fence continued to face the lane. We will now continue towards the church beside the museum quarter."
+      ],
+      "facts": {
+        "o_f1": "In front of the estate, pause by the cast-iron fence. According to an account published by the Ushinsky Library, it was cast in the eighteenth century and probably moved here later. The gates are especially remarkable: each leaf was cast in a single piece. Notice how delicate a pattern could be made from such a heavy material. For this stop, the view from the street is enough; there is no need to go beyond the fence.",
+        "o_f2": "In the nineteenth century, the house belonged to Maria Sollogub. After she was widowed, she established a literary salon here. Its guests included Turgenev, Khomyakov and the Kireyevsky brothers. In a house like this, conversation became part of daily life: people visited one another, discussed books and returned to the debate at their next meeting.",
+        "o_f3": "The rooms later found another purpose. From 1882 to 1915, the estate housed Moscow’s Sixth Gymnasium, where Shmelyov studied. During the First World War, the school had to give way to a hospital. In 1942, the building was transferred to a pedagogical library. The same address gathered, in turn, salon guests, pupils, patients and readers. The life inside the house changed while its fence continued to face the lane. We will now continue towards the church beside the museum quarter."
+      }
+    },
+    {
+      "placeId": "osm:way:53548437",
+      "sourceTextId": "a9a4916b-ae7d-48d4-b28c-9e6f6af6a658",
+      "sourceStorySha256": "97c7f7a918dcb5492b29bd4e2427f4b45ec00a99835f639808fe0b4d6668fa1b",
+      "title": "St Nicholas in Tolmachi: A Parish Beside the Collection",
+      "paragraphs": [
+        "The Church of St Nicholas in Tolmachi lets us see the Tretyakov Gallery from another angle. For the collector’s family, this was their parish church. Paintings filled the house next door, while here the familiar life of a congregation went on. This proximity helps us picture Pavel Tretyakov as a man of his neighbourhood, walking the same narrow lanes as we do.",
+        "The church has been known since the first half of the seventeenth century. The stone building was erected in 1697 with funds provided by the merchant Longin Dobrynin. It was later remodelled; in the twentieth century, its fate became closely entwined with that of the museum. After it closed in 1929, the premises were transferred to the gallery, and from 1932 they were used as storage. The sacred space became part of the workings of a great collection.",
+        "After restoration, the church received the special status of a museum church, combining religious services with museum work. For many years, the Vladimir Icon of the Mother of God was associated with this address. But information in older guidebooks needs updating: on 3 April 2026, the icon was transferred to the Cathedral of Christ the Saviour. We therefore cannot promise that you will see it in Tolmachi. Our story concerns the building itself and its relationship with the gallery; a visit to the interior can be planned separately. From the street, it is easy to see how closely different eras of the museum quarter stand side by side here."
+      ],
+      "facts": {
+        "o_f1": "The Church of St Nicholas in Tolmachi lets us see the Tretyakov Gallery from another angle. For the collector’s family, this was their parish church. Paintings filled the house next door, while here the familiar life of a congregation went on. This proximity helps us picture Pavel Tretyakov as a man of his neighbourhood, walking the same narrow lanes as we do.",
+        "o_f2": "The church has been known since the first half of the seventeenth century. The stone building was erected in 1697 with funds provided by the merchant Longin Dobrynin. It was later remodelled; in the twentieth century, its fate became closely entwined with that of the museum. After it closed in 1929, the premises were transferred to the gallery, and from 1932 they were used as storage. The sacred space became part of the workings of a great collection.",
+        "o_f3": "After restoration, the church received the special status of a museum church, combining religious services with museum work. For many years, the Vladimir Icon of the Mother of God was associated with this address. But information in older guidebooks needs updating: on 3 April 2026, the icon was transferred to the Cathedral of Christ the Saviour. We therefore cannot promise that you will see it in Tolmachi. Our story concerns the building itself and its relationship with the gallery; a visit to the interior can be planned separately. From the street, it is easy to see how closely different eras of the museum quarter stand side by side here."
+      }
+    },
+    {
+      "placeId": "osm:way:52435403",
+      "sourceTextId": "73aed695-a9fe-4b1c-b392-37f6386c06c1",
+      "sourceStorySha256": "e6ed5c67f014f4da4b09d3a05d513d282dbbb731107f617c5fd1a3a75bc4f9e6",
+      "title": "The Writers’ House: Neighbours by Profession",
+      "paragraphs": [
+        "Behind this facade, literary names belonged to neighbours. Boris Pasternak, Konstantin Paustovsky, Mikhail Prishvin, Agnia Barto, Ilya Ilf and Yevgeny Petrov all lived in this building. Each had their own work, but they shared the same postal address. As you look at the entrances from the street, try to imagine an ordinary apartment building: coming home, meeting on the stairs, welcoming guests from across Moscow.",
+        "The building was designed by Ivan Nikolayev for a writers’ housing cooperative. The first four entrances were occupied by 1937. After the war, in 1948–1949, two more were added. The State Pushkin Museum notes a telling detail: writers who had received awards for works about the war were included on the list of residents for the new section. Even the allocation of apartments reflected the literary policy of its time.",
+        "Residents received visits from Akhmatova, Mandelstam, Neuhaus and other famous contemporaries. For this walk, however, what matters most is the scale of the community: a museum exhibition about the house counted around a hundred writers. Books were created behind the windows of an apartment building, amid domestic concerns and social calls. Compare this building with the estate we have just seen. There, a salon hostess brought literary life together; here, people in the same profession were housed side by side. Next we will come to the gallery facade, and then see another way of supporting people in the arts."
+      ],
+      "facts": {
+        "o_f1": "Behind this facade, literary names belonged to neighbours. Boris Pasternak, Konstantin Paustovsky, Mikhail Prishvin, Agnia Barto, Ilya Ilf and Yevgeny Petrov all lived in this building. Each had their own work, but they shared the same postal address. As you look at the entrances from the street, try to imagine an ordinary apartment building: coming home, meeting on the stairs, welcoming guests from across Moscow.",
+        "o_f2": "The building was designed by Ivan Nikolayev for a writers’ housing cooperative. The first four entrances were occupied by 1937. After the war, in 1948–1949, two more were added. The State Pushkin Museum notes a telling detail: writers who had received awards for works about the war were included on the list of residents for the new section. Even the allocation of apartments reflected the literary policy of its time.",
+        "o_f3": "Residents received visits from Akhmatova, Mandelstam, Neuhaus and other famous contemporaries. For this walk, however, what matters most is the scale of the community: a museum exhibition about the house counted around a hundred writers. Books were created behind the windows of an apartment building, amid domestic concerns and social calls. Compare this building with the estate we have just seen. There, a salon hostess brought literary life together; here, people in the same profession were housed side by side. Next we will come to the gallery facade, and then see another way of supporting people in the arts."
+      }
+    },
+    {
+      "placeId": "osm:relation:1907261",
+      "sourceTextId": "9659a7dd-366b-4c1f-bbb1-eb1db881c122",
+      "sourceStorySha256": "06760d4a73b464b43707d698e4431d3bb7289031f742124f1ed485521ede84e8",
+      "title": "The Tretyakov Gallery: The Collection Outgrows Its Home",
+      "paragraphs": [
+        "Before you is a museum that grew out of a family home. The Tretyakovs bought the mansion in Lavrushinsky Lane at the end of 1851. In 1856, Pavel Tretyakov acquired the first paintings of what would become the collection. At first, they hung in the family’s living rooms. But the collection grew, and gradually there was no longer enough space for it alongside domestic life.",
+        "Throughout 1873, rooms for paintings were added to the house, and in 1874 the gallery opened to visitors. More halls followed: in 1882, 1885 and 1892. The building changed with the collector’s acquisitions. Think of the museum as a house that had to expand again and again to make room for each new work.",
+        "The familiar facade appeared later, after the founder’s death. In 1900, the artist Viktor Vasnetsov was commissioned to design the gallery in the Russian style. The new facade was built in 1902–1904. The Tretyakov Gallery’s familiar appearance therefore belongs to another phase of its history: Vasnetsov gave the growing museum a single expressive face.",
+        "There is one more practical detail to this story. Until the gallery was electrified in 1929, it admitted visitors only in daylight. Seeing the paintings depended on how much light entered the halls. As we continue through the neighbouring quarter, try to discern traces of the everyday lives of people in the arts in its buildings."
+      ],
+      "facts": {
+        "o_f1": "Before you is a museum that grew out of a family home. The Tretyakovs bought the mansion in Lavrushinsky Lane at the end of 1851. In 1856, Pavel Tretyakov acquired the first paintings of what would become the collection. At first, they hung in the family’s living rooms. But the collection grew, and gradually there was no longer enough space for it alongside domestic life.",
+        "o_f2": "Throughout 1873, rooms for paintings were added to the house, and in 1874 the gallery opened to visitors. More halls followed: in 1882, 1885 and 1892. The building changed with the collector’s acquisitions. Think of the museum as a house that had to expand again and again to make room for each new work.",
+        "o_f3": "The familiar facade appeared later, after the founder’s death. In 1900, the artist Viktor Vasnetsov was commissioned to design the gallery in the Russian style. The new facade was built in 1902–1904. The Tretyakov Gallery’s familiar appearance therefore belongs to another phase of its history: Vasnetsov gave the growing museum a single expressive face.",
+        "o_f4": "There is one more practical detail to this story. Until the gallery was electrified in 1929, it admitted visitors only in daylight. Seeing the paintings depended on how much light entered the halls. As we continue through the neighbouring quarter, try to discern traces of the everyday lives of people in the arts in its buildings."
+      }
+    },
+    {
+      "placeId": "osm:way:52435420",
+      "sourceTextId": "47f402e8-d21a-4f37-9702-824685427e5a",
+      "sourceStorySha256": "c5413dc9b3446c00601871c93c1b7ddc7e615e1c2ab18b04fdc94262c8a5addb",
+      "title": "Tretyakov’s Shelter: Supporting an Artist’s Family",
+      "paragraphs": [
+        "We finish at a house that reveals another side of Tretyakov’s legacy. His collection of paintings made the collector’s name famous. But in his will, Pavel Tretyakov also made provision for the families of deceased artists. A shelter with free apartments was built for them in Lavrushinsky Lane. The building’s address is 3/8, Building 2.",
+        "The house was built in 1910–1912 to a design by Nikolai Kurdyukov. It provided a home for artists’ widows, young children and unmarried daughters. The assistance included accommodation and food, funded from endowed capital. Behind the old-fashioned word “shelter” lay a very practical everyday task: giving a family a roof over its head after the loss of its breadwinner.",
+        "The artist Georgy Savitsky is also associated with this building. According to Moscow’s heritage register, he lived and worked here from 1912 to 1949. This charitable address thus remained a place of artistic work. We have moved from a writer’s school memories to paintings, apartment entrances and support for families. At the gallery, people usually remember what Tretyakov bought. Here, it is worth remembering whom he cared for. The house is best viewed from the lane: the walk does not require entering the residential premises or courtyard."
+      ],
+      "facts": {
+        "o_f1": "We finish at a house that reveals another side of Tretyakov’s legacy. His collection of paintings made the collector’s name famous. But in his will, Pavel Tretyakov also made provision for the families of deceased artists. A shelter with free apartments was built for them in Lavrushinsky Lane. The building’s address is 3/8, Building 2.",
+        "o_f2": "The house was built in 1910–1912 to a design by Nikolai Kurdyukov. It provided a home for artists’ widows, young children and unmarried daughters. The assistance included accommodation and food, funded from endowed capital. Behind the old-fashioned word “shelter” lay a very practical everyday task: giving a family a roof over its head after the loss of its breadwinner.",
+        "o_f3": "The artist Georgy Savitsky is also associated with this building. According to Moscow’s heritage register, he lived and worked here from 1912 to 1949. This charitable address thus remained a place of artistic work. We have moved from a writer’s school memories to paintings, apartment entrances and support for families. At the gallery, people usually remember what Tretyakov bought. Here, it is worth remembering whom he cared for. The house is best viewed from the lane: the walk does not require entering the residential premises or courtyard."
+      }
+    },
+    {
+      "placeId": "osm:node:4595636713",
+      "sourceTextId": "d7bcea47-cae8-4a59-aa3f-a1c32e159dd1",
+      "sourceStorySha256": "5e5a12cdcebab8027774180db0d31006ab0ca60699296f4e43dcabda2a49fc9f",
+      "title": "Trees of Love",
+      "paragraphs": [
+        "On Luzhkov Bridge, the “Trees of Love” are metal tree-shaped sculptures on which couples hang padlocks. The first such tree appeared here in 2007. On 21 April, Konstantin and Marina Yakimov attached the first lock to it. By 9 July 2008, there were already five trees on the bridge; four were made to the same design.",
+        "Separate structures were provided for the locks because padlocks attached to railings and barriers add weight to the bridge. When the trees fill up, they are replaced with new ones and the old trees are moved to the embankment. In March 2015, trees covered in locks were moved from the bridge to the “Alley of Love.” Another event is associated with one of the trees: on 29 April 2011, British Deputy Ambassador Denis Keefe hung a lock on it bearing the initials of Prince William and Kate Middleton."
+      ],
+      "facts": {
+        "f1": "The “Trees of Love” on Luzhkov Bridge are metal tree-shaped sculptures on which couples hang padlocks.",
+        "f2": "Moscow’s first “Tree of Love” appeared on Luzhkov Bridge in 2007.",
+        "f3": "Konstantin and Marina Yakimov attached the first lock to the “Tree of Love” on 21 April 2007.",
+        "f4": "By 9 July 2008, there were five “Trees of Love” on Luzhkov Bridge, four of them made to the same design.",
+        "f5": "The “Trees of Love” are intended for padlocks partly because locks attached to the railings and barriers add weight to the bridge structure.",
+        "f6": "Trees on Luzhkov Bridge that fill with locks are replaced with new ones, while the old trees are moved to the embankment.",
+        "f7": "In March 2015, trees covered in locks were moved from Luzhkov Bridge to the “Alley of Love” on the embankment.",
+        "f8": "On 29 April 2011, British Deputy Ambassador to Moscow Denis Keefe hung a lock bearing the initials of Prince William and Kate Middleton on one of the trees."
+      }
+    },
+    {
+      "placeId": "osm:way:642091604",
+      "sourceTextId": "a93c9720-d881-4afc-9822-2f30e7a8a5cb",
+      "sourceStorySha256": "5dbfbb669d2ac153735d85e9022bf17b91797190c1c9f6d27486ff1ec4588e9f",
+      "title": "The State Tretyakov Gallery’s New Building on Kadashevskaya Embankment",
+      "paragraphs": [
+        "The windows of the Tretyakov Gallery’s new building look like pictures in pale frames on a red wall. The facade on Kadashevskaya Embankment connects the building’s architecture with the works kept inside the museum.",
+        "The building opened to visitors on 30 May 2024. It contains exhibition spaces, conservation studios for painting, graphic art and sculpture, as well as a scholarly photo archive. The open atrium on the embankment side became a public space within the new building.",
+        "Different eras meet in the museum quarter: old estates, the gallery’s historic buildings and new construction beside the Vodootvodny Canal. The building at 12 Kadashevskaya Embankment continued the development of this complex. Its distinctive windows reveal the museum theme from the street, before visitors enter the exhibition halls."
+      ],
+      "facts": {
+        "batch53_1": "The windows of the Tretyakov Gallery’s new building look like pictures in pale frames on a red wall. The facade on Kadashevskaya Embankment connects the building’s architecture with the works kept inside the museum.",
+        "batch53_2": "The building opened to visitors on 30 May 2024. It contains exhibition spaces, conservation studios for painting, graphic art and sculpture, as well as a scholarly photo archive. The open atrium on the embankment side became a public space within the new building.",
+        "batch53_3": "Different eras meet in the museum quarter: old estates, the gallery’s historic buildings and new construction beside the Vodootvodny Canal. The building at 12 Kadashevskaya Embankment continued the development of this complex. Its distinctive windows reveal the museum theme from the street, before visitors enter the exhibition halls."
+      }
+    },
+    {
+      "placeId": "osm:node:1359108784",
+      "sourceTextId": "39127309-d5f0-46b7-87b8-0a5b4742e445",
+      "sourceStorySha256": "7ce69b5ce2d37a03cf31712a926fa289c7eb5300389396b124d7c49026c1d6b6",
+      "title": "Dimitrov: An Orator in Yakimansky Square",
+      "paragraphs": [
+        "In Yakimansky Square, a bronze Dimitrov stands on a granite pedestal as though addressing a crowd gathered before him. The sculptors Konstantin and Merab Merabishvili chose this image of an orator. R. N. Gvozdev designed the monument’s architectural setting. We have just examined a museum building with picture-like windows. Here, the artistic task is different: to convey a person’s speech through a motionless figure.",
+        "Georgi Dimitrov was a Bulgarian communist. He became widely known through the Leipzig Trial of 1933. He was accused of involvement in the burning of the German Reichstag, but the court acquitted him. After the trial, his speeches became part of the history of antifascism, while communist Bulgaria fashioned him into a national hero. The figure of a public orator therefore had a very specific meaning for this monument.",
+        "The sculptor had a personal memory of Dimitrov’s appearance. In 1934, Konstantin Merabishvili modelled his portrait from life in Borjomi. Dimitrov had come to Georgia to rest at the resort after the trial. Almost forty years passed between that meeting and the unveiling of the Moscow monument. Behind the large bronze figure stands the work of a man who had seen the monument’s future hero at close quarters.",
+        "The monument was unveiled on 16 June 1972, marking the ninetieth anniversary of Dimitrov’s birth. The newspaper Zarya Vostoka reported a large rally attended by representatives of the USSR and Bulgaria. When the covering was removed from the monument, the anthems of both countries were played. Today, this is an ordinary city square; for a time that day, however, it became the stage for an official ceremony.",
+        "The choice of location was also connected with Dimitrov’s life. The neighbouring Bolshaya Yakimanka was then named after him. Nearby stands the House on the Embankment, where he lived in 1934–1945. The street later regained its old name, while the monument remained. Beside museum facades and church domes, it preserves another layer of the district’s history: Soviet urban sculpture and the language of the political monument."
+      ],
+      "facts": {
+        "d_f1": "The bronze figure on a granite pedestal depicts Dimitrov as an orator. Its creators were K. M. Merabishvili, M. K. Merabishvili and R. N. Gvozdev. The comparison with the museum facade is an authorial observation.",
+        "d_f2": "Dimitrov, a Bulgarian communist, was acquitted at the 1933 Leipzig Trial over the Reichstag fire. In communist Bulgaria, he was portrayed as a national hero of the antifascist resistance.",
+        "d_f3": "In 1934, K. M. Merabishvili modelled Dimitrov from life in Borjomi. Between that meeting and the 1972 monument, 38 years passed.",
+        "d_f4": "The monument was unveiled on 16 June 1972 for the 90th anniversary of Dimitrov’s birth. A report describes a large rally, representatives of the two countries, the removal of the covering and the playing of the anthems of the USSR and Bulgaria.",
+        "d_f5": "The monument was erected on what was then Dimitrov Street, now Bolshaya Yakimanka, near the House on the Embankment, where he lived in 1934–1945. The description of this layer of the district’s history is an editorial conclusion."
+      }
+    },
+    {
+      "placeId": "osm:relation:11661228",
+      "sourceTextId": "b01f8b41-c03e-4e73-b244-03e5d5556563",
+      "sourceStorySha256": "126539f71dcee4a31015f4c79431dee15e2a9bcd94666d057ba7d451f15525c7",
+      "title": "Church of St Gregory of Neocaesarea in Derbitsy",
+      "paragraphs": [
+        "Tiles with a “peacock’s eye” pattern encircle the Church of St Gregory of Neocaesarea at 29A Bolshaya Polyanka. They were made by the craftsman Stepan Polubes. The five-domed building with its tent-roofed bell tower was built by the royal architects Karp Guba and Ivan Kuznechik; the main altar was consecrated in 1679.",
+        "The founding of the parish is associated with Vasily II’s return from captivity in the Golden Horde. This is a tradition, whereas the written mention of a wooden church dates to the seventeenth century. The church was closed in 1935. The parish was revived in 1994, and in November 1996, after restoration, the main altar was consecrated."
+      ],
+      "facts": {
+        "batch20_1": "Tiles with a “peacock’s eye” pattern encircle the Church of St Gregory of Neocaesarea at 29A Bolshaya Polyanka. They were made by the craftsman Stepan Polubes. The five-domed building with its tent-roofed bell tower was built by the royal architects Karp Guba and Ivan Kuznechik; the main altar was consecrated in 1679.",
+        "batch20_2": "The founding of the parish is associated with Vasily II’s return from captivity in the Golden Horde. This is a tradition, whereas the written mention of a wooden church dates to the seventeenth century. The church was closed in 1935. The parish was revived in 1994, and in November 1996, after restoration, the main altar was consecrated."
+      }
+    }
+  ],
+  "walk": {
+    "sourceDocumentSha256": "ef452830e52012872a1af94762dac242146f654cec98f89f5a8a36240e1ee41d",
+    "title": "Around the Tretyakov Gallery: Art in a Residential Quarter",
+    "description": "From Tretyakovskaya metro station to Polyanka: thirteen stories about merchants’ houses, art and the museum quarter. After the gallery’s new building, we will visit the monument to Dimitrov in Yakimansky Square and finish our stories at the Church of St Gregory of Neocaesarea. The sites are viewed from the street; allow 60–75 minutes for listening and stops.",
+    "stops": [
+      {
+        "id": "ordynka-extension-osm-way-75650837",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, Bolshaya Ordynka, Church of the Icon of the Mother of God “Joy of All Who Sorrow.” Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-extension-osm-relation-6897502",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, Ivan Shmelyov. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-stop-1",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, the Inspiration Fountain. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-stop-2",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, 3 Bolshoy Tolmachyovsky Lane, Building 5. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-stop-3",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, 9 Maly Tolmachyovsky Lane. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-stop-4",
+        "transition": "On the way from the church to the gallery, notice the Engineering Building, which opened in 1989. It takes its name from the museum’s engineering systems housed here.",
+        "nextHint": "Next stop: Moscow, 17 Lavrushinsky Lane, Building 2. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-stop-5",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, 10 Lavrushinsky Lane. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-stop-6",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, 3/8 Lavrushinsky Lane, Building 2. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-stop-7",
+        "transition": "",
+        "nextHint": "Next stop: the Trees of Love on Luzhkov Bridge. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-extension-osm-node-4595636713",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, 12 Kadashevskaya Embankment. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-extension-osm-way-642091604",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, Yakimansky Square, monument to Georgi Dimitrov. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-dimitrov-1359108784",
+        "transition": "",
+        "nextHint": "Next stop: Moscow, 29A Bolshaya Polyanka Street. Follow the walking route on the map."
+      },
+      {
+        "id": "ordynka-extension-osm-relation-11661228",
+        "transition": "",
+        "nextHint": "The stories end at the Church of St Gregory of Neocaesarea. Continue along the route line to Exit 1 of Polyanka metro station."
+      }
+    ]
+  }
+}

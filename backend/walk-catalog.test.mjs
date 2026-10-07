@@ -16,6 +16,23 @@ test("catalogue adapter preserves the four published chapters and recordings", (
   assert.equal("tunnels" in catalogWalkView(plain).document.route, false);
 });
 
+test("catalogue adapter marks the unchanged Russian publication as an explicit localized fallback", () => {
+  const route = JSON.parse(readFileSync(new URL("../public/data/routes/paveletskaya.json", import.meta.url), "utf8"));
+  const view = catalogWalkView(route, { requestedLocale: "en" });
+  assert.equal(view.requestedLocale, "en");
+  assert.ok(view.chapters.every(chapter => chapter.localization?.requestedLocale === "en"));
+  assert.ok(view.chapters.every(chapter => chapter.localization?.contentLocale === "ru" && chapter.localization.fallbackReason === "missing"));
+  assert.ok(view.chapters.every(chapter => !chapter.audio || chapter.audio.language === "ru"));
+  assert.equal("requestedLocale" in catalogWalkView(route), false);
+  assert.equal("localization" in catalogWalkView(route).chapters[0], false);
+  assert.equal("language" in catalogWalkView(route).chapters[0].audio, false);
+  const pending = structuredClone(route);
+  const content = [...pending.pois, ...pending.notes].find(item => item.id === pending.walk.steps[0].content_id);
+  content.story.text_status = "draft";
+  assert.deepEqual(catalogWalkView(pending, { requestedLocale: "zh" }).chapters[0].localization,
+    { requestedLocale: "zh", contentLocale: "ru", fallbackReason: "missing" });
+});
+
 const SHARE = "901d1133-44a2-4724-a856-2fe8d6c86a44";
 test("a catalogue walk moved to a shared walk is named by its share token", () => {
   for (const [moved, expected] of [[SHARE, SHARE], [undefined, null], ["", null], ["not-a-token", null], [SHARE.toUpperCase(), null], [42, null]])

@@ -76,6 +76,44 @@ describe("загрузка прогулок", () => {
     expect(result.chapters[0]).toMatchObject({ status: "preparing", story: null, audio: null });
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
+
+  it("запрашивает локализованный view отдельно и отвергает ответ другой локали", async () => {
+    const document: WalkDocument = { version: 2, id: "22222222-2222-4222-8222-222222222222", title: "Walk", description: "", city: "Москва", mode: "open", minutes: 30,
+      start: { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } }, stops: [], route: null, fieldChecked: false };
+    const localized = { document, revision: 0, contentVersion: "en", requestedLocale: "en", chapters: [] };
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify(localized), { status: 200 }));
+    vi.stubGlobal("fetch", fetcher);
+    await expect(loadCatalogWalk("arbat", new AbortController().signal, "en")).resolves.toEqual(localized);
+    expect(fetcher.mock.calls[0][0]).toBe("/api/story-walks/arbat/view?lang=en");
+
+    fetcher.mockResolvedValueOnce(new Response(JSON.stringify({ ...localized, requestedLocale: "zh" }), { status: 200 }));
+    await expect(loadCatalogWalk("arbat", new AbortController().signal, "en")).rejects.toMatchObject({ retryable: false });
+  });
+
+  it("сохраняет исходный документ рядом с локализованной проекцией локальной прогулки", async () => {
+    const sourceDocument: WalkDocument = { version: 2, id: "22222222-2222-4222-8222-222222222222", title: "Моя прогулка", description: "Описание", city: "Москва", mode: "open", minutes: 30,
+      start: { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } }, stops: [{ id: "33333333-3333-4333-8333-333333333333",
+        place: { address: "Москва, Арбат, 10", location: { lat: 55.751, lon: 37.601 } }, storyRef: { kind: "osm", id: "osm:way:10" }, transition: "Идите прямо.", nextHint: "Дом слева." }], route: null, fieldChecked: false };
+    const document = { ...sourceDocument, title: "My walk", description: "Description",
+      stops: sourceDocument.stops.map(stop => ({ ...stop, transition: "Continue straight.", nextHint: "The house is on the left." })) };
+    const localized = { document, sourceDocument, documentLocalization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null }, revision: 5,
+      contentVersion: "en-view", requestedLocale: "en", chapters: [{ id: sourceDocument.stops[0].id, status: "text_ready", story: {
+        title: "A house", address: sourceDocument.stops[0].place.address, paragraphs: [{ text: "An English story.", factIds: [] }], sources: [], facts: [] }, audio: null,
+      localization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null } }] };
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify(localized), { status: 200 }));
+    vi.stubGlobal("fetch", fetcher);
+    const result = await loadLocalWalkView(sourceDocument, 5, new AbortController().signal, "en");
+    expect(result.document.title).toBe("My walk");
+    expect(result.sourceDocument).toEqual(sourceDocument);
+    expect(result.documentLocalization).toEqual(localized.documentLocalization);
+    expect(fetcher.mock.calls[0][0]).toBe("/api/story-walks/resolve?lang=en");
+
+    fetcher.mockResolvedValueOnce(new Response(JSON.stringify({ ...localized, sourceDocument: { ...sourceDocument, title: "Другой исходник" } }), { status: 200 }));
+    const fallback = await loadLocalWalkView(sourceDocument, 5, new AbortController().signal, "en");
+    expect(fallback.document).toEqual(sourceDocument);
+    expect(fallback.sourceDocument).toBeUndefined();
+    expect(fallback.documentLocalization).toEqual({ requestedLocale: "en", contentLocale: "ru", fallbackReason: "missing" });
+  });
 });
 
 it.each([3, 4, 6])("открывает локальную прогулку с %i остановками и сохраняет геометрию", async count => {

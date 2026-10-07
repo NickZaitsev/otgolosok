@@ -4,14 +4,16 @@ import { failure } from "./domain.mjs";
 
 export const ELEVENLABS_PROFILE_ID = "elevenlabs-v3";
 const LEASE_MS = 600000;
+const LANGUAGES = new Set(["ru", "en", "zh"]);
 
 /**
  * Queue profile of catalog voicing through ElevenLabs: the text is normalized once at enqueue time. The ID predates
  * Eleven v4 and is kept because stored texts and jobs refer to it. The model selects synthesis for new jobs;
  * ordinary enqueue preserves matching published audio when the configured model changes.
  */
-export function elevenLabsProfile(voice, model) {
-  return { engine: "elevenlabs", language: "ru", speaker: voice, model, configVersion: "1", chunking: "elevenlabs-v3", maximumPublicationDurationSec: 300 };
+export function elevenLabsProfile(voice, model, language = "ru") {
+  if (!LANGUAGES.has(language)) throw failure("TTS_LANGUAGE_UNSUPPORTED");
+  return { engine: "elevenlabs", language, speaker: voice, model, configVersion: "1", chunking: "elevenlabs-v3", maximumPublicationDurationSec: 300 };
 }
 
 // The queued text is already normalized for speech; normalizing again would change it.
@@ -32,7 +34,11 @@ export function startSpeechAudioWorker({ store, speechProvider, profileId, audio
     const lease = { workerId, generation: claim.leaseGeneration, leaseToken: claim.leaseToken };
     try {
       store.heartbeatExternalAudio(claim.id, { ...lease, leaseMs: LEASE_MS, progress: { stage: "synthesis" } });
-      const voiced = { ...speechProvider, voice: claim.profile.speaker ?? speechProvider.voice };
+      const language = claim.profile.language ?? "ru";
+      if (!LANGUAGES.has(language) || (language !== "ru" && (claim.profile.engine !== "elevenlabs" || speechProvider.ttsProvider !== "elevenlabs"))) {
+        throw failure("TTS_LANGUAGE_UNSUPPORTED");
+      }
+      const voiced = { ...speechProvider, ttsLanguage: language, voice: claim.profile.speaker ?? speechProvider.voice };
       const deliberate = claim.profile.engine === "elevenlabs" && Boolean(claim.revoiceRequestId);
       if (deliberate) {
         // Keep completed retry caches readable after a runtime-model change; a cache miss requires the original model.

@@ -56,6 +56,27 @@ describe("universal walk adapters", () => {
     expect(chapters.map(chapter => chapter.status)).toEqual(["preparing", "preparing"]);
   });
 
+  it("preserves localized chapter language through the player adapter", () => {
+    const sourceDocument = draftToWalkDocument(draft([firstStop]), "33333333-3333-4333-8333-333333333333");
+    const document = { ...sourceDocument, title: "A walk" };
+    const hash = "a".repeat(64);
+    const story = { title: "House", address: firstStop.address, paragraphs: [{ text: "An English story.", factIds: [] }], sources: [], facts: [] };
+    const view = { document, sourceDocument, documentLocalization: { requestedLocale: "en" as const, contentLocale: "en" as const, fallbackReason: null },
+      revision: 1, contentVersion: "en-1", requestedLocale: "en" as const,
+      chapters: document.stops.map(stop => ({ id: stop.id, status: "ready" as const, story,
+        audio: { url: `/api/story-audio/${hash}.mp3`, sha256: hash, durationSec: 30, language: "en" as const },
+        localization: { requestedLocale: "en" as const, contentLocale: "en" as const, fallbackReason: null } })) };
+    const route = walkViewToRoute(view);
+    expect(route.requested_locale).toBe("en");
+    expect(route.content_locale).toBe("en");
+    expect(route.fallback_reason).toBeNull();
+    expect(route.title).toBe("A walk");
+    expect(route.walk?.steps[0].localization?.contentLocale).toBe("en");
+    expect(route.walk?.steps[0].audio?.language).toBe("en");
+    expect(route.pois[0].story.opening).toBe("House");
+    expect(route.pois[0].editorial_note).toBe("Sources and facts are available in the stop card.");
+  });
+
   it("links a published OSM story selected by the route planner", () => {
     const contentStop = { ...firstStop, contentId: "osm:way:42" };
     const document = draftToWalkDocument(draft([contentStop]), "44444444-4444-4444-8444-444444444444");

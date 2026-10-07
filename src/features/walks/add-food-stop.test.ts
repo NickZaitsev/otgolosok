@@ -73,6 +73,29 @@ describe("добавление заведения в прогулку", () => {
     expect(d.account).not.toHaveBeenCalled();
   });
 
+  it("переносит прогресс только выбранного языка в локализованную копию", async () => {
+    const checkpoint = { version: 1, routeId: "catalog-walk", chapterId: "a", audioUrl: "/audio/walk/a-en.mp3", positionSec: 12 };
+    const storage = memoryStorage({ "otgolosok:playback:catalog-walk:en": JSON.stringify(checkpoint),
+      "otgolosok:playback:catalog-walk": JSON.stringify({ ...checkpoint, audioUrl: "/audio/walk/a-ru.mp3" }) });
+    const base = view(0, "catalog-walk");
+    const sourceDocument = { ...base.document, description: "Русское описание",
+      stops: base.document.stops.map((stop, index) => ({ ...stop, transition: index === 0 ? "Идите прямо." : "", nextHint: "" })) };
+    const displayDocument = { ...sourceDocument, title: "A walk", description: "English description",
+      stops: sourceDocument.stops.map((stop, index) => ({ ...stop, transition: index === 0 ? "Continue straight." : "", nextHint: "" })) };
+    const localized: WalkView = { ...base, document: displayDocument, sourceDocument,
+      documentLocalization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null }, requestedLocale: "en", chapters: base.chapters.map(chapter => ({ ...chapter,
+      localization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null } })) };
+    const result = await run({ kind: "catalog", id: "catalog-walk" }, deps(storage), localized);
+    expect(result.view.requestedLocale).toBe("en");
+    expect(JSON.parse(storage.values.get(`otgolosok:playback:${COPY}:en`)!)).toEqual({ ...checkpoint, routeId: COPY });
+    expect(storage.values.has(`otgolosok:playback:${COPY}`)).toBe(false);
+    expect(result.view.chapters.find(chapter => chapter.id === COPY)?.localization?.contentLocale).toBe("en");
+    expect(result.view.document.title).toBe("Прогулка");
+    expect(result.view.sourceDocument).toBeUndefined();
+    expect(result.view.documentLocalization).toEqual({ requestedLocale: "en", contentLocale: "ru", fallbackReason: "stale" });
+    expect(getLocalWalk(storage, COPY)?.document.title).toBe("Прогулка");
+  });
+
   it("чужая прогулка при входе копируется в кабинет под ID, который выдал сервер", async () => {
     const d = deps();
     d.session.mockResolvedValue({ id: "user" });

@@ -90,6 +90,35 @@ describe("офлайн-комплект прогулки", () => {
     expect(await cache.match(audioUrl)).toBeUndefined();
     expect(await loadOfflineWalk(catalogRef, cache)).not.toBeNull();
   });
+
+  it("разделяет языковые копии, сохраняя старый русский адрес", async () => {
+    const cache = new MemoryCache();
+    const enRef = offlineWalkRef("catalog", "arbat", null, "en")!;
+    const enView: WalkView = { ...silentView, requestedLocale: "en", contentVersion: "version-en", chapters: silentView.chapters.map(chapter => ({ ...chapter,
+      story: chapter.story && { ...chapter.story, title: "House", paragraphs: [{ text: "An English story.", factIds: [] }] },
+      localization: { requestedLocale: "en", contentLocale: "en", fallbackReason: null } })) };
+    await saveWalkOffline(silentView, catalogRef, { cache });
+    await saveWalkOffline(enView, enRef, { cache });
+    expect((await loadOfflineWalk(catalogRef, cache))?.view).toEqual(silentView);
+    expect((await loadOfflineWalk(enRef, cache))?.view).toEqual(enView);
+    expect([...cache.entries.keys()].some(key => key === "/__offline/walks/public%3Acatalog/arbat/pointer.json")).toBe(true);
+    expect([...cache.entries.keys()].some(key => key === "/__offline/walks/public%3Acatalog/arbat/en/pointer.json")).toBe(true);
+    await removeOfflineWalk(enRef, cache);
+    expect(await loadOfflineWalk(catalogRef, cache)).not.toBeNull();
+  });
+
+  it("читает старый manifest v1 только как русский", async () => {
+    const cache = new MemoryCache();
+    await saveWalkOffline(silentView, catalogRef, { cache });
+    const key = "/__offline/walks/public%3Acatalog/arbat/pointer.json";
+    const pointer = await (await cache.match(key))!.json();
+    delete pointer.manifest.requestedLocale;
+    pointer.version = 1;
+    pointer.manifest.version = 1;
+    await cache.put(key, new Response(JSON.stringify(pointer)));
+    expect((await loadOfflineWalk(catalogRef, cache))?.view).toEqual(silentView);
+    expect(await loadOfflineWalk(offlineWalkRef("catalog", "arbat", null, "en")!, cache)).toBeNull();
+  });
 });
 
 describe("адрес офлайн-копии", () => {

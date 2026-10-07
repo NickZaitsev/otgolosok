@@ -12,9 +12,14 @@ export type WalkDocument = {
 export type WalkStory = { title: string; address: string; paragraphs: Array<{ text: string; factIds: string[] }>;
   sources: Array<{ id: string; title: string; url: string; publisher: string }>;
   facts: Array<{ id: string; claim: string; sourceIds: string[] }>; checkedAt?: string };
-export type WalkAudio = { url: string; sha256: string; durationSec: number };
-export type WalkView = { document: WalkDocument; revision: number; contentVersion: string;
+export type ContentLocale = "ru" | "en" | "zh";
+export type WalkLocalization = { requestedLocale: ContentLocale; contentLocale: ContentLocale; fallbackReason: null | "missing" | "draft" | "stale" };
+export type WalkAudio = { url: string; sha256: string; durationSec: number; language?: ContentLocale };
+export type WalkView = { document: WalkDocument; sourceDocument?: WalkDocument; documentLocalization?: WalkLocalization | null; revision: number; contentVersion: string; requestedLocale?: ContentLocale;
   chapters: Array<{ id: string; status: "not_requested" | "preparing" | "text_ready" | "ready" | "failed" | "review_required" | "insufficient_evidence" | "unavailable";
-    story: WalkStory | null; audio: WalkAudio | null }> };
+    story: WalkStory | null; audio: WalkAudio | null; localization?: WalkLocalization | null }> };
+
+export const walkRequestedLocale = (view: Pick<WalkView, "requestedLocale">): ContentLocale => view.requestedLocale ?? "ru";
+export const chapterContentLocale = (chapter: WalkView["chapters"][number]): ContentLocale => chapter.localization?.contentLocale ?? "ru";
 
 export { validateWalkDocument, migrateLegacyDraft, validateWalkView } from "../../../backend/walk-document.mjs";

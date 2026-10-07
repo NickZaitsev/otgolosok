@@ -38,6 +38,7 @@ import { createWalkReviewRoutes } from "./walk-review-routes.mjs";
 import { createPlaceFeedbackRoutes } from "./place-feedback-routes.mjs";
 import { createWalkImprovementRoutes } from "./walk-improvement-routes.mjs";
 import { resolveWalkView } from "./walk-view.mjs";
+import { readContentLocale } from "./content-localization.mjs";
 import { builtinRoutes } from "./builtin-routes.mjs";
 import { catalogMovedShare, catalogWalkView, listedCatalogRoutes } from "./walk-catalog.mjs";
 import { normalizeForSpeech } from "./text-normalizer.mjs";
@@ -193,7 +194,7 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
           const walk=accountStore.getWalk(session.user.id,ownWalkView[1]);
           if(!walk){json(res,404,{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
           if(walk.snapshotError){json(res,409,{error:{code:"INVALID_WALK",message:"Снимок прогулки повреждён. Скачайте исходную копию и восстановите её."}});return;}
-          json(res,200,resolveWalkView(walk.snapshot,walk.revision,store));return;
+          json(res,200,resolveWalkView(walk.snapshot,walk.revision,store,{requestedLocale:readContentLocale(url.searchParams)}));return;
         }
         const ownWalkSharing=new RegExp(`^/api/me/walks/(${UUID})/sharing$`).exec(url.pathname);
         if(ownWalkSharing&&req.method==="PUT"){
@@ -653,7 +654,7 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
           lat:nearby?Number(url.searchParams.get("lat")):null,lon:nearby?Number(url.searchParams.get("lon")):null,radius:nearby?Number(url.searchParams.get("radius")):null,bounds}));return;
       }
       const publicPlace=/^\/api\/content\/places\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
-      if(readMethod&&publicPlace){const place=store.getPublishedPlace(publicPlace[1]);if(place)sendCacheableJson(req,res,JSON.stringify({place}));else json(res,404,{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
+      if(readMethod&&publicPlace){const place=store.getPublishedPlace(publicPlace[1],{requestedLocale:readContentLocale(url.searchParams)});if(place)sendCacheableJson(req,res,JSON.stringify({place}));else json(res,404,{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
       // The shared link of a place: its preview tags for messengers, then the map (backend/place-share.mjs).
       if(readMethod&&url.pathname.startsWith("/place/")) {
         const placeId=sharePathToPlaceId(url.pathname);
@@ -709,15 +710,15 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
       if(req.method==="GET"&&sharedWalk){
         const walk=accountStore?.getSharedWalk(sharedWalk[1]);
         if(!walk||walk.snapshotError){json(res,404,{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
-        json(res,200,resolveWalkView(walk.snapshot,walk.revision,store));return;
+        json(res,200,resolveWalkView(walk.snapshot,walk.revision,store,{requestedLocale:readContentLocale(url.searchParams)}));return;
       }
       const catalogView=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})\/view$/.exec(url.pathname);
       if(req.method==="GET"&&catalogView){const share=catalogMovedShare(builtinRoutes.find(route=>route.id===catalogView[1]));
         if(share){json(res,410,{error:{code:"WALK_MOVED",message:"Прогулка переехала по новой ссылке.",share}});return;}
-        const route=store.getPublishedWalk(catalogView[1]);json(res,route?200:404,route?catalogWalkView(route):{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
+        const locale=readContentLocale(url.searchParams),route=store.getPublishedWalk(catalogView[1]);json(res,route?200:404,route?catalogWalkView(route,{requestedLocale:locale}):{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;}
       if(req.method==="GET"&&publishedWalk) {
-        const route=store.getPublishedWalk(publishedWalk[1]);
-        json(res,route?200:404,route??{error:{code:"NOT_FOUND",message:"Walk not found."}});return;
+        const locale=readContentLocale(url.searchParams),route=store.getPublishedWalk(publishedWalk[1]);
+        json(res,route?200:404,route?(locale==="ru"?route:{...route,requested_locale:locale,content_locale:"ru",fallback_reason:"missing"}):{error:{code:"NOT_FOUND",message:"Walk not found."}});return;
       }
       if(req.method==="GET"&&url.pathname==="/api/story-place") {
         try {
@@ -750,7 +751,7 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
         if(url.pathname==="/api/story-walks/resolve") {
           const input=await body(req,100000);
           if(Object.keys(input).some(key=>!["document","revision"].includes(key))||!Number.isSafeInteger(input.revision)||input.revision<0)throw failure("BAD_REQUEST");
-          json(res,200,resolveWalkView(input.document,input.revision,store));return;
+          json(res,200,resolveWalkView(input.document,input.revision,store,{requestedLocale:readContentLocale(url.searchParams)}));return;
         }
         if(await launches(req,res,url,session))return;
         if(!provider) {json(res,503,{error:{message:"Подготовка историй пока недоступна."}});return;}

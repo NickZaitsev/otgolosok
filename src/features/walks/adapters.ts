@@ -1,4 +1,4 @@
-import { validateWalkDocument, validateWalkView, type WalkAudio, type WalkDocument, type WalkStory, type WalkView } from "./model";
+import { validateWalkDocument, validateWalkView, type ContentLocale, type WalkAudio, type WalkDocument, type WalkStory, type WalkView } from "./model";
 import type { Draft, Place as DraftPlace, StoryRef as DraftStoryRef } from "../walk-builder/model";
 import type { Coordinates, HistoricalContent, Poi, Route, WalkStep } from "../tour/types";
 import { isJobId, placeKey } from "../walk-builder/model";
@@ -115,10 +115,15 @@ function dateOnly(value: string | undefined) {
   return value?.slice(0, 10) || "";
 }
 
-function walkStoryToHistorical(story: WalkStory | null, revision: number): HistoricalContent {
+function walkStoryToHistorical(story: WalkStory | null, revision: number, contentLocale: ContentLocale = "ru"): HistoricalContent {
+  const pending = contentLocale === "en" ? "Story is still being prepared" : contentLocale === "zh" ? "故事仍在准备中" : "История ещё готовится";
+  const pendingNote = contentLocale === "en" ? "The story will become available after the sources are verified."
+    : contentLocale === "zh" ? "资料来源核实后，故事将会开放。" : "История станет доступна после проверки источников.";
+  const editorialNote = contentLocale === "en" ? "Sources and facts are available in the stop card."
+    : contentLocale === "zh" ? "可在停靠点卡片中查看资料来源和事实。" : "Источники и факты доступны в карточке остановки.";
   if (!story) return {
     story: {
-      opening: "История ещё готовится",
+      opening: pending,
       duration_sec: 0,
       duration_is_estimate: true,
       text_status: "draft",
@@ -130,7 +135,7 @@ function walkStoryToHistorical(story: WalkStory | null, revision: number): Histo
     },
     sources: [],
     facts: [],
-    editorial_note: "История станет доступна после проверки источников.",
+    editorial_note: pendingNote,
   };
   return {
     story: {
@@ -158,7 +163,7 @@ function walkStoryToHistorical(story: WalkStory | null, revision: number): Histo
       confidence: "verified",
       evidence: fact.sourceIds.map(sourceId => ({ source_id: sourceId, locator: "", summary: "" })),
     })),
-    editorial_note: "Источники и факты доступны в карточке остановки.",
+    editorial_note: editorialNote,
   };
 }
 
@@ -173,6 +178,7 @@ function audioToLegacy(audio: WalkAudio | null): WalkStep["audio"] {
     script_sha256: audio.sha256,
     audio_sha256: audio.sha256,
     generated_at: "",
+    ...(audio.language ? { language: audio.language } : {}),
   };
 }
 
@@ -187,7 +193,7 @@ function photoPlace(stop: WalkView["document"]["stops"][number], story: WalkStor
 function chapterToPoi(view: WalkView, index: number): { poi: Poi; step: WalkStep } {
   const stop = view.document.stops[index];
   const chapter = view.chapters[index];
-  const content = walkStoryToHistorical(chapter.story, view.revision);
+  const content = walkStoryToHistorical(chapter.story, view.revision, chapter.localization?.contentLocale ?? "ru");
   const placeId = photoPlace(stop, chapter.story);
   const poi: Poi = {
     id: stop.id,
@@ -211,6 +217,7 @@ function chapterToPoi(view: WalkView, index: number): { poi: Poi; step: WalkStep
     ...(stop.triggerLocation ? { trigger_location: stop.triggerLocation } : {}),
     trigger: defaultTrigger,
     status: chapter.status,
+    ...(chapter.localization ? { localization: chapter.localization } : {}),
     ...(placeId ? { place_id: placeId } : {}),
     ...(audioToLegacy(chapter.audio) ? { audio: audioToLegacy(chapter.audio) } : {}),
   };
@@ -232,7 +239,7 @@ export function walkViewToRoute(input: WalkView): Route {
     viewpoint: anchor.location,
     viewpoint_pending: true,
     trigger: defaultTrigger,
-    ...walkStoryToHistorical(null, view.revision),
+    ...walkStoryToHistorical(null, view.revision, view.requestedLocale ?? "ru"),
   } satisfies Poi];
   return {
     id: view.document.id,
@@ -243,6 +250,9 @@ export function walkViewToRoute(input: WalkView): Route {
     distance_km: route ? route.distanceM / 1000 : 0,
     poi_count: chapters.length,
     status: route ? "published" : "draft",
+    ...(view.documentLocalization ? { requested_locale: view.documentLocalization.requestedLocale,
+      content_locale: view.documentLocalization.contentLocale, fallback_reason: view.documentLocalization.fallbackReason }
+      : view.requestedLocale ? { requested_locale: view.requestedLocale } : {}),
     pois: poi,
     notes: [],
     walk: {
@@ -288,8 +298,13 @@ export function routeToWalkView(route: Route): WalkView {
       url: step.audio.url,
       sha256: step.audio.audio_sha256,
       durationSec: step.audio.duration_sec,
+      ...(step.audio.language ? { language: step.audio.language } : route.content_locale ? { language: route.content_locale } : {}),
     } : null;
-    return { id: step.id, status: audio ? "ready" as const : story ? "text_ready" as const : "unavailable" as const, story, audio };
+    const localization = step.localization ?? (route.requested_locale && route.content_locale ? {
+      requestedLocale: route.requested_locale, contentLocale: route.content_locale, fallbackReason: route.fallback_reason ?? null,
+    } : undefined);
+    return { id: step.id, status: audio ? "ready" as const : story ? "text_ready" as const : "unavailable" as const, story, audio,
+      ...(localization ? { localization } : {}) };
   });
   const start = route.walk?.start ? { address: route.walk.start.address, location: { ...route.walk.start.location } } : null;
   const geometry = route.walk?.path.coordinates.map(([lon, lat]) => ({ lat, lon })) ?? [];
@@ -308,7 +323,10 @@ export function routeToWalkView(route: Route): WalkView {
       fieldChecked: route.walk?.field_checked ?? false,
     },
     revision: 0,
-    contentVersion: `catalog:${route.id}:${route.walk?.steps.length ?? 0}`,
+    ...(route.requested_locale ? { requestedLocale: route.requested_locale,
+      ...(route.content_locale ? { documentLocalization: { requestedLocale: route.requested_locale, contentLocale: route.content_locale,
+        fallbackReason: route.fallback_reason ?? null } } : {}) } : {}),
+    contentVersion: `catalog:${route.id}:${route.requested_locale ? `${route.requested_locale}:` : ""}${route.walk?.steps.length ?? 0}`,
     chapters,
   });
 }

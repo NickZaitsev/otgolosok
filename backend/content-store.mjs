@@ -5,6 +5,8 @@ import { osmPostalAddress } from "./osm-context.mjs";
 import { IDENTITY_RULES_VERSION, IDENTITY_TIERS } from "./identity-triage.mjs";
 import { cellKey, cellOf, etagOf, isCellLat, isCellLon, serializeCell, toMapPoint } from "./map-cells.mjs";
 import { EDITORIAL_NEXT_CHECK, editorialPlaceImages, PLACE_IMAGE_FILE, PLACE_IMAGE_URL_PREFIX, placeImageInputHash } from "./place-images.mjs";
+import { contentSourceHash } from "./content-localization.mjs";
+import { createPlaceTranslationStore } from "./place-translations.mjs";
 
 const encode = JSON.stringify;
 const decode = value => value == null ? null : JSON.parse(value);
@@ -143,6 +145,7 @@ export function createContentStore({db,now,transaction}) {
     CREATE TABLE IF NOT EXISTS place_open_data (place_id TEXT NOT NULL,dataset_id INTEGER NOT NULL,record_id TEXT NOT NULL,dataset_version TEXT NOT NULL,
       match_json TEXT NOT NULL,record_json TEXT NOT NULL,content_hash TEXT NOT NULL,imported_at TEXT NOT NULL,PRIMARY KEY(place_id,dataset_id));
   `);
+  const translations=createPlaceTranslationStore({db,now,transaction});
   const columns=new Set(db.prepare("PRAGMA table_info(places)").all().map(column=>column.name));
   if(!columns.has("geometry_json"))db.exec("ALTER TABLE places ADD COLUMN geometry_json TEXT");
   if(!columns.has("provenance_json"))db.exec("ALTER TABLE places ADD COLUMN provenance_json TEXT");
@@ -212,6 +215,7 @@ export function createContentStore({db,now,transaction}) {
     job:row.job_state?{state:row.job_state,identityPolicy:row.job_policy}:null});
 
   return {
+    ...translations,
     importPlaces(catalog,{complete=false}={}) {
       if(!catalog||!Array.isArray(catalog.places)||!catalog.places.length||typeof catalog.sourceSha256!=="string")throw fail("BAD_REQUEST");
       return transaction(()=>{
@@ -307,12 +311,12 @@ export function createContentStore({db,now,transaction}) {
       return [...cells.values()].map(({cell,points})=>({lat:cell.lat,lon:cell.lon,count:points.length,etag:etagOf(serializeCell(cell,points))}))
         .sort((a,b)=>a.lat-b.lat||a.lon-b.lon);
     },
-    getPublishedPlace(id) {
+    getPublishedPlace(id, {requestedLocale="ru"}={}) {
       const place=viewPlace(db.prepare("SELECT * FROM places WHERE id=? AND archived=0").get(id));if(!place)return null;
       const text=db.prepare("SELECT * FROM place_texts WHERE place_id=? AND approved_story_json IS NOT NULL ORDER BY created_at DESC,rowid DESC LIMIT 1").get(id);if(!text)return null;
       const audio=latestApprovedAudio(id),story=decode(text.approved_story_json);
-      return {...place,text:{id:text.id,profile:text.profile,story,verification:text.verification,audio:decode(audio),createdAt:text.created_at},
-        photo:publicPhoto(this.getPlaceImageRow(id),story,place.name)};
+      return this.localizePublishedPlace({...place,text:{id:text.id,profile:text.profile,story,verification:text.verification,audio:decode(audio),createdAt:text.created_at},
+        photo:publicPhoto(this.getPlaceImageRow(id),story,place.name)},requestedLocale);
     },
     /** Mirrors the editorial catalog: upserts its entries and drops editorial rows that left it, so the sync takes them over. */
     syncEditorialPlaceImages(catalog) {
@@ -613,12 +617,13 @@ export function createContentStore({db,now,transaction}) {
         db.prepare("UPDATE content_jobs SET state='ready',error_json=NULL,updated_at=? WHERE id=?").run(timestamp,id);db.prepare("UPDATE content_job_attempts SET state='ready',finished_at=? WHERE job_id=? AND generation=?").run(timestamp,id,row.attempts);syncItems(id,"ready");
         return {id:existing.id,placeId:existing.place_id,story,sourceRevision:0,audioProfiles:[]};}
       if(existing){const timestamp=iso(now),selected=decode(existing.story_json);
-        if(autoApprove&&!existing.approved_story_json)db.prepare("UPDATE place_texts SET approved_story_json=? WHERE id=?").run(encode(selected),existing.id);
+        if(autoApprove&&!existing.approved_story_json){db.prepare("UPDATE place_texts SET approved_story_json=? WHERE id=?").run(encode(selected),existing.id);this.invalidatePlaceTranslations(existing.place_id,existing.id);}
         db.prepare("UPDATE content_jobs SET state='ready',updated_at=? WHERE id=?").run(timestamp,id);syncItems(id,"ready");return{id:existing.id,placeId:existing.place_id,story:selected,audioProfiles:audioProfiles()};}
       const timestamp=iso(now),textId=randomUUID();db.prepare(`INSERT INTO place_texts
         (id,place_id,input_key,profile,content_hash,story_json,evidence_json,verification,audio_json,approved_story_json,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)
         `)
         .run(textId,row.place_id,row.input_key,row.profile,sha256(encode(story)),encode(story),encode(evidence),verification,null,autoApprove||verification==="editorial"?encode(story):null,timestamp);
+      if(autoApprove||verification==="editorial")this.invalidatePlaceTranslations(row.place_id,textId);
       db.prepare("UPDATE content_jobs SET state='ready',error_json=NULL,updated_at=? WHERE id=?").run(timestamp,id);db.prepare("UPDATE content_job_attempts SET state='ready',finished_at=? WHERE job_id=? AND generation=?").run(timestamp,id,row.attempts);syncItems(id,"ready");
       return {id:textId,placeId:row.place_id,story,sourceRevision:0,audioProfiles:audioProfiles()};});},
     /** countAttempt=false: the failure was the provider's, not the job's (outage), so the attempt is given back and the job always waits for another try. */
@@ -631,12 +636,13 @@ export function createContentStore({db,now,transaction}) {
         CASE WHEN approved_story_json IS NOT NULL THEN 1 ELSE 0 END DESC,created_at DESC,rowid DESC LIMIT 1`).get(placeId);if(!row)return null;
       const selected=story??decode(row.story_json);if(!selected||typeof selected.title!=="string"||!Array.isArray(selected.paragraphs)||!selected.paragraphs.length)throw fail("BAD_REQUEST");
       const timestamp=iso(now),selectedJson=encode(selected),approvedStory=decode(row.approved_story_json),sameApproved=approvedStory
-        &&approvedStory.title===selected.title&&approvedStory.paragraphs?.map(paragraph=>paragraph.text).join("\n\n")===selected.paragraphs.map(paragraph=>paragraph.text).join("\n\n");if(approvedStory&&!sameApproved){
+        &&contentSourceHash(approvedStory)===contentSourceHash(selected);if(approvedStory&&!sameApproved){
         cancelAudioForPlace(placeId,timestamp);
         const id=randomUUID(),inputKey=sha256(encode({editorialParent:row.id,story:selected}));db.prepare(`INSERT INTO place_texts
           (id,place_id,input_key,profile,content_hash,story_json,evidence_json,verification,audio_json,approved_story_json,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)`)
           .run(id,placeId,inputKey,row.profile,sha256(selectedJson),selectedJson,row.evidence_json,"editorial",null,selectedJson,timestamp);row=db.prepare("SELECT * FROM place_texts WHERE id=?").get(id);
       } else if(!row.approved_story_json){db.prepare("UPDATE place_texts SET approved_story_json=?,verification='editorial' WHERE id=?").run(selectedJson,row.id);row=db.prepare("SELECT * FROM place_texts WHERE id=?").get(row.id);}
+      this.invalidatePlaceTranslations(placeId,row.id);
       const profiles=selected.audioDisposition==="not_applicable_short_text"?[]:db.prepare(`SELECT b.tts_profile,max(b.created_at) created_at FROM batch_items i JOIN content_batches b ON b.id=i.batch_id JOIN content_jobs j ON j.id=i.text_job_id
         WHERE j.place_id=? AND b.mode='text-and-audio' AND b.tts_profile IS NOT NULL GROUP BY b.tts_profile ORDER BY created_at,b.tts_profile`).all(placeId).map(item=>item.tts_profile);
       const approved=this.getPlace(placeId);return {...approved,text:{...approved.text,story:selected},audioProfiles:profiles};});},

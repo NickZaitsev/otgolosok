@@ -18,12 +18,45 @@ test("speech sends the tagged narration to eleven_v4 with the selected voice", a
   assert.equal(calls[0].headers["xi-api-key"], "PRIVATE_KEY");
   assert.deepEqual(calls[0].body, { text: "[warmly] Памятник Гаазу.", model_id: "eleven_v4", language_code: "ru" });
   assert.equal(tts.ttsModel, "eleven_v4");
+  assert.equal(tts.ttsLanguage, "ru");
   assert.equal(tts.scriptVersion, "tags-test");
+});
+
+test("speech enforces Chinese language_code and keeps tagged CJK text intact", async () => {
+  const calls = [];
+  const tagged = "[warmly]这里是特列季亚科夫画廊。[short pause]“请看这里！”";
+  const tts = createElevenLabsTts({ apiKeys: [{ apiKey: "key" }], voice: "Otgolosok2", language: "zh",
+    tagNarration: async (script, options) => { calls.push({ script, tagLanguage: options.language }); return tagged; },
+    fetchImpl: async (_url, init) => { calls.push(JSON.parse(String(init.body))); return audio(); } });
+  await tts.speech("这里是特列季亚科夫画廊。“请看这里！”");
+  assert.equal(tts.ttsLanguage, "zh");
+  assert.deepEqual(calls, [
+    { script: "这里是特列季亚科夫画廊。“请看这里！”", tagLanguage: "zh" },
+    { text: tagged, model_id: "eleven_v4", language_code: "zh" },
+  ]);
+});
+
+test("speech can override the configured language for one English narration", async () => {
+  const seen = [];
+  const tts = createElevenLabsTts({ apiKeys: [{ apiKey: "key" }], voice: "Otgolosok2",
+    tagNarration: async (script, options) => { seen.push([script, options.language]); return `[warmly] ${script}`; },
+    fetchImpl: async (_url, init) => { seen.push(JSON.parse(String(init.body))); return audio(); } });
+  await tts.speech("This is the Tretyakov Gallery.", { language: "en" });
+  assert.deepEqual(seen, [
+    ["This is the Tretyakov Gallery.", "en"],
+    { text: "[warmly] This is the Tretyakov Gallery.", model_id: "eleven_v4", language_code: "en" },
+  ]);
+  assert.equal(tts.ttsLanguage, "ru", "a per-call override does not mutate the provider default");
 });
 
 test("long narration is split between paragraphs and sentences within the request limit", () => {
   assert.deepEqual(speechChunks("Один.\n\nДва.\n\n\nТри.", 12), ["Один.\n\nДва.", "Три."]);
   assert.deepEqual(speechChunks("Первое. Второе! Третье?", 16), ["Первое. Второе!", "Третье?"]);
+  assert.deepEqual(speechChunks("第一句。第二句！第三句？", 8), ["第一句。第二句！", "第三句？"]);
+  assert.deepEqual(speechChunks("“第一句。”第二句！", 6), ["“第一句。”", "第二句！"]);
+  assert.deepEqual(speechChunks(`${"甲".repeat(2999)}。`), [`${"甲".repeat(2999)}。`]);
+  assert.throws(() => speechChunks(`${"甲".repeat(3000)}。`), { code: "TTS_FAILED" });
+  assert.throws(() => speechChunks(`Коротко.\n\n${"。".repeat(11)}`, 10), { code: "TTS_FAILED" });
   assert.throws(() => speechChunks("Слишком длинное предложение", 10), { code: "TTS_FAILED" });
   assert.throws(() => speechChunks("  \n\n "), { code: "TTS_FAILED" });
 });
@@ -58,6 +91,16 @@ test("configuration requires a key, a safe voice id and a tagger", () => {
     { apiKeys: ["k"], voice: "v1", tagNarration }, { apiKeys: [{ apiKey: "k", voice: "../v2" }], voice: "v1", tagNarration },
     { apiKeys: [{ apiKey: "k" }], voice: "../v1", tagNarration }, { apiKeys: [{ apiKey: "k" }], voice: "v1" }])
     assert.throws(() => createElevenLabsTts(/** @type {any} */ (options)), { code: "PROVIDER_CONFIG" });
+  assert.throws(() => createElevenLabsTts({ apiKeys: [{ apiKey: "k" }], voice: "v1", tagNarration, language: /** @type {any} */ ("fr") }), { code: "TTS_LANGUAGE_UNSUPPORTED" });
+});
+
+test("unsupported speech language fails before tagging or synthesis", async () => {
+  let tags = 0, requests = 0;
+  const tts = createElevenLabsTts({ apiKeys: [{ apiKey: "key" }], voice: "voice1",
+    tagNarration: async () => { tags++; return "[warmly] Text."; }, fetchImpl: async () => { requests++; return audio(); } });
+  await assert.rejects(tts.speech("Text.", { language: /** @type {any} */ ("fr") }), { code: "TTS_LANGUAGE_UNSUPPORTED" });
+  assert.equal(tags, 0);
+  assert.equal(requests, 0);
 });
 
 test("account voices put Russian ones first and skip malformed entries", async () => {

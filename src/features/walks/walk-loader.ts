@@ -1,4 +1,4 @@
-import { validateWalkView, type WalkDocument, type WalkView } from "./model";
+import { validateWalkView, walkRequestedLocale, type ContentLocale, type WalkDocument, type WalkView } from "./model";
 import { loadOfflineWalk, type OfflineWalkRef } from "./offline";
 
 export type WalkCard = {
@@ -92,53 +92,69 @@ export async function loadJson<T>(url: string, signal: AbortSignal, validate: (v
   throw last ?? new WalkLoadError("Не удалось открыть прогулку.");
 }
 
-export function localWalkView(document: WalkDocument, revision: number): WalkView {
+function localizedApiUrl(url: string, locale: ContentLocale) {
+  return locale === "ru" ? url : `${url}${url.includes("?") ? "&" : "?"}lang=${locale}`;
+}
+
+function requestedView(value: unknown, locale: ContentLocale): WalkView {
+  const view: WalkView = validateWalkView(value);
+  if (walkRequestedLocale(view) !== locale) throw new Error("Сервис вернул прогулку на другом языке.");
+  return view;
+}
+
+export function localWalkView(document: WalkDocument, revision: number, locale: ContentLocale = "ru"): WalkView {
   return validateWalkView({
     document,
     revision,
-    contentVersion: `local:${revision}`,
+    contentVersion: locale === "ru" ? `local:${revision}` : `local:${locale}:${revision}`,
+    ...(locale === "ru" ? {} : { requestedLocale: locale,
+      documentLocalization: { requestedLocale: locale, contentLocale: "ru", fallbackReason: "missing" as const } }),
     chapters: document.stops.map(stop => ({
       id: stop.id,
       status: stop.storyRef ? "preparing" : "not_requested",
       story: null,
       audio: null,
+      ...(locale === "ru" ? {} : { localization: { requestedLocale: locale, contentLocale: locale, fallbackReason: null } }),
     })),
   });
 }
 
 // Гостевая прогулка хранится только в браузере, поэтому опубликованные истории
 // её остановок сервер подставляет по присланному документу.
-export async function resolveLocalWalkView(document: WalkDocument, revision: number, signal: AbortSignal) {
-  const base = localWalkView(document, revision);
+export async function resolveLocalWalkView(document: WalkDocument, revision: number, signal: AbortSignal, locale: ContentLocale = "ru") {
+  const base = localWalkView(document, revision, locale);
   if (!document.stops.some(stop => stop.storyRef)) return base;
-  const resolved = await loadJson("/api/story-walks/resolve", signal, (value): WalkView => {
-    const view: WalkView = validateWalkView(value);
-    if (view.revision !== revision || view.chapters.some((chapter, index) => chapter.id !== base.chapters[index].id)) throw new Error();
+  const resolved = await loadJson(localizedApiUrl("/api/story-walks/resolve", locale), signal, (value): WalkView => {
+    const view = requestedView(value, locale);
+    if (view.revision !== revision || view.chapters.some((chapter, index) => chapter.id !== base.chapters[index].id)
+        || view.sourceDocument && JSON.stringify(view.sourceDocument) !== JSON.stringify(document)) throw new Error();
     return view;
   }, 3, { document, revision });
-  return validateWalkView({ ...base, contentVersion: `local:${revision}:${resolved.contentVersion}`, chapters: resolved.chapters });
+  return validateWalkView({ ...base, document: resolved.document, ...(resolved.sourceDocument ? { sourceDocument: resolved.sourceDocument } : {}),
+    ...(resolved.documentLocalization !== undefined ? { documentLocalization: resolved.documentLocalization } : {}),
+    contentVersion: locale === "ru" ? `local:${revision}:${resolved.contentVersion}` : `local:${locale}:${revision}:${resolved.contentVersion}`, chapters: resolved.chapters });
 }
 
 // Без сети прогулка всё равно открывается: остановки остаются в статусе «готовится».
-export async function loadLocalWalkView(document: WalkDocument, revision: number, signal: AbortSignal) {
+export async function loadLocalWalkView(document: WalkDocument, revision: number, signal: AbortSignal, locale: ContentLocale = "ru") {
   try {
-    return await resolveLocalWalkView(document, revision, signal);
+    return await resolveLocalWalkView(document, revision, signal, locale);
   } catch (error) {
     if (signal.aborted) throw error;
-    return localWalkView(document, revision);
+    return localWalkView(document, revision, locale);
   }
 }
 
-export function loadCatalogWalk(id: string, signal: AbortSignal) {
-  return loadJson(`/api/story-walks/${encodeURIComponent(id)}/view`, signal, value => validateWalkView(value));
+export function loadCatalogWalk(id: string, signal: AbortSignal, locale: ContentLocale = "ru") {
+  return loadJson(localizedApiUrl(`/api/story-walks/${encodeURIComponent(id)}/view`, locale), signal, value => requestedView(value, locale));
 }
 
-export function loadSharedWalk(token: string, signal: AbortSignal) {
-  return loadJson(`/api/story-walks/shared/${encodeURIComponent(token)}`, signal, value => validateWalkView(value));
+export function loadSharedWalk(token: string, signal: AbortSignal, locale: ContentLocale = "ru") {
+  return loadJson(localizedApiUrl(`/api/story-walks/shared/${encodeURIComponent(token)}`, locale), signal, value => requestedView(value, locale));
 }
 
-export function loadAccountWalk(id: string, signal: AbortSignal) {
-  return loadJson(`/api/me/walks/${encodeURIComponent(id)}/view`, signal, value => validateWalkView(value));
+export function loadAccountWalk(id: string, signal: AbortSignal, locale: ContentLocale = "ru") {
+  return loadJson(localizedApiUrl(`/api/me/walks/${encodeURIComponent(id)}/view`, locale), signal, value => requestedView(value, locale));
 }
 
 export type LoadedWalk = { view: WalkView; offline: false } | { view: WalkView; offline: true; savedAt: string };

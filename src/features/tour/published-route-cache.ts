@@ -1,5 +1,5 @@
 import { downloadOfflineFood, OFFLINE_FOOD_MAX_BYTES, seedOfflineFood, type OfflineFoodBundle } from "../food/offline-food";
-import type { Route } from "./types";
+import type { ContentLocale, Route } from "./types";
 import { applyPublishedRoute } from "./published-route";
 
 const WALK_CACHE = "walk-packs-v1";
@@ -12,8 +12,22 @@ type GeneratedAudio = {
   sha256: string;
 };
 
-function routeUrl(route: Route) {
-  return `/api/story-walks/${encodeURIComponent(route.id)}`;
+function routeUrl(route: Route, requestedLocale: ContentLocale) {
+  const base = `/api/story-walks/${encodeURIComponent(route.id)}`;
+  return requestedLocale === "ru" ? base : `${base}?lang=${requestedLocale}`;
+}
+
+function fallbackRoute(route: Route, requestedLocale: ContentLocale): Route {
+  if (requestedLocale === "ru") return route;
+  const withoutAudio = (content: Route["pois"][number]) => ({ ...content, story: { ...content.story, audio_url: null } });
+  const silentStep = (step: NonNullable<Route["walk"]>["steps"][number]) => {
+    const silent = { ...step };
+    delete silent.audio;
+    return silent;
+  };
+  return { ...route, requested_locale: requestedLocale, content_locale: "ru", fallback_reason: "missing",
+    pois: route.pois.map(withoutAudio), notes: route.notes?.map(note => ({ ...note, story: { ...note.story, audio_url: null } })),
+    walk: route.walk ? { ...route.walk, steps: route.walk.steps.map(silentStep) } : undefined };
 }
 
 function generatedAudio(route: Route): GeneratedAudio[] {
@@ -33,10 +47,10 @@ async function sha256(bytes: ArrayBuffer) {
   return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
 }
 
-async function fetchPublication(base: Route, url: string, signal: AbortSignal) {
+async function fetchPublication(base: Route, url: string, signal: AbortSignal, requestedLocale: ContentLocale) {
   const response = await fetch(url, { signal, cache: "no-store" });
   if (!response.ok || response.status !== 200) throw new Error("Published walk is unavailable");
-  const merged = applyPublishedRoute(base, await response.json());
+  const merged = applyPublishedRoute(base, await response.json(), requestedLocale);
   if (merged === base) throw new Error("Published walk is invalid");
   signal.throwIfAborted();
   return merged;
@@ -68,32 +82,33 @@ async function fetchAudio(audio: GeneratedAudio, signal: AbortSignal, timeoutMs:
   }
 }
 
-async function cachedPublication(cache: Cache, base: Route, url: string) {
+async function cachedPublication(cache: Cache, base: Route, fallback: Route, url: string, requestedLocale: ContentLocale) {
   try {
     const manifest = await cache.match(url);
-    if (!manifest) return base;
+    if (!manifest) return fallback;
     const value = await manifest.json();
-    const merged = applyPublishedRoute(base, value);
-    if (merged === base) return base;
+    const merged = applyPublishedRoute(base, value, requestedLocale);
+    if (merged === base) return fallback;
     const audio = generatedAudio(merged);
     const available = await Promise.all(audio.map(entry => cache.match(entry.url)));
-    if (!available.every(Boolean)) return base;
+    if (!available.every(Boolean)) return fallback;
     if (value.offlineFood) {
       try { seedOfflineFood(value.offlineFood as OfflineFoodBundle); } catch { /* A damaged optional copy does not block the walk. */ }
     }
     return merged;
   } catch {
-    return base;
+    return fallback;
   }
 }
 
-export async function loadPublishedRoute(base: Route, signal: AbortSignal, { audioTimeoutMs = AUDIO_TIMEOUT_MS } = {}): Promise<Route> {
-  const url = routeUrl(base);
+export async function loadPublishedRoute(base: Route, signal: AbortSignal, { audioTimeoutMs = AUDIO_TIMEOUT_MS, requestedLocale = "ru" as ContentLocale } = {}): Promise<Route> {
+  const url = routeUrl(base, requestedLocale);
+  const fallback = fallbackRoute(base, requestedLocale);
   if (!("caches" in globalThis)) {
     try {
-      return await fetchPublication(base, url, signal);
+      return await fetchPublication(base, url, signal, requestedLocale);
     } catch {
-      return base;
+      return fallback;
     }
   }
 
@@ -102,14 +117,14 @@ export async function loadPublishedRoute(base: Route, signal: AbortSignal, { aud
     cache = await caches.open(WALK_CACHE);
   } catch {
     try {
-      return await fetchPublication(base, url, signal);
+      return await fetchPublication(base, url, signal, requestedLocale);
     } catch {
-      return base;
+      return fallback;
     }
   }
 
   try {
-    const merged = await fetchPublication(base, url, signal);
+    const merged = await fetchPublication(base, url, signal, requestedLocale);
     // One recording at a time, each kept as soon as it is verified: an interrupted
     // update resumes from the missing files instead of downloading everything again.
     for (const entry of generatedAudio(merged)) {
@@ -124,6 +139,6 @@ export async function loadPublishedRoute(base: Route, signal: AbortSignal, { aud
     await cache.put(url, new Response(JSON.stringify({ ...merged, ...(food.bundle ? { offlineFood: food.bundle } : {}) }), { headers: { "Content-Type": "application/json" } }));
     return merged;
   } catch {
-    return cachedPublication(cache, base, url);
+    return cachedPublication(cache, base, fallback, url, requestedLocale);
   }
 }

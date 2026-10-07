@@ -24,6 +24,7 @@ import type { createFoodHoursCache } from "../food/food-walk-model";
 import { useI18n } from "@/lib/i18n/provider";
 import { ContentLanguageNote } from "@/lib/i18n/content-language-note";
 import { toUserMessage } from "@/lib/errors/user-message";
+import { htmlLanguage } from "@/lib/i18n/locale";
 
 export function FoodSheet({ place, manifest, hours, distanceM, onClose }: {
   place: FoodPlace; manifest: FoodManifest; hours: ReturnType<typeof createFoodHoursCache>;
@@ -66,8 +67,12 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
   const { locale, t } = useI18n();
   // A catalog point carries only its header; the text, sources and audio load when the sheet opens.
   const catalog = story.placeId !== undefined && story.chapter === undefined && story.jobId === undefined;
-  const loaded = usePlaceStory(catalog ? story.placeId : undefined);
+  const loaded = usePlaceStory(catalog ? story.placeId : undefined, locale);
   const content: Pick<StoryPin, "paragraphs" | "attribution" | "audioUrl"> = catalog ? loaded.story ?? {} : story;
+  const actualLocale = catalog ? loaded.story?.actualLocale ?? "ru" : "ru";
+  const detailHeader = catalog ? loaded.story?.place : undefined;
+  const displayTitle = detailHeader?.title ?? story.title;
+  const displayAddress = detailHeader?.address ?? story.address;
   const progress = story.progress;
   const expand = isExpandableStory(story) && onExpand && onCollapse ? { onExpand, onCollapse } : null;
   const peek = expand !== null && !expanded;
@@ -81,9 +86,9 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
   const rateable = catalog && !peek && loaded.status === "ready" && story.placeId !== undefined && canRatePlace(story.placeId);
   const label = story.pending ? t("Готовим для вас") : story.chapter !== undefined ? t("По дороге · часть {number}", { number: story.chapter + 1 }) : progress ? progress.label : null;
   const labelText = label ? <span className={a.label}>{label}</span> : null;
-  const title = <h2 id="selected-place-title" className={a.title} lang={locale === "ru" ? undefined : "ru"}>{story.title}</h2>;
+  const title = <h2 id="selected-place-title" className={a.title} lang={htmlLanguage[actualLocale]}>{displayTitle}</h2>;
   // The peek names the place only; the address waits in the expanded card.
-  const heading = peek ? title : <>{title}{story.title !== story.address ? <p className={styles.address} lang={locale === "ru" ? undefined : "ru"}>{story.address}</p> : null}</>;
+  const heading = peek ? title : <>{title}{displayTitle !== displayAddress ? <p className={styles.address} lang="ru">{displayAddress}</p> : null}</>;
   const close = (className?: string) => <button type="button" className={cx(a.iconButton, className)} aria-label={t("Закрыть карточку")} onClick={onClose}><ExploreIcon name="close" /></button>;
   // In the peek the title, the teaser and the photo open the story; controls inside them (retry) keep their own job.
   const expandOnClick = peek ? (event: MouseEvent) => { if (!(event.target as Element).closest("a, button, summary")) expand.onExpand(); } : undefined;
@@ -98,19 +103,19 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
     handle={expand ? <SheetHandle expanded={expanded} onExpand={expand.onExpand} onCollapse={expand.onCollapse} controls="story-sheet"
       expandLabel={t("Читать историю полностью")} collapseLabel={t("Свернуть историю")} /> : null}
     // Only catalog places have photos; the index flag holds the banner until the detail arrives.
-    media={catalog ? <PlacePhotoBanner key={story.id} photo={loaded.story?.photo} pending={story.hasPhoto === true && loaded.status === "loading"} title={story.title}
+    media={catalog ? <PlacePhotoBanner key={story.id} photo={loaded.story?.photo} pending={story.hasPhoto === true && loaded.status === "loading"} title={displayTitle}
       // In the peek the photo is part of the preview and expands the story like its title and text.
       onPreview={peek ? expand.onExpand : undefined} /> : null}
     header={header}
     corner={expand || !label ? close(styles.cornerClose) : null}
     // The player stays with the action: the text never takes it away. It is the walk's player too.
     footer={content.audioUrl || action || rateable ? <>
-      {rateable && story.placeId ? <PlaceFeedback key={story.placeId} placeId={story.placeId} title={story.title} /> : null}
+      {rateable && story.placeId ? <PlaceFeedback key={story.placeId} placeId={story.placeId} title={displayTitle} /> : null}
       {content.audioUrl ? <StoryAudioPlayer key={content.audioUrl} className={styles.audio} src={content.audioUrl} /> : null}{action}
     </> : null}>
     <>
       {peek ? null : <div className={cx(styles.heading, (expand || !label) && styles.titleRow)}>{heading}</div>}
-      {(content.paragraphs?.length || content.audioUrl) ? <ContentLanguageNote /> : null}
+      {(content.paragraphs?.length || content.audioUrl) ? <ContentLanguageNote contentLocale={actualLocale} audioAvailable={Boolean(content.audioUrl)} /> : null}
       {pendingText && loaded.status === "loading" ? <p className={a.text} role="status">{t("Загружаем рассказ…")}</p> : null}
       {pendingText && loaded.status === "error" ? <div role="alert"><p className={a.text}>{t("Не удалось загрузить рассказ.")}</p><button type="button" className={a.secondary} onClick={loaded.retry}>{t("Повторить")}</button></div> : null}
       {pendingText && loaded.status === "missing" ? <p className={a.text} role="status">{t("Эта история больше недоступна.")}</p> : null}
@@ -118,7 +123,7 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
       {progress?.error ? <p className={a.text} role="status">{toUserMessage(new Error(progress.error), "Подготовка прервалась.", locale)}</p> : null}
       {retryError ? <p className={a.text} role="alert">{retryError}</p> : null}
       {progress?.note && !peek ? <p className={styles.source}>{progress.note}</p> : null}
-      {paragraphs ? <div className={cx(styles.story, peek && styles.teaser, peek && styles.expandArea)} lang={locale === "ru" ? undefined : "ru"} onClick={expandOnClick}>{paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div> : null}
+      {paragraphs ? <div className={cx(styles.story, peek && styles.teaser, peek && styles.expandArea)} lang={htmlLanguage[actualLocale]} onClick={expandOnClick}>{paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div> : null}
       {peek ? null : <>
         {content.attribution ? <p className={styles.source}>{t("Источник:")} <a href={content.attribution.url} target="_blank" rel="noopener noreferrer" lang={locale === "ru" ? undefined : "ru"}>{content.attribution.label}</a></p> : null}
         {story.sources?.length ? <details className={`${styles.help} ${styles.sources}`}><summary>{t("Источники")}</summary>
@@ -127,7 +132,7 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
         {!action && story.placeId && !pendingText && !content.paragraphs?.length ? <p className={a.text}>{t(content.audioUrl ? "Проверенный текст доступен в карточке места; запись можно слушать здесь." : "Проверенный текст доступен в карточке места; озвучивание ещё не готово.")}</p> : null}
         {walkHref ? <WalkFromHere href={walkHref} onClick={onWalk} /> : null}
         {/* Only a published catalog place has a link to share, and only the reading view offers it. */}
-        {expand && expanded && isLinkablePlace(story) && loaded.status === "ready" ? <SharePlaceButton key={story.id} placeId={story.id} title={story.title} /> : null}
+        {expand && expanded && isLinkablePlace(story) && loaded.status === "ready" ? <SharePlaceButton key={story.id} placeId={story.id} title={displayTitle} /> : null}
       </>}
     </>
   </Sheet>;

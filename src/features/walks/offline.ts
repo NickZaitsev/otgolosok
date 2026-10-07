@@ -1,6 +1,6 @@
 import { downloadOfflineFood, OFFLINE_FOOD_MAX_BYTES, offlineFoodSummary, seedOfflineFood, type OfflineFood, type OfflineFoodBundle } from "../food/offline-food";
 import { fetchFoodWithRetry } from "../food/food-cells";
-import { validateWalkView, type WalkView } from "./model";
+import { validateWalkView, walkRequestedLocale, type ContentLocale, type WalkView } from "./model";
 
 export const WALK_PACK_CACHE = "walk-packs-v1";
 const PACK_ROOT = "/__offline/walks/";
@@ -9,7 +9,7 @@ export const MAX_PACK_BYTES = 60 * 1024 * 1024;
 const PUBLISHED_ROUTE = /^\/api\/story-walks\/[^/]+$/;
 
 /** Where a saved copy lives: `scope` owns it, `walkId` is the key the walk is opened by. */
-export type OfflineWalkRef = { scope: string; walkId: string };
+export type OfflineWalkRef = { scope: string; walkId: string; requestedLocale?: ContentLocale };
 export type OfflineWalkKind = "id" | "catalog" | "share" | "local";
 
 /**
@@ -17,29 +17,34 @@ export type OfflineWalkKind = "id" | "catalog" | "share" | "local";
  * sign-out. Catalog and shared walks are readable by anyone with the link, and
  * local walks already live in this browser, so their copies are kept on sign-out.
  */
-export function offlineWalkRef(kind: OfflineWalkKind, key: string, userId: string | null): OfflineWalkRef | null {
+export function offlineWalkRef(kind: OfflineWalkKind, key: string, userId: string | null, requestedLocale: ContentLocale = "ru"): OfflineWalkRef | null {
   if (!key) return null;
-  if (kind === "id") return userId ? { scope: userId, walkId: key } : null;
-  return { scope: { catalog: "public:catalog", share: "public:shared", local: "device:local" }[kind], walkId: key };
+  const locale = requestedLocale === "ru" ? {} : { requestedLocale };
+  if (kind === "id") return userId ? { scope: userId, walkId: key, ...locale } : null;
+  return { scope: { catalog: "public:catalog", share: "public:shared", local: "device:local" }[kind], walkId: key, ...locale };
 }
 
 type OfflineAudio = { chapterId: string; url: string; sha256: string; bytes: number };
 export type OfflineWalkManifest = {
-  version: 1;
+  version: 1 | 2;
   walkId: string;
   scope: string;
+  requestedLocale?: ContentLocale;
   revision: number;
   contentVersion: string;
   savedAt: string;
   audio: OfflineAudio[];
   food?: OfflineFood;
 };
-type OfflinePointer = { version: 1; stage: string; manifest: OfflineWalkManifest };
+type OfflinePointer = { version: 1 | 2; stage: string; manifest: OfflineWalkManifest };
 type CachePort = Pick<Cache, "match" | "put" | "delete" | "keys">;
 
 const encode = (value: string) => encodeURIComponent(value);
-const root = (scope: string, walkId: string) => `${PACK_ROOT}${encode(scope)}/${encode(walkId)}`;
-const pointerKey = (scope: string, walkId: string) => `${root(scope, walkId)}/pointer.json`;
+const root = (scope: string, walkId: string, requestedLocale: ContentLocale = "ru") => {
+  const legacy = `${PACK_ROOT}${encode(scope)}/${encode(walkId)}`;
+  return requestedLocale === "ru" ? legacy : `${legacy}/${requestedLocale}`;
+};
+const pointerKey = (scope: string, walkId: string, requestedLocale: ContentLocale = "ru") => `${root(scope, walkId, requestedLocale)}/pointer.json`;
 const response = (value: unknown) => new Response(JSON.stringify(value), { headers: { "Content-Type": "application/json" } });
 
 function randomId() {
@@ -92,11 +97,13 @@ async function pruneAudio(cache: CachePort) {
 }
 
 function readPointer(value: unknown): OfflinePointer | null {
-  if (!value || typeof value !== "object" || (value as { version?: unknown }).version !== 1 || typeof (value as { stage?: unknown }).stage !== "string") return null;
+  if (!value || typeof value !== "object" || ![1, 2].includes(Number((value as { version?: unknown }).version)) || typeof (value as { stage?: unknown }).stage !== "string") return null;
   const pointer = value as OfflinePointer;
-  if (!pointer.manifest || pointer.manifest.version !== 1 || typeof pointer.manifest.walkId !== "string" || typeof pointer.manifest.scope !== "string" ||
+  if (!pointer.manifest || ![1, 2].includes(pointer.manifest.version) || typeof pointer.manifest.walkId !== "string" || typeof pointer.manifest.scope !== "string" ||
       !Number.isSafeInteger(pointer.manifest.revision) || pointer.manifest.revision < 0 || typeof pointer.manifest.contentVersion !== "string" ||
       typeof pointer.manifest.savedAt !== "string" || !Array.isArray(pointer.manifest.audio)) return null;
+  if (pointer.manifest.version === 2 && !["ru", "en", "zh"].includes(pointer.manifest.requestedLocale ?? "")) return null;
+  if (pointer.version !== pointer.manifest.version) return null;
   return pointer;
 }
 
@@ -116,11 +123,13 @@ export async function saveWalkOffline(view: WalkView, ref: OfflineWalkRef, optio
 } = {}) {
   validateWalkView(view);
   const { scope, walkId } = ref;
+  const requestedLocale = ref.requestedLocale ?? "ru";
+  if (walkRequestedLocale(view) !== requestedLocale) throw new Error("Язык офлайн-копии не совпадает с открытой прогулкой.");
   if (!scope.trim() || !walkId.trim()) throw new Error("Не удалось определить владельца офлайн-копии.");
   const cache = await openCache(options.cache);
   const fetcher = options.fetcher ?? fetch;
   const maxBytes = options.maxBytes ?? MAX_PACK_BYTES;
-  const stage = `${root(scope, walkId)}/staging-${randomId()}`;
+  const stage = `${root(scope, walkId, requestedLocale)}/staging-${randomId()}`;
   const audio = [] as OfflineAudio[];
   const downloaded = new Set<string>();
   let bytesTotal = 0;
@@ -161,14 +170,14 @@ export async function saveWalkOffline(view: WalkView, ref: OfflineWalkRef, optio
         foodWarning = true;
       }
     }
-    const manifest: OfflineWalkManifest = { version: 1, walkId, scope, revision: view.revision, contentVersion: view.contentVersion,
+    const manifest: OfflineWalkManifest = { version: 2, walkId, scope, requestedLocale, revision: view.revision, contentVersion: view.contentVersion,
       savedAt: (options.now ?? (() => new Date()))().toISOString(), audio, ...(food.bundle ? { food: offlineFoodSummary(food.bundle) } : {}) };
     await cache.put(`${stage}/view.json`, response(view));
     await cache.put(`${stage}/manifest.json`, response(manifest));
-    const priorResponse = await cache.match(pointerKey(scope, walkId));
+    const priorResponse = await cache.match(pointerKey(scope, walkId, requestedLocale));
     const prior = priorResponse ? readPointer(await priorResponse.json().catch(() => null)) : null;
-    const pointer: OfflinePointer = { version: 1, stage, manifest };
-    await cache.put(pointerKey(scope, walkId), response(pointer));
+    const pointer: OfflinePointer = { version: 2, stage, manifest };
+    await cache.put(pointerKey(scope, walkId, requestedLocale), response(pointer));
     if (prior && prior.stage !== stage) await removeStage(cache, prior.stage);
     await pruneAudio(cache).catch(() => {});
     return { manifest, availableAudio: audio.length, foodWarning };
@@ -179,15 +188,17 @@ export async function saveWalkOffline(view: WalkView, ref: OfflineWalkRef, optio
 }
 
 /** `seedFood` puts the saved food cells into the shared store: only for a walk opened from this copy, not for status checks. */
-export async function loadOfflineWalk({ scope, walkId }: OfflineWalkRef, cache?: CachePort, { seedFood = false }: { seedFood?: boolean } = {}): Promise<{ view: WalkView; manifest: OfflineWalkManifest } | null> {
+export async function loadOfflineWalk({ scope, walkId, requestedLocale = "ru" }: OfflineWalkRef, cache?: CachePort, { seedFood = false }: { seedFood?: boolean } = {}): Promise<{ view: WalkView; manifest: OfflineWalkManifest } | null> {
   const storage = await openCache(cache);
-  const pointerResponse = await storage.match(pointerKey(scope, walkId));
+  const pointerResponse = await storage.match(pointerKey(scope, walkId, requestedLocale));
   const pointer = pointerResponse ? readPointer(await pointerResponse.json().catch(() => null)) : null;
-  if (!pointer || pointer.manifest.scope !== scope || pointer.manifest.walkId !== walkId) return null;
+  const savedLocale = pointer?.manifest.version === 1 ? "ru" : pointer?.manifest.requestedLocale;
+  if (!pointer || pointer.manifest.scope !== scope || pointer.manifest.walkId !== walkId || savedLocale !== requestedLocale) return null;
   const viewResponse = await storage.match(`${pointer.stage}/view.json`);
   if (!viewResponse) return null;
   try {
     const view = validateWalkView(await viewResponse.json());
+    if (walkRequestedLocale(view) !== requestedLocale) return null;
     if (seedFood && pointer.manifest.food) {
       try {
         const manifest = await (await storage.match(`${pointer.stage}/food/manifest.json`))?.json();
@@ -210,11 +221,11 @@ export async function loadOfflineWalk({ scope, walkId }: OfflineWalkRef, cache?:
   }
 }
 
-export async function removeOfflineWalk({ scope, walkId }: OfflineWalkRef, cache?: CachePort) {
+export async function removeOfflineWalk({ scope, walkId, requestedLocale = "ru" }: OfflineWalkRef, cache?: CachePort) {
   const storage = await openCache(cache);
-  const pointerResponse = await storage.match(pointerKey(scope, walkId));
+  const pointerResponse = await storage.match(pointerKey(scope, walkId, requestedLocale));
   const pointer = pointerResponse ? readPointer(await pointerResponse.json().catch(() => null)) : null;
-  await storage.delete(pointerKey(scope, walkId));
+  await storage.delete(pointerKey(scope, walkId, requestedLocale));
   if (pointer) await removeStage(storage, pointer.stage);
   await pruneAudio(storage);
 }

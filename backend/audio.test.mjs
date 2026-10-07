@@ -21,6 +21,8 @@ test("audio cache isolates TTS providers even with matching model and voice", as
   const openai = { ttsModel: parameters.model, voice: parameters.voice,
     speech: async () => assert.fail("Legacy cache should avoid a paid request") };
   assert.deepEqual(await createNarration(story, openai, directory, undefined, { normalize: identityNormalizer }), metadata);
+  assert.deepEqual(await createNarration(story, { ...openai, ttsLanguage: "ru" }, directory, undefined, { normalize: identityNormalizer }), metadata,
+    "an explicit Russian language keeps the legacy cache key unchanged");
   let calls = 0;
   const yandex = { ...openai, ttsProvider: "yandex", speech: async () => { calls++; throw new Error("Yandex cache miss"); } };
   await assert.rejects(createNarration(story, yandex, directory, undefined, { normalize: identityNormalizer }), /Yandex cache miss/);
@@ -29,6 +31,45 @@ test("audio cache isolates TTS providers even with matching model and voice", as
   await writeFile(join(directory, `${sha256(JSON.stringify({ ...parameters, provider: "yandex" }))}.json`), JSON.stringify(yandexMetadata));
   assert.deepEqual(await createNarration(story, yandex, directory, undefined, { normalize: identityNormalizer }), yandexMetadata);
   assert.equal(calls, 1);
+});
+
+test("narration isolates language caches and passes Chinese text through unchanged", async t => {
+  const directory = await mkdtemp(join(tmpdir(), "otgolosok-language-cache-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const text = "这里是特列季亚科夫画廊。“请看这里！”";
+  const story = { paragraphs: [{ text }] };
+  const parameters = { script: text, model: "eleven_v4", voice: "Otgolosok2", version: 2,
+    normalizer: "multilingual-verbatim-v1", provider: "elevenlabs", language: "zh" };
+  const bytes = Buffer.from("validated Chinese narration");
+  const hash = sha256(bytes);
+  const metadata = { sha256: hash, durationSec: 60, provider: "elevenlabs", model: "eleven_v4", voice: "Otgolosok2", language: "zh" };
+  await writeFile(join(directory, `${hash}.mp3`), bytes);
+  await writeFile(join(directory, `${sha256(JSON.stringify(parameters))}.json`), JSON.stringify(metadata));
+  const chinese = { ttsProvider: "elevenlabs", ttsModel: "eleven_v4", ttsLanguage: "zh", voice: "Otgolosok2",
+    speech: async () => assert.fail("the matching Chinese cache must be reused") };
+  assert.deepEqual(await createNarration(story, chinese, directory, undefined), metadata);
+
+  let calls = 0;
+  const english = { ...chinese, ttsLanguage: "en", speech: async (script, options) => {
+    calls++;
+    assert.equal(script, text, "non-Russian narration is not sent through ru-normalizr");
+    assert.equal(options.language, "en");
+    throw new Error("English cache miss");
+  } };
+  await assert.rejects(createNarration(story, english, directory, undefined), /English cache miss/);
+  assert.equal(calls, 1, "English must not reuse Chinese audio for identical text, model and voice");
+});
+
+test("non-Russian narration rejects unsupported providers before preparation or synthesis", async () => {
+  for (const ttsProvider of ["f5", "yandex", "openai"]) {
+    let prepared = 0, calls = 0;
+    const normalize = Object.assign(async text => { prepared++; return text; }, { version: "must-not-run" });
+    const provider = { ttsProvider, ttsLanguage: "zh", speech: async () => { calls++; return Buffer.from("paid"); } };
+    await assert.rejects(createNarration({ paragraphs: [{ text: "中文故事。" }] }, provider, "unused", undefined, { normalize }),
+      { code: "TTS_LANGUAGE_UNSUPPORTED" }, ttsProvider);
+    assert.equal(prepared, 0, `${ttsProvider} must fail before text preparation`);
+    assert.equal(calls, 0, `${ttsProvider} must fail before synthesis`);
+  }
 });
 
 test("narration passes the selected voice to synthesis and never reuses another voice's cache", async t => {
@@ -147,3 +188,25 @@ for (const { durationSec, cached } of [{ durationSec: 150, cached: true }, { dur
     else await assert.rejects(narration, /Cached narration rejected/);
   });
 }
+
+test("foreign cache metadata must match language and configured synthesis provenance", async t => {
+  const directory = await mkdtemp(join(tmpdir(), "otgolosok-foreign-provenance-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const text = "The gallery is here.", story = { paragraphs: [{ text }] };
+  const parameters = { script: text, model: "eleven_v4", voice: "voice-fixture", version: 2,
+    normalizer: "multilingual-verbatim-v1", provider: "elevenlabs", language: "en" };
+  const bytes = Buffer.from("validated fixture"), hash = sha256(bytes);
+  await writeFile(join(directory, `${hash}.mp3`), bytes);
+  const path = join(directory, `${sha256(JSON.stringify(parameters))}.json`);
+  const metadata = { sha256: hash, durationSec: 60, provider: "elevenlabs", model: "eleven_v4", voice: "voice-fixture", language: "en" };
+  let calls = 0;
+  const provider = { ttsProvider: "elevenlabs", ttsModel: "eleven_v4", voice: "voice-fixture", ttsLanguage: "en", speech: async () => { calls++; throw new Error("provenance cache miss"); } };
+  for (const change of [{ language: "ru" }, { language: undefined }, { provider: "f5" }, { model: "eleven_v3" }, { voice: "other" }]) {
+    await writeFile(path, JSON.stringify({ ...metadata, ...change }));
+    await assert.rejects(createNarration(story, provider, directory, undefined), /provenance cache miss/);
+  }
+  assert.equal(calls, 5);
+  await writeFile(path, JSON.stringify(metadata));
+  assert.deepEqual(await createNarration(story, provider, directory, undefined), metadata);
+  assert.equal(calls, 5);
+});

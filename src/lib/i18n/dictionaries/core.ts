@@ -10,6 +10,8 @@ export const coreTranslations: Translations = {
   "Язык интерфейса": ["Interface language", "界面语言"],
   "Смена языка прервёт прогулку. Продолжить?": ["Changing the language will end this walk. Continue?", "切换语言将结束本次漫步。要继续吗？"],
   "Текст и аудио этой истории пока доступны только на русском языке.": ["This story's text and audio are currently available in Russian only.", "本故事的文字和音频目前仅提供俄语版本。"],
+  "Текст этой истории пока доступен только на русском языке. Озвучка готовится.": ["This story's text is currently available in Russian only. Narration is being prepared.", "本故事的文字目前仅提供俄语版本，音频正在制作中。"],
+  "Озвучка этой истории на выбранном языке ещё готовится.": ["Narration in your selected language is being prepared.", "所选语言的音频正在制作中。"],
   "Открываем прогулки…": ["Opening walks…", "正在打开漫步路线…"],
   "Масштаб карты": ["Map zoom", "地图缩放"],
   "Отдалить": ["Zoom out", "缩小"],

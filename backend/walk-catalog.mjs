@@ -11,7 +11,7 @@ export const listedCatalogRoutes = routes => routes.filter(route => route.walk?.
 
 // The editorial catalogue remains its own data source. Its public projection
 // uses the same ordered walk view as user-created routes.
-export function catalogWalkView(route) {
+export function catalogWalkView(route, { requestedLocale = "ru" } = {}) {
   const items = new Map([...(route.pois ?? []), ...(route.notes ?? [])].map(item => [item.id, item]));
   const cleanPlace = value => value.replace(/^Финиш:\s*/i, "");
   const stops = (route.walk?.steps ?? []).map(step => ({
@@ -21,7 +21,8 @@ export function catalogWalkView(route) {
   }));
   const chapters = (route.walk?.steps ?? []).map(step => {
     const item = items.get(step.content_id);
-    if (!item?.story?.paragraphs?.length || item.story.text_status !== "ready") return { id: step.id, status: "preparing", story: null, audio: null };
+    if (!item?.story?.paragraphs?.length || item.story.text_status !== "ready") return { id: step.id, status: "preparing", story: null, audio: null,
+      ...(requestedLocale === "ru" ? {} : { localization: { requestedLocale, contentLocale: "ru", fallbackReason: "missing" } }) };
     const story = {
       title: step.title, address: step.place,
       paragraphs: item.story.paragraphs.map(paragraph => ({ text: paragraph.text, factIds: paragraph.fact_ids })),
@@ -29,8 +30,10 @@ export function catalogWalkView(route) {
       facts: (item.facts ?? []).map(fact => ({ id: fact.id, claim: fact.claim, sourceIds: fact.evidence.map(proof => proof.source_id) })),
       checkedAt: item.story.checked_at,
     };
-    const audio = step.audio ? {url:step.audio.url,sha256:step.audio.audio_sha256,durationSec:step.audio.duration_sec}:null;
-    return { id: step.id, status: audio ? "ready" : "text_ready", story, audio };
+    const audio = step.audio ? {url:step.audio.url,sha256:step.audio.audio_sha256,durationSec:step.audio.duration_sec,
+      ...(requestedLocale === "ru" ? {} : { language: "ru" })}:null;
+    return { id: step.id, status: audio ? "ready" : "text_ready", story, audio,
+      ...(requestedLocale === "ru" ? {} : { localization: { requestedLocale, contentLocale: "ru", fallbackReason: "missing" } }) };
   });
   return validateWalkView({
     document: {
@@ -42,6 +45,7 @@ export function catalogWalkView(route) {
         ...(route.walk.path.tunnels ? { tunnels: route.walk.path.tunnels } : {}) },
       fieldChecked: route.walk.field_checked,
     }, revision: 0, chapters,
-    contentVersion: createHash("sha256").update(JSON.stringify(chapters)).digest("hex"),
+    ...(requestedLocale === "ru" ? {} : { requestedLocale }),
+    contentVersion: createHash("sha256").update(JSON.stringify(requestedLocale === "ru" ? chapters : { requestedLocale, chapters })).digest("hex"),
   });
 }

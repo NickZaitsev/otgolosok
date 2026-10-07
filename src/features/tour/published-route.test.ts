@@ -46,4 +46,27 @@ describe("published walk narration", () => {
     }
     expect(applyPublishedRoute(route, null)).toBe(route);
   });
+
+  it("accepts localized text without narration and removes the Russian recording", () => {
+    const publication = structuredClone(route) as Route;
+    publication.requested_locale = "en";
+    publication.content_locale = "en";
+    publication.fallback_reason = null;
+    publication.walk!.steps[0].audio = undefined;
+    publication.walk!.steps[0].title = "Leatherworkers";
+    const content = [...publication.pois, ...publication.notes!].find(item => item.id === publication.walk!.steps[0].content_id)!;
+    content.story.paragraphs[0].text = "An English story.";
+    const result = applyPublishedRoute(route, publication, "en");
+    expect(result.requested_locale).toBe("en");
+    expect(result.content_locale).toBe("en");
+    expect(result.walk!.steps[0].audio).toBeUndefined();
+    expect([...result.pois, ...result.notes!].find(item => item.id === publication.walk!.steps[0].content_id)!.story.audio_url).toBeNull();
+
+    publication.requested_locale = "zh";
+    expect(applyPublishedRoute(route, publication, "en")).toBe(route);
+    publication.requested_locale = "en";
+    publication.walk!.steps[0].audio = { ...route.walk!.steps[0].audio!, language: "ru" };
+    publication.content_locale = "en";
+    expect(applyPublishedRoute(route, publication, "en")).toBe(route);
+  });
 });
