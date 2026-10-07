@@ -280,7 +280,7 @@
   color: var(--map-green);
   background: var(--control-soft);
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
   cursor: pointer;
 }
 

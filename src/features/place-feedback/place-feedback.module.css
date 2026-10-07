@@ -21,10 +21,13 @@
   padding: 8px;
   color: var(--map-green);
   background: var(--field-surface);
-  border: 1px solid var(--field-border);
-  border-radius: 12px;
+
+  /* A choice chip, as in the walk builder: a capsule with the control border. */
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-pill);
   font: inherit;
   font-size: var(--text-secondary);
+  font-weight: var(--weight-medium);
   cursor: pointer;
 }
 
