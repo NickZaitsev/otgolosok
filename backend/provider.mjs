@@ -76,7 +76,7 @@ export function searchAnswerSources(payload) {
   return [...sources.values()];
 }
 
-export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-medium", writerModel = "codex/gpt-5.6-sol-low", ttsModel = "gpt-4o-mini-tts", voice = "marin", searchModel = null, deepResearchModel = null, fetchImpl = fetch }) {
+export function createProvider({ baseUrl, apiKey, model = "codex/gpt-5.6-sol-medium", writerModel = "codex/gpt-6.1-sol-medium", ttsModel = "gpt-4o-mini-tts", voice = "marin", searchModel = null, deepResearchModel = null, fetchImpl = fetch }) {
   const base = new URL(baseUrl);
   if (base.protocol !== "https:" || !apiKey || base.username || base.password) throw failure("PROVIDER_CONFIG");
   const endpoint = base.href.replace(/\/$/, "");
