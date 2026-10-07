@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { nextSlots } from "./promo-slots.mjs";
+import { moscowDate, nextSlots } from "./promo-slots.mjs";
 
 // The promo queue: walks picked in the admin are built and published by otgolosok-shorts, one per slot.
 // This store is the source of truth for order and public status; Shorts claims items and reports back.
@@ -63,8 +63,9 @@ export function createPromoQueueStore(db, { now = Date.now, transaction }) {
   /** Active items in order with planned slots: a ready item keeps its fixed slot, the rest take free slots in order. */
   function active() {
     const rows = db.prepare(`${select} WHERE q.status IN ('queued','building','ready') ORDER BY q.position, q.created_at`).all();
-    const fixed = new Set(rows.filter(row => row.status === "ready" && row.slot_at).map(row => row.slot_at));
-    const free = nextSlots(new Date(now()), rows.length + fixed.size).filter(slot => !fixed.has(slot));
+    // A fixed slot takes its whole Moscow day: one set before the slot time changed must not share it.
+    const fixed = new Set(rows.filter(row => row.status === "ready" && row.slot_at).map(row => moscowDate(String(row.slot_at))));
+    const free = nextSlots(new Date(now()), rows.length + fixed.size).filter(slot => !fixed.has(moscowDate(slot)));
     return rows.map(row => (row.status === "ready" && row.slot_at ? item(row) : item(row, free.shift() ?? null)));
   }
 
