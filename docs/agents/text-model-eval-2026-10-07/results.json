@@ -1,0 +1,3360 @@
+{
+  "generations": [
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_087511617358d6e2016ac637ddc6cc87d287e2eeec7b867c69",
+      "responseStatus": "completed",
+      "elapsedMs": 14374,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "За купеческим фасадом владения Аршиновых в глубине участка находился научный корпус, построенный в 1904–1905 годах по проекту архитектора Фёдора Шехтеля. С улицы его скрывали другие постройки.\n\nВасилий Аршинов заказал Шехтелю институт для своего сына Владимира — выпускника Московского университета и ученика Владимира Вернадского. В 1904 году здесь заложили основание «Литогеи»; ВИМС ведёт от неё свою историю. Аршинов также поддерживал коммерческое образование и приходскую школу.",
+      "usage": {
+        "input_tokens": 744,
+        "output_tokens": 245,
+        "total_tokens": 989,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 104
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 64,
+        "paragraphCount": 2,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "arshinov",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_074f039cee52405a016ac63a71f5c887d2afaf33bb806a8350",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 744,
+        "output_tokens": 343,
+        "total_tokens": 1087,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 140
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 23567,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "За купеческим фасадом владения Аршиновых находился научный корпус, скрытый в глубине участка и не видимый с улицы. Его построили в 1904–1905 годах по проекту архитектора Фёдора Шехтеля.\n\nКорпус появился по заказу Василия Аршинова: он предназначался для института его сына Владимира. Владимир Аршинов окончил Московский университет и был учеником Владимира Вернадского. В 1904 году здесь заложили основание «Литогеи», от которой ведёт свою историю ВИМС.\n\nИстория владения связана не только с научными замыслами. Василий Аршинов поддерживал коммерческое образование и приходскую школу. После реконструкции 1980-х владение получило другой номер, но научный корпус Шехтеля остался частью истории этого скрытого за фасадом места.",
+      "usage": {
+        "input_tokens": 744,
+        "output_tokens": 343,
+        "total_tokens": 1087,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 140
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 98,
+        "paragraphCount": 3,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "arshinov",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_036af684fde26962016ac637eb30c087d2b7d824f94aaa748d",
+      "responseStatus": "completed",
+      "elapsedMs": 33577,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "История этого места связана с Василием Аршиновым, который заказал Михаилу Шехтелю институт для своего сына Владимира. Владимир Аршинов окончил Московский университет и был учеником Владимира Вернадского. Аршинов также поддерживал коммерческое образование и приходскую школу.\n\nОснование «Литогеи» заложили в 1904 году; от неё ВИМС ведёт свою историю. Научный корпус построили в 1904–1905 годах по проекту Шехтеля. Он находился в глубине владения и с улицы был скрыт другими постройками, поэтому за купеческим фасадом оставалось незаметное научное учреждение.",
+      "usage": {
+        "input_tokens": 744,
+        "output_tokens": 617,
+        "total_tokens": 1361,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 456
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 75,
+        "paragraphCount": 2,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "arshinov",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_07ef21764f525d2e016ac63a89577487d283a2da629dfaffac",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 744,
+        "output_tokens": 500,
+        "total_tokens": 1244,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 371
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 28406,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "За купеческим фасадом владения Аршиновых находился научный корпус, скрытый от улицы другими постройками. Его построили в 1904–1905 годах по проекту Шехтеля.\n\nВасилий Аршинов заказал Шехтелю институт для своего сына Владимира — выпускника Московского университета и ученика Вернадского. Основание «Литогеи» заложили в 1904 году; ВИМС ведёт от неё свою историю. Аршинов поддерживал коммерческое образование и приходскую школу.",
+      "usage": {
+        "input_tokens": 744,
+        "output_tokens": 500,
+        "total_tokens": 1244,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 371
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 56,
+        "paragraphCount": 2,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "arshinov",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "cs/claude-fable-5-1",
+      "returnedModel": "claude-fable-5-1",
+      "responseId": "resp_msg_011CfnrodgQrFG2QQurnHLbt",
+      "responseStatus": "completed",
+      "elapsedMs": 8473,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "За купеческим фасадом владения Аршиновых скрыта история, которую с улицы не разглядеть. Научный корпус 1904–1905 годов стоит в глубине двора, и постройки, выходящие на улицу, закрывают его от прохожих.\n\nЭтот корпус построен по проекту Фёдора Шехтеля. Заказчиком был Василий Аршинов, а предназначался институт для его сына Владимира — выпускника Московского университета и ученика Вернадского. Так в купеческом владении появилась научная лаборатория.\n\nОснование института, получившего название «Литогея», было заложено в 1904 году. От «Литогеи» ведёт свою историю ВИМС — Всероссийский институт минерального сырья.\n\nСам Василий Аршинов поддерживал не только науку: он помогал коммерческому образованию и приходской школе. Поэтому корпус во дворе — не случайная прихоть, а часть его участия в просвещении, только скрытая от глаз за фасадом.",
+      "usage": {
+        "input_tokens": 1123,
+        "output_tokens": 602,
+        "total_tokens": 1725
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 116,
+        "paragraphCount": 4,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "arshinov",
+      "repetition": 1
+    },
+    {
+      "ok": false,
+      "requestedModel": "opencode-go/deepseek-v4-pro",
+      "elapsedMs": 180002,
+      "attempts": [],
+      "errorCode": 23,
+      "caseId": "arshinov",
+      "repetition": 1
+    },
+    {
+      "ok": false,
+      "requestedModel": "opencode-go/glm-5.3",
+      "returnedModel": "glm-5.3",
+      "responseId": "resp_chatcmpl-ff0133dd5e1f4e8ab66441f5ee514e92",
+      "responseStatus": "completed",
+      "elapsedMs": 44448,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "errorCode": "EMPTY_RESPONSE",
+      "caseId": "arshinov",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_01981ad9145ccbea016ac6378f2f6c819197dab8473157f027",
+      "responseStatus": "completed",
+      "elapsedMs": 16013,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "8 января 1873 года было утверждено училище, готовившее детей духовенства к иконописанию и ремёслам. Хлудов предоставил для него дом и средства на десять стипендий.\n\nУчилищу также пожертвовали отдельный доходный дом. В нём размещались учебные помещения, общежитие и помещения, предназначенные для аренды.",
+      "usage": {
+        "input_tokens": 690,
+        "output_tokens": 290,
+        "total_tokens": 980,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 200
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 41,
+        "paragraphCount": 2,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "khludov",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_0a375277ed492c50016ac63a4fc2dc87d2aefd3511d48b8082",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 690,
+        "output_tokens": 231,
+        "total_tokens": 921,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 140
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 13586,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "8 января 1873 года было утверждено училище, готовившее детей духовенства к иконописанию и ремёслам. Хлудов предоставил для него дом и средства на десять стипендий.\n\nУчилищу также пожертвовали отдельный доходный дом. В нём размещались учебные помещения, общежитие и помещения, которые сдавали в аренду.",
+      "usage": {
+        "input_tokens": 690,
+        "output_tokens": 231,
+        "total_tokens": 921,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 140
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 42,
+        "paragraphCount": 2,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "khludov",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_02a6a1ccd88dc79c016ac6379909c88191811ad11bf11de9be",
+      "responseStatus": "completed",
+      "elapsedMs": 9695,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Хлудов предоставил училищу отдельный доходный дом, в котором разместились учебные помещения и общежитие. Часть помещений предназначалась для сдачи в аренду: дом совмещал учебное, жилое и доходное использование.\n\nУчилище было утверждено 8 января 1873 года. Оно готовило детей духовенства к иконописанию и ремёслам. Помимо дома, Хлудов выделил средства на десять стипендий.",
+      "usage": {
+        "input_tokens": 690,
+        "output_tokens": 218,
+        "total_tokens": 908,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 109
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 50,
+        "paragraphCount": 2,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "khludov",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_02a239a5b17bfb42016ac63a62181c87d2b560db5495b5a0b0",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 690,
+        "output_tokens": 311,
+        "total_tokens": 1001,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 207
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 19973,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Училище, для которого Хлудов предоставил дом, было утверждено 8 января 1873 года. Оно готовило детей духовенства к иконописанию и ремёслам. Хлудов также выделил средства на десять стипендий.\n\nДля училища был пожертвован отдельный доходный дом. В нём размещались учебные помещения и общежитие, а часть помещений предназначалась для сдачи в аренду.",
+      "usage": {
+        "input_tokens": 690,
+        "output_tokens": 311,
+        "total_tokens": 1001,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 207
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 49,
+        "paragraphCount": 2,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "khludov",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "cs/claude-fable-5-1",
+      "returnedModel": "claude-fable-5-1",
+      "responseId": "resp_msg_011CfnrheDVWbqhB57in89dx",
+      "responseStatus": "completed",
+      "elapsedMs": 5620,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Этот дом связан с училищем, которое было утверждено 8 января 1873 года. Хлудов предоставил для него дом и средства на десять стипендий. Училище готовило детей духовенства к иконописанию и ремёслам. Под него был пожертвован отдельный доходный дом: в нём разместились учебные помещения и общежитие, а часть помещений сдавалась в аренду.",
+      "usage": {
+        "input_tokens": 1039,
+        "output_tokens": 346,
+        "total_tokens": 1385
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 50,
+        "paragraphCount": 1,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "khludov",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "opencode-go/deepseek-v4-pro",
+      "returnedModel": "deepseek-v4-pro",
+      "responseId": "resp_021791375222138e04d4405dfa8354a322f6f89cfd01771d0160d",
+      "responseStatus": "completed",
+      "elapsedMs": 118221,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Дом Хлудова связан с училищем, утверждённым 8 января 1873 года. Хлудов предоставил для него дом и средства на десять стипендий.\n\nУчилище готовило детей духовенства к иконописанию и ремёслам. Для него пожертвовали отдельный доходный дом.\n\nВ этом доме размещались учебные помещения, общежитие и помещения для аренды. Так в одном здании соединились обучение, проживание и аренда.",
+      "usage": {
+        "input_tokens": 806,
+        "output_tokens": 8364,
+        "total_tokens": 9170,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 8244
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 54,
+        "paragraphCount": 3,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "khludov",
+      "repetition": 1
+    },
+    {
+      "ok": false,
+      "requestedModel": "opencode-go/glm-5.3",
+      "returnedModel": "glm-5.3",
+      "responseId": "resp_chatcmpl-59d12e7e50724f1aad54910f91dcaa19",
+      "responseStatus": "completed",
+      "elapsedMs": 49679,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "errorCode": "EMPTY_RESPONSE",
+      "caseId": "khludov",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_079be82da09b774d016ac637389dd0819190dc27526ada4294",
+      "responseStatus": "completed",
+      "elapsedMs": 13657,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Кожевнический проезд и переулки сохранили в названиях память о слободе кожевников, сформировавшейся на берегу Москвы-реки в XVI веке. Здесь выделывали кожи. В старом путеводителе Кожевническая и Ивановская указаны как два названия одной улицы.\n\nСтарейшим сохранившимся зданием слободы считаются палаты на Кожевнической улице. Это кирпичный двухэтажный дом конца XVII века, стоящий в глубине владения ближе к реке. Его отличают кубический объём, крыша с высокими дымниками и узкие окна. Первоначальное назначение палат доподлинно неизвестно. После упразднения Петром I слободского устройства здесь разместился мытный двор — городская таможня. У соседней паромной переправы купцы платили налог за ввоз товаров, называвшийся мытом.\n\nДеревянную церковь Троицы в Кожевниках построили приблизительно в 1625 году. Нынешнее пятиглавое здание возвели в 1686–1689 годах, а колокольню пристроили в 1722 году. Расцвет слободы во второй половине XIX века Музей Москвы связывает с Бахрушиными, внедрявшими новые технологии производства кожи и тканей.",
+      "usage": {
+        "input_tokens": 998,
+        "output_tokens": 424,
+        "total_tokens": 1422,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 111
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 139,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "kozhevniki",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_04dbc83a50424e67016ac63a169aa487d289a286c116980c66",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 998,
+        "output_tokens": 358,
+        "total_tokens": 1356,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 56
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 10281,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Кожевнический проезд и переулки сохранили память о кожевенной слободе, сформировавшейся в Москве в XVI веке. На берегу Москвы-реки здесь выделывали кожи. В путеводителе Романского Кожевническая и Ивановская указаны как два названия одной улицы.\n\nСтарейшее сохранившееся здание слободы — палаты на Кожевнической улице, вероятно связанные с ней. Это кирпичный двухэтажный дом конца XVII века с кубическим объёмом, высокой крышей с дымниками и узкими окнами. Первоначальное назначение палат доподлинно неизвестно. После упразднения Петром I слободского устройства там разместился мытный двор — городская таможня. У соседней паромной переправы купцы платили налог за ввоз товаров, называвшийся мытом.\n\nДеревянную церковь Троицы в Кожевниках построили приблизительно в 1625 году. Нынешнее пятиглавое здание возвели в 1686–1689 годах, а колокольню пристроили в 1722 году. Расцвет слободы во второй половине XIX века Музей Москвы связывает с Бахрушиными, внедрявшими новые технологии производства кожи и тканей.",
+      "usage": {
+        "input_tokens": 998,
+        "output_tokens": 358,
+        "total_tokens": 1356,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 56
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 135,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "kozhevniki",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_0efd74ab85765854016ac636edd66487d2aa1336c851df24c1",
+      "responseStatus": "completed",
+      "elapsedMs": 13877,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Названия Кожевнического проезда и переулков сохранили память о слободе кожевников на берегу Москвы-реки. Она сформировалась в XVI веке: здесь выделывали кожи, а в самой слободе находилась церковь Троицы. Деревянный храм построили приблизительно в 1625 году. Нынешнее пятиглавое здание появилось в 1686–1689 годах, колокольню пристроили в 1722 году.\n\nНа Кожевнической улице сохранились кирпичные двухэтажные палаты, вероятно относившиеся к слободе. Это её старейшее сохранившееся здание, расположенное в глубине участка, ближе к реке. По архитектуре палаты относят к концу XVII века: у них кубический объём и узкие окна. Первоначальное назначение здания доподлинно неизвестно.\n\nПосле того как Пётр Первый упразднил слободское устройство, в палатах разместился мытный двор — городская таможня. Рядом действовала паромная переправа, а за ввоз товаров купцы платили налог, называвшийся мытом. Расцвет Кожевенной слободы во второй половине XIX века Музей Москвы связывает с Бахрушиными: по сведениям музея, они первыми в Москве внедрили на своих производствах новейшие технологии изготовления кожи и тканей.",
+      "usage": {
+        "input_tokens": 998,
+        "output_tokens": 393,
+        "total_tokens": 1391,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 70
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 149,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "kozhevniki",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_09ee7f422f3a4cf3016ac63a2268948191bb9bd2015664e910",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 998,
+        "output_tokens": 369,
+        "total_tokens": 1367,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 59
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 13654,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Названия Кожевнического проезда и переулков сохранили память о слободе кожевников на берегу Москвы-реки. Она сформировалась в XVI веке: здесь выделывали кожи. В слободе находилась и церковь Троицы. Её деревянное здание построили приблизительно в 1625 году, нынешний пятиглавый храм — в 1686–1689 годах, а колокольню пристроили в 1722 году.\n\nНа Кожевнической улице сохранились палаты, вероятно относившиеся к слободе, — её старейшее уцелевшее здание. Это кирпичный двухэтажный дом, стоящий в глубине участка, ближе к реке. Его архитектура относится к концу XVII века: кубический объём и узкие окна. Первоначальное назначение палат доподлинно неизвестно. После упразднения Петром Первым слободского устройства здесь разместился мытный двор — городская таможня. Рядом действовала паромная переправа; за ввоз товаров купцы платили налог, который назывался мытом.\n\nРасцвет Кожевенной слободы во второй половине XIX века Музей Москвы связывает с Бахрушиными. По сведениям музея, они первыми в Москве внедрили на своих производствах новейшие технологии изготовления кожи и тканей.",
+      "usage": {
+        "input_tokens": 998,
+        "output_tokens": 369,
+        "total_tokens": 1367,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 59
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 146,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "kozhevniki",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "cs/claude-fable-5-1",
+      "returnedModel": "claude-fable-5-1",
+      "responseId": "resp_msg_011CfnrbVSUhfUUFjTveJYLb",
+      "responseStatus": "completed",
+      "elapsedMs": 12983,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Кожевнический проезд и соседние переулки хранят память о слободе кожевников, стоявшей на берегу Москвы-реки. Слобода сложилась в XVI веке: здесь выделывали кожи, там же стояла церковь Троицы в Кожевниках. Деревянный храм построили около 1625 года, нынешнее пятиглавое здание возвели в 1686–1689 годах, а в 1722 году к нему пристроили колокольню.\n\nСтарейшая сохранившаяся постройка слободы — палаты на Кожевнической улице, которые, вероятно, относились к ней. Это кирпичный двухэтажный дом в глубине владения, ближе к реке. По архитектуре его относят к концу XVII века: кубический объём, крыша с высокими дымниками, узкие окна. Для чего именно строились палаты, доподлинно неизвестно.\n\nПосле того как Пётр I упразднил слободское устройство, в палатах разместился мытный двор — городская таможня. Рядом работала паромная переправа, и за ввоз товаров купцы платили налог, который назывался мыт.\n\nВо второй половине XIX века слобода пережила расцвет. Музей Москвы связывает его с Бахрушиными: по данным музея, они первыми в Москве внедрили на своих производствах новейшие технологии производства кожи и тканей. В путеводителе Романского у Кожевнической улицы указано и второе имя — Ивановская.",
+      "usage": {
+        "input_tokens": 1480,
+        "output_tokens": 1160,
+        "total_tokens": 2640
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 170,
+        "paragraphCount": 4,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "kozhevniki",
+      "repetition": 1
+    },
+    {
+      "ok": false,
+      "requestedModel": "opencode-go/deepseek-v4-pro",
+      "returnedModel": "deepseek-v4-pro",
+      "responseId": "resp_cb436f28-4e11-4127-a3df-663a1f4c6fb9",
+      "responseStatus": "completed",
+      "elapsedMs": 30858,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "errorCode": "EMPTY_RESPONSE",
+      "caseId": "kozhevniki",
+      "repetition": 1
+    },
+    {
+      "ok": false,
+      "requestedModel": "opencode-go/glm-5.3",
+      "returnedModel": "glm-5.3",
+      "responseId": "resp_chatcmpl-61d7753a",
+      "responseStatus": "completed",
+      "elapsedMs": 52102,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "errorCode": "EMPTY_RESPONSE",
+      "caseId": "kozhevniki",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_08c5d559287871d1016ac636b90c1487d29a906c8d141375e0",
+      "responseStatus": "completed",
+      "elapsedMs": 11629,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Московский почтамт разместился в бывшем дворце Меншикова, который почтовое ведомство арендовало у Лазаревых в 1783 году, а в 1792-м выкупило. Во дворе стояли почтовые экипажи и пассажирские дилижансы. В середине XIX века комплекс перестраивал Альберт Кавос.\n\nГлавный корпус открыли в 1912 году. Его проектировали Леонид Новиков и Оскар Мунц, а братья Веснины заменили византийское оформление фасада романским. На фасаде установлены круглые часы; в комплекс входят проездные арки и внутренние дворы.\n\nНа месте прежнего двора устроили операционный зал, перекрытый стеклом на стальном каркасе. Для посетителей установили дубовые стойки. На втором и третьем этажах зал окружают галереи с ажурными ограждениями, а первый и второй этажи соединяют чугунные винтовые лестницы со сквозным орнаментом ступеней.\n\nСлужебный корпус 1855–1856 годов первоначально строили для почтовых экипажей. С 1868 года его занимал Московский телеграф, а после переезда телеграфа на Тверскую в 1927 году туда вернулась почта.",
+      "usage": {
+        "input_tokens": 938,
+        "output_tokens": 302,
+        "total_tokens": 1240,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 139,
+        "paragraphCount": 4,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "postoffice",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_024b2bbb78fdc226016ac639f6cd4487d28b9bdde8c497fc77",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 938,
+        "output_tokens": 389,
+        "total_tokens": 1327,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 82
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 17403,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Главный корпус Московского почтамта открылся в 1912 году. Его проектировали Леонид Новиков и Оскар Мунц, а братья Веснины заменили византийское оформление фасада романским. На фасаде находятся круглые часы; в комплекс входят проездные арки и внутренние дворы.\n\nОперационный зал устроили на месте прежнего двора и перекрыли стеклом на стальном каркасе. Для посетителей установили дубовые стойки. На втором и третьем этажах зал окружают галереи с ажурными ограждениями. Первый и второй этажи соединяют чугунные винтовые лестницы со сквозным орнаментом ступеней.\n\nИстория почтового владения началась раньше: в 1783 году почтамт арендовал у Лазаревых бывший дворец Меншикова, а в 1792 году выкупил его. Во дворе размещались почтовые экипажи и пассажирские дилижансы. В середине XIX века комплекс перестраивал Альберт Кавос. Отдельный служебный корпус возвели в 1855–1856 годах для экипажей. С 1868 года его занимал Московский телеграф, а после переезда телеграфа на Тверскую в 1927 году туда вернулась почта.",
+      "usage": {
+        "input_tokens": 938,
+        "output_tokens": 389,
+        "total_tokens": 1327,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 82
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 142,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "postoffice",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_04adb1d44810f5f3016ac636d06fc48191914b6726caa7444b",
+      "responseStatus": "completed",
+      "elapsedMs": 13511,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Главный корпус Московского почтамта открылся в 1912 году. На его фасаде — круглые часы, а в состав комплекса входят проездные арки и внутренние дворы. Новый корпус проектировали Леонид Новиков и Оскар Мунц. Братья Веснины изменили византийское оформление фасада на романское.\n\nИстория почтамта на этом участке связана с бывшим дворцом Меншикова. В 1783 году почтамт арендовал его у Лазаревых, а в 1792 году купил владение. Во дворе размещались почтовые экипажи и пассажирские дилижансы. В середине XIX века комплекс перестраивал Альберт Кавос.\n\nОперационный зал главного корпуса устроили на месте двора, перекрыв его стеклом на стальном каркасе. Для посетителей установили дубовые стойки. По периметру зала на втором и третьем этажах расположены галереи с ажурными ограждениями. Первый и второй этажи соединяют чугунные винтовые лестницы; их ступени украшены сквозным орнаментом.",
+      "usage": {
+        "input_tokens": 938,
+        "output_tokens": 364,
+        "total_tokens": 1302,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 102
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 125,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "postoffice",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_0e3eab2bcbf66854016ac63a07bb3087d2897fe0b907b19b29",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 938,
+        "output_tokens": 374,
+        "total_tokens": 1312,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 112
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 14864,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Главный корпус Московского почтамта открылся в 1912 году. На его фасаде — круглые часы, а в комплекс входят проездные арки и внутренние дворы. Новый корпус проектировали Леонид Новиков и Оскар Мунц. Братья Веснины изменили первоначальное византийское оформление фасада на романское.\n\nИстория почтамта на этом участке началась раньше. В 1783 году он арендовал у Лазаревых бывший дворец Меншикова, а в 1792 году купил владение. Во дворе размещались почтовые экипажи и пассажирские дилижансы. В середине XIX века комплекс перестраивал Альберт Кавос.\n\nОперационный зал главного корпуса устроили на месте двора, перекрыв его стеклом на стальном каркасе. Для посетителей установили дубовые стойки. По периметру зала, на втором и третьем этажах, расположены галереи с ажурными ограждениями. Первый и второй этажи соединяют чугунные винтовые лестницы; их ступени украшены сквозным орнаментом.",
+      "usage": {
+        "input_tokens": 938,
+        "output_tokens": 374,
+        "total_tokens": 1312,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 112
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 124,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "postoffice",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "cs/claude-fable-5-1",
+      "returnedModel": "claude-fable-5-1",
+      "responseId": "resp_msg_011CfnrVqihTqMieU5SKASEp",
+      "responseStatus": "completed",
+      "elapsedMs": 10775,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Главный корпус Московского почтамта открыт в 1912 году. На его фасаде — круглые часы, а весь комплекс включает проездные арки и внутренние дворы. Новый корпус проектировали Леонид Новиков и Оскар Мунц, а братья Веснины изменили задуманное византийское оформление фасада на романское.\n\nИстория почты на этом месте началась раньше. В 1783 году почтамт арендовал у Лазаревых бывший дворец Меншикова, а в 1792 году купил владение. Во дворе тогда стояли почтовые экипажи и пассажирские дилижансы. В середине девятнадцатого века комплекс перестраивал Альберт Кавос. Служебный корпус 1855–1856 годов строили для почтовых экипажей; с 1868 года его занимал Московский телеграф, а когда телеграф в 1927 году переехал на Тверскую, туда вернулась почта.\n\nОперационный зал главного корпуса устроен на месте двора. Его перекрыли стеклом на стальном каркасе, а для посетителей поставили дубовые стойки. По периметру зала на втором и третьем этажах проходят галереи с ажурными ограждениями. Первый и второй этажи соединяют чугунные винтовые лестницы со сквозным орнаментом ступеней.",
+      "usage": {
+        "input_tokens": 1400,
+        "output_tokens": 656,
+        "total_tokens": 2056
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 153,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "postoffice",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "opencode-go/deepseek-v4-pro",
+      "returnedModel": "deepseek-v4-pro",
+      "responseId": "resp_02179137506867568bed1fb63597428c3971f167251da488e0f38",
+      "responseStatus": "completed",
+      "elapsedMs": 61206,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Почтамт занял это владение ещё в XVIII веке. В 1783 году он арендовал бывший дворец Меншикова у Лазаревых, а в 1792 году купил его. Во дворе размещались почтовые экипажи и пассажирские дилижансы. В середине XIX века комплекс перестраивал Альберт Кавос.\n\nГлавный корпус открыт в 1912 году. Его проектировали Леонид Новиков и Оскар Мунц. Братья Веснины изменили византийское оформление фасада на романское. Фасад имеет круглые часы, а комплекс включает проездные арки и внутренние дворы.\n\nОперационный зал устроен на месте двора. Его перекрыли стеклом на стальном каркасе, для посетителей установили дубовые стойки. По периметру зала на втором и третьем этажах идут галереи с ажурными ограждениями. В зале находятся чугунные винтовые лестницы со сквозным орнаментом ступеней, соединяющие первый и второй этажи.\n\nСлужебный корпус 1855–1856 годов строили для почтовых экипажей. С 1868 года его занимал Московский телеграф. После переезда телеграфа на Тверскую в 1927 году корпус снова заняла почта.",
+      "usage": {
+        "input_tokens": 1096,
+        "output_tokens": 4911,
+        "total_tokens": 6007,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 4564
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 145,
+        "paragraphCount": 4,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "postoffice",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "opencode-go/glm-5.3",
+      "returnedModel": "glm-5.3",
+      "responseId": "resp_chatcmpl-56d2a20c",
+      "responseStatus": "completed",
+      "elapsedMs": 20020,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Московский почтамт стоит на владении с долгой историей. В 1783 году почта арендовала бывший дворец Меншикова у Лазаревых, а в 1792 году выкупила его. Во дворе тогда размещались почтовые экипажи и пассажирские дилижансы.\n\nВ середине XIX века комплекс перестраивал Альберт Кавос. Служебный корпус 1855–1856 годов возводили для почтовых экипажей, но с 1868 года его занял Московский телеграф. После переезда телеграфа на Тверскую в 1927 году туда вновь вернулась почта.\n\nГлавный корпус открылся в 1912 году. Его проектировали Леонид Новиков и Оскар Мунц, а позже братья Веснины заменили византийское оформление фасада на романское. На фасаде — круглые часы, а сквозь комплекс ведут проездные арки во внутренние дворы.\n\nГлавное пространство почтамта — операционный зал, устроенный на месте бывшего двора. Его перекрыли стеклом на стальном каркасе, а для посетителей установили дубовые стойки. По периметру зала на втором и третьем этажах идут галереи с ажурными ограждениями. Соединяют этажи чугунные винтовые лестницы со сквозным орнаментом ступеней.",
+      "usage": {
+        "input_tokens": 947,
+        "output_tokens": 1195,
+        "total_tokens": 2142,
+        "input_tokens_details": {
+          "cached_tokens": 10
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 151,
+        "paragraphCount": 4,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "postoffice",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_01ef94ea7e8a8e15016ac637665b0087d2bd25d67b313f0f81",
+      "responseStatus": "completed",
+      "elapsedMs": 15640,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Территория мануфактуры Цинделя простиралась от Дербеневской улицы до Москвы-реки. В 1874 году, после смерти Эмиля Цинделя, его наследники организовали товарищество на паях. Фабрика выпускала обивочные кретоны — плотные узорные ткани, а также тонкий батист.\n\nПри фабрике появились училище и больница. Через Дербеневскую улицу строили жильё для рабочих и служащих. Реклама товарищества была рассчитана и на зарубежных покупателей: Российская государственная библиотека хранит плакат для китайского рынка, датированный 1911 годом.\n\nВ 1920-е годы Варвара Степанова и Любовь Попова создавали геометрические рисунки для Первой ситценабивной фабрики, бывшей мануфактуры Цинделя. На фотографии Александра Родченко 1924 года Степанова запечатлена в платье, для которого сама разработала рисунок ткани и фасон, а также выполнила пошив. Образцы тканей фабрики Цинделя представлены в собрании Государственного исторического музея.",
+      "usage": {
+        "input_tokens": 904,
+        "output_tokens": 418,
+        "total_tokens": 1322,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 147
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 118,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "zindel",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-5.6-sol-low",
+      "returnedModel": "gpt-5.6-sol-low",
+      "responseId": "resp_0297af9ebd72b701016ac63a2e92648191bb50ea91227e775b",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 904,
+        "output_tokens": 374,
+        "total_tokens": 1278,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 101
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 10858,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Территория мануфактуры Цинделя простиралась от Дербеневской улицы до Москвы-реки. После смерти Эмиля Цинделя в 1874 году его наследники организовали товарищество на паях. При фабрике появились училище и больница, а через Дербеневскую улицу строили жильё для рабочих и служащих.\n\nПредприятие выпускало обивочные кретоны — плотные узорные ткани — и тонкий батист. Рекламу товарищества для китайских покупателей хранит Российская государственная библиотека; аннотация Национальной электронной библиотеки датирует этот плакат 1911 годом. Образцы продукции фабрики входят в собрание Государственного исторического музея.\n\nВ 1920-е годы бывшая мануфактура Цинделя называлась Первой ситценабивной фабрикой. Варвара Степанова и Любовь Попова создавали для неё геометрические рисунки тканей. На фотографии Александра Родченко 1924 года Степанова запечатлена в платье, для которого сама разработала рисунок ткани и фасон, а также выполнила пошив.",
+      "usage": {
+        "input_tokens": 904,
+        "output_tokens": 374,
+        "total_tokens": 1278,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 101
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 120,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "zindel",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_078cb6e2b4ca7cef016ac637752974819183d781ffc3ab0747",
+      "responseStatus": "completed",
+      "elapsedMs": 14356,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Территория фабрики Цинделя простиралась от Дербеневской улицы до Москвы-реки. В 1874 году, после смерти Эмиля Цинделя, его наследники организовали товарищество на паях. При фабрике появились училище и больница, а через Дербеневскую улицу строили жильё для рабочих и служащих.\n\nФабрика выпускала обивочные кретоны — плотные узорные ткани — и тонкий батист. Образцы её тканей представлены в собрании Государственного исторического музея. Сохранилась и реклама товарищества для китайских покупателей: этот плакат хранится в Российской государственной библиотеке и датируется 1911 годом.\n\nВ 1920-е годы для Первой ситценабивной фабрики, бывшей мануфактуры Цинделя, геометрические рисунки создавали Варвара Степанова и Любовь Попова. На фотографии Александра Родченко 1924 года Степанова одета в платье, для которого сама создала рисунок ткани, разработала фасон и выполнила пошив.",
+      "usage": {
+        "input_tokens": 904,
+        "output_tokens": 407,
+        "total_tokens": 1311,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 147
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 116,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "zindel",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "codex/gpt-6.1-sol-medium",
+      "returnedModel": "gpt-6.1-sol-medium",
+      "responseId": "resp_0f37b7d9a95a923f016ac63a3945988191b75b9c098ba271ab",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 904,
+        "output_tokens": 478,
+        "total_tokens": 1382,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 243
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 22368,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Территория фабрики Цинделя простиралась от Дербеневской улицы до Москвы-реки. При фабрике появились училище и больница, а через Дербеневскую улицу строили жильё для рабочих и служащих. Здесь выпускали плотные узорные ткани для обивки и тонкий батист. Образцы тканей фабрики представлены в собрании Государственного исторического музея.\n\nВ 1920-е годы бывшая мануфактура Цинделя стала местом работы художниц авангарда. Варвара Степанова и Любовь Попова создавали геометрические рисунки для тканей Первой ситценабивной фабрики — так тогда называлась бывшая мануфактура.\n\nНа фотографии Александра Родченко 1924 года Варвара Степанова одета в платье с рисунком ткани, который создала сама. Её работа над этим платьем не ограничилась узором: Степанова также разработала фасон и выполнила пошив.",
+      "usage": {
+        "input_tokens": 904,
+        "output_tokens": 478,
+        "total_tokens": 1382,
+        "input_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 243
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 106,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "zindel",
+      "repetition": 2
+    },
+    {
+      "ok": true,
+      "requestedModel": "cs/claude-fable-5-1",
+      "returnedModel": "claude-fable-5-1",
+      "responseId": "resp_msg_011CfnreAMbQZoL1CAad6ngX",
+      "responseStatus": "completed",
+      "elapsedMs": 18407,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Территория фабрики Цинделя простиралась от Дербеневской улицы до Москвы-реки. В 1874 году, после смерти Эмиля Цинделя, наследники организовали товарищество на паях. При фабрике появились училище и больница, а через Дербеневскую улицу строили жильё для рабочих и служащих.\n\nЗдесь выпускали обивочные кретоны — плотные узорные ткани — и тонкий батист. Образцы тканей фабрики сегодня хранятся в собрании Государственного исторического музея. Товарищество искало покупателей и далеко за пределами России: в Российской государственной библиотеке сохранилась его реклама для китайских покупателей, которую аннотация датирует 1911 годом.\n\nВ 1920-е годы предприятие стало Первой ситценабивной фабрикой, и для него создавали геометрические рисунки Варвара Степанова и Любовь Попова. На фотографии Александра Родченко 1924 года Степанова снята в платье, для которого сама придумала рисунок ткани, разработала фасон и сшила его своими руками. Так авангард здесь можно было не только увидеть, но и надеть.",
+      "usage": {
+        "input_tokens": 1362,
+        "output_tokens": 841,
+        "total_tokens": 2203
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 135,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "zindel",
+      "repetition": 1
+    },
+    {
+      "ok": true,
+      "requestedModel": "opencode-go/deepseek-v4-pro",
+      "returnedModel": "deepseek-v4-pro",
+      "responseId": "resp_be86fc6b-ebde-4457-8e12-d293cc22eb51",
+      "responseStatus": "completed",
+      "elapsedMs": 13724,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Территория фабрики простиралась от Дербеневской улицы до Москвы-реки. После смерти Эмиля Цинделя в 1874 году наследники организовали товарищество на паях. При фабрике появились училище и больница, а через Дербеневскую улицу строили жильё для рабочих и служащих.\n\nФабрика выпускала обивочные кретоны, плотные узорные ткани и тонкий батист. Образцы этих тканей представлены в собрании Государственного исторического музея. РГБ хранит рекламу товарищества для китайских покупателей; аннотация НЭБ датирует плакат 1911 годом.\n\nВ 1920-е годы Варвара Степанова и Любовь Попова создавали геометрические рисунки для Первой ситценабивной фабрики, бывшей мануфактуры Цинделя. На фотографии Александра Родченко 1924 года Варвара Степанова одета в платье, для которого сама создала рисунок ткани, разработала фасон и выполнила пошив.",
+      "usage": {
+        "input_tokens": 1049,
+        "output_tokens": 1496,
+        "total_tokens": 2545,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 1219
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 108,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "zindel",
+      "repetition": 1
+    },
+    {
+      "ok": false,
+      "requestedModel": "opencode-go/glm-5.3",
+      "returnedModel": "glm-5.3",
+      "responseId": "resp_chatcmpl-1e4a0ea6",
+      "responseStatus": "completed",
+      "elapsedMs": 56209,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "errorCode": "EMPTY_RESPONSE",
+      "caseId": "zindel",
+      "repetition": 1
+    }
+  ],
+  "reviews": [
+    {
+      "file": "review-arshinov-r1.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 1
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 1
+        },
+        {
+          "label": "C",
+          "requestedModel": "cs/claude-fable-5-1",
+          "repetition": 1
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011CfnsFcLmSC28Y4AZuEnwL",
+      "elapsedMs": 60252,
+      "usage": {
+        "input_tokens": 3184,
+        "output_tokens": 6799,
+        "total_tokens": 9983
+      },
+      "reviewValid": true,
+      "review": {
+        "cases": [
+          {
+            "caseId": "arshinov",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 4,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 4,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Передаёт все ключевые факты без искажений: корпус 1904–1905 годов по проекту Шехтеля, его положение в глубине владения, заказ Василия Аршинова для сына, «Литогея» и ВИМС, поддержка коммерческого образования и приходской школы.",
+                  "Сохраняет прошедшее время источника («находился», «скрывали») и не утверждает, что корпус существует сейчас.",
+                  "Около 63 слов. При двух фактах такой объём оправдан режимом 20–99 слов. Повторов и наполнителя нет.",
+                  "Номер владения (32/30) не назван, требование об адресе соблюдено."
+                ],
+                "issues": [
+                  {
+                    "quote": "по проекту архитектора Фёдора Шехтеля",
+                    "reason": "Имени «Фёдор» в фактах нет. Это неподтверждённое добавление, хотя оно и соответствует общеизвестному. Блокирующим не считаю: имя не выдумано и не противоречит входу.",
+                    "factIds": [
+                      "m3_f1",
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "ученика Владимира Вернадского",
+                    "reason": "Имя Вернадского во входе не дано. Это неподтверждённое, хотя и верное, уточнение.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "В 1904 году здесь заложили основание «Литогеи»",
+                    "reason": "Слово «здесь» привязывает основание «Литогеи» к этому участку. В факте m3_f2 место основания прямо не указано. Связь вероятна из контекста, но не подтверждена.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "ВИМС ведёт от неё свою историю",
+                    "reason": "Аббревиатура не расшифрована. На слух «ВИМС» непонятен. Расшифровки нет и во входе, поэтому пропуск допустим, но ясность для слушателя снижается.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "Аршинов также поддерживал коммерческое образование и приходскую школу",
+                    "reason": "Здесь лишь небольшая шероховатость. В источнике просто «Аршинов», а текст из контекста относит это к Василию. Переформулировка допустима, но неоднозначность источника скрыта.",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 2,
+                  "naturalRussian": 3.5,
+                  "audioClarity": 3.5,
+                  "coherence": 3.5,
+                  "instructionFollowing": 3
+                },
+                "blockingIssues": [
+                  "Неверное имя архитектора: «Михаилу Шехтелю». Во входе имени нет, а общеизвестное имя Шехтеля — Фёдор. Это выдуманное имя ключевого для архитектурного гида лица.",
+                  "Добавлен вывод через «поэтому»: «поэтому за купеческим фасадом оставалось незаметное научное учреждение». Факт говорит только, что корпус был скрыт с улицы. Незаметность всего учреждения — неподтверждённое следствие."
+                ],
+                "strengths": [
+                  "Остальные факты переданы близко к источнику, даты верны.",
+                  "Номер владения не назван.",
+                  "Около 85 слов, это допустимо при скудном материале."
+                ],
+                "issues": [
+                  {
+                    "quote": "заказал Михаилу Шехтелю институт",
+                    "reason": "Выдуманное имя, во входе указана только фамилия Шехтеля. Блокирующий дефект.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "поэтому за купеческим фасадом оставалось незаметное научное учреждение",
+                    "reason": "Причинная связка и расширение смысла: из «корпус с улицы скрыт постройками» сделан вывод о незаметности учреждения. Это нарушает запрет на вымышленные причинные связи.",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "Владимир Аршинов окончил Московский университет и был учеником Владимира Вернадского. Аршинов также поддерживал коммерческое образование и приходскую школу.",
+                    "reason": "Предыдущее предложение говорит о Владимире, поэтому слушатель отнесёт «Аршинов также поддерживал» к сыну. Ссылка неоднозначна и может перенести факт на другого человека.",
+                    "factIds": [
+                      "m3_f1",
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "История этого места связана с Василием Аршиновым",
+                    "reason": "Общая вводная фраза, которая не добавляет подтверждённой подробности.",
+                    "factIds": []
+                  },
+                  {
+                    "quote": "Научный корпус построили в 1904–1905 годах по проекту Шехтеля.",
+                    "reason": "Шехтель упоминается второй раз, а архитектурный объект появляется только во втором абзаце, после биографии. Текст звучит как каталог фактов, связка слабая.",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "от неё ВИМС ведёт свою историю",
+                    "reason": "Аббревиатура не расшифрована и на слух непонятна.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "C",
+                "scores": {
+                  "factuality": 2,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 3.5,
+                  "instructionFollowing": 2.5
+                },
+                "blockingIssues": [
+                  "Выдуманный мотив и причинность: «Поэтому корпус во дворе — не случайная прихоть, а часть его участия в просвещении». Источник не связывает постройку корпуса с поддержкой образования. Это прямо запрещённая вымышленная причинная связь, к тому же с оценкой."
+                ],
+                "strengths": [
+                  "Около 140 слов в 4 абзацах, формально в диапазоне 100–200.",
+                  "Текст хорошо звучит на слух, связки плавные.",
+                  "Номер владения не назван.",
+                  "Даты и связь «Литогеи» с ВИМС переданы верно."
+                ],
+                "issues": [
+                  {
+                    "quote": "Поэтому корпус во дворе — не случайная прихоть, а часть его участия в просвещении, только скрытая от глаз за фасадом.",
+                    "reason": "Вымышленная причинная связь и мотив заказчика, плюс оценочная риторика. Блокирующий дефект.",
+                    "factIds": [
+                      "m3_f1",
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "Научный корпус 1904–1905 годов стоит в глубине двора, и постройки, выходящие на улицу, закрывают его от прохожих.",
+                    "reason": "Настоящее время («стоит», «закрывают») утверждает, что корпус существует сейчас. В источнике прошедшее «находился», и упомянута реконструкция 1980-х. Это неподтверждённое добавление о нынешнем состоянии. Кроме того, «двор» — вольная замена «владения».",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "ВИМС — Всероссийский институт минерального сырья",
+                    "reason": "Расшифровки нет во входе, это неподтверждённое добавление. Полное официальное название института иное (в нём есть слова «научно-исследовательский»), так что расшифровка ещё и неточна.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "по проекту Фёдора Шехтеля",
+                    "reason": "Имени во входе нет. Это неподтверждённое, хотя и верное, добавление.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "Основание института, получившего название «Литогея»",
+                    "reason": "Источник ставит заказ института и основание «Литогеи» в одном факте, но прямо не утверждает, что институт получил это название. Это правдоподобная, но интерпретирующая склейка.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "За купеческим фасадом владения Аршиновых скрыта история, которую с улицы не разглядеть.",
+                    "reason": "Эффектное вступление без подтверждённой подробности. Мотив «скрытости» затем повторяется ещё дважды («закрывают его от прохожих», «скрытая от глаз за фасадом»), это материальный повтор.",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "Так в купеческом владении появилась научная лаборатория.",
+                    "reason": "Связка перефразирует название карточки и не добавляет факта. Нарушено требование, чтобы каждое предложение добавляло подтверждённую подробность.",
+                    "factIds": []
+                  },
+                  {
+                    "quote": "Сам Василий Аршинов поддерживал не только науку: он помогал коммерческому образованию и приходской школе.",
+                    "reason": "«Поддерживал не только науку» — обобщение, которого нет в фактах. Отнесение к Василию снимает неоднозначность источника («Аршинов»).",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "A",
+              "C",
+              "B"
+            ],
+            "reason": "Единственный вариант без блокирующих дефектов — A. Он компактно и точно передаёт оба факта, а его короткий объём оправдан скудостью материала. У B и C есть блокирующие дефекты. B называет архитектора вымышленным именем «Михаил» и добавляет причинный вывод о «незаметном учреждении». C приписывает заказчику мотив («не случайная прихоть, а часть его участия в просвещении»), подаёт корпус как существующий сейчас, неточно расшифровывает ВИМС и заполняет объём повторами. C поставлен выше B с минимальным отрывом: по взвешенной сумме они почти равны (≈2,98 против ≈2,85), а у C лучше звучание и связность. При этом ни один из них не пригоден без правки."
+          }
+        ],
+        "limitations": [
+          "Подсчёт слов приблизительный (A ≈ 63, B ≈ 85, C ≈ 140).",
+          "Неверность имени «Михаил» и неточность расшифровки ВИМС установлены по общеизвестным сведениям, а не по входным фактам. Относительно входа оба утверждения в любом случае неподтверждённые добавления.",
+          "В источнике (m3_f1) поддержка образования приписана просто «Аршинову» без имени, поэтому отнесение её к Василию в A и C считаю допустимой, но не строго подтверждённой интерпретацией.",
+          "Источник не уточняет, сохранился ли корпус сейчас и где именно основана «Литогея». Оценка утверждений об этом исходит из буквального текста фактов."
+        ]
+      }
+    },
+    {
+      "file": "review-arshinov-r2.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 2
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 2
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011Cfnsm4LmGumhbd6FAtNFu",
+      "elapsedMs": 48706,
+      "usage": {
+        "input_tokens": 2931,
+        "output_tokens": 5179,
+        "total_tokens": 8110
+      },
+      "reviewValid": true,
+      "review": {
+        "cases": [
+          {
+            "caseId": "arshinov",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 3.5,
+                  "naturalRussian": 4,
+                  "audioClarity": 3.5,
+                  "coherence": 3.5,
+                  "instructionFollowing": 3.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Около 98 слов: это короткая справка (description-v1), три абзаца допустимы.",
+                  "Номер владения не назван. Реконструкция 1980-х упомянута без адресных цифр: «владение получило другой номер».",
+                  "Корпус в глубине участка, скрытый от улицы, передан верно (m3_f1).",
+                  "Даты 1904–1905 и 1904, а также связь «Литогеи» с ВИМС переданы верно (m3_f1, m3_f2).",
+                  "Указание «архитектора» при фамилии Шехтеля помогает на слух и выводится из «по проекту Шехтеля»."
+                ],
+                "issues": [
+                  {
+                    "quote": "по проекту архитектора Фёдора Шехтеля",
+                    "reason": "Имя «Фёдор» во входных фактах отсутствует. Это неподтверждённое добавление. Противоречия нет, имя соответствует общеизвестному, но нарушает требование использовать только данные факты.",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "был учеником Владимира Вернадского",
+                    "reason": "Имя «Владимир» у Вернадского во входе не указано. Это неподтверждённое добавление того же типа.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "Василий Аршинов поддерживал коммерческое образование и приходскую школу.",
+                    "reason": "В факте сказано только «Аршинов поддерживал», без имени. Отнести эту деятельность к Василию правдоподобно, но не подтверждено: это конкретизация лица сверх источника. Неопределённость исходных данных потеряна.",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "В 1904 году здесь заложили основание «Литогеи»",
+                    "reason": "Слово «здесь» добавляет локализацию, которой в факте нет. Кроме того, «основание заложено» в источнике может означать учреждение, а не закладку на этом участке.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "скрытый в глубине участка и не видимый с улицы",
+                    "reason": "«Скрытый» и «не видимый с улицы» почти повторяют друг друга. В источнике сказано точнее: скрыт постройками.",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "История владения связана не только с научными замыслами.",
+                    "reason": "Связка-наполнитель. Новой подтверждённой подробности она не несёт, а «научные замыслы» — расплывчатая формулировка.",
+                    "factIds": []
+                  },
+                  {
+                    "quote": "но научный корпус Шехтеля остался частью истории этого скрытого за фасадом места",
+                    "reason": "Пустое завершение, повторяет мысль первого абзаца. Слово «остался» может прозвучать как намёк на сохранность корпуса, а сохранность не подтверждена.",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "от которой ведёт свою историю ВИМС",
+                    "reason": "Аббревиатура не расшифрована и на слух непонятна. Расшифровки нет во входе, поэтому это ограничение audioClarity, а не фактическая ошибка. То же касается «Литогеи».",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4,
+                  "audioClarity": 3.5,
+                  "coherence": 4,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Около 56 слов: компактная справка без наполнителей, два абзаца допустимы.",
+                  "Все утверждения прямо опираются на m3_f1 и m3_f2, добавленных имён и локализаций нет.",
+                  "«Скрытый от улицы другими постройками» точно передаёт формулировку источника.",
+                  "Неопределённость «Аршинов поддерживал» сохранена так, как она дана во входе.",
+                  "Номер владения и сведения о реконструкции опущены. Это допустимо: требовать раскрытия всех фактов нельзя."
+                ],
+                "issues": [
+                  {
+                    "quote": "Аршинов поддерживал коммерческое образование и приходскую школу.",
+                    "reason": "На слух неоднозначно: сразу перед этим упомянут сын Владимир, и слушатель может отнести фразу к нему. Неоднозначность унаследована от источника, но здесь она усилена порядком предложений. Сама фраза оторвана от темы абзаца о «Литогее».",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "по проекту Шехтеля",
+                    "reason": "Роль Шехтеля прямо не названа. Она выводится из «по проекту», но краткое «архитектора» облегчило бы восприятие на слух. Дефект незначительный.",
+                    "factIds": [
+                      "m3_f1"
+                    ]
+                  },
+                  {
+                    "quote": "Основание «Литогеи» заложили в 1904 году; ВИМС ведёт от неё свою историю.",
+                    "reason": "«Литогея» и «ВИМС» не пояснены, точка с запятой на слух не воспринимается. Пояснений нет во входе, поэтому это ограничение ясности, а не ошибка.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  },
+                  {
+                    "quote": "Василий Аршинов заказал Шехтелю институт для своего сына Владимира — выпускника Московского университета и ученика Вернадского.",
+                    "reason": "Предложение близко к пересказу факта и несколько перегружено приложением. В целом допустимо.",
+                    "factIds": [
+                      "m3_f2"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "B",
+              "A"
+            ],
+            "reason": "Блокирующих дефектов нет ни у одного варианта: противоречий фактам, выдуманных дат или переноса истории на соседний объект не найдено. B строго держится входных данных, сохраняет исходную неопределённость и не содержит наполнителей. A добавляет неподтверждённые элементы: имена «Фёдор» и «Владимир Вернадский», отнесение благотворительности именно к Василию, локализацию «здесь». Кроме того, в A есть две связки без содержания и повтор «скрытый / не видимый». Длина обоих вариантов соответствует режиму короткой справки, поэтому преимущество B определяется фактологической точностью и плотностью, а не композицией."
+          }
+        ],
+        "limitations": [
+          "Имена «Фёдор Шехтель» и «Владимир Вернадский» в A соответствуют общеизвестным лицам, поэтому они оценены как неподтверждённое добавление, а не как выдуманное имя-блокер. При более строгом толковании правила это можно считать блокирующим.",
+          "Отнесение поддержки образования к Василию Аршинову в A правдоподобно, но во входе не подтверждено. Квалификация «неподтверждённая конкретизация» вместо «блокера» — редакторское решение.",
+          "Подсчёт слов приблизительный (A ≈ 98, B ≈ 56). A находится у границы режимов 20–99 и 100–200 слов; при иной методике подсчёта A может формально попасть в режим story-v1, где двух абзацев минимум и трёх достаточно.",
+          "Расшифровки «ВИМС» и пояснения к «Литогее» во входе нет, поэтому их отсутствие учтено только в audioClarity."
+        ]
+      }
+    },
+    {
+      "file": "review-khludov-r1.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "opencode-go/deepseek-v4-pro",
+          "repetition": 1
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 1
+        },
+        {
+          "label": "C",
+          "requestedModel": "cs/claude-fable-5-1",
+          "repetition": 1
+        },
+        {
+          "label": "D",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 1
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011CfnsLpzfgMHCPBng5Pzyb",
+      "elapsedMs": 50225,
+      "usage": {
+        "input_tokens": 2966,
+        "output_tokens": 5405,
+        "total_tokens": 8371
+      },
+      "reviewValid": true,
+      "retryReason": "Ревьюер ошибочно потребовал минимум два абзаца для description-v1; рубрика уточнена по runtime.",
+      "review": {
+        "cases": [
+          {
+            "caseId": "khludov",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4,
+                  "audioClarity": 3.5,
+                  "coherence": 3.5,
+                  "instructionFollowing": 4
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Все утверждения опираются на m2_f1 и m2_f2. Даты, имена и причинные связи не добавлены.",
+                  "Сохранена неопределённость источника: дом, предоставленный Хлудовым, и пожертвованный доходный дом названы раздельно. Донор доходного дома не приписан Хлудову.",
+                  "Номер дома «22/2» не назван.",
+                  "Около 54 слов в трёх абзацах. Это корректная короткая справка."
+                ],
+                "issues": [
+                  {
+                    "quote": "Так в одном здании соединились обучение, проживание и аренда.",
+                    "reason": "Предложение пересказывает предыдущее и не добавляет новой подробности. Это нарушает правило «каждое предложение должно добавлять подтверждённую подробность» и «короткий текст лучше повторов».",
+                    "factIds": [
+                      "m2_f2"
+                    ]
+                  },
+                  {
+                    "quote": "Хлудов предоставил для него дом… Для него пожертвовали отдельный доходный дом.",
+                    "reason": "На слух упомянуты два дома, а текст начинается с «Дом Хлудова». Слушателю неясно, какой из домов рассказывает гид и совпадают ли они. Факты это не уточняют, но формулировка запутывает.",
+                    "factIds": [
+                      "m2_f1",
+                      "m2_f2"
+                    ]
+                  },
+                  {
+                    "quote": "Для него пожертвовали",
+                    "reason": "Местоимение «него» стоит после предложения про детей духовенства и ремёсла. Связь с «училищем» на слух ослаблена.",
+                    "factIds": [
+                      "m2_f2"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 3.5,
+                  "naturalRussian": 3.5,
+                  "audioClarity": 4,
+                  "coherence": 4.5,
+                  "instructionFollowing": 4
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Самая связная композиция: в тексте один дом, и слушатель не путается в референтах.",
+                  "Формулировка «Часть помещений предназначалась для сдачи в аренду» точно передаёт «помещения для аренды», без утверждения о фактической сдаче.",
+                  "Номер дома не назван. Около 50 слов в двух абзацах."
+                ],
+                "issues": [
+                  {
+                    "quote": "Хлудов предоставил училищу отдельный доходный дом",
+                    "reason": "В m2_f2 донор доходного дома не назван («пожертвован»). В m2_f1 говорится лишь, что Хлудов «предоставил дом». Текст отождествляет эти дома и приписывает Хлудову пожертвование доходного дома. Неопределённость источника снята без подтверждения. Это неподтверждённое добавление, а не явное противоречие.",
+                    "factIds": [
+                      "m2_f1",
+                      "m2_f2"
+                    ]
+                  },
+                  {
+                    "quote": "Помимо дома, Хлудов выделил средства на десять стипендий.",
+                    "reason": "Предложение закрепляет то же отождествление двух домов.",
+                    "factIds": [
+                      "m2_f1"
+                    ]
+                  },
+                  {
+                    "quote": "дом совмещал учебное, жилое и доходное использование",
+                    "reason": "Канцелярский оборот («использование»). Он к тому же частично повторяет только что перечисленное.",
+                    "factIds": [
+                      "m2_f2"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "C",
+                "scores": {
+                  "factuality": 4,
+                  "naturalRussian": 4,
+                  "audioClarity": 3,
+                  "coherence": 3.5,
+                  "instructionFollowing": 4
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Все ключевые факты переданы компактно, около 49 слов.",
+                  "Один абзац для короткой справки допустим.",
+                  "Пожертвование доходного дома не приписано Хлудову."
+                ],
+                "issues": [
+                  {
+                    "quote": "Этот дом связан с училищем",
+                    "reason": "Затем упоминаются «дом» Хлудова и «отдельный доходный дом». На слух получается три «дома», и неясно, о каком из них «этот».",
+                    "factIds": [
+                      "m2_f1",
+                      "m2_f2"
+                    ]
+                  },
+                  {
+                    "quote": "а часть помещений сдавалась в аренду",
+                    "reason": "В источнике сказано «помещения для аренды», то есть назначение. Утверждение, что они фактически сдавались, — небольшое неподтверждённое усиление.",
+                    "factIds": [
+                      "m2_f2"
+                    ]
+                  },
+                  {
+                    "quote": "Под него был пожертвован отдельный доходный дом: в нём разместились учебные помещения и общежитие, а часть помещений сдавалась в аренду.",
+                    "reason": "Длинное составное предложение в конце плотного абзаца. Его тяжело воспринимать на слух.",
+                    "factIds": [
+                      "m2_f2"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "D",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 4,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Самый экономный текст без повторов, около 39 слов. Каждое предложение добавляет подтверждённую подробность.",
+                  "Нет двусмысленного «этот дом». Пожертвование доходного дома не приписано Хлудову.",
+                  "Номер дома не назван. Два абзаца для справки допустимы."
+                ],
+                "issues": [
+                  {
+                    "quote": "Училищу также пожертвовали отдельный доходный дом.",
+                    "reason": "Слово «также» подаёт доходный дом как дополнительный к дому Хлудова. Источник это допускает («отдельный»), но прямо не утверждает. Это лёгкая интерпретация, а не противоречие.",
+                    "factIds": [
+                      "m2_f1",
+                      "m2_f2"
+                    ]
+                  },
+                  {
+                    "quote": "8 января 1873 года было утверждено училище",
+                    "reason": "Начало с числа на слух менее удобно. Это стилистическое замечание, а не ошибка.",
+                    "factIds": [
+                      "m2_f1"
+                    ]
+                  },
+                  {
+                    "quote": "учебные помещения, общежитие и помещения, предназначенные для аренды",
+                    "reason": "Слово «помещения» повторяется в одном перечне.",
+                    "factIds": [
+                      "m2_f2"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "D",
+              "A",
+              "C",
+              "B"
+            ],
+            "reason": "Все четыре текста — короткие справки допустимой длины без адресного номера и без выдуманных дат. D точнее всех передаёт факты, не содержит повторов и не создаёт двусмысленного референта. A фактически аккуратен, но последнее предложение лишь повторяет предыдущее, а два «дома» путают слушателя. C ещё плотнее и труднее на слух: в одном абзаце фигурируют три «дома», а назначение «для аренды» усилено до «сдавалась». B самый связный, но достигает этого ценой неподтверждённого отождествления: Хлудову приписано пожертвование доходного дома, хотя в m2_f2 донор не назван. Поэтому при весе factuality 40% B на последнем месте."
+          }
+        ],
+        "limitations": [
+          "Факты не уточняют, совпадает ли «дом», предоставленный Хлудовым (m2_f1), с «отдельным доходным домом» (m2_f2). Поэтому отождествление в B оценено как неподтверждённое добавление, а не блокирующий дефект. Если редакция считает приписывание донора выдуманной атрибуцией, вариант B следует перевести в блокирующие.",
+          "Роль Хлудова во входных данных не указана, поэтому отсутствие пояснения, кто он, не засчитано как недостаток ни одному варианту.",
+          "Подсчёт слов приблизительный; все варианты находятся в диапазоне 20–99 слов."
+        ]
+      }
+    },
+    {
+      "file": "review-khludov-r2.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 2
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 2
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011Cfnsiz9wSMLXX9XdmCR64",
+      "elapsedMs": 28296,
+      "usage": {
+        "input_tokens": 2643,
+        "output_tokens": 2671,
+        "total_tokens": 5314
+      },
+      "reviewValid": true,
+      "review": {
+        "cases": [
+          {
+            "caseId": "khludov",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 4,
+                  "instructionFollowing": 5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Все утверждения опираются на m2_f1 и m2_f2. Выдуманных дат, имён и причинных связей нет.",
+                  "«часть помещений предназначалась для сдачи в аренду» точно передаёт «помещения для аренды» и не утверждает, что сдача действительно велась.",
+                  "Номер «22/2» опущен, запрет на адрес соблюдён.",
+                  "Около 50 слов. Это допустимая короткая справка формата description-v1, два абзаца уместны."
+                ],
+                "issues": [
+                  {
+                    "quote": "Училище, для которого Хлудов предоставил дом, было утверждено 8 января 1873 года.",
+                    "reason": "Причастный оборот в начале тяжеловат на слух. Главная информация (дата, утверждение) отодвинута в конец, а Хлудов появляется без всякой роли. Фактической ошибки нет.",
+                    "factIds": [
+                      "m2_f1"
+                    ]
+                  },
+                  {
+                    "quote": "Для училища был пожертвован отдельный доходный дом.",
+                    "reason": "После «Хлудов предоставил дом» слушатель может решить, что речь о втором доме. Источник сам неоднозначен, и текст не разрешает неопределённость, но и не снимает её. Сведения о Хлудове при этом разорваны на два места: первое и третье предложения.",
+                    "factIds": [
+                      "m2_f1",
+                      "m2_f2"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 4,
+                  "naturalRussian": 4.5,
+                  "audioClarity": 4.5,
+                  "coherence": 4,
+                  "instructionFollowing": 5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Компактно: дата, назначение училища и вклад Хлудова собраны в двух связных предложениях первого абзаца.",
+                  "Порядок слов естественный, на слух воспринимается легко.",
+                  "Номер «22/2» опущен. Около 45 слов, допустимая короткая справка в двух абзацах."
+                ],
+                "issues": [
+                  {
+                    "quote": "Училищу также пожертвовали отдельный доходный дом.",
+                    "reason": "Слово «также» прямо утверждает, что был второй дом помимо предоставленного Хлудовым. Из фактов не ясно, один это дом или два, а текст снимает эту неопределённость без оснований. Это неподтверждённая интерпретация, а не явное противоречие, поэтому дефект не блокирующий, но снижает factuality.",
+                    "factIds": [
+                      "m2_f1",
+                      "m2_f2"
+                    ]
+                  },
+                  {
+                    "quote": "помещения, которые сдавали в аренду",
+                    "reason": "В источнике сказано «помещения для аренды», то есть о назначении. Здесь же утверждается, что сдача фактически велась. Усиление небольшое, но неподтверждённое.",
+                    "factIds": [
+                      "m2_f2"
+                    ]
+                  },
+                  {
+                    "quote": "учебные помещения, общежитие и помещения",
+                    "reason": "Слово «помещения» повторяется в одном перечне, на слух это заметно.",
+                    "factIds": [
+                      "m2_f2"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "A",
+              "B"
+            ],
+            "reason": "Оба текста короткие, корректные по формату и без блокирующих дефектов. B звучит естественнее и компактнее, но словом «также» утверждает существование второго дома, а формулировкой «сдавали в аренду» превращает назначение помещений в факт сдачи. A остаётся ближе к источнику и сохраняет его неопределённость. Поскольку factuality весит 40%, A немного впереди (≈4.30 против ≈4.28). Разница минимальна, и решает её именно точность, а не композиция."
+          }
+        ],
+        "limitations": [
+          "По фактам m2_f1 и m2_f2 нельзя однозначно установить, один и тот же дом имеется в виду («предоставил дом» и «пожертвован отдельный доходный дом») или два разных. Оценка «также» в варианте B зависит от этой неоднозначности.",
+          "Без имени Хлудова и его роли (меценат, жертвователь) оба текста вводят персону без пояснения. В фактах такие данные отсутствуют, поэтому это не засчитано как дефект."
+        ]
+      }
+    },
+    {
+      "file": "review-kozhevniki-r1.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "cs/claude-fable-5-1",
+          "repetition": 1
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 1
+        },
+        {
+          "label": "C",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 1
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011CfnsQWP6eVKvirwQujiD4",
+      "elapsedMs": 64895,
+      "usage": {
+        "input_tokens": 4212,
+        "output_tokens": 7229,
+        "total_tokens": 11441
+      },
+      "reviewValid": true,
+      "retryReason": "Предыдущий JSON обрезан лимитом output_tokens=7500; повтор того же слепого промпта с лимитом 16000.",
+      "review": {
+        "cases": [
+          {
+            "caseId": "kozhevniki",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 4.5,
+                  "instructionFollowing": 5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Сохраняет обе оговорки о палатах: «которые, вероятно, относились к ней» и «По архитектуре его относят к концу XVII века».",
+                  "Утверждение о технологиях Бахрушиных прямо приписано источнику: «по данным музея».",
+                  "Около 166 слов, 4 абзаца, адресных номеров нет. Требования промпта соблюдены.",
+                  "Абзацы тематически цельные: слобода и церковь, палаты, таможня, XIX век и второе название улицы."
+                ],
+                "issues": [
+                  {
+                    "quote": "Во второй половине XIX века слобода пережила расцвет.",
+                    "reason": "Расцвет сначала подан как самостоятельный факт и только в следующем предложении приписан Музею Москвы. Это небольшое ослабление атрибуции, но не противоречие.",
+                    "factIds": [
+                      "bakhrushins"
+                    ]
+                  },
+                  {
+                    "quote": "налог, который назывался мыт",
+                    "reason": "Форма в именительном падеже звучит неестественно. Естественнее «назывался мытом».",
+                    "factIds": [
+                      "customs"
+                    ]
+                  },
+                  {
+                    "quote": "внедрили на своих производствах новейшие технологии производства кожи",
+                    "reason": "Однокоренной повтор «производствах… производства» режет слух.",
+                    "factIds": [
+                      "bakhrushins"
+                    ]
+                  },
+                  {
+                    "quote": "Пётр I упразднил",
+                    "reason": "Римскую цифру синтезатор речи может прочитать неверно. Для аудиогида надёжнее «Пётр Первый».",
+                    "factIds": [
+                      "customs"
+                    ]
+                  },
+                  {
+                    "quote": "о слободе кожевников, стоявшей на берегу… там же стояла церковь",
+                    "reason": "Повтор «стоявшей… стояла» в соседних предложениях. Это стилистическая мелочь.",
+                    "factIds": [
+                      "leather-settlement"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 3,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 3.5,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Самый компактный текст: около 138 слов, 3 абзаца.",
+                  "Хорошо звучащие формулировки: «налог за ввоз товаров, называвшийся мытом»."
+                ],
+                "issues": [
+                  {
+                    "quote": "Это кирпичный двухэтажный дом конца XVII века",
+                    "reason": "Утрачена неопределённость. В источнике сказано «по архитектуре конца XVII века», то есть это стилистическая датировка, а не точная дата постройки.",
+                    "factIds": [
+                      "chambers"
+                    ]
+                  },
+                  {
+                    "quote": "Старейшим сохранившимся зданием слободы считаются палаты на Кожевнической улице.",
+                    "reason": "Пропущена оговорка источника «вероятно относившиеся к слободе». Принадлежность палат слободе подана как установленная.",
+                    "factIds": [
+                      "chambers"
+                    ]
+                  },
+                  {
+                    "quote": "У соседней паромной переправы купцы платили налог за ввоз товаров",
+                    "reason": "Неподтверждённое добавление. В источнике переправа и уплата мыта упомянуты рядом, но не сказано, что налог платили именно у переправы. Блокирующим дефектом не считаю: это правдоподобное прочтение, а не выдуманная дата или имя. Тем не менее связь додумана.",
+                    "factIds": [
+                      "customs"
+                    ]
+                  },
+                  {
+                    "quote": "В старом путеводителе",
+                    "reason": "Слово «старом» не подтверждено: возраст путеводителя в данных не указан. Кроме того, опущено имя источника (Романский), и атрибуция стала размытой.",
+                    "factIds": [
+                      "ivanovskaya"
+                    ]
+                  },
+                  {
+                    "quote": "Музей Москвы связывает с Бахрушиными, внедрявшими новые технологии",
+                    "reason": "Утверждение о технологиях вынесено в причастный оборот, и его принадлежность музею стала нечёткой. Звучит как факт от автора.",
+                    "factIds": [
+                      "bakhrushins"
+                    ]
+                  },
+                  {
+                    "quote": "Деревянную церковь Троицы в Кожевниках построили приблизительно в 1625 году.",
+                    "reason": "Церковь появляется только в третьем абзаце, без указания, что она стояла в слободе. В том же абзаце соседствуют история храма и Бахрушины XIX века. Тематическая цельность слабее, чем у A.",
+                    "factIds": [
+                      "trinity-church",
+                      "leather-settlement"
+                    ]
+                  },
+                  {
+                    "quote": "здесь разместился мытный двор",
+                    "reason": "На слух «здесь» может отнестись к слободе, а не к палатам. В A и C сказано однозначно: «в палатах».",
+                    "factIds": [
+                      "customs"
+                    ]
+                  },
+                  {
+                    "quote": "Первоначальное назначение палат доподлинно неизвестно.",
+                    "reason": "Сужение: в источнике неизвестно назначение палат вообще, а не только первоначальное. Это допустимо, но неточно.",
+                    "factIds": [
+                      "chambers"
+                    ]
+                  },
+                  {
+                    "quote": "Петром I",
+                    "reason": "Римская цифра в тексте для озвучки.",
+                    "factIds": [
+                      "customs"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "C",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 4,
+                  "instructionFollowing": 5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Оговорки сохранены: «вероятно относившиеся к слободе», «По архитектуре палаты относят к концу XVII века».",
+                  "Атрибуция музею сохранена: «по сведениям музея».",
+                  "«Пётр Первый» записан словами, это удобно для озвучки.",
+                  "Около 144 слов, 3 абзаца, без лишних деталей и адресов."
+                ],
+                "issues": [
+                  {
+                    "quote": "Это её старейшее сохранившееся здание",
+                    "reason": "На слух местоимение «её» неоднозначно: оно может отнестись и к слободе, и к только что названной Кожевнической улице. Это меняет смысл утверждения.",
+                    "factIds": [
+                      "chambers"
+                    ]
+                  },
+                  {
+                    "quote": "Первоначальное назначение здания доподлинно неизвестно.",
+                    "reason": "То же сужение, что в B: в источнике неизвестно назначение вообще.",
+                    "factIds": [
+                      "chambers"
+                    ]
+                  },
+                  {
+                    "quote": "Рядом действовала паромная переправа… Расцвет Кожевенной слободы во второй половине XIX века",
+                    "reason": "В одном абзаце без перехода соединены петровская таможня и XIX век. Это небольшой тематический скачок.",
+                    "factIds": [
+                      "customs",
+                      "bakhrushins"
+                    ]
+                  },
+                  {
+                    "quote": "сохранили память… сохранились… сохранившееся",
+                    "reason": "Тройной однокоренной повтор в двух соседних абзацах.",
+                    "factIds": [
+                      "leather-settlement",
+                      "chambers"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "A",
+              "C",
+              "B"
+            ],
+            "reason": "Ни в одном варианте нет выдуманных дат, имён или переноса истории на соседний объект, все укладываются в 100–200 слов. A и C близки по точности: оба сохраняют неопределённость о палатах и атрибуцию музею. A ставлю выше: в нём нет неоднозначной отсылки «её», к слободе «на слух» привязана церковь, точно передана атрибуция к Романскому. Минусы A мелкие: римская цифра, «назывался мыт», повтор «производствах… производства». У C лучше форма «Пётр Первый», но референт «её» неоднозначен, а таможня и XIX век склеены в одном абзаце. B последний: утрачены две оговорки источника (датировка «по архитектуре» и «вероятно относившиеся»), добавлены неподтверждённые «старом путеводителе» и уплата налога «у переправы», утверждение о технологиях Бахрушиных хуже приписано музею. Компактность B не компенсирует эти фактические потери.",
+            "limitations": []
+          }
+        ],
+        "limitations": [
+          "Число слов подсчитано вручную, погрешность ±3–5 слов. На соответствие диапазону 100–200 это не влияет.",
+          "Фраза B «У соседней паромной переправы купцы платили налог» — пограничный случай между допустимым прочтением и выдуманной связью. Она оценена как существенное неподтверждённое добавление, но не как блокирующий дефект. При более строгом толковании B следует считать заблокированным.",
+          "Произношение «Пётр I» оценено по распространённому поведению TTS. Конкретный движок озвучки неизвестен."
+        ]
+      }
+    },
+    {
+      "file": "review-kozhevniki-r2.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 2
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 2
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011CfnscxgUUgJ5nU37HPHx1",
+      "elapsedMs": 44055,
+      "usage": {
+        "input_tokens": 3741,
+        "output_tokens": 4560,
+        "total_tokens": 8301
+      },
+      "reviewValid": true,
+      "review": {
+        "cases": [
+          {
+            "caseId": "kozhevniki",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4.5,
+                  "audioClarity": 4,
+                  "coherence": 4.5,
+                  "instructionFollowing": 5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Все даты, имена и детали совпадают с фактами; новых утверждений нет.",
+                  "Сохранена неопределённость: «вероятно относившиеся к слободе», «доподлинно неизвестно».",
+                  "Тезис о Бахрушиных дважды атрибутирован музею: «Музей Москвы связывает» и «По сведениям музея». Оценочное «первыми в Москве» не выдано за факт от лица рассказчика.",
+                  "Мытный двор привязан к палатам, переправа упомянута только как соседство («Рядом действовала»). Лишней связи нет.",
+                  "Около 155 слов, 3 абзаца, адресных номеров нет. Требования story-v1 выполнены.",
+                  "«Петром Первым» вместо «Петром I» удобнее для озвучки."
+                ],
+                "issues": [
+                  {
+                    "quote": "Она сформировалась в XVI веке: здесь выделывали кожи.",
+                    "reason": "Двоеточие делает выделку кож пояснением к дате формирования слободы. Получается неестественная логическая связка. Фактической ошибки нет, но фраза звучит странно. Лучше разделить на два предложения или соединить через «и».",
+                    "factIds": [
+                      "sixteenth-century",
+                      "leather-settlement"
+                    ]
+                  },
+                  {
+                    "quote": "Её деревянное здание построили приблизительно в 1625 году, нынешний пятиглавый храм — в 1686–1689 годах, а колокольню пристроили в 1722 году.",
+                    "reason": "Три даты в одном предложении на слух усваиваются тяжело. Даты верны, замечание касается только audioClarity.",
+                    "factIds": [
+                      "trinity-church"
+                    ]
+                  },
+                  {
+                    "quote": "Первоначальное назначение палат доподлинно неизвестно.",
+                    "reason": "В источнике сказано «назначение палат доподлинно неизвестно», без уточнения «первоначальное». Сужение небольшое и допустимое, но это не дословная передача.",
+                    "factIds": [
+                      "chambers"
+                    ]
+                  },
+                  {
+                    "quote": "здесь разместился мытный двор",
+                    "reason": "«Здесь» стоит через несколько предложений после упоминания палат. На слух можно понять это как «в слободе», хотя в факте сказано «в палатах». Неоднозначность небольшая, но «в палатах» было бы точнее.",
+                    "factIds": [
+                      "customs"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 3,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 3.5,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [
+                  "«У соседней паромной переправы купцы платили налог за ввоз товаров» — в фактах переправа и налог стоят рядом, но не сказано, что мыт платили у переправы. Место взимания налога выдумано, функция мытного двора (в палатах) фактически перенесена на соседний объект."
+                ],
+                "strengths": [
+                  "Даты церкви, век формирования слободы и роль Петра I переданы верно.",
+                  "Сохранена оговорка «вероятно связанные с ней» и неизвестность назначения палат.",
+                  "Около 145 слов, 3 абзаца, адресных номеров нет. Формальные требования story-v1 выполнены.",
+                  "Упомянут факт о путеводителе Романского; его не требовалось включать, но он передан точно."
+                ],
+                "issues": [
+                  {
+                    "quote": "У соседней паромной переправы купцы платили налог за ввоз товаров, называвшийся мытом.",
+                    "reason": "Неподтверждённая пространственно-причинная связь: источник не говорит, где платили мыт. Блокирующий дефект.",
+                    "factIds": [
+                      "customs"
+                    ]
+                  },
+                  {
+                    "quote": "высокой крышей с дымниками",
+                    "reason": "В источнике «крыша с высокими дымниками». Признак «высокий» перенесён с дымников на крышу, это искажение архитектурной детали.",
+                    "factIds": [
+                      "chambers"
+                    ]
+                  },
+                  {
+                    "quote": "кирпичный двухэтажный дом конца XVII века",
+                    "reason": "В источнике «по архитектуре конца XVII века», то есть датировка по стилю. Текст подаёт её как установленную дату постройки, и неопределённость теряется.",
+                    "factIds": [
+                      "chambers"
+                    ]
+                  },
+                  {
+                    "quote": "Музей Москвы связывает с Бахрушиными, внедрявшими новые технологии производства кожи и тканей.",
+                    "reason": "Сведение о технологиях вынесено в причастный оборот от лица рассказчика, и атрибуция музею для этой части ослабла. Пропуск «первыми в Москве» допустим.",
+                    "factIds": [
+                      "bakhrushins"
+                    ]
+                  },
+                  {
+                    "quote": "В путеводителе Романского Кожевническая и Ивановская указаны как два названия одной улицы.",
+                    "reason": "Предложение вставлено без связки между выделкой кож и палатами. Слушатель не знает, кто такой Романский и зачем ему второе название. Звучит как справочная вставка и рвёт повествование.",
+                    "factIds": [
+                      "ivanovskaya"
+                    ]
+                  },
+                  {
+                    "quote": "На берегу Москвы-реки здесь выделывали кожи.",
+                    "reason": "Сочетание «на берегу Москвы-реки здесь» тяжеловесно, слова «здесь» и «на берегу» дублируют локализацию.",
+                    "factIds": [
+                      "leather-settlement"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "A",
+              "B"
+            ],
+            "reason": "Оба текста одной длины и структуры и выполняют формальные требования. A передаёт факты без искажений, сохраняет оговорки и атрибуцию музею; его недостатки стилистические: двоеточие с ложной связкой и плотное предложение с датами. В B есть блокирующий дефект: место уплаты мыта привязано к переправе, чего нет в фактах. Кроме того, перепутан признак «высокий» (крыша вместо дымников), датировка по архитектуре подана как точная дата, а вставка о Романском разрывает повествование. Порядок определён фактической точностью, а не композицией."
+          }
+        ],
+        "limitations": [
+          "Количество слов посчитано вручную, приблизительно. Оба текста явно укладываются в 100–200 слов.",
+          "Отнесение связки «переправа — уплата мыта» в B к блокирующим дефектам — интерпретация правила о выдуманной причинности и переносе на соседний объект. При более мягком прочтении это было бы серьёзное неподтверждённое добавление, но ранжирование бы не изменилось."
+        ]
+      }
+    },
+    {
+      "file": "review-postoffice-r1.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "cs/claude-fable-5-1",
+          "repetition": 1
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 1
+        },
+        {
+          "label": "C",
+          "requestedModel": "opencode-go/deepseek-v4-pro",
+          "repetition": 1
+        },
+        {
+          "label": "D",
+          "requestedModel": "opencode-go/glm-5.3",
+          "repetition": 1
+        },
+        {
+          "label": "E",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 1
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011CfnrwsJRdeKGHwrWTYCYF",
+      "elapsedMs": 67250,
+      "usage": {
+        "input_tokens": 4896,
+        "output_tokens": 6897,
+        "total_tokens": 11793
+      },
+      "reviewValid": true,
+      "review": {
+        "cases": [
+          {
+            "caseId": "postoffice",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4.5,
+                  "audioClarity": 4,
+                  "coherence": 4.5,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Использованы все семь фактов, явных противоречий нет.",
+                  "Сохранена формулировка «Новый корпус проектировали», без лишнего отождествления.",
+                  "Служебный корпус и телеграф отделены от главного корпуса и помещены в исторический абзац.",
+                  "Около 170 слов и 3 абзаца: требование промпта выполнено."
+                ],
+                "issues": [
+                  {
+                    "quote": "изменили задуманное византийское оформление фасада на романское",
+                    "reason": "Неподтверждённое добавление. Слово «задуманное» утверждает, что византийское оформление существовало только в замысле. В источнике сказано лишь, что Веснины «изменили византийское оформление фасада на романское». Это не выдуманная дата или причинность, но смысл сдвигается.",
+                    "factIds": [
+                      "architects"
+                    ]
+                  },
+                  {
+                    "quote": "Служебный корпус 1855–1856 годов строили для почтовых экипажей; с 1868 года его занимал Московский телеграф, а когда телеграф в 1927 году переехал на Тверскую, туда вернулась почта.",
+                    "reason": "Предложение перегружено: три даты, две смены владельца и точка с запятой. Второй абзац получился самым плотным, около 75 слов. На слух его трудно удержать.",
+                    "factIds": [
+                      "telegraph"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 5,
+                  "naturalRussian": 4.5,
+                  "audioClarity": 4.5,
+                  "coherence": 4.5,
+                  "instructionFollowing": 5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Неподтверждённых добавлений нет; переформулировки допустимы: «открылся», «в состав комплекса входят».",
+                  "«Новый корпус» оставлен как в источнике.",
+                  "Короткие предложения легко воспринимаются на слух; около 125 слов, 3 абзаца.",
+                  "Факт о телеграфе опущен. Это допустимо: раскрывать все факты не требуется, а текст сосредоточен на объекте и его участке."
+                ],
+                "issues": [
+                  {
+                    "quote": "Операционный зал главного корпуса устроили на месте двора",
+                    "reason": "Слабая неоднозначность. Абзацем выше упомянут двор с экипажами («Во дворе размещались почтовые экипажи»), и слушатель может решить, что зал стоит на месте именно этого двора. Источник такую связь не устанавливает, но и не исключает. Явной ошибки нет.",
+                    "factIds": [
+                      "hall",
+                      "estate"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "C",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 3.5,
+                  "audioClarity": 3.5,
+                  "coherence": 3.5,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Явных противоречий нет, использованы все факты.",
+                  "Около 150 слов, 4 абзаца: в пределах промпта."
+                ],
+                "issues": [
+                  {
+                    "quote": "а в 1792 году купил его",
+                    "reason": "Местоимение «его» относится к дворцу, а по источнику куплено «владение». Сдвиг небольшой, но объект покупки сужен.",
+                    "factIds": [
+                      "estate"
+                    ]
+                  },
+                  {
+                    "quote": "Фасад имеет круглые часы, а комплекс включает проездные арки и внутренние дворы.",
+                    "reason": "Канцелярская калька исходной формулировки («фасад имеет»). Для устного русского текста неестественно.",
+                    "factIds": [
+                      "exterior"
+                    ]
+                  },
+                  {
+                    "quote": "В зале находятся чугунные винтовые лестницы со сквозным орнаментом ступеней, соединяющие первый и второй этажи.",
+                    "reason": "Почти дословный перенос факта с длинным причастным оборотом в конце. На слух тяжеловесно.",
+                    "factIds": [
+                      "f7"
+                    ]
+                  },
+                  {
+                    "quote": "Служебный корпус 1855–1856 годов строили для почтовых экипажей.",
+                    "reason": "Абзац о служебном корпусе стоит в конце без всякой связки, после рассказа о зале. Для слушателя это резкая смена объекта, и связность страдает.",
+                    "factIds": [
+                      "telegraph"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "D",
+                "scores": {
+                  "factuality": 3.5,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 4.5,
+                  "instructionFollowing": 4
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Хронологическая последовательность ясна, связки плавные.",
+                  "Около 160 слов, 4 абзаца."
+                ],
+                "issues": [
+                  {
+                    "quote": "Московский почтамт стоит на владении с долгой историей.",
+                    "reason": "Общая оценочная фраза-заполнитель без конкретной подробности. Сочетание «стоит на владении» неестественно.",
+                    "factIds": []
+                  },
+                  {
+                    "quote": "а позже братья Веснины заменили византийское оформление фасада на романское",
+                    "reason": "Слово «позже» добавляет хронологический порядок между работой Новикова и Мунца и правкой Вессниных. Источник такой последовательности не задаёт.",
+                    "factIds": [
+                      "architects"
+                    ]
+                  },
+                  {
+                    "quote": "сквозь комплекс ведут проездные арки во внутренние дворы",
+                    "reason": "Неподтверждённое пространственное утверждение. В источнике лишь перечислено, что комплекс включает арки и дворы; что арки ведут во дворы, не сказано.",
+                    "factIds": [
+                      "exterior"
+                    ]
+                  },
+                  {
+                    "quote": "Главное пространство почтамта — операционный зал",
+                    "reason": "Неподтверждённая оценка: в источнике нет слов о «главном» пространстве.",
+                    "factIds": [
+                      "hall"
+                    ]
+                  },
+                  {
+                    "quote": "Соединяют этажи чугунные винтовые лестницы со сквозным орнаментом ступеней.",
+                    "reason": "Указание «первый и второй» опущено. Сразу после упоминания второго и третьего этажей фраза читается так, будто лестницы связывают все этажи. Это искажение факта.",
+                    "factIds": [
+                      "f7",
+                      "galleries"
+                    ]
+                  },
+                  {
+                    "quote": "выкупила его",
+                    "reason": "Куплено «владение», а не только дворец. Небольшое сужение.",
+                    "factIds": [
+                      "estate"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "E",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4.5,
+                  "audioClarity": 4.5,
+                  "coherence": 4,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Использованы все факты, речь естественная: «заменили византийское оформление фасада романским», «зал окружают галереи».",
+                  "Слово «первоначально» о служебном корпусе оправдано последующей сменой владельцев.",
+                  "Около 145 слов, 4 абзаца."
+                ],
+                "issues": [
+                  {
+                    "quote": "который почтовое ведомство арендовало у Лазаревых в 1783 году, а в 1792-м выкупило",
+                    "reason": "По источнику арендатор и покупатель — «Почтамт», а не «почтовое ведомство». Субъект слегка смещён. Кроме того, выкупленным оказывается дворец, а не «владение».",
+                    "factIds": [
+                      "estate"
+                    ]
+                  },
+                  {
+                    "quote": "Служебный корпус 1855–1856 годов первоначально строили для почтовых экипажей.",
+                    "reason": "Абзац о служебном корпусе поставлен в конец без связки с предыдущим текстом о зале, хотя переход мягче, чем в C.",
+                    "factIds": [
+                      "telegraph"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "B",
+              "E",
+              "A",
+              "C",
+              "D"
+            ],
+            "reason": "Блокирующих дефектов нет ни у одного варианта: выдуманных дат, имён, причинности или переноса истории соседнего объекта не найдено. B — единственный текст без неподтверждённых добавлений; он короткий, ясный на слух и укладывается в 100–200 слов. Пропуск факта о телеграфе не штрафуется. E и A близки по взвешенному баллу. E поставлен выше, потому что его отклонения («почтовое ведомство», «выкупило» дворец) слабее смыслового добавления «задуманное» в A. Кроме того, у A перегружен второй абзац. C точен, но канцелярски калькирует источник и обрывает рассказ абзацем о служебном корпусе. D последний: в нём больше всего неподтверждённых добавлений («позже», арки «ведут во внутренние дворы», «главное пространство», оценочное вступление) и обобщение «Соединяют этажи», которое на слух противоречит факту о первом и втором этажах."
+          }
+        ],
+        "limitations": [
+          "Число слов подсчитано приблизительно; все варианты явно укладываются в 100–200 слов и 2–5 абзацев.",
+          "Проверка проведена только по предоставленным фактам, без внешних источников. Например, был ли византийский фасад только проектом, по входным данным установить нельзя.",
+          "Отождествление «нового корпуса» с главным корпусом 1912 года в C, D и E сочтено допустимым выводом из контекста, а не ошибкой.",
+          "Оценки naturalRussian и audioClarity частично субъективны и не проверялись озвучкой."
+        ]
+      }
+    },
+    {
+      "file": "review-postoffice-r2.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 2
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 2
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011CfnsZbQTxTH9xKXCksTda",
+      "elapsedMs": 46157,
+      "usage": {
+        "input_tokens": 3587,
+        "output_tokens": 5029,
+        "total_tokens": 8616
+      },
+      "reviewValid": true,
+      "review": {
+        "cases": [
+          {
+            "caseId": "postoffice",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4.5,
+                  "audioClarity": 4,
+                  "coherence": 4.5,
+                  "instructionFollowing": 5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Около 123 слов в трёх абзацах, что укладывается в рамки story-v1 (100–200 слов, 2–5 абзацев). Адресных номеров нет.",
+                  "Даты, имена и роли переданы точно: 1912, 1783, 1792, Лазаревы, Меншиков, Кавос, Новиков и Мунц, Веснины.",
+                  "Хорошо раскрыт интерьер: стеклянное перекрытие на стальном каркасе, дубовые стойки, галереи на втором и третьем этажах, чугунные винтовые лестницы с орнаментом ступеней.",
+                  "История служебного корпуса с телеграфом не смешана с главным корпусом. Её отсутствие допустимо, раскрывать все факты не требуется."
+                ],
+                "issues": [
+                  {
+                    "quote": "изменили первоначальное византийское оформление фасада на романское",
+                    "reason": "Слова «первоначальное» нет во входе. Факт говорит только, что Веснины сменили византийское оформление на романское. Был ли византийский вариант первоначальным, не сказано. Это неподтверждённое уточнение, а не противоречие, поэтому дефект мелкий.",
+                    "factIds": [
+                      "architects"
+                    ]
+                  },
+                  {
+                    "quote": "Главный корпус Московского почтамта открылся в 1912 году. … Новый корпус проектировали Леонид Новиков и Оскар Мунц.",
+                    "reason": "На слух «главный корпус» и «новый корпус» звучат как два разных здания. Слушатель не поймёт, что речь об одном объекте. Термин взят из факта дословно, но связь с главным корпусом не проговорена.",
+                    "factIds": [
+                      "exterior",
+                      "architects"
+                    ]
+                  },
+                  {
+                    "quote": "История почтамта на этом участке началась раньше.",
+                    "reason": "Факты не утверждают прямо, что главный корпус стоит на участке бывшего дворца Меншикова. Это лишь выводится из упоминаний двора и владения. Вывод правдоподобен, но сформулирован утвердительнее, чем позволяют данные.",
+                    "factIds": [
+                      "estate",
+                      "hall"
+                    ]
+                  },
+                  {
+                    "quote": "На его фасаде — круглые часы, а в комплекс входят проездные арки и внутренние дворы. Новый корпус проектировали… Братья Веснины изменили…",
+                    "reason": "Первый абзац состоит из четырёх коротких перечислительных предложений без связок. Звучит немного каталожно, хотя недопустимым канцеляритом это не назвать.",
+                    "factIds": [
+                      "exterior",
+                      "architects"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4.5,
+                  "audioClarity": 4.5,
+                  "coherence": 4.5,
+                  "instructionFollowing": 5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Около 141 слова в трёх абзацах, что соответствует story-v1. Адресных номеров нет. Улица Тверская названа без номера, это разрешено.",
+                  "«Его проектировали Леонид Новиков и Оскар Мунц» снимает двусмысленность «главный/новый корпус», и на слух текст понятнее.",
+                  "Служебный корпус корректно отделён от главного словом «Отдельный». Его история с телеграфом (1868, 1927) передана точно и не переносится на главный корпус.",
+                  "Даты, имена и детали интерьера переданы без искажений. «на месте прежнего двора» — допустимая переформулировка."
+                ],
+                "issues": [
+                  {
+                    "quote": "а в 1792 году выкупил его",
+                    "reason": "По факту почтамт «купил владение», а местоимение «его» грамматически указывает на «бывший дворец Меншикова». Предмет покупки слегка сужен с владения до дворца. Глагол «выкупил» добавляет оттенок выкупа арендатором, которого во входе нет. Это неточная переформулировка, а не выдумка.",
+                    "factIds": [
+                      "estate"
+                    ]
+                  },
+                  {
+                    "quote": "Главный корпус Московского почтамта открылся в 1912 году. Его проектировали Леонид Новиков и Оскар Мунц",
+                    "reason": "Во входе сказано «новый корпус», а не «главный». Отождествить их разумно, но это интерпретация, а не прямая цитата факта. Дефект мелкий.",
+                    "factIds": [
+                      "exterior",
+                      "architects"
+                    ]
+                  },
+                  {
+                    "quote": "В середине XIX века комплекс перестраивал Альберт Кавос. Отдельный служебный корпус возвели в 1855–1856 годах для экипажей.",
+                    "reason": "Эти предложения стоят рядом, и слушатель может решить, что служебный корпус построил Кавос. В тексте этого не утверждается, а во входе такой связи нет. Риск неверного понимания невелик, но он есть.",
+                    "factIds": [
+                      "architects",
+                      "telegraph"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "B",
+              "A"
+            ],
+            "reason": "Блокирующих дефектов нет ни в одном варианте: даты, имена и причинные связи не выдуманы, история соседних объектов не перенесена. Оба текста укладываются в объём и формат story-v1. Разница небольшая и не связана с длиной или порядком абзацев. В A есть неподтверждённое «первоначальное», а соседство «главного» и «нового» корпуса на слух путает. B точнее привязывает архитекторов к описываемому зданию и аккуратно отделяет служебный корпус. Его слабые места — неточное «выкупил его» вместо покупки владения и соседство предложений о Кавосе и служебном корпусе. По совокупности B немного понятнее на слух и чуть надёжнее по фактам. Дополнительные факты о телеграфе преимуществом сами по себе не считались."
+          }
+        ],
+        "limitations": [
+          "Количество слов посчитано вручную, погрешность ±3 слова. На соответствие диапазону 100–200 слов это не влияет.",
+          "Утверждения проверялись только по предоставленным фактам. Вопрос, стоит ли главный корпус на участке бывшего дворца Меншикова, внешними источниками не проверялся.",
+          "Разрыв между вариантами мал: ранжирование опирается на мелкие различия в ясности ссылок и точности переформулировок."
+        ]
+      }
+    },
+    {
+      "file": "review-zindel-r1.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "cs/claude-fable-5-1",
+          "repetition": 1
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 1
+        },
+        {
+          "label": "C",
+          "requestedModel": "opencode-go/deepseek-v4-pro",
+          "repetition": 1
+        },
+        {
+          "label": "D",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 1
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011Cfns7Yny8KrV17fzKhz7r",
+      "elapsedMs": 61608,
+      "usage": {
+        "input_tokens": 4205,
+        "output_tokens": 6723,
+        "total_tokens": 10928
+      },
+      "reviewValid": true,
+      "review": {
+        "cases": [
+          {
+            "caseId": "zindel",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 2.5,
+                  "naturalRussian": 4.5,
+                  "audioClarity": 4.5,
+                  "coherence": 4.5,
+                  "instructionFollowing": 3.5
+                },
+                "blockingIssues": [
+                  "«В 1920-е годы предприятие стало Первой ситценабивной фабрикой» относит переименование к 1920-м годам. По факту avant-garde-designers к 1920-м относится только работа Степановой и Поповой. Когда фабрика получила новое название, в данных не сказано. Это выдуманная датировка события."
+                ],
+                "strengths": [
+                  "Живой, естественный язык; хорошо воспринимается на слух.",
+                  "Термин «кретоны» верно пояснён приложением: «обивочные кретоны — плотные узорные ткани».",
+                  "Неопределённость датировки плаката частично сохранена: «которую аннотация датирует 1911 годом».",
+                  "Объём около 134 слов, 3 абзаца: требования промпта соблюдены."
+                ],
+                "issues": [
+                  {
+                    "quote": "В 1920-е годы предприятие стало Первой ситценабивной фабрикой",
+                    "reason": "Неподтверждённая дата переименования. В факте новое название дано только как определение фабрики, для которой работали художницы.",
+                    "factIds": [
+                      "avant-garde-designers"
+                    ]
+                  },
+                  {
+                    "quote": "Товарищество искало покупателей и далеко за пределами России",
+                    "reason": "Из рекламы для китайских покупателей выведены намерение и география («за пределами России»). Это интерпретация, а не факт.",
+                    "factIds": [
+                      "poster"
+                    ]
+                  },
+                  {
+                    "quote": "Так авангард здесь можно было не только увидеть, но и надеть.",
+                    "reason": "Вывод связывает платье Степановой с фабрикой («здесь»). В факте stepanova-dress не сказано, что ткань платья выпускалась на этой фабрике. Часть «не только увидеть» — оценочный наполнитель.",
+                    "factIds": [
+                      "stepanova-dress",
+                      "avant-garde-designers"
+                    ]
+                  },
+                  {
+                    "quote": "которую аннотация датирует 1911 годом",
+                    "reason": "Не сказано, чья это аннотация (НЭБ), поэтому ссылка повисает. Уточнение сохраняет осторожность, но слушателю неясно, о какой аннотации речь.",
+                    "factIds": [
+                      "poster"
+                    ]
+                  },
+                  {
+                    "quote": "разработала фасон и сшила его своими руками",
+                    "reason": "«Его» грамматически тянется к «фасону», а не к платью. Двусмысленность небольшая.",
+                    "factIds": [
+                      "stepanova-dress"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 4,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 3.5,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Выдуманных дат и имён нет. Хронология партнёрства и 1920-х передана точно.",
+                  "Кретоны пояснены верно, как плотные узорные ткани.",
+                  "Объём около 125 слов, 3 абзаца."
+                ],
+                "issues": [
+                  {
+                    "quote": "плакат для китайского рынка, датированный 1911 годом",
+                    "reason": "Датировка подана как установленная. В данных это датировка по аннотации НЭБ, и неопределённость утрачена. Замена «китайских покупателей» на «китайский рынок» — допустимая, но расширительная переформулировка.",
+                    "factIds": [
+                      "poster"
+                    ]
+                  },
+                  {
+                    "quote": "Реклама товарищества была рассчитана и на зарубежных покупателей",
+                    "reason": "Обобщение до «зарубежных» и частица «и» намекают на более широкую экспортную стратегию, чем подтверждено. Нарушение мягкое.",
+                    "factIds": [
+                      "poster"
+                    ]
+                  },
+                  {
+                    "quote": "Образцы тканей фабрики Цинделя представлены в собрании Государственного исторического музея.",
+                    "reason": "Фраза стоит в конце, после рассказа о 1920-х и платье Степановой. Логическая линия обрывается, а слушатель может отнести образцы к авангардным тканям.",
+                    "factIds": [
+                      "museum"
+                    ]
+                  },
+                  {
+                    "quote": "При фабрике появились училище и больница. Через Дербеневскую улицу строили жильё для рабочих и служащих.",
+                    "reason": "Два коротких рубленых предложения без связки звучат перечнем.",
+                    "factIds": [
+                      "district"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "C",
+                "scores": {
+                  "factuality": 2.5,
+                  "naturalRussian": 3,
+                  "audioClarity": 2.5,
+                  "coherence": 3.5,
+                  "instructionFollowing": 3.5
+                },
+                "blockingIssues": [
+                  "«После смерти Эмиля Цинделя в 1874 году» при восприятии на слух датирует 1874 годом смерть Цинделя. В факте partnership 1874 год относится к организации товарищества, а дата смерти не дана. Дата переносится на другое событие."
+                ],
+                "strengths": [
+                  "Остальные факты переданы близко к источнику.",
+                  "Сохранена атрибуция датировки плаката аннотации НЭБ.",
+                  "Объём около 111 слов, 3 абзаца."
+                ],
+                "issues": [
+                  {
+                    "quote": "После смерти Эмиля Цинделя в 1874 году наследники организовали товарищество на паях.",
+                    "reason": "Обстоятельство времени примыкает к «смерти», и слушатель поймёт, что Циндель умер в 1874 году. В данных такой даты нет.",
+                    "factIds": [
+                      "partnership"
+                    ]
+                  },
+                  {
+                    "quote": "Фабрика выпускала обивочные кретоны, плотные узорные ткани и тонкий батист.",
+                    "reason": "В факте «плотные узорные ткани» — пояснение к кретонам. Здесь получился перечень из трёх отдельных видов продукции, и смысл искажён. Термин «кретоны» остался без объяснения.",
+                    "factIds": [
+                      "assortment"
+                    ]
+                  },
+                  {
+                    "quote": "РГБ хранит рекламу товарищества для китайских покупателей; аннотация НЭБ датирует плакат 1911 годом.",
+                    "reason": "Нераскрытые аббревиатуры РГБ и НЭБ плохо воспринимаются на слух. Предложение перенесено из фактов почти дословно и звучит канцелярски.",
+                    "factIds": [
+                      "poster"
+                    ]
+                  },
+                  {
+                    "quote": "Территория фабрики простиралась от Дербеневской улицы до Москвы-реки.",
+                    "reason": "В первом предложении фабрика не названа. Слушатель узнаёт, о какой фабрике речь, только из следующей фразы.",
+                    "factIds": [
+                      "location"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "D",
+                "scores": {
+                  "factuality": 4.5,
+                  "naturalRussian": 4.5,
+                  "audioClarity": 4.5,
+                  "coherence": 4.5,
+                  "instructionFollowing": 5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Все утверждения опираются на факты. Даты привязаны к тем же событиям, что в источнике (1874 — организация товарищества, 1920-е — работа художниц).",
+                  "Кретоны пояснены верно, аббревиатуры раскрыты, связки естественные («Сохранилась и реклама…»).",
+                  "Нет оценочного финала и лишних обобщений. Объём около 119 слов, 3 абзаца."
+                ],
+                "issues": [
+                  {
+                    "quote": "этот плакат хранится в Российской государственной библиотеке и датируется 1911 годом",
+                    "reason": "Не сказано, что датировка взята из аннотации НЭБ, поэтому неопределённость частично сглажена. Нарушение мягкое.",
+                    "factIds": [
+                      "poster"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "D",
+              "B",
+              "A",
+              "C"
+            ],
+            "reason": "D точнее всех передаёт факты, сохраняет привязку дат к событиям и звучит естественно; единственная неточность — опущенная атрибуция датировки плаката. B тоже без блокирующих дефектов, но в нём сильнее утрачена неопределённость датировки, а сведения о музее неудачно вынесены в конец. A — самый гладкий стилистически, но содержит выдуманную датировку переименования фабрики («В 1920-е годы предприятие стало…»), неподтверждённый мотив («искало покупателей… за пределами России») и вывод, связывающий платье Степановой с фабрикой. C ставит 1874 год к смерти Цинделя, превращает пояснение о кретонах в перечень и использует нераскрытые аббревиатуры, поэтому он на последнем месте."
+          }
+        ],
+        "limitations": [
+          "Подсчёт слов приблизительный, но все варианты явно укладываются в 100–200 слов и 2–5 абзацев.",
+          "Достоверность проверялась только по предоставленным фактам, без сверки с внешними историческими источниками.",
+          "Вывод о блокирующем дефекте в C основан на наиболее вероятном прочтении на слух. Грамматически «в 1874 году» можно отнести и к «организовали», но такое прочтение менее естественно."
+        ]
+      }
+    },
+    {
+      "file": "review-zindel-r2.json",
+      "mapping": [
+        {
+          "label": "A",
+          "requestedModel": "codex/gpt-6.1-sol-medium",
+          "repetition": 2
+        },
+        {
+          "label": "B",
+          "requestedModel": "codex/gpt-5.6-sol-low",
+          "repetition": 2
+        }
+      ],
+      "requestedModel": "cs/claude-opus-5-5",
+      "returnedModel": "claude-opus-5-5",
+      "responseId": "resp_msg_011CfnsgDcjM1cXkGYdsAv8Z",
+      "elapsedMs": 37443,
+      "usage": {
+        "input_tokens": 3467,
+        "output_tokens": 3823,
+        "total_tokens": 7290
+      },
+      "reviewValid": true,
+      "review": {
+        "cases": [
+          {
+            "caseId": "zindel",
+            "variants": [
+              {
+                "label": "A",
+                "scores": {
+                  "factuality": 4,
+                  "naturalRussian": 4,
+                  "audioClarity": 4.5,
+                  "coherence": 4,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Около 125 слов и 3 абзаца: соответствует story-v1. Адресных номеров нет.",
+                  "Термин «кретоны» опущен и заменён подтверждёнными словами «плотные узорные ткани для обивки». Это допустимо.",
+                  "Факт stepanova-dress передан точно: рисунок ткани, фасон и пошив выполнены самой Степановой.",
+                  "Чётко разделены дореволюционная фабрика и Первая ситценабивная фабрика 1920-х.",
+                  "Короткие предложения легко воспринимаются на слух."
+                ],
+                "issues": [
+                  {
+                    "quote": "В 1920-е годы бывшая мануфактура Цинделя стала местом работы художниц авангарда.",
+                    "reason": "Это неподтверждённое добавление. Факты говорят только, что Степанова и Попова создавали рисунки для фабрики. Из этого не следует, что фабрика была их местом работы и что они работали на территории. Сказано сильнее, чем в источнике, но прямого противоречия нет.",
+                    "factIds": [
+                      "avant-garde-designers"
+                    ]
+                  },
+                  {
+                    "quote": "Первой ситценабивной фабрики — так тогда называлась бывшая мануфактура.",
+                    "reason": "Повтор: «бывшая мануфактура» звучит дважды в двух соседних предложениях. Пояснение «так тогда называлась» дублирует уже сказанное.",
+                    "factIds": [
+                      "avant-garde-designers"
+                    ]
+                  },
+                  {
+                    "quote": "одета в платье с рисунком ткани, который создала сама. Её работа над этим платьем не ограничилась узором",
+                    "reason": "Один факт растянут на два предложения. Формулировка «не ограничилась узором» добавляет лёгкую оценочную интонацию. Фактической ошибки нет.",
+                    "factIds": [
+                      "stepanova-dress"
+                    ]
+                  }
+                ]
+              },
+              {
+                "label": "B",
+                "scores": {
+                  "factuality": 3.5,
+                  "naturalRussian": 4,
+                  "audioClarity": 4,
+                  "coherence": 4.5,
+                  "instructionFollowing": 4.5
+                },
+                "blockingIssues": [],
+                "strengths": [
+                  "Около 150 слов и 3 абзаца: соответствует story-v1. Адресных номеров нет.",
+                  "Термин объяснён подтверждёнными словами: «обивочные кретоны — плотные узорные ткани».",
+                  "Сохранена неопределённость датировки плаката: «аннотация Национальной электронной библиотеки датирует этот плакат 1911 годом». Дата не выдана за установленный факт.",
+                  "Аббревиатуры РГБ и НЭБ раскрыты, это удобно для озвучки.",
+                  "Логичная структура: территория и социальная инфраструктура, затем продукция и источники, затем авангард."
+                ],
+                "issues": [
+                  {
+                    "quote": "После смерти Эмиля Цинделя в 1874 году его наследники организовали товарищество на паях.",
+                    "reason": "Сдвиг даты. В источнике 1874 год относится к созданию товарищества: «В 1874 году, после смерти Эмиля Цинделя». В варианте B при слушании «смерти Эмиля Цинделя в 1874 году» естественно воспринимается как год смерти, которого во входных данных нет. Блокирующим дефектом не считаю: синтаксически обстоятельство можно отнести и к глаголу «организовали». Но для аудио риск ложного понимания высок, поэтому снижен балл factuality.",
+                    "factIds": [
+                      "partnership"
+                    ]
+                  },
+                  {
+                    "quote": "Рекламу товарищества для китайских покупателей хранит Российская государственная библиотека; аннотация Национальной электронной библиотеки датирует этот плакат 1911 годом.",
+                    "reason": "Длинное каталожное предложение с двумя полными названиями учреждений. На слух оно тяжеловато и близко к «бюрократическому перечню». Фактически оно корректно.",
+                    "factIds": [
+                      "poster"
+                    ]
+                  },
+                  {
+                    "quote": "Варвара Степанова и Любовь Попова создавали для неё геометрические рисунки тканей.",
+                    "reason": "Персоны введены без роли (художницы, дизайнеры). Связь с местом понятна из контекста, поэтому недостаток незначительный.",
+                    "factIds": [
+                      "avant-garde-designers"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "ranking": [
+              "A",
+              "B"
+            ],
+            "reason": "Блокирующих дефектов нет ни у одного варианта, оба укладываются в 100–200 слов и 2–5 абзацев. B полнее и точнее объясняет термин «кретоны», корректно передаёт неопределённость датировки плаката. Однако его формулировка о товариществе на слух переносит 1874 год на смерть Эмиля Цинделя. Это риск появления даты, отсутствующей во входе, а по правилам задания даты — наиболее чувствительная категория. У A свой недостаток: неподтверждённое усиление «стала местом работы художниц авангарда» и повтор «бывшая мануфактура». Это менее серьёзно, чем смещение даты. Кроме того, A не теряет полезности, хотя опускает товарищество и плакат: раскрывать все факты не требуется. Преимущество A небольшое, оно определяется весом factuality, а не длиной или композицией.",
+            "factualityNote": "Взвешенные баллы: A ≈ 4.13, B ≈ 3.93."
+          }
+        ],
+        "limitations": [
+          "Проверка велась только относительно предоставленных фактов. Внешняя проверка, например фактического года смерти Эмиля Цинделя, не проводилась.",
+          "Число слов подсчитано приблизительно, вручную.",
+          "Оценка неоднозначности «после смерти … в 1874 году» зависит от интонации диктора. При иной фразировке риск неверного понимания может быть ниже."
+        ]
+      }
+    }
+  ],
+  "judgeRetries": [
+    {
+      "file": "invalid-review-khludov-r1.json",
+      "responseId": "resp_msg_011CfnsC7pwNDQ1mBgGeCiUb",
+      "usage": {
+        "input_tokens": 2902,
+        "output_tokens": 5167,
+        "total_tokens": 8069
+      },
+      "reviewValid": false,
+      "reason": "Ревьюер ошибочно потребовал минимум два абзаца для description-v1; рубрика уточнена по runtime."
+    },
+    {
+      "file": "invalid-review-kozhevniki-r1.json",
+      "responseId": "resp_msg_011Cfns2hTUe9c5pPfGznK2c",
+      "usage": {
+        "input_tokens": 4212,
+        "output_tokens": 7500,
+        "total_tokens": 11712
+      },
+      "reviewValid": false,
+      "reason": "Ответ заменён после проверки"
+    },
+    {
+      "file": "superseded-review-khludov-r1.json",
+      "responseId": "resp_msg_011CfnsC7pwNDQ1mBgGeCiUb",
+      "usage": {
+        "input_tokens": 2902,
+        "output_tokens": 5167,
+        "total_tokens": 8069
+      },
+      "reviewValid": true,
+      "reason": "Ответ заменён после проверки"
+    }
+  ],
+  "diagnostics": [
+    {
+      "ok": true,
+      "requestedModel": "opencode-go/deepseek-v4-pro",
+      "returnedModel": "deepseek-v4-pro",
+      "responseId": "resp_d7d2d582-c85f-44b8-85f7-786e31e2b82a",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 1138,
+        "output_tokens": 5407,
+        "total_tokens": 6545,
+        "input_tokens_details": {
+          "cached_tokens": 1024
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 5029
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 46540,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Кожевнический проезд и переулки сохранили в названии память о слободе кожевников. Она сложилась в XVI веке на берегу Москвы-реки, где выделывали кожи и находилась церковь Троицы в Кожевниках.\n\nКирпичные двухэтажные палаты на Кожевнической улице, вероятно относившиеся к слободе, — её старейшее сохранившееся здание. Они стоят в глубине владения ближе к реке. По архитектуре палаты относятся к концу XVII века: у них кубический объём, крыша с высокими дымниками и узкие окна. Назначение палат доподлинно неизвестно. После упразднения Петром I слободского устройства в палатах разместился мытный двор — городская таможня. Рядом была паромная переправа, и за ввоз товаров купцы платили налог, мыт.\n\nДеревянная церковь Троицы в слободе кожевников построена приблизительно в 1625 году. Нынешнее пятиглавое здание относится к 1686–1689 годам, колокольня пристроена в 1722 году. Музей Москвы связывает расцвет Кожевенной слободы во второй половине XIX века с Бахрушиными и пишет, что они первыми в Москве внедрили на своих производствах новейшие технологии производства кожи и тканей. В путеводителе Романского Кожевническая и Ивановская указаны как два названия одной улицы.",
+      "usage": {
+        "input_tokens": 1138,
+        "output_tokens": 5407,
+        "total_tokens": 6545,
+        "input_tokens_details": {
+          "cached_tokens": 1024
+        },
+        "output_tokens_details": {
+          "reasoning_tokens": 5029
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 165,
+        "paragraphCount": 3,
+        "profile": "story-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "kozhevniki",
+      "maxOutputTokens": 6400,
+      "purpose": "Диагностика пустого ответа при увеличенном лимите; не входит в основное сравнение."
+    },
+    {
+      "ok": true,
+      "requestedModel": "opencode-go/glm-5.3",
+      "returnedModel": "glm-5.3",
+      "responseId": "resp_chatcmpl-d7c39f8c",
+      "responseStatus": "completed",
+      "payloadUsage": {
+        "input_tokens": 989,
+        "output_tokens": 6400,
+        "total_tokens": 7389,
+        "input_tokens_details": {
+          "cached_tokens": 988
+        }
+      },
+      "outputTypes": [
+        "reasoning",
+        "message"
+      ],
+      "contentTypes": [
+        "output_text"
+      ],
+      "incompleteDetails": null,
+      "elapsedMs": 102901,
+      "attempts": [
+        {
+          "status": 200
+        }
+      ],
+      "text": "Кожевнический проезд и переулки названы по слободе кожевников на берегу Москвы-реки. Кожевенная слобода сформировалась в XVI веке: там выделывали кожи, а при ней стояла церковь Троицы в Кожевниках.\n\nПалаты на Кожевнической улице, вероятно, относ",
+      "usage": {
+        "input_tokens": 989,
+        "output_tokens": 6400,
+        "total_tokens": 7389,
+        "input_tokens_details": {
+          "cached_tokens": 988
+        }
+      },
+      "validation": {
+        "runtimeValid": true,
+        "words": 34,
+        "paragraphCount": 2,
+        "profile": "description-v1",
+        "promptLengthValid": true
+      },
+      "caseId": "kozhevniki",
+      "maxOutputTokens": 6400,
+      "purpose": "Диагностика пустого ответа при увеличенном лимите; не входит в основное сравнение."
+    }
+  ],
+  "summary": [
+    {
+      "model": "codex/gpt-5.6-sol-low",
+      "attempted": 10,
+      "successful": 10,
+      "runtimeValid": 10,
+      "promptLengthValid": 10,
+      "medianSeconds": 14.0155,
+      "reviewed": 10,
+      "reviewBlockingCases": 1,
+      "averageScore": 4.02,
+      "reportedTokens": 11922
+    },
+    {
+      "model": "codex/gpt-6.1-sol-medium",
+      "attempted": 10,
+      "successful": 10,
+      "runtimeValid": 10,
+      "promptLengthValid": 10,
+      "medianSeconds": 14.61,
+      "reviewed": 10,
+      "reviewBlockingCases": 1,
+      "averageScore": 4.1775,
+      "reportedTokens": 12579
+    },
+    {
+      "model": "opencode-go/glm-5.3",
+      "attempted": 5,
+      "successful": 1,
+      "runtimeValid": 1,
+      "promptLengthValid": 1,
+      "medianSeconds": 20.02,
+      "reviewed": 1,
+      "reviewBlockingCases": 0,
+      "averageScore": 3.875,
+      "reportedTokens": 2142
+    },
+    {
+      "model": "opencode-go/deepseek-v4-pro",
+      "attempted": 5,
+      "successful": 3,
+      "runtimeValid": 3,
+      "promptLengthValid": 3,
+      "medianSeconds": 61.206,
+      "reviewed": 3,
+      "reviewBlockingCases": 1,
+      "averageScore": 3.6333333333333333,
+      "reportedTokens": 17722
+    },
+    {
+      "model": "cs/claude-fable-5-1",
+      "attempted": 5,
+      "successful": 5,
+      "runtimeValid": 5,
+      "promptLengthValid": 5,
+      "medianSeconds": 10.775,
+      "reviewed": 5,
+      "reviewBlockingCases": 2,
+      "averageScore": 3.8299999999999996,
+      "reportedTokens": 10009
+    }
+  ]
+}
