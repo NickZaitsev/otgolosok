@@ -1,0 +1,139 @@
+{
+  "checkedAt": "2026-10-07T17:03:56.851834+00:00",
+  "distanceM": 3569,
+  "walkingMinutes": 44,
+  "stops": [
+    {
+      "placeId": "osm:way:47294368",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 4.59,
+      "triggerGapFromRouteM": 0.03,
+      "wordCount": 213
+    },
+    {
+      "placeId": "osm:way:300426887",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 5.73,
+      "triggerGapFromRouteM": 0.01,
+      "wordCount": 260
+    },
+    {
+      "placeId": "osm:node:3423510101",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 5.57,
+      "triggerGapFromRouteM": 0.03,
+      "wordCount": 315
+    },
+    {
+      "placeId": "osm:way:160317025",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 23.33,
+      "triggerGapFromRouteM": 0.02,
+      "wordCount": 85
+    },
+    {
+      "placeId": "osm:way:300426888",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 17.92,
+      "triggerGapFromRouteM": 0.01,
+      "wordCount": 183
+    },
+    {
+      "placeId": "osm:way:32783700",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 43.1,
+      "triggerGapFromRouteM": 0.99,
+      "wordCount": 118
+    },
+    {
+      "placeId": "osm:node:3466483914",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 6.71,
+      "triggerGapFromRouteM": 0.02,
+      "wordCount": 176
+    },
+    {
+      "placeId": "osm:way:47296416",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 63.99,
+      "triggerGapFromRouteM": 0.05,
+      "wordCount": 193
+    },
+    {
+      "placeId": "osm:relation:18626008",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 18.17,
+      "triggerGapFromRouteM": 0.0,
+      "wordCount": 166
+    },
+    {
+      "placeId": "osm:way:47296531",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 9.53,
+      "triggerGapFromRouteM": 0.01,
+      "wordCount": 137
+    },
+    {
+      "placeId": "osm:way:46525731",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 24.8,
+      "triggerGapFromRouteM": 0.03,
+      "wordCount": 112
+    },
+    {
+      "placeId": "osm:way:47031131",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 39.0,
+      "triggerGapFromRouteM": 0.03,
+      "wordCount": 131
+    },
+    {
+      "placeId": "osm:way:47031092",
+      "insideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 21.94,
+      "triggerGapFromRouteM": 0.04,
+      "wordCount": 173
+    }
+  ],
+  "startGapM": 2.93,
+  "destinationGapM": 0.03,
+  "outsideBoundaryVertices": [
+    242,
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249,
+    250,
+    251,
+    252,
+    253,
+    254,
+    255,
+    256,
+    257,
+    258
+  ],
+  "geometryVertices": 259,
+  "notes": [
+    "Выходы метро и тротуары проверены по локальному OpenStreetMap от 22.09.2026.",
+    "Полевая доступность и обзор с точки прослушивания не проверены.",
+    "Монголия: прежний автоматический тротуар оказался в 82,79 м от центра, с тыла. Новый подход перед въездом с Борисоглебского переулка; путь не требует ворот или территории посольства. Прямого прохода к Трубниковскому нет: обход через Большую Молчановку. Последние две остановки поменялись порядком без изменения набора объектов."
+  ],
+  "fieldChecked": false
+}

@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-07T16:42:56.800976+00:00",
+  "requestedModel": "claude-opus-5-5",
+  "actualModels": [
+    "claude-opus-5-5"
+  ],
+  "success": true,
+  "durationMs": 287129,
+  "costEstimateUSD": 0.782824,
+  "numTurns": 1,
+  "modelUsage": {
+    "claude-opus-5-5": {
+      "inputTokens": 2,
+      "outputTokens": 28260,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 27202,
+      "webSearchRequests": 0,
+      "costUSD": 0.7828240000000001,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 22579,
+      "canonicalModel": "claude-opus-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "packetSha256": "885f41730821a870411c046ce8e85e8914e59386d0f7c571ffbb80e9122683e5",
+  "rawResultSha256": "4dc33dd82bc4c047ca9246f0d3a3e6e5bec097f42250351f323f856db9f3fa5c",
+  "reportSha256": "a7a90b1c21a204c594bdc170eeaf2ad5cbaafe74e8a6026a73bd6b07476debda",
+  "scope": "Аудит текстов обеих прогулок перед финальной редакторской правкой; консультант не открывал источники и не проверял поле.",
+  "finalRevisionReaudited": false,
+  "reportWhitespaceNormalized": true
+}

@@ -1,0 +1,360 @@
+{
+  "checkedAt": "2026-10-07T16:20:44.492Z",
+  "method": "100 × общие канонические физические объекты / min(число физических остановок A, B). Отдельный рассказ job не меняет физический placeId. Здание и его доски в этой прогулке образуют один визит.",
+  "publicWalksChecked": 25,
+  "candidatePlaceIds": [
+    "osm:node:3423510101",
+    "osm:node:3466483914",
+    "osm:relation:18626008",
+    "osm:way:160317025",
+    "osm:way:300426887",
+    "osm:way:300426888",
+    "osm:way:32783700",
+    "osm:way:46525731",
+    "osm:way:47031092",
+    "osm:way:47031131",
+    "osm:way:47294368",
+    "osm:way:47296416",
+    "osm:way:47296531"
+  ],
+  "walks": [
+    {
+      "title": "Ордынка: храмы и городские судьбы",
+      "shareToken": "2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 13
+    },
+    {
+      "title": "Пятницкая: деньги, книги и городская жизнь",
+      "shareToken": "85429f29-1bb3-41dc-a08b-2c4cb13b67d0",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 11
+    },
+    {
+      "title": "Вокруг Третьяковки: искусство в жилом квартале",
+      "shareToken": "6cacfdd1-defd-4afb-940f-5085356d0315",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 13
+    },
+    {
+      "title": "От Кожевников к Цинделю",
+      "shareToken": "901d1133-44a2-4724-a856-2fe8d6c86a44",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 4
+    },
+    {
+      "title": "Купцы и благотворители Ордынки",
+      "shareToken": "baed220c-72a9-4790-940e-1b1160e02913",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 11
+    },
+    {
+      "title": "От «Спартака» до «Тушинской»",
+      "shareToken": "284227ab-a324-47f4-b07f-25617166bb3f",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 16
+    },
+    {
+      "title": "От Чистых прудов до Китай-города",
+      "shareToken": "9e588fd7-1424-4dcc-8e05-ad89d5007e7b",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 29
+    },
+    {
+      "title": "От Трубной через Чистые пруды до Покровских ворот",
+      "shareToken": "4a106748-0443-4066-8bd9-a20ae7d6902f",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 28
+    },
+    {
+      "title": "По бульварному кольцу от Тверской до Трубной",
+      "shareToken": "26216b83-453d-4d81-926d-ec537993f70f",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 17
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Китай-город»",
+      "shareToken": "6aac2ffb-8a36-4aac-b51e-a9d3af504594",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 4
+    },
+    {
+      "title": "Прогулка на час от метро «Чистые пруды»",
+      "shareToken": "b9d7cfea-49e4-4229-8be3-b1b85e2b3977",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 6
+    },
+    {
+      "title": "Прогулка на час от метро «Динамо»",
+      "shareToken": "f783ab3c-ccc2-48cb-9922-19f274f39fb6",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 6
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Сретенский бульвар»",
+      "shareToken": "326bc586-4083-4dff-ac35-223ba406265b",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 4
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Красные Ворота»",
+      "shareToken": "83bffd5e-743f-4eef-a864-2dbf9e80f31e",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 3
+    },
+    {
+      "title": "Прогулка на час от метро «Тургеневская»",
+      "shareToken": "d5b3d13c-9c1e-4b1f-857e-b2febb5d8403",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 6
+    },
+    {
+      "title": "Прогулка на час от метро «Охотный ряд»",
+      "shareToken": "21e06a2b-dece-424e-b603-6ae79d5377a7",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 4
+    },
+    {
+      "title": "Прогулка на час от метро «Сретенский бульвар»",
+      "shareToken": "2e8d898b-241b-432d-8408-603ebb965177",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 6
+    },
+    {
+      "title": "Прогулка от метро «Боровицкая» · 60 минут",
+      "shareToken": "f8ce0130-51ae-42bf-b971-f6c0bc18785c",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 4
+    },
+    {
+      "title": "По бульварному кольцу от Кропоткинской до Тверской",
+      "shareToken": "b2823a83-f861-46f2-834b-b7873960882a",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 28
+    },
+    {
+      "title": "Прогулка на час от метро «Марксистская»",
+      "shareToken": "69f00305-a8f3-4d7f-9def-6f7621018a71",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 6
+    },
+    {
+      "title": "Прогулка на час от метро «Чкаловская»",
+      "shareToken": "8a99f025-e3fa-4842-ac63-52de8e43674b",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 5
+    },
+    {
+      "title": "Прогулка на час от метро «Менделеевская»",
+      "shareToken": "5830272b-9714-4577-9fd8-5a3a2b074b74",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 8
+    },
+    {
+      "title": "Прогулка на час от метро «ЦСКА»",
+      "shareToken": "e4e2ff09-116a-4258-98a0-dc92f54941d8",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 8
+    },
+    {
+      "title": "Прогулка на полтора часа от метро «Селигерская»",
+      "shareToken": "674b591a-d868-439d-97f5-369b0dcf3812",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 8
+    },
+    {
+      "title": "Прогулка на полчаса от метро «Красносельская»",
+      "shareToken": "d325aae0-bc6d-46ed-82c4-5777ef69e9c5",
+      "commonPlaceIds": [],
+      "common": 0,
+      "percent": 0.0,
+      "physicalStops": 3
+    }
+  ],
+  "unresolvedStops": [
+    {
+      "walkTitle": "Прогулка на час от метро «Динамо»",
+      "address": "Москва, Спортивный парк \"Динамо\"",
+      "nearestPlaceId": "osm:way:47031092",
+      "distanceM": 3977.75
+    },
+    {
+      "walkTitle": "Прогулка на час от метро «Сретенский бульвар»",
+      "address": "Москва, В.И. Ленину",
+      "nearestPlaceId": "osm:way:47294368",
+      "distanceM": 3309.13
+    },
+    {
+      "walkTitle": "Прогулка на час от метро «Марксистская»",
+      "address": "Москва, Владимир Высоцкий",
+      "nearestPlaceId": "osm:way:47294368",
+      "distanceM": 3729.15
+    },
+    {
+      "walkTitle": "Прогулка на час от метро «Чкаловская»",
+      "address": "Москва, Е. А. Жерлыгину",
+      "nearestPlaceId": "osm:way:47294368",
+      "distanceM": 3692.91
+    },
+    {
+      "walkTitle": "Прогулка на час от метро «Менделеевская»",
+      "address": "Москва, Песня Родины",
+      "nearestPlaceId": "osm:way:47031092",
+      "distanceM": 2737.6
+    },
+    {
+      "walkTitle": "Прогулка на час от метро «Менделеевская»",
+      "address": "Москва, Д. В. Шурпенко",
+      "nearestPlaceId": "osm:way:47031092",
+      "distanceM": 2574.16
+    },
+    {
+      "walkTitle": "Прогулка на час от метро «Менделеевская»",
+      "address": "Москва, В. А. Туманову",
+      "nearestPlaceId": "osm:way:47031092",
+      "distanceM": 2437.25
+    },
+    {
+      "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
+      "address": "Москва, С.Н. Фёдорову",
+      "nearestPlaceId": "osm:way:47031092",
+      "distanceM": 12264.24
+    },
+    {
+      "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
+      "address": "Москва, Орловский сад",
+      "nearestPlaceId": "osm:way:47031092",
+      "distanceM": 12619.87
+    },
+    {
+      "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
+      "address": "Москва, Г. А. Кузнецову",
+      "nearestPlaceId": "osm:way:47031092",
+      "distanceM": 12796.49
+    },
+    {
+      "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
+      "address": "Москва, Путейская улица, 3",
+      "nearestPlaceId": "osm:way:47031092",
+      "distanceM": 12995.0
+    },
+    {
+      "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
+      "address": "Москва, Путейская улица, 25",
+      "nearestPlaceId": "osm:way:47031092",
+      "distanceM": 13079.61
+    }
+  ],
+  "plannedWalks": [
+    {
+      "routeId": "R01",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R02",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R03",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R05",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R06",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R07",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R08",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R09",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R10",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R11",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R12",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    },
+    {
+      "routeId": "R13",
+      "commonPlaceIds": [],
+      "percent": 0.0
+    }
+  ],
+  "maxExistingPercent": 0.0,
+  "maxPlannedPercent": 0.0
+}
