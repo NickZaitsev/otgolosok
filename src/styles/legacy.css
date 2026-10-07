@@ -75,7 +75,7 @@
   margin-bottom: var(--space-lg);
   color: var(--accent);
   font-size: var(--text-meta);
-  font-weight: 800;
+  font-weight: var(--weight-bold);
   letter-spacing: 0.1em;
   line-height: 1.4;
   text-transform: uppercase;

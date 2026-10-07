@@ -103,7 +103,7 @@ for (const viewport of VIEWPORTS) {
     await expect(input).toBeFocused();
     const { font, weight } = await shape(input);
     expect(font).toBeGreaterThanOrEqual(FIELD.minFont);
-    expect(weight).toBeLessThanOrEqual(500);
+    expect(weight).toBe(FIELD.weight);
   });
 
   test(`поля настроек прогулки не мельче 16 px, ${viewport.width}×${viewport.height}`, async ({ page }) => {
@@ -194,6 +194,11 @@ for (const viewport of [VIEWPORTS[0], { width: 1440, height: 900 }]) {
       const { height, font, weight, radius } = await shape(button);
       expect({ height: height >= 44, font, weight, pill: radius >= height / 2 }).toEqual({ height: true, font: 16, weight: 700, pill: true });
     }
+    // Наведение не должно снимать заливку основного действия: белый текст на светлом фоне не читается.
+    const find = page.getByRole("button", { name: "Найти", exact: true });
+    await find.hover();
+    const paint = await find.evaluate(el => ({ background: getComputedStyle(el).backgroundColor, color: getComputedStyle(el).color }));
+    expect(paint).toEqual({ background: "rgb(32, 62, 56)", color: "rgb(255, 255, 255)" });
     const fields = page.locator(".admin-desk :is(input:not([type=checkbox]), select)");
     await expect(fields.first()).toBeVisible();
     for (const field of await fields.all()) {
@@ -202,3 +207,10 @@ for (const viewport of [VIEWPORTS[0], { width: 1440, height: 900 }]) {
     }
   });
 }
+
+// Ссылка «Войти» видна, когда сессию проверить не удалось: тогда админка не уводит на /login сама.
+test("вход в админку при сбое сессии — основное действие", async ({ page }) => {
+  await page.route("**/api/**", route => route.fulfill({ status: 503, json: {} }));
+  await page.goto("/admin");
+  await expectPrimary(page.getByRole("link", { name: "Войти", exact: true }));
+});
