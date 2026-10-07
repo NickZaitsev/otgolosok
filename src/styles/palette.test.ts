@@ -7,7 +7,9 @@ import { describe, expect, it } from "vitest";
 const root = join(__dirname, "..");
 const tokens = readFileSync(join(__dirname, "tokens.css"), "utf8");
 
-// legacy.css styles the old built-in home tour, which is to be removed as a whole (docs/agents/plans).
+// legacy.css keeps its own colours only for the dark walk mode of the old built-in home tour
+// (.shell[data-mode="walk"], .dek), which goes away with that tour (docs/agents/plans); its shared
+// story and source styles already use the palette.
 const SKIPPED = new Set(["styles/tokens.css", "styles/legacy.css"]);
 
 function cssFiles(dir: string): string[] {

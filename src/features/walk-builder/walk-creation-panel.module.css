@@ -145,7 +145,7 @@
 .time legend {
   margin-bottom: var(--space-sm);
   font-size: var(--text-body);
-  font-weight: 650;
+  font-weight: var(--weight-medium);
 }
 
 .time > div {
@@ -159,10 +159,12 @@
   color: var(--map-green);
   background: transparent;
   border: 1px solid var(--control-border);
-  border-radius: var(--radius-sm);
+
+  /* A choice chip: a capsule like every button, lighter than an action. */
+  border-radius: var(--radius-pill);
   font: inherit;
   font-size: var(--text-secondary);
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   cursor: pointer;
 }
 
@@ -345,7 +347,7 @@
 
 .research h2 {
   font-size: var(--text-section);
-  font-weight: 650;
+  font-weight: var(--weight-medium);
   line-height: 1.3;
 }
 

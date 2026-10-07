@@ -395,7 +395,7 @@
   background: transparent;
   cursor: pointer;
   font-size: var(--text-secondary);
-  font-weight: 800;
+  font-weight: var(--weight-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }

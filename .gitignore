@@ -75,3 +75,6 @@ compose.override.yaml
 *.jks
 *.keystore
 /mobile/android/keystore.properties
+
+# Local design-system audit scratch (screenshots, reports)
+/.audit/
