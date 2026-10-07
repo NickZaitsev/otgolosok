@@ -1,6 +1,6 @@
 {
   "checkedAt": "2026-10-07T09:36:35.385187+00:00",
-  "planDataSha256": "11ab2ed5970632075fb1308828fb772d284e25d5f9fcf63fbd75e8e0e7765261",
+  "planDataSha256": "8889a5cdef713182714d565553e816a9beed17996ee0c4997fcb778ae04c3b53",
   "routeCount": 13,
   "existingWalkCount": 25,
   "stopOccurrences": 174,
@@ -72,5 +72,23 @@
     "Фактическая длительность MP3 и воспроизведение в новом порядке",
     "Полный текст платных туров",
     "Полевая доступность всех точек"
-  ]
+  ],
+  "purchaseMetadataUpdate": {
+    "date": "2026-10-07",
+    "tourIds": [
+      "75e6",
+      "ab77"
+    ],
+    "routeDataUnchanged": true,
+    "note": "Обновлены только сведения о покупке; исходные результаты проверки маршрутов сохранены.",
+    "projectCheck": {
+      "command": "pnpm check",
+      "exitCode": 1,
+      "reason": "Три ошибки в src/styles/contrast.test.ts: field-border на field-surface, raised и surface-island. Этот файл уже изменён другой задачей; правки покупки его не затрагивают.",
+      "lint": "passed",
+      "typecheck": "passed",
+      "testsPassed": 1837,
+      "testsFailed": 3
+    }
+  }
 }
