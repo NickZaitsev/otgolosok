@@ -1,0 +1,170 @@
+{
+  "checkedAt": "2026-10-07",
+  "shareUrl": "https://otgolosok.online/walk?share=2fec4a83-6c6b-414e-9fd9-0008bd0916e7",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "stops": [
+    {
+      "stop": 1,
+      "placeId": "osm:relation:7503420",
+      "textChecked": true,
+      "audio": {
+        "sha256": "7c036b701381b0c9cc2660bcf082f7a7f75dfe34b1d9c595ed1adae9dc2458ac",
+        "playing": [
+          {
+            "timeSec": 1.019675,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 2,
+      "placeId": "osm:relation:6897502",
+      "textChecked": true
+    },
+    {
+      "stop": 3,
+      "placeId": "osm:relation:6381244",
+      "textChecked": true,
+      "audio": {
+        "sha256": "ae1a627c324ee9ef29403619dc4915e46ba4f3cd27fb11cb3b9769f044d3dbb1",
+        "playing": [
+          {
+            "timeSec": 1.012473,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 4,
+      "placeId": "osm:relation:8453866",
+      "textChecked": true
+    },
+    {
+      "stop": 5,
+      "placeId": "osm:way:111136355",
+      "textChecked": true,
+      "audio": {
+        "sha256": "d1b31cff5ad9eeacd007b2c348729439434729dde5a70913662bd7736ce004d4",
+        "playing": [
+          {
+            "timeSec": 1.012604,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 6,
+      "placeId": "osm:relation:16467332",
+      "textChecked": true
+    },
+    {
+      "stop": 7,
+      "placeId": "osm:node:1359123836",
+      "textChecked": true
+    },
+    {
+      "stop": 8,
+      "placeId": "osm:relation:7483246",
+      "textChecked": true
+    },
+    {
+      "stop": 9,
+      "placeId": "osm:node:1359123449",
+      "textChecked": true
+    },
+    {
+      "stop": 10,
+      "placeId": "osm:way:156493115",
+      "textChecked": true,
+      "audio": {
+        "sha256": "53b82333a1d101043700516b6a48b0ce22263420cf67f53dbe7c7e998e4df853",
+        "playing": [
+          {
+            "timeSec": 1.019775,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 11,
+      "placeId": "osm:way:164210810",
+      "textChecked": true
+    },
+    {
+      "stop": 12,
+      "placeId": "osm:relation:8454676",
+      "textChecked": true,
+      "audio": {
+        "sha256": "8b56d4eefc1f8836a3d6bc3182667b74f0bdaff3068bfae34f936f6ebad9642a",
+        "playing": [
+          {
+            "timeSec": 1.017398,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 13,
+      "placeId": "osm:way:314197370",
+      "textChecked": true,
+      "audio": {
+        "sha256": "3753894af8b83e84e0b0a073385ebfd2c41a027e8ecd3cd078b68de252060a34",
+        "playing": [
+          {
+            "timeSec": 1.006344,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    }
+  ],
+  "finishChecked": true,
+  "javascriptErrors": [],
+  "audioHttp": [
+    {
+      "url": "https://otgolosok.online/api/story-audio/7c036b701381b0c9cc2660bcf082f7a7f75dfe34b1d9c595ed1adae9dc2458ac.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/ae1a627c324ee9ef29403619dc4915e46ba4f3cd27fb11cb3b9769f044d3dbb1.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/d1b31cff5ad9eeacd007b2c348729439434729dde5a70913662bd7736ce004d4.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/53b82333a1d101043700516b6a48b0ce22263420cf67f53dbe7c7e998e4df853.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/8b56d4eefc1f8836a3d6bc3182667b74f0bdaff3068bfae34f936f6ebad9642a.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/3753894af8b83e84e0b0a073385ebfd2c41a027e8ecd3cd078b68de252060a34.mp3",
+      "status": 206
+    }
+  ],
+  "fieldChecked": false
+}
