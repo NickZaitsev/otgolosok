@@ -40,7 +40,9 @@
 .endpoints {
   margin: 0;
   overflow: hidden;
-  border: 1px solid var(--line);
+
+  /* The start and destination rows are the fields of the builder: the field border. */
+  border: 1px solid var(--field-border);
   border-radius: var(--radius-md);
 }
 

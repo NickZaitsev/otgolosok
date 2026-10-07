@@ -31,7 +31,10 @@ const TEXT: [string, string][] = [
   ["alert-ink", "alert-surface"], ["danger-ink", "alert-surface"], ["danger-ink", "raised"],
   ["warning-ink", "warning-surface"], ["warning-ink", "raised"],
 ];
-const MARKS: [string, string][] = [["warning-mark", "warning-surface"], ["focus", "surface-island"], ["focus", "paper"]];
+const MARKS: [string, string][] = [
+  ["warning-mark", "warning-surface"], ["focus", "surface-island"], ["focus", "paper"],
+  ["field-border", "field-surface"], ["field-border", "raised"], ["field-border", "surface-island"],
+];
 
 describe("контраст пар дизайн-системы", () => {
   it.each(TEXT)("текст %s на %s не меньше 4.5:1", (text, ground) => {

@@ -89,7 +89,9 @@
   --control-soft: #eef1ed;
   --control-selected: rgb(32 62 56 / 12%);
   --control-border: #d5ddd6;
-  --field-border: #cbd4cd;
+
+  /* At least 3:1 on every field ground (field-surface, raised, islands, paper): a field border carries meaning. */
+  --field-border: #7d897f;
   --field-surface: #fff;
   --notice-surface: #edf2ed;
   --alert-surface: #fff0eb;

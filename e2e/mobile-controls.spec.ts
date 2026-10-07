@@ -11,6 +11,19 @@ const shape = (element: Locator) => element.evaluate(el => {
   return { height: Math.round(box.height), font: parseFloat(style.fontSize), weight: Number(style.fontWeight), radius: parseFloat(style.borderTopLeftRadius) };
 });
 
+// Контраст рамки поля с его фоном: граница поля — значимый элемент, WCAG требует не меньше 3:1.
+const borderContrast = (field: Locator) => field.evaluate(el => {
+  const rgb = (value: string) => (value.match(/[\d.]+/g) ?? []).map(Number);
+  const channel = (c: number) => { const v = c / 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+  const luminance = ([r, g, b]: number[]) => 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+  const style = getComputedStyle(el);
+  const [r, g, b, a = 1] = rgb(style.borderTopColor), back = rgb(style.backgroundColor);
+  // A translucent border is painted over the field's own background.
+  const border = [r, g, b].map((c, i) => c * a + back[i] * (1 - a));
+  const [light, dark] = [luminance(border), luminance(back)].sort((x, y) => y - x);
+  return (light + 0.05) / (dark + 0.05);
+});
+
 async function expectPrimary(button: Locator) {
   await expect(button).toBeVisible();
   const { height, font, weight, radius } = await shape(button);
@@ -89,6 +102,7 @@ for (const viewport of VIEWPORTS) {
       await field.fill("проверка");
       const { height, font, weight } = await shape(field);
       expect({ height, font: font >= FIELD.minFont, weight }).toEqual({ height: FIELD.height, font: true, weight: FIELD.weight });
+      expect(await borderContrast(field), "рамка поля").toBeGreaterThanOrEqual(3);
       const label = await field.evaluate(el => parseFloat(getComputedStyle(el.closest("label")!).fontSize));
       expect(label).toBeLessThan(font);
     }
@@ -116,6 +130,7 @@ for (const viewport of VIEWPORTS) {
     for (const select of await selects.all()) {
       const { height, font, weight } = await shape(select);
       expect({ height, font: font >= FIELD.minFont, weight }).toEqual({ height: FIELD.height, font: true, weight: FIELD.weight });
+      expect(await borderContrast(select), "рамка поля").toBeGreaterThanOrEqual(3);
     }
   });
 
@@ -129,6 +144,7 @@ for (const viewport of VIEWPORTS) {
     await expect(field).toBeVisible();
     const { height, font, weight } = await shape(field);
     expect({ height, font: font >= FIELD.minFont, weight }).toEqual({ height: FIELD.height, font: true, weight: FIELD.weight });
+    expect(await borderContrast(field), "рамка поля").toBeGreaterThanOrEqual(3);
     await expectPrimary(page.getByRole("button", { name: "Сохранить изменения" }));
   });
 }
@@ -204,6 +220,7 @@ for (const viewport of [VIEWPORTS[0], { width: 1440, height: 900 }]) {
     for (const field of await fields.all()) {
       const { height, font, weight } = await shape(field);
       expect({ height, font: font >= FIELD.minFont, weight }).toEqual({ height: FIELD.height, font: true, weight: FIELD.weight });
+      expect(await borderContrast(field), "рамка поля").toBeGreaterThanOrEqual(3);
     }
   });
 }
