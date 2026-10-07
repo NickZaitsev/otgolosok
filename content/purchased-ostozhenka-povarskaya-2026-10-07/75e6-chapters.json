@@ -1,0 +1,869 @@
+{
+  "tourId": "75e6",
+  "tourUrl": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru",
+  "title": "Прогулка по Остоженке с \"Вокруг Света\"",
+  "fetchedAt": "2026-10-07",
+  "access": "Оглавление 86 глав; получены 84 превью, главы 39 и 57 не загрузились; полный платный текст не получен",
+  "chapters": [
+    {
+      "number": 1,
+      "title": "Памятник Энгельсу",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#04eda90b-7612-4e2d-bf43-024801d0cb75__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "04eda90b-7612-4e2d-bf43-024801d0cb75__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.744215,
+        "lng": 37.601274
+      }
+    },
+    {
+      "number": 2,
+      "title": "Красные палаты",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#c95e8199-9876-498a-898b-a2a4c9c3a65d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "c95e8199-9876-498a-898b-a2a4c9c3a65d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.743854,
+        "lng": 37.601081
+      }
+    },
+    {
+      "number": 3,
+      "title": "Улица Остоженка",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#033638f2-bf37-4620-88bf-70afe3fd7e52__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "033638f2-bf37-4620-88bf-70afe3fd7e52__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7438294922215,
+        "lng": 37.6015307976227
+      }
+    },
+    {
+      "number": 4,
+      "title": "Доходный дом Филатова",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#18f2429e-1829-4678-8041-d3ed5864f24a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "18f2429e-1829-4678-8041-d3ed5864f24a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7436712549585,
+        "lng": 37.601681245369
+      }
+    },
+    {
+      "number": 5,
+      "title": "Дом архитектора Нирнзее",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#6382e7fa-ba12-40d2-b9a2-185b51b48bd2__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "6382e7fa-ba12-40d2-b9a2-185b51b48bd2__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7437705883889,
+        "lng": 37.6019538134918
+      }
+    },
+    {
+      "number": 6,
+      "title": "Доходный дом графа Баранова",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#74eacf25-3e07-4d00-98ae-cf11d5ede756__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "74eacf25-3e07-4d00-98ae-cf11d5ede756__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.743332019637,
+        "lng": 37.601280245369
+      }
+    },
+    {
+      "number": 7,
+      "title": "Остоженка, 7",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#14f265fd-c51e-4c96-aa05-ffba28cdb0d1__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "14f265fd-c51e-4c96-aa05-ffba28cdb0d1__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.742779,
+        "lng": 37.6008890000001
+      }
+    },
+    {
+      "number": 8,
+      "title": "Доходный дом Г.Е. Бройдо",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#3b5e05da-c93e-40ae-9369-5e5536f9992e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "3b5e05da-c93e-40ae-9369-5e5536f9992e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.742176,
+        "lng": 37.6023680000001
+      }
+    },
+    {
+      "number": 9,
+      "title": "Обыденские переулки",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#6ecf44f2-725d-40f9-8f8d-6da0e61eefaf__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "6ecf44f2-725d-40f9-8f8d-6da0e61eefaf__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7422336836002,
+        "lng": 37.6031653313523
+      }
+    },
+    {
+      "number": 10,
+      "title": "Церковь Илии Обыденного",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#b0ca769f-3d76-4ff7-a9c9-cc930966efb6__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "b0ca769f-3d76-4ff7-a9c9-cc930966efb6__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.742223703225,
+        "lng": 37.603722810745
+      }
+    },
+    {
+      "number": 11,
+      "title": "Соймоновский проезд",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#73c3e3d2-80aa-444b-a69a-50c75064cb3e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "73c3e3d2-80aa-444b-a69a-50c75064cb3e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.743256434719,
+        "lng": 37.604945898056
+      }
+    },
+    {
+      "number": 12,
+      "title": "Курсовой переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#42cb0f3e-63cb-4311-81b7-38f0aab4812e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "42cb0f3e-63cb-4311-81b7-38f0aab4812e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7426525014904,
+        "lng": 37.6058793067934
+      }
+    },
+    {
+      "number": 13,
+      "title": "Доходный дом З.А. Перцовой",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#23ba7f96-dc49-435a-83da-98813b0f643c__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "23ba7f96-dc49-435a-83da-98813b0f643c__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.742586,
+        "lng": 37.606239
+      }
+    },
+    {
+      "number": 14,
+      "title": "Особняк А.А. Левенсона",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#17b25922-ed3b-4e4c-ad15-8ea5055dcf5d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "17b25922-ed3b-4e4c-ad15-8ea5055dcf5d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7422316647586,
+        "lng": 37.6064327116394
+      }
+    },
+    {
+      "number": 15,
+      "title": "Особняк И.А. Мазурина",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#5f32445e-c27a-41c6-aab1-6e38f54471d2__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "5f32445e-c27a-41c6-aab1-6e38f54471d2__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7420557434558,
+        "lng": 37.6064266269836
+      }
+    },
+    {
+      "number": 16,
+      "title": "Водокачка Сандуновских бань",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#156ded4c-236f-4bc3-b6d5-9d276517f56a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "156ded4c-236f-4bc3-b6d5-9d276517f56a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7418576840137,
+        "lng": 37.6063941779098
+      }
+    },
+    {
+      "number": 17,
+      "title": "Цветковская галерея",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#95bce6bf-3ea5-42f5-b757-c0cf52e99a99__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "95bce6bf-3ea5-42f5-b757-c0cf52e99a99__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.741628,
+        "lng": 37.606628
+      }
+    },
+    {
+      "number": 18,
+      "title": "Пречистенская набережная",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#d8ff845b-852b-42ef-9058-7dd14dfb5337__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "d8ff845b-852b-42ef-9058-7dd14dfb5337__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7414255632504,
+        "lng": 37.6068688148193
+      }
+    },
+    {
+      "number": 19,
+      "title": "Фабрика «Красный Октябрь»",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#674ef6be-b0e2-4bc0-80c3-cae8e6b09c5e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "674ef6be-b0e2-4bc0-80c3-cae8e6b09c5e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7411132474412,
+        "lng": 37.6089098981477
+      }
+    },
+    {
+      "number": 20,
+      "title": "Памятник Петру I",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#bbbfeba0-21aa-4853-acb3-1dc1db4b4430__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "bbbfeba0-21aa-4853-acb3-1dc1db4b4430__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.738707,
+        "lng": 37.608311
+      }
+    },
+    {
+      "number": 21,
+      "title": "Пречистенские рабочие курсы",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#4028244c-f202-4736-b1c9-fbbefec954d0__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "4028244c-f202-4736-b1c9-fbbefec954d0__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.740168,
+        "lng": 37.6054779999999
+      }
+    },
+    {
+      "number": 22,
+      "title": "Пожарский переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#fac5347f-4a0b-4500-954b-f7e5c3cf8f49__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "fac5347f-4a0b-4500-954b-f7e5c3cf8f49__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.740678,
+        "lng": 37.6036799999999
+      }
+    },
+    {
+      "number": 23,
+      "title": "Усадьба Савеловых",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#e3ca6c61-e02d-4de7-a5c9-f3bb46be2438__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "e3ca6c61-e02d-4de7-a5c9-f3bb46be2438__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.74105730669,
+        "lng": 37.6022407374344
+      }
+    },
+    {
+      "number": 24,
+      "title": "Культурный центр «На Остожье»",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#76e00cf6-4acd-49a4-8a29-9baee85efc7d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "76e00cf6-4acd-49a4-8a29-9baee85efc7d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7413043365289,
+        "lng": 37.6027602625657
+      }
+    },
+    {
+      "number": 25,
+      "title": "Пожарский, 12",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#c9e1e93b-7441-4d4a-b7d6-63091b3dd474__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "c9e1e93b-7441-4d4a-b7d6-63091b3dd474__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.741976,
+        "lng": 37.6011
+      }
+    },
+    {
+      "number": 26,
+      "title": "Всеволожский переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#01bc8414-32d9-4b30-bf74-7fca6e868ab5__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "01bc8414-32d9-4b30-bf74-7fca6e868ab5__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7423586362129,
+        "lng": 37.5996577731553
+      }
+    },
+    {
+      "number": 27,
+      "title": "Ресторан «Генацвале»",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#e79b92f2-dacd-444e-8983-d1899e80a24f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "e79b92f2-dacd-444e-8983-d1899e80a24f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7419619479305,
+        "lng": 37.5993086613769
+      }
+    },
+    {
+      "number": 28,
+      "title": "Traveler's Coffee",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#771ce21e-486c-47e9-af93-4b83f06c81a9__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "771ce21e-486c-47e9-af93-4b83f06c81a9__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7418558689746,
+        "lng": 37.5989460193256
+      }
+    },
+    {
+      "number": 29,
+      "title": "Дом купца Шустова",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#9d4c86ac-dc0a-41f7-ab65-62575f783050__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "9d4c86ac-dc0a-41f7-ab65-62575f783050__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7417193874991,
+        "lng": 37.5995816944428
+      }
+    },
+    {
+      "number": 30,
+      "title": "Лопухинский переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#96435720-4397-49db-9308-71f4796fa5f3__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "96435720-4397-49db-9308-71f4796fa5f3__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7417239066082,
+        "lng": 37.5991111375731
+      }
+    },
+    {
+      "number": 31,
+      "title": "Зачатьевские переулки",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#9620d77c-f0be-4d91-aaa5-c8e2cac07f7a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "9620d77c-f0be-4d91-aaa5-c8e2cac07f7a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7413208777289,
+        "lng": 37.5995814642487
+      }
+    },
+    {
+      "number": 32,
+      "title": "Зачатьевский женский монастырь",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#2deecbd2-b711-4af4-83c4-d98eb3d6574f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "2deecbd2-b711-4af4-83c4-d98eb3d6574f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.740276,
+        "lng": 37.599528
+      }
+    },
+    {
+      "number": 33,
+      "title": "Усадьба Бухвостовых",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#0b0baafe-118c-488b-ad2e-84da54fede32__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "0b0baafe-118c-488b-ad2e-84da54fede32__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7404944242596,
+        "lng": 37.6001271951066
+      }
+    },
+    {
+      "number": 34,
+      "title": "«Золотая миля» Остоженки",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#52df2d9c-a593-4d58-8a63-eba58170dbbe__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "52df2d9c-a593-4d58-8a63-eba58170dbbe__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7402023351431,
+        "lng": 37.6009266481628
+      }
+    },
+    {
+      "number": 35,
+      "title": "Молочный переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#94aad20f-64ec-4270-9ac7-f66e03c093e7__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "94aad20f-64ec-4270-9ac7-f66e03c093e7__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7391930598727,
+        "lng": 37.6010238868942
+      }
+    },
+    {
+      "number": 36,
+      "title": "Дом Виктора Попкова",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#915f748c-c7b4-4335-bbd3-cac31e309f76__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "915f748c-c7b4-4335-bbd3-cac31e309f76__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.739007,
+        "lng": 37.601098
+      }
+    },
+    {
+      "number": 37,
+      "title": "Вилла «Остоженка»",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#51ae116f-fe97-47ba-ba7b-73f7f311a450__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "51ae116f-fe97-47ba-ba7b-73f7f311a450__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.738796560323,
+        "lng": 37.6014160833282
+      }
+    },
+    {
+      "number": 38,
+      "title": "Cooper House (Купер-Хаус)",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#d3db3c50-81c7-4009-8134-627931a576fa__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "d3db3c50-81c7-4009-8134-627931a576fa__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.738911,
+        "lng": 37.6031439999999
+      }
+    },
+    {
+      "number": 39,
+      "title": "Бутиковский переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#f62b7311-6726-4a60-957e-3c0d3ba96e8d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "f62b7311-6726-4a60-957e-3c0d3ba96e8d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.739563,
+        "lng": 37.603281
+      }
+    },
+    {
+      "number": 40,
+      "title": "Парк «Музеон»",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#70a60fcf-1487-4891-83bc-66c1b5068249__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "70a60fcf-1487-4891-83bc-66c1b5068249__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7366682459208,
+        "lng": 37.607974829361
+      }
+    },
+    {
+      "number": 41,
+      "title": "Ермаковское училище",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#2457f268-f3ee-473d-a7cf-d550be6b87cc__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "2457f268-f3ee-473d-a7cf-d550be6b87cc__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.737646,
+        "lng": 37.603357
+      }
+    },
+    {
+      "number": 42,
+      "title": "Москва-река",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#4d08b70c-5deb-4ec6-aded-6e478fc02d29__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "4d08b70c-5deb-4ec6-aded-6e478fc02d29__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7364541531022,
+        "lng": 37.6033319986725
+      }
+    },
+    {
+      "number": 43,
+      "title": "Коробейников переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#bbbfab2f-75c2-4cb2-bb80-adf207d63bf3__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "bbbfab2f-75c2-4cb2-bb80-adf207d63bf3__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.737792,
+        "lng": 37.6004
+      }
+    },
+    {
+      "number": 44,
+      "title": "Посольство Кот д'Ивуара",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#ade2bd5c-59bb-4de3-8323-b15bc08f90ae__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "ade2bd5c-59bb-4de3-8323-b15bc08f90ae__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.738386,
+        "lng": 37.599569
+      }
+    },
+    {
+      "number": 45,
+      "title": "Посольство Хорватии",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#0f49916e-cdc8-4e82-9503-c8252acced75__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "0f49916e-cdc8-4e82-9503-c8252acced75__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.738572,
+        "lng": 37.599166
+      }
+    },
+    {
+      "number": 46,
+      "title": "Дом Шаляпина",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#c3f05cb0-5182-42d6-81c2-8719761c78a0__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "c3f05cb0-5182-42d6-81c2-8719761c78a0__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.73962,
+        "lng": 37.598005
+      }
+    },
+    {
+      "number": 47,
+      "title": "Доходный дом Бройдо",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#b321454f-4dcb-4c3c-9eee-168947171827__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "b321454f-4dcb-4c3c-9eee-168947171827__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.741353,
+        "lng": 37.598475
+      }
+    },
+    {
+      "number": 48,
+      "title": "Барыковский переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#de3a8629-cbe2-4b18-8c11-bf0521c77175__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "de3a8629-cbe2-4b18-8c11-bf0521c77175__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.741197574855,
+        "lng": 37.5981243829422
+      }
+    },
+    {
+      "number": 49,
+      "title": "Доходный дом Кекушевой",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#d5b8d880-0e87-4d77-be99-b0cb31d6914c__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "d5b8d880-0e87-4d77-be99-b0cb31d6914c__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.740882,
+        "lng": 37.5984109999999
+      }
+    },
+    {
+      "number": 50,
+      "title": "Особняк А.И. Кекушевой",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#a4d846f0-205d-42eb-b238-57e41524a34a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "a4d846f0-205d-42eb-b238-57e41524a34a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.740696,
+        "lng": 37.59811
+      }
+    },
+    {
+      "number": 51,
+      "title": "Центр оперного пения Галины Вишневской",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#448e52ae-a19c-4310-b2bd-37bb88ca4c1c__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "448e52ae-a19c-4310-b2bd-37bb88ca4c1c__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.740251417433,
+        "lng": 37.5975877962951
+      }
+    },
+    {
+      "number": 52,
+      "title": "Сеченовский переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#2aef1b0c-6f03-4faf-ba61-ee2347b44268__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "2aef1b0c-6f03-4faf-ba61-ee2347b44268__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7406044327378,
+        "lng": 37.5968779166717
+      }
+    },
+    {
+      "number": 53,
+      "title": "Лайт-хаус",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#ccedc572-9380-49ce-ab52-a7292ba15529__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "ccedc572-9380-49ce-ab52-a7292ba15529__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.740553,
+        "lng": 37.5964750000001
+      }
+    },
+    {
+      "number": 54,
+      "title": "Сеченовский, 8",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#e9cb0871-33dd-4565-92ba-1b2b073548f1__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "e9cb0871-33dd-4565-92ba-1b2b073548f1__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.740891,
+        "lng": 37.596587
+      }
+    },
+    {
+      "number": 55,
+      "title": "Опера-хаус",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#fb57c0d2-0687-4e11-9074-c645d9ea0395__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "fb57c0d2-0687-4e11-9074-c645d9ea0395__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7398639203807,
+        "lng": 37.5968507876969
+      }
+    },
+    {
+      "number": 56,
+      "title": "Гостиница «Кебур-Палас»",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#1645de00-0628-43e1-a8f2-aefcd58adbcb__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "1645de00-0628-43e1-a8f2-aefcd58adbcb__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7397917567821,
+        "lng": 37.5961084662704
+      }
+    },
+    {
+      "number": 57,
+      "title": "Мансуровский переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#7fea5fa2-9437-4e16-918e-738d0c82e7c4__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "7fea5fa2-9437-4e16-918e-738d0c82e7c4__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7394712022866,
+        "lng": 37.5959123267364
+      }
+    },
+    {
+      "number": 58,
+      "title": "Ресторан «Тифлисский дворик»",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#32194d00-be8d-44b1-91c8-fe0e05e7336f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "32194d00-be8d-44b1-91c8-fe0e05e7336f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.739571506063,
+        "lng": 37.5957601951065
+      }
+    },
+    {
+      "number": 59,
+      "title": "Дом Вахтангова",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#8fab234f-6348-47e4-a548-b0d5c133a8af__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "8fab234f-6348-47e4-a548-b0d5c133a8af__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.739448,
+        "lng": 37.595327
+      }
+    },
+    {
+      "number": 60,
+      "title": "Доходный дом П.В. Лоськова",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#e014d1b8-2b89-4601-9c81-e69f749b838f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "e014d1b8-2b89-4601-9c81-e69f749b838f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.739823,
+        "lng": 37.5952150000001
+      }
+    },
+    {
+      "number": 61,
+      "title": "Домик Мастера",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#c42111a4-c0a5-4ad5-9cab-9c19e27cdba1__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "c42111a4-c0a5-4ad5-9cab-9c19e27cdba1__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.739855,
+        "lng": 37.594257
+      }
+    },
+    {
+      "number": 62,
+      "title": "Усадьба А.В. Кузнецова",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#90568e55-beae-4928-b47b-da600291624e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "90568e55-beae-4928-b47b-da600291624e__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.739952,
+        "lng": 37.59398
+      }
+    },
+    {
+      "number": 63,
+      "title": "Хилков переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#e29708f4-bdde-4412-8ec3-65b390573f37__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "e29708f4-bdde-4412-8ec3-65b390573f37__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7389725786964,
+        "lng": 37.5963618379592
+      }
+    },
+    {
+      "number": 64,
+      "title": "Здание Московского совета детских приютов",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#99174bc8-9f10-4c78-bf1a-10b787e12d13__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "99174bc8-9f10-4c78-bf1a-10b787e12d13__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.739047,
+        "lng": 37.5955739999999
+      }
+    },
+    {
+      "number": 65,
+      "title": "Еропкинский переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#5cb36eca-9b0e-41f3-9177-120f64038dbe__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "5cb36eca-9b0e-41f3-9177-120f64038dbe__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7389381232006,
+        "lng": 37.5957072394256
+      }
+    },
+    {
+      "number": 66,
+      "title": "Дом И.С. Тургенева",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#1f0f4c92-a453-432c-9c42-2342f26cfe8f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "1f0f4c92-a453-432c-9c42-2342f26cfe8f__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.738725,
+        "lng": 37.59615
+      }
+    },
+    {
+      "number": 67,
+      "title": "Дом П.Д. Еропкина",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#e44645a1-fc08-423c-b2b9-30835b1c7807__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "e44645a1-fc08-423c-b2b9-30835b1c7807__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7388718794368,
+        "lng": 37.5950556527787
+      }
+    },
+    {
+      "number": 68,
+      "title": "Учебные мастерские",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#7b290212-db13-483f-9056-5180cb43c9c0__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "7b290212-db13-483f-9056-5180cb43c9c0__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.738549,
+        "lng": 37.595961
+      }
+    },
+    {
+      "number": 69,
+      "title": "Памятник ополченцам",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#7dbb3b3b-f749-45c3-b3f9-ce584b32c594__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "7dbb3b3b-f749-45c3-b3f9-ce584b32c594__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7386641399927,
+        "lng": 37.5952088981476
+      }
+    },
+    {
+      "number": 70,
+      "title": "Померанцев переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#2deee17a-d53e-4ce0-939b-e8e0571cd298__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "2deee17a-d53e-4ce0-939b-e8e0571cd298__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7382934599332,
+        "lng": 37.5949410555725
+      }
+    },
+    {
+      "number": 71,
+      "title": "Доходный дом Фокиных",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#6888d23b-a466-4a8a-92e7-c7aa3a60943d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "6888d23b-a466-4a8a-92e7-c7aa3a60943d__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.738234,
+        "lng": 37.59442
+      }
+    },
+    {
+      "number": 72,
+      "title": "Остоженка, 40",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#bf0272d2-924b-43f4-82c8-1fdf9797ed05__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "bf0272d2-924b-43f4-82c8-1fdf9797ed05__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.737952,
+        "lng": 37.595152
+      }
+    },
+    {
+      "number": 73,
+      "title": "Дом А.В. Всеволожского",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#c8486ec4-b717-4320-9e92-660f6bf5c21c__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "c8486ec4-b717-4320-9e92-660f6bf5c21c__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.737636,
+        "lng": 37.5957089999999
+      }
+    },
+    {
+      "number": 74,
+      "title": "Усадьба Н.О. Косыревой",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#02627f2d-82fb-407c-8551-dbb2de166406__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "02627f2d-82fb-407c-8551-dbb2de166406__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.737362,
+        "lng": 37.5955730000001
+      }
+    },
+    {
+      "number": 75,
+      "title": "Кропоткинский переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#39939a7f-a46b-463e-acf3-25ba9c0b2bd6__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "39939a7f-a46b-463e-acf3-25ba9c0b2bd6__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7373991320806,
+        "lng": 37.5948181289749
+      }
+    },
+    {
+      "number": 76,
+      "title": "Бассейн «Чайка»",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#f5edd4c3-0472-4b0a-ba16-2cd3561aa204__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "f5edd4c3-0472-4b0a-ba16-2cd3561aa204__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7365499075146,
+        "lng": 37.5964134146805
+      }
+    },
+    {
+      "number": 77,
+      "title": "Турчанинов переулок",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#ba14ce5a-9699-4ea7-ae18-ffe3d1f123f7__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "ba14ce5a-9699-4ea7-ae18-ffe3d1f123f7__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7368086091109,
+        "lng": 37.5971665727386
+      }
+    },
+    {
+      "number": 78,
+      "title": "Храм Покрова Богоматери",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#1db42b64-4430-4836-8f45-4ce4890f9bde__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "1db42b64-4430-4836-8f45-4ce4890f9bde__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.736737,
+        "lng": 37.5979170000001
+      }
+    },
+    {
+      "number": 79,
+      "title": "Пречистенская набережная",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#a7f42a7a-61f4-487a-a810-13f38b69cd42__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "a7f42a7a-61f4-487a-a810-13f38b69cd42__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7358364402567,
+        "lng": 37.5998401203766
+      }
+    },
+    {
+      "number": 80,
+      "title": "Центральный дом художника",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#3c17de86-26e8-44d7-9b29-5670c77cb5cc__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "3c17de86-26e8-44d7-9b29-5670c77cb5cc__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7344139189782,
+        "lng": 37.6044523715971
+      }
+    },
+    {
+      "number": 81,
+      "title": "Крымский мост",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#e4668ccd-b4d6-4b5c-9833-d499a2ddb448__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "e4668ccd-b4d6-4b5c-9833-d499a2ddb448__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.733972,
+        "lng": 37.599098
+      }
+    },
+    {
+      "number": 82,
+      "title": "Новокрымский проезд",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#49ac475e-e9fd-4f83-aed6-97d99ee9f644__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "49ac475e-e9fd-4f83-aed6-97d99ee9f644__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.735274,
+        "lng": 37.597232
+      }
+    },
+    {
+      "number": 83,
+      "title": "Катковский лицей",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#7e2079a7-4424-4b9d-ac20-7052f2054a8a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "7e2079a7-4424-4b9d-ac20-7052f2054a8a__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7357140202265,
+        "lng": 37.5955020601883
+      }
+    },
+    {
+      "number": 84,
+      "title": "Дом служащих Катковского лицея",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#161229c9-118d-4095-ace4-70da138f4935__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "161229c9-118d-4095-ace4-70da138f4935__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.7364622740849,
+        "lng": 37.5954590760574
+      }
+    },
+    {
+      "number": 85,
+      "title": "Провиантские склады",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#7bd3a62c-3017-438f-acc9-df116a876bb1__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "7bd3a62c-3017-438f-acc9-df116a876bb1__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.736500775472,
+        "lng": 37.5943594748687
+      }
+    },
+    {
+      "number": 86,
+      "title": "Павильон станции метро «Парк культуры»",
+      "url": "https://izi.travel/ru/75e6-progulka-po-ostozhenke-s-vokrug-sveta/ru#0591f0a8-310b-42c7-b212-b9af6fa8f378__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "id": "0591f0a8-310b-42c7-b212-b9af6fa8f378__75e66dad-7434-49e1-ae63-7497d1d6e9c5",
+      "location": {
+        "lat": 55.73607,
+        "lng": 37.595048
+      }
+    }
+  ]
+}

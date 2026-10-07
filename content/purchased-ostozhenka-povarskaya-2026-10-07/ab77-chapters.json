@@ -1,0 +1,779 @@
+{
+  "tourId": "ab77",
+  "tourUrl": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru",
+  "title": "Москва. Поварская и Новый Арбат",
+  "fetchedAt": "2026-10-07",
+  "access": "Оглавление 77 глав; получены полные тексты всех 77 глав через интерфейс IZI",
+  "chapters": [
+    {
+      "number": 1,
+      "title": "Наземный павильон метро «Арбатская»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#5720ad73-fce0-483a-a139-a210e5ec611c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "5720ad73-fce0-483a-a139-a210e5ec611c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.75213,
+        "lng": 37.601582
+      }
+    },
+    {
+      "number": 2,
+      "title": "Кинотеатр «Художественный»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#bf2d0491-05e8-4542-9fee-5122ffc7ab67__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "bf2d0491-05e8-4542-9fee-5122ffc7ab67__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.752439,
+        "lng": 37.601889
+      }
+    },
+    {
+      "number": 3,
+      "title": "Ресторан «Прага»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#fe072c02-1e83-4dec-86c5-4154738cc12a__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "fe072c02-1e83-4dec-86c5-4154738cc12a__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.75241,
+        "lng": 37.5995350000001
+      }
+    },
+    {
+      "number": 4,
+      "title": "Дом связи",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#81c61203-e592-47b3-bfff-1018173032eb__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "81c61203-e592-47b3-bfff-1018173032eb__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7531946980514,
+        "lng": 37.5992729656067
+      }
+    },
+    {
+      "number": 5,
+      "title": "Храм Св. Симеона Столпника",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#2b104fc3-6909-4a35-b3ff-a39651e4d81c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "2b104fc3-6909-4a35-b3ff-a39651e4d81c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7533049622702,
+        "lng": 37.5973271018524
+      }
+    },
+    {
+      "number": 6,
+      "title": "Поварская улица",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#580aa557-1feb-47ad-94e2-92ed1f0551d5__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "580aa557-1feb-47ad-94e2-92ed1f0551d5__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7532859434013,
+        "lng": 37.598073932541
+      }
+    },
+    {
+      "number": 7,
+      "title": "Поварская, 10",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#f13b76da-c78d-49a0-a657-b742638ab142__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "f13b76da-c78d-49a0-a657-b742638ab142__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7534326606435,
+        "lng": 37.5979463214264
+      }
+    },
+    {
+      "number": 8,
+      "title": "Особняк М.С. Грачева",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#6581480f-6708-420f-bb42-e67e707583e4__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "6581480f-6708-420f-bb42-e67e707583e4__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.753708,
+        "lng": 37.596375
+      }
+    },
+    {
+      "number": 9,
+      "title": "Особняк Е.Д. Дункер",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#6e56bda4-d84c-45fc-9c1b-9d7630909c9b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "6e56bda4-d84c-45fc-9c1b-9d7630909c9b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.753921,
+        "lng": 37.595642
+      }
+    },
+    {
+      "number": 10,
+      "title": "Особняк Столыпина",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#b97a99b8-2671-4771-8718-854b42dadb33__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "b97a99b8-2671-4771-8718-854b42dadb33__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.754019,
+        "lng": 37.5943130000001
+      }
+    },
+    {
+      "number": 11,
+      "title": "Литовский культурный центр...",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#ad849823-edb2-4008-a5a2-42e674c5ac36__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "ad849823-edb2-4008-a5a2-42e674c5ac36__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.754717,
+        "lng": 37.5941720000001
+      }
+    },
+    {
+      "number": 12,
+      "title": "Доходный дом И.С. Баскакова",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#a1b0a774-16d9-4d97-9783-f1391d42ef16__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "a1b0a774-16d9-4d97-9783-f1391d42ef16__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.754889,
+        "lng": 37.593617
+      }
+    },
+    {
+      "number": 13,
+      "title": "Верховный суд Российской Федерации",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#66e99622-f114-4f3c-9cd6-48eeae5d79b6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "66e99622-f114-4f3c-9cd6-48eeae5d79b6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.754712,
+        "lng": 37.592913
+      }
+    },
+    {
+      "number": 14,
+      "title": "Дом военных",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#656b9a8b-8660-484b-b1b4-90f150fec4d2__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "656b9a8b-8660-484b-b1b4-90f150fec4d2__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.754535,
+        "lng": 37.591819
+      }
+    },
+    {
+      "number": 15,
+      "title": "Большой Ржевский переулок",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#0963c8b4-95c9-439b-9b13-f7e92d712e59__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "0963c8b4-95c9-439b-9b13-f7e92d712e59__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7540505831422,
+        "lng": 37.5917538392869
+      }
+    },
+    {
+      "number": 16,
+      "title": "Доходный дом Г.А. Гордона",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#6470d0bd-7dd4-458a-a730-0de58a224e4f__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "6470d0bd-7dd4-458a-a730-0de58a224e4f__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.753968,
+        "lng": 37.592669
+      }
+    },
+    {
+      "number": 17,
+      "title": "Улица Малая Молчановка",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#b2896687-7555-49e3-91db-6fb78dd28d0c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "b2896687-7555-49e3-91db-6fb78dd28d0c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.753632,
+        "lng": 37.593201
+      }
+    },
+    {
+      "number": 18,
+      "title": "Улица Большая Молчановка",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#d0ec4e4d-fc43-4497-a833-6e53b5f3d5e3__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "d0ec4e4d-fc43-4497-a833-6e53b5f3d5e3__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7535232450467,
+        "lng": 37.5938529630128
+      }
+    },
+    {
+      "number": 19,
+      "title": "Дом-музей М.Ю. Лермонтова",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#0b20c76c-1f6e-47cd-a19d-e02a856eea2f__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "0b20c76c-1f6e-47cd-a19d-e02a856eea2f__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.753505,
+        "lng": 37.594252
+      }
+    },
+    {
+      "number": 20,
+      "title": "Дом Н.М. Кишкина",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#3ef8504e-e557-422d-9385-3b9147f51c71__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "3ef8504e-e557-422d-9385-3b9147f51c71__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.753431,
+        "lng": 37.594874
+      }
+    },
+    {
+      "number": 21,
+      "title": "Доходный дом Д.И. Тихомирова",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#174c6107-8a02-4215-886d-bdf9aa66c48c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "174c6107-8a02-4215-886d-bdf9aa66c48c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7532434905984,
+        "lng": 37.5931186269836
+      }
+    },
+    {
+      "number": 22,
+      "title": "Доходный дом В.В. Баскакова",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#c96b32df-1e93-4707-9cbc-3393b024cb80__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "c96b32df-1e93-4707-9cbc-3393b024cb80__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7530109811123,
+        "lng": 37.5924485337296
+      }
+    },
+    {
+      "number": 23,
+      "title": "Б. Молчановка, 21а",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#166bc933-2b64-46c8-a36b-f6abd793fbd9__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "166bc933-2b64-46c8-a36b-f6abd793fbd9__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7530132644507,
+        "lng": 37.5907937288359
+      }
+    },
+    {
+      "number": 24,
+      "title": "Школа № 1234",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#fe649374-49e9-455e-8c85-8b6f652406db__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "fe649374-49e9-455e-8c85-8b6f652406db__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7534405098585,
+        "lng": 37.5900949153443
+      }
+    },
+    {
+      "number": 25,
+      "title": "Борисоглебский переулок",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#852346c0-8dd8-401b-a06d-52d7e0b16dd7__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "852346c0-8dd8-401b-a06d-52d7e0b16dd7__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7534571272465,
+        "lng": 37.5893982771072
+      }
+    },
+    {
+      "number": 26,
+      "title": "Памятник Марине Цветаевой",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#1e878c90-64eb-4d65-88d0-07b954b4c84c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "1e878c90-64eb-4d65-88d0-07b954b4c84c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7542175302107,
+        "lng": 37.5895757374344
+      }
+    },
+    {
+      "number": 27,
+      "title": "Дом-музей Марины Цветаевой",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#18f92a0d-8892-4704-9c84-e8a727366ca6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "18f92a0d-8892-4704-9c84-e8a727366ca6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7542008496412,
+        "lng": 37.5899693558197
+      }
+    },
+    {
+      "number": 28,
+      "title": "Здание посольства Монголии",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#630487f0-af32-449e-89f8-71069af34f49__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "630487f0-af32-449e-89f8-71069af34f49__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7546167373325,
+        "lng": 37.5884602883606
+      }
+    },
+    {
+      "number": 29,
+      "title": "Дом Марковой",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#4b142a5c-797c-4228-bc14-51ebafdc3a3c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "4b142a5c-797c-4228-bc14-51ebafdc3a3c__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.754518,
+        "lng": 37.589926
+      }
+    },
+    {
+      "number": 30,
+      "title": "Памятник И.А. Бунину",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#382ec770-57fc-4e4c-8d16-bb657d967602__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "382ec770-57fc-4e4c-8d16-bb657d967602__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.755163,
+        "lng": 37.591642
+      }
+    },
+    {
+      "number": 31,
+      "title": "Академия музыки им. Гнесиных",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#29125865-a4af-4d5a-9fdc-bd4b3f32fa90__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "29125865-a4af-4d5a-9fdc-bd4b3f32fa90__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.755782,
+        "lng": 37.591362
+      }
+    },
+    {
+      "number": 32,
+      "title": "Ин-т мировой литературы им. М. Горького",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#501d3b65-38f9-4ab8-8a2f-1a9816bdf308__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "501d3b65-38f9-4ab8-8a2f-1a9816bdf308__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7558610560029,
+        "lng": 37.5894138306885
+      }
+    },
+    {
+      "number": 33,
+      "title": "Памятник М. Горькому",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#d9b90f4c-d439-450d-ad61-a2929c445ef7__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "d9b90f4c-d439-450d-ad61-a2929c445ef7__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.756069,
+        "lng": 37.589515
+      }
+    },
+    {
+      "number": 34,
+      "title": "Особняк А.А. Шереметева",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#e019fd3a-ac7d-4f9b-9854-70dfb806a5d1__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "e019fd3a-ac7d-4f9b-9854-70dfb806a5d1__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7562990931699,
+        "lng": 37.5890344662705
+      }
+    },
+    {
+      "number": 35,
+      "title": "Здание посольства Афганистана",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#a33a2600-f872-4f93-a0bc-2749aef99800__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "a33a2600-f872-4f93-a0bc-2749aef99800__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7566376837116,
+        "lng": 37.5891503730163
+      }
+    },
+    {
+      "number": 36,
+      "title": "Поварская, 31",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#c77710a4-6b44-4ed2-8718-733d0b2f53c6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "c77710a4-6b44-4ed2-8718-733d0b2f53c6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7567795873634,
+        "lng": 37.5876173227539
+      }
+    },
+    {
+      "number": 37,
+      "title": "Трубниковский, 23",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#6261f42b-f015-4d83-8a67-f98370f233c6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "6261f42b-f015-4d83-8a67-f98370f233c6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.756128776258,
+        "lng": 37.5864933558198
+      }
+    },
+    {
+      "number": 38,
+      "title": "Трубниковский, 21",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#9a74a7b4-cc10-4b98-be86-61cc03edf74d__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "9a74a7b4-cc10-4b98-be86-61cc03edf74d__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7554915326757,
+        "lng": 37.586875
+      }
+    },
+    {
+      "number": 39,
+      "title": "Винные подвалы доходного дома № 19",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#569dc741-9bed-425c-aed1-ec0bc0aaa0fa__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "569dc741-9bed-425c-aed1-ec0bc0aaa0fa__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7551255132492,
+        "lng": 37.5866839239427
+      }
+    },
+    {
+      "number": 40,
+      "title": "Особняк Д.П. Нарышкина",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#b315f3df-b185-4d47-b234-ee985a4523de__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "b315f3df-b185-4d47-b234-ee985a4523de__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.757254,
+        "lng": 37.587676
+      }
+    },
+    {
+      "number": 41,
+      "title": "Государственный театр киноактера",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#fad7bc79-eaec-48ed-99d2-1030c00c0e90__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "fad7bc79-eaec-48ed-99d2-1030c00c0e90__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.757047,
+        "lng": 37.5866639999999
+      }
+    },
+    {
+      "number": 42,
+      "title": "Центральный дом литераторов",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#8e8d6377-987e-4f3f-90a5-3abb78edbd40__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "8e8d6377-987e-4f3f-90a5-3abb78edbd40__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.757534,
+        "lng": 37.586779
+      }
+    },
+    {
+      "number": 43,
+      "title": "«Дом Ростовых»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#de77aa3f-4095-4b6b-996c-14784a0ac781__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "de77aa3f-4095-4b6b-996c-14784a0ac781__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7581415378033,
+        "lng": 37.5869491018523
+      }
+    },
+    {
+      "number": 44,
+      "title": "Памятник Л.Н. Толстому",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#157120b4-0cdb-4978-917c-bb5016075ebe__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "157120b4-0cdb-4978-917c-bb5016075ebe__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.757969,
+        "lng": 37.58663
+      }
+    },
+    {
+      "number": 45,
+      "title": "Новинский бул., 28",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#e00bc411-b6ac-4323-9d67-79e96939e6f2__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "e00bc411-b6ac-4323-9d67-79e96939e6f2__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7576783176555,
+        "lng": 37.5852413730163
+      }
+    },
+    {
+      "number": 46,
+      "title": "Культурный центр П.И. Чайковского",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#d384533a-b608-4374-ba06-0cc11081f09b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "d384533a-b608-4374-ba06-0cc11081f09b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.758179,
+        "lng": 37.585409
+      }
+    },
+    {
+      "number": 47,
+      "title": "Высотка на Кудринской площади",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#69d9c497-f6eb-49ce-8a89-73c0de9a62b6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "69d9c497-f6eb-49ce-8a89-73c0de9a62b6__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7592224234258,
+        "lng": 37.5808370833282
+      }
+    },
+    {
+      "number": 48,
+      "title": "ТЦ «Новинский пассаж»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#c5b86471-6d4f-446f-b6e1-8439f3fad875__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "c5b86471-6d4f-446f-b6e1-8439f3fad875__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.757681,
+        "lng": 37.5833689999999
+      }
+    },
+    {
+      "number": 49,
+      "title": "Памятник Ф.И. Шаляпину",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#24c93c5c-c1df-4ed3-92e2-bff6ccea7e8a__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "24c93c5c-c1df-4ed3-92e2-bff6ccea7e8a__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.757223,
+        "lng": 37.583428
+      }
+    },
+    {
+      "number": 50,
+      "title": "Особняк Жихарева",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#6c375db7-60be-4b4b-964e-98fa669a8f2d__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "6c375db7-60be-4b4b-964e-98fa669a8f2d__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7569429070851,
+        "lng": 37.5834703816147
+      }
+    },
+    {
+      "number": 51,
+      "title": "Доходный дом У.М. Сарухановой",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#8054e5ff-e4f5-4393-b835-f710099e2291__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "8054e5ff-e4f5-4393-b835-f710099e2291__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7566360237556,
+        "lng": 37.5848254404755
+      }
+    },
+    {
+      "number": 52,
+      "title": "Галерея искусств «Дом Шаляпина»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#1ac40299-9ea0-4c1c-bec1-15bd14add9db__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "1ac40299-9ea0-4c1c-bec1-15bd14add9db__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7566418511526,
+        "lng": 37.5833906527787
+      }
+    },
+    {
+      "number": 53,
+      "title": "Усадьба Шаляпина",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#73637273-eca3-49a0-9615-b699a26e0390__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "73637273-eca3-49a0-9615-b699a26e0390__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7564773538144,
+        "lng": 37.5833354748688
+      }
+    },
+    {
+      "number": 54,
+      "title": "Новинский бул., 20",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#5e2c7cd1-8268-4c2c-8acf-9020790206b7__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "5e2c7cd1-8268-4c2c-8acf-9020790206b7__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7561438322008,
+        "lng": 37.5848303974838
+      }
+    },
+    {
+      "number": 55,
+      "title": "Новинский бул., 18",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#71a7919a-dbc8-406c-b791-d089aedcadaf__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "71a7919a-dbc8-406c-b791-d089aedcadaf__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7556959584223,
+        "lng": 37.5846417374344
+      }
+    },
+    {
+      "number": 56,
+      "title": "Здание посольства США",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#998b5dbe-1f5e-48f6-a261-213fa71a3b7b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "998b5dbe-1f5e-48f6-a261-213fa71a3b7b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.755647,
+        "lng": 37.5830960000001
+      }
+    },
+    {
+      "number": 57,
+      "title": "Дом Грибоедовых",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#2278184d-d3ef-4c72-a0fd-af9d4206bc74__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "2278184d-d3ef-4c72-a0fd-af9d4206bc74__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.75509,
+        "lng": 37.582982
+      }
+    },
+    {
+      "number": 58,
+      "title": "Новинский бульвар",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#7287c7b3-f5f5-4534-9f41-013cf4f02590__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "7287c7b3-f5f5-4534-9f41-013cf4f02590__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7547326315348,
+        "lng": 37.5837308981477
+      }
+    },
+    {
+      "number": 59,
+      "title": "Новинский бул., 12",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#d43f50c9-a8f6-4282-9b20-049cf64f48d3__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "d43f50c9-a8f6-4282-9b20-049cf64f48d3__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7535056221638,
+        "lng": 37.5839943472213
+      }
+    },
+    {
+      "number": 60,
+      "title": "Доходный дом Щербатова",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#fc59d029-f5e0-4954-80b0-4335e97689df__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "fc59d029-f5e0-4954-80b0-4335e97689df__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7533787359911,
+        "lng": 37.58223
+      }
+    },
+    {
+      "number": 61,
+      "title": "Детская библиотека № 23",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#3b719f19-e737-46f0-8152-725da842fe4f__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "3b719f19-e737-46f0-8152-725da842fe4f__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7529039244172,
+        "lng": 37.5826615165329
+      }
+    },
+    {
+      "number": 62,
+      "title": "Торговый центр «Лотте Плаза»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#ace676f9-040e-4a0c-922a-39898ca1c852__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "ace676f9-040e-4a0c-922a-39898ca1c852__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.751972,
+        "lng": 37.583851
+      }
+    },
+    {
+      "number": 63,
+      "title": "Культурно-развлекательный центр «Арбат»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#c1168421-da98-4a20-8a43-789233a6d250__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "c1168421-da98-4a20-8a43-789233a6d250__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.751871,
+        "lng": 37.584574
+      }
+    },
+    {
+      "number": 64,
+      "title": "Культурно-развлекательный центр «Мираж»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#891fdf2f-699a-4fc9-b415-0f60676fe412__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "891fdf2f-699a-4fc9-b415-0f60676fe412__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.751876,
+        "lng": 37.585511
+      }
+    },
+    {
+      "number": 65,
+      "title": "Торговый центр «Дом Декор Дизайн»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#2b932bb6-2fe0-4753-b1e4-4171e74b8a9b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "2b932bb6-2fe0-4753-b1e4-4171e74b8a9b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7520791706494,
+        "lng": 37.5861914490738
+      }
+    },
+    {
+      "number": 66,
+      "title": "Трубниковский переулок",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#853a88d0-c1ef-4955-9694-648ec2b04d27__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "853a88d0-c1ef-4955-9694-648ec2b04d27__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7530314473238,
+        "lng": 37.5866009814758
+      }
+    },
+    {
+      "number": 67,
+      "title": "Трубниковский, 11",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#c3a5a456-e6a0-44fa-a37c-5e1b24efc87a__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "c3a5a456-e6a0-44fa-a37c-5e1b24efc87a__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7531597735006,
+        "lng": 37.5863306441803
+      }
+    },
+    {
+      "number": 68,
+      "title": "Киноконцертный зал «Октябрь»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#63a5d47b-f7a2-4a74-b55b-ae713af273b9__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "63a5d47b-f7a2-4a74-b55b-ae713af273b9__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7531430575149,
+        "lng": 37.5870243372956
+      }
+    },
+    {
+      "number": 69,
+      "title": "Усадьба Смолянинова",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#dfebc36b-64ca-43cf-bb33-cc33f37b7976__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "dfebc36b-64ca-43cf-bb33-cc33f37b7976__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7541147743875,
+        "lng": 37.5864497460327
+      }
+    },
+    {
+      "number": 70,
+      "title": "Филиал литературного музея",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#54c80017-8a97-4ed3-9448-1cbb4c0f104b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "54c80017-8a97-4ed3-9448-1cbb4c0f104b__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7547078499551,
+        "lng": 37.5865920171966
+      }
+    },
+    {
+      "number": 71,
+      "title": "Торговый центр «Весна»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#b20077a9-de96-4795-a4a2-6ed522350977__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "b20077a9-de96-4795-a4a2-6ed522350977__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7520469620755,
+        "lng": 37.5880383214264
+      }
+    },
+    {
+      "number": 72,
+      "title": "Улица Новый Арбат",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#9fa81982-aef7-4be0-ac0a-f8d6ddfe01c1__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "9fa81982-aef7-4be0-ac0a-f8d6ddfe01c1__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7525670378449,
+        "lng": 37.5902158637543
+      }
+    },
+    {
+      "number": 73,
+      "title": "Торговый центр «Москвичка»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#5eb03e67-3931-4a63-80d4-5defaf4d4bc4__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "5eb03e67-3931-4a63-80d4-5defaf4d4bc4__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.752065,
+        "lng": 37.5921510000001
+      }
+    },
+    {
+      "number": 74,
+      "title": "Культурно-развлекательный центр «Корона»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#6812830f-1f2a-4f6a-9a85-1c2468df9732__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "6812830f-1f2a-4f6a-9a85-1c2468df9732__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.752152,
+        "lng": 37.593491
+      }
+    },
+    {
+      "number": 75,
+      "title": "Торговый дом «Новоарбатский»",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#93b2f2cc-f20a-40e9-83ac-e8e90518385e__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "93b2f2cc-f20a-40e9-83ac-e8e90518385e__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7522206115128,
+        "lng": 37.5953200231399
+      }
+    },
+    {
+      "number": 76,
+      "title": "Московский дом книги",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#31f54aee-5b90-4caa-91f9-c3418e9c4a6f__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "31f54aee-5b90-4caa-91f9-c3418e9c4a6f__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7530568866983,
+        "lng": 37.5955120846558
+      }
+    },
+    {
+      "number": 77,
+      "title": "Новый Арбат, 7",
+      "url": "https://izi.travel/ru/ab77-moskva-povarskaya-i-novyy-arbat/ru#2d09e890-f748-4a62-b8e8-f6b7c5933a67__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "id": "2d09e890-f748-4a62-b8e8-f6b7c5933a67__ab77cf40-7908-4e90-9933-b9e4d57112d6",
+      "location": {
+        "lat": 55.7526764918368,
+        "lng": 37.5975519153442
+      }
+    }
+  ]
+}

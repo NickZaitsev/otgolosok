@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-07T13:23:29.976459+00:00",
+  "chapterCount": 163,
+  "fullTextReadCount": 77,
+  "previewReadCount": 84,
+  "unavailableChapters": 2,
+  "matchedChapterCount": 32,
+  "draftCount": 6,
+  "additionalWordCounts": {
+    "R02": 446,
+    "R04": 420
+  },
+  "routeCount": 13,
+  "existingComparisonCount": 325,
+  "newPairCount": 78,
+  "maxExistingOverlapPercent": 25.0,
+  "maxNewOverlapPercent": 7.6923076923076925,
+  "routesChanged": false,
+  "published": false,
+  "audioCreated": false,
+  "planDataSha256": "e421d8dbb7a881303ef8aeed8ac8ef82bfddb3bb5005a505adf689e42d9276d4",
+  "filesSha256": {
+    "75e6-chapters.json": "5ed05b3ff900416f18c70b6804469985b33f36d01c38585df5c4cd8f34d7c4ab",
+    "README.md": "b0c26b3aa7eeab2fec3723a3bef151e85d144ebb87730da12fcd5977ae0c4a73",
+    "ab77-chapters.json": "c389786b771aebb89a60fbc3c9bf4a666480c82078d4d7070e0445891a0b745a",
+    "audit-receipt.json": "2211c6fb5f66f0ead279f47e0576f38bd9a3dccaa55994001bc2fad8e05f6849",
+    "chapter-review.json": "59854144329a72b49510e6ff4cddb3fb559482ce60a20900971cfabeeebb4564",
+    "claude-audit-original.md": "6d82d4e13f865a8552a07748bdd927a322ca0fa5d7fc45a5109cfb225c442e6e",
+    "claude-audit.md": "baf1110c2c92e520867aa1d6c0f249e7b1e6c17504b1a885cf5acd851608ebdb",
+    "drafts.md": "cee3b32501fdb31d2169ef39e7ade3d772ab75d3a5331809f766bc1e7ee18522",
+    "editorial-drafts.json": "cb39b093da08ee98fbcf5ad77d7be7bd86ba113938fe1880fde4f2945ef61d3c",
+    "reading-receipt.json": "4db85412b601b2a14584c9ef0f3886e5e8fc012a638e51ee8f3adb56e262760c",
+    "route-stop-review.md": "58f4cc32b0e88d661b1be616b2c9401fd6e65403c770a04f9bdad3e6be60b648"
+  },
+  "projectCheck": {
+    "command": "pnpm check",
+    "exitCode": 0,
+    "frontendTestsPassed": 1840,
+    "backendTestsPassed": 978,
+    "pythonTestsPassed": 26,
+    "pythonSubtestsPassed": 78,
+    "productionBuild": "passed"
+  },
+  "passed": [
+    "Количество и последовательность глав в оглавлениях проверены",
+    "Уровни доступа:77 полных,84 превью,2 недоступных",
+    "32 ID сопоставленных карточек существуют; ошибочная привязка Бройдо исключена",
+    "Шесть черновиков: все абзацы имеют источники, ID принадлежат выбранным маршрутам",
+    "13 вариантов: центры внутри контура,10+ ID,325 сравнений и78 пар пересчитаны",
+    "Ссылки на локальные файлы разрешаются; платные тексты не включены в публичную сверку"
+  ],
+  "notVerified": [
+    "Полные платные главы Остоженки",
+    "Пешеходные линии,выходы метро и уличные триггеры",
+    "Полевой доступ и видимость деталей",
+    "Фактическая длительность и воспроизведение окончательных MP3",
+    "Изменения production-каталога после первоначального снимка",
+    "Независимая верификация всех фактов аудиогида"
+  ]
+}

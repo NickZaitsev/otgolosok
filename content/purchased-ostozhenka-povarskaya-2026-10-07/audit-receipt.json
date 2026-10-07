@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-07",
+  "model": [
+    "claude-opus-5-5"
+  ],
+  "subtype": "success",
+  "isError": false,
+  "durationMs": 152399,
+  "packetSha256": "142c68179cb09f26f383315d69831ee7c166ddfcde7b031e5693c6ea9b9d8425",
+  "responseTextSha256": "e7252d2a79c40069276ca5ddf461b456c07d50ad944dec6f74009142dac2db78",
+  "auditedDraftFileSha256": "807a41ca3cfc19c122c7847f57f90b5cbcca4f05a3200da1ec98ef9352b43060",
+  "calls": 1,
+  "toolsEnabled": false,
+  "finalRevisionReaudited": false,
+  "note": "Аудированы черновики до редакторских сокращений:497/502 слов. Финальная редакция446/420 слов. В консультационный пакет ошибочно попало разбиение32привязок как18/14; исправлено по таблице на17Поварская/15Остоженка."
+}
