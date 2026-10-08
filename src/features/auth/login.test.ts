@@ -104,12 +104,46 @@ it("explains a provider configuration failure and retries it", async () => {
   expect(container.querySelector(".telegram-button")?.textContent).toContain("Продолжить через Telegram");
 });
 
+it("blocks Telegram on the initial sign-in screen until terms are accepted", async () => {
+  await mount("ru");
+  const telegram = container.querySelector<HTMLButtonElement>(".telegram-button")!;
+  const checkbox = container.querySelector<HTMLInputElement>('input[type="checkbox"]');
+  expect(telegram.disabled).toBe(true);
+  expect(checkbox).not.toBeNull();
+  expect(checkbox!.checked).toBe(false);
+  expect(checkbox!.required).toBe(false);
+  expect(container.querySelector<HTMLButtonElement>(".account-button")!.disabled).toBe(false);
+  const navigationCount = vi.mocked(location.replace).mock.calls.length;
+  const authorizationCount = vi.mocked(getTelegramAuthorizationUrl).mock.calls.length;
+  await act(async () => telegram.click());
+  expect(vi.mocked(location.replace).mock.calls.length).toBe(navigationCount);
+  expect(vi.mocked(getTelegramAuthorizationUrl).mock.calls.length).toBe(authorizationCount);
+  await act(async () => checkbox!.click());
+  expect(telegram.disabled).toBe(false);
+  await act(async () => checkbox!.click());
+  expect(telegram.disabled).toBe(true);
+});
+
 it("passes a preserved return target to Telegram and navigates only to the checked URL", async () => {
   vi.stubGlobal("location", { origin: "https://otgolosok.online", search: "?returnTo=%2Fwalk%3Fid%3D42", replace: vi.fn() });
   await mount("ru");
+  await act(async () => container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
   await act(async () => container.querySelector<HTMLButtonElement>(".telegram-button")!.click());
-  expect(getTelegramAuthorizationUrl).toHaveBeenCalledWith("/walk?id=42", "ru", "https://otgolosok.online", false);
+  expect(getTelegramAuthorizationUrl).toHaveBeenCalledWith("/walk?id=42", "ru", "https://otgolosok.online", true);
   expect(location.replace).toHaveBeenCalledWith("https://oauth.telegram.org/auth?bot_id=1");
+});
+
+it("switching authentication modes clears acceptance before another Telegram attempt", async () => {
+  await mount("ru");
+  await act(async () => container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+  expect(container.querySelector<HTMLButtonElement>(".telegram-button")!.disabled).toBe(false);
+  for (const heading of ["Регистрация", "Вход"]) {
+    await act(async () => container.querySelector<HTMLButtonElement>(".text-button")!.click());
+    expect(container.querySelector("h1")?.textContent).toBe(heading);
+    expect(container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.checked).toBe(false);
+    expect(container.querySelector<HTMLButtonElement>(".telegram-button")!.disabled).toBe(true);
+    await act(async () => container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+  }
 });
 
 it("registration requires a separate unchecked acceptance for both Telegram and email", async () => {
