@@ -1,4 +1,4 @@
-/* The compact player: shared by the walk panel and the place card, so both sound and look the same. */
+/* The compact player on place cards. */
 .compact {
   display: flex;
   align-items: center;
@@ -56,4 +56,84 @@
   font-size: var(--text-secondary);
   line-height: 1.4;
   color: var(--alert-ink);
+}
+
+/* The walking player keeps its transport controls large enough for one-handed use. */
+.walk {
+  display: grid;
+  gap: 10px;
+  margin-top: var(--space-sm);
+  padding: 10px 12px 12px;
+  border: 1px solid var(--control-border);
+  border-radius: 18px;
+  background: var(--control-selected);
+}
+
+.walkTimeline input {
+  display: block;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  accent-color: var(--map-green);
+  cursor: pointer;
+}
+
+.walkButtons {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  gap: 8px;
+}
+
+.walkButtons button {
+  min-height: 52px;
+  border-radius: 14px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.walkSkip {
+  display: grid;
+  place-content: center;
+  border: 1px solid var(--control-border);
+  background: var(--surface-island);
+  color: var(--map-green);
+  line-height: 1;
+}
+
+.walkSkip span {
+  font-size: var(--text-section);
+}
+
+.walkSkip small {
+  font-size: var(--text-meta);
+  font-weight: 700;
+}
+
+.walkSkip:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.walkToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 0;
+  background: var(--map-green);
+  color: var(--surface-island);
+  font-size: var(--text-control);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.walkToggle svg {
+  flex: none;
+}
+
+.walk :is(button, input):focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
 }

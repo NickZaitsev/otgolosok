@@ -228,7 +228,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
       target: view.withUser && !legFit.refined ? { points: view.points, keepUserView: true } : legFit.target });
   }
   // The position help closes by itself once a fix arrives after a retry.
-  if (drawer === "position" && (user || !active)) setDrawer(null);
+  if (drawer === "position" && ((user && !positionFailed) || !active)) setDrawer(null);
   function retryPosition() { setDrawer("position"); onRetryPosition(); }
   function select(position: number) { setDrawer(null); onSelect(position); }
   function startAt(position?: number) { setDrawer(null); onStart(position); }
@@ -242,6 +242,8 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   const next = index + 1 < chapters.length || (finishLeg && index + 1 === chapters.length);
   const meta = !active ? t("{minutes} мин · {distance} км", { minutes: route.duration_min, distance: distance.toLocaleString(languageTag, { maximumFractionDigits: 1 }) })
     : !chapter ? t("До финиша") : stage === "approach" ? approachHint(advance, Boolean(chapter.audio), locale) : "";
+  const locationLabel = t(positionFailed ? "Геопозиции нет" : user ? "Положение определено" : "Определяем положение…");
+  const following = active && index + 1 < chapters.length ? t("Дальше: {title}", { title: chapters[index + 1].title }) : "";
 
   const panel = <section className={`walk-session-panel ${foodStyles.panel}`} data-region="sheet" aria-labelledby="walk-session-title">
       {/* Like the player, the photo yields its room to an open drawer. */}
@@ -250,9 +252,11 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
       <header className="walk-session-heading">
         <div>
           {/* During the walk the stop number lives on the «Остановки» button; this line is left for the hint and the finish. */}
-          {meta ? <p className="walk-session-meta">{meta}{!active && !completed && ratingLabel ? <> · {reviews
+          <div className="walk-session-context">{meta ? <p className="walk-session-meta">{meta}{!active && !completed && ratingLabel ? <> · {reviews
             ? <button type="button" className="walk-session-rating" aria-expanded={drawer === "reviews"} onClick={toggleReviews}>{ratingLabel}</button>
             : ratingLabel}</> : null}</p> : null}
+            {active ? positionFailed ? <button type="button" className="walk-session-location walk-session-location--failed" aria-expanded={drawer === "position"} onClick={retryPosition}><span aria-hidden="true" />{locationLabel}</button>
+              : <span className="walk-session-location" role="status"><span aria-hidden="true" />{locationLabel}</span> : null}</div>
           <h1 id="walk-session-title" ref={titleRef} tabIndex={-1}>{completed ? t("Прогулка завершена") : active ? chapter?.title ?? route.walk?.finish.address ?? t("Прогулка") : route.title.trim() || t("Ваш маршрут")}</h1>
         </div>
         {!completed ? <div className="walk-session-heading-actions">
@@ -267,7 +271,6 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
       {active && chapter && !chapter.audio && !hasText ? <p className="walk-session-muted">{t("Без истории")}</p> : null}
       {!completed && !foodVisible ? <div className="walk-session-tools">
         {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />{active && chapter ? t("Остановка {current} из {total}", { current: index + 1, total: chapters.length }) : t("Остановки · {count}", { count: chapters.length })}</button> : null}
-        {active && (positionFailed || drawer === "position") ? <button type="button" className="walk-session-position" aria-expanded={drawer === "position"} onClick={retryPosition}><ExploreIcon name="locate" />{t("Геопозиции нет")}</button> : null}
         {!active && canStart && onDirectionChange ? <button type="button" aria-label={t("Пройти прогулку с конца")} aria-pressed={direction === "reverse"} onClick={() => { setDrawer(null); onDirectionChange(direction === "forward" ? "reverse" : "forward"); }}>{t(direction === "reverse" ? "Направление: с конца" : "Направление: с начала")}</button> : null}
         {active && hasText ? <button type="button" className="walk-session-read" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}><ExploreIcon name="book" /><span>{t("Читать историю")}</span></button> : null}
         {active && chapter ? <PlaceVideo key={chapter.id} compact placeId={chapter.place_id} title={chapter.title} /> : null}
@@ -311,13 +314,14 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
       {foodManifestError ? <p role="status" className="walk-session-notice">{t("Не удалось загрузить заведения")} <button type="button" className={foodStyles.retry} onClick={food.retry}>{t("Повторить")}</button></p> : null}
       </div>
       <footer className={`${foodStyles.actions} walk-session-actions${completed && reviews ? " walk-session-actions--finish" : ""}`} data-sheet-part="footer">
+        {following ? <p className="walk-session-following" title={following}>{following}</p> : null}
         {completed ? reviews ? <>
           <button type="button" className="walk-session-primary" aria-haspopup="dialog" onClick={onRate}>{t(hasReview ? "Изменить отзыв" : "Оставить отзыв")}</button>
           <Link className="walk-session-secondary" href={path("/")}>{t("На карту")}</Link>
         </> : <Link className="walk-session-primary" href={path("/")}>{t("На карту")}</Link> : active ? <>
           {index > 0 ? <button type="button" className="walk-session-previous" aria-label={t("Предыдущая остановка")} onClick={() => select(index - 1)}><ExploreIcon name="arrow" /></button> : null}
           {foodButton}
-          <button type="button" className="walk-session-primary" onClick={() => { setDrawer(null); if (next) select(index + 1); else onStop(true); }}>{t(index + 1 < chapters.length ? "Дальше" : next ? "К финишу" : "Завершить")}<ExploreIcon name="arrow" /></button>
+          <button type="button" className="walk-session-primary" aria-label={following || undefined} onClick={() => { setDrawer(null); if (next) select(index + 1); else onStop(true); }}>{t(index + 1 < chapters.length ? "Дальше" : next ? "К финишу" : "Завершить")}<ExploreIcon name="arrow" /></button>
         </> : <>
           {/* The way back to the builder sits where «Назад» sits during the walk: before the start the walk is still being made. */}
           {own ? <Link className="walk-session-previous" href={path(own.editHref)} prefetch={false} aria-label={t("Изменить маршрут")}><ExploreIcon name="arrow" /></Link> : null}

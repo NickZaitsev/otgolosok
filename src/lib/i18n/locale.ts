@@ -13,7 +13,7 @@ export function localeFromPath(pathname: string): Locale {
 export function unlocalizedPath(pathname: string): string {
   return pathname.replace(/^\/(en|zh)(?=\/|$)/, "") || "/";
 }
-const PUBLIC_PAGES = new Set(["/", "/walk", "/history", "/account", "/login"]);
+const PUBLIC_PAGES = new Set(["/", "/walk", "/history", "/trends", "/account", "/account/walks", "/login"]);
 /** Localize app pages only; API paths, assets, admin and external URLs stay intact. */
 export function localizedPath(href: string, locale: Locale): string {
   if (!href.startsWith("/") || href.startsWith("//")) return href;

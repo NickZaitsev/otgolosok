@@ -5,6 +5,10 @@ describe("precache manifest", () => {
   it("сохраняет оболочку истории для открытия без сети", () => {
     expect(selectPrecacheFiles(["history.html"]).map(precacheUrl)).toEqual(["/history"]);
   });
+  it("сохраняет новые разделы прогулок и трендов для установленного PWA", () => {
+    expect(selectPrecacheFiles(["account/walks.html", "trends.html", "en/account/walks.html", "zh/trends.html"]).map(precacheUrl))
+      .toEqual(["/account/walks", "/en/account/walks", "/trends", "/zh/trends"]);
+  });
   it("не кэширует удалённую страницу /create", () => {
     expect(selectPrecacheFiles(["create.html", "index.html"]).map(precacheUrl)).toEqual(["/"]);
   });

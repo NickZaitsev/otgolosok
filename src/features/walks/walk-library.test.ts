@@ -31,11 +31,11 @@ const { accessLabel } = await import("./access-dialog");
 let root: Root;
 let container: HTMLDivElement;
 
-async function render(locale: Locale = "ru") {
+async function render(locale: Locale = "ru", mode: "all" | "mine" = "all") {
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
-  await act(async () => { root.render(createElement(I18nProvider, { locale } as ComponentProps<typeof I18nProvider>, createElement(WalkLibrary))); });
+  await act(async () => { root.render(createElement(I18nProvider, { locale } as ComponentProps<typeof I18nProvider>, createElement(WalkLibrary, { mode }))); });
 }
 
 const accountWalk = (patch: Partial<WalkCard & { draft: boolean }> = {}): WalkCard & { draft: boolean } => ({
@@ -127,6 +127,26 @@ describe("вкладки «Мои прогулки» и «Топ прогуло�
     await render();
     await act(async () => { tab("Мои прогулки").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true })); });
     expect(location.search).toBe("?tab=top");
+  });
+});
+
+describe("«Мои прогулки» в профиле", () => {
+  it("сразу показывает личный список без вкладок и топа, даже когда прогулок нет", async () => {
+    history.replaceState(null, "", "/account/walks?tab=top");
+    await render("ru", "mine");
+    expect(container.querySelector("h1")?.textContent).toBe("Мои прогулки");
+    expect(container.querySelector("[role=tablist]")).toBeNull();
+    expect(container.querySelector("#history-panel-mine")?.hasAttribute("hidden")).toBe(false);
+    expect(container.querySelector("[data-testid=top]")).toBeNull();
+    expect(container.textContent).toContain("Начните свою историю города");
+    expect(container.querySelector<HTMLAnchorElement>(".history-heading a")?.getAttribute("href")).toBe("/account");
+    expect(container.querySelector<HTMLAnchorElement>(".history-signin a")?.getAttribute("href")).toBe("/login?returnTo=%2Faccount%2Fwalks");
+  });
+
+  it("сохраняет язык в ссылке возврата после входа", async () => {
+    history.replaceState(null, "", "/en/account/walks");
+    await render("en", "mine");
+    expect(container.querySelector<HTMLAnchorElement>(".history-signin a")?.getAttribute("href")).toBe("/en/login?returnTo=%2Fen%2Faccount%2Fwalks");
   });
 });
 

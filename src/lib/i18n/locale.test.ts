@@ -11,6 +11,7 @@ describe("языковые адреса", () => {
     ["/en/walk?share=abc#top", "zh", "/zh/walk?share=abc#top"],
     ["/zh/history/?tab=local", "ru", "/history?tab=local"],
     ["/en", "ru", "/"], ["/login?returnTo=%2Fen%2Fwalk", "en", "/en/login?returnTo=%2Fen%2Fwalk"],
+    ["/trends", "en", "/en/trends"], ["/account/walks", "zh", "/zh/account/walks"],
     ["/api/me", "zh", "/api/me"], ["/admin", "en", "/admin"], ["/audio/story.mp3", "zh", "/audio/story.mp3"],
     ["https://example.com/walk", "en", "https://example.com/walk"], ["//evil.test/walk", "en", "//evil.test/walk"],
     ["/place/node/123", "en", "/place/node/123"], ["/unknown", "en", "/unknown"],

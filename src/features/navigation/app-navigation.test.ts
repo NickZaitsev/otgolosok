@@ -50,7 +50,9 @@ describe("нижняя навигация приложения", () => {
     ["/walk", "walk"],
     ["/walk/", "walk"],
     ["/account", "account"],
-    ["/history", "history"],
+    ["/history", "trends"],
+    ["/trends", "trends"],
+    ["/account/walks", "account"],
   ] as const)("выделяет раздел %s", (pathname, expected) => {
     expect(navigationSection(pathname)).toBe(expected);
   });
@@ -59,7 +61,7 @@ describe("нижняя навигация приложения", () => {
     expect(navigationSection(pathname)).toBeNull();
   });
 
-  it.each([["/history", "История"], ["/account", "Профиль"], ["/walk", "Прогулка"]])("на странице %s отмечает «%s»", async (pathname, label) => {
+  it.each([["/trends", "Тренды"], ["/account/walks", "Профиль"], ["/account", "Профиль"], ["/walk", "Прогулка"]])("на странице %s отмечает «%s»", async (pathname, label) => {
     expect(await render(pathname)).not.toBeNull();
     expect(current()).toBe(label);
   });
@@ -68,10 +70,10 @@ describe("нижняя навигация приложения", () => {
     expect(await render(pathname)).toBeNull();
   });
 
-  it("ведёт к созданию прогулки на карте и к истории", async () => {
-    await render("/history");
+  it("ведёт к созданию прогулки на карте и сразу к трендам", async () => {
+    await render("/trends");
     expect(item("Прогулка")?.getAttribute("href")).toBe("/?walk=create");
-    expect(item("История")?.getAttribute("href")).toBe("/history");
+    expect(item("Тренды")?.getAttribute("href")).toBe("/trends");
     expect(item("Рядом")?.getAttribute("href")).toBe("/");
   });
 
@@ -123,11 +125,11 @@ describe("скрытие навигации экраном", () => {
 
 
 describe("языковая навигация", () => {
-  it.each([["/en/history", "History", "/en?walk=create"], ["/zh/history", "历史记录", "/zh?walk=create"]])("сохраняет язык на %s", async (pathname, label, createUrl) => {
+  it.each([["/en/trends", "Trending", "/en?walk=create"], ["/zh/trends", "热门", "/zh?walk=create"]])("сохраняет язык на %s", async (pathname, label, createUrl) => {
     await render(pathname);
     expect(current()).toBe(label);
     expect([...container.querySelectorAll("a")].some(link => link.getAttribute("href") === createUrl)).toBe(true);
-    expect(navigationSection(pathname)).toBe("history");
+    expect(navigationSection(pathname)).toBe("trends");
   });
   it.each(["/en", "/zh", "/en/login", "/zh/login"])("не дублирует навигацию на %s", async pathname => {
     expect(await render(pathname)).toBeNull();

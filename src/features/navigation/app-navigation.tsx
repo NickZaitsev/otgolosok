@@ -34,7 +34,7 @@ export function AppNavigation({ active, embedded = false, onNearby, onWalk }: Pr
   return <nav className={styles.navigation} data-region="nav" aria-label={t("Основная навигация")}>
     {nearby}
     {walk}
-    <Link href={path("/history")} aria-current={current === "history" ? "page" : undefined}><ExploreIcon name="walk"/><span>{t("История")}</span></Link>
+    <Link href={path("/trends")} aria-current={current === "trends" ? "page" : undefined}><ExploreIcon name="trends"/><span>{t("Тренды")}</span></Link>
     <Link href={path("/account")} aria-current={current === "account" ? "page" : undefined}><ExploreIcon name="user"/><span>{t("Профиль")}</span></Link>
   </nav>;
 }

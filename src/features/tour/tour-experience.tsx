@@ -421,7 +421,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
         hasReview={Boolean(reviews.mine)} ratingCount={reviews.summary?.count ?? null} reviews={reviewTarget ? <WalkReviews reviews={reviews} onRate={() => setRateOpen(true)} /> : null} onRate={() => setRateOpen(true)}
         onImprove={reviewTarget ? () => setImproveOpen(true) : null}
         audioError={audioStatus === "blocked" || audioStatus === "error" ? t("Не удалось включить аудио. Нажмите «Повторить запуск звука».") : ""}
-        player={walkAudioUrl ? <AudioPlayerControls compact position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
+        player={walkAudioUrl ? <AudioPlayerControls compact walk position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
           label={audioButtonLabel} rate={settings.rate} onToggle={toggleAudio} onSeek={audio.seek} onRate={rate => updateSettings({ rate })} /> : null}
         story={<><StoryText story={walkContent.story} contentLocale={contentLocale} />{walkContent.sources.length ? <StorySources content={walkContent} contentLocale={contentLocale} open={showSources} onToggle={toggleSources} /> : null}</>}
         settings={<div className="walk-session-settings">

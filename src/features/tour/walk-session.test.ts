@@ -59,10 +59,10 @@ it.each(["session", "map"])("%s ставит маркеры в точки про
   expect(selected.map(chapter => chapter.location)).toEqual(originalLocations);
 });
 
-function sessionDocument(props: { active?: boolean; completed?: boolean; ratingLabel?: string; hasReview?: boolean; ratingCount?: number | null; reviews?: string | null; own?: OwnWalk | null }) {
+function sessionDocument(props: { active?: boolean; completed?: boolean; ratingLabel?: string; hasReview?: boolean; ratingCount?: number | null; reviews?: string | null; own?: OwnWalk | null; positionFailed?: boolean; user?: { lat: number; lon: number; accuracyM: number } | null }) {
   const markup = renderToStaticMarkup(createElement(WalkSession, {
     route, chapters, index: 0, active: props.active ?? false, completed: props.completed ?? false,
-    user: null, positionFailed: false, resume: false,
+    user: props.user ?? null, positionFailed: props.positionFailed ?? false, resume: false,
     titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
     onStart: () => {}, onSelect: () => {}, onStop: () => {},
     player: null, story: null, settings: null, audioError: "",
@@ -72,16 +72,16 @@ function sessionDocument(props: { active?: boolean; completed?: boolean; ratingL
 }
 const buttonTexts = (document: Document) => [...document.querySelectorAll("button")].map(button => button.textContent);
 
-async function mountSession(props: { active?: boolean; completed?: boolean; ratingLabel?: string; ratingCount?: number | null; reviewable?: boolean; improvable?: boolean; walk?: Route["walk"]; offline?: boolean; resume?: boolean; resumeIndex?: number }) {
+async function mountSession(props: { active?: boolean; completed?: boolean; ratingLabel?: string; ratingCount?: number | null; reviewable?: boolean; improvable?: boolean; walk?: Route["walk"]; offline?: boolean; resume?: boolean; resumeIndex?: number; positionFailed?: boolean; user?: { lat: number; lon: number; accuracyM: number } | null }) {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
   const container = document.createElement("div");
   document.body.append(container);
   const root = createRoot(container);
-  const onRate = vi.fn(), onImprove = vi.fn(), onStart = vi.fn();
+  const onRate = vi.fn(), onImprove = vi.fn(), onStart = vi.fn(), onRetryPosition = vi.fn();
   await act(async () => root.render(createElement(WalkSession, {
     route: props.walk ? { ...route, walk: props.walk } : route, chapters, index: 0, active: props.active ?? false, completed: props.completed ?? false,
-    user: null, positionFailed: false, resume: props.resume ?? false, resumeIndex: props.resumeIndex,
+    user: props.user ?? null, positionFailed: props.positionFailed ?? false, resume: props.resume ?? false, resumeIndex: props.resumeIndex, onRetryPosition,
     titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
     onStart, onSelect: () => {}, onStop: () => {},
     player: null, story: null, settings: createElement("p", null, "настройки"), audioError: "",
@@ -93,8 +93,28 @@ async function mountSession(props: { active?: boolean; completed?: boolean; rati
   const find = (text: string) => [...container.querySelectorAll("button")].find(button => button.textContent === text);
   const click = (element: HTMLElement) => act(async () => element.click());
   const unmount = async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); };
-  return { container, find, click, onRate, onImprove, onStart, unmount };
+  return { container, find, click, onRate, onImprove, onStart, onRetryPosition, unmount };
 }
+
+it("во время прогулки показывает состояние геопозиции и следующую остановку", () => {
+  const pending = sessionDocument({ active: true });
+  expect(pending.querySelector(".walk-session-location")?.textContent).toBe("Определяем положение…");
+  expect(pending.querySelector(".walk-session-following")?.textContent).toBe(`Дальше: ${chapters[1].title}`);
+  const found = sessionDocument({ active: true, user: { lat: 55.75, lon: 37.62, accuracyM: 12 } });
+  expect(found.querySelector(".walk-session-location")?.textContent).toBe("Положение определено");
+  expect(sessionDocument({}).querySelector(".walk-session-following")).toBeNull();
+});
+
+it("при потере геопозиции с последней известной точкой открывает помощь и повторяет попытку", async () => {
+  const session = await mountSession({ active: true, positionFailed: true, user: { lat: 55.75, lon: 37.62, accuracyM: 12 } });
+  const status = session.container.querySelector<HTMLButtonElement>(".walk-session-location--failed")!;
+  expect(status.textContent).toBe("Геопозиции нет");
+  await session.click(status);
+  expect(session.onRetryPosition).toHaveBeenCalledTimes(1);
+  expect(status.getAttribute("aria-expanded")).toBe("true");
+  expect(session.container.querySelector(".walk-session-drawer")?.textContent).toContain("Не удалось определить положение");
+  await session.unmount();
+});
 
 it.each([
   [{ ratingLabel: "★ 4,6 · 12 оценок" }, true],
@@ -333,7 +353,7 @@ async function mountPosition(denied: boolean) {
     player: null, story: null, settings: null, audioError: "",
   })));
   await render(true, null);
-  const button = () => [...container.querySelectorAll<HTMLButtonElement>(".walk-session-tools button")].find(item => item.textContent === "Геопозиции нет");
+  const button = () => container.querySelector<HTMLButtonElement>(".walk-session-location--failed");
   const drawer = () => container.querySelector(".walk-session-drawer");
   const unmount = async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); };
   return { container, render, button, drawer, onRetryPosition, unmount };
@@ -342,10 +362,9 @@ async function mountPosition(denied: boolean) {
 it.each([
   [true, "Сайту запрещён доступ к геопозиции", true],
   [false, "Не удалось определить положение", false],
-])("«Геопозиции нет» стоит рядом с «Остановками» и по нажатию снова запрашивает доступ (запрещён=%s)", async (denied, message, helpOpen) => {
+])("«Геопозиции нет» открывает помощь и снова запрашивает доступ (запрещён=%s)", async (denied, message, helpOpen) => {
   const session = await mountPosition(denied);
-  const tools = [...session.container.querySelectorAll(".walk-session-tools button")].map(item => item.textContent);
-  expect(tools.slice(0, 2)).toEqual([`Остановка 1 из ${chapters.length}`, "Геопозиции нет"]);
+  expect(session.button()?.textContent).toBe("Геопозиции нет");
   expect(session.container.textContent).not.toContain("Геопозиция недоступна");
 
   await act(async () => session.button()!.click());
@@ -364,7 +383,7 @@ it.each([
   // Пришли координаты — подсказка и кнопка исчезают сами.
   await session.render(false, { lat: 55.75, lon: 37.6, accuracyM: 10 });
   expect(session.drawer()).toBeNull();
-  expect(session.button()).toBeUndefined();
+  expect(session.button()).toBeNull();
   await session.unmount();
 });
 

@@ -27,7 +27,7 @@ export function selectedTab(param: string | null, loading: boolean, ownCount: nu
   return ownCount || failed ? "mine" : "top";
 }
 
-export function WalkLibrary() {
+export function WalkLibrary({ mode = "all" }: { mode?: "all" | "mine" }) {
   const { languageTag, locale, path, t } = useI18n();
   const params = useSearchParams();
   const [local, setLocal] = useState<Card[]>([]);
@@ -80,7 +80,7 @@ export function WalkLibrary() {
   }
   const cards = [...account, ...local].sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
   const visible = cards.filter(card => filter === "all" || card.draft);
-  const tab = selectedTab(params.get("tab"), loading, cards.length, Object.keys(errors).length > 0);
+  const tab = mode === "mine" ? "mine" : selectedTab(params.get("tab"), loading, cards.length, Object.keys(errors).length > 0);
   // The top loads lazily on its first open and stays mounted afterwards.
   if (tab === "top" && !topOpened) setTopOpened(true);
   function selectTab(next: Tab, focus = false) {
@@ -100,13 +100,13 @@ export function WalkLibrary() {
     selectTab(next.id, true);
   }
   return <main className="ui-page history-page"><AppHeader />
-    <header className="history-heading"><div><p className="ui-eyebrow">{t("Ваши маршруты")}</p><h1>{t("История прогулок")}</h1><p className="ui-muted">{t("Знакомые места. Новые открытия. Всё, к чему хочется вернуться.")}</p></div></header>
-    <div role="tablist" aria-label={t("Прогулки")} className={styles.tabs}>
+    <header className="history-heading"><div>{mode === "mine" ? <Link className="ui-eyebrow" href={path("/account")}>{t("Профиль")}</Link> : <p className="ui-eyebrow">{t("Ваши маршруты")}</p>}<h1>{t(mode === "mine" ? "Мои прогулки" : "История прогулок")}</h1><p className="ui-muted">{t(mode === "mine" ? "Сохранённые маршруты и черновики" : "Знакомые места. Новые открытия. Всё, к чему хочется вернуться.")}</p></div></header>
+    {mode === "all" ? <div role="tablist" aria-label={t("Прогулки")} className={styles.tabs}>
       {TABS.map(item => <button key={item.id} ref={element => { tabRefs.current[item.id] = element; }} type="button" role="tab" id={`history-tab-${item.id}`}
         aria-selected={tab === item.id} aria-controls={`history-panel-${item.id}`} tabIndex={tab === item.id || (tab === null && item.id === "mine") ? 0 : -1}
         className={styles.tab} onClick={() => selectTab(item.id)} onKeyDown={tabKeys}>{t(item.title)}</button>)}
-    </div>
-    <section role="tabpanel" id="history-panel-mine" aria-labelledby="history-tab-mine" hidden={tab === "top"}>
+    </div> : null}
+    <section role={mode === "all" ? "tabpanel" : undefined} id="history-panel-mine" aria-labelledby={mode === "all" ? "history-tab-mine" : undefined} hidden={tab === "top"}>
       <div className={styles.toolbar}><div className="history-filters"><button aria-pressed={filter === "all"} onClick={() => setFilter("all")}>{t("Все прогулки")}</button><button aria-pressed={filter === "draft"} onClick={() => setFilter("draft")}>{t("Черновики")}</button></div><Link href={path("/?walk=create")} className="ui-button">{t("Новая прогулка")} <span aria-hidden="true">＋</span></Link></div>
       {Object.entries(errors).map(([key, message]) => <p key={key} role="alert" className="ui-notice">{message} <button className="history-retry" onClick={() => { setErrors({}); setLoading(true); setAttempt(value => value + 1); }}>{t("Повторить")}</button></p>)}
       {loading ? <p role="status" className="ui-muted">{t("Загружаем ваши прогулки…")}</p> : <>
@@ -128,12 +128,12 @@ export function WalkLibrary() {
         </div></article></li>)}</ul> : <section className="history-empty"><span aria-hidden="true">↗</span><h2>{t(filter === "draft" ? "Нет незаконченных прогулок" : "Начните свою историю города")}</h2><p>{t("Выберите дом на карте или задайте начало маршрута.")}{" "}<br />{t("Сохранённые прогулки появятся здесь.")}</p><Link className="ui-button" href={path("/?walk=create")}>{t("Создать прогулку")}</Link></section>}
         {cursor && <button className="ui-button secondary" disabled={busy !== null} onClick={() => void more()}>{t("Показать ещё")}</button>}
         {notice && <p className="ui-notice" role="status">{notice}</p>}
-        {guest && <aside className="history-signin"><div><h2>{t("Ваши прогулки — с вами")}</h2><p>{t("Войдите, чтобы открывать их на других устройствах и делиться ссылками.")}</p></div><Link className="ui-button quiet" href={path(`/login?returnTo=${encodeURIComponent(path("/history"))}`)}>{t("Войти")}</Link></aside>}
+        {guest && <aside className="history-signin"><div><h2>{t("Ваши прогулки — с вами")}</h2><p>{t("Войдите, чтобы открывать их на других устройствах и делиться ссылками.")}</p></div><Link className="ui-button quiet" href={path(`/login?returnTo=${encodeURIComponent(path(mode === "mine" ? "/account/walks" : "/history"))}`)}>{t("Войти")}</Link></aside>}
       </>}
     </section>
-    <section role="tabpanel" id="history-panel-top" aria-labelledby="history-tab-top" hidden={tab !== "top"}>
+    {mode === "all" ? <section role="tabpanel" id="history-panel-top" aria-labelledby="history-tab-top" hidden={tab !== "top"}>
       {topOpened && <TopWalks />}
-    </section>
+    </section> : null}
     <AccessDialog card={accessCard} onClose={() => setAccessCard(null)} onSaved={walk => { if (accessCard) void accessSaved(accessCard, walk); }} />
   </main>;
 }

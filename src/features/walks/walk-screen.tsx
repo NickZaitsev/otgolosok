@@ -132,5 +132,5 @@ export function WalkScreen() {
 
 function WalkError({ message }: { message: string }) {
   const { path, t } = useI18n();
-  return <main className="walk-screen"><p className="walk-warning" role="alert">{message}</p><a href={path("/history")}>{t("Вернуться к прогулкам")}</a></main>;
+  return <main className="walk-screen"><p className="walk-warning" role="alert">{message}</p><a href={path("/account/walks")}>{t("Вернуться к прогулкам")}</a></main>;
 }

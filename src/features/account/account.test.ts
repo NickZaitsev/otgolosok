@@ -51,8 +51,8 @@ afterEach(async () => {
 });
 
 it.each([
-  ["en", "My walks", "Account settings", "/en/history"],
-  ["zh", "我的漫步", "账户设置", "/zh/history"],
+  ["en", "My walks", "Account settings", "/en/account/walks"],
+  ["zh", "我的漫步", "账户设置", "/zh/account/walks"],
 ] as const)("renders account navigation and settings in %s", async (locale, walks, settings, href) => {
   await mount(locale);
   const history = [...container.querySelectorAll("a")].find(link => link.textContent?.includes(walks));

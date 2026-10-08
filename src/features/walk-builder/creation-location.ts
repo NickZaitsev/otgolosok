@@ -15,7 +15,7 @@ export function creationLocation(search: URLSearchParams): string | null {
   const creating = ["new", "resume", "address", "lat", "lon"].some(key => search.has(key));
   if (ids.length > 1 || (ids.length && creating) || (search.has("new") && search.has("resume"))) return null;
   if (search.get("edit") === "1" && (ids.length !== 1 || !["local", "id"].includes(ids[0]))) return null;
-  if (!creating && search.get("edit") !== "1") return ids.length ? null : "/history";
+  if (!creating && search.get("edit") !== "1") return ids.length ? null : "/account/walks";
   const result = new URLSearchParams(search);
   result.set("walk", "create");
   return `/?${result}`;
