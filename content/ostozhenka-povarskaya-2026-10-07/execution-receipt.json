@@ -1,0 +1,87 @@
+{
+  "checkedAt": "2026-10-08T07:38:39.007837+00:00",
+  "storiesImported": 25,
+  "importsIdempotent": true,
+  "sourceCardsAndAudioUnchanged": true,
+  "existingPublicWalksUnchanged": true,
+  "audioQueueJobs": 25,
+  "audioJobsSucceeded": 25,
+  "newWalksCreated": 2,
+  "visibility": "shared",
+  "catalogPublications": 0,
+  "voiceConfirmed": {
+    "id": "9ivxhQ6xIsHd6R3Xc635",
+    "label": "Отголосок2 (ru)",
+    "language": "ru"
+  },
+  "fallbackAccountVoicesConfirmed": [
+    {
+      "keyPosition": 1,
+      "configuredVoiceId": "9ivxhQ6xIsHd6R3Xc635",
+      "voice": {
+        "id": "9ivxhQ6xIsHd6R3Xc635",
+        "label": "Отголосок2 (ru)",
+        "language": "ru"
+      },
+      "error": null
+    },
+    {
+      "keyPosition": 2,
+      "configuredVoiceId": "JVYtLnrrrMG4dcGbtdAw",
+      "voice": {
+        "id": "JVYtLnrrrMG4dcGbtdAw",
+        "label": "Отголосок2 (ru)",
+        "language": "ru"
+      },
+      "error": null
+    },
+    {
+      "keyPosition": 3,
+      "configuredVoiceId": "8Hp7MfQf2HGTKtrxXvVj",
+      "voice": {
+        "id": "8Hp7MfQf2HGTKtrxXvVj",
+        "label": "Отголосок2 (ru)",
+        "language": "ru"
+      },
+      "error": null
+    }
+  ],
+  "model": "eleven_v4",
+  "ssh": {
+    "existingAuthorizedConnectionUsable": true,
+    "freshKeyConnectionVerified": true,
+    "agentSocketResolvedFromLaunchd": true
+  },
+  "walks": [
+    {
+      "checkedAt": "2026-10-08T07:36:26.093Z",
+      "id": "11783317-2e09-53f1-a725-79c445316b15",
+      "title": "Остоженка: искусство и частная жизнь",
+      "revision": 1,
+      "visibility": "shared",
+      "shareUrl": "https://otgolosok.online/walk?share=524711ec-1ccc-494f-abf8-e6bb82e8f8ac",
+      "physicalStops": 12,
+      "distanceM": 3117,
+      "walkingMinutes": 39,
+      "audioDurationSec": 1114.68,
+      "measuredDurationSec": 1114,
+      "fieldChecked": false,
+      "catalogPublished": false
+    },
+    {
+      "checkedAt": "2026-10-08T07:36:26.101Z",
+      "id": "6ba0c14c-67f9-50e7-9d2f-19eb38fe760e",
+      "title": "Поварская: литература, музыка и особняки",
+      "revision": 1,
+      "visibility": "shared",
+      "shareUrl": "https://otgolosok.online/walk?share=e7f37feb-1f3b-4241-ba79-54d2c1fe7146",
+      "physicalStops": 13,
+      "distanceM": 3569,
+      "walkingMinutes": 44,
+      "audioDurationSec": 1172.664,
+      "measuredDurationSec": 1171.92,
+      "fieldChecked": false,
+      "catalogPublished": false
+    }
+  ]
+}
