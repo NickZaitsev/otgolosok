@@ -1,4 +1,9 @@
 import { test, expect } from "./support/test";
+import { TERMS_VERSION } from "../legal/publication.mjs";
+
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/auth/providers", route => route.fulfill({json: {telegram: false}}));
+});
 
 for (const mode of ["sign-in", "sign-up"] as const) {
   test(`авторизация ${mode}: форма отправляется и возвращает пользователя на карту`, async ({ page }) => {
@@ -7,7 +12,7 @@ for (const mode of ["sign-in", "sign-up"] as const) {
     await page.route("**/api/auth/session", route => route.fulfill({ json: { user: authenticated ? user : null } }));
     await page.route(`**/api/auth/${mode}/email`, async route => {
       expect(route.request().postDataJSON()).toEqual({
-        ...(mode === "sign-up" ? { name: user.name } : {}),
+        ...(mode === "sign-up" ? { name: user.name, termsAccepted: true, termsVersion: TERMS_VERSION } : {}),
         email: user.email,
         password: "test-password-123",
       });
@@ -18,6 +23,7 @@ for (const mode of ["sign-in", "sign-up"] as const) {
     if (mode === "sign-up") {
       await page.getByRole("button", { name: "Нет аккаунта? Зарегистрироваться" }).click();
       await page.getByLabel("Имя", { exact: true }).fill(user.name);
+      await page.getByRole("checkbox", { name: "Я принимаю условия использования." }).check();
     }
     await page.getByLabel("Email", { exact: true }).fill(user.email);
     await page.getByLabel("Пароль", { exact: true }).fill("test-password-123");
@@ -33,6 +39,7 @@ test("ошибка регистрации сохраняет форму и по�
   await page.goto("/login");
   await page.getByRole("button", { name: "Нет аккаунта? Зарегистрироваться" }).click();
   await page.getByLabel("Имя", { exact: true }).fill("Тест");
+  await page.getByRole("checkbox", { name: "Я принимаю условия использования." }).check();
   await page.getByLabel("Email", { exact: true }).fill("release@example.test");
   await page.getByLabel("Пароль", { exact: true }).fill("test-password-123");
   await page.getByRole("button", { name: "Создать аккаунт", exact: true }).click();

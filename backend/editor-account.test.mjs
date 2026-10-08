@@ -5,6 +5,7 @@ import { access, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createAuth } from "./auth.mjs";
+import { TERMS_VERSION } from "../legal/publication.mjs";
 import { ensureEditor } from "./editor-account.mjs";
 import { createApp } from "./server.mjs";
 import { createStore } from "./store.mjs";
@@ -12,7 +13,7 @@ import { createStore } from "./store.mjs";
 async function fixture(t) {
   const directory = await mkdtemp(join(tmpdir(), "otg-editor-"));
   const databasePath = join(directory, "auth.sqlite");
-  const runtime = await createAuth({ databasePath, baseURL: "http://localhost", production: false });
+  const runtime = await createAuth({ databasePath, baseURL: "http://localhost", production: false, legalReady: true });
   t.after(async () => { runtime.close(); await rm(directory, { recursive: true, force: true }); });
   return { ...runtime, databasePath, directory };
 }
@@ -56,7 +57,7 @@ test("editor command creates a new account that can sign in with editor access",
 
 test("existing users gain editor rights without changing their password, identity or sessions", async t => {
   const f = await fixture(t), password = "original-password";
-  const { user } = await f.auth.api.signUpEmail({ body: { name: "Имя пользователя", email: "user@example.com", password } });
+  const { user } = await f.auth.api.signUpEmail({ body: /** @type {any} */ ({ name: "Имя пользователя", email: "user@example.com", password, termsAccepted: true, termsVersion: TERMS_VERSION }) });
   const before = f.database.prepare("SELECT * FROM account WHERE userId=?").get(user.id);
   const sessions = f.database.prepare("SELECT count(*) n FROM session").get().n;
   for (let i = 0; i < 2; i++) {
@@ -77,7 +78,7 @@ test("existing users gain editor rights without changing their password, identit
 
 test("an unverified pre-registered email cannot gain editor rights without its current password", async t => {
   const f = await fixture(t);
-  const { user } = await f.auth.api.signUpEmail({ body: { name: "Existing", email: "admin@example.com", password: "existing-password" } });
+  const { user } = await f.auth.api.signUpEmail({ body: /** @type {any} */ ({ name: "Existing", email: "admin@example.com", password: "existing-password", termsAccepted: true, termsVersion: TERMS_VERSION }) });
   const before = f.database.prepare("SELECT * FROM user WHERE id=?").get(user.id);
   const denied = await command([user.email, f.databasePath, "--password-stdin"], "operator-password");
   assert.equal(denied.code, 1);

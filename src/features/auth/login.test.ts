@@ -5,7 +5,9 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { I18nProvider } from "@/lib/i18n/provider";
 import type { Locale } from "@/lib/i18n/locale";
 import { Login } from "./login";
-import { getAuthProviders, getSession, getTelegramAuthorizationUrl, signInWithPassword } from "./client";
+import { getAuthProviders, getSession, getTelegramAuthorizationUrl, signInWithPassword, signUpWithPassword } from "./client";
+
+vi.mock("../../../legal/publication.mjs", () => ({ LEGAL_READY: true }));
 
 vi.mock("../navigation/app-header", () => ({ AppHeader: () => null }));
 vi.mock("./client", () => ({
@@ -106,8 +108,54 @@ it("passes a preserved return target to Telegram and navigates only to the check
   vi.stubGlobal("location", { origin: "https://otgolosok.online", search: "?returnTo=%2Fwalk%3Fid%3D42", replace: vi.fn() });
   await mount("ru");
   await act(async () => container.querySelector<HTMLButtonElement>(".telegram-button")!.click());
-  expect(getTelegramAuthorizationUrl).toHaveBeenCalledWith("/walk?id=42", "ru", "https://otgolosok.online");
+  expect(getTelegramAuthorizationUrl).toHaveBeenCalledWith("/walk?id=42", "ru", "https://otgolosok.online", false);
   expect(location.replace).toHaveBeenCalledWith("https://oauth.telegram.org/auth?bot_id=1");
+});
+
+it("registration requires a separate unchecked acceptance for both Telegram and email", async () => {
+  await mount("ru");
+  await act(async () => container.querySelector<HTMLButtonElement>(".text-button")!.click());
+  const checkbox = container.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+  const telegram = container.querySelector<HTMLButtonElement>(".telegram-button")!;
+  const emailButton = container.querySelector<HTMLButtonElement>(".account-button")!;
+  expect(checkbox.checked).toBe(false);
+  expect(telegram.disabled).toBe(true);
+  expect(emailButton.disabled).toBe(true);
+  await act(async () => checkbox.click());
+  expect(telegram.disabled).toBe(false);
+  expect(emailButton.disabled).toBe(false);
+  await act(async () => telegram.click());
+  expect(getTelegramAuthorizationUrl).toHaveBeenCalledWith(null, "ru", "https://otgolosok.online", true);
+  expect(location.replace).toHaveBeenCalledWith("https://oauth.telegram.org/auth?bot_id=1");
+});
+
+it("sends explicit acceptance with password registration", async () => {
+  vi.mocked(signUpWithPassword).mockResolvedValue({});
+  await mount("ru");
+  await act(async () => container.querySelector<HTMLButtonElement>(".text-button")!.click());
+  await act(async () => {
+    for (const [selector, value] of [['input[autocomplete="name"]', "Анна"], ['input[type="email"]', "anna@example.test"], ['input[type="password"]', "correct-length"]]) {
+      const input = container.querySelector<HTMLInputElement>(selector)!;
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, value);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();
+  });
+  await act(async () => container.querySelector<HTMLFormElement>("form")!.requestSubmit());
+  expect(signUpWithPassword).toHaveBeenCalledWith("Анна", "anna@example.test", "correct-length", true);
+  expect(location.replace).toHaveBeenCalledWith("/account");
+});
+
+it("a new Telegram user without acceptance gets registration while preserving the return target", async () => {
+  vi.stubGlobal("location", { origin: "https://otgolosok.online", search: "?telegram_error=1&error=TERMS_REQUIRED&returnTo=%2Fwalk%3Fid%3D42", replace: vi.fn() });
+  await mount("ru");
+  expect(container.querySelector("h1")?.textContent).toBe("Регистрация");
+  expect(container.querySelector(".form-error")?.textContent).toBe("Для регистрации примите актуальные условия использования.");
+  expect(container.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked).toBe(false);
+  await act(async () => container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+  await act(async () => container.querySelector<HTMLButtonElement>(".telegram-button")!.click());
+  expect(getTelegramAuthorizationUrl).toHaveBeenCalledWith("/walk?id=42", "ru", "https://otgolosok.online", true);
+  expect(container.textContent).not.toContain("TERMS_REQUIRED");
 });
 
 it.each([

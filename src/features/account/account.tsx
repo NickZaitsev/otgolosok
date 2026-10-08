@@ -13,6 +13,7 @@ import "./account.css";
 import { toUserMessage } from "@/lib/errors/user-message";
 import { localizedPath } from "@/lib/i18n/locale";
 import { useI18n } from "@/lib/i18n/provider";
+import { LegalLinks } from "../legal/legal-links";
 
 type RequestItem = { jobId: string; operation: string; createdAt: string };
 type Favorite = { type: string; id: string; createdAt: string; title?: string; href?: string | null };
@@ -148,5 +149,6 @@ export function Account() {
       {confirmAction && <form className="profile-confirm" onSubmit={confirm}><h3>{t(confirmAction === "delete" ? "Удалить аккаунт навсегда?" : "Подтвердите выход")}</h3><p>{t(confirmAction === "delete" ? "Прогулки в аккаунте и избранное будут удалены без возможности восстановления. Локальные черновики останутся." : "Приватные материалы для прослушивания без сети будут удалены с этого устройства. Прогулки в аккаунте сохранятся.")}</p>{confirmAction === "delete" && user.authMethod !== "telegram" && <label className="ui-field">{t("Текущий пароль")}<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128} /></label>}<div className="ui-row">{confirmAction === "delete" && user.authMethod === "telegram" && user.requiresReauthentication ? <button type="button" className="ui-button" disabled={busy !== null} onClick={()=>void reauthenticateTelegram()}>{t(busy === "settings" ? "Открываем Telegram…" : "Подтвердить в Telegram")}</button> : <button className="ui-button danger" disabled={busy !== null}>{t(confirmAction === "delete" ? "Удалить навсегда" : "Подтвердить выход")}</button>}<button type="button" className="ui-button secondary" disabled={busy !== null} onClick={() => { setConfirmAction(null); setPassword(""); }}>{t("Отмена")}</button></div></form>}
       </section>
     </>}
+    <LegalLinks />
   </main>;
 }

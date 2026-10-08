@@ -42,8 +42,18 @@ it("waits for a pending offline sign-out before starting Telegram OAuth", async 
     callbackURL: "/en/walk?id=42",
     errorCallbackURL: "/en/login?telegram_error=1&returnTo=%2Fen%2Fwalk%3Fid%3D42",
     disableRedirect: true,
+    termsAccepted: false,
+    termsVersion: "2026-10-08",
   });
   expect(localStorage.getItem("otgolosok:auth:offline-logout")).toBeNull();
+});
+
+it("passes explicit terms acceptance only when the user selected it", async () => {
+  const fetchMock = vi.fn().mockResolvedValue(ok({ url: "https://oauth.telegram.org/auth" }));
+  vi.stubGlobal("fetch", fetchMock);
+  const { getTelegramAuthorizationUrl } = await import("./client");
+  await getTelegramAuthorizationUrl("/account", "ru", "https://otgolosok.online", true);
+  expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({termsAccepted: true, termsVersion: "2026-10-08"});
 });
 
 it("does not erase a newer offline sign-out marker while an earlier revoke is in flight", async () => {

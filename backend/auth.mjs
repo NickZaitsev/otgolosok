@@ -1,9 +1,10 @@
 import { DatabaseSync } from "node:sqlite";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { betterAuth } from "better-auth";
-import { createAuthMiddleware, APIError } from "better-auth/api";
+import { createAuthMiddleware, APIError, addOAuthServerContext, getOAuthState } from "better-auth/api";
 import { createTelegramAuthPlugin, telegramEmail } from "./telegram-auth.mjs";
 import { getMigrations } from "better-auth/db/migration";
+import { LEGAL_READY, TERMS_VERSION } from "../legal/publication.mjs";
 
 function openAuthDatabase(path) {
   const database = new DatabaseSync(path, { timeout: 5000 });
@@ -11,11 +12,17 @@ function openAuthDatabase(path) {
   return database;
 }
 
-/** @param {{databasePath: string, baseURL: string, secret?: string, production?: boolean, telegram?: Parameters<typeof createTelegramAuthPlugin>[0], telegramDependencies?: Parameters<typeof createTelegramAuthPlugin>[1]}} options */
-export async function createAuth({ databasePath, baseURL, secret, production = process.env.NODE_ENV === "production", telegram = null, telegramDependencies = {} }) {
+/** @param {{databasePath: string, baseURL: string, secret?: string, production?: boolean, legalReady?: boolean, telegram?: Parameters<typeof createTelegramAuthPlugin>[0], telegramDependencies?: Parameters<typeof createTelegramAuthPlugin>[1]}} options */
+export async function createAuth({ databasePath, baseURL, secret, production = process.env.NODE_ENV === "production", telegram = null, telegramDependencies = {}, legalReady = LEGAL_READY }) {
   if (!baseURL) throw new Error("APP_ORIGIN is required for authentication");
   if (production && (!secret || secret.length < 32)) throw new Error("BETTER_AUTH_SECRET must contain at least 32 characters");
   const database = openAuthDatabase(databasePath);
+  // ID tokens are verified by the provider before persistence. They are not
+  // needed after login, and Better Auth only encrypts access/refresh tokens.
+  const discardTelegramIdToken = async (account, ctx) => ({ data:
+    account.providerId === "telegram" || (ctx?.path === "/callback/:id" && ctx.params?.id === "telegram")
+      ? { ...account, idToken: null } : account,
+  });
   /** @satisfies {import("better-auth").BetterAuthOptions} */
   const options = {
     appName: "Отголосок", baseURL, basePath: "/api/auth", database,
@@ -28,14 +35,49 @@ export async function createAuth({ databasePath, baseURL, secret, production = p
       if (ctx.path === "/sign-in/social" && (ctx.headers?.get("origin") !== new URL(baseURL).origin || ctx.headers?.get("sec-fetch-site") === "cross-site")) {
         throw new APIError("FORBIDDEN", { message: "Вход возможен только с сайта Отголоска." });
       }
+      const input = /** @type {Record<string, unknown>} */ (ctx.body);
+      if (ctx.path === "/sign-in/social" && input?.provider === "telegram") {
+        // Client additionalData is untrusted. Better Auth embeds serverContext in
+        // its authenticated, single-use OAuth state and restores it on callback.
+        if (legalReady && input.termsAccepted === true && input.termsVersion === TERMS_VERSION) {
+          await addOAuthServerContext({ termsAcceptance: { version: TERMS_VERSION, acceptedAt: Date.now() } });
+        }
+      }
+      if (ctx.path !== "/sign-up/email") return;
+      if (!legalReady) throw new APIError("SERVICE_UNAVAILABLE", { code: "LEGAL_UNAVAILABLE", message: "Регистрация временно недоступна." });
+      if (input?.termsAccepted !== true || input?.termsVersion !== TERMS_VERSION) {
+        throw new APIError("BAD_REQUEST", { code: "TERMS_REQUIRED", message: "Для регистрации примите актуальные условия использования." });
+      }
+      // Evidence fields are assigned by the server, never by an API client.
+      delete input.termsVersion;
+      delete input.termsAcceptedAt;
     }) },
-    databaseHooks: { session: { create: { before: async (session, ctx) => ({ data: {
+    databaseHooks: { user: { create: { before: async (user, ctx) => {
+      if (ctx?.path === "/sign-up/email") return { data: { ...user, termsVersion: TERMS_VERSION, termsAcceptedAt: new Date() } };
+      if (ctx?.path !== "/callback/:id" || ctx.params?.id !== "telegram") return { data: user };
+      if (!legalReady) throw new APIError("SERVICE_UNAVAILABLE", { code: "LEGAL_UNAVAILABLE", message: "Регистрация временно недоступна." });
+      const evidence = /** @type {{version?: unknown, acceptedAt?: unknown} | undefined} */ ((await getOAuthState())?.serverContext?.termsAcceptance);
+      // The authenticated state already proves who assigned this timestamp.
+      // Comparing it to a later wall clock would reject valid flows when the
+      // system clock moves backwards between initiation and callback.
+      if (evidence?.version !== TERMS_VERSION || typeof evidence.acceptedAt !== "number" || !Number.isSafeInteger(evidence.acceptedAt) || evidence.acceptedAt <= 0 || evidence.acceptedAt > 8.64e15) {
+        throw new APIError("BAD_REQUEST", { code: "TERMS_REQUIRED", message: "Для регистрации примите актуальные условия использования." });
+      }
+      return { data: { ...user, termsVersion: TERMS_VERSION, termsAcceptedAt: new Date(evidence.acceptedAt) } };
+    } } }, session: { create: { before: async (session, ctx) => ({ data: {
       ...session,
       authProvider: ctx?.path === "/callback/:id" && ctx.params?.id === "telegram" ? "telegram" : "password",
-    } }) } } },
+    } }) } }, account: {
+      create: { before: discardTelegramIdToken },
+      update: { before: discardTelegramIdToken },
+    } },
     emailAndPassword: { enabled: true, minPasswordLength: 10, maxPasswordLength: 128 },
     user: {
-      additionalFields: { role: { type: "string", required: false, defaultValue: "user", input: false } },
+      additionalFields: {
+        role: { type: "string", required: false, defaultValue: "user", input: false },
+        termsVersion: { type: "string", required: false, input: false, returned: false },
+        termsAcceptedAt: { type: "date", required: false, input: false, returned: false },
+      },
       validateUserInfo: ({ user, source }) => {
         const reserved = typeof user.email === "string" && user.email.toLowerCase().endsWith("@users.telegram.invalid");
         if (!reserved) return;
@@ -64,6 +106,7 @@ export async function createAuth({ databasePath, baseURL, secret, production = p
   await runMigrations();
   // A Telegram identity cannot belong to two users, including simultaneous callbacks.
   database.exec("CREATE UNIQUE INDEX IF NOT EXISTS account_telegram_identity ON account(providerId,accountId) WHERE providerId='telegram'");
+  database.exec("UPDATE account SET idToken=NULL WHERE providerId='telegram' AND idToken IS NOT NULL");
   const auth = betterAuth(options);
   // Better Auth keeps transactions open across awaits on its connection (sign-up
   // hashes the password inside one). Account data gets a separate connection so
