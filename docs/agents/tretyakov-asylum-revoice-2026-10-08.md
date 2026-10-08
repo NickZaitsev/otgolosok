@@ -51,5 +51,9 @@
 Полный `pnpm check` остановился на `react-hooks/set-state-in-effect` в
 параллельно изменяемой `src/features/auth/login.tsx`. Отдельный backend-прогон
 также выявил сбой теста Telegram reauthentication в параллельных изменениях
-`backend/auth-telegram.test.mjs`. Эти файлы не входят в переозвучку; успешный
-полный прогон текущего рабочего дерева не заявляется.
+`backend/auth-telegram.test.mjs`. Эти файлы не входят в переозвучку.
+
+После завершения параллельных исправлений повторные `pnpm lint`,
+`pnpm typecheck`, `pnpm test` и `pnpm test:py` прошли: 2015 клиентских
+и 1067 backend-тестов, 26 Python-тестов и 78 подтестов. Логи повторной проверки
+сохранены рядом с [F5-аудитом](garden-ring-f5-address-audit-2026-10-08.md).
