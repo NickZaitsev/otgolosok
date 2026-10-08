@@ -37,7 +37,8 @@ it.each([
   expect(map.getZoom()).toBe(zoom);
 });
 
-it("the zoom buttons still step one whole level", () => {
-  map.zoomOut();
+it("keyboard users can change scale without zoom buttons", () => {
+  element.focus();
+  document.dispatchEvent(new KeyboardEvent("keydown", { key: "-", keyCode: 189, bubbles: true }));
   expect(map.getZoom()).toBe(13);
 });

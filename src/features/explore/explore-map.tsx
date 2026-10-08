@@ -2,10 +2,8 @@
 
 import {
   useEffect,
-  useImperativeHandle,
   useRef,
   useState,
-  type Ref,
 } from "react";
 import type * as Leaflet from "leaflet";
 import { foodMarkerSvg } from "../food/food-marker";
@@ -38,7 +36,7 @@ export const MAP_MIN_ZOOM = 10;
 /**
  * Fractional zoom for the wheel and pinch: with Leaflet's default snap of 1 every touchpad tick,
  * however small, jumped a whole level after the wheel debounce. A mouse notch still moves about
- * one level (wheelPxPerZoomLevel compensates for the finer snap), and the +/− buttons keep zoomDelta 1.
+ * one level (wheelPxPerZoomLevel compensates for the finer snap).
  */
 export const MAP_ZOOM_OPTIONS = { zoomSnap: 0.25, zoomDelta: 1, wheelPxPerZoomLevel: 40 } as const;
 
@@ -107,10 +105,8 @@ export type { MapFocus };
 export type MapViewState = {
   current: { center: Coordinates; zoom: number; focus: MapFocus | null } | null;
 };
-export type MapHandle = { zoomIn(): void; zoomOut(): void };
 /** Points the map should show; keepUserView makes it a refinement that yields to a manual pan or zoom. */
 export type MapFitTarget = { points: Coordinates[]; keepUserView: boolean };
-export type ZoomLimits = { canZoomIn: boolean; canZoomOut: boolean };
 export type ExploreMapProps = {
   items: MapItem[];
   selectedId?: string;
@@ -132,9 +128,7 @@ export type ExploreMapProps = {
   /** The part of the map no panel covers: focus and route are kept inside it. */
   insets?: MapInsets;
   onViewport?: (area: MapViewport) => void;
-  onZoomLimits?: (limits: ZoomLimits) => void;
   onStatus?: (status: MapStatus) => void;
-  ref?: Ref<MapHandle>;
 };
 
 const MARKER_CLASS: Record<MarkerKind, string> = {
@@ -197,9 +191,7 @@ export function ExploreMap({
   viewState,
   insets = NO_INSETS,
   onViewport,
-  onZoomLimits,
   onStatus,
-  ref,
 }: ExploreMapProps) {
   const { locale, t } = useI18n();
   const container = useRef<HTMLDivElement>(null);
@@ -230,22 +222,14 @@ export function ExploreMap({
   } | null>(null);
   // Whether the current view target is the whole route (fitGeometry), not a leg or a focus.
   const routeFitted = useRef(false);
-  const handlers = useRef({ onSelect, onPoint, onZoomLimits, onViewport, selectedId });
+  const handlers = useRef({ onSelect, onPoint, onViewport, selectedId });
   const appliedFocus = useRef<Coordinates | null>(null);
   const [ready, setReady] = useState(false);
   const [tileError, setTileError] = useState(false);
   const [mapError, setMapError] = useState(false);
   useEffect(() => {
-    handlers.current = { onSelect, onPoint, onZoomLimits, onViewport, selectedId };
-  }, [onSelect, onPoint, onZoomLimits, onViewport, selectedId]);
-  useImperativeHandle(
-    ref,
-    () => ({
-      zoomIn: () => runtime.current?.map.zoomIn(),
-      zoomOut: () => runtime.current?.map.zoomOut(),
-    }),
-    [],
-  );
+    handlers.current = { onSelect, onPoint, onViewport, selectedId };
+  }, [onSelect, onPoint, onViewport, selectedId]);
   useEffect(() => {
     onStatus?.({
       phase: mapError ? "failed" : ready ? "ready" : "loading",
@@ -277,6 +261,9 @@ export function ExploreMap({
         // Zoom immediately so switching tabs mid-zoom cannot touch a removed map.
         const map = L.map(container.current, {
           zoomControl: false,
+          scrollWheelZoom: true,
+          touchZoom: true,
+          keyboard: true,
           attributionControl: false,
           zoomAnimation: false,
           fadeAnimation: !reduced,
@@ -339,13 +326,6 @@ export function ExploreMap({
             lon: event.latlng.lng,
           }),
         );
-        const limits = () =>
-          handlers.current.onZoomLimits?.({
-            canZoomIn: map.getZoom() < map.getMaxZoom(),
-            canZoomOut: map.getZoom() > map.getMinZoom(),
-          });
-        map.on("zoomend", limits);
-        limits();
         // Route and position colours are tokens; Leaflet draws SVG attributes, so they are read once here.
         const style = getComputedStyle(container.current);
         const token = (name: string) => style.getPropertyValue(name).trim();

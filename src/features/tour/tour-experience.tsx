@@ -41,7 +41,6 @@ import { orientWalk, type WalkDirection } from "./walk-direction";
 import { useWalkDirection } from "./use-walk-direction";
 import type { FoodPlace } from "../food/types";
 import { useI18n } from "@/lib/i18n/provider";
-import { LanguageSwitcher } from "@/lib/i18n/language-switcher";
 
 export type AddFood = (place: FoodPlace, signal: AbortSignal) => Promise<string>;
 
@@ -401,7 +400,6 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
           <BrandMark />
         </Link>
         <p className="privacy-note"><i aria-hidden="true" /> {t("Координаты остаются на устройстве")}</p>
-        <LanguageSwitcher compact />
       </header> : null}
 
       {universal && reviewTarget ? <ReviewDialog reviews={reviews} open={rateOpen} onClose={() => setRateOpen(false)} walkTitle={route.title.trim() || t("Ваш маршрут")} /> : null}

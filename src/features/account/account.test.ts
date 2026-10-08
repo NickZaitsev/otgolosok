@@ -58,6 +58,7 @@ it.each([
   const history = [...container.querySelectorAll("a")].find(link => link.textContent?.includes(walks));
   expect(history?.getAttribute("href")).toBe(href);
   expect(container.textContent).toContain(settings);
+  expect(container.querySelector(".profile-settings select[aria-label]")?.getAttribute("aria-label")).toBe(locale === "en" ? "Interface language" : "界面语言");
   expect(container.textContent).toContain(locale === "en" ? "Your favorite stories and walks will appear here." : "您收藏的故事和漫步路线会显示在这里。");
 });
 
@@ -74,6 +75,13 @@ it.each([
   expect(alert?.textContent).toContain(message);
   expect(alert?.querySelector("button")?.textContent).toBe(retry);
   expect(container.textContent).toContain("Anna");
+});
+
+it("keeps language selection available when the profile cannot load", async () => {
+  vi.mocked(getSession).mockRejectedValue(new TypeError("Failed to fetch"));
+  await mount("ru");
+  expect(container.querySelector(".profile-settings select[aria-label='Язык интерфейса']")).not.toBeNull();
+  expect(container.querySelector("[role=alert]")?.textContent).toContain("Нет связи с сервером");
 });
 
 it("shows Telegram identity and deletes a freshly authenticated Telegram account only after confirmation", async () => {

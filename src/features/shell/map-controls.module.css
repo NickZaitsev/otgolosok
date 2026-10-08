@@ -9,8 +9,7 @@
   pointer-events: auto;
 }
 
-.button,
-.zoomButton {
+.button {
   display: grid;
   place-items: center;
   flex: none;
@@ -20,53 +19,27 @@
   color: var(--map-green);
   background: var(--surface-island);
   border: 0;
+  border-radius: 50%;
+  box-shadow: var(--shadow-control);
   font: inherit;
   cursor: pointer;
 }
 
-.button {
-  border-radius: 50%;
-  box-shadow: var(--shadow-control);
-}
-
-.button:disabled,
-.zoomButton:disabled {
+.button:disabled {
   cursor: default;
   opacity: 0.5;
 }
 
-.button:focus-visible,
-.zoomButton:focus-visible {
+.button:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
 
-.button svg,
-.zoomButton svg {
+.button svg {
   width: 1.5rem;
   height: 1.5rem;
   fill: none;
   stroke: currentcolor;
   stroke-width: 1.8;
   stroke-linecap: round;
-}
-
-.zoom {
-  display: flex;
-  overflow: hidden;
-  border-radius: var(--radius-pill);
-  box-shadow: var(--shadow-control);
-}
-
-.zoomButton + .zoomButton {
-  border-left: 1px solid var(--border-island);
-}
-
-.zoomButton:focus-visible {
-  outline-offset: -3px;
-}
-
-/* A 2px stroke centred on the 24px grid lands on whole pixels; 1.8 smears into a font-like glyph. */
-.zoomButton svg {
-  stroke-width: 2;
 }

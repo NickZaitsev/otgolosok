@@ -50,6 +50,7 @@ it.each([
 ] as const)("renders the login UI in %s", async (locale, heading, password, switchLabel) => {
   await mount(locale);
   expect(container.querySelector("h1")?.textContent).toBe(heading);
+  expect(container.querySelector(".auth-language select[aria-label]")?.getAttribute("aria-label")).toBe(locale === "en" ? "Interface language" : "界面语言");
   expect(container.textContent).toContain(password);
   expect(container.querySelector(".text-button")?.textContent).toBe(switchLabel);
 });

@@ -1,16 +1,15 @@
 "use client";
 
-import { useCallback, useRef, useState, type ReactNode } from "react";
-import { ExploreMap, type ExploreMapProps, type MapHandle, type ZoomLimits } from "../explore/explore-map";
+import { useRef, useState, type ReactNode } from "react";
+import { ExploreMap, type ExploreMapProps } from "../explore/explore-map";
 import { MapAttribution } from "./map-attribution";
-import { LanguageSwitcher } from "@/lib/i18n/language-switcher";
 import { MapBrand } from "./map-brand";
 import { MapControls } from "./map-controls";
 import { mapStatusText, MapStatusNotice, type MapStatus } from "./map-status-notice";
 import { useMapInsets } from "./use-map-insets";
 import styles from "./map-shell.module.css";
 
-export type ShellMapProps = Omit<ExploreMapProps, "insets" | "ref" | "onStatus" | "onZoomLimits">;
+export type ShellMapProps = Omit<ExploreMapProps, "insets" | "onStatus">;
 
 type Props = {
   map: ShellMapProps;
@@ -18,7 +17,7 @@ type Props = {
   onBrand?: () => void;
   /** Whether the bottom navigation is on screen; a running walk hides it and the dock goes down to the edge. */
   navigation?: boolean;
-  /** Screen buttons placed before the zoom pair, e.g. «Моё местоположение». */
+  /** Screen buttons, e.g. «Моё местоположение». */
   controls?: ReactNode;
   /** Short messages above the sheet. */
   notices?: ReactNode;
@@ -39,26 +38,22 @@ type Props = {
 export function MapShell({ map, onBrand, navigation = true, controls, notices, sheet, sheetExpanded = false, onCollapseSheet }: Props) {
   const mapCell = useRef<HTMLDivElement>(null);
   const free = useRef<HTMLDivElement>(null);
-  const handle = useRef<MapHandle>(null);
   // The free cell vanishes under an expanded sheet; the map keeps the view it had beside the peek.
   const insets = useMapInsets(mapCell, free, sheetExpanded);
   const [status, setStatus] = useState<MapStatus>({ phase: "loading", tilesOffline: false });
-  const [limits, setLimits] = useState<ZoomLimits>({ canZoomIn: true, canZoomOut: true });
-  const zoomIn = useCallback(() => handle.current?.zoomIn(), []);
-  const zoomOut = useCallback(() => handle.current?.zoomOut(), []);
   const hasNotices = Boolean(notices) || mapStatusText(status) !== null;
   const hasDock = hasNotices || Boolean(sheet);
 
   return <div className={styles.shell}>
     <div ref={mapCell} className={styles.map} inert={sheetExpanded}>
-      <ExploreMap {...map} ref={handle} insets={insets} onStatus={setStatus} onZoomLimits={setLimits} />
+      <ExploreMap {...map} insets={insets} onStatus={setStatus} />
     </div>
     {/* Mouse users get a way back beside a column; keyboard and screen readers use the handle, Escape or Back. */}
     {sheetExpanded ? <div className={styles.scrim} aria-hidden="true" data-scrim onClick={onCollapseSheet} /> : null}
     <div className={styles.frame} data-dock={hasDock ? undefined : "none"} data-nav={navigation ? undefined : "none"} data-sheet-mode={sheetExpanded ? "expanded" : undefined}>
       <div className={styles.top} inert={sheetExpanded}>
-        <div className={styles.identity}><header className={styles.header} data-region="header"><MapBrand onClick={onBrand} /></header><LanguageSwitcher compact /></div>
-        <MapControls zoom={{ zoomIn, zoomOut, ...limits }}>{controls}</MapControls>
+        <header className={styles.header} data-region="header"><MapBrand onClick={onBrand} /></header>
+        {controls ? <MapControls>{controls}</MapControls> : null}
       </div>
       <div className={styles.attribution}><MapAttribution surface={mapCell} /></div>
       <div ref={free} className={styles.free} aria-hidden="true" />

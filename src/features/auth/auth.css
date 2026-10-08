@@ -12,3 +12,4 @@
 @media(max-width:600px){.auth-card{margin:16px auto;padding:24px}}
 
 .auth-card .auth-terms{display:flex;gap:12px;align-items:flex-start;margin:0 0 20px;font-size:14px;line-height:1.5}.auth-card .auth-terms input{width:20px;height:20px;min-height:20px;padding:0;flex:none}.auth-terms a{color:var(--map-green);text-decoration:underline}
+.auth-language{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:flex-end;margin-bottom:24px;font-size:var(--text-secondary)}

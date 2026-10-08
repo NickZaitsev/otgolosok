@@ -57,7 +57,7 @@
 }
 
 /*
- * Header, language and map controls keep their own touch-target sizes. The controls wrap when
+ * Header and map controls keep their own touch-target sizes. The controls wrap when
  * the current column cannot fit one row; the grid reserves the actual height above the free map.
  */
 .top {
@@ -269,15 +269,6 @@
   .frame[data-sheet-mode="expanded"] .dock {
     width: min(var(--island-max), 100%);
   }
-}
-
-.identity {
-  display: flex;
-  flex: none;
-  gap: 0.25rem;
-  align-items: center;
-  min-width: 0;
-  pointer-events: auto;
 }
 
 .top > :last-child {

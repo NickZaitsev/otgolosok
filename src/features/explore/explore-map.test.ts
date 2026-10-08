@@ -328,7 +328,7 @@ it.each([
 it("does not zoom out past the scale where the basemap still has greenery", async () => {
   const { cleanup } = await mount();
   expect(mock.mapOptions).toEqual([
-    expect.objectContaining({ minZoom: MAP_MIN_ZOOM }),
+    expect.objectContaining({ minZoom: MAP_MIN_ZOOM, zoomControl: false, scrollWheelZoom: true, touchZoom: true, keyboard: true }),
   ]);
   // Measured on VersaTiles: below z10 OSM greenery is down to a few large forests, the rest is grey.
   expect(MAP_MIN_ZOOM).toBeGreaterThanOrEqual(10);
