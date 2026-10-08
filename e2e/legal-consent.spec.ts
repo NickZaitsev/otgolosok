@@ -103,14 +103,31 @@ for (const [path, title, refusal] of [
   });
 }
 
-test("документы доступны без JavaScript и не отправляют tracking-пиксель", async ({ browser, baseURL }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
+test("без JavaScript документы читаются до конца без перекрывающего cookie-баннера и tracking-пикселя", async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: {width: 390, height: 844} });
   const page = await context.newPage();
   const tracking: string[] = [];
   page.on("request", request => {if (/mc\.yandex\./.test(request.url())) tracking.push(request.url());});
   try {
-    await page.goto("/legal/privacy");
-    await expect(page.getByRole("heading", {name: "Политика обработки персональных данных", exact: true})).toBeVisible();
+    for (const [name, title] of [["privacy", "Политика обработки персональных данных"], ["cookies", "Использование cookie и хранилища устройства"]]) {
+      await page.goto(`/legal/${name}`);
+      await expect(page.getByRole("heading", {name: title, exact: true})).toBeVisible();
+      await expect(page.getByRole("complementary", {name: "Cookie и приватность"})).toHaveCount(0);
+      const footer = page.getByRole("navigation", {name: "Правовая информация"});
+      await footer.scrollIntoViewIfNeeded();
+      const visibleEnd = await page.locator("article").evaluate(article => {
+        const lastParagraph = article.querySelector("p:last-of-type")!;
+        const footer = article.querySelector("nav")!;
+        return [lastParagraph, footer].every(element => {
+          const bounds = element.getBoundingClientRect();
+          return bounds.top >= 0 && bounds.bottom <= innerHeight && [bounds.top + 2, bounds.bottom - 2].every(y => {
+            const foreground = document.elementFromPoint(bounds.left + bounds.width / 2, y);
+            return foreground !== null && (element.contains(foreground) || foreground.contains(element));
+          });
+        });
+      });
+      expect(visibleEnd).toBe(true);
+    }
     expect(tracking).toEqual([]);
   } finally {await context.close();}
 });

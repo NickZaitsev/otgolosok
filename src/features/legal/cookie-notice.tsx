@@ -9,8 +9,13 @@ import { recordCookieChoice } from "./record-choice";
 import styles from "./legal.module.css";
 import overlayStyles from "../shell/global-overlay.module.css";
 
+const subscribeClientReady = () => () => {};
+const clientReadySnapshot = () => true;
+const serverReadySnapshot = () => false;
+
 export function CookieNotice() {
   const { t } = useI18n();
+  const clientReady = useSyncExternalStore(subscribeClientReady, clientReadySnapshot, serverReadySnapshot);
   const choice = useSyncExternalStore(subscribeCookieChoice, cookieChoice, () => null);
   const [opened, setOpened] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +25,7 @@ export function CookieNotice() {
     window.addEventListener(COOKIE_SETTINGS_EVENT, open);
     return () => window.removeEventListener(COOKIE_SETTINGS_EVENT, open);
   }, []);
-  if (choice !== null && !opened) return null;
+  if (!clientReady || (choice !== null && !opened)) return null;
   async function choose(analytics: boolean) {
     if (busy || (analytics && !LEGAL_READY)) return;
     setBusy(true); setError(""); setOpened(true);

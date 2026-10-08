@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import {act, createElement} from "react";
 import {createRoot, type Root} from "react-dom/client";
+import {renderToString} from "react-dom/server";
 import {beforeEach, afterEach, expect, it, vi} from "vitest";
 import {CookieNotice} from "./cookie-notice";
 import {cookieChoice, cookieReceipt, openCookieSettings, saveCookieChoice} from "./cookie-consent";
@@ -15,6 +16,10 @@ beforeEach(() => {
 });
 afterEach(async () => {await act(async () => root.unmount());container.remove();vi.unstubAllGlobals();});
 const receipt = "11111111-1111-4111-8111-111111111111." + "a".repeat(43);
+
+it("серверный HTML не содержит незакрываемое без JavaScript cookie-уведомление", () => {
+  expect(renderToString(createElement(CookieNotice))).toBe("");
+});
 
 it("предлагает равноправные решения и включает аналитику после подтверждения сервера", async () => {
   let respond!: (value: Response) => void;
