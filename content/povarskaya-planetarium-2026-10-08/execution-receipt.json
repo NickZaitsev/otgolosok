@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-08T08:43:30.885Z",
+  "existingPublicWalksUnchanged": true,
+  "original25AddressStoriesAndAudioUnchanged": true,
+  "publishedPlanetariumTextUnchanged": true,
+  "boundaryExceptionConfirmed": true,
+  "walk": {
+    "checkedAt": "2026-10-08T08:43:30.885Z",
+    "id": "6ba0c14c-67f9-50e7-9d2f-19eb38fe760e",
+    "title": "Поварская: литература, музыка и особняки",
+    "revision": 2,
+    "visibility": "shared",
+    "shareUrl": "https://otgolosok.online/walk?share=e7f37feb-1f3b-4241-ba79-54d2c1fe7146",
+    "physicalStops": 14,
+    "distanceM": 3908,
+    "walkingMinutes": 48,
+    "audioDurationSec": 1234.392,
+    "measuredDurationSec": 1233.6,
+    "fieldChecked": false,
+    "catalogPublished": false
+  },
+  "postflightAt": "2026-10-08T08:44:44.776Z",
+  "oldAudioPreservedAndAvailable": true,
+  "browserPlaybackVerified": true,
+  "browserCheckedStops": 14,
+  "old13AudioUnchanged": true,
+  "newSynthesisJobs": 1,
+  "newAddressJobs": 0,
+  "queueAttempts": 1
+}

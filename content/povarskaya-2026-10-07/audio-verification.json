@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-10-08T07:36:19.848826+00:00",
+  "checkedAt": "2026-10-08T08:42:51.688245+00:00",
   "complete": true,
-  "physicalStops": 13,
+  "physicalStops": 14,
   "items": [
     {
       "placeId": "osm:way:47294368",
@@ -236,10 +236,27 @@
       "configSha256": null,
       "url": "/api/story-audio/2cdcd8b8d7eb109424b2d7499f5ed60e8a7841f2b270fcfe250c4b5b0613b81f.mp3",
       "queueAttempts": 1
+    },
+    {
+      "placeId": "osm:relation:18135199",
+      "placeTextId": "df652fb7-5273-4cec-9352-156c2e16517b",
+      "sourceJobId": "place-text:df652fb7-5273-4cec-9352-156c2e16517b",
+      "audioJobId": "810737e4-69f4-4f9c-a2ec-426af8b23e34",
+      "sourceTextSha256": "d5f303e94a568f6b2dfaa9ab6cb131e98b5858eb917b20094fd468e3b8ebd375",
+      "spokenTextSha256": "07b91159d10d374570bb3c97bfbdf4e374d59268a3317801babeb14e499c38bb",
+      "sha256": "889c183410b72f29ae1948c54567dcc0751171c1935ea043b8489fdbb3837781",
+      "bytes": 494061,
+      "durationSec": 61.728,
+      "measuredDurationSec": 61.68,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "url": "/api/story-audio/889c183410b72f29ae1948c54567dcc0751171c1935ea043b8489fdbb3837781.mp3",
+      "queueAttempts": 1
     }
   ],
-  "audioDurationSec": 1172.664,
-  "measuredDurationSec": 1171.92,
+  "audioDurationSec": 1234.392,
+  "measuredDurationSec": 1233.6,
   "minimumAudioDurationVerified": true,
   "providerModelVoiceVerified": true,
   "voiceName": "Отголосок2",

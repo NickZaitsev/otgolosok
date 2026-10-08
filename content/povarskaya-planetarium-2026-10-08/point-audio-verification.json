@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-10-08T08:42:51.688245+00:00",
+  "item": {
+    "placeId": "osm:relation:18135199",
+    "placeTextId": "df652fb7-5273-4cec-9352-156c2e16517b",
+    "sourceJobId": "place-text:df652fb7-5273-4cec-9352-156c2e16517b",
+    "audioJobId": "810737e4-69f4-4f9c-a2ec-426af8b23e34",
+    "sourceTextSha256": "d5f303e94a568f6b2dfaa9ab6cb131e98b5858eb917b20094fd468e3b8ebd375",
+    "spokenTextSha256": "07b91159d10d374570bb3c97bfbdf4e374d59268a3317801babeb14e499c38bb",
+    "sha256": "889c183410b72f29ae1948c54567dcc0751171c1935ea043b8489fdbb3837781",
+    "bytes": 494061,
+    "durationSec": 61.728,
+    "measuredDurationSec": 61.68,
+    "provider": "elevenlabs",
+    "model": "eleven_v4",
+    "voice": "9ivxhQ6xIsHd6R3Xc635",
+    "url": "/api/story-audio/889c183410b72f29ae1948c54567dcc0751171c1935ea043b8489fdbb3837781.mp3",
+    "queueAttempts": 1
+  },
+  "voiceName": "Отголосок2",
+  "existingPublishedTextUnchanged": true,
+  "original13AudioUnchanged": true,
+  "oldAudioPreservedAndAvailable": true,
+  "oldAudioSha256": "e5a27d3da81fcfa0dfb1dd892dad97de26862eb47c010eaedb280561e00449e3",
+  "measuredTotalDurationSec": 1233.6,
+  "fullAcousticReviewPerformed": false
+}

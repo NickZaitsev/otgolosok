@@ -1,23 +1,23 @@
 {
-  "checkedAt": "2026-10-08T07:38:39.007837+00:00",
+  "checkedAt": "2026-10-08T08:47:46.251431+00:00",
   "status": "ready_shared_previews_verified",
-  "publicSnapshotAt": "2026-10-08T07:36:21.136Z",
+  "publicSnapshotAt": "2026-10-08T08:26:51.883Z",
   "publicWalksChecked": 25,
   "osmAliasesChecked": 6292,
-  "physicalPlaceSetsUnchanged": true,
-  "publicSnapshotSha256": "8e30a89ca57fdc9d5d00a3c1715d2090a35b0031e2fa5d10479909fff529291a",
+  "physicalPlaceSetsUnchanged": false,
+  "publicSnapshotSha256": "fbf0b97f5d1c293dac5c2f27f866dccec8fc779b8002eae3a53b4258a857dce3",
   "placeCatalogSha256": "43f6c3ed178fdf2bb2604a25cb3b7c8620fdcfc8fb02247adfaa08c389cded5d",
   "projectCheck": {
     "command": "pnpm check",
     "exitCode": 0,
-    "frontendTestsPassed": 1994,
-    "backendTestsPassed": 1025,
+    "frontendTestsPassed": 1967,
+    "backendTestsPassed": 1019,
     "pythonTestsPassed": 26,
     "pythonSubtestsPassed": 78,
     "productionBuildPassed": true,
     "lintErrors": 0,
     "lintWarnings": 127,
-    "logSha256": "6f35fa74857bcc593e682caa2c9a7b1198bce44498dcd97c6622ca86548aa55a"
+    "logSha256": "f553f2e5a565a726899e23d8be0c75b02161247975facecdc2ce1e6831eed1de"
   },
   "routes": [
     {
@@ -44,23 +44,30 @@
     {
       "routeId": "R04",
       "title": "Поварская: литература, музыка и особняки",
-      "physicalStops": 13,
-      "words": 2262,
-      "distanceM": 3569,
-      "walkingMinutes": 44,
+      "physicalStops": 14,
+      "words": 2374,
+      "distanceM": 3908,
+      "walkingMinutes": 48,
       "maxExistingOverlapPercent": 0.0,
       "maxPlannedOverlapPercent": 0.0,
       "storiesValid": true,
       "documentValid": true,
       "viewWithNullAudioValid": true,
       "maxTriggerGapM": 0.99,
-      "allCentersInsideBoundary": true,
-      "allTriggersInsideBoundary": true,
+      "allCentersInsideBoundary": false,
+      "allTriggersInsideBoundary": false,
       "fieldChecked": false,
       "newAudioCreated": true,
-      "finalAudioDurationSec": 1171.92,
+      "finalAudioDurationSec": 1233.6,
       "minimumAudioDurationVerified": true,
-      "browserPlaybackVerified": true
+      "browserPlaybackVerified": true,
+      "boundaryExceptions": [
+        {
+          "placeId": "osm:relation:18135199",
+          "confirmedByUser": true
+        }
+      ],
+      "viewWithReadyAudioValid": true
     }
   ],
   "tts": {
@@ -72,17 +79,19 @@
     "actualProviderModelVoiceVerified": true,
     "pilotCompleted": true,
     "mp3Measured": true,
-    "synthesisJobsSucceeded": 25,
-    "synthesisAttempts": 25,
+    "synthesisJobsSucceeded": 26,
+    "synthesisAttempts": 26,
     "fullAcousticReviewPerformed": false
   },
   "operations": {
     "productionJobsWrittenThisRun": 25,
-    "audioQueueMutationsThisRun": 25,
+    "audioQueueMutationsThisRun": 26,
     "walksCreatedThisRun": 2,
     "publicationsThisRun": 0,
     "browserPlaybackVerified": true,
-    "blocker": null
+    "blocker": null,
+    "catalogRevoicesThisRun": 1,
+    "walkUpdatesThisRun": 1
   },
   "filesSha256": {
     "content/ostozhenka-2026-10-07/walk.json": "38d220467dc66f86c6b58657dae3ae50f8ed9d88a9359d48455ff7ecf050358e",
@@ -92,24 +101,33 @@
     "content/ostozhenka-2026-10-07/route.png": "452e7b40b8e848a84e1234c66db4798cd2a1e665ee7f2eff10b919c9c4e0f5ac",
     "content/ostozhenka-2026-10-07/geometry-verification.json": "57bdf0e8ff1c32b3b01ba0eb7392f3399bcdf1fdfe897f5b3f6fe16a20204290",
     "content/ostozhenka-2026-10-07/stories.md": "1346e44333874882204a3278575a10b05eaa8747bf6e7719b47b914f328911a6",
-    "content/povarskaya-2026-10-07/walk.json": "74a0d2241387d9dcd1b51031a5acc09a90bffb20e4fcddfb9a3ba10980c59ff5",
+    "content/povarskaya-2026-10-07/walk.json": "1155303bb4c10ea256ad2fd485d4c3f2237b3310176465c66267b54002cab7e2",
     "content/povarskaya-2026-10-07/stories.json": "6154e31bdd9d53a36c18ff201e847f324a83628ddfd2310a619848e86f55b4ad",
-    "content/povarskaya-2026-10-07/README.md": "1290c14531daafb27dc3785abf3ad6cca7388ce83d83744b2efb6b1780e9bdba",
-    "content/povarskaya-2026-10-07/overlap.json": "84167f040d1e50ce433fc6141f7fed93d81f4b9ee249dd0d750cf3b4565ec507",
-    "content/povarskaya-2026-10-07/route.png": "8c7f67bc00a34b18233a957726e3e01d9bf7cf82381dffd1617ec26eff697c21",
-    "content/povarskaya-2026-10-07/geometry-verification.json": "25b85cb3b6356bcb7f3db34a82f0e3107eec1c73191b0f798c3bf999e0ec3d20",
-    "content/povarskaya-2026-10-07/stories.md": "d5078e31cb329711c43e69992609b903a8096a19f00e9cc164dfc4e03a9491f3",
+    "content/povarskaya-2026-10-07/README.md": "cc304203e6847fd295076a41299139dd21ab500b5dc8df1544368870050771ae",
+    "content/povarskaya-2026-10-07/overlap.json": "ebbc6fa2cc49b1e13044819d75697a4ce4fa4e7aed753cef56041c5df8230d09",
+    "content/povarskaya-2026-10-07/route.png": "58d9f054b4838249d7cbb51bfc1e1b0fe6cb01654ebd24f0ef88aa759f694bff",
+    "content/povarskaya-2026-10-07/geometry-verification.json": "9f98740512dd4782f7165aa6d872cb17a22098998cff0241c1b27459a55aa972",
+    "content/povarskaya-2026-10-07/stories.md": "502dbd5ba89977fff3d2c2987c658311a5ba2a021d772c43eefc7c3aa48d75ca",
     "content/ostozhenka-povarskaya-2026-10-07/claude-audit-response.md": "398cda1c2f4d89f0423bf5c2d77daf6368213213a7608e002e764a2cb857cef8",
-    "content/ostozhenka-povarskaya-2026-10-07/README.md": "9caf39b29d2435ddfe86bac1a8adad9e8782df0d0e65870f633332c87bc54396",
+    "content/ostozhenka-povarskaya-2026-10-07/README.md": "d4cda976e365945d415b02cbfcdc760119788d0190d8a8bd21db41e46b13c8c6",
     "content/ostozhenka-povarskaya-2026-10-07/claude-audit-original.md": "a7a90b1c21a204c594bdc170eeaf2ad5cbaafe74e8a6026a73bd6b07476debda",
     "content/ostozhenka-povarskaya-2026-10-07/claude-receipt.json": "00ff9393b12e93ea0afb9fb318ba4f735dbaf749965dd472c5b867ae4ed88292",
     "content/ostozhenka-povarskaya-2026-10-07/execution-receipt.json": "0e9c32d5b5341bc4aa45845bab8423e09a6e7ff80ffd8f90bd6a4edf8e460ef9",
     "content/ostozhenka-2026-10-07/audio-verification.json": "3971ff7cf87ee4d92cc53e1929d962bc8ceb7322e58f09810ac7357bd325b852",
     "content/ostozhenka-2026-10-07/ui-verification.json": "d8f6cfd33e37ac8bd304224d5dfa5dab908c711129481853d84cf3323d74f844",
     "content/ostozhenka-2026-10-07/preview.json": "eca7e6cfb7fe4978cdf525dd183b6e45eaeffadad051732d25a634e2d151b5db",
-    "content/povarskaya-2026-10-07/audio-verification.json": "99a4e9f5b85f03ee201f5f7d34f9b7b9fd4d858663a3ccb4bd3bc268900e98fe",
-    "content/povarskaya-2026-10-07/ui-verification.json": "018bb9e2aaaf41331cf547166f0f165403123aad5bf2165bd0e43a1a04da821a",
-    "content/povarskaya-2026-10-07/preview.json": "e497eaebc568d1fb2ecbe1e5601b1bb7a8807d1a751c010c6f990e7668abf135"
+    "content/povarskaya-2026-10-07/audio-verification.json": "ef2502f3020a419240431f667124579aff1a7963e5192337b564c4a6e09c02de",
+    "content/povarskaya-2026-10-07/ui-verification.json": "8724c30259af3df53641e3b1016e714920966089219f744d2c1ca9762def2637",
+    "content/povarskaya-2026-10-07/preview.json": "2680db3dc3913a33cf3ccddc2eb55f0abe67582c0b2f6926b4a262848d050071",
+    "content/povarskaya-planetarium-2026-10-08/point-audio-verification.json": "95a7c63461816bd402d87f4a224377b824643f2eaa4bdaf859f33a4689a80237",
+    "content/povarskaya-planetarium-2026-10-08/execution-receipt.json": "f238353ba289c8e39fd9257592364c269723b94fa294926112e210383fb2aa9b",
+    "content/povarskaya-planetarium-2026-10-08/story.json": "d0ed6bf9296a8d5a0ba42df6557b499977e867ece5d2070fbc2a45fca2374fa1",
+    "content/povarskaya-planetarium-2026-10-08/feasibility.json": "e03dc02b78226dbe7db0f4fc5e1f49ade1076661b5bc31161d55b1a25f49b917",
+    "content/povarskaya-planetarium-2026-10-08/README.md": "d0f2cb99ac8f63fcae6f09f0592468952095d94cfcda6cbeda309ef16306bc2b",
+    "docs/agents/povarskaya-planetarium-2026-10-08.md": "92d5d311dee3ff99b8078b560ccbfcb909e22ee3d284356d8e8a8f70268f4a07"
   },
-  "filesSha256TextNewlines": "LF"
+  "filesSha256TextNewlines": "LF",
+  "boundaryExceptionConfirmed": true,
+  "publicSnapshotHashMethod": "SHA-256 JSON {walks,aliases}, ensure_ascii=false, sort_keys=true, separators=(comma,colon)",
+  "latestUpdateReceipt": "content/povarskaya-planetarium-2026-10-08/execution-receipt.json"
 }

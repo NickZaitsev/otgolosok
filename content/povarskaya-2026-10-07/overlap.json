@@ -1,10 +1,11 @@
 {
-  "checkedAt": "2026-10-08T07:36:21.136Z",
+  "checkedAt": "2026-10-08T08:26:51.883Z",
   "method": "100 × общие канонические физические объекты / min(число физических остановок A, B). Отдельный рассказ job не меняет физический placeId. Здание и его доски в этой прогулке образуют один визит.",
   "publicWalksChecked": 25,
   "candidatePlaceIds": [
     "osm:node:3423510101",
     "osm:node:3466483914",
+    "osm:relation:18135199",
     "osm:relation:18626008",
     "osm:way:160317025",
     "osm:way:300426887",
@@ -223,50 +224,50 @@
     {
       "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
       "address": "Москва, С.Н. Фёдорову",
-      "nearestPlaceId": "osm:way:47031092",
-      "distanceM": 12264.24
+      "nearestPlaceId": "osm:relation:18135199",
+      "distanceM": 11939.51
     },
     {
       "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
       "address": "Москва, Орловский сад",
-      "nearestPlaceId": "osm:way:47031092",
-      "distanceM": 12619.87
+      "nearestPlaceId": "osm:relation:18135199",
+      "distanceM": 12294.97
     },
     {
       "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
       "address": "Москва, Г. А. Кузнецову",
-      "nearestPlaceId": "osm:way:47031092",
-      "distanceM": 12796.49
+      "nearestPlaceId": "osm:relation:18135199",
+      "distanceM": 12472.27
     },
     {
       "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
       "address": "Москва, Путейская улица, 3",
-      "nearestPlaceId": "osm:way:47031092",
-      "distanceM": 12995.0
+      "nearestPlaceId": "osm:relation:18135199",
+      "distanceM": 12672.46
     },
     {
       "walkTitle": "Прогулка на полтора часа от метро «Селигерская»",
       "address": "Москва, Путейская улица, 25",
-      "nearestPlaceId": "osm:way:47031092",
-      "distanceM": 13079.61
+      "nearestPlaceId": "osm:relation:18135199",
+      "distanceM": 12757.3
     },
     {
       "walkTitle": "Прогулка на час от метро «Менделеевская»",
       "address": "Москва, Песня Родины",
-      "nearestPlaceId": "osm:way:47031092",
-      "distanceM": 2737.6
+      "nearestPlaceId": "osm:relation:18135199",
+      "distanceM": 2497.89
     },
     {
       "walkTitle": "Прогулка на час от метро «Менделеевская»",
       "address": "Москва, Д. В. Шурпенко",
-      "nearestPlaceId": "osm:way:47031092",
-      "distanceM": 2574.16
+      "nearestPlaceId": "osm:relation:18135199",
+      "distanceM": 2337.51
     },
     {
       "walkTitle": "Прогулка на час от метро «Менделеевская»",
       "address": "Москва, В. А. Туманову",
-      "nearestPlaceId": "osm:way:47031092",
-      "distanceM": 2437.25
+      "nearestPlaceId": "osm:relation:18135199",
+      "distanceM": 2188.86
     },
     {
       "walkTitle": "Прогулка на час от метро «Чкаловская»",
@@ -289,70 +290,70 @@
     {
       "walkTitle": "Прогулка на час от метро «Динамо»",
       "address": "Москва, Спортивный парк \"Динамо\"",
-      "nearestPlaceId": "osm:way:47031092",
-      "distanceM": 3977.75
+      "nearestPlaceId": "osm:relation:18135199",
+      "distanceM": 3657.83
     }
   ],
   "plannedWalks": [
     {
       "routeId": "R01",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R02",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R03",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R05",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R06",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R07",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R08",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R09",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R10",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R11",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R12",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     },
     {
       "routeId": "R13",
-      "commonPlaceIds": [],
-      "percent": 0.0
+      "percent": 0.0,
+      "commonPlaceIds": []
     }
   ],
   "maxExistingPercent": 0.0,
