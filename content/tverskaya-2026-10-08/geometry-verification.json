@@ -1,0 +1,147 @@
+{
+  "checkedAt": "2026-10-08T12:38:18.253872+00:00",
+  "distanceM": 5012,
+  "walkingMinutes": 65,
+  "stops": [
+    {
+      "placeId": "osm:relation:225031",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 3.68,
+      "triggerGapFromRouteM": 0.06,
+      "listeningWayId": 109446028,
+      "wordCount": 88
+    },
+    {
+      "placeId": "osm:way:31482145",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 31.53,
+      "triggerGapFromRouteM": 0.05,
+      "listeningWayId": 204576117,
+      "wordCount": 74
+    },
+    {
+      "placeId": "osm:relation:451292",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 22.79,
+      "triggerGapFromRouteM": 0.03,
+      "listeningWayId": 251639716,
+      "wordCount": 105
+    },
+    {
+      "placeId": "osm:relation:451293",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 53.23,
+      "triggerGapFromRouteM": 0.02,
+      "listeningWayId": 198766718,
+      "wordCount": 197
+    },
+    {
+      "placeId": "osm:relation:2669481",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 60.48,
+      "triggerGapFromRouteM": 0.04,
+      "listeningWayId": 848200363,
+      "wordCount": 81
+    },
+    {
+      "placeId": "osm:relation:2669538",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 38.28,
+      "triggerGapFromRouteM": 0.01,
+      "listeningWayId": 198766655,
+      "wordCount": 122
+    },
+    {
+      "placeId": "osm:node:253124200",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 25.76,
+      "triggerGapFromRouteM": 0.02,
+      "listeningWayId": 198766726,
+      "wordCount": 102
+    },
+    {
+      "placeId": "osm:node:5181346005",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 5.38,
+      "triggerGapFromRouteM": 0.01,
+      "listeningWayId": 204576163,
+      "wordCount": 100
+    },
+    {
+      "placeId": "osm:way:31560938",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 16.25,
+      "triggerGapFromRouteM": 0.0,
+      "listeningWayId": 257541609,
+      "wordCount": 203
+    },
+    {
+      "placeId": "osm:relation:3366117",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 2.04,
+      "triggerGapFromRouteM": 0.01,
+      "listeningWayId": 143186583,
+      "wordCount": 268
+    },
+    {
+      "placeId": "osm:relation:7583383",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 29.98,
+      "triggerGapFromRouteM": 0.0,
+      "listeningWayId": 483453075,
+      "wordCount": 130
+    },
+    {
+      "placeId": "osm:way:52597841",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 4.88,
+      "triggerGapFromRouteM": 0.01,
+      "listeningWayId": 483453075,
+      "wordCount": 88
+    },
+    {
+      "placeId": "osm:relation:16685841",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 3.16,
+      "triggerGapFromRouteM": 0.0,
+      "listeningWayId": 483460035,
+      "wordCount": 109
+    },
+    {
+      "placeId": "osm:relation:16682984",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 4.12,
+      "triggerGapFromRouteM": 0.0,
+      "listeningWayId": 97170902,
+      "wordCount": 289
+    }
+  ],
+  "startGapM": 0.05,
+  "destinationGapM": 0.01,
+  "outsideBoundaryVertices": [],
+  "geometryVertices": 324,
+  "boundarySampleStepM": 10,
+  "boundarySamplesChecked": 689,
+  "outsideBoundarySampleCount": 0,
+  "notes": [
+    "Тротуары и выходы метро проверены по OSM от 22.09.2026, линия построена пешеходным Valhalla.",
+    "Полевая доступность и обзор с точки прослушивания не проверялись.",
+    "Музеи не требуют покупки билета: рассказы слушаются снаружи.",
+    "Саввинское подворье слушается на Тверской у подхода во двор. Видимость через арку зависит от доступа; закрытые ворота обходить не нужно. МХТ: триггер на пешеходном Камергерском переулке. Короткий финишный подход к Маяковской с внешней стороны Садового согласован ранее."
+  ],
+  "fieldChecked": false
+}

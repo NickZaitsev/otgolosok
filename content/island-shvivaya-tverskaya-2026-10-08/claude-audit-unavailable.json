@@ -1,0 +1,11 @@
+{
+  "requestedModel": "claude-opus-5-5",
+  "modelConfirmed": false,
+  "completed": false,
+  "exitCode": 1,
+  "reason": "weekly_limit",
+  "message": "You've hit your weekly limit · resets 8am (Europe/Moscow)",
+  "toolsEnabled": false,
+  "productionAccess": false,
+  "paidAudioStartedAtRequest": false
+}

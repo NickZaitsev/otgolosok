@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-08T12:33:09.755Z",
+  "routes": [
+    {
+      "slug": "island",
+      "stops": 15,
+      "validStories": 15,
+      "documentValid": true,
+      "viewValid": true
+    },
+    {
+      "slug": "shvivaya",
+      "stops": 14,
+      "validStories": 14,
+      "documentValid": true,
+      "viewValid": true
+    },
+    {
+      "slug": "tverskaya",
+      "stops": 14,
+      "validStories": 14,
+      "documentValid": true,
+      "viewValid": true
+    }
+  ]
+}

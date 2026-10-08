@@ -1,0 +1,147 @@
+{
+  "checkedAt": "2026-10-08T12:38:18.224581+00:00",
+  "distanceM": 5629,
+  "walkingMinutes": 71,
+  "stops": [
+    {
+      "placeId": "osm:node:2715045290",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 7.37,
+      "triggerGapFromRouteM": 0.01,
+      "listeningWayId": 1076096787,
+      "wordCount": 255
+    },
+    {
+      "placeId": "osm:node:1733057309",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 20.99,
+      "triggerGapFromRouteM": 0.04,
+      "listeningWayId": 1160942729,
+      "wordCount": 190
+    },
+    {
+      "placeId": "osm:relation:7968458",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 15.3,
+      "triggerGapFromRouteM": 0.02,
+      "listeningWayId": 558019764,
+      "wordCount": 76
+    },
+    {
+      "placeId": "osm:relation:14352897",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 25.06,
+      "triggerGapFromRouteM": 0.05,
+      "listeningWayId": 1078531644,
+      "wordCount": 122
+    },
+    {
+      "placeId": "osm:way:37771167",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 68.95,
+      "triggerGapFromRouteM": 0.0,
+      "listeningWayId": 719026257,
+      "wordCount": 98
+    },
+    {
+      "placeId": "osm:way:151077511",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 41.11,
+      "triggerGapFromRouteM": 0.03,
+      "listeningWayId": 719026257,
+      "wordCount": 84
+    },
+    {
+      "placeId": "osm:way:151077489",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 9.82,
+      "triggerGapFromRouteM": 4.47,
+      "listeningWayId": 340500618,
+      "wordCount": 86
+    },
+    {
+      "placeId": "osm:node:266720662",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 100.99,
+      "triggerGapFromRouteM": 0.02,
+      "listeningWayId": 109538186,
+      "wordCount": 115
+    },
+    {
+      "placeId": "osm:node:3008136198",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 27.56,
+      "triggerGapFromRouteM": 0.02,
+      "listeningWayId": 133636928,
+      "wordCount": 106
+    },
+    {
+      "placeId": "osm:way:37769988",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 53.97,
+      "triggerGapFromRouteM": 0.01,
+      "listeningWayId": 136514684,
+      "wordCount": 89
+    },
+    {
+      "placeId": "osm:relation:55214",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 10.74,
+      "triggerGapFromRouteM": 4.48,
+      "listeningWayId": 483453078,
+      "wordCount": 123
+    },
+    {
+      "placeId": "osm:relation:17443827",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 11.05,
+      "triggerGapFromRouteM": 0.04,
+      "listeningWayId": 299404071,
+      "wordCount": 111
+    },
+    {
+      "placeId": "osm:relation:17361989",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 128.47,
+      "triggerGapFromRouteM": 0.02,
+      "listeningWayId": 280058780,
+      "wordCount": 226
+    },
+    {
+      "placeId": "osm:relation:9854949",
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "triggerDistanceFromCenterM": 18.3,
+      "triggerGapFromRouteM": 0.02,
+      "listeningWayId": 489797436,
+      "wordCount": 221
+    }
+  ],
+  "startGapM": 0.03,
+  "destinationGapM": 0.02,
+  "outsideBoundaryVertices": [],
+  "geometryVertices": 367,
+  "boundarySampleStepM": 10,
+  "boundarySamplesChecked": 770,
+  "outsideBoundarySampleCount": 0,
+  "notes": [
+    "Тротуары и выходы метро проверены по OSM от 22.09.2026, линия построена пешеходным Valhalla.",
+    "Полевая доступность и обзор с точки прослушивания не проверялись.",
+    "Музеи не требуют покупки билета: рассказы слушаются снаружи.",
+    "Дом на Котельнической и Воспитательный дом — крупные комплексы; триггеры на публичной набережной, в 101 и 128 м от геокодированного центра. Вход в дворы не требуется."
+  ],
+  "fieldChecked": false
+}

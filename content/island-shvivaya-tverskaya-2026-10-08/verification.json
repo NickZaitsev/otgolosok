@@ -1,0 +1,269 @@
+{
+  "checkedAt": "2026-10-08T12:41:17.670646+00:00",
+  "physicalStops": 43,
+  "walksCreated": 3,
+  "allAudioElevenLabsV4": true,
+  "minimumAudioSeconds": 900,
+  "allMeasuredDurationsAtLeastMinimum": true,
+  "all43Mp3DownloadedAndHashed": true,
+  "all43SourceAndSpokenTextHashesVerified": true,
+  "mobileChaptersReadAndPlayed": 43,
+  "publicDocumentsAndStoriesMatch": true,
+  "originalCardsUnchanged": 43,
+  "oldWalksUnchanged": 27,
+  "maximumExistingOverlapPercent": 25,
+  "betweenTheseRoutesOverlapPercent": 0,
+  "newClaudeAuditCompleted": false,
+  "newClaudeAuditFailure": "weekly_limit",
+  "fieldChecked": false,
+  "fullAcousticReviewPerformed": false,
+  "catalogPublished": false,
+  "checks": {
+    "command": "pnpm check",
+    "exitCode": 0,
+    "frontendTests": 1984,
+    "backendTests": 1054,
+    "pythonTests": 26,
+    "pythonSubtests": 78,
+    "lintErrors": 0,
+    "lintWarnings": 127,
+    "typecheck": true,
+    "ruff": true,
+    "pyright": true,
+    "productionBuild": true,
+    "checkLogSha256": "863c8ea2ade3820ca1eb6448304986f1f12ebc33bed1378aadf169e4b6849d8d"
+  },
+  "baseCommit": "d2f3c4df10c0f6aaae1790402bac59e3352b830c",
+  "files": [
+    {
+      "path": "content/island-shvivaya-tverskaya-2026-10-08/README.md",
+      "sha256": "fff652921b4359a6ff0a4461359b489a682c180ed49c4760828706b757024fc0",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-shvivaya-tverskaya-2026-10-08/claude-audit-unavailable.json",
+      "sha256": "b4165db6ba4e6b840db31c01a21cce9fd9f01b26aece75e38e8e25ccf799a3d4",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-shvivaya-tverskaya-2026-10-08/contracts-verification.json",
+      "sha256": "16e7bf482bc59a91ebc3633171646ba3900440a58729532f64139256a9d869b4",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-shvivaya-tverskaya-2026-10-08/editorial-review.md",
+      "sha256": "c61c562b0b8d91eff243dbdff55316b3fcb301c03182a29a4b21fd731abda8d7",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-shvivaya-tverskaya-2026-10-08/execution-receipt.json",
+      "sha256": "24d0d92e8f946d696ce6340fc6a1c60056072ff092f22413645a736bdbd5df77",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-shvivaya-tverskaya-2026-10-08/preservation-verification.json",
+      "sha256": "cf342679b355bb98f3d365892a7a5ff5ecd12b973961efa0c499b778d537f784",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-shvivaya-tverskaya-2026-10-08/voice-accounts-verification.json",
+      "sha256": "4de9d6644f4ec780cd33c59b2a633b9a68b0a64a24a880aceec44908c04ed8ea",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-shvivaya-tverskaya-2026-10-08/voice-verification.json",
+      "sha256": "2d86b0f593351e5aaac75ed2bf419dd006f10199e49bed387571b248aff0e4b2",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/README.md",
+      "sha256": "6c61ef7b322eff1af7187fde87d11014fabe409df27058a1b883d3c228e3316a",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/audio-verification.json",
+      "sha256": "7ce41e48c913c74734778255af4f458604b4f4e60d9c019a189a37f8aed9d27e",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/building-footprint-verification.json",
+      "sha256": "125ce3fb39937f96efb7d95d7b45041db9eed5a4741ff773e47d605bb90baee7",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/geometry-verification.json",
+      "sha256": "e783254ceed854d9d42bb2b97a7dd4570eac3f7951827dd855c2575427826135",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/overlap.json",
+      "sha256": "6db51eedbaf7b0a876545d43b8b1ad874fbf84816c9391c68f1e78a75e996a95",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/preview.json",
+      "sha256": "ab8944529ae4ba7f799ff856aeae03c4cb148da3c71ff860c98694ac93cbd680",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/public-verification.json",
+      "sha256": "f6aa1dbf97f904c9a85acf4b1723fbf4ebd06ec813104f506c08dfc8b728a666",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/route.png",
+      "sha256": "08b752270e18fcd6458b8d5c4839af1e208fb93b40fd185603e7a3e6bd239847",
+      "normalization": "raw"
+    },
+    {
+      "path": "content/island-2026-10-08/stories.json",
+      "sha256": "0eb3076590c5c78641f579e00323a17b54982018f2ac42de97df2baf53aa25e6",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/stories.md",
+      "sha256": "255fcc68d3e344dd31c3203c1b92d062a66446f0a74f67313b4065e287a244cb",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/ui-verification.json",
+      "sha256": "b80ad250732a600042690be2b9f527deffe30bd9a8e965fde7c5ebc7e1ebbf33",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/island-2026-10-08/walk.json",
+      "sha256": "70f27067ebfc00bf4e249ac1ec689cb92a39a319e96c2f31374bd38a154b494a",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/README.md",
+      "sha256": "9963419d6e01f78750d4aa2887d27f17eb8e80a3cb03c6dae9703958c30714aa",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/audio-verification.json",
+      "sha256": "cfcb492c082340aa28f6b86162f0a603995fc4b4835a1ec76ca5890e5e0fcc65",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/geometry-verification.json",
+      "sha256": "80fd4a2dda03ccb3e33f64cbe50f5cd28a87629da5652df3dd7bd96c43937b51",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/metadata-fix-receipt.json",
+      "sha256": "6c0aeb28c01969879fa8c8a50417a6778ca0470d9d6d92c1bba3c655442539ce",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/overlap.json",
+      "sha256": "a46c640797d80c2f87d7ff6fe3cea00320b9e9646442e4e8d31685bc6e58e9e8",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/preview.json",
+      "sha256": "78171bcfdca5b4d43f92e27c62cfa98338a363754a2d47c4a2b8eb36c07078b7",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/public-verification.json",
+      "sha256": "04a2dc62c4b90079153ad41c08d52daa63b67cf566815f49e82b8741f58bdae0",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/route.png",
+      "sha256": "d2fde8abfd6e1dc212b2f8939a04793890006397a49789db71dfeb72c012f91a",
+      "normalization": "raw"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/stories.json",
+      "sha256": "c438cb6f672c09263e05beb197596286db303488bb9abb3f87f9da39118dce65",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/stories.md",
+      "sha256": "0e1a4476db04a6378065b02ec96df54a3069596e2e16b16d6946d9d69ca5d5bd",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/ui-verification.json",
+      "sha256": "b837f43c97c65a98698999339166c83a362b19d3264810bdc3f146e72687656a",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/shvivaya-2026-10-08/walk.json",
+      "sha256": "8232323bdeb9f3965a668f77e9cfc0a583dfbd366c82c3683d173bf940501197",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/README.md",
+      "sha256": "cdc47f75c50170cc4f59d2cb55ff58fc2ae187c5f7b61b279ece4ec0b83312be",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/audio-verification.json",
+      "sha256": "15c213e2d21db00a0a766885d0f0de19f28e5c3b03e8f78382dc1fcd02acb6d4",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/geometry-verification.json",
+      "sha256": "fe9942bae42746d1ba0adf586089f1e52c5dddfde5fb7f267d21491b4564fada",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/metadata-fix-receipt.json",
+      "sha256": "d79443adea2d176dff370a77b490a962323befd28e28fd46411c2d061ba6e3ee",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/overlap.json",
+      "sha256": "4bd384f9dcb239ac09191141e32e295bb529b2a7588b2d62dbb9212b81679f54",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/preview.json",
+      "sha256": "bb9bfec124c01a1ca9531f9a21a14341458f10412116ea21c92a60a33c37b16d",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/public-verification.json",
+      "sha256": "95bca8b7059682ed81aa0a21ca044b5e2132d734e5e087f5ef7d9d97460e0320",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/route.png",
+      "sha256": "3181fc83e8fb62b5a2635437e0390ff5bc4b9d3e10ab689745f5c486edc87003",
+      "normalization": "raw"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/stories.json",
+      "sha256": "f57e3b75dc70b1612dfdd0d0074b46b57178bf4ed449081e78045b8e3fc9c4ba",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/stories.md",
+      "sha256": "0400eb39af5b0703a591a0642a433ff9d53b5cab0a0544ced7367c105e8e3ad1",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/ui-verification.json",
+      "sha256": "78b142a692f5ec21bcf3d4946475f02e992dc3beac05521fdcf1c07994fac879",
+      "normalization": "LF"
+    },
+    {
+      "path": "content/tverskaya-2026-10-08/walk.json",
+      "sha256": "ed701b86e931f5e328594dbe9727dc05a374042a17502f4cbd417ff85b71fbec",
+      "normalization": "LF"
+    },
+    {
+      "path": "docs/agents/plans/2026-10-07-garden-ring-metro-walks.md",
+      "sha256": "e10525ffdba1c5bd16edd2a73f8ce8d9e45e2e7fe4c9938f054c9e560b0a32c4",
+      "normalization": "LF"
+    },
+    {
+      "path": "docs/agents/island-shvivaya-tverskaya-release-2026-10-08.md",
+      "sha256": "2a2ca7520a005f70583423e76f06b5e235d71d00f500f7e297892a59b43d922b",
+      "normalization": "LF"
+    }
+  ]
+}

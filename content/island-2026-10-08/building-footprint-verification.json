@@ -1,0 +1,13 @@
+{
+  "placeId": "osm:way:42766224",
+  "buildingWayId": 42766224,
+  "buildingAddress": "улица Серафимовича 2/20",
+  "triggerLocation": {
+    "lat": 55.745414136859864,
+    "lon": 37.611938154971725
+  },
+  "publicSidewalkWayId": 140957750,
+  "distanceToBuildingFootprintM": 2.16,
+  "basis": "Северный фасад того же здания: тротуар Берсеневской набережной, обход до южного геокодированного центра не требуется.",
+  "fieldChecked": false
+}
