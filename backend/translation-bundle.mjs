@@ -1,10 +1,11 @@
 import { isDeepStrictEqual } from "node:util";
 import { contentSourceHash, requireContentLocale } from "./content-localization.mjs";
 import { failure } from "./domain.mjs";
-import { hydratePlaceTranslation, hydrateWalkTranslation } from "./place-translations.mjs";
+import { hydratePlaceTranslation, hydrateWalkTranslation, validateEditorialSourceStory } from "./place-translations.mjs";
 import { validateWalkDocument } from "./walk-document.mjs";
 
 const HASH = /^[a-f0-9]{64}$/;
+const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 const record = value => value !== null && typeof value === "object" && !Array.isArray(value);
 const exactFields = (value, fields) => record(value) && isDeepStrictEqual(Object.keys(value).sort(), [...fields].sort());
 const bad = message => failure("BAD_REQUEST", message);
@@ -34,6 +35,69 @@ function validateCapturedSource(source) {
     texts.add(entry.sourceTextId);
   }
   return contentSourceHash(source);
+}
+
+function validatePairedSource(source, baseSource) {
+  if (source.sourceKind !== undefined && source.sourceKind !== "editorial") {
+    throw bad("Неизвестный вид снимка исходных текстов.");
+  }
+  if (source.sourceKind !== "editorial") return [];
+  if (!record(baseSource) || baseSource.sourceKind !== undefined) {
+    throw bad("Для редакционного снимка требуется исходный опубликованный снимок.");
+  }
+  const baseSourceBundleSha256 = validateCapturedSource(baseSource);
+  if (source.baseSourceBundleSha256 !== baseSourceBundleSha256) {
+    throw conflict("Хеш опубликованного снимка не соответствует редакционной поправке.");
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(source.editedAt) ||
+      source.baseCapturedAt !== baseSource.capturedAt || source.baseSourceUrl !== baseSource.sourceUrl ||
+      source.capturedAt !== undefined || source.sourceUrl !== undefined ||
+      source.shareToken !== baseSource.shareToken || source.revision !== baseSource.revision ||
+      source.sourceDocumentSha256 !== baseSource.sourceDocumentSha256 ||
+      !isDeepStrictEqual(source.document, baseSource.document) ||
+      source.entries.length !== baseSource.entries.length) {
+    throw conflict("Редакционный снимок не соответствует опубликованной основе.");
+  }
+
+  const sourceEdits = [];
+  const targetIds = new Set(baseSource.entries.map(entry => entry.sourceTextId));
+  for (let index = 0; index < source.entries.length; index++) {
+    const edited = source.entries[index];
+    const base = baseSource.entries[index];
+    if (edited.placeId !== base.placeId) throw conflict(`Нарушен порядок исходных историй: позиция ${index + 1}.`);
+    if (edited.sourceEdit === undefined) {
+      if (!isDeepStrictEqual(edited, base)) throw conflict(`История без sourceEdit изменена: ${edited.placeId}.`);
+      continue;
+    }
+    if (!exactFields(edited.sourceEdit, ["baseSourceTextId", "baseSourceStorySha256"]) ||
+        edited.sourceEdit.baseSourceTextId !== base.sourceTextId ||
+        edited.sourceEdit.baseSourceStorySha256 !== base.sourceStorySha256 ||
+        !UUID.test(edited.sourceEdit.baseSourceTextId) || !UUID.test(edited.sourceTextId) || targetIds.has(edited.sourceTextId)) {
+      throw conflict(`Некорректная привязка редакционной поправки: ${edited.placeId}.`);
+    }
+    const expected = {
+      ...base,
+      sourceTextId: edited.sourceTextId,
+      sourceStorySha256: edited.sourceStorySha256,
+      sourceEdit: edited.sourceEdit,
+      story: edited.story,
+    };
+    if (!isDeepStrictEqual(edited, expected)) {
+      throw conflict(`Редакционная поправка изменила служебные поля: ${edited.placeId}.`);
+    }
+    validateEditorialSourceStory(base.story, edited.story);
+    targetIds.add(edited.sourceTextId);
+    sourceEdits.push({
+      placeId: edited.placeId,
+      sourceTextId: edited.sourceTextId,
+      sourceStorySha256: edited.sourceStorySha256,
+      baseSourceTextId: base.sourceTextId,
+      baseSourceStorySha256: base.sourceStorySha256,
+      story: edited.story,
+    });
+  }
+  if (!sourceEdits.length) throw bad("Редакционный снимок не содержит поправок.");
+  return sourceEdits;
 }
 
 function validateLocaleArtifact(source, artifact, sourceBundleSha256) {
@@ -81,8 +145,10 @@ function validateLocaleArtifact(source, artifact, sourceBundleSha256) {
  * Builds a fully hydrated, source-pinned batch without consulting mutable live data.
  * The store performs its own freshness checks when this batch is applied.
  */
-export function validateTranslationBundle(source, translations) {
+/** @param {any} source @param {any[]} translations @param {{baseSource?: any}} [options] */
+export function validateTranslationBundle(source, translations, { baseSource } = {}) {
   const sourceBundleSha256 = validateCapturedSource(source);
+  const sourceEdits = validatePairedSource(source, baseSource);
   if (!Array.isArray(translations) || translations.length === 0) throw bad("Не переданы файлы переводов.");
   const seen = new Set();
   const hydrated = translations.map(artifact => {
@@ -91,9 +157,13 @@ export function validateTranslationBundle(source, translations) {
     seen.add(item.locale);
     return item;
   });
+  if (sourceEdits.length && (seen.size !== 2 || !seen.has("en") || !seen.has("zh"))) {
+    throw bad("Редакционная поправка русского исходника требует английский и китайский черновики.");
+  }
   return {
     document: source.document,
     sourceDocumentSha256: source.sourceDocumentSha256,
+    sourceEdits,
     translations: hydrated,
   };
 }

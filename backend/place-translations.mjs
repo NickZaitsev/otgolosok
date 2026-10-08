@@ -23,6 +23,22 @@ export function validatePlaceTranslation(source, value) {
   return translated;
 }
 
+/** A Russian editorial revision may change only the same narrative fields as a translation. */
+export function validateEditorialSourceStory(source, value) {
+  const original = safeWalkStory({ story: source, address: source?.address });
+  const edited = safeWalkStory({ story: value, address: value?.address });
+  if (!original || !edited) throw failure("BAD_REQUEST");
+  validatePlaceTranslation(original, edited);
+  const expected = {
+    ...source,
+    title: value.title,
+    paragraphs: source.paragraphs.map((paragraph, index) => ({ ...paragraph, text: value.paragraphs[index].text })),
+    facts: source.facts.map((fact, index) => ({ ...fact, claim: value.facts[index].claim })),
+  };
+  if (!same(expected, value)) throw failure("BAD_REQUEST");
+  return value;
+}
+
 /** Compact translation files cannot change any non-text source field. */
 export function hydratePlaceTranslation(source, draft) {
   const original = safeWalkStory({ story: source, address: source.address });
@@ -53,8 +69,8 @@ const view = row => row ? { id: row.id, placeId: row.entity_id, locale: row.loca
   story: JSON.parse(row.content_json), contentHash: row.content_hash, provenance: JSON.parse(row.provenance_json),
   audio: row.audio_json ? JSON.parse(row.audio_json) : null, createdAt: row.created_at, approvedAt: row.approved_at, reviewer: row.reviewer } : null;
 
-/** Additive tables: Russian source rows, their audio and existing publication keys are untouched. */
-export function createPlaceTranslationStore({ db, now, transaction }) {
+/** Translation tables are additive; an explicitly authorized bundle may add a pinned Russian editorial revision. */
+export function createPlaceTranslationStore({ db, now, transaction, prepareEditorialSources }) {
   for (const table of ["place_story_translations", "walk_text_translations"]) db.exec(`CREATE TABLE IF NOT EXISTS ${table} (
     id TEXT PRIMARY KEY, entity_id TEXT NOT NULL, locale TEXT NOT NULL CHECK(locale IN ('en','zh')),
     source_id TEXT NOT NULL, source_hash TEXT NOT NULL, revision INTEGER NOT NULL,
@@ -92,6 +108,14 @@ export function createPlaceTranslationStore({ db, now, transaction }) {
     db.prepare(`UPDATE ${table} SET state='approved',approved_at=?,reviewer=? WHERE id=?`).run(timestamp(), reviewer, id);
     return view(db.prepare(`SELECT * FROM ${table} WHERE id=?`).get(id));
   }
+  const latest = (table, entityId, locale) => db.prepare(`SELECT * FROM ${table} WHERE entity_id=? AND locale=? ORDER BY revision DESC LIMIT 1`)
+    .get(entityId, locale);
+  const exactDraft = (table, entityId, sourceId, sourceHash, locale, content, sourceProvenance) => {
+    const row = latest(table, entityId, locale);
+    return row?.state === "draft" && row.source_id === sourceId && row.source_hash === sourceHash &&
+      row.content_hash === contentSourceHash(content) && same(JSON.parse(row.content_json), content) &&
+      same(JSON.parse(row.provenance_json), sourceProvenance) ? row : null;
+  };
   return {
     savePlaceTranslation(placeId, input) { return transaction(() => {
       const row = currentSource(placeId); checkSource(row, input.sourceTextId, input.sourceStorySha256);
@@ -142,22 +166,68 @@ export function createPlaceTranslationStore({ db, now, transaction }) {
     approveWalkTranslation(id, { document, expectedRevision, reviewer }) { return transaction(() => approve("walk_text_translations", id, expectedRevision, reviewer, row => {
       validateWalkDocument(document); if (document.id !== row.entity_id || contentSourceHash(document) !== row.source_hash) throw failure("CONFLICT");
     })); },
-    importTranslationBundle(batch) { return transaction(() => {
-      if (!record(batch) || !Array.isArray(batch.translations) || !batch.translations.length) throw failure("BAD_REQUEST");
+    importTranslationBundle(batch, { applySourceEdits = false } = {}) { return transaction(() => {
+      if (!record(batch) || (batch.sourceEdits !== undefined && !Array.isArray(batch.sourceEdits)) ||
+          !Array.isArray(batch.translations) || !batch.translations.length ||
+          typeof applySourceEdits !== "boolean") throw failure("BAD_REQUEST");
+      const sourceEdits = batch.sourceEdits ?? [];
       validateWalkDocument(batch.document);
       if (contentSourceHash(batch.document) !== batch.sourceDocumentSha256) throw failure("CONFLICT");
+      if (sourceEdits.length && !applySourceEdits) throw failure("BAD_REQUEST", "Редакционные поправки исходника требуют явного разрешения.");
+      if (sourceEdits.length && typeof prepareEditorialSources !== "function") throw failure("CONFLICT");
+      const sourcePlan = sourceEdits.length ? prepareEditorialSources(sourceEdits) : null;
+      const edits = new Map(sourceEdits.map(edit => [edit.placeId, edit]));
+      if (edits.size !== sourceEdits.length) throw failure("BAD_REQUEST");
+      const locales = new Set();
+      const prepared = batch.translations.map(translation => {
+        const locale = foreign(translation.locale);
+        provenance(translation.provenance);
+        if (locales.has(locale) || !Array.isArray(translation.entries) || !translation.entries.length) throw failure("BAD_REQUEST");
+        locales.add(locale);
+        const places = new Set();
+        const entries = translation.entries.map(entry => {
+          if (!record(entry) || places.has(entry.placeId)) throw failure("BAD_REQUEST");
+          places.add(entry.placeId);
+          const edit = edits.get(entry.placeId);
+          if (edit) {
+            if (entry.sourceTextId !== edit.sourceTextId || entry.sourceStorySha256 !== edit.sourceStorySha256) throw failure("CONFLICT");
+            return { ...entry, story: validatePlaceTranslation(edit.story, entry.story) };
+          }
+          const source = currentSource(entry.placeId);
+          checkSource(source, entry.sourceTextId, entry.sourceStorySha256);
+          return { ...entry, story: validatePlaceTranslation(JSON.parse(source.approved_story_json), entry.story) };
+        });
+        if ([...edits.keys()].some(placeId => !places.has(placeId))) throw failure("CONFLICT");
+        return { ...translation, locale, entries, walkContent: hydrateWalkTranslation(batch.document, translation.walkContent) };
+      });
+      if (sourceEdits.length && (locales.size !== 2 || !locales.has("en") || !locales.has("zh"))) throw failure("BAD_REQUEST");
+
+      if (sourcePlan?.state === "replay") {
+        return prepared.map(translation => {
+          const entries = translation.entries.map(entry => {
+            const row = exactDraft("place_story_translations", entry.placeId, entry.sourceTextId, entry.sourceStorySha256,
+              translation.locale, entry.story, translation.provenance);
+            if (!row) throw failure("CONFLICT");
+            return view(row);
+          });
+          const walk = exactDraft("walk_text_translations", batch.document.id, batch.document.id, batch.sourceDocumentSha256,
+            translation.locale, translation.walkContent, translation.provenance);
+          if (!walk) throw failure("CONFLICT");
+          return { locale: translation.locale, entries, walk: view(walk) };
+        });
+      }
+
+      sourcePlan?.apply();
       const result = [];
-      for (const translation of batch.translations) {
-        foreign(translation.locale);
-        if (!Array.isArray(translation.entries) || !translation.entries.length) throw failure("BAD_REQUEST");
+      for (const translation of prepared) {
         const entries = translation.entries.map(entry => {
           const source = currentSource(entry.placeId);
           checkSource(source, entry.sourceTextId, entry.sourceStorySha256);
           return save("place_story_translations", entry.placeId, source.id, entry.sourceStorySha256, translation.locale,
-            validatePlaceTranslation(JSON.parse(source.approved_story_json), entry.story), translation.provenance);
+            entry.story, translation.provenance);
         });
         const walk = save("walk_text_translations", batch.document.id, batch.document.id, batch.sourceDocumentSha256,
-          translation.locale, hydrateWalkTranslation(batch.document, translation.walkContent), translation.provenance);
+          translation.locale, translation.walkContent, translation.provenance);
         result.push({ locale: translation.locale, entries, walk });
       }
       return result;

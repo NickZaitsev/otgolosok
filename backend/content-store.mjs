@@ -6,7 +6,7 @@ import { IDENTITY_RULES_VERSION, IDENTITY_TIERS } from "./identity-triage.mjs";
 import { cellKey, cellOf, etagOf, isCellLat, isCellLon, serializeCell, toMapPoint } from "./map-cells.mjs";
 import { EDITORIAL_NEXT_CHECK, editorialPlaceImages, PLACE_IMAGE_FILE, PLACE_IMAGE_URL_PREFIX, placeImageInputHash } from "./place-images.mjs";
 import { contentSourceHash } from "./content-localization.mjs";
-import { createPlaceTranslationStore } from "./place-translations.mjs";
+import { createPlaceTranslationStore, validateEditorialSourceStory } from "./place-translations.mjs";
 
 const encode = JSON.stringify;
 const decode = value => value == null ? null : JSON.parse(value);
@@ -145,7 +145,7 @@ export function createContentStore({db,now,transaction}) {
     CREATE TABLE IF NOT EXISTS place_open_data (place_id TEXT NOT NULL,dataset_id INTEGER NOT NULL,record_id TEXT NOT NULL,dataset_version TEXT NOT NULL,
       match_json TEXT NOT NULL,record_json TEXT NOT NULL,content_hash TEXT NOT NULL,imported_at TEXT NOT NULL,PRIMARY KEY(place_id,dataset_id));
   `);
-  const translations=createPlaceTranslationStore({db,now,transaction});
+  const translations=createPlaceTranslationStore({db,now,transaction,prepareEditorialSources});
   const columns=new Set(db.prepare("PRAGMA table_info(places)").all().map(column=>column.name));
   if(!columns.has("geometry_json"))db.exec("ALTER TABLE places ADD COLUMN geometry_json TEXT");
   if(!columns.has("provenance_json"))db.exec("ALTER TABLE places ADD COLUMN provenance_json TEXT");
@@ -171,8 +171,60 @@ export function createContentStore({db,now,transaction}) {
     ORDER BY created_at DESC,rowid DESC LIMIT 1`).get(placeId)?.audio_json;
   const cancelAudioForPlace=(placeId,timestamp)=>db.prepare(`UPDATE external_audio_jobs SET state='cancelled',lease_token_hash=NULL,
     lease_expires_at=NULL,worker_id=NULL,claim_request_id=NULL,error_json=?,updated_at=? WHERE state IN ('queued','retry_wait','leased')
-    AND source_job_id IN (SELECT 'place-text:'||id FROM place_texts WHERE place_id=?)`)
-    .run(encode({code:"CANCELLED",message:"Superseded or cancelled by editor."}),timestamp,placeId);
+    AND (source_job_id IN (SELECT 'place-text:'||id FROM place_texts WHERE place_id=?)
+      OR source_job_id IN (SELECT 'place-translation:'||id FROM place_story_translations WHERE entity_id=?))`)
+    .run(encode({code:"CANCELLED",message:"Superseded or cancelled by editor."}),timestamp,placeId,placeId);
+
+  /**
+   * Preflights every source amendment without writing. The returned apply function
+   * deliberately has no transaction of its own: bundle import owns the one atomic boundary.
+   */
+  function prepareEditorialSources(sourceEdits) {
+    if(!Array.isArray(sourceEdits)||!sourceEdits.length)throw fail("BAD_REQUEST");
+    const ids=new Set(),places=new Set(),plans=[];let state=null;
+    const current=placeId=>db.prepare(`SELECT t.* FROM place_texts t JOIN places p ON p.id=t.place_id
+      WHERE p.id=? AND p.archived=0 AND t.approved_story_json IS NOT NULL ORDER BY t.created_at DESC,t.rowid DESC LIMIT 1`).get(placeId);
+    for(const edit of sourceEdits){
+      if(!edit||typeof edit!=="object"||Array.isArray(edit)||typeof edit.placeId!=="string"||
+        typeof edit.sourceTextId!=="string"||!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(edit.sourceTextId)||
+        typeof edit.baseSourceTextId!=="string"||!/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(edit.baseSourceTextId)||
+        typeof edit.sourceStorySha256!=="string"||typeof edit.baseSourceStorySha256!=="string"||
+        !/^[a-f0-9]{64}$/.test(edit.sourceStorySha256)||!/^[a-f0-9]{64}$/.test(edit.baseSourceStorySha256)||
+        contentSourceHash(edit.story)!==edit.sourceStorySha256||ids.has(edit.sourceTextId)||places.has(edit.placeId))throw fail("BAD_REQUEST");
+      ids.add(edit.sourceTextId);places.add(edit.placeId);
+      const base=db.prepare("SELECT * FROM place_texts WHERE id=?").get(edit.baseSourceTextId);
+      if(!base||base.place_id!==edit.placeId||!base.approved_story_json||
+        contentSourceHash(decode(base.approved_story_json))!==edit.baseSourceStorySha256)throw fail("CONFLICT");
+      validateEditorialSourceStory(decode(base.approved_story_json),edit.story);
+      const target=db.prepare("SELECT * FROM place_texts WHERE id=?").get(edit.sourceTextId);
+      const live=current(edit.placeId);
+      let itemState;
+      if(live?.id===edit.baseSourceTextId&&contentSourceHash(decode(live.approved_story_json))===edit.baseSourceStorySha256){
+        if(target)throw fail("CONFLICT");
+        itemState="new";
+      }else if(live?.id===edit.sourceTextId&&contentSourceHash(decode(live.approved_story_json))===edit.sourceStorySha256){
+        if(!target||target.place_id!==edit.placeId||!target.approved_story_json||
+          contentSourceHash(decode(target.approved_story_json))!==edit.sourceStorySha256)throw fail("CONFLICT");
+        itemState="replay";
+      }else throw fail("CONFLICT");
+      if(state!==null&&state!==itemState)throw fail("CONFLICT");
+      state=itemState;plans.push({edit,base});
+    }
+    return {state,apply(){
+      if(state==="replay")return;
+      const timestamp=iso(now);
+      for(const {edit,base} of plans){
+        const selectedJson=encode(edit.story);
+        cancelAudioForPlace(edit.placeId,timestamp);
+        const inputKey=sha256(encode({editorialParent:edit.baseSourceTextId,editorialRevision:edit.sourceTextId,story:edit.story}));
+        db.prepare(`INSERT INTO place_texts
+          (id,place_id,input_key,profile,content_hash,story_json,evidence_json,verification,audio_json,approved_story_json,created_at,audio_target_profile)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).run(edit.sourceTextId,edit.placeId,inputKey,base.profile,sha256(selectedJson),selectedJson,
+            base.evidence_json,"editorial",null,selectedJson,timestamp,null);
+        translations.invalidatePlaceTranslations(edit.placeId,edit.sourceTextId);
+      }
+    }};
+  }
 
   function validateBatch({requestKey,name,limit,textProfile,mode,identityPolicy}) {
     if(typeof requestKey!=="string"||requestKey.length<8||requestKey.length>100||typeof name!=="string"||!name.trim()||!["text-only","text-and-audio"].includes(mode)
