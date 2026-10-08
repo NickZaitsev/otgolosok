@@ -27,6 +27,7 @@ import { createPlaceImageService, createWikimediaClient, placeImageUserAgent, st
 import { openOsmGeocoder } from "./osm-geocoder.mjs";
 import { openFoodIndex, isCellLat as isFoodCellLat, isCellLon as isFoodCellLon } from "./food-places.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword } from "./auth.mjs";
+import { createLegalConsentRoute } from "./legal-consent.mjs";
 import { favoriteSummary } from "./favorite-summary.mjs";
 import { createAccountStore } from "./account-store.mjs";
 import { createWalkLaunchRoutes } from "./walk-launch-routes.mjs";
@@ -170,10 +171,12 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
   const launches=createWalkLaunchRoutes({store,accountStore,authSecret,limiter:launchLimiter,walkLimiter:launchWalkLimiter,json,body});
   const topWalks=accountStore?createTopWalks({accountStore,store,builtinRoutes}):null;
   const nearbyWalks=accountStore?createNearbyWalks({accountStore,store,builtinRoutes}):null;
+  const legalConsent=createLegalConsentRoute({store:accountStore?.legalConsents,origin,secret:authSecret,json,body});
   const legacyAdminEnabled=allowLegacyAdminToken??(!auth||process.env.ALLOW_LEGACY_ADMIN_TOKEN==="true");
   const server=httpServer(async(req,res)=>{
     try {
       const url=new URL(req.url,"http://localhost");
+      if(await legalConsent(req,res,url))return;
       const session=auth?await authSession(auth,req):null;
       if(auth&&url.pathname==="/api/auth/session") {json(res,200,{user:session?{id:session.user.id,email:session.user.email,name:session.user.name,role:session.user.role}:null,csrfToken:session?sessionCsrfToken(authSecret,session.session.id):null});return;}
       if(auth&&url.pathname.startsWith("/api/auth/")){await authRequestHandler(auth)(req,res);return;}

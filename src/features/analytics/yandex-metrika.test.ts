@@ -9,6 +9,8 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(window.location.search),
 }));
 
+vi.mock("../../../legal/publication.mjs", () => ({ LEGAL_READY: true }));
+
 let root: Root;
 let container: HTMLDivElement;
 
@@ -17,6 +19,7 @@ beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   vi.stubEnv("NODE_ENV", "production");
   delete window.ym;
+  localStorage.clear();
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
@@ -33,21 +36,23 @@ afterEach(async () => {
   vi.unstubAllEnvs();
 });
 
-it("учитывает маршруты и query при навигации, включая возврат назад, без дубля StrictMode", async () => {
+it("учитывает маршруты и query при навигации, включая возврат назад, без дублей", async () => {
   const { YandexMetrika } = await import("./yandex-metrika");
+  const { saveCookieChoice } = await import("../legal/cookie-consent");
+  saveCookieChoice(true, "11111111-1111-4111-8111-111111111111." + "a".repeat(43));
   for (const path of ["/", "/walk?id=one", "/walk?id=two", "/"]) {
     window.history.pushState({}, "", path);
     await act(async () => root.render(createElement(StrictMode, null, createElement(YandexMetrika))));
   }
   expect(window.ym?.a?.filter(command => command[1] === "hit").map(command => new URL(String(command[2])).pathname + new URL(String(command[2])).search))
-    .toEqual(["/", "/walk?id=one", "/walk?id=two", "/"]);
+    .toEqual(["/", "/walk", "/"]);
   expect(document.querySelectorAll("script")).toHaveLength(1);
 });
 
 it("не загружает аналитику в режиме разработки", async () => {
   vi.stubEnv("NODE_ENV", "development");
   const { YandexMetrika } = await import("./yandex-metrika");
-  await act(async () => root.render(createElement(YandexMetrika)));
+  await act(async () => root.render(createElement(StrictMode, null, createElement(YandexMetrika))));
   expect(window.ym).toBeUndefined();
   expect(document.querySelector("script")).toBeNull();
 });

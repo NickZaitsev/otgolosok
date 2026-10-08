@@ -5,7 +5,9 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { I18nProvider } from "@/lib/i18n/provider";
 import type { Locale } from "@/lib/i18n/locale";
 import { Login } from "./login";
-import { getSession, signInWithPassword } from "./client";
+import { getSession, signInWithPassword, signUpWithPassword } from "./client";
+
+vi.mock("../../../legal/publication.mjs", () => ({ LEGAL_READY: true }));
 
 vi.mock("../navigation/app-header", () => ({ AppHeader: () => null }));
 vi.mock("./client", () => ({
@@ -65,4 +67,25 @@ it.each([
   expect(container.querySelector("[role=alert]")?.textContent).toBe(message);
   expect(email.value).toBe("anna@example.test");
   expect(password.value).toBe("correct-length");
+});
+
+
+it("регистрация требует отдельного неотмеченного подтверждения условий", async () => {
+  await mount("ru");
+  await act(async () => container.querySelector<HTMLButtonElement>(".text-button")!.click());
+  const checkbox = container.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+  const submit = container.querySelector<HTMLButtonElement>('button[type="submit"], .account-button')!;
+  expect(checkbox.checked).toBe(false);
+  expect(submit.disabled).toBe(true);
+  expect(container.querySelector<HTMLAnchorElement>('a[href="/legal/terms"]')?.target).toBe("_blank");
+  await act(async () => container.querySelector("form")!.dispatchEvent(new Event("submit", {bubbles: true, cancelable: true})));
+  expect(signUpWithPassword).not.toHaveBeenCalled();
+  expect(container.querySelector('[role="alert"]')?.textContent).toContain("примите актуальные условия");
+  await act(async () => checkbox.click());
+  expect(submit.disabled).toBe(false);
+  await act(async () => container.querySelector<HTMLButtonElement>(".text-button")!.click());
+  expect(container.querySelector('input[type="checkbox"]')).toBeNull();
+  expect(submit.disabled).toBe(false);
+  await act(async () => container.querySelector<HTMLButtonElement>(".text-button")!.click());
+  expect(container.querySelector<HTMLInputElement>('input[type="checkbox"]')?.checked).toBe(false);
 });

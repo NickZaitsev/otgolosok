@@ -13,4 +13,4 @@ admin-create: admin-create-prod ## Создать редактора; EMAIL=ва
 
 admin-create-prod: ## Создать редактора в работающем контейнере; EMAIL=ваш@email.ru
 	@test -n $(call shell_quote,$(EMAIL)) || { printf '%s\n' 'Укажите EMAIL: make admin-create-prod EMAIL=ваш@email.ru' >&2; exit 1; }
-	@docker exec -it -- $(call shell_quote,$(GENERATOR_CONTAINER)) node /app/editor-account.mjs $(call shell_quote,$(EMAIL)) /data/auth.sqlite
+	@docker exec -it -- $(call shell_quote,$(GENERATOR_CONTAINER)) node /app/backend/editor-account.mjs $(call shell_quote,$(EMAIL)) /data/auth.sqlite

@@ -1,11 +1,11 @@
 import { type ReactNode, Suspense } from "react";
 import { YandexMetrika } from "@/features/analytics/yandex-metrika";
-import { METRIKA_ID } from "@/features/analytics/metrika";
 import { I18nProvider } from "./provider";
 import { htmlLanguage, localizedPath, type Locale } from "./locale";
 import type { Metadata, Viewport } from "next";
 import { AppNavigation } from "@/features/navigation/app-navigation";
 import { NativeShell } from "@/features/native/native-shell";
+import { CookieNotice } from "@/features/legal/cookie-notice";
 import "@/styles/tokens.css";
 import "@/styles/base.css";
 import "@/styles/ui.css";
@@ -33,12 +33,8 @@ export function RootDocument({ children, locale }: { children: ReactNode; locale
   return (
     <html lang={htmlLanguage[locale]}>
       <body>
-        <I18nProvider locale={locale}>{children}<AppNavigation /><NativeShell /></I18nProvider>
+        <I18nProvider locale={locale}>{children}<AppNavigation /><NativeShell /><CookieNotice /></I18nProvider>
         <Suspense fallback={null}><YandexMetrika /></Suspense>
-        {process.env.NODE_ENV === "production" && <noscript><div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`https://mc.yandex.ru/watch/${METRIKA_ID}`} style={{ position: "absolute", left: -9999 }} alt="" />
-        </div></noscript>}
       </body>
     </html>
   );

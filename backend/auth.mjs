@@ -1,7 +1,9 @@
 import { DatabaseSync } from "node:sqlite";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { betterAuth } from "better-auth";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { getMigrations } from "better-auth/db/migration";
+import { TERMS_VERSION, LEGAL_READY } from "../legal/publication.mjs";
 
 function openAuthDatabase(path) {
   const database = new DatabaseSync(path, { timeout: 5000 });
@@ -9,8 +11,8 @@ function openAuthDatabase(path) {
   return database;
 }
 
-/** @param {{databasePath: string, baseURL: string, secret?: string, production?: boolean}} options */
-export async function createAuth({ databasePath, baseURL, secret, production = process.env.NODE_ENV === "production" }) {
+/** @param {{databasePath: string, baseURL: string, secret?: string, production?: boolean, legalReady?: boolean}} options */
+export async function createAuth({ databasePath, baseURL, secret, production = process.env.NODE_ENV === "production", legalReady = LEGAL_READY }) {
   if (!baseURL) throw new Error("APP_ORIGIN is required for authentication");
   if (production && (!secret || secret.length < 32)) throw new Error("BETTER_AUTH_SECRET must contain at least 32 characters");
   const database = openAuthDatabase(databasePath);
@@ -20,7 +22,26 @@ export async function createAuth({ databasePath, baseURL, secret, production = p
     secret: secret || "development-only-better-auth-secret-32",
     trustedOrigins: [baseURL],
     emailAndPassword: { enabled: true, minPasswordLength: 10, maxPasswordLength: 128 },
-    user: { additionalFields: { role: { type: "string", required: false, defaultValue: "user", input: false } } },
+    user: { additionalFields: {
+      role: { type: "string", required: false, defaultValue: "user", input: false },
+      termsVersion: { type: "string", required: false, input: false, returned: false },
+      termsAcceptedAt: { type: "date", required: false, input: false, returned: false },
+    } },
+    hooks: { before: createAuthMiddleware(async ctx => {
+      if (ctx.path !== "/sign-up/email") return;
+      const input = /** @type {Record<string, unknown>} */ (ctx.body);
+      if (!legalReady) throw new APIError("SERVICE_UNAVAILABLE", { code: "LEGAL_UNAVAILABLE", message: "Регистрация временно недоступна." });
+      if (input?.termsAccepted !== true || input?.termsVersion !== TERMS_VERSION) {
+        throw new APIError("BAD_REQUEST", { code: "TERMS_REQUIRED", message: "Для регистрации примите актуальные условия использования." });
+      }
+      // Evidence fields are assigned by the server, never by an auth API client.
+      delete input.termsVersion;
+      delete input.termsAcceptedAt;
+    }) },
+    databaseHooks: { user: { create: { before: async (user, ctx) => {
+      if (ctx?.path !== "/sign-up/email") return { data: user };
+      return { data: { ...user, termsVersion: TERMS_VERSION, termsAcceptedAt: new Date() } };
+    } } } },
     // Better Auth refreshes expiresAt at most once a day. Seven days is the
     // inactivity window; authSession separately enforces the 30 day absolute
     // lifetime from the immutable createdAt value.
