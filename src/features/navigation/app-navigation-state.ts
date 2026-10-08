@@ -7,6 +7,6 @@ export function navigationSection(pathname: string): NavigationSection | null {
   if (normalized === "/") return "nearby";
   if (normalized === "/walk") return "walk";
   if (normalized === "/history" || normalized === "/trends") return "trends";
-  if (normalized === "/account" || normalized === "/account/walks") return "account";
+  if (normalized === "/account" || normalized === "/account/walks" || normalized === "/login") return "account";
   return null;
 }

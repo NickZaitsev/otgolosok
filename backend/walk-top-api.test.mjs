@@ -118,7 +118,9 @@ test("the top lists approved public walks only, without private data; the catalo
   const { walks } = response.data;
   assert.deepEqual(walks.map((/** @type {any} */ item) => [item.kind, item.id]), [["shared", approved.shareToken]]);
   const item = walks.find((/** @type {any} */ entry) => entry.kind === "shared");
-  assert.deepEqual(item, { kind: "shared", id: approved.shareToken, title: "Одобренная", walkingMinutes: 45, distanceM: 3200, stopCount: 1, rating: { average: 5, count: 1 } });
+  assert.deepEqual(item, { kind: "shared", id: approved.shareToken, title: "Одобренная", walkingMinutes: 45, distanceM: 3200, stopCount: 1, rating: { average: 5, count: 1 },
+    preview: [[26.4, 92], [73.6, 8]],
+    startMetro: { name: "Арбатская", distanceM: 255 }, endMetro: { name: "Арбатская", distanceM: 129 } });
   assert.equal(walks[0].kind, "shared", "a launched walk ranks above one with no launches");
   for (const secretValue of ["anna", "Анна", "@example.test", approved.id, "launches"]) assert.equal(response.text.includes(secretValue), false, secretValue);
   assert.equal(accountStore.launchTotals().get(`account:${approved.id}`), 1);

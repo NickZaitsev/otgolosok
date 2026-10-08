@@ -1,4 +1,6 @@
 import { catalogWalkView, listedCatalogRoutes } from "./walk-catalog.mjs";
+import metroData from "./metro-stations.json" with { type: "json" };
+import { nearestMetro, routePreview } from "./walk-top-preview.mjs";
 
 export const TOP_LIMIT = 20;
 export const TOP_PRIOR_WEIGHT = 5;
@@ -72,9 +74,17 @@ export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP
         const documents = accountStore.getTopDocuments(batch.filter(item => item.kind === "shared").map(item => item.walkId));
         for (const item of batch) {
           if (result.length >= limit) break;
-          const meta = item.kind === "catalog" ? catalogDetails(item.route) : walkDetails(documents.get(item.walkId));
+          const document = item.kind === "catalog" ? catalogDocument(item.route) : documents.get(item.walkId);
+          const meta = walkDetails(document);
           if (!meta) continue;
-          result.push({ kind: item.kind, id: item.id, title: item.title, ...meta, rating: ratingSummary(item) });
+          const geometry = Array.isArray(document.route.geometry) ? document.route.geometry : [];
+          const start = document.start?.location ?? geometry[0];
+          const end = geometry.at(-1);
+          const loopEnd = document.mode === "loop" && start && end && Math.abs(start.lat - end.lat) < 0.0005 && Math.abs(start.lon - end.lon) < 0.0005;
+          result.push({ kind: item.kind, id: item.id, title: item.title, ...meta, rating: ratingSummary(item),
+            preview: routePreview(geometry),
+            startMetro: nearestMetro(start, metroData.stations, document.start?.address),
+            endMetro: nearestMetro(end, metroData.stations, loopEnd ? document.start?.address : "") });
         }
       }
       return result;

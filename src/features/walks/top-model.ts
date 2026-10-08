@@ -12,7 +12,12 @@ export type TopWalk = {
   distanceM: number;
   stopCount: number;
   rating: ReviewSummary;
+  preview: Array<[number, number]> | null;
+  startMetro: MetroStation | null;
+  endMetro: MetroStation | null;
 };
+
+export type MetroStation = { name: string; distanceM: number };
 
 export const record = (value: unknown): Record<string, unknown> => {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new TypeError("Ожидался объект.");
@@ -26,7 +31,7 @@ export const CATALOG_WALK_ID = /^[a-z0-9][a-z0-9-]{0,127}$/;
 export const WALK_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 
 /** Fields every walk card shares; the caller validates kind and id. */
-export function validateWalkCard(item: Record<string, unknown>): Omit<TopWalk, "kind" | "id"> {
+export function validateWalkCard(item: Record<string, unknown>): Pick<TopWalk, "title" | "walkingMinutes" | "distanceM" | "stopCount" | "rating"> {
   if (typeof item.title !== "string" || !item.title.trim()) throw new TypeError("Нет названия прогулки.");
   if (!Number.isSafeInteger(item.stopCount) || (item.stopCount as number) < 0) throw new TypeError("Неверное число историй.");
   const rating = record(item.rating);
@@ -40,12 +45,26 @@ export function validateWalkCard(item: Record<string, unknown>): Omit<TopWalk, "
   };
 }
 
+function preview(value: unknown): TopWalk["preview"] {
+  if (value === undefined || value === null) return null;
+  if (!Array.isArray(value) || value.length < 2 || value.length > 80 || !value.every(point =>
+    Array.isArray(point) && point.length === 2 && point.every(coordinate => typeof coordinate === "number" && Number.isFinite(coordinate) && coordinate >= 0 && coordinate <= 100))) throw new TypeError("Неверная схема маршрута.");
+  return value as Array<[number, number]>;
+}
+
+function metro(value: unknown): MetroStation | null {
+  if (value === undefined || value === null) return null;
+  const station = record(value);
+  if (typeof station.name !== "string" || !station.name.trim() || station.name.length > 100 || !Number.isSafeInteger(station.distanceM) || (station.distanceM as number) < 0 || (station.distanceM as number) > 1500) throw new TypeError("Неверная станция метро.");
+  return { name: station.name, distanceM: station.distanceM as number };
+}
+
 function validateTopWalk(raw: unknown): TopWalk {
   const item = record(raw);
   if (item.kind !== "catalog" && item.kind !== "shared") throw new TypeError("Неверный вид прогулки.");
   const id = item.id;
   if (typeof id !== "string" || !(item.kind === "catalog" ? CATALOG_WALK_ID : WALK_UUID).test(id)) throw new TypeError("Неверный идентификатор прогулки.");
-  return { kind: item.kind, id, ...validateWalkCard(item) };
+  return { kind: item.kind, id, ...validateWalkCard(item), preview: preview(item.preview), startMetro: metro(item.startMetro), endMetro: metro(item.endMetro) };
 }
 
 export function validateTopWalks(value: unknown): TopWalk[] {
@@ -56,6 +75,10 @@ export function validateTopWalks(value: unknown): TopWalk[] {
 
 export function topWalkHref(walk: Pick<TopWalk, "kind" | "id">) {
   return walk.kind === "catalog" ? `/walk?catalog=${encodeURIComponent(walk.id)}` : `/walk?share=${encodeURIComponent(walk.id)}`;
+}
+
+export function filterTopWalks(walks: TopWalk[], start: string, end: string): TopWalk[] {
+  return walks.filter(walk => (!start || walk.startMetro?.name === start) && (!end || walk.endMetro?.name === end));
 }
 
 const storyWords: Record<string, string> = { one: "история", few: "истории", many: "историй", other: "истории" };

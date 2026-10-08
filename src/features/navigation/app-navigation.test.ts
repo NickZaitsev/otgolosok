@@ -53,20 +53,22 @@ describe("нижняя навигация приложения", () => {
     ["/history", "trends"],
     ["/trends", "trends"],
     ["/account/walks", "account"],
+    ["/login", "account"],
+    ["/en/login", "account"],
   ] as const)("выделяет раздел %s", (pathname, expected) => {
     expect(navigationSection(pathname)).toBe(expected);
   });
 
-  it.each(["/login", "/admin", "/update.html"])("не выделяет служебный маршрут %s", pathname => {
+  it.each(["/admin", "/update.html"])("не выделяет служебный маршрут %s", pathname => {
     expect(navigationSection(pathname)).toBeNull();
   });
 
-  it.each([["/trends", "Тренды"], ["/account/walks", "Профиль"], ["/account", "Профиль"], ["/walk", "Прогулка"]])("на странице %s отмечает «%s»", async (pathname, label) => {
+  it.each([["/trends", "Тренды"], ["/account/walks", "Профиль"], ["/account", "Профиль"], ["/login", "Профиль"], ["/walk", "Прогулка"]])("на странице %s отмечает «%s»", async (pathname, label) => {
     expect(await render(pathname)).not.toBeNull();
     expect(current()).toBe(label);
   });
 
-  it.each(["/", "/login", "/admin"])("общая навигация не рисуется на %s: там её нет или её рисует карта", async pathname => {
+  it.each(["/", "/admin"])("общая навигация не рисуется на %s: там её нет или её рисует карта", async pathname => {
     expect(await render(pathname)).toBeNull();
   });
 
@@ -131,7 +133,11 @@ describe("языковая навигация", () => {
     expect([...container.querySelectorAll("a")].some(link => link.getAttribute("href") === createUrl)).toBe(true);
     expect(navigationSection(pathname)).toBe("trends");
   });
-  it.each(["/en", "/zh", "/en/login", "/zh/login"])("не дублирует навигацию на %s", async pathname => {
+  it.each(["/en", "/zh"])("не дублирует навигацию на %s", async pathname => {
     expect(await render(pathname)).toBeNull();
+  });
+  it.each([["/en/login", "Profile"], ["/zh/login", "个人资料"]])("оставляет профиль в нижней навигации на %s", async (pathname, label) => {
+    expect(await render(pathname)).not.toBeNull();
+    expect(current()).toBe(label);
   });
 });
