@@ -217,9 +217,16 @@ test("аудио, текст и список остановок открываю
   const secondLeg = await activeLeg.getAttribute("d");
   await page.getByRole("button", { name: "Пауза", exact: true }).click();
   await expect.poll(() => page.locator("audio").evaluate(el => (el as HTMLAudioElement).paused)).toBe(true);
-  await page.getByRole("button", { name: "Читать историю" }).click();
+  const readStory = page.getByRole("button", { name: "Читать историю", exact: true });
+  await expect(readStory.locator("svg")).toHaveAttribute("aria-hidden", "true");
+  await expect(readStory.locator("span")).toHaveCSS("text-decoration-line", "underline");
+  await expect(readStory).toHaveAttribute("aria-expanded", "false");
+  await readStory.click();
   await expect(page.locator(".walk-session-drawer .story-text")).toBeVisible();
-  await page.getByRole("button", { name: "Читать историю" }).click();
+  await expect(readStory).toHaveAttribute("aria-expanded", "true");
+  await readStory.click();
+  await expect(page.locator(".walk-session-drawer .story-text")).toHaveCount(0);
+  await expect(readStory.locator("span")).toHaveCSS("text-decoration-line", "underline");
   await page.getByRole("button", { name: "Настройки прогулки" }).click();
   await page.getByLabel("Переключение остановок").selectOption("manual");
   await page.getByLabel("Скорость аудио").selectOption("1.25");

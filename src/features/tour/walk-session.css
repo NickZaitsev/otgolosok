@@ -21,6 +21,8 @@
 .walk-session-tools a{display:flex;align-items:center;min-height:var(--control-min);color:inherit;font-size:14px;text-underline-offset:4px}
 .walk-session-tools button{display:flex;align-items:center;gap:6px;min-height:var(--control-min);padding:0;border:0;background:none;color:inherit;font:inherit;font-size:14px;cursor:pointer}
 .walk-session-tools svg{width:18px;height:18px}
+.walk-session-read svg{flex:none}
+.walk-session-read span{text-decoration:underline;text-underline-offset:4px}
 .walk-session-tools [aria-expanded=true]{text-decoration:underline;text-underline-offset:4px}
 .walk-session-tools .walk-session-position{color:var(--warning-ink)}
 /* One row of round 50 px icons and the main action. The action never breaks its label: when the row is too narrow for it, it takes a row of its own (flex-wrap). */
