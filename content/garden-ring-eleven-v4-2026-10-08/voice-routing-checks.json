@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-08T17:59:56.754Z",
+  "keys": 3,
+  "checks": [
+    {
+      "keyIndex": 1,
+      "configuredVoice": "9ivxhQ6xIsHd6R3Xc635",
+      "effectiveVoice": "9ivxhQ6xIsHd6R3Xc635",
+      "exists": true,
+      "label": "Отголосок2 (ru)"
+    },
+    {
+      "keyIndex": 2,
+      "configuredVoice": "9ivxhQ6xIsHd6R3Xc635",
+      "effectiveVoice": "JVYtLnrrrMG4dcGbtdAw",
+      "exists": true,
+      "label": "Отголосок2 (ru)"
+    },
+    {
+      "keyIndex": 3,
+      "configuredVoice": "9ivxhQ6xIsHd6R3Xc635",
+      "effectiveVoice": "8Hp7MfQf2HGTKtrxXvVj",
+      "exists": true,
+      "label": "Отголосок2 (ru)"
+    }
+  ]
+}

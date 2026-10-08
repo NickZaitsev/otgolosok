@@ -1,0 +1,1592 @@
+{
+  "id": "garden-ring-eleven-v4-2026-10-08",
+  "provider": "elevenlabs",
+  "model": "eleven_v4",
+  "voice": "9ivxhQ6xIsHd6R3Xc635",
+  "entries": [
+    {
+      "placeId": "osm:node:1081354475",
+      "name": "Дети — жертвы пороков взрослых",
+      "textId": "e9e9df39-8a85-4044-8cba-571e40d7dbd3",
+      "sourceTextSha256": "c307f10f665ae9415e7c1bf99814cd5d4be716bb54facccef994a79c6181493d",
+      "wordCount": 105,
+      "revoiceRequestId": "774f3ae1-f6da-5512-929d-d7edbcc45d6d"
+    },
+    {
+      "placeId": "osm:node:11012889362",
+      "name": "Р. Я. Плятту",
+      "textId": "a04e5e35-4200-4509-8b0e-bc5fc073e4ea",
+      "sourceTextSha256": "ca2ba48c4ef76f19d0b3b47be282049a2d9f32a923ab798360e06d69cd968785",
+      "wordCount": 113,
+      "revoiceRequestId": "f0831366-927a-5234-ac0d-4865cd5f358f"
+    },
+    {
+      "placeId": "osm:node:11037404188",
+      "name": "Пушкин и Мицкевич",
+      "textId": "cbfe1533-11f5-4ee3-972d-a8579c45ba8c",
+      "sourceTextSha256": "8c603841177e0d8b59f94ee1a0b8cb97a3d61443fa54a39b86580150462ee7b7",
+      "wordCount": 102,
+      "revoiceRequestId": "8e371adc-ead1-56d5-802f-22ff31482304"
+    },
+    {
+      "placeId": "osm:node:1106845052",
+      "name": "Музей В.В. Маяковского",
+      "textId": "9682e5d3-b38c-4a6d-8edb-7b36692bf76b",
+      "sourceTextSha256": "cf902e1d096b99d0e5f7176189f7fe0c5bd8a42b669870d40716fab389499eca",
+      "wordCount": 136,
+      "revoiceRequestId": "ac429049-1327-5b80-82d3-632c5bedfd10"
+    },
+    {
+      "placeId": "osm:node:11780094310",
+      "name": "Рудно-петрографический музей",
+      "textId": "6a24d0cf-6fd8-49dd-bfcd-1653c90111b1",
+      "sourceTextSha256": "356f3f196c27d62194f6386114bca24f6a668026361af1f12c12926b079348c7",
+      "wordCount": 116,
+      "revoiceRequestId": "163a306a-028d-51fd-b41f-d98974fb3d01"
+    },
+    {
+      "placeId": "osm:node:11916294313",
+      "name": "Музей Русского Афона",
+      "textId": "e754c1c0-c5d0-4a89-921c-03881dd9f804",
+      "sourceTextSha256": "3a1b1bdf6210d38091087467d918d1c35ff98f6f72004dde5c82f385ee1e4faa",
+      "wordCount": 107,
+      "revoiceRequestId": "6be93e8c-4221-540c-b897-9739abeec959"
+    },
+    {
+      "placeId": "osm:node:12233205875",
+      "name": "Пречистенские вечерние классы для рабочих",
+      "textId": "a97e76b1-a6a9-4710-bb31-6f78f3a8dc2e",
+      "sourceTextSha256": "6718be8527e7ad9bcb0aa25ffb67ff11775988ffbffd15354931880d39406382",
+      "wordCount": 121,
+      "revoiceRequestId": "45d2a47c-05eb-5bbb-b5e5-38bef75ad13e"
+    },
+    {
+      "placeId": "osm:node:12236419787",
+      "name": "С. И. Мицкевичу",
+      "textId": "5f8af31e-67ca-4d45-afad-3400c02c7690",
+      "sourceTextSha256": "57d1f65b68ab28682b746959d5a2327a254245f7eb119681541ebe2c9be82312",
+      "wordCount": 112,
+      "revoiceRequestId": "b48edfa9-69b2-5605-b168-3a6a7abc9b81"
+    },
+    {
+      "placeId": "osm:node:13190696077",
+      "name": "Театр Скатуве",
+      "textId": "73f78517-bf78-48af-a229-8bc61c387d9b",
+      "sourceTextSha256": "8634a297bee8c204049846675f8a66f39d22c86e31d049ed84667e088b49585e",
+      "wordCount": 119,
+      "revoiceRequestId": "9cd6ee14-7801-5185-9cf5-032f79677e48"
+    },
+    {
+      "placeId": "osm:node:1334562944",
+      "name": "И. А. Крылову",
+      "textId": "535fbcab-f0a0-46c7-a0db-8026dcda021d",
+      "sourceTextSha256": "5e9ad77c821823d4623fc0764e6f684625bd420b63b67243bf9a4ae87959b78a",
+      "wordCount": 105,
+      "revoiceRequestId": "144f7af8-30d4-58f2-8fa1-d21f95e172a0"
+    },
+    {
+      "placeId": "osm:node:1559435148",
+      "name": "В. В. Воровскому",
+      "textId": "326dc300-74d0-4d26-af3c-025cc8373ad5",
+      "sourceTextSha256": "b12b3d8e6d30e4d72f086b1d4b1a5a1966ee5019280da091bc04c83abe2f3e41",
+      "wordCount": 113,
+      "revoiceRequestId": "b6cfae51-2051-5e31-9db4-855ee33a853e"
+    },
+    {
+      "placeId": "osm:node:1592025111",
+      "name": "Дом на набережной",
+      "textId": "3d8d4e0e-2072-4cfe-81f0-15f9850edb61",
+      "sourceTextSha256": "bfdd4c617323a94ee840265dbf8ebb280ca47498f3a5799abe8d94e3fee6b0c5",
+      "wordCount": 109,
+      "revoiceRequestId": "868ca233-8f00-52f5-9186-d2c9372d8ac8"
+    },
+    {
+      "placeId": "osm:node:2219502268",
+      "name": "Мемориальный музей-квартира А. Н. Толстого",
+      "textId": "3e3ff273-219d-47df-a0f8-83058f655fe1",
+      "sourceTextSha256": "e838ece6467db669dcc92c103068edf857b4b716f89aa10a954c3e77cd28d638",
+      "wordCount": 126,
+      "revoiceRequestId": "ee208998-7872-5dd0-b44d-b480f79b06b1"
+    },
+    {
+      "placeId": "osm:node:2368886164",
+      "name": "Теремной дворец",
+      "textId": "8a47d1e0-6acc-4999-81ec-31c2e48ab98e",
+      "sourceTextSha256": "cbac67a007ea59da8f2340f1c91601d6f912b8cbb7861e5055eac065e564b673",
+      "wordCount": 110,
+      "revoiceRequestId": "3d290a44-0d41-54cd-9d13-45ed82fb8f05"
+    },
+    {
+      "placeId": "osm:node:2368886170",
+      "name": "Золотая Царицына палата",
+      "textId": "867e80cb-f762-4ccf-9226-bb34af78b2bb",
+      "sourceTextSha256": "7ed5e0421fe4400202309672bdde29c80844e19ac46571e99875f0a577f198e0",
+      "wordCount": 102,
+      "revoiceRequestId": "4a316a58-c6d7-5780-8ef3-1399ef941fba"
+    },
+    {
+      "placeId": "osm:node:2380290739",
+      "name": "Могила М. В. Фрунзе",
+      "textId": "c12f5265-a698-4533-b275-2305ecb17e88",
+      "sourceTextSha256": "0a6f12b42d69a9e9689f8ca42ecbad6ad9a202eef766f8fbc81bdfe03033668e",
+      "wordCount": 114,
+      "revoiceRequestId": "7d2fbc26-d0e4-5855-b52f-f15d6065a59c"
+    },
+    {
+      "placeId": "osm:node:253124200",
+      "name": "Юрию Долгорукому",
+      "textId": "31bad6dd-41c8-42fd-86e8-383192755b19",
+      "sourceTextSha256": "d51b936045bdf26503abad6669d41ce964ddd3038dee8a3c99c9a4ee650c3af3",
+      "wordCount": 102,
+      "revoiceRequestId": "afe80a42-157b-5a10-a723-844193f93c07"
+    },
+    {
+      "placeId": "osm:node:2574198424",
+      "name": "И. А. Бродскому",
+      "textId": "23a9a432-a4e5-4185-b1d8-1fe5bb82d387",
+      "sourceTextSha256": "59449081fd08f514bf2f4ceacc3ec2c68d80e1c9ad0d48d4036fb0ee60dfcdc8",
+      "wordCount": 101,
+      "revoiceRequestId": "dfbfa6db-fbe0-5632-850b-50398f045102"
+    },
+    {
+      "placeId": "osm:node:2613597034",
+      "name": "Музей искусства народов Востока",
+      "textId": "cd9f44c1-c468-4ea3-8ff6-1324700e8049",
+      "sourceTextSha256": "96b6292779fdfd14303093c83624ffceaa0d7fa750c9caf7d8b882f1eca8265a",
+      "wordCount": 122,
+      "revoiceRequestId": "6619120a-b2b4-5ead-ab31-cbb5c42c1d38"
+    },
+    {
+      "placeId": "osm:node:2624695929",
+      "name": "Стена Цоя",
+      "textId": "d17e82aa-40c7-47ec-88e8-b6e4c23d5e1c",
+      "sourceTextSha256": "7d8e07d539b6ef278a4f08bdc04cec3642c7983de9b152eccebceeaf12353b19",
+      "wordCount": 111,
+      "revoiceRequestId": "5cc0286e-aaab-5617-939c-d8e9726fb9bb"
+    },
+    {
+      "placeId": "osm:node:2640796038",
+      "name": "Ф. И. Шаляпину",
+      "textId": "29e7b02e-f54f-4530-9795-5cb8daa48106",
+      "sourceTextSha256": "a4ec9df6fc579cca24819838a9db7982c1600607674da8ae094d940906da6fdb",
+      "wordCount": 100,
+      "revoiceRequestId": "0bbaa856-208e-515e-b576-ca9d2ca3831c"
+    },
+    {
+      "placeId": "osm:node:266720662",
+      "name": "Жилой дом на Котельнической набережной",
+      "textId": "428fe828-c0d5-444e-8bad-b4486c61057f",
+      "sourceTextSha256": "03c34d97d6287acc1c57cc09863fbe76b4a5c48e3a566a07f43a7835cbd0b4eb",
+      "wordCount": 114,
+      "revoiceRequestId": "6a388c31-4e62-5e13-85f9-b4b56e54199e"
+    },
+    {
+      "placeId": "osm:node:273355916",
+      "name": "Государственный музей А.С.Пушкина",
+      "textId": "18249104-ec8b-470e-b7b1-dc71a3d7d631",
+      "sourceTextSha256": "1ef1c416aced647ca4f27b912db3fa57a484b853693142a392bb40931368e730",
+      "wordCount": 106,
+      "revoiceRequestId": "fd260beb-d64a-5f21-9667-8421efe11c97"
+    },
+    {
+      "placeId": "osm:node:2798179186",
+      "name": "Государственный музей Л.Н. Толстого",
+      "textId": "8f92f779-ef10-42a1-a82b-ab88b40481ae",
+      "sourceTextSha256": "7240d798fed3c676966cbb1de9c794d2db42fa5454e47a62cbc86f60f3d93f6b",
+      "wordCount": 112,
+      "revoiceRequestId": "80ad6b45-0bc2-5437-a386-5884e6d7b790"
+    },
+    {
+      "placeId": "osm:node:3047362972",
+      "name": "Героям Плевны",
+      "textId": "fecfa607-f781-4c76-90f2-5fe48fb95d06",
+      "sourceTextSha256": "c5ec0901ea324c87b8ee7ccb4f87264b8bcf6f183ed25592a4320338531b9154",
+      "wordCount": 133,
+      "revoiceRequestId": "2ebe7269-1ff6-52a3-8e39-c180b4f239c7"
+    },
+    {
+      "placeId": "osm:node:311999396",
+      "name": "Царь-пушка",
+      "textId": "98c89988-099d-499b-a4ab-6face9f0a87e",
+      "sourceTextSha256": "bbde42486c775030b6f8f24535575e96ea1bd62fff25b55e7267d687dc242b0d",
+      "wordCount": 155,
+      "revoiceRequestId": "63d95f5a-6085-52ff-8762-31b7cff717bd"
+    },
+    {
+      "placeId": "osm:node:311999397",
+      "name": "Царь-колокол",
+      "textId": "f95f739e-7257-4d56-b985-d3d00117d656",
+      "sourceTextSha256": "fff424a4611a0d9162a1d4e79c1e7d8593a5158fe7057eac7e867a97d8e4fb0f",
+      "wordCount": 128,
+      "revoiceRequestId": "d2177e00-0318-509c-9e9c-82cef75a22f6"
+    },
+    {
+      "placeId": "osm:node:3198384989",
+      "name": "Александру I",
+      "textId": "be959eeb-b387-4c12-bb7b-26c5067ae814",
+      "sourceTextSha256": "b8e6fdbcc10cfe21b2d6a7ce72c0bddd01c06c3a3054a4c377c99d864bdc8a69",
+      "wordCount": 101,
+      "revoiceRequestId": "6019dd80-814b-583a-ab91-e86fc242c9f2"
+    },
+    {
+      "placeId": "osm:node:3387496562",
+      "name": "Дом-музей А.П. Чехова",
+      "textId": "b3598027-2bc3-4df3-ab6e-e9f487896d01",
+      "sourceTextSha256": "1b5784c1d6366848015ea97f81c9e1c9998325e54250495d637b1a382f55530d",
+      "wordCount": 102,
+      "revoiceRequestId": "c2fe0572-a0c8-5d6a-8128-00cab0411f93"
+    },
+    {
+      "placeId": "osm:node:3500729458",
+      "name": "Дом-музей А. И. Герцена",
+      "textId": "913ae5bd-a0ba-4eb1-9990-f40862b3569e",
+      "sourceTextSha256": "8726b6c186bbb9afe9e0986b05e9244948a5836d9de143f59adae3cb674af95f",
+      "wordCount": 110,
+      "revoiceRequestId": "aa628759-e2c4-57f5-ac27-068cb0102dac"
+    },
+    {
+      "placeId": "osm:node:4139540604",
+      "name": "Театральная галерея на Малой Ордынке",
+      "textId": "63bd8c52-335a-4738-b6f2-ea320cc2cf2a",
+      "sourceTextSha256": "8e0623734793a1eba4e61a7156b3f295fdd2bb8fbfc8fe1d08cb8682f7017fec",
+      "wordCount": 114,
+      "revoiceRequestId": "9ce0365f-3397-5bfe-a698-edc2ff14ebc2"
+    },
+    {
+      "placeId": "osm:node:4142854541",
+      "name": "Ф. Э. Дзержинскому",
+      "textId": "2a0fd14d-73aa-48f0-9385-e23c01ba5380",
+      "sourceTextSha256": "956d6daf94a1a3d8b9af347a58e474d80da1c8b7e7af5c630e0c15ae3ae72ecc",
+      "wordCount": 109,
+      "revoiceRequestId": "181a1b50-80a3-5654-8065-29860253c74e"
+    },
+    {
+      "placeId": "osm:node:4142936190",
+      "name": "Яблоко",
+      "textId": "0355d0ef-c255-4d5b-bb5e-b709ecfba1b4",
+      "sourceTextSha256": "1749538c3c7d05a20a9565f6dc5d32815d251c08992fb23ead00a843c57eb8cd",
+      "wordCount": 103,
+      "revoiceRequestId": "db4642f4-8af6-5681-af11-84b72fa3ec39"
+    },
+    {
+      "placeId": "osm:node:4142941912",
+      "name": "Самурай",
+      "textId": "71dfedad-f84b-4805-8532-8f0d64edefd4",
+      "sourceTextSha256": "9d2723fe62b58d884b6d9ad8ed17cc8989f1dc3722cac3b7cd3f3bfbafee1a66",
+      "wordCount": 107,
+      "revoiceRequestId": "9f718046-c98d-54f0-b731-2e1569d58bae"
+    },
+    {
+      "placeId": "osm:node:4142945438",
+      "name": "Философский камень",
+      "textId": "805b3b0f-bd7d-413e-8634-880138f6437a",
+      "sourceTextSha256": "dd83e491d9bee4fc8ebcf929e3332681e81e14b356f536042d567a18e96baa03",
+      "wordCount": 107,
+      "revoiceRequestId": "7bfaade1-6e87-5d2f-8e21-cd02a2bdade4"
+    },
+    {
+      "placeId": "osm:node:4142950215",
+      "name": "Прайд",
+      "textId": "23d5142b-c039-4d42-9a98-eb13e0c9d31f",
+      "sourceTextSha256": "b030c8723b8be66207036de31c3aa8d44aaf7cd934d45cc92e5e7d5af91a8912",
+      "wordCount": 104,
+      "revoiceRequestId": "36676c7f-e714-50f9-b32f-0af3c64a29e1"
+    },
+    {
+      "placeId": "osm:node:4142950216",
+      "name": "Слоник",
+      "textId": "bd5cb698-0277-4da2-9f90-bdc8f9da1bda",
+      "sourceTextSha256": "4721bd00f42136261caa4c4e00161d2f1f222f975dc92c64fbb7369b0f8c0af4",
+      "wordCount": 106,
+      "revoiceRequestId": "e6b8b8b8-0160-5820-992d-ba99d3929683"
+    },
+    {
+      "placeId": "osm:node:4143539655",
+      "name": "Русское Поле",
+      "textId": "1cd56e8c-257d-468e-bd39-5297f4b4b520",
+      "sourceTextSha256": "ae0dbf0c480d278f4728ec3b671ff9f8f843dfb1192915f7a2f474994b32cbd4",
+      "wordCount": 107,
+      "revoiceRequestId": "65cefbf4-94c7-5c1d-8ce8-728650126554"
+    },
+    {
+      "placeId": "osm:node:4481478260",
+      "name": "Владимиру Великому",
+      "textId": "38d8db73-a882-47bd-93ec-0b5eacca9d6e",
+      "sourceTextSha256": "309e5978ef2e796ffcdb4b326784b3f2a143cec4d5cad799e0f5c3cc31a7e871",
+      "wordCount": 106,
+      "revoiceRequestId": "40cf0bf9-8939-5633-b958-b89dc08154f0"
+    },
+    {
+      "placeId": "osm:node:4534758656",
+      "name": "Студентам, преподавателям, сотрудникам архитектурного института, павшим в Великой Отечественной войне",
+      "textId": "cf395ca7-ca2a-4e50-b334-75f0185f8559",
+      "sourceTextSha256": "0b51d09d69f3e504595a869b982a24a4fcad5ec214d0a0dbe6ec31be394b8de5",
+      "wordCount": 106,
+      "revoiceRequestId": "eea130d5-2c14-5363-851b-c33bf228a750"
+    },
+    {
+      "placeId": "osm:node:4604783638",
+      "name": "Благословенна в веках дружба народов России и Армении",
+      "textId": "0c6f7ad8-a5e8-4098-b6f6-0f71c3c422fd",
+      "sourceTextSha256": "839adddd78a2896c23f665fe0671fb44c60f73a5b82f77de2a3a08c5dbf9d7ca",
+      "wordCount": 120,
+      "revoiceRequestId": "9bac5bbf-b3c9-5694-839e-4b9bf2ec1a6d"
+    },
+    {
+      "placeId": "osm:node:4639900102",
+      "name": "А. Н. Островскому",
+      "textId": "aa524af2-d104-49ab-b434-766874030b8c",
+      "sourceTextSha256": "91862d3f2958acc677dc320d8c98ebb9861866b787599e5313df8587dda843dd",
+      "wordCount": 103,
+      "revoiceRequestId": "fb2682ef-7eef-517d-9a25-18cf47722ebe"
+    },
+    {
+      "placeId": "osm:node:4692951498",
+      "name": "Мемориальный музей-квартира А. М. Горького",
+      "textId": "64c1afb5-b0ec-442d-8716-4acf10cd2032",
+      "sourceTextSha256": "c22459fa4d146054b130aff306437093b15fac5a9b36def6abcc7e7ed85a37b4",
+      "wordCount": 109,
+      "revoiceRequestId": "02bcee8d-0217-595a-8500-acd24f5cbfb1"
+    },
+    {
+      "placeId": "osm:node:4988219028",
+      "name": "Алмазный фонд",
+      "textId": "017f0da9-38e5-4bee-9d1c-1e78b774f453",
+      "sourceTextSha256": "914041e99a597bd6510431e7137c296915fc70ac469a4004f20a935ea6d0a2e5",
+      "wordCount": 106,
+      "revoiceRequestId": "352ce0a0-5220-5431-a0d4-a3acb3ede1ce"
+    },
+    {
+      "placeId": "osm:node:5181346005",
+      "name": "Музей-квартира А. Б. Гольденвейзера",
+      "textId": "b3152eda-f792-43c3-9b9e-51ee1238f740",
+      "sourceTextSha256": "94bf79a754c4778c4168c2cb5665e862c46125a9cf931238887c2329a0c8e7ce",
+      "wordCount": 115,
+      "revoiceRequestId": "fc96ddc9-ce8c-5687-afbc-d956b0e16222"
+    },
+    {
+      "placeId": "osm:node:5244167433",
+      "name": "Э.Г. Гилельсу",
+      "textId": "d83a9b3d-b5fb-44f3-b9e3-2b4315c24606",
+      "sourceTextSha256": "87b7d40a149164f652db7460abb1fba765134347feea51de3d50599ad50c64a2",
+      "wordCount": 114,
+      "revoiceRequestId": "5f1da141-f936-5a9a-b6b5-ff2fea640f87"
+    },
+    {
+      "placeId": "osm:node:5247522109",
+      "name": "Учёным, создавшим первые советские ракеты ГИРД",
+      "textId": "57f0b5c6-7116-477e-9ff2-cdf214053b22",
+      "sourceTextSha256": "54c05a3b55bd6f3a3978115cdf15a109155ede35856490b910454c2a8b6814cb",
+      "wordCount": 106,
+      "revoiceRequestId": "951a37cd-1097-5ee6-a023-d92c541554af"
+    },
+    {
+      "placeId": "osm:node:5527925431",
+      "name": "Art4",
+      "textId": "873ee5dc-49ae-41a9-82b2-49e42ba01caa",
+      "sourceTextSha256": "1498f6a0c1a224b63192b7bf6cc3dea54c2116574d5a67f1e6d5219527b91848",
+      "wordCount": 108,
+      "revoiceRequestId": "8c620e84-bb50-5fe8-bfa7-941222a45d1b"
+    },
+    {
+      "placeId": "osm:node:5591184668",
+      "name": "Усадьба Охотниковых",
+      "textId": "209db0a1-6690-4288-b316-8425c69b8c90",
+      "sourceTextSha256": "e3b7b58d547e8fdb60e561c3686470f797f25b123e269b5dcbcb40650257ee90",
+      "wordCount": 101,
+      "revoiceRequestId": "d187c008-ce36-5ef0-8426-8b10aff2a1a2"
+    },
+    {
+      "placeId": "osm:node:5630505421",
+      "name": "Галерея Александра Шилова",
+      "textId": "a33e02aa-f4d1-4754-bb1f-d970fc921675",
+      "sourceTextSha256": "dbfac75a316890048571b503b0372f77bbe00b570e20a3270b81e960be26165a",
+      "wordCount": 112,
+      "revoiceRequestId": "43b8349b-1325-50ef-a80e-2de290072044"
+    },
+    {
+      "placeId": "osm:node:5906743571",
+      "name": "Собрание",
+      "textId": "c0c343e1-1759-4039-972c-61fad8cd6994",
+      "sourceTextSha256": "b9f746b0901f5e4636a1b97f2e683b692bd4b353a1d7ff291ab20ee9f4e27586",
+      "wordCount": 111,
+      "revoiceRequestId": "2561c3d1-c4b8-508a-a7a5-288cb5066232"
+    },
+    {
+      "placeId": "osm:node:5978239883",
+      "name": "Остатки фундамента храма Николая Чудотворца в Столпах",
+      "textId": "c4436a08-943c-4480-bd52-e31f5d7a5e69",
+      "sourceTextSha256": "34464f9fc431b6cd73a4ac978ed8cbceeb0ad1cea5e6cf41bafd23316ad3c190",
+      "wordCount": 113,
+      "revoiceRequestId": "3d28932b-6740-5fc3-8afd-6ed263ae4e9c"
+    },
+    {
+      "placeId": "osm:node:6449794069",
+      "name": "С.К. Тимошенко",
+      "textId": "e79688fc-fec1-4352-ae92-611aeb1cde27",
+      "sourceTextSha256": "01f7874fd533d06e6184b763ba02600032c9075b91d4ad9088490fe870a0adbd",
+      "wordCount": 107,
+      "revoiceRequestId": "3e128a26-6ccf-500f-8ffa-afbb57394eec"
+    },
+    {
+      "placeId": "osm:node:6449794071",
+      "name": "С.А. Оруджеву",
+      "textId": "58a9f38a-8882-4e28-959e-3043d3918c4c",
+      "sourceTextSha256": "9b00f1ba6de13b6ba404f23f217955dddee4959c11d14bd088b5af777bb9cdc8",
+      "wordCount": 108,
+      "revoiceRequestId": "0a9abfdd-8688-5314-96f8-62ae7a0da5b0"
+    },
+    {
+      "placeId": "osm:node:6617755692",
+      "name": "Ф. В. Токареву",
+      "textId": "0f12410b-4fca-4a64-b1c5-dc2535acfeb6",
+      "sourceTextSha256": "31aa6e2bec95e02a6293bc2271123659097ba35bf8ac0ff37f32967570016167",
+      "wordCount": 121,
+      "revoiceRequestId": "319f1d0e-31f6-52c9-aa74-4a2f4ff98f84"
+    },
+    {
+      "placeId": "osm:node:703628600",
+      "name": "Музей-квартира А. С. Пушкина",
+      "textId": "98ad3f06-befe-4385-8f42-199a09ac01b2",
+      "sourceTextSha256": "21cf75e79a0cd5dbeae49b8ea1156e4bac96c7f2c72685b3b0b25a8ea2311ea4",
+      "wordCount": 121,
+      "revoiceRequestId": "d8005eee-b9bd-5c17-8e5a-573864ebc0cb"
+    },
+    {
+      "placeId": "osm:node:7633124896",
+      "name": "М. Ю. Лермонтову",
+      "textId": "93874dbd-5e73-4b04-8e40-81e0a918199c",
+      "sourceTextSha256": "7185d019023a9d6d2c36f2c0819f7af9f47146705dcb25037095228e13a713da",
+      "wordCount": 105,
+      "revoiceRequestId": "b9528eff-1139-5216-ac76-0cfd1721a673"
+    },
+    {
+      "placeId": "osm:node:7887532120",
+      "name": "Музей советских игровых автоматов",
+      "textId": "38dca524-9cb4-4117-a620-2367b8932b1e",
+      "sourceTextSha256": "1664eb4da0459471ba0cb5a4305714e1fc15b8543a903c8b92b8e8901723022e",
+      "wordCount": 115,
+      "revoiceRequestId": "02c72166-e35a-566d-b670-641fb01ab077"
+    },
+    {
+      "placeId": "osm:node:8431704518",
+      "name": "Доходное владение Г. Е. и А. Г. Бройдо — В. Я. Бурдакова. Жилой дом",
+      "textId": "5429f805-9e24-4dfc-a1fb-18e833c56aa6",
+      "sourceTextSha256": "345566970963a0468f9beb07061fc579be77c47fe7cedbbe70c50eb3fd5f4755",
+      "wordCount": 110,
+      "revoiceRequestId": "d6a0b920-5a28-5edd-8a2b-cc5eb4bb63b3"
+    },
+    {
+      "placeId": "osm:node:8442152125",
+      "name": "Немцов мост",
+      "textId": "cbd8d0d1-534f-487e-877e-1305218af142",
+      "sourceTextSha256": "99bad0cb98a467bcd57a7aed7c0e43131955d393a137dad5352d96e094772d99",
+      "wordCount": 119,
+      "revoiceRequestId": "ed83260a-0cb3-56c0-8f0f-419880f26bb1"
+    },
+    {
+      "placeId": "osm:node:8664353717",
+      "name": "Российский музей медицины",
+      "textId": "38649752-0e12-4dad-a1af-225bfd61bd56",
+      "sourceTextSha256": "e229d25429de5c903b02ea00dac3652d58f299a88b084720e3cbf1a682babb69",
+      "wordCount": 109,
+      "revoiceRequestId": "ba3a9f93-c32a-5f1c-9996-698c4baec359"
+    },
+    {
+      "placeId": "osm:node:8898082923",
+      "name": "С. М. Соловьёву и И. А. Гончарову",
+      "textId": "e1ead350-d3f8-4139-b284-02f803018709",
+      "sourceTextSha256": "3b21ea871bec088f615ad20c1081b68d7fd59226529e1b5167c25cada68cbb82",
+      "wordCount": 103,
+      "revoiceRequestId": "8e92dc6a-46aa-5631-94b0-bf59a17e2112"
+    },
+    {
+      "placeId": "osm:node:8898082930",
+      "name": "Ф. Платтену",
+      "textId": "a4a4c00c-d49e-4acb-b68b-c39ee6df6dfd",
+      "sourceTextSha256": "d91b83a50bd4e303653b21f844a02991db862afb70239c8b83d553e2caa0296c",
+      "wordCount": 120,
+      "revoiceRequestId": "dcc2b36f-ab3f-5967-ae38-d9801df0ca76"
+    },
+    {
+      "placeId": "osm:node:9106236033",
+      "name": "Сквер Майи Плисецкой",
+      "textId": "32992a2c-bd4e-47e2-b4de-1cd2860d8b36",
+      "sourceTextSha256": "847fa317c448db9c2972d65a247d13cca9d079fc4f7d97605b358aa4b53ce5e9",
+      "wordCount": 111,
+      "revoiceRequestId": "0355ac96-eb18-53b7-95eb-a6dcac5d48e5"
+    },
+    {
+      "placeId": "osm:node:916076746",
+      "name": "Фридриху Энгельсу",
+      "textId": "d31298bd-79f6-4bfd-b914-19f79b4d9ade",
+      "sourceTextSha256": "db22cf87bcca07caecad01be803eab75d095d62e4bafe96212baf38dfd496c50",
+      "wordCount": 102,
+      "revoiceRequestId": "cf4611c0-f42e-5ce3-b70a-add8501a9b83"
+    },
+    {
+      "placeId": "osm:node:928056489",
+      "name": "Богоявленский монастырь",
+      "textId": "f68d0b2a-0a61-4daa-bfdf-72b2fa5194cf",
+      "sourceTextSha256": "c0dacba88801af8cf7cd7303e43174b895735c64df76dc1d0903e0331817b8ca",
+      "wordCount": 133,
+      "revoiceRequestId": "e29cca5d-efee-58f5-ac6c-2498998ee5c9"
+    },
+    {
+      "placeId": "osm:node:983180221",
+      "name": "Знаменский монастырь",
+      "textId": "68c3eae8-9762-4f98-92d8-68d73f252ed4",
+      "sourceTextSha256": "b63d27a95033eeed0a1aa34e1775b826dc4936be2ffb15043dad04507e085f62",
+      "wordCount": 124,
+      "revoiceRequestId": "d480fe27-3125-525b-abf5-045263da562d"
+    },
+    {
+      "placeId": "osm:relation:10319256",
+      "name": "Дом Ярошенко",
+      "textId": "77061bd6-efd0-4c01-8fd8-f67bcd6e410e",
+      "sourceTextSha256": "87e255cf7f10353d524aeea5c50ad62b3da575547b9d6ce65cfccf6336cd3099",
+      "wordCount": 115,
+      "revoiceRequestId": "5df185ec-e886-540b-8a60-d1f27380b9c7"
+    },
+    {
+      "placeId": "osm:relation:10485566",
+      "name": "Храм великомученика Георгия Победоносца в Старых Лучниках",
+      "textId": "ef2e63e7-9fe4-44a6-a6b9-9d4bbcfbdaf3",
+      "sourceTextSha256": "f03bc3b5abd0897e3c86017d14690b842e2f30a415c9efd060ed1069cf9b1b1c",
+      "wordCount": 106,
+      "revoiceRequestId": "6c69efb2-f27b-5e19-84ad-b36a00bf67c7"
+    },
+    {
+      "placeId": "osm:relation:10967050",
+      "name": "Храм Успения Пресвятой Богородицы на Могильцах",
+      "textId": "299aa7e1-023a-4790-8269-a1d0d878a516",
+      "sourceTextSha256": "94a405b760e20abfea81fce644cb18166dd88b061e120a6bf521e03877294a65",
+      "wordCount": 108,
+      "revoiceRequestId": "e18e64aa-b275-5362-a19d-05b71430f98b"
+    },
+    {
+      "placeId": "osm:relation:1359243",
+      "name": "Собор Михаила Архангела",
+      "textId": "fe504b5e-9216-4547-81d1-8a306f68293d",
+      "sourceTextSha256": "746086ffa8d5d10e0bca6b4a2976022350d059d860df80084c830641bd76745c",
+      "wordCount": 110,
+      "revoiceRequestId": "9fda7206-7339-56cb-9dbb-c10135cd489c"
+    },
+    {
+      "placeId": "osm:relation:1359248",
+      "name": "Патриаршие палаты",
+      "textId": "2647cf0e-ce12-4d7b-bd77-d16ef9c74c75",
+      "sourceTextSha256": "44bead062d9eb139606c7173edb3ff838d096479e22b352b35c8be104352b30c",
+      "wordCount": 129,
+      "revoiceRequestId": "eede2afc-6963-5fcd-b227-df05c3fa0faf"
+    },
+    {
+      "placeId": "osm:relation:1360627",
+      "name": "Троицкая башня",
+      "textId": "a16962cf-86ba-4ac2-a91b-c38e7f7750db",
+      "sourceTextSha256": "d96a1a2a413f60afc7ad36491594a7769eae376a06bc35c22eab4311ee127caa",
+      "wordCount": 125,
+      "revoiceRequestId": "77a36e01-17a5-55fb-a81e-ce18dc95b80a"
+    },
+    {
+      "placeId": "osm:relation:1360630",
+      "name": "Боровицкая башня",
+      "textId": "1d16bce2-2944-438e-9f77-d5badf60ca0a",
+      "sourceTextSha256": "260263d32292356d0375849648f05175605273e6d36671e11c1421909227f7e8",
+      "wordCount": 115,
+      "revoiceRequestId": "f880191b-6d35-5d69-b3a8-f53e9e6341ca"
+    },
+    {
+      "placeId": "osm:relation:1360641",
+      "name": "Московский Кремль",
+      "textId": "8be14669-ae49-46db-981f-88eb2b1e2ead",
+      "sourceTextSha256": "3e18e9945a95033eb4d8e24239daeec1d4505a09997ae61077063b6b1bdea993",
+      "wordCount": 136,
+      "revoiceRequestId": "33aebbbf-191c-5b37-babe-1873185d9c7c"
+    },
+    {
+      "placeId": "osm:relation:1360642",
+      "name": "Первая безымянная башня",
+      "textId": "2811df05-ad4f-426d-9b51-c3489f775a2b",
+      "sourceTextSha256": "9bb46a40ae6406f39f8901a44850c53b3c3debce5a59136e1d5af655735f0956",
+      "wordCount": 105,
+      "revoiceRequestId": "e9e2ad00-bc73-5437-95a3-a4f95c5cb93b"
+    },
+    {
+      "placeId": "osm:relation:1360648",
+      "name": "Водовзводная башня",
+      "textId": "0e23c95c-5683-4d2b-9e68-3ac61b954a27",
+      "sourceTextSha256": "985d55062125080f39426018e3d70699d486e31592b686e2e1b24a972ff18a08",
+      "wordCount": 109,
+      "revoiceRequestId": "0658a32a-eb6e-58ab-815e-f4102268b38e"
+    },
+    {
+      "placeId": "osm:relation:1360655",
+      "name": "Комендантская башня",
+      "textId": "54bd4afb-c7d6-4c4c-8518-71811333428b",
+      "sourceTextSha256": "0517e822973f917bf750fe810bb00aeb572ea87b36f38bf41e30fce90dcea039",
+      "wordCount": 123,
+      "revoiceRequestId": "1bc58c40-b94d-5a27-ad11-011a344a8793"
+    },
+    {
+      "placeId": "osm:relation:1360656",
+      "name": "Спасская башня",
+      "textId": "5de69146-720b-4c2d-a535-1afd64f3bdf7",
+      "sourceTextSha256": "378408348c206e4a0db9e1e55527d75b54f2e0f1acb0f2940d23566f022e453d",
+      "wordCount": 101,
+      "revoiceRequestId": "84ea6bc4-30c7-55a4-81de-b04d3c892696"
+    },
+    {
+      "placeId": "osm:relation:1360661",
+      "name": "Набатная башня",
+      "textId": "03b17cac-8307-46e6-85fc-3921ddac1f3e",
+      "sourceTextSha256": "d60f3dcd05d721c7d020a3d9107140c7e7526fa9bdc169f2c3477f01d58d7bf1",
+      "wordCount": 118,
+      "revoiceRequestId": "07588c3b-09bc-59de-9a86-49fb5fb7879b"
+    },
+    {
+      "placeId": "osm:relation:1360677",
+      "name": "Тайницкий Сад",
+      "textId": "88a4f3ed-d3ab-431c-8901-4d4e714632c7",
+      "sourceTextSha256": "16a09e28794b522a93deaff1fe43988d0a0a3e8695d5490e189e8e9e82ebf6aa",
+      "wordCount": 106,
+      "revoiceRequestId": "af5ecb6e-c794-52ae-b70e-68ad2a1d476c"
+    },
+    {
+      "placeId": "osm:relation:13626693",
+      "name": "Росатом",
+      "textId": "c4dcfa92-8f92-487e-b023-8e25c6b48fc7",
+      "sourceTextSha256": "c1fe6aff281347802301d120405a3736d999c8fec0ee57e35c61f7f197fc76c7",
+      "wordCount": 115,
+      "revoiceRequestId": "8bbce886-aba1-5ec7-b689-665fd6dcba95"
+    },
+    {
+      "placeId": "osm:relation:14352897",
+      "name": "Храм Святителя Николая в Котельниках",
+      "textId": "babcc508-5455-40a9-922f-14fc8fe01030",
+      "sourceTextSha256": "1e65abac87250b415a48b3660a9bdbe13456bccbadde635612cbaedc1e6cd41d",
+      "wordCount": 112,
+      "revoiceRequestId": "1d1b7453-7650-5594-ba48-d33901000812"
+    },
+    {
+      "placeId": "osm:relation:14442855",
+      "name": "Мариинское училище",
+      "textId": "7a6bdbac-9dc7-44fe-9f94-4c1f09cb385d",
+      "sourceTextSha256": "5148102cf9264211dc2e34a7fc7f2242aa1aa9196d3eb7ca2966abdbd9eb94b3",
+      "wordCount": 107,
+      "revoiceRequestId": "9dccd8fe-584f-5f05-9bb3-393ecde15745"
+    },
+    {
+      "placeId": "osm:relation:15671457",
+      "name": "Российская Академия живописи, ваяния и зодчества Ильи Глазунова",
+      "textId": "5677f736-f458-4e9c-8a3a-04634c2e23d3",
+      "sourceTextSha256": "4a1747a69877b80dea4797ffe2f4850e9082cd5c6ccfc1f321ac64b8156c011d",
+      "wordCount": 106,
+      "revoiceRequestId": "2789ebef-3ed3-507c-b4c3-133858fc69b2"
+    },
+    {
+      "placeId": "osm:relation:16492514",
+      "name": "Аллея городов-героев и городов воинской славы",
+      "textId": "5e66f50e-6c11-4f5a-b2c6-4329b5714892",
+      "sourceTextSha256": "85e092458cdec765f066a7e94febdbf4cbe3c415f6ca8e73aa7c1822405d943a",
+      "wordCount": 102,
+      "revoiceRequestId": "fd80c816-5209-5124-a39f-27eeacac950c"
+    },
+    {
+      "placeId": "osm:relation:16492515",
+      "name": "Могила Неизвестного Солдата",
+      "textId": "a5f55b83-e04e-40f6-bae5-6fc4e87b89bc",
+      "sourceTextSha256": "de0d41ff87ce037fd316a394dad36220ed23c4554355b598ac081164cbc33d6d",
+      "wordCount": 101,
+      "revoiceRequestId": "94f49cec-ea5f-5635-8c6a-e5805f14eaf5"
+    },
+    {
+      "placeId": "osm:relation:16682979",
+      "name": "Дом Г. А. Тарасова",
+      "textId": "e8022d7c-51f0-45a8-a738-b6bee84f7ec8",
+      "sourceTextSha256": "e3525526fab22ae527126481a9afabdc12af75665cb9922123eae9ec84db20b1",
+      "wordCount": 102,
+      "revoiceRequestId": "79167292-5443-55c6-b792-6595a49c717c"
+    },
+    {
+      "placeId": "osm:relation:16682982",
+      "name": "Театр имени Моссовета",
+      "textId": "ec94b3f2-ab01-4cd9-a9e7-accc225e5b41",
+      "sourceTextSha256": "bc67ca9fb734b943dc84a4492d96cac3e298510881eca7e1ed52762a891a2df3",
+      "wordCount": 103,
+      "revoiceRequestId": "bba28e73-289e-5c99-a600-1016f43ec0a3"
+    },
+    {
+      "placeId": "osm:relation:16682984",
+      "name": "Концертный зал им. П. И. Чайковского",
+      "textId": "a00dbea4-6621-4307-b60d-95ce23ecc653",
+      "sourceTextSha256": "56fadec3be64d40d86d706eaa1793a9aabcb784cdd5259af235e70dfbf6f4b3c",
+      "wordCount": 120,
+      "revoiceRequestId": "8eb8d49c-7795-5aff-a700-30d30b00ea28"
+    },
+    {
+      "placeId": "osm:relation:16685841",
+      "name": "Государственный центральный музей современной истории России",
+      "textId": "b118aaca-493f-41a4-8df8-6fd81cfb8de1",
+      "sourceTextSha256": "1f0eef5d7973176fa058e339984ca883ccc6bfebc79bfb986de8d8ec3bfc65b1",
+      "wordCount": 106,
+      "revoiceRequestId": "a60faabf-d4ff-59a2-b3ba-999b6cd4912a"
+    },
+    {
+      "placeId": "osm:relation:17096998",
+      "name": "Институт востоковедения РАН",
+      "textId": "5178fafb-3d62-4fd2-87b5-48f902d320ab",
+      "sourceTextSha256": "57ca7d496497371c8bfdfbad3849f1af7b5e8b1915ff363e3f9d1ac845dd39f5",
+      "wordCount": 101,
+      "revoiceRequestId": "8b5f5f21-6b60-5556-a057-cd9c4521f953"
+    },
+    {
+      "placeId": "osm:relation:17443827",
+      "name": "Храм Троицы Живоначальной в Серебряниках",
+      "textId": "5d815cb4-c1fb-4519-a87a-9ff18fb267e0",
+      "sourceTextSha256": "6e7924ec36bf23852fd785dc390a581c0e1d15b8cb05d961bf913d53876efc6c",
+      "wordCount": 101,
+      "revoiceRequestId": "088f159d-1632-536c-a11a-7c8a717be673"
+    },
+    {
+      "placeId": "osm:relation:1794442",
+      "name": "Большой Каменный мост",
+      "textId": "24cc4e97-9bbc-468c-be36-5bbcb8bbb2c3",
+      "sourceTextSha256": "9ae1094365023b7a7432d16efc369d59a4bdacb834ef9823744edb4a858edaa2",
+      "wordCount": 111,
+      "revoiceRequestId": "a3d6aade-f893-557a-beaa-8efe85e51811"
+    },
+    {
+      "placeId": "osm:relation:18096252",
+      "name": "Церковь Илии Пророка Обыденная",
+      "textId": "d0902393-529f-4fb7-a8fc-91c4081a4cfc",
+      "sourceTextSha256": "11db802677d34d9df660d44afc57231b4782918b7b5c5d6f332ceb248330d453",
+      "wordCount": 112,
+      "revoiceRequestId": "a73ba9ed-a98f-5d0d-af53-9fb1f33c0645"
+    },
+    {
+      "placeId": "osm:relation:18530505",
+      "name": "Типография Левенсона",
+      "textId": "54a7c30e-bd3c-4134-bf99-45180d2884d5",
+      "sourceTextSha256": "e46597eb527e9a29e814fd1b3da2b239bd41397ff1705e8c89c97fc5105bbbb9",
+      "wordCount": 122,
+      "revoiceRequestId": "a593afa6-a4b9-5864-91a4-3ae4562363a9"
+    },
+    {
+      "placeId": "osm:relation:19080710",
+      "name": "Собор иконы Божией Матери «Знамение»",
+      "textId": "4a904c0b-3bb1-4a5c-986f-edcaaca82ea5",
+      "sourceTextSha256": "5e6503033c98b7cf1cf2976bc0a6b2d310348ea3ea34a873ea9ec05524c7b849",
+      "wordCount": 105,
+      "revoiceRequestId": "e546ddb4-52f4-5e19-b821-3bb0494a9f1b"
+    },
+    {
+      "placeId": "osm:relation:20346140",
+      "name": "Кокоревское подворье",
+      "textId": "c045ba75-131b-4089-89ff-713dc9bf9ae8",
+      "sourceTextSha256": "6544133ed72ec1707129d5cacb74f28c2f1760ec1ef6500454032f25f0df4e03",
+      "wordCount": 104,
+      "revoiceRequestId": "8a397d50-fe81-5cf3-946e-1a2becbabbab"
+    },
+    {
+      "placeId": "osm:relation:20397973",
+      "name": "ТВ Центр",
+      "textId": "5dfcb2cc-ce5c-47bc-b2ce-233de68d0266",
+      "sourceTextSha256": "5bb491b026693f016ce8a11539f34b48e7e0e3064e48e06ab69daf101f64ef55",
+      "wordCount": 113,
+      "revoiceRequestId": "70602c8c-b25a-5405-9a6d-a6b0e39efa85"
+    },
+    {
+      "placeId": "osm:relation:2156516",
+      "name": "Усадьба Цурикова",
+      "textId": "c856f2dd-3742-4270-80b0-6a5f5875fa73",
+      "sourceTextSha256": "114882d51e0af90a30757f39bb8f391607843ff2eda5ebd7a217743369e5c66b",
+      "wordCount": 102,
+      "revoiceRequestId": "194fd043-e04b-50c1-9fe6-7c905179aaed"
+    },
+    {
+      "placeId": "osm:relation:225033",
+      "name": "Большой Кремлёвский дворец",
+      "textId": "698a7247-a569-4dbd-b9aa-5f54bf67a2b0",
+      "sourceTextSha256": "bbb46847d21f4a33a6450fa27ba6da47545dd5eadf727ad2513fdb4a56ca4cce",
+      "wordCount": 119,
+      "revoiceRequestId": "76084da0-d555-52c6-a198-535b66d22914"
+    },
+    {
+      "placeId": "osm:relation:2421978",
+      "name": "Государственный музей изобразительных искусств имени А. С. Пушкина",
+      "textId": "07059209-cf80-4501-a6e9-91fdeaec2146",
+      "sourceTextSha256": "b44ad4b9e5cab1f6c5ebfe4c948a9623531bd9b88dd01c86032adf95959cc2be",
+      "wordCount": 101,
+      "revoiceRequestId": "e7f88f8b-367e-55c0-b11d-7aed8abd8306"
+    },
+    {
+      "placeId": "osm:relation:2669483",
+      "name": "Российская государственная библиотека искусств",
+      "textId": "ba1a32b2-5efc-40ff-8ce8-18766d59d243",
+      "sourceTextSha256": "ee62f200d6722ba4ba6ffee227a0e9e3cd438c345d74c034f75b0eda9f859430",
+      "wordCount": 117,
+      "revoiceRequestId": "37dd2ab0-50ae-5188-a8d2-58865fe98337"
+    },
+    {
+      "placeId": "osm:relation:2669538",
+      "name": "Храм Космы и Дамиана в Шубине",
+      "textId": "262b643f-cb5d-4e0a-bf0d-4622d37802dc",
+      "sourceTextSha256": "167e25792d27cfc8df1d16e14dcdee308087ff95359cd5b88e0f068bbd69ff19",
+      "wordCount": 111,
+      "revoiceRequestId": "fb95c382-9b39-535a-91ea-01caa03739d8"
+    },
+    {
+      "placeId": "osm:relation:2791365",
+      "name": "Парк Горького",
+      "textId": "b56794dd-94e7-4e27-b24c-8532d57fe27b",
+      "sourceTextSha256": "751185832067b05e9cbab3837950c319b431f77b2743c8dabfc6b0faf96a59c8",
+      "wordCount": 105,
+      "revoiceRequestId": "2f8e02a7-40ec-5ad2-afe5-1e0a2c38b47c"
+    },
+    {
+      "placeId": "osm:relation:3028585",
+      "name": "Собор Успения Пресвятой Богородицы",
+      "textId": "e400f930-b539-42b1-a920-3a1fd96654cb",
+      "sourceTextSha256": "a06361a43eae368686f830c997630a14db6084b1561cd55729ef7f230c860ba5",
+      "wordCount": 116,
+      "revoiceRequestId": "2fe3d208-3a8a-5e45-a63a-e052a65c2be6"
+    },
+    {
+      "placeId": "osm:relation:3031379",
+      "name": "Государственный Кремлёвский дворец",
+      "textId": "75c56d15-739d-411e-916e-15a69452e652",
+      "sourceTextSha256": "0ff0905dddafdfeece178dd486a20cb599c20673a8cf982397f1226edc5b9dc8",
+      "wordCount": 100,
+      "revoiceRequestId": "ca9e08ff-5b4f-5ffe-b3a3-adbce23ad821"
+    },
+    {
+      "placeId": "osm:relation:3138566",
+      "name": "Нарышкинские палаты",
+      "textId": "d0a860a0-d312-4100-8cf7-a8ec0a61ba24",
+      "sourceTextSha256": "df69049497657ff3ded49268b6cfd1ba005327d94220e824ab93068a0cfdf6f4",
+      "wordCount": 120,
+      "revoiceRequestId": "8c4f8b9b-f518-59a3-9553-5596f9e96345"
+    },
+    {
+      "placeId": "osm:relation:3224482",
+      "name": "Парк искусств Музеон",
+      "textId": "0368af06-a959-4825-b751-3b14cc139e19",
+      "sourceTextSha256": "8af5eaf848eab825449ecc51135257f9628691b4be4d82129c9282a36044c0fd",
+      "wordCount": 117,
+      "revoiceRequestId": "079faef5-bb33-5d25-a152-d159431cc33a"
+    },
+    {
+      "placeId": "osm:relation:3229300",
+      "name": "Благовещенская башня",
+      "textId": "6971df89-c961-49be-8ed1-e8e3601fbe57",
+      "sourceTextSha256": "94046c141e55c599573c582efb54eb53348cafab746a0a062d7f7e88a2670349",
+      "wordCount": 108,
+      "revoiceRequestId": "6dbd5ab4-ac23-551f-8d07-7e202a7b58bb"
+    },
+    {
+      "placeId": "osm:relation:4137492",
+      "name": "Красный монетный двор",
+      "textId": "d6555a13-4e61-4468-8cc8-486ad839e750",
+      "sourceTextSha256": "8bc6593f542018329f45d7a8a12f77d319274a6800db6f6525544d8eb968f728",
+      "wordCount": 101,
+      "revoiceRequestId": "c74ad940-4796-50d7-b54b-2e323d90b88a"
+    },
+    {
+      "placeId": "osm:relation:4168584",
+      "name": "Главное здание РГБ",
+      "textId": "52a09ee9-4b22-412d-a09a-b25a34eee09f",
+      "sourceTextSha256": "69a2179917aaa634c51933045c8d12909fb8b370b3ff4430e542be58d0ec28d8",
+      "wordCount": 116,
+      "revoiceRequestId": "4005b67e-7874-5a56-82a0-09ec157af41e"
+    },
+    {
+      "placeId": "osm:relation:451292",
+      "name": "Центральный телеграф",
+      "textId": "c8061915-1abf-4a4d-987f-ec05c71114fb",
+      "sourceTextSha256": "158c0823f84e5082d076efc4f903a5ae072fa70328377b57dd9bbff289737a3e",
+      "wordCount": 111,
+      "revoiceRequestId": "c273be98-1a0d-5c71-89ed-9bb27905fab6"
+    },
+    {
+      "placeId": "osm:relation:5371134",
+      "name": "Усадьба Шаховского-Краузе-Осиповых",
+      "textId": "7d231e77-bc8d-4f94-b6ef-c1e291e97d2e",
+      "sourceTextSha256": "830bca3aa9ac33856a378f8d8320e52745f402b067c95084ba98a4ed8024a951",
+      "wordCount": 107,
+      "revoiceRequestId": "81e5ac84-76e6-55fa-8ce4-08f1edc7a3b5"
+    },
+    {
+      "placeId": "osm:relation:6190097",
+      "name": "Московский государственный юридический университет имени О. Е. Кутафина",
+      "textId": "3a2523a4-b141-4576-bad5-1896bd00bde9",
+      "sourceTextSha256": "48f5ca4b85cf280f4c4fb003f8f5038f2858acb4b21d3c8a27d3a7b031c2a927",
+      "wordCount": 103,
+      "revoiceRequestId": "a2ac3ebe-0e83-55b7-9d8d-51789e175102"
+    },
+    {
+      "placeId": "osm:relation:6210566",
+      "name": "МЧС России",
+      "textId": "e9b01981-c2d6-43c8-932a-868368d222e6",
+      "sourceTextSha256": "02d866d4f33f73fcbd8304ac4c8be3c21e5c2aa8d70e173300fe9f08721a9e91",
+      "wordCount": 110,
+      "revoiceRequestId": "d7f14dcd-3c61-5333-9ca4-3420acaa3cb0"
+    },
+    {
+      "placeId": "osm:relation:6233742",
+      "name": "Торговый комплекс «Охотный ряд»",
+      "textId": "afead992-cfb5-474e-838c-43194fdae453",
+      "sourceTextSha256": "9367cbbdb6ca7191d7ea618ff6cdc68d9830ece9cc114c3fc512f67dcf014b29",
+      "wordCount": 105,
+      "revoiceRequestId": "f66d542e-875d-5041-a1b7-00cc638ebdd1"
+    },
+    {
+      "placeId": "osm:relation:7164364",
+      "name": "Булгаковский дом",
+      "textId": "7f4c74c0-21fc-47cd-b891-98936b90b278",
+      "sourceTextSha256": "7d5ac157fb7571e6ebc8e7af38547be372323cc63c2d915071d017a06821c400",
+      "wordCount": 114,
+      "revoiceRequestId": "59edb840-b350-52d8-90ad-7873d7217755"
+    },
+    {
+      "placeId": "osm:relation:7520849",
+      "name": "Сквер Мандельштама",
+      "textId": "ca0375c6-c696-448f-99dd-17407ce4233c",
+      "sourceTextSha256": "39e9db3dfc7f91e84e6416c03ac713fe7c6bd77f75106bd62420b7f127fb49d2",
+      "wordCount": 109,
+      "revoiceRequestId": "9c823350-371e-532e-8290-bd33076f6824"
+    },
+    {
+      "placeId": "osm:relation:7583383",
+      "name": "Храм Рождества Пресвятой Богородицы",
+      "textId": "f277d9fd-8236-4820-b1b9-5c3450123706",
+      "sourceTextSha256": "689e21e4fe9abfc60b74071a65b779252e2774c35d5345c9970e8447307153a0",
+      "wordCount": 124,
+      "revoiceRequestId": "28101680-6b63-54d6-bad0-f1359620cd89"
+    },
+    {
+      "placeId": "osm:relation:7596233",
+      "name": "Храм святителя Николая Чудотворца \"Красный звон\"",
+      "textId": "8c6ace65-deda-46f0-a4bc-000e0ed3a64a",
+      "sourceTextSha256": "44b6232e711aaa87d5d2cc637c343dd31b42615e5fadd622f59f456a561aa641",
+      "wordCount": 112,
+      "revoiceRequestId": "cc5cab6f-05df-5891-b1fc-843b614372bc"
+    },
+    {
+      "placeId": "osm:relation:7623552",
+      "name": "Храм Трёх Святителей на Кулишках",
+      "textId": "b4f43859-097b-4e65-b07a-1fdbbffe2edd",
+      "sourceTextSha256": "7ed265ffe7068210cc85d09fa51787a428c0392248b2bc94a49bdf81c15de6f5",
+      "wordCount": 101,
+      "revoiceRequestId": "448576cc-9873-5cd9-b82d-55d574286071"
+    },
+    {
+      "placeId": "osm:relation:7624254",
+      "name": "Казанский собор",
+      "textId": "17d939ae-543c-4414-9c1c-9548e3b3c71a",
+      "sourceTextSha256": "188e81f0639993c536f0d91b535f525718470666173aec6992afe91fd9b07cae",
+      "wordCount": 118,
+      "revoiceRequestId": "70099ac3-2cac-5165-89a7-a07b0a1ad63b"
+    },
+    {
+      "placeId": "osm:relation:7672227",
+      "name": "сквер Ополченцев Замоскворечья",
+      "textId": "e287829f-ad8d-424d-ae6b-79a108018c79",
+      "sourceTextSha256": "f03784d6713dbaaed3453cf4c723bcee9ff6ddb808c601543206bddf2f2321ce",
+      "wordCount": 102,
+      "revoiceRequestId": "c24c49cd-ed9a-5cb0-836f-004b6ebb81f8"
+    },
+    {
+      "placeId": "osm:relation:7839823",
+      "name": "Сквер Аргентинской Республики",
+      "textId": "76edff1d-3cd8-4ccd-9126-84a45db1091f",
+      "sourceTextSha256": "eceabad9c323cb77a9733c95f81b0b4d7f8e59ce53b6544f357efe0f581c714f",
+      "wordCount": 114,
+      "revoiceRequestId": "0dde390c-3612-52fb-ac97-12c38d580ede"
+    },
+    {
+      "placeId": "osm:relation:8062619",
+      "name": "Храм Введения во Храм Пресвятой Богородицы в Барашах",
+      "textId": "c03f152b-4df0-4133-acb2-a58f130439d8",
+      "sourceTextSha256": "39a11cfce3e89705d7e55ba858eb0616b2ed3bb8aad6100964567b2347396a69",
+      "wordCount": 110,
+      "revoiceRequestId": "196644eb-814c-5e5b-b979-54a3b6ef8d7e"
+    },
+    {
+      "placeId": "osm:relation:85762",
+      "name": "Малый театр",
+      "textId": "639335fb-9f06-4977-8345-7a27bb5090f3",
+      "sourceTextSha256": "5a5b24f37979dbc83b85d067f076182e4e046d8a6a6d41f5c62f8ba8604f87fc",
+      "wordCount": 105,
+      "revoiceRequestId": "5990f71f-1437-59f9-9ad8-b5c60406cadd"
+    },
+    {
+      "placeId": "osm:relation:86444",
+      "name": "Московский цирк Никулина",
+      "textId": "e7f8133c-bbb0-4822-a74f-645b01f94d7c",
+      "sourceTextSha256": "0523c3ed6dd9fdbe5dbf68b01f40225f7bfe51426f3f3a8dd6846d16f6e6d6aa",
+      "wordCount": 101,
+      "revoiceRequestId": "24132410-5f6b-5425-8174-8ee83776ebb6"
+    },
+    {
+      "placeId": "osm:relation:8888875",
+      "name": "Политехнический музей",
+      "textId": "7f80440b-e778-4fcd-bf6f-a2486fd10f6e",
+      "sourceTextSha256": "a695fedfad89b0827f89735c5804e1f29295c144f61b37f72cf7cc482520c449",
+      "wordCount": 127,
+      "revoiceRequestId": "02e8c8f6-598e-5633-bf03-9e5a908abe9d"
+    },
+    {
+      "placeId": "osm:relation:9241423",
+      "name": "Стоматологическая поликлиника №53",
+      "textId": "91bd4b43-24ac-4438-bc73-16c99dac14db",
+      "sourceTextSha256": "06d8add18ca62136b88b637ed5bf7b32c883ed227fa3487f6ee14e36187d2de4",
+      "wordCount": 119,
+      "revoiceRequestId": "2f92a025-0461-5086-8bac-deb35d76a8a4"
+    },
+    {
+      "placeId": "osm:relation:9303002",
+      "name": "Правильная палата",
+      "textId": "5f4db1ba-223e-4c82-81f0-143923092a65",
+      "sourceTextSha256": "b2cefffb374edcc9a11b412d0a6de4b808a0378fe55105c57b5a343946e9c5ad",
+      "wordCount": 111,
+      "revoiceRequestId": "56a7ca30-d428-54e3-85b8-1b063bd70b41"
+    },
+    {
+      "placeId": "osm:relation:9308383",
+      "name": "Церковь Космы и Дамиана в Старых Панех",
+      "textId": "18e929b8-0042-4e6e-9d39-8ffd5a7f13cf",
+      "sourceTextSha256": "fa4d0f513195d52dfa4ac87aba5d0fc102626aaf89aa3d61693367f167517e2c",
+      "wordCount": 104,
+      "revoiceRequestId": "edb30e36-6deb-5dee-85fd-5cc5a373cf9b"
+    },
+    {
+      "placeId": "osm:relation:9326509",
+      "name": "Храм преподобного Феодора Студита у Никитских Ворот",
+      "textId": "064fe0b7-ab15-4f26-b569-9e7272bd166b",
+      "sourceTextSha256": "d97239fc6845817c2e539c733c77e47a2e54794873a931abfe97a20e5b7aea70",
+      "wordCount": 118,
+      "revoiceRequestId": "ff0a9611-1da0-5110-b79c-58c90377d7d6"
+    },
+    {
+      "placeId": "osm:relation:9341259",
+      "name": "Театр на Бронной",
+      "textId": "36e414dc-1891-4091-91aa-0696c1175588",
+      "sourceTextSha256": "b59e2287ae275bd369df8f80cc628c369f2b7903f7d7f20dbe2ceb4ce70cc897",
+      "wordCount": 103,
+      "revoiceRequestId": "4d78c324-1fa5-5037-b567-31a90526d37e"
+    },
+    {
+      "placeId": "osm:relation:9464684",
+      "name": "Усадьба Хрущёвых-Селезнёвых",
+      "textId": "e1356249-d992-418c-9cce-fa25d8edf26f",
+      "sourceTextSha256": "2a30c96f46f7ed494f1073c1badeb5efd2fb2ee01967646bc558dd292098a8c7",
+      "wordCount": 101,
+      "revoiceRequestId": "dc4813cc-f7bd-592e-8b70-1545b1c04c0f"
+    },
+    {
+      "placeId": "osm:relation:9529826",
+      "name": "Церковь Николая Чудотворца в Заяицком",
+      "textId": "cb5f01b8-ef48-40a9-833a-ea5262638352",
+      "sourceTextSha256": "e42a65575d518dc8a9d3e53a87d0fd2ce4a283831ed988b52c9e98a88d4df7b2",
+      "wordCount": 100,
+      "revoiceRequestId": "a298ddec-9cbd-54bf-a54a-32c73d83a986"
+    },
+    {
+      "placeId": "osm:relation:9535897",
+      "name": "Церковь Иоанна Богослова на Бронной",
+      "textId": "6f0402aa-4dd1-4501-894d-3ed1e3f6b911",
+      "sourceTextSha256": "f9723087acd8515489c8e8068c01e13f2c4306cf3ffd719788dae88c803058e2",
+      "wordCount": 112,
+      "revoiceRequestId": "f8eefee7-2065-5ad3-b063-ef6f66746e70"
+    },
+    {
+      "placeId": "osm:relation:9969079",
+      "name": "Храм Великомученика Георгия Победоносца в Ендове",
+      "textId": "205cb867-c419-455c-aef1-e2138e6adfbe",
+      "sourceTextSha256": "c11953e35bb521cace428f6a81c363927a7086902c9d963f07297b7d9b7fd4e0",
+      "wordCount": 110,
+      "revoiceRequestId": "b0d990e5-63bd-590a-bdfb-c6cc7b49cb4e"
+    },
+    {
+      "placeId": "osm:way:1251726004",
+      "name": "Мономахов трон",
+      "textId": "a47cd84b-cb9b-4303-832e-b6aa0e135f1b",
+      "sourceTextSha256": "7f3405f6f1792526222f805ee0f6d40d545da2ffb663f4b5d8a58c0af6c79888",
+      "wordCount": 100,
+      "revoiceRequestId": "4ea69585-03bc-57af-8724-d1b48a131b8e"
+    },
+    {
+      "placeId": "osm:way:129212972",
+      "name": "Центральный дом учёных",
+      "textId": "537188ae-ad46-446a-8619-894a18c55304",
+      "sourceTextSha256": "fb8780401689de7917bc7e27170b4ed22bfc3b775a4e03d02c2ba125ecadc4c0",
+      "wordCount": 101,
+      "revoiceRequestId": "977e1b05-c7d8-5ea6-b138-8a3947948603"
+    },
+    {
+      "placeId": "osm:way:131491845",
+      "name": "Усадьба Васильчиковых",
+      "textId": "5b892ca6-a117-4dbc-bcb1-64cfce5eabd2",
+      "sourceTextSha256": "57eb706859a0c37f6c4c63d3dc9f7baebfaa02cedfc66828ed68832326606b3b",
+      "wordCount": 109,
+      "revoiceRequestId": "fb3565bd-18dc-5f56-ba44-e6a1e6d58deb"
+    },
+    {
+      "placeId": "osm:way:161280389",
+      "name": "Большой Москворецкий мост",
+      "textId": "f030fc1a-a5ce-4bfc-bf3f-a5d312c1a3e9",
+      "sourceTextSha256": "565382160a7294316ec0f9ef853f4b292c0e8b1dee1dc9d9fb90ea7cf55cbcf5",
+      "wordCount": 104,
+      "revoiceRequestId": "06cff452-b70f-539d-9712-901d3d256140"
+    },
+    {
+      "placeId": "osm:way:174929171",
+      "name": "сквер им. Муслима Магомаева",
+      "textId": "005aab5f-b6de-44e3-a43a-348041241594",
+      "sourceTextSha256": "bbb8d10c153cb75d2632fabcbd6d8a725343bcf3f895f95e86194b893e60ae25",
+      "wordCount": 103,
+      "revoiceRequestId": "0f2c1ee2-6f3f-526f-9d05-fa70eecfbcbd"
+    },
+    {
+      "placeId": "osm:way:176241685",
+      "name": "Храм священномученика Власия в Старой Конюшенной слободе",
+      "textId": "8395c265-4e79-4bc5-b086-3e3dd777ac74",
+      "sourceTextSha256": "c3d5fc6860e5fbda9019ea323934d84bc3152990a62fd52b0bc497ddbd1fdc61",
+      "wordCount": 108,
+      "revoiceRequestId": "a1e15d7a-a501-55dc-982e-dde3102304cc"
+    },
+    {
+      "placeId": "osm:way:193498236",
+      "name": "Мультимедиа Арт Музей",
+      "textId": "5bf1617e-fb3d-41e1-9a48-f0537d032e34",
+      "sourceTextSha256": "9db6b683f2b6a35fd4ee6c3f462bbe7e58b72cf9f3b4c2de5b16daa01ed0f8d6",
+      "wordCount": 100,
+      "revoiceRequestId": "0e187595-9506-5e8c-a694-bee5c53adeab"
+    },
+    {
+      "placeId": "osm:way:205731716",
+      "name": "Дом-музей К. С. Станиславского",
+      "textId": "6249f15d-a604-46c1-afea-580af073aae2",
+      "sourceTextSha256": "37a7eaa51ee9cba06b159b668512db3b68fe7bded447a71072f6a6034a43d617",
+      "wordCount": 115,
+      "revoiceRequestId": "30a06d7c-5c59-50cc-be21-248113eb6a92"
+    },
+    {
+      "placeId": "osm:way:205734958",
+      "name": "сквер Мстислава Ростроповича",
+      "textId": "90f41e85-277e-44f8-beb8-3113754a065c",
+      "sourceTextSha256": "45a5f71edc0cc6fd0e8f310edf6cc6ce65c59193c9009c8f69d845b581b64242",
+      "wordCount": 104,
+      "revoiceRequestId": "90dbe0f1-4b97-5c6e-a5b0-d2fd582ae715"
+    },
+    {
+      "placeId": "osm:way:211651325",
+      "name": "Сквер Булгакова",
+      "textId": "f5d39d5a-24d6-4ce6-9758-1a363827c863",
+      "sourceTextSha256": "50a4e84d50713d0232d480bc0747bfecf2d250c48f32711700477e9b0f3122c0",
+      "wordCount": 111,
+      "revoiceRequestId": "89392b30-044e-5b9f-b597-091ec22b2806"
+    },
+    {
+      "placeId": "osm:way:224225490",
+      "name": "Театр им. Евгения Вахтангова",
+      "textId": "22b51a2a-7200-440f-b12c-85b043d49a6c",
+      "sourceTextSha256": "16936ef129d160df5710ba2b42fe06c15cfa1c388d6bdf4c3ecbfd39af815f52",
+      "wordCount": 104,
+      "revoiceRequestId": "d8da9640-2ad5-5b02-9e48-41d28c3d23dc"
+    },
+    {
+      "placeId": "osm:way:225157172",
+      "name": "ФЕСКО Транспортная группа",
+      "textId": "cbe97c13-c9ce-4cb0-a60f-c7d3257e3218",
+      "sourceTextSha256": "b5d752c5bbc4485314d3261482f4a60f9c6c4eea7579a889332fe33f25799851",
+      "wordCount": 113,
+      "revoiceRequestId": "d6de7c79-4e93-5414-a80f-5bbfdf9fb15e"
+    },
+    {
+      "placeId": "osm:way:251330231",
+      "name": "сквер Строителей Москвы",
+      "textId": "4713641b-e95e-4e15-97de-13ca5e5cc651",
+      "sourceTextSha256": "1a9f7b421bac4bbbd5dc072d9916369b48832b39aa25ecbc4b08159e60e44572",
+      "wordCount": 105,
+      "revoiceRequestId": "9b846a79-4b0b-531c-9c72-b6863c6e4703"
+    },
+    {
+      "placeId": "osm:way:289507858",
+      "name": "Сквер Тургенева",
+      "textId": "6f0b31a1-69d2-4122-932e-53d7af720851",
+      "sourceTextSha256": "b68b30bac93a2d16851ca0efec486d8639da3eef8194136e4a4bc0fb90c6e4db",
+      "wordCount": 107,
+      "revoiceRequestId": "d7cf471a-161b-5da6-949c-b2b27847e673"
+    },
+    {
+      "placeId": "osm:way:300426888",
+      "name": "Дом-музей Марины Цветаевой",
+      "textId": "3b45ec11-4c11-4659-b90e-8fcb399d06e4",
+      "sourceTextSha256": "a615e1ac78a8ae59a1c2dc07579ee159dffe4e10c8e1e53a9b4a9a52fedc8fdd",
+      "wordCount": 104,
+      "revoiceRequestId": "9e84eddb-617b-538e-9792-0e08bbbe3d7c"
+    },
+    {
+      "placeId": "osm:way:30153015",
+      "name": "Посольство Туркменистана",
+      "textId": "712ce7f8-40db-43a9-93ee-faeef47ded99",
+      "sourceTextSha256": "9b1f6bec3f155fb4eff436bd1cd8ee8c383d64a7ce19805d9777c4d8bf79d663",
+      "wordCount": 119,
+      "revoiceRequestId": "46b46fc6-e762-5121-a801-fe486edc1f40"
+    },
+    {
+      "placeId": "osm:way:307795782",
+      "name": "Сквер Киселева",
+      "textId": "23814e2c-0fe2-4072-8c93-d8204d8cdbd6",
+      "sourceTextSha256": "ea0d5d9af6189b1593982d6d0cfbccf337eb631500d2b22c91eac27a1b04feac",
+      "wordCount": 106,
+      "revoiceRequestId": "9cc21d8c-82e7-5fbd-becd-06eb240c3540"
+    },
+    {
+      "placeId": "osm:way:31482144",
+      "name": "Государственный геологический музей им. В. И. Вернадского",
+      "textId": "eaf06bf3-b9e2-4fa9-b924-e5ec89389f85",
+      "sourceTextSha256": "4fb163e66d221e79fc37e1909e402d89810c88672ee5c0b8df4e7a6fa99e7a1f",
+      "wordCount": 118,
+      "revoiceRequestId": "f160ae6a-0db0-530c-95ef-94ff40190d6e"
+    },
+    {
+      "placeId": "osm:way:317918942",
+      "name": "Центральная избирательная комиссия Российской Федерации",
+      "textId": "e526a0a0-9be7-48f4-867f-92b325a022fd",
+      "sourceTextSha256": "95cd8c1cddf1a666c581bd75c5b80499b920ebe0d1db963c834ce7757a99864d",
+      "wordCount": 102,
+      "revoiceRequestId": "3ae2ee51-2930-5019-bae6-f1b4d8cfbc75"
+    },
+    {
+      "placeId": "osm:way:32693733",
+      "name": "Государственный музей архитектуры им. А. В. Щусева",
+      "textId": "feaaef09-466e-4205-a4ab-b9db90be9b75",
+      "sourceTextSha256": "412ab7c02c2ee28d1b9f90704784c17b42bd18aa01f5c3270db8ade1ecd2c522",
+      "wordCount": 107,
+      "revoiceRequestId": "9367b345-cb5d-5216-93ff-24cf3843b309"
+    },
+    {
+      "placeId": "osm:way:343479557",
+      "name": "Международный Фонд славянской письменности и культуры",
+      "textId": "b2a6a9d1-e473-4a85-947a-88dd6cbccedd",
+      "sourceTextSha256": "88dcd3170922bcc6a44493bca72f4579e8a3b9dc4c88ce133337b0f6d1c7940b",
+      "wordCount": 116,
+      "revoiceRequestId": "8e17a64f-b001-5f3b-8bfd-07820abe2a08"
+    },
+    {
+      "placeId": "osm:way:385991667",
+      "name": "Ведомственный дом МОГЭС",
+      "textId": "a97df602-c0bf-4a3a-8008-42c6a76f71f0",
+      "sourceTextSha256": "c85e90b978edcd8762bf9620f0d27058b140d9c6de8a931b5b97e04361e2f080",
+      "wordCount": 105,
+      "revoiceRequestId": "a7b3f89f-f248-544b-8521-7e87c4e5b9a5"
+    },
+    {
+      "placeId": "osm:way:412738928",
+      "name": "Усадьба Давыдова",
+      "textId": "61ada605-5cab-4d41-b48d-5d7f4b50dd6c",
+      "sourceTextSha256": "1ea726182944e86f9c0e625806ad2fd7cea0e03820ddc181763e665db4ce19bc",
+      "wordCount": 111,
+      "revoiceRequestId": "7c89c847-2999-5cd3-aa17-6b50865c0558"
+    },
+    {
+      "placeId": "osm:way:42766224",
+      "name": "Дом на набережной",
+      "textId": "731d9dc3-627d-47eb-a54c-8ec4005ab664",
+      "sourceTextSha256": "4c224beb990d3ea8dae925b09a486d3bcf50cdb86b7234fe34ba914b1f149c2d",
+      "wordCount": 182,
+      "revoiceRequestId": "a67be33d-8aee-55fb-beea-25f9625e88a3"
+    },
+    {
+      "placeId": "osm:way:44185735",
+      "name": "Балчуг Кемпински",
+      "textId": "b2a96b36-7392-4f63-b285-21a3733ae4da",
+      "sourceTextSha256": "b276b293bd7fb87cd4dc6274dbeebd068fa3c04eac0fb9e172c5b7a4f4a5a482",
+      "wordCount": 111,
+      "revoiceRequestId": "a4b44b2e-227f-57f0-aae6-84b5088931ea"
+    },
+    {
+      "placeId": "osm:way:45818589",
+      "name": "Белые палаты на улице Пречистенке",
+      "textId": "a7d482a1-9519-417d-9975-5cbae00ff681",
+      "sourceTextSha256": "85b89bed6befa2e14e6501169d6700cfa24e8b312b1e79dc328d8b6fd9ef90a5",
+      "wordCount": 107,
+      "revoiceRequestId": "51bba271-74da-57f7-a9a5-15a1863598c9"
+    },
+    {
+      "placeId": "osm:way:45903933",
+      "name": "Московский епархиальный дом",
+      "textId": "0650dc3c-05eb-4542-8dcb-8bcb18f54bd5",
+      "sourceTextSha256": "89e545ac6414330185c93ce02accce127b2d0e2f8813bcbc53e317b458d37b3a",
+      "wordCount": 100,
+      "revoiceRequestId": "6d158837-6e3a-504d-95c1-6927abae2e08"
+    },
+    {
+      "placeId": "osm:way:46096643",
+      "name": "Палаты Шуйских",
+      "textId": "55202af5-4d04-4623-bec3-f9323ee5e7ba",
+      "sourceTextSha256": "de818c4ada979ee3802234fbd9d43e023033df14603b2bb558c33c369ab1cc9d",
+      "wordCount": 103,
+      "revoiceRequestId": "6ac8cfec-2a7c-5d33-a368-39ce90496145"
+    },
+    {
+      "placeId": "osm:way:46525731",
+      "name": "Мастерская «12»",
+      "textId": "06795edf-d5e6-4b0c-86c6-a118c0641e78",
+      "sourceTextSha256": "9b8d9bd38f847fc73465e3b38388f3570f58dc39c7951dfd4b3447390049bb03",
+      "wordCount": 102,
+      "revoiceRequestId": "dfeb564e-4891-5bce-9026-e9772c1dbe2a"
+    },
+    {
+      "placeId": "osm:way:46837169",
+      "name": "Московский театр мюзикла",
+      "textId": "58549513-e2b6-4ff6-8309-7c13799488a4",
+      "sourceTextSha256": "f44d623ed0b3246c06906489dbcd14c327e26ab19f77ffa25a6cda213c0b4ac1",
+      "wordCount": 110,
+      "revoiceRequestId": "1d0cc379-6276-554f-8d49-85f13bb1f1a5"
+    },
+    {
+      "placeId": "osm:way:47031428",
+      "name": "Посольство Танзании",
+      "textId": "f984a58b-c3f4-41e2-8880-40fd78fd2407",
+      "sourceTextSha256": "1d2c313bfc41bf2086a265753f8cfd2deff51a6e093ca70798410a1b42f95292",
+      "wordCount": 110,
+      "revoiceRequestId": "e7372614-0e15-500c-ba5e-6a48ec48721d"
+    },
+    {
+      "placeId": "osm:way:471223526",
+      "name": "Садовый павильон с садом",
+      "textId": "e6e01742-e798-4b87-8978-9fe2145600fd",
+      "sourceTextSha256": "3fc87825086f93075d7f016eb26e08dc992f8f80f2734f0c1ba3cd37552efdef",
+      "wordCount": 113,
+      "revoiceRequestId": "6fc41f35-c244-5b31-a674-8c8a82ee9e5d"
+    },
+    {
+      "placeId": "osm:way:47138160",
+      "name": "Государственный театр наций",
+      "textId": "594e5740-cf01-417d-9238-fc54e524247d",
+      "sourceTextSha256": "1a806ca4bebb827614a160b60751066467348d67b1b2a1bf0c3dafe2b5a4f39b",
+      "wordCount": 110,
+      "revoiceRequestId": "bb1de74d-ef22-5d07-a4db-86674a473e3f"
+    },
+    {
+      "placeId": "osm:way:47512415",
+      "name": "Особняк Маргариты Морозовой",
+      "textId": "7d0f5813-246b-49d4-96ce-0a6deed12b1d",
+      "sourceTextSha256": "eb7e85312d6161521654f253d79e45bcdb6b541fdde660e2a0dbc538a8726710",
+      "wordCount": 110,
+      "revoiceRequestId": "87f9c14a-1076-5cc0-997b-77cdc039eb55"
+    },
+    {
+      "placeId": "osm:way:47513274",
+      "name": "Музей-мастерская А. С. Голубкиной",
+      "textId": "e8260c08-0262-4156-b556-012c74474f5c",
+      "sourceTextSha256": "76d1abdb5f0e90abc78d4f6ad93c4f84a33e27dda3caf03ea4c78767ff62524b",
+      "wordCount": 114,
+      "revoiceRequestId": "55b829e2-f8ea-50ff-8b52-200d06c8967a"
+    },
+    {
+      "placeId": "osm:way:47578513",
+      "name": "посольство Палестины",
+      "textId": "2620d43b-7ac8-40eb-a9e9-895fe640e602",
+      "sourceTextSha256": "ee4d48b3c1563bf92e9fc6de02cfb34c34ddd85a863fb02cd6d069309452331e",
+      "wordCount": 102,
+      "revoiceRequestId": "2e62e6b8-ee7e-5b2d-a166-8968a8c9e041"
+    },
+    {
+      "placeId": "osm:way:47853856",
+      "name": "Усадьба Апраксиных-Бутурлиных",
+      "textId": "73a06bbf-3f01-4b1d-8407-382147991f4a",
+      "sourceTextSha256": "0dae1632f0dbef06c706cfc9f84186dd5ac559bf1b2093b2cb1759a771c63b90",
+      "wordCount": 118,
+      "revoiceRequestId": "111697d6-392e-50d9-8c8e-11a2390e1dd9"
+    },
+    {
+      "placeId": "osm:way:48172547",
+      "name": "Университет Российской академии образования",
+      "textId": "39654ac8-9df1-43f5-86d2-97bb1973d339",
+      "sourceTextSha256": "b9e70724842f1cd2f8bb2cafead9d8e7ba9355884664c77b6ffeca3474fc2ade",
+      "wordCount": 107,
+      "revoiceRequestId": "f54eb7d9-7bdb-5ce0-8bb7-0cef35fead0b"
+    },
+    {
+      "placeId": "osm:way:48859891",
+      "name": "Палаты Аверкия Кириллова",
+      "textId": "c9d4517a-3ff6-4f7c-b015-019764c708c2",
+      "sourceTextSha256": "5aeb0184fd20552ce760d490ad54fe99008bded6e710eb6541c51ed714b68043",
+      "wordCount": 117,
+      "revoiceRequestId": "55919710-7295-51bf-b649-6baf41e8cd31"
+    },
+    {
+      "placeId": "osm:way:49578741",
+      "name": "Сретенская духовная семинария",
+      "textId": "e4aa0f2e-58bc-4b82-95b1-782386a6e437",
+      "sourceTextSha256": "17947a8a14109d3a92a6e7346f17e3b1fd1822716e1a141abcaf6f4d166c333a",
+      "wordCount": 113,
+      "revoiceRequestId": "d31e7066-10ff-5d0a-9918-1acdd956f7a0"
+    },
+    {
+      "placeId": "osm:way:51049346",
+      "name": "Особняк Зинаиды Морозовой",
+      "textId": "c320d596-ca39-45b0-8a89-a5d9d19cf9e1",
+      "sourceTextSha256": "52bebca90ee59b3379c743db184da9d3fe12f02ce8bd227af60aa369a200ac74",
+      "wordCount": 120,
+      "revoiceRequestId": "3fb84f7f-6492-50a7-b7a9-4b6ea6b7ee5b"
+    },
+    {
+      "placeId": "osm:way:51988398",
+      "name": "Дом. Культурный центр",
+      "textId": "eb744b6c-2207-43d7-86fb-1c3c09b3aea1",
+      "sourceTextSha256": "bdffc06fdeb539ccb0f0a6bffa608357fd154b62e975d169fc7ce419ae53f9c3",
+      "wordCount": 126,
+      "revoiceRequestId": "6f5520fc-edc6-585c-b61e-1f9edf277b95"
+    },
+    {
+      "placeId": "osm:way:52106120",
+      "name": "Посольство Таджикистана",
+      "textId": "53a9ce52-8191-4c0a-8756-f8f9e40dd059",
+      "sourceTextSha256": "0aa4315e140e6aae85671b05934e463c75e78bbf313772127388fea29a6138d3",
+      "wordCount": 108,
+      "revoiceRequestId": "4e58dd15-3c20-5400-94ac-87657e1d0292"
+    },
+    {
+      "placeId": "osm:way:52387428",
+      "name": "Корпус «Т» АУК «Покровка» НИУ ВШЭ",
+      "textId": "10760d27-b27b-490e-b844-00b5c3d5adf3",
+      "sourceTextSha256": "e51a72fa3ee42dec058c1b660580d99400b0a7a50fe82bc22e121f016f36ceee",
+      "wordCount": 114,
+      "revoiceRequestId": "7d490b06-adb2-575f-ad42-aa9b47d5f27f"
+    },
+    {
+      "placeId": "osm:way:52444324",
+      "name": "Факультет психологии МГУ — лабораторный корпус",
+      "textId": "c27166e1-5d59-4100-b84e-79bda6319465",
+      "sourceTextSha256": "ea84684be9ab62fd9d65f17468bc1b3ba7e1161e0abc9ead185a893a8b0baa87",
+      "wordCount": 121,
+      "revoiceRequestId": "64988a1a-2ba9-50dd-bc00-6968e08a14c4"
+    },
+    {
+      "placeId": "osm:way:52582022",
+      "name": "Особняк Шехтеля",
+      "textId": "7e50b973-8a1d-4cc9-a885-af3145c65228",
+      "sourceTextSha256": "4505af66eda879a7c5005dbdd5b9caeda042ccdd0f3e7d20aad65cb094e36a29",
+      "wordCount": 111,
+      "revoiceRequestId": "0c4e6d50-d5dd-57b3-ab69-09a523376f1b"
+    },
+    {
+      "placeId": "osm:way:52609063",
+      "name": "Храм Успения Пресвятой Богородицы в Путинках",
+      "textId": "64583be2-5da4-4c98-9197-9d375fc99ac6",
+      "sourceTextSha256": "219be3956b714057661e2d640bebaeea95b84ae87428fc66c7650692dfc9f328",
+      "wordCount": 107,
+      "revoiceRequestId": "585be0cf-ee78-5915-af2e-9e109f98aa07"
+    },
+    {
+      "placeId": "osm:way:52613460",
+      "name": "Собор Петра, митрополита Московского",
+      "textId": "ab41a66c-fa5a-49af-ab38-93a5bb4aa97f",
+      "sourceTextSha256": "b2d98ae53d5a9b8c8e699cd0c0defbff9bb639b499fbffddde9753ac251ffd41",
+      "wordCount": 108,
+      "revoiceRequestId": "09921382-e8f3-5daf-a38f-0a246f0c71cf"
+    },
+    {
+      "placeId": "osm:way:52769675",
+      "name": "Дворец Юсуповых",
+      "textId": "3a7404ed-3874-4a3a-bd15-6671d2fe7832",
+      "sourceTextSha256": "f22340ad70aa49ce417beefa73029f4c60074e679c3bbf9c246281f6d0436dbd",
+      "wordCount": 102,
+      "revoiceRequestId": "5f358926-94a1-531e-8982-1b853a22ee96"
+    },
+    {
+      "placeId": "osm:way:52813016",
+      "name": "Посольство Эстонии",
+      "textId": "8002cad4-f430-4d84-9a9c-fb6cc69e8d15",
+      "sourceTextSha256": "2cc2bf88ad5d199d478841aba4ccfdee38f1a89017826feace83546e742010f5",
+      "wordCount": 105,
+      "revoiceRequestId": "cc4ac1dd-d83d-56a4-be36-c1516107edac"
+    },
+    {
+      "placeId": "osm:way:52813020",
+      "name": "Посольство Нидерландов",
+      "textId": "48e55246-9fb6-48e2-8234-69d5fb921a6e",
+      "sourceTextSha256": "0a75410fde0e9b95119d598facb3045c020b6c8514fb6409b6a0d72fa56837a9",
+      "wordCount": 106,
+      "revoiceRequestId": "986b3052-fbe4-5003-a832-e4ab86a94fd8"
+    },
+    {
+      "placeId": "osm:way:52829438",
+      "name": "Библиотека-читальня им. И. С. Тургенева",
+      "textId": "a1841a76-191f-4586-9f8e-0948c4bfd396",
+      "sourceTextSha256": "4b0a966b15bf863d17300c6b59ac919d1da9fbf8f43a41a474abcfc2b676968d",
+      "wordCount": 118,
+      "revoiceRequestId": "5315baea-fa48-5dd7-9868-1dd1f561680e"
+    },
+    {
+      "placeId": "osm:way:534095533",
+      "name": "Чудов монастырь",
+      "textId": "4191296c-6966-424e-938e-0deaeea1e0c5",
+      "sourceTextSha256": "4cd54b26859dfe08996b8aaf64e9cc239a40239ef3efe7e92e27111b634742b0",
+      "wordCount": 142,
+      "revoiceRequestId": "01401c9f-9dbe-5220-a03f-e282c66728bd"
+    },
+    {
+      "placeId": "osm:way:53548436",
+      "name": "Третьяковская галерея. Инженерный корпус",
+      "textId": "ac1fd5cf-997e-4c3c-b0ac-fe75fb392a3e",
+      "sourceTextSha256": "1ef40a0c4f1b280e376757901d780e48a0471f5cf2e31989189911ac3fcba2d0",
+      "wordCount": 103,
+      "revoiceRequestId": "a527c1c4-d6cf-5384-a2aa-84ece4605f59"
+    },
+    {
+      "placeId": "osm:way:53830818",
+      "name": "Российский музей леса",
+      "textId": "5d91dd06-e705-4b92-be3a-16197a98b2e0",
+      "sourceTextSha256": "1d75a3c55f74829d65dc3fb53ae7c2cc57e5f2fe1b9de1ac5f08104144c7f16f",
+      "wordCount": 111,
+      "revoiceRequestId": "bd986bdd-f05e-581d-b427-70bb1c3c704a"
+    },
+    {
+      "placeId": "osm:way:758586236",
+      "name": "Сквер Генерала армии А.В.Хрулёва",
+      "textId": "d454dc38-120d-4a65-9ace-fc874e08dead",
+      "sourceTextSha256": "567c366d4553b2117a2eea0d984e392ef49b58bc87e68a7a5f2f2dd493c11c2d",
+      "wordCount": 115,
+      "revoiceRequestId": "7c9399e4-6f25-5a90-8ade-0d0a33b61a9d"
+    },
+    {
+      "placeId": "osm:way:76618921",
+      "name": "Дом-музей И. С. Тургенева",
+      "textId": "4491c24a-3dc1-4bb4-abc8-fac89824cde9",
+      "sourceTextSha256": "52f5bdfd08082f5ea0f7eddf524547bab949bf67080f6271f0d3cf1c65018d68",
+      "wordCount": 122,
+      "revoiceRequestId": "90411b89-9efb-5cf0-83f3-83405fb1db9c"
+    },
+    {
+      "placeId": "osm:way:76633314",
+      "name": "Церковь Покрова Пресвятой Богородицы",
+      "textId": "7581e733-7fbb-4e3b-84f9-30e7bb9ed137",
+      "sourceTextSha256": "a7691c11d7ce4e3f67376a9e89ec69d4202c0c2fcab840b94cd4546d57255946",
+      "wordCount": 111,
+      "revoiceRequestId": "557eb0da-83b7-5db7-bfa3-41a47bcdf75f"
+    },
+    {
+      "placeId": "osm:way:84632785",
+      "name": "Церковь Ильи Пророка на Новгородском подворье",
+      "textId": "a985148e-9074-400e-b90f-00b62110245a",
+      "sourceTextSha256": "bea1e7f6fb26a7da5b800d1f5c5082d7e9f2eda0920e159e8e60db23570cf12d",
+      "wordCount": 105,
+      "revoiceRequestId": "b5c60086-b5a1-560d-9124-c78728428594"
+    },
+    {
+      "placeId": "osm:way:92227425",
+      "name": "Храм Софии Премудрости Божией в Средних Садовниках",
+      "textId": "eba26fb0-308c-48e8-bdee-28e81dca9e89",
+      "sourceTextSha256": "8a8bdca25d2c33c164ba21620f83c360761e9015a1fc40865bd483539c4a54e0",
+      "wordCount": 102,
+      "revoiceRequestId": "bf51b653-5c41-5f34-ba18-584a0806d87a"
+    }
+  ]
+}
