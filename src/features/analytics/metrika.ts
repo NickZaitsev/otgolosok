@@ -59,9 +59,15 @@ export function stopMetrika() {
   window.clearTimeout(retry);
   if (tag) { tag.onload = null; tag.onerror = null; tag.remove(); tag = undefined; }
   try {
-    if (initialized && !window.ym?.a) window.ym?.(METRIKA_ID, "destruct");
+    // The loaded SDK retains ym.a and dispatches commands through its push
+    // method. Its presence does not mean that this is still an unloaded stub.
+    if (initialized) window.ym?.(METRIKA_ID, "destruct");
   } catch { console.warn("Не удалось остановить Яндекс.Метрику."); }
   if (window.ym?.a) window.ym.a.length = 0;
+  for (const script of document.querySelectorAll<HTMLScriptElement>("script[src]")) {
+    // Metrica can load helper scripts such as tag_phono.js after tag.js.
+    if (script.src.startsWith("https://mc.yandex.ru/metrika/")) script.remove();
+  }
   try {
     clearAnalyticsCookies();
     for (const key of Object.keys(localStorage)) if (/^_ym/.test(key)) localStorage.removeItem(key);

@@ -105,6 +105,40 @@ it("отзыв отменяет повторы и удаляет только а
   expect(vi.getTimerCount()).toBe(0);
 });
 
+it("отзыв останавливает загруженный SDK с сохранённой очередью и удаляет его дочерние скрипты", async () => {
+  const { saveCookieChoice } = await import("../legal/cookie-consent");
+  saveCookieChoice(true, "11111111-1111-4111-8111-111111111111." + "a".repeat(43));
+  const { trackPage, stopMetrika } = await import("./metrika");
+  trackPage(location.href);
+  const queue = window.ym!.a!;
+  let active = true;
+  const heartbeat = window.setInterval(() => {
+    if (active) document.cookie = "_ym_uid=renewed; Path=/";
+  }, 1000);
+  // Real Metrica retains ym.a and subscribes to the array's push method.
+  const originalPush = queue.push;
+  queue.push = function (...commands) {
+    for (const command of commands) if (command[1] === "destruct") { active = false; window.clearInterval(heartbeat); }
+    return originalPush.apply(this, commands);
+  };
+  document.querySelector("script")!.dispatchEvent(new Event("load"));
+  const child = document.createElement("script");
+  child.src = "https://mc.yandex.ru/metrika/tag_phono.js";
+  document.head.append(child);
+  const application = document.createElement("script");
+  application.src = "/_next/static/application.js";
+  document.head.append(application);
+  saveCookieChoice(false);
+  stopMetrika();
+  await vi.advanceTimersByTimeAsync(1500);
+  expect(active).toBe(false);
+  expect(document.querySelector('script[src*="mc.yandex.ru/metrika/"]')).toBeNull();
+  expect(document.head.contains(application)).toBe(true);
+  expect(window.ym?.a).toHaveLength(0);
+  expect(document.cookie).not.toContain("_ym_uid");
+  expect(vi.getTimerCount()).toBe(0);
+});
+
 it.each(["/login", "/account", "/admin", "/en/login", "/zh/account"])("исключает приватный маршрут %s", async path => {
   const { saveCookieChoice } = await import("../legal/cookie-consent");
   saveCookieChoice(true, "11111111-1111-4111-8111-111111111111." + "a".repeat(43));
