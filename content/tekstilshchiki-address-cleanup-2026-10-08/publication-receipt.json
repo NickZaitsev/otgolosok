@@ -1,0 +1,85 @@
+{
+  "verifiedAt": "2026-10-08T15:59:20.142Z",
+  "results": [
+    {
+      "placeId": "osm:relation:7486944",
+      "textId": "125367e3-3132-4672-b825-99269ac16f68",
+      "audioJobId": "cc70bd09-966b-4c33-bb9a-c4dd6138b707",
+      "state": "succeeded",
+      "attempts": 1,
+      "sourceTextHash": "ea174e60aa7f2a8dd3134f1b5a102810cf47a7fd090cd380f991fe4eca96ee4f",
+      "profileId": "f5-ru-v1",
+      "engine": "f5",
+      "speaker": "obrazec6",
+      "audio": {
+        "sha256": "9dfff7edce39e9f2ebf2ee756d3e39a033c0479b82f9eb2c39bbedee7a7ed15a",
+        "bytes": 594477,
+        "durationSec": 74.28,
+        "provider": "external",
+        "model": "f5",
+        "voice": "obrazec6"
+      },
+      "receiptSha256": null
+    },
+    {
+      "placeId": "osm:way:48222938",
+      "textId": "c12648d3-5c53-44ab-913b-2f201b4db8d4",
+      "audioJobId": "b70595cf-1db4-4fa5-a468-61125031101c",
+      "state": "succeeded",
+      "attempts": 1,
+      "sourceTextHash": "f56fb0563f40a62fb74ba9288444b7ffe36cd84757dc838f28a698c12e3ed235",
+      "profileId": "f5-ru-v1",
+      "engine": "f5",
+      "speaker": "obrazec6",
+      "audio": {
+        "sha256": "8c2101bd4fb8e4b6ceea0fd0aa9a3fe18c176f7e677deb4f74420c9983bc9814",
+        "bytes": 446637,
+        "durationSec": 55.8,
+        "provider": "external",
+        "model": "f5",
+        "voice": "obrazec6"
+      },
+      "receiptSha256": null
+    },
+    {
+      "placeId": "osm:way:48222937",
+      "textId": "cfed3a90-fbfc-401c-9f6b-ee130d24ef60",
+      "audioJobId": "8021a942-d39d-4715-a63d-254ae6b51258",
+      "state": "succeeded",
+      "attempts": 1,
+      "sourceTextHash": "7c37df9a75b99a2bbeb42d7c562188fedaebbb0b7d5c7bd5a51e9d093943e104",
+      "profileId": "f5-ru-v1",
+      "engine": "f5",
+      "speaker": "obrazec6",
+      "audio": {
+        "sha256": "f22e2e1791d79fc48d66e93dec90b8ceee1ff3da11646c2f6c3b672ad21ee9d2",
+        "bytes": 495597,
+        "durationSec": 61.92,
+        "provider": "external",
+        "model": "f5",
+        "voice": "obrazec6"
+      },
+      "receiptSha256": null
+    },
+    {
+      "placeId": "osm:way:48222942",
+      "textId": "001442de-d51e-4307-a5f0-8f1cdaa50c6a",
+      "audioJobId": "9584c1ac-8eb0-4ab6-b351-73754bd13f08",
+      "state": "succeeded",
+      "attempts": 1,
+      "sourceTextHash": "cc85f578e4b1d77107094e11ed29e04da9353c2ec8f401ecfcec101ee9942707",
+      "profileId": "f5-ru-v1",
+      "engine": "f5",
+      "speaker": "obrazec6",
+      "audio": {
+        "sha256": "2a704e47a8cf8cc9c8260c82aae3482905be5c1c50cb2ab9aaddab8e1d569407",
+        "bytes": 518253,
+        "durationSec": 64.752,
+        "provider": "external",
+        "model": "f5",
+        "voice": "obrazec6"
+      },
+      "receiptSha256": null
+    }
+  ]
+}

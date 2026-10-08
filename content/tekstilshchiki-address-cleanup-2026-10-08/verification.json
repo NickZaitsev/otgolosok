@@ -1,0 +1,122 @@
+{
+  "verifiedAt": "2026-10-08T15:59:09.147Z",
+  "bundleId": "tekstilshchiki-address-cleanup-2026-10-08",
+  "results": [
+    {
+      "placeId": "osm:relation:7486979",
+      "status": "unchanged",
+      "textId": "4ea577e7-b998-494a-b16b-fb70eda3c919",
+      "wordCount": 105,
+      "address": null,
+      "location": {
+        "lat": 55.6898684,
+        "lon": 37.7545961
+      },
+      "audio": {
+        "sha256": "5b56a57f6ed8dd32a41fd36538ebb90e5addbec6ce7248eb31ee6e0ea3e02813",
+        "bytes": 522477,
+        "durationSec": 65.232,
+        "provider": "external",
+        "model": "f5",
+        "voice": "obrazec6"
+      },
+      "previousAudio": null
+    },
+    {
+      "placeId": "osm:relation:7486944",
+      "status": "changed",
+      "textId": "125367e3-3132-4672-b825-99269ac16f68",
+      "wordCount": 128,
+      "address": "Москва, Летняя улица, 1",
+      "location": {
+        "lat": 55.6885483,
+        "lon": 37.7429678
+      },
+      "audio": {
+        "sha256": "9dfff7edce39e9f2ebf2ee756d3e39a033c0479b82f9eb2c39bbedee7a7ed15a",
+        "bytes": 594477,
+        "durationSec": 74.221333,
+        "provider": "external",
+        "model": "f5",
+        "voice": "obrazec6"
+      },
+      "previousAudio": {
+        "sha256": "64bf4b23221aa351f04b9ec7d7fdac0cf8b4b8d31d3d93cc9d012818f754013f",
+        "bytes": 423981,
+        "durationSec": 52.909333
+      }
+    },
+    {
+      "placeId": "osm:way:48222938",
+      "status": "changed",
+      "textId": "c12648d3-5c53-44ab-913b-2f201b4db8d4",
+      "wordCount": 103,
+      "address": "Москва, Летняя улица, 4 с4",
+      "location": {
+        "lat": 55.6877093,
+        "lon": 37.7443343
+      },
+      "audio": {
+        "sha256": "8c2101bd4fb8e4b6ceea0fd0aa9a3fe18c176f7e677deb4f74420c9983bc9814",
+        "bytes": 446637,
+        "durationSec": 55.738667,
+        "provider": "external",
+        "model": "f5",
+        "voice": "obrazec6"
+      },
+      "previousAudio": {
+        "sha256": "87d4e0206010ee0cfda2b9243e086635b7367f619cb9cc0be24b452619a02be9",
+        "bytes": 340845,
+        "durationSec": 42.512
+      }
+    },
+    {
+      "placeId": "osm:way:48222937",
+      "status": "changed",
+      "textId": "cfed3a90-fbfc-401c-9f6b-ee130d24ef60",
+      "wordCount": 103,
+      "address": "Москва, Летняя улица, 8/2 с1",
+      "location": {
+        "lat": 55.6878164,
+        "lon": 37.7452676
+      },
+      "audio": {
+        "sha256": "f22e2e1791d79fc48d66e93dec90b8ceee1ff3da11646c2f6c3b672ad21ee9d2",
+        "bytes": 495597,
+        "durationSec": 61.872,
+        "provider": "external",
+        "model": "f5",
+        "voice": "obrazec6"
+      },
+      "previousAudio": {
+        "sha256": "0871c746fd2177417337061ecd7e282cc9439adab56e2c2b7bacf01f19ea5b1c",
+        "bytes": 306477,
+        "durationSec": 38.221333
+      }
+    },
+    {
+      "placeId": "osm:way:48222942",
+      "status": "changed",
+      "textId": "001442de-d51e-4307-a5f0-8f1cdaa50c6a",
+      "wordCount": 118,
+      "address": "Москва, Летняя улица, 10/1",
+      "location": {
+        "lat": 55.6877481,
+        "lon": 37.7458829
+      },
+      "audio": {
+        "sha256": "2a704e47a8cf8cc9c8260c82aae3482905be5c1c50cb2ab9aaddab8e1d569407",
+        "bytes": 518253,
+        "durationSec": 64.698667,
+        "provider": "external",
+        "model": "f5",
+        "voice": "obrazec6"
+      },
+      "previousAudio": {
+        "sha256": "20e946671c41d47a22b628bbdfc254a0bafd891ea8a51be75f11ce3e5d510d6f",
+        "bytes": 466989,
+        "durationSec": 58.285333
+      }
+    }
+  ]
+}
