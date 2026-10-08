@@ -17,4 +17,4 @@ node --test content/garden-ring-address-cleanup-2026-10-08/verify.test.mjs
 pnpm check
 ```
 
-Статус завершения озвучки и проверка публичных MP3 фиксируются в [отчёте](../../docs/agents/garden-ring-address-cleanup-2026-10-08.md).
+Все 121 новые записи готовы. [publication-receipt.json](publication-receipt.json) содержит идентификаторы заданий, исходные хеши, модель, голос и готовые артефакты. [verification.json](verification.json) фиксирует свежую публичную проверку всех 199 карточек и 320 MP3, включая прежние записи. Подробности — в [отчёте](../../docs/agents/garden-ring-address-cleanup-2026-10-08.md).

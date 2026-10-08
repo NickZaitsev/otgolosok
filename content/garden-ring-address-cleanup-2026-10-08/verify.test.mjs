@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 
 const bundle = JSON.parse(readFileSync(new URL("./changes.json", import.meta.url), "utf8"));
 const tokens = (story) => story.paragraphs.map((paragraph) => paragraph.text).join(" ").split(/\s+/u).filter(Boolean);
@@ -44,5 +45,43 @@ test("Каждый озвучиваемый абзац имеет проверя
       assert.ok(paragraph.factIds.length > 0, entry.placeId);
       for (const id of paragraph.factIds) assert.ok(facts.has(id), `${entry.placeId}: ${id}`);
     }
+  }
+});
+
+test("Опубликованные тексты и все новые MP3 совпадают с завершённой партией", () => {
+  const receipt = JSON.parse(readFileSync(new URL("./publication-receipt.json", import.meta.url), "utf8"));
+  const verification = JSON.parse(readFileSync(new URL("./verification.json", import.meta.url), "utf8"));
+  assert.equal(receipt.status, "ready");
+  assert.equal(verification.checked, 199);
+  assert.deepEqual(verification.errors, []);
+  assert.deepEqual(verification.queueStates, { succeeded: 121 });
+  const published = new Map(verification.entries.map((entry) => [entry.placeId, entry]));
+  assert.equal(published.size, 199);
+  for (const entry of bundle.entries) {
+    const script = entry.story.paragraphs.map((paragraph) => paragraph.text).join("\n\n");
+    const expectedHash = createHash("sha256").update(script).digest("hex");
+    assert.equal(published.get(entry.placeId).sourceTextSha256, expectedHash, entry.placeId);
+  }
+  for (const reviewed of bundle.reviewed) {
+    const actual = published.get(reviewed.placeId);
+    assert.equal(actual.sourceTextSha256, reviewed.sourceTextSha256, reviewed.placeId);
+    assert.equal(actual.wordCount, reviewed.wordCount, reviewed.placeId);
+  }
+  assert.equal(receipt.results.length, bundle.entries.length);
+  for (const result of receipt.results) {
+    const actual = published.get(result.placeId);
+    assert.equal(result.audioState, "succeeded", result.placeId);
+    assert.equal(actual.textId, result.textId, result.placeId);
+    assert.equal(actual.sourceTextSha256, result.sourceTextSha256, result.placeId);
+    assert.deepEqual(actual.audio, result.audio, result.placeId);
+    assert.equal(actual.files[0].sha256, result.audio.sha256, result.placeId);
+    assert.equal(actual.files[0].bytes, result.audio.bytes, result.placeId);
+    assert.equal(actual.files[1].sha256, result.previousAudioSha256, result.placeId);
+    assert.notEqual(result.audio.sha256, result.previousAudioSha256, result.placeId);
+    assert.equal(result.promoAtVerification, result.promo, result.placeId);
+    const expected = result.promo
+      ? ["elevenlabs", "eleven_v4", "9ivxhQ6xIsHd6R3Xc635"]
+      : ["external", "f5", "obrazec6"];
+    assert.deepEqual([result.audio.provider, result.audio.model, result.audio.voice], expected, result.placeId);
   }
 });
