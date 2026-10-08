@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type Ref } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type Ref } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { WalkCreationPanel, type CreationMap } from "../walk-builder/walk-creation-panel";
 import type { Coordinates, Route } from "../tour/types";
@@ -31,7 +31,7 @@ import { openDataAttribution } from "./source-attribution";
 import a from "./around.module.css";
 import styles from "./around-screen.module.css";
 import { toUserMessage } from "@/lib/errors/user-message";
-import { describeLocateError, locateOnce } from "@/lib/position/locate";
+import { describeLocateError, locateOnce, type LocateErrorCode } from "@/lib/position/locate";
 import { useI18n } from "@/lib/i18n/provider";
 import { unlocalizedPath, type Locale } from "@/lib/i18n/locale";
 import { translate } from "@/lib/i18n/translate";
@@ -78,6 +78,8 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const [user,setUser]=useState<(Coordinates&{accuracyM:number})|null>(null);
   const [nearbyCenter,setNearbyCenter]=useState<Coordinates|null>(null),[nearbyRadius,setNearbyRadius]=useState<NearbyRadius>(200);
   const [geo,setGeo]=useState<"idle"|"loading"|"ready"|"error"|"denied">("idle"),[geoMessage,setGeoMessage]=useState(""),[geoOutside,setGeoOutside]=useState(false);
+  const [geoError,setGeoError]=useState<LocateErrorCode|null>(null);
+  const geoStatusId=useId();
   const [prompt,setPrompt]=useState(false);
   const [mapHintVisible,setMapHintVisible]=useState(true);
   // The place a URL change selected; the map moves to it once its pin is known (a linked place may still be loading).
@@ -97,6 +99,36 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   useEffect(()=>{
     const timer=setTimeout(()=>setPrompt((()=>{try{return shouldShowGeoPrompt(localStorage);}catch{return true;}})()),0);
     return()=>clearTimeout(timer);
+  },[]);
+  // Разрешение может быть отозвано или выдано в настройках без перезагрузки карты.
+  useEffect(()=>{
+    if(!navigator.permissions)return;
+    let disposed=false,status:PermissionStatus|null=null,previous:PermissionState|null=null;
+    const changed=()=>{
+      if(disposed||!status)return;
+      const before=previous;previous=status.state;
+      if(status.state==="denied"){
+        locating.current?.();locating.current=null;
+        setGeo("denied");setGeoError("permission-denied");setUser(null);
+      }else{
+        if(before==="denied"||(before!==null&&status.state==="granted")){setGeoMessage("");setGeoOutside(false);}
+        if(before==="granted"&&status.state==="prompt"){
+          locating.current?.();locating.current=null;setGeo("idle");setGeoError(null);setUser(null);
+        }
+        setGeo(current=>current==="denied"?"idle":current);
+        setGeoError(current=>current==="permission-denied"?null:current);
+      }
+    };
+    void (async()=>{
+      try{
+        const permission=await navigator.permissions.query({name:"geolocation"});
+        if(disposed)return;
+        status=permission;status.addEventListener("change",changed);changed();
+      }catch{
+        // Если браузер не умеет проверять разрешение, узнаем состояние при нажатии.
+      }
+    })();
+    return()=>{disposed=true;status?.removeEventListener("change",changed);};
   },[]);
   useEffect(()=>{
     if(!tracked.length)return;
@@ -232,13 +264,13 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   // Сначала показываем грубую точку, затем уточняем её; поиск рядом запускаем по итоговой.
   function locate(){
     locating.current?.();
-    setGeo("loading");setGeoMessage("");setGeoOutside(false);
+    setGeo("loading");setGeoError(null);setUser(null);setGeoMessage("");setGeoOutside(false);
     let first=true;
     locating.current=locateOnce(update=>{
       if(update.type==="error"){
         locating.current=null;
         const denied=update.code==="permission-denied";
-        setGeo(denied?"denied":"error");
+        setGeo(denied?"denied":"error");setGeoError(update.code);setUser(null);
         setGeoMessage(`${t(describeLocateError(update.code))} ${t(denied?"Можно разрешить его в настройках или выбрать место на карте.":"Выберите дом на карте или повторите попытку.")}`);
         if(denied)setPrompt(false);
         return;
@@ -335,12 +367,20 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   ].filter(Boolean);
   const notices = noticeList.length ? noticeList : null;
 
+  const geoControlState=geo==="denied"?"denied":geoError==="unsupported"?"unavailable":geo==="loading"?"locating":geo==="error"||(geo==="ready"&&user&&user.accuracyM>50)?"weak":geo==="ready"?"ready":"idle";
+  const geoDescription=geoControlState==="denied"?t("Нет доступа к геолокации.")
+    :geoControlState==="unavailable"?t("Геолокация недоступна в этом браузере.")
+    :geoControlState==="locating"?t("Определяем положение…")
+    :geoControlState==="weak"?user&&Number.isFinite(user.accuracyM)?t("Низкая точность геолокации: около {accuracy} м.",{accuracy:Math.round(user.accuracyM)}):t("Не удаётся определить точное местоположение.")
+    :geoControlState==="ready"?t("Местоположение определено."):t("Моё местоположение");
+  const geoIcon=geoControlState==="denied"||geoControlState==="unavailable"?"locateOff":geoControlState==="weak"?"locateWeak":"locate";
+
   return <>
     <MapShell
       map={{onViewport:handleViewport,viewState:nearbyMapView,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:foodPlace?`food:${foodPlace.id}`:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
         onSelect:id=>{const value=food.places.find(value=>`food:${value.id}`===id);if(!creating&&value){selectFood(value);return;}const pin=storyPins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
         onPoint:point=>creating?setPicked(point):void findPlace(point)}}
-      controls={creating?null:<>{!food.unavailable&&food.manifest?<MapControlButton aria-label={t("Еда")} aria-pressed={food.enabled} className={styles.foodToggle} onClick={()=>{setSelectedFood(null);food.toggle();}}><ExploreIcon name="cup"/></MapControlButton>:null}<MapControlButton aria-label={t("Моё местоположение")} onClick={locate} disabled={geo==="loading"}><ExploreIcon name="locate"/></MapControlButton></>}
+      controls={creating?null:<>{!food.unavailable&&food.manifest?<MapControlButton aria-label={t("Еда")} aria-pressed={food.enabled} className={styles.foodToggle} onClick={()=>{setSelectedFood(null);food.toggle();}}><ExploreIcon name="cup"/></MapControlButton>:null}<MapControlButton aria-label={t("Моё местоположение")} aria-describedby={geoStatusId} aria-busy={geo==="loading"} title={geoDescription} data-location-state={geoControlState} className={styles.geoControl} onClick={locate} disabled={geo==="loading"}><ExploreIcon name={geoIcon}/><span id={geoStatusId} className={styles.geoStatus} role="status">{geoDescription}</span></MapControlButton></>}
       notices={notices}
       sheet={sheet} sheetExpanded={reading.expanded&&storyShown} onCollapseSheet={reading.collapse} />
     {unlocalizedPath(pathname) === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();}} />}

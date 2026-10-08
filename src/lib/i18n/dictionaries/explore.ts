@@ -1,6 +1,9 @@
 import type { Translations } from "../locale";
 
 export const exploreTranslations: Translations = {
+  "Низкая точность геолокации: около {accuracy} м.": ["Low location accuracy: about {accuracy} m.", "定位精度较低：约 {accuracy} 米。"],
+  "Не удаётся определить точное местоположение.": ["Unable to determine an accurate location.", "无法确定准确位置。"],
+  "Местоположение определено.": ["Location determined.", "已确定位置。"],
   "Карта историй. Выберите отметку или нажмите на дом, чтобы подготовить историю.": ["Story map. Select a marker or tap a building to prepare a story.", "故事地图。请选择标记，或点击建筑来制作故事。"],
   "Мест: {count}. Нажмите, чтобы раскрыть группу": ["Places: {count}. Select to expand the group", "地点：{count}。点击展开此组"],
   "Готово к прослушиванию": ["Ready to listen", "可收听"],

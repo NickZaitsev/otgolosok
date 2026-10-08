@@ -625,7 +625,7 @@ for (const [width, height] of [[390, 844], [1280, 800], [1440, 900]]) {
 
 // Chromium отдаёт эмулированную позицию сразу; точность задаёт, будет ли поиск рядом.
 // Неточная точка не улучшается, поэтому итог приходит после окна уточнения (6 с).
-for (const [accuracy, expected] of [[20, "В радиусе 200 м"], [150, "В радиусе 200 м"], [280, "В радиусе 300 м"], [800, "Положение приблизительное: точность около 800 м"]] as const) {
+for (const [accuracy, expected] of [[20, "В радиусе 200 м"], [50, "В радиусе 200 м"], [51, "В радиусе 200 м"], [150, "В радиусе 200 м"], [280, "В радиусе 300 м"], [800, "Положение приблизительное: точность около 800 м"]] as const) {
   test(`кнопка «Моё местоположение» при точности ${accuracy} м`, async ({ page, context }) => {
     await context.grantPermissions(["geolocation"]);
     await context.setGeolocation({ latitude: 55.7249, longitude: 37.6507, accuracy });
@@ -633,6 +633,10 @@ for (const [accuracy, expected] of [[20, "В радиусе 200 м"], [150, "В 
     await expect(page.getByText("Загружаем карту…")).toHaveCount(0);
     await page.getByRole("button", { name: "Моё местоположение", exact: true }).click();
     await expect(page.getByText(expected)).toBeVisible({ timeout: 10_000 });
+    const control = page.getByRole("button", { name: "Моё местоположение", exact: true });
+    await expect(control).toHaveAttribute("data-location-state", accuracy > 50 ? "weak" : "ready");
+    await expect(control).toBeEnabled();
+    await expect(control).toHaveAccessibleDescription(accuracy > 50 ? `Низкая точность геолокации: около ${accuracy} м.` : "Местоположение определено.");
   });
 }
 
@@ -641,6 +645,13 @@ test("кнопка «Моё местоположение» объясняет з
   await expect(page.getByText("Загружаем карту…")).toHaveCount(0);
   await page.getByRole("button", { name: "Моё местоположение", exact: true }).click();
   await expect(page.getByText("Нет доступа к геолокации. Можно разрешить его в настройках или выбрать место на карте.")).toBeVisible();
+  const control = page.getByRole("button", { name: "Моё местоположение", exact: true });
+  await expect(control).toHaveAttribute("data-location-state", "denied");
+  await expect(control).toHaveAccessibleDescription("Нет доступа к геолокации.");
+  await expect(control).toHaveCSS("color", "rgb(152, 46, 36)");
+  // Закрытая подсказка не означает, что разрешение восстановилось.
+  await page.getByRole("button", { name: "Скрыть сообщение" }).first().click();
+  await expect(control).toHaveAttribute("data-location-state", "denied");
 });
 
 for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 1280, height: 800 }]) {

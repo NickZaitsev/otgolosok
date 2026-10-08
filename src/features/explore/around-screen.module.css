@@ -61,3 +61,21 @@
 .foodToggle[aria-pressed="true"] {
   background-image: linear-gradient(var(--control-selected) 0 0);
 }
+
+.geoControl[data-location-state="denied"],
+.geoControl[data-location-state="unavailable"] {
+  color: var(--danger-ink);
+}
+
+.geoControl[data-location-state="weak"] {
+  color: var(--warning-ink);
+}
+
+.geoStatus {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}

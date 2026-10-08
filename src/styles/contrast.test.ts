@@ -32,7 +32,7 @@ const TEXT: [string, string][] = [
   ["warning-ink", "warning-surface"], ["warning-ink", "raised"],
 ];
 const MARKS: [string, string][] = [
-  ["warning-mark", "warning-surface"], ["focus", "surface-island"], ["focus", "paper"],
+  ["warning-mark", "warning-surface"], ["warning-ink", "surface-island"], ["danger-ink", "surface-island"], ["focus", "surface-island"], ["focus", "paper"],
   ["field-border", "field-surface"], ["field-border", "raised"], ["field-border", "surface-island"],
 ];
 
