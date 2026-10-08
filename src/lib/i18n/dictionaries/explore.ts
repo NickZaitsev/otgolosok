@@ -300,4 +300,11 @@ export const exploreTranslations: Translations = {
   "Фотографии места": ["Place photos", "地点照片"],
   "Предыдущее фото": ["Previous photo", "上一张照片"],
   "Следующее фото": ["Next photo", "下一张照片"],
+  "Смотреть видео": ["Watch video", "观看视频"],
+  "Открыть на YouTube": ["Open on YouTube", "在 YouTube 上打开"],
+  "Закрыть видео": ["Close video", "关闭视频"],
+  "Видео: {title}": ["Video: {title}", "视频：{title}"],
+  "Не удалось открыть видео.": ["Unable to open the video.", "无法打开视频。"],
+  "Не удалось загрузить видео.": ["Unable to load the video.", "无法加载视频。"],
+  "Повторить загрузку видео": ["Reload video", "重新加载视频"],
 };

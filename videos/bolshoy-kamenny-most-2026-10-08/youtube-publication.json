@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-08T13:40:41.457Z",
+  "videoId": "bgkho60Se_Y",
+  "url": "https://www.youtube.com/watch?v=bgkho60Se_Y",
+  "channelId": "UC6iI4xswk8MOTld9b1mL4GQ",
+  "sha256": "56abac882abbdd796ef369602ec3a499114708883f34e74dc57dc2af33cde477",
+  "status": {
+    "uploadStatus": "processed",
+    "privacyStatus": "unlisted",
+    "license": "youtube",
+    "embeddable": true,
+    "publicStatsViewable": true,
+    "madeForKids": false,
+    "selfDeclaredMadeForKids": false
+  }
+}

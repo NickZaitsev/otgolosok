@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-10-08T13:52:35.289989+00:00",
+  "base": "https://otgolosok.online",
+  "cases": [
+    {
+      "context": "walk",
+      "viewport": [
+        390,
+        844
+      ],
+      "iframeBounds": {
+        "x": 32,
+        "y": 164.375,
+        "width": 326,
+        "height": 537.625
+      },
+      "noIframeBeforeClick": true,
+      "closeVisible": true,
+      "youtubePlayerLoaded": true,
+      "playback": {
+        "time": 2.426623,
+        "duration": 79.521,
+        "paused": false,
+        "readyState": 4
+      },
+      "iframeRemovedAfterClose": true
+    },
+    {
+      "context": "walk",
+      "viewport": [
+        320,
+        568
+      ],
+      "iframeBounds": {
+        "x": 32,
+        "y": 110.375,
+        "width": 256,
+        "height": 369.625
+      },
+      "noIframeBeforeClick": true,
+      "closeVisible": true,
+      "youtubePlayerLoaded": true,
+      "iframeRemovedAfterClose": true
+    },
+    {
+      "context": "walk",
+      "viewport": [
+        844,
+        390
+      ],
+      "iframeBounds": {
+        "x": 166,
+        "y": 88,
+        "width": 512,
+        "height": 214
+      },
+      "noIframeBeforeClick": true,
+      "closeVisible": true,
+      "youtubePlayerLoaded": true,
+      "iframeRemovedAfterClose": true
+    },
+    {
+      "context": "walk",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "iframeBounds": {
+        "x": 464,
+        "y": 220,
+        "width": 512,
+        "height": 560
+      },
+      "noIframeBeforeClick": true,
+      "closeVisible": true,
+      "youtubePlayerLoaded": true,
+      "iframeRemovedAfterClose": true
+    },
+    {
+      "context": "map-card",
+      "viewport": [
+        390,
+        844
+      ],
+      "embedded": true,
+      "youtubePlayerLoaded": true,
+      "iframeRemovedAfterClose": true
+    }
+  ],
+  "externalRequestsAfterClick": 68
+}

@@ -1,0 +1,111 @@
+{
+  "batchcomplete": "",
+  "query": {
+    "pages": {
+      "128472272": {
+        "pageid": 128472272,
+        "ns": 6,
+        "title": "File:7244. Bolshoy Kamenny Bridge across the Moskva River.jpg",
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 724198,
+            "width": 2249,
+            "height": 1403,
+            "url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/7244._Bolshoy_Kamenny_Bridge_across_the_Moskva_River.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:7244._Bolshoy_Kamenny_Bridge_across_the_Moskva_River.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=128472272",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2023-02-06 21:16:20",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "7244. Bolshoy Kamenny Bridge across the Moskva River",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "Bolshoy Kamenny Bridge|Self-published work|Files with coordinates missing SDC location of creation",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "GPSLatitude": {
+                "value": "55.744720",
+                "source": "commons-desc-page"
+              },
+              "GPSLongitude": {
+                "value": "37.609619",
+                "source": "commons-desc-page"
+              },
+              "GPSMapDatum": {
+                "value": "WGS-84",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Большой Каменный мост через Москву реку.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2019-08-12 11:39:57",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:GAlexandrova&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:GAlexandrova (page does not exist)\">GAlexandrova</a>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 4.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 4.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/4.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-4.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

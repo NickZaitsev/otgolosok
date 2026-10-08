@@ -9,6 +9,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode, 
 import type { MapFitTarget, MapFocus } from "../explore/explore-map";
 import { ExploreIcon } from "../explore/icons";
 import { PlacePhotoBanner } from "../explore/place-photo";
+import { PlaceVideo } from "../explore/place-video";
 import { usePlaceStory } from "../explore/place-story";
 import { GeoHelp } from "../explore/around-sheets";
 import { nativePlatform } from "@/lib/native/platform";
@@ -269,6 +270,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         {active && (positionFailed || drawer === "position") ? <button type="button" className="walk-session-position" aria-expanded={drawer === "position"} onClick={retryPosition}><ExploreIcon name="locate" />{t("Геопозиции нет")}</button> : null}
         {!active && canStart && onDirectionChange ? <button type="button" aria-label={t("Пройти прогулку с конца")} aria-pressed={direction === "reverse"} onClick={() => { setDrawer(null); onDirectionChange(direction === "forward" ? "reverse" : "forward"); }}>{t(direction === "reverse" ? "Направление: с конца" : "Направление: с начала")}</button> : null}
         {active && hasText ? <button type="button" className="walk-session-read" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}><ExploreIcon name="book" /><span>{t("Читать историю")}</span></button> : null}
+        {active && chapter ? <PlaceVideo key={chapter.id} compact placeId={chapter.place_id} title={chapter.title} /> : null}
         {/* Settings sit with the walk's other tools: in the heading a second button left a gap under a one-line title. */}
         {active ? <button type="button" aria-label={t("Настройки прогулки")} aria-expanded={drawer === "settings"} onClick={() => setDrawer(drawer === "settings" ? null : "settings")}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor"/><circle cx="15" cy="17" r="3" fill="currentColor"/></svg>{t("Настройки")}

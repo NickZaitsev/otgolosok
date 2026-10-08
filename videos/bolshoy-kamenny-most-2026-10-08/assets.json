@@ -1,0 +1,49 @@
+[
+  {
+    "path": "assets/current-bridge.jpg",
+    "caption": "Современный мост, фото 12 августа 2019 года",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:7244._Bolshoy_Kamenny_Bridge_across_the_Moskva_River.jpg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/b/bf/7244._Bolshoy_Kamenny_Bridge_across_the_Moskva_River.jpg",
+    "author": "GAlexandrova",
+    "date": "2019-08-12 11:39:57",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sha256": "2c5835cc26f945a82629f3066e60da89cebfd705951dab48e0ca2ad6ec26861b",
+    "width": 2249,
+    "height": 1403
+  },
+  {
+    "path": "assets/bridge-fenton-1852.jpg",
+    "caption": "Старый каменный мост на фотографии 1852 года",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%9A%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D0%BE%D1%81%D1%82.jpg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f1/%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%9A%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D0%BE%D1%81%D1%82.jpg",
+    "author": "Roger Fenton",
+    "date": "1852",
+    "license": "Public domain",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "sha256": "6241a87d8ec14eafc0c54defefa2fe0a56d48e3f0dcc15af7f2ac1a6d6ffab8b",
+    "width": 1108,
+    "height": 880
+  },
+  {
+    "path": "assets/bridge-1890-1900.jpg",
+    "caption": "Металлический мост 1858–1938 годов на фотохроме 1890–1900 годов",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Cathedral_of_St._Saviour,_(i.e.,_Christ_the_Savior),_and_the_Kamennyj,_(i.e.,_Kamennyi_Most),_Bridge,_Moscow,_Russia-LCCN2001697452.jpg",
+    "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/7/74/The_Cathedral_of_St._Saviour%2C_%28i.e.%2C_Christ_the_Savior%29%2C_and_the_Kamennyj%2C_%28i.e.%2C_Kamennyi_Most%29%2C_Bridge%2C_Moscow%2C_Russia-LCCN2001697452.jpg",
+    "author": "\nPhotochrom Print Collection",
+    "date": "between 1890 and 1900date QS:P571,+1500-00-00T00:00:00Z/6,P1319,+1890-00-00T00:00:00Z/9,P1326,+1900-00-00T00:00:00Z/9",
+    "license": "Public domain",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "sha256": "89cd8c9ed3609f86a9c352880bbf69c011461cb5c919ceea8d34c4ad4975f897",
+    "width": 3440,
+    "height": 2560
+  },
+  {
+    "path": "assets/bridge-1890-1900-display.jpg",
+    "derivedFrom": "assets/bridge-1890-1900.jpg",
+    "modifications": "Уменьшено до 1800 пикселей по длинной стороне без кадрирования; JPEG quality 92. Видеокамера масштабирует отдельную визуальную обёртку, исходный снимок без ретуши.",
+    "sha256": "dc0fb78c85dc67428141c53d8ff9545575510ed60932d0e3dcdd1ac794880447",
+    "width": 1800,
+    "height": 1340
+  }
+]

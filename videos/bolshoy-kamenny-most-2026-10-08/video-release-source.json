@@ -1,0 +1,14 @@
+{
+  "baseCommit": "e49fee0541d79f0f56e46bc88361d0ac9d90ceef",
+  "previousPhotoCommit": "e2540a4",
+  "videoFiles": [
+    "scripts/content-security-policy.mjs",
+    "src/features/explore/around-sheets.tsx",
+    "src/features/tour/walk-session.tsx",
+    "src/lib/i18n/dictionaries/explore.ts",
+    "src/features/explore/place-video.tsx",
+    "src/features/explore/place-video.module.css",
+    "src/features/explore/place-videos.json",
+    "src/lib/legal/document-content.tsx"
+  ]
+}

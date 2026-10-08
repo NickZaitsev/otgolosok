@@ -1,0 +1,79 @@
+.video {
+  margin: var(--space-sm) var(--sheet-pad, 1.25rem);
+}
+
+.compact {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.trigger {
+  min-height: var(--control-min);
+  padding: 0.625rem 1rem;
+  color: var(--map-green);
+  background: var(--control-soft);
+  border: 0;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-size: var(--text-control);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.video a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+.trigger:focus-visible,
+.video a:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.duration {
+  font-size: var(--text-secondary);
+  color: var(--map-green);
+}
+
+.compact .duration {
+  display: none;
+}
+
+.viewer {
+  max-width: 34rem;
+  height: min(44rem, calc(100% - 2rem));
+}
+
+.viewer[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.player {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  margin-inline: auto;
+  background: var(--map-green);
+}
+
+.player iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.fallback {
+  flex-shrink: 0;
+  margin: var(--space-sm) 0 0;
+  font-size: var(--text-secondary);
+  text-align: center;
+}

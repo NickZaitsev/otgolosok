@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-08T13:30:30.951Z",
+  "complete": true,
+  "output": "renders/bolshoy-kamenny-most-full.mp4",
+  "sha256": "56abac882abbdd796ef369602ec3a499114708883f34e74dc57dc2af33cde477",
+  "bytes": 64541352,
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "frames": 2385,
+  "durationSec": 79.5,
+  "videoCodec": "h264",
+  "audioCodec": "aac",
+  "originalAudioSha256": "344454707a85d001ba17455d1324c2f417c97652f09c826b75b9ec8c25eeffca",
+  "provider": "elevenlabs",
+  "model": "eleven_v4",
+  "voiceName": "Отголосок2",
+  "sourceAudioUnchanged": true,
+  "fullNarrationAndPunctuationInCaptions": true,
+  "captionCues": 32,
+  "sourceDecodedDurationSec": 79.44,
+  "renderedDecodedAudioDurationSec": 79.488,
+  "audioCorrelationWindows": [
+    {
+      "start": 0,
+      "end": 10,
+      "correlation": 0.9998758334030224
+    },
+    {
+      "start": 34,
+      "end": 44,
+      "correlation": 0.9997808880917667
+    },
+    {
+      "start": 69,
+      "end": 79.44,
+      "correlation": 0.9997994086888976
+    }
+  ],
+  "hyperframes": {
+    "version": "0.8.141",
+    "strict": true,
+    "lintErrors": 0,
+    "lintWarnings": 0,
+    "runtimeErrors": 0,
+    "layoutErrors": 0,
+    "motionSamples": 300,
+    "contrastChecks": 50
+  },
+  "seams": {
+    "count": 5,
+    "allPassed": true
+  },
+  "youtubePublished": false
+}

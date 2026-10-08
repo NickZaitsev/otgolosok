@@ -8,6 +8,14 @@ const hash = (body: string) => `'sha256-${createHash("sha256").update(body, "utf
 const policyOf = (html: string) => /http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html)?.[1] ?? "";
 
 describe("content security policy", () => {
+  it("разрешает только плеер YouTube с расширенной конфиденциальностью во фрейме", () => {
+    const directives = contentSecurityPolicy([]).split("; ");
+    expect(directives.find(value => value.startsWith("frame-src "))).toContain("https://www.youtube-nocookie.com");
+    for (const name of ["script-src", "connect-src", "img-src", "media-src"]) {
+      expect(directives.find(value => value.startsWith(name + " "))).not.toContain("youtube");
+    }
+    expect(contentSecurityPolicy([])).not.toContain("https://www.youtube.com");
+  });
   it("разрешает встраивание Docker-сайта только интерфейсам Метрики", () => {
     const headers = readFileSync(new URL("../../docker/security-headers.conf", import.meta.url), "utf8");
     const ancestors = /frame-ancestors ([^;]+)/.exec(headers)?.[1].split(" ") ?? [];

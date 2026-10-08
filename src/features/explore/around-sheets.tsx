@@ -12,6 +12,7 @@ import { StoryAudioPlayer } from "../tour/story-audio-player";
 import { PlaceFeedback } from "../place-feedback/place-feedback";
 import { canRatePlace } from "../place-feedback/model";
 import { PlacePhotoBanner } from "./place-photo";
+import { PlaceVideo } from "./place-video";
 import { usePlaceStory } from "./place-story";
 import { SharePlaceButton } from "./share-place-button";
 import { isExpandableStory, isLinkablePlace, type StoryPin } from "./story-pin";
@@ -116,6 +117,7 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
     <>
       {peek ? null : <div className={cx(styles.heading, (expand || !label) && styles.titleRow)}>{heading}</div>}
       {(content.paragraphs?.length || content.audioUrl) ? <ContentLanguageNote contentLocale={actualLocale} audioAvailable={Boolean(content.audioUrl)} /> : null}
+      {catalog && !peek ? <PlaceVideo key={story.id} placeId={story.placeId} title={displayTitle} /> : null}
       {pendingText && loaded.status === "loading" ? <p className={a.text} role="status">{t("Загружаем рассказ…")}</p> : null}
       {pendingText && loaded.status === "error" ? <div role="alert"><p className={a.text}>{t("Не удалось загрузить рассказ.")}</p><button type="button" className={a.secondary} onClick={loaded.retry}>{t("Повторить")}</button></div> : null}
       {pendingText && loaded.status === "missing" ? <p className={a.text} role="status">{t("Эта история больше недоступна.")}</p> : null}

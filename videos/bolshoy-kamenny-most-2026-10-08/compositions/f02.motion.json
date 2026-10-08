@@ -1,0 +1,15 @@
+{
+  "composition": "f02",
+  "duration": 23.01,
+  "assertions": [
+    {
+      "kind": "appearsBy",
+      "selector": "#f02-photo",
+      "bySec": 1
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#f02-visual"
+    }
+  ]
+}

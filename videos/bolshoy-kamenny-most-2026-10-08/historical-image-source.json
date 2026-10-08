@@ -1,0 +1,88 @@
+{
+  "pageid": 32962120,
+  "ns": 6,
+  "title": "File:The Cathedral of St. Saviour, (i.e., Christ the Savior), and the Kamennyj, (i.e., Kamennyi Most), Bridge, Moscow, Russia-LCCN2001697452.jpg",
+  "imagerepository": "local",
+  "imageinfo": [
+    {
+      "size": 2398003,
+      "width": 3440,
+      "height": 2560,
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/74/The_Cathedral_of_St._Saviour%2C_%28i.e.%2C_Christ_the_Savior%29%2C_and_the_Kamennyj%2C_%28i.e.%2C_Kamennyi_Most%29%2C_Bridge%2C_Moscow%2C_Russia-LCCN2001697452.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:The_Cathedral_of_St._Saviour,_(i.e.,_Christ_the_Savior),_and_the_Kamennyj,_(i.e.,_Kamennyi_Most),_Bridge,_Moscow,_Russia-LCCN2001697452.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=32962120",
+      "extmetadata": {
+        "DateTime": {
+          "value": "2014-06-22 02:07:46",
+          "source": "mediawiki-metadata",
+          "hidden": ""
+        },
+        "ObjectName": {
+          "value": "<div class=\"fn\">\nThe  Cathedral of St. Saviour, (i.e., Christ the Savior), and the Kamennyj, (i.e., Kamennyi Most), Bridge, Moscow, Russia</div>",
+          "source": "commons-desc-page"
+        },
+        "CommonsMetadataExtension": {
+          "value": 1.2,
+          "source": "extension",
+          "hidden": ""
+        },
+        "Categories": {
+          "value": "Images from the Library of Congress|Moscow in the 1890s|Images uploaded by Fæ|Artworks without Wikidata item|Artworks with known accession number|PD US expired|Supported by Wikimedia UK|19th century photochrome prints of Moscow|GWToolset Batch Upload|Content media by years - Supported by Wikimedia UK - 2014|Cathedral of Christ the Saviour (1882—1931)|PD-US missing SDC copyright status|Bolshoy Kamenny Bridge (1858-1938)",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Assessments": {
+          "value": "",
+          "source": "commons-categories",
+          "hidden": ""
+        },
+        "Artist": {
+          "value": "<div class=\"fn value\">\nPhotochrom Print Collection</div>",
+          "source": "commons-desc-page"
+        },
+        "DateTimeOriginal": {
+          "value": "between 1890 and 1900<div style=\"display: none;\">date QS:P571,+1500-00-00T00:00:00Z/6,P1319,+1890-00-00T00:00:00Z/9,P1326,+1900-00-00T00:00:00Z/9</div>",
+          "source": "commons-desc-page"
+        },
+        "Credit": {
+          "value": "<p>Library of Congress\n</p>\n<ul><li><i>Catalog:</i> <a rel=\"nofollow\" class=\"external free\" href=\"http://lccn.loc.gov/2001697452\">http://lccn.loc.gov/2001697452</a></li></ul>",
+          "source": "commons-desc-page"
+        },
+        "Permission": {
+          "value": "Public domain works must be out of copyright in both the United States and in the source country of the work in order to be hosted on the Commons. If the work is not a U.S. work, the file <b>must</b> have an additional <a href=\"//commons.wikimedia.org/wiki/Commons:Copyright_tags\" title=\"Commons:Copyright tags\">copyright tag</a> indicating the copyright status in the source country.<br><b>Note:</b> This tag should <i>not</i> be used for sound recordings.<span style=\"display:none;\"><span class=\"licensetpl_short\">PD-1923</span><span class=\"licensetpl_long\"><a href=\"//commons.wikimedia.org/wiki/Public_domain\" class=\"mw-redirect\" title=\"Public domain\">Public domain</a> in the United States</span><span class=\"licensetpl_link\">//commons.wikimedia.org/wiki/File:The_Cathedral_of_St._Saviour,_(i.e.,_Christ_the_Savior),_and_the_Kamennyj,_(i.e.,_Kamennyi_Most),_Bridge,_Moscow,_Russia-LCCN2001697452.jpg</span></span>",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "LicenseShortName": {
+          "value": "Public domain",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "UsageTerms": {
+          "value": "Public domain",
+          "source": "commons-desc-page"
+        },
+        "AttributionRequired": {
+          "value": "false",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Copyrighted": {
+          "value": "False",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "Restrictions": {
+          "value": "",
+          "source": "commons-desc-page",
+          "hidden": ""
+        },
+        "License": {
+          "value": "pd",
+          "source": "commons-templates",
+          "hidden": ""
+        }
+      }
+    }
+  ]
+}

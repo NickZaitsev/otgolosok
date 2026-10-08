@@ -1,0 +1,11 @@
+{
+  "duration": 79.488,
+  "assertions": [
+    {"kind":"appearsBy","selector":"#f01-photo","bySec":1},
+    {"kind":"appearsBy","selector":"#f02-photo","bySec":24.2},
+    {"kind":"appearsBy","selector":"#f03-photo","bySec":47.2},
+    {"kind":"appearsBy","selector":"#f04-schema","bySec":54},
+    {"kind":"appearsBy","selector":"#f05-photo","bySec":59.5},
+    {"kind":"appearsBy","selector":"#f06-photo","bySec":64.5}
+  ]
+}

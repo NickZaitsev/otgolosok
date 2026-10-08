@@ -1,0 +1,22 @@
+{
+  "placeId": "osm:relation:1794442",
+  "jobId": "244492e7-f224-5fa7-9420-80e0572d7ecd",
+  "audioJobId": "fce162f9-6d13-4556-b425-271bd0cf8ed6",
+  "sourceTextSha256": "b74f3f5e8009a17c7c70d0582d969c7108401ab10d9042df7da7876716bac17a",
+  "spokenTextSha256": "53ad957298b26545dccf1a6e5317fe10583e288ab5839c405e7a58eb016ace4f",
+  "sha256": "344454707a85d001ba17455d1324c2f417c97652f09c826b75b9ec8c25eeffca",
+  "bytes": 636141,
+  "durationSec": 79.488,
+  "measuredDurationSec": 79.44,
+  "provider": "elevenlabs",
+  "model": "eleven_v4",
+  "voice": "9ivxhQ6xIsHd6R3Xc635",
+  "preparationVersion": null,
+  "configSha256": null,
+  "url": "/api/story-audio/344454707a85d001ba17455d1324c2f417c97652f09c826b75b9ec8c25eeffca.mp3",
+  "queueAttempts": 1,
+  "reusedExistingV4": false,
+  "voiceName": "Отголосок2",
+  "usedWholeOriginalAudio": true,
+  "regeneratedForVideo": false
+}
