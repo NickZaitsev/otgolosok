@@ -58,17 +58,17 @@
 }
 
 .viewer {
-  width: calc(100% - 2rem);
+  width: calc(100% - 1rem);
   max-width: 45rem;
-  max-height: calc(100% - 2rem);
+  max-height: calc(100% - 1rem);
   margin: auto;
-  padding: var(--space-md);
+  padding: 0;
   overflow: auto;
   overscroll-behavior: contain;
   color: var(--map-green);
   background: var(--surface-island);
   border: 0;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
 }
 
 .viewer::backdrop {
@@ -76,16 +76,20 @@
 }
 
 .viewerHeader {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-raise);
   display: flex;
   gap: var(--space-sm);
-  align-items: flex-start;
-  margin-bottom: var(--space-sm);
+  align-items: center;
+  padding: var(--space-sm);
+  background: var(--surface-island);
 }
 
 .viewerHeader h3 {
   flex: 1;
   min-width: 0;
-  margin: var(--space-xs) 0;
+  margin: 0;
   font-family: var(--font-body), sans-serif;
   font-size: var(--text-body);
   font-weight: 700;
@@ -113,11 +117,15 @@
   height: auto;
   max-height: 38rem;
   object-fit: contain;
-  border-radius: var(--radius-sm);
+}
+
+.slider {
+  position: relative;
+  touch-action: pan-y pinch-zoom;
 }
 
 .credit {
-  margin: var(--space-sm) 0 0;
+  margin: var(--space-sm);
   font-size: var(--text-secondary);
   line-height: 1.6;
   color: var(--map-green);
@@ -131,7 +139,8 @@
 }
 
 .error {
-  padding: var(--space-lg) 0;
+  min-height: 10rem;
+  padding: var(--space-lg) var(--space-sm);
 }
 
 .error button {
@@ -209,38 +218,8 @@
   font-size: var(--text-secondary);
 }
 
-.navigation {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs);
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-sm);
-  font-size: var(--text-secondary);
-}
-
-.navigation button {
-  min-height: var(--control-min);
-  padding: var(--space-xs) var(--space-sm);
-  color: var(--map-green);
-  background: var(--control-soft);
-  border: 0;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-.navigation button:disabled {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.navigation button:focus-visible {
-  outline: var(--focus-ring);
-  outline-offset: 3px;
-}
-
 .caption {
-  margin: var(--space-sm) 0;
+  margin: var(--space-sm);
   font-size: var(--text-body);
   line-height: 1.4;
 }

@@ -73,15 +73,38 @@ it("показывает архивное превью, переключает �
   const dialog = container.querySelector("dialog")!;
   expect(dialog.textContent).toContain("1927");
   expect(dialog.textContent).toContain("Александр Александрович Губарев");
-  expect([...dialog.querySelectorAll("button")].find(b => b.textContent === "Предыдущее фото")?.disabled).toBe(true);
+  expect(dialog.querySelector<HTMLButtonElement>('[aria-label="Предыдущее фото"]')?.disabled).toBe(true);
   await click("Следующее фото");
   expect(dialog.textContent).toContain("1867");
   expect(dialog.textContent).toContain("Автор неизвестен");
-  expect([...dialog.querySelectorAll("button")].find(b => b.textContent === "Следующее фото")?.disabled).toBe(true);
+  expect(dialog.querySelector<HTMLButtonElement>('[aria-label="Следующее фото"]')?.disabled).toBe(true);
   expect(dialog.querySelector('a[href*="1867_Moscow"]')).not.toBeNull();
   await click("Закрыть фото");
   expect(dialog.hasAttribute("open")).toBe(false);
   expect(document.activeElement).toBe(container.querySelector("[data-photo-banner]"));
+});
+
+it("просмотрщик листается жестами без текстовых кнопок, сохраняет границы, подпись и выбранное превью", async () => {
+  await act(async () => root.render(createElement(PlacePhotoBanner, {placeId:"osm:way:48859891", title:"Палаты"})));
+  await click("Открыть фото: Палаты");
+  const dialog=container.querySelector('dialog[open]')!;
+  const slider=dialog.querySelector('[data-photo-slider]')!;
+  expect(slider).not.toBeNull();
+  expect(dialog.textContent).not.toContain("Следующее фото");
+  expect(dialog.textContent).not.toContain("Предыдущее фото");
+  await pointer(slider,"pointerdown",200,60);await pointer(slider,"pointermove",100,60);await pointer(slider,"pointerup",100,60);
+  expect(dialog.querySelector('img')?.getAttribute('alt')).toContain("1867");
+  expect(dialog.querySelector('[role="status"]')?.textContent).toBe("Фото 2 из 2");
+  expect(dialog.querySelector('a[href*="1867_Moscow"]')).not.toBeNull();
+  await pointer(slider,"pointerdown",200,60);await pointer(slider,"pointerup",100,60);
+  expect(dialog.querySelector('img')?.getAttribute('alt')).toContain("1867");
+  await pointer(slider,"pointerdown",100,60);await pointer(slider,"pointerup",110,180);
+  await pointer(slider,"pointerdown",100,60);await pointer(slider,"pointercancel",200,60);await pointer(slider,"pointerup",200,60);
+  expect(dialog.querySelector('img')?.getAttribute('alt')).toContain("1867");
+  await pointer(slider,"pointerdown",100,60);await pointer(slider,"pointerup",200,60);
+  expect(dialog.querySelector('img')?.getAttribute('alt')).toContain("1927");
+  await click("Следующее фото");await click("Закрыть фото");
+  expect(container.querySelector('[data-photo-banner] img')?.getAttribute('alt')).toContain("1867");
 });
 
 it("ошибка снимка не мешает открыть другой кадр и повторить загрузку", async () => {

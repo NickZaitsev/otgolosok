@@ -5,7 +5,6 @@ import { useI18n } from "@/lib/i18n/provider";
 import { pauseAudioElement } from "@/lib/audio/audio-element";
 import videos from "./place-videos.json";
 import { ExploreIcon } from "./icons";
-import photoStyles from "./place-photo.module.css";
 import styles from "./place-video.module.css";
 
 /** Без внешних запросов до явного нажатия; закрытие уничтожает iframe и останавливает ролик. */
@@ -43,7 +42,7 @@ export function PlaceVideo({ placeId, title, compact = false }: { placeId?: stri
       <span className={styles.duration}>{durationLabel} · YouTube</span>
     </div>
     {openFailed ? <p role="alert">{t("Не удалось открыть видео.")} {link}</p> : null}
-    <dialog ref={dialog} className={`${photoStyles.viewer} ${styles.viewer}`} aria-label={t("Видео: {title}", {title})} data-video-dialog
+    <dialog ref={dialog} className={styles.viewer} aria-label={t("Видео: {title}", {title})} data-video-dialog
       onClose={() => { setOpen(false); trigger.current?.focus({preventScroll:true}); }}
       onClick={event => {
         if (event.target !== event.currentTarget) return;
@@ -51,12 +50,12 @@ export function PlaceVideo({ placeId, title, compact = false }: { placeId?: stri
         if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.current?.close();
       }}>
       <header className={styles.header}>
-        <a className={styles.external} href={watchUrl} target="_blank" rel="noopener noreferrer" aria-label={t("Открыть на YouTube")} title={t("Открыть на YouTube")}>
+        <a className={styles.control} href={watchUrl} target="_blank" rel="noopener noreferrer" aria-label={t("Открыть на YouTube")} title={t("Открыть на YouTube")}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 3h7v7M21 3 10 14M21 14v7H3V3h7"/></svg>
         </a>
-        <button ref={close} type="button" className={photoStyles.close} aria-label={t("Закрыть видео")} onClick={() => dialog.current?.close()}><ExploreIcon name="close" /></button>
+        <button ref={close} type="button" className={styles.control} aria-label={t("Закрыть видео")} onClick={() => dialog.current?.close()}><ExploreIcon name="close" /></button>
       </header>
-      {open ? frameFailed ? <div role="alert">
+      {open ? frameFailed ? <div className={styles.error} role="alert">
         <p>{t("Не удалось загрузить видео.")}</p>
         <button type="button" className={styles.trigger} onClick={() => {setAttempt(value => value + 1); setFrameFailed(false);}}>{t("Повторить загрузку видео")}</button>
       </div> : <div className={styles.player}>

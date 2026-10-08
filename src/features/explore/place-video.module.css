@@ -59,8 +59,21 @@
 }
 
 .viewer {
+  width: calc(100% - 1rem);
   max-width: 34rem;
-  height: min(44rem, calc(100% - 2rem));
+  height: min(48rem, calc(100% - 1rem));
+  max-height: calc(100% - 1rem);
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  color: var(--surface-island);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.viewer::backdrop {
+  background: color-mix(in srgb, var(--map-green) 75%, transparent);
 }
 
 .viewer[open] {
@@ -76,12 +89,29 @@
   margin-bottom: var(--space-xs);
 }
 
-.external {
+.viewer .control {
   display: grid;
+  flex: none;
   place-items: center;
   width: var(--control-min);
   height: var(--control-min);
-  border-radius: var(--radius-sm);
+  padding: 0;
+  color: var(--surface-island);
+  background: color-mix(in srgb, var(--map-green) 90%, transparent);
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.viewer .control:focus-visible {
+  outline: var(--focus-ring);
+  outline-color: var(--surface-island);
+  outline-offset: -3px;
+}
+
+.error {
+  padding: var(--space-md);
+  background: var(--map-green);
 }
 
 .player {

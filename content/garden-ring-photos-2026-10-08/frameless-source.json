@@ -1,0 +1,17 @@
+{
+  "baseCommit": "43e7838677b893ce66152862d19bda0b3cb2549a",
+  "files": [
+    "src/features/explore/place-photo.tsx",
+    "src/features/explore/place-photo.module.css",
+    "src/features/explore/place-photo.test.ts",
+    "src/features/explore/place-video.tsx",
+    "src/features/explore/place-video.module.css"
+  ],
+  "sha256": {
+    "src/features/explore/place-photo.tsx": "5e8d9ab272c7e2d91a345854cb7c1dc51d36f6c4cd45ed4ea85f8965ac21aeeb",
+    "src/features/explore/place-photo.module.css": "67578e01481ec9e2a47db8d04aea3691e3b71878e9158aa764eae7215ceffc02",
+    "src/features/explore/place-photo.test.ts": "ed42889c9e0a29e4854c2d289ad3e89355c799f88122fdbc5d88cc09492e1b0a",
+    "src/features/explore/place-video.tsx": "a80a44fb6babf5ef10a2bde9a20ad91bc6b2aebfdb1603f6f531bf61c0aec96f",
+    "src/features/explore/place-video.module.css": "29411dd07ed2c7f7fec2a61b6357b55f18868333578811f0d715bb116a04059d"
+  }
+}

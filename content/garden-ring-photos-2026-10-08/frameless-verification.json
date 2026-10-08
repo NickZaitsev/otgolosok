@@ -1,0 +1,126 @@
+{
+  "checkedAt": "2026-10-08T16:38:07.119422+00:00",
+  "base": "https://otgolosok.online",
+  "cases": [
+    {
+      "context": "bridge-preview",
+      "arrows": true,
+      "nativeTouchSwipeBothDirections": true,
+      "swipeDoesNotOpenDialog": true,
+      "videoIcon": true,
+      "videoUnderline": true
+    },
+    {
+      "context": "youtube-minimal",
+      "parameters": "https://www.youtube-nocookie.com/embed/bgkho60Se_Y?playsinline=1&rel=0&controls=0&iv_load_policy=3&autoplay=1",
+      "playback": {
+        "time": 0.41454,
+        "paused": false,
+        "duration": 79.521
+      },
+      "duplicateTitleRemoved": true,
+      "footerRemoved": true,
+      "appearance": {
+        "padding": "0px",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "radius": "0px"
+      },
+      "nativeTouchPauseResume": true
+    },
+    {
+      "context": "photo-slider",
+      "nativeTouchSwipeBothDirections": true,
+      "boundaryPreserved": true,
+      "selectedPreviewPreserved": true,
+      "textNavigationRemoved": true,
+      "edgeToEdgePhoto": true,
+      "nativeVerticalSwipePreservesPhoto": true,
+      "verticalScrollAndPinchZoomAllowed": true,
+      "closeVisibleAfterScrolling": true,
+      "viewports": [
+        [
+          390,
+          844
+        ],
+        [
+          320,
+          568
+        ],
+        [
+          844,
+          390
+        ],
+        [
+          1440,
+          1000
+        ]
+      ]
+    },
+    {
+      "context": "palaty-preview",
+      "nativeTouchSwipe": true,
+      "selectedPhotoOpensInViewer": true,
+      "boundaryDisabled": true
+    },
+    {
+      "context": "video-layout",
+      "viewport": [
+        320,
+        568
+      ],
+      "closeVisible": true,
+      "noHorizontalOverflow": true,
+      "iframeBounds": {
+        "x": 8,
+        "y": 60,
+        "width": 304,
+        "height": 500
+      },
+      "focusReturned": true
+    },
+    {
+      "context": "video-layout",
+      "viewport": [
+        844,
+        390
+      ],
+      "closeVisible": true,
+      "noHorizontalOverflow": true,
+      "iframeBounds": {
+        "x": 150,
+        "y": 60,
+        "width": 544,
+        "height": 322
+      },
+      "focusReturned": true
+    },
+    {
+      "context": "video-layout",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "closeVisible": true,
+      "noHorizontalOverflow": true,
+      "iframeBounds": {
+        "x": 448,
+        "y": 168,
+        "width": 544,
+        "height": 716
+      },
+      "focusReturned": true
+    },
+    {
+      "context": "map-card",
+      "viewport": [
+        390,
+        844
+      ],
+      "previewArrowsDoNotExpand": true,
+      "nativeTouchSwipeDoesNotExpand": true,
+      "tapExpandsStory": true,
+      "expandedSelectedPhotoOpens": true
+    }
+  ]
+}
