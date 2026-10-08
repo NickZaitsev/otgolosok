@@ -244,7 +244,15 @@ export function GeoNotice({ message, outside, denied, onMoscow, onRetry, onClose
 /** How to allow geolocation for the site; `open` shows the steps without the extra tap. */
 export function GeoHelp({ onRetry, open = false }: { onRetry: () => void; open?: boolean }): ReactNode {
   const { t } = useI18n();
-  if (nativePlatform() === "android") return <details className={styles.help} open={open}>
+  const native = nativePlatform();
+  const userAgent = typeof navigator === "undefined" ? "" : navigator.userAgent;
+  const ios = native === "ios" || /iPhone|iPad|iPod/i.test(userAgent)
+    || (typeof navigator !== "undefined" && navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const androidWeb = native === null && /Android/i.test(userAgent);
+  const windows = /Windows NT/i.test(userAgent);
+  const mac = /Macintosh|Mac OS X/i.test(userAgent) && !ios;
+  const desktop = windows || mac || /X11|Linux x86_64/i.test(userAgent);
+  if (native === "android") return <details className={styles.help} open={open}>
     <summary>{t("Как разрешить геолокацию")}</summary>
     <ol>
       <li>{t("Откройте «Настройки» телефона → «Приложения» → «Отголосок» → «Разрешения» → «Местоположение».")}</li>
@@ -255,15 +263,33 @@ export function GeoHelp({ onRetry, open = false }: { onRetry: () => void; open?:
   </details>;
   return <details className={styles.help} open={open}>
     <summary>{t("Как разрешить геолокацию")}</summary>
-    <p><strong>{t("На iPhone и iPad")}</strong></p>
-    <ol>
-      <li>{t("В Safari нажмите значок меню страницы слева от адреса, затем «Ещё» (…) → «Настройки сайта» → «Геопозиция» → «Разрешить».")}</li>
-      <li>{t("Если доступ всё ещё закрыт, откройте «Настройки» телефона → «Конфиденциальность и безопасность» → «Службы геолокации». Включите их и разрешите доступ для «Веб-сайты Safari» или вашего браузера при использовании.")}</li>
-      <li>{t("Вернитесь на сайт и повторите попытку.")}</li>
-    </ol>
-    <p>{t("Если открыли сайт с экрана «Домой», проверьте его разрешение в «Службах геолокации». Если его нет в списке, откройте сайт в Safari.")}</p>
-    <p>{t("В другом браузере откройте настройки разрешений этого сайта и разрешите доступ к местоположению. Также проверьте геолокацию на устройстве.")}</p>
-    <a href="https://support.apple.com/ru-ru/102515" target="_blank" rel="noopener noreferrer">{t("Инструкция Apple ↗")}</a>
+    {ios ? <>
+      <p><strong>{t("На iPhone и iPad")}</strong></p>
+      <ol>
+        <li>{t("В Safari нажмите значок меню страницы слева от адреса, затем «Ещё» (…) → «Настройки сайта» → «Геопозиция» → «Разрешить».")}</li>
+        <li>{t("Если доступ всё ещё закрыт, откройте «Настройки» телефона → «Конфиденциальность и безопасность» → «Службы геолокации». Включите их и разрешите доступ для «Веб-сайты Safari» или вашего браузера при использовании.")}</li>
+        <li>{t("Вернитесь на сайт и повторите попытку.")}</li>
+      </ol>
+      <p>{t("Если открыли сайт с экрана «Домой», проверьте его разрешение в «Службах геолокации». Если его нет в списке, откройте сайт в Safari.")}</p>
+      <p>{t("В другом браузере откройте настройки разрешений этого сайта и разрешите доступ к местоположению. Также проверьте геолокацию на устройстве.")}</p>
+      <a href="https://support.apple.com/ru-ru/102515" target="_blank" rel="noopener noreferrer">{t("Инструкция Apple ↗")}</a>
+    </> : androidWeb ? <>
+      <p><strong>{t("На телефоне Android")}</strong></p>
+      <ol>
+        <li>{t("Откройте настройки разрешений этого сайта в браузере и разрешите доступ к местоположению.")}</li>
+        <li>{t("Проверьте, что геолокация включена в настройках телефона и разрешена для браузера.")}</li>
+        <li>{t("Вернитесь на сайт и повторите попытку.")}</li>
+      </ol>
+    </> : <>
+      <p><strong>{t(desktop ? "На компьютере" : "В браузере")}</strong></p>
+      <ol>
+        <li>{t("Откройте настройки этого сайта через значок слева от адреса в браузере.")}</li>
+        <li>{t("Для местоположения выберите «Разрешить».")}</li>
+        <li>{t("Вернитесь на сайт и повторите попытку.")}</li>
+      </ol>
+      {windows ? <p>{t("Если доступ всё ещё закрыт, откройте «Параметры Windows» → «Конфиденциальность и безопасность» → «Расположение» и включите службы геолокации и доступ для приложений.")}</p> : null}
+      {mac ? <p>{t("Если доступ всё ещё закрыт, откройте «Системные настройки» → «Конфиденциальность и безопасность» → «Службы геолокации» и разрешите доступ браузеру.")}</p> : null}
+    </>}
     <button className={styles.inlineButton} type="button" onClick={onRetry}>{t("Проверить снова")}</button>
   </details>;
 }

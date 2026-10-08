@@ -26,6 +26,20 @@ test("значок обновляется после выдачи и отзыв�
   await expect(control).toHaveAttribute("data-location-state", "denied");
 });
 
+test.describe("подсказка на Windows", () => {
+  test.use({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" });
+
+  test("показывает настройки браузера и Windows без инструкций iPhone", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByText("Загружаем карту…")).toHaveCount(0);
+    await page.getByRole("button", { name: "Моё местоположение", exact: true }).click();
+    await page.getByText("Как разрешить геолокацию").click();
+    await expect(page.getByText("На компьютере")).toBeVisible();
+    await expect(page.getByText(/Параметры Windows/)).toBeVisible();
+    await expect(page.getByText("На iPhone и iPad")).toHaveCount(0);
+  });
+});
+
 for (const [code, message] of [[2, "Устройство не смогло определить положение."], [3, "Не удалось вовремя определить положение."]] as const) {
   test(`ошибка геолокации ${code} отличается от запрета и допускает повтор`, async ({ page }) => {
     await page.addInitScript(errorCode => {

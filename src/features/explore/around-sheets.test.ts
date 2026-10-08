@@ -2,7 +2,7 @@
 import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
+import { GeoHelp, NearbySheet, PlaceSheet, StorySheet } from "./around-sheets";
 import { jobPin } from "./around-screen";
 import type { NearbyRecommendation } from "./nearby-stories";
 import { catalogPin, isExpandableStory, isLinkablePlace, linkedPlacePin } from "./story-pin";
@@ -316,4 +316,33 @@ it("место по ссылке выглядит на карте так же, �
   const photo = { src: "/images/places/way-5-000000000000.jpg", thumbnail: "/images/places/way-5-111111111111.jpg", width: 1, height: 1, alt: "Дом", author: null, sourceUrl: "https://a.test", license: "CC0", licenseUrl: "https://b.test" };
   expect(linkedPlacePin(point.id, { title: point.title, address: point.address, location: point.location }, { paragraphs: [], actualLocale: "ru", durationSec: 90, photo })).toEqual(catalogPin(point));
   expect(catalogPin({ ...point, durationSec: null, photo: false }).status).toBe("Текст готов");
+});
+
+it("на Windows подсказка геолокации показывает шаги для ПК без инструкций iPhone", async () => {
+  vi.stubGlobal("navigator", { ...navigator, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0 Safari/537.36", platform: "Win32", maxTouchPoints: 0 });
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  await act(async () => root.render(createElement(GeoHelp, { open: true, onRetry: () => {} })));
+  expect(container.textContent).toContain("На компьютере");
+  expect(container.textContent).toContain("Параметры Windows");
+  expect(container.textContent).not.toContain("На iPhone и iPad");
+  expect(container.textContent).not.toContain("Инструкция Apple");
+  await act(async () => root.unmount());
+});
+
+it.each([
+  { name: "iPhone", userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1", platform: "iPhone", touches: 5, shown: "На iPhone и iPad", hidden: "На компьютере" },
+  { name: "iPad с настольным user agent", userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 Safari/604.1", platform: "MacIntel", touches: 5, shown: "На iPhone и iPad", hidden: "На компьютере" },
+  { name: "Android в браузере", userAgent: "Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 Chrome/126.0 Mobile Safari/537.36", platform: "Linux armv8l", touches: 5, shown: "На телефоне Android", hidden: "На iPhone и iPad" },
+  { name: "Mac", userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 Safari/605.1.15", platform: "MacIntel", touches: 0, shown: "Системные настройки", hidden: "На iPhone и iPad" },
+  { name: "Linux", userAgent: "Mozilla/5.0 (X11; Linux x86_64) Firefox/128.0", platform: "Linux x86_64", touches: 0, shown: "На компьютере", hidden: "На iPhone и iPad" },
+  { name: "неизвестная платформа", userAgent: "Unknown browser", platform: "", touches: 0, shown: "В браузере", hidden: "На iPhone и iPad" },
+])("подсказка геолокации для $name", async ({ userAgent, platform, touches, shown, hidden }) => {
+  vi.stubGlobal("navigator", { ...navigator, userAgent, platform, maxTouchPoints: touches });
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  await act(async () => root.render(createElement(GeoHelp, { open: true, onRetry: () => {} })));
+  expect(container.textContent).toContain(shown);
+  expect(container.textContent).not.toContain(hidden);
+  await act(async () => root.unmount());
 });
