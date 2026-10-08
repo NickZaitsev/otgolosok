@@ -1,0 +1,203 @@
+{
+  "osm:way:76633316": {
+    "thumbnail": "/images/places/way-76633316-f93ce5c67f8e.jpg",
+    "src": "/images/places/way-76633316-97a36d11f78d.jpg",
+    "width": 960,
+    "height": 720,
+    "alt": "Главный дом усадьбы Скосыревой и Абрикосовых, Остоженка, 51",
+    "author": "Kolpaky",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Abrikosov.jpg",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
+  "osm:node:3423510101": {
+    "thumbnail": "/images/places/node-3423510101-3481cc30e8b1.jpg",
+    "src": "/images/places/node-3423510101-24dc97304bb4.jpg",
+    "width": 439,
+    "height": 491,
+    "alt": "Академия имени Гнесиных справа и музыкальное училище слева, Поварская улица",
+    "author": "Aleksisn28",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gnesinka._Povarskaya_street..jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
+  "osm:relation:18626008": {
+    "thumbnail": "/images/places/relation-18626008-55aaf0ac32d8.jpg",
+    "src": "/images/places/relation-18626008-a33e4d5a94b4.jpg",
+    "width": 960,
+    "height": 677,
+    "alt": "Дом Шереметьевых на Поварской, 27",
+    "author": "NVO",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Povarskaya_27_01.JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
+  "osm:relation:1794442": {
+    "thumbnail": "/images/places/relation-1794442-075cd4aae574.jpg",
+    "src": "/images/places/relation-1794442-c84e244143b8.jpg",
+    "width": 960,
+    "height": 762,
+    "alt": "Первый Большой Каменный мост, 1852 год. Фото Роджера Фентона",
+    "author": "Роджер Фентон",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%9A%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D0%BE%D1%81%D1%82.jpg",
+    "license": "Public domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%9A%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D0%BE%D1%81%D1%82.jpg",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан.",
+    "gallery": [
+      {
+        "thumbnail": "/images/places/relation-1794442-a3e8199dd9ef.jpg",
+        "src": "/images/places/relation-1794442-b8ab83886577.jpg",
+        "width": 960,
+        "height": 714,
+        "alt": "Прежний Большой Каменный мост (1858–1938). Фотохром, около 1890–1900 годов",
+        "author": "Photochrom Print Collection, Library of Congress",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Cathedral_of_St._Saviour,_(i.e.,_Christ_the_Savior),_and_the_Kamennyj,_(i.e.,_Kamennyi_Most),_Bridge,_Moscow,_Russia-LCCN2001697452.jpg",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/File:The_Cathedral_of_St._Saviour,_(i.e.,_Christ_the_Savior),_and_the_Kamennyj,_(i.e.,_Kamennyi_Most),_Bridge,_Moscow,_Russia-LCCN2001697452.jpg",
+        "retrievedAt": "2026-10-08",
+        "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+      },
+      {
+        "thumbnail": "/images/places/relation-1794442-9d41cb75b88b.jpg",
+        "src": "/images/places/relation-1794442-d62ca3c0eed9.jpg",
+        "width": 960,
+        "height": 599,
+        "alt": "Нынешний Большой Каменный мост, 12 августа 2019 года",
+        "author": "GAlexandrova",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:7244._Bolshoy_Kamenny_Bridge_across_the_Moskva_River.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "retrievedAt": "2026-10-08",
+        "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+      }
+    ]
+  },
+  "osm:way:48859891": {
+    "thumbnail": "/images/places/way-48859891-fe87673b5fdc.jpg",
+    "src": "/images/places/way-48859891-cb65adcd3898.jpg",
+    "width": 960,
+    "height": 881,
+    "alt": "Палаты Аверкия Кириллова, 18 марта 1927 года. Фото Александра Губарева",
+    "author": "Александр Александрович Губарев",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:5699678_%D0%90.%D0%90.%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%91%D0%B5%D1%80%D1%81%D0%B5%D0%BD%D0%B5%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F,_%D0%BF%D0%B0%D0%BB%D0%B0%D1%82%D1%8B_%D0%90%D0%B2%D0%B5%D1%80%D0%BA%D0%B8%D1%8F_%D0%9A%D0%B8%D1%80%D0%B8%D0%BB%D0%BB%D0%BE%D0%B2%D0%B0,_1927-03-18.jpg",
+    "license": "Public domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:5699678_%D0%90.%D0%90.%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%91%D0%B5%D1%80%D1%81%D0%B5%D0%BD%D0%B5%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F,_%D0%BF%D0%B0%D0%BB%D0%B0%D1%82%D1%8B_%D0%90%D0%B2%D0%B5%D1%80%D0%BA%D0%B8%D1%8F_%D0%9A%D0%B8%D1%80%D0%B8%D0%BB%D0%BB%D0%BE%D0%B2%D0%B0,_1927-03-18.jpg",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан.",
+    "gallery": [
+      {
+        "thumbnail": "/images/places/way-48859891-fd2b14b49bd5.jpg",
+        "src": "/images/places/way-48859891-b990711ce710.jpg",
+        "width": 960,
+        "height": 698,
+        "alt": "Палаты Аверкия Кириллова и храм Николы на Берсеневке. Панорама Замоскворечья, 1867 год",
+        "author": "Автор неизвестен",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:1867_Moscow_BW_big_7.jpg",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/File:1867_Moscow_BW_big_7.jpg",
+        "retrievedAt": "2026-10-08",
+        "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+      }
+    ]
+  },
+  "osm:way:92227425": {
+    "thumbnail": "/images/places/way-92227425-ab7fb553c529.jpg",
+    "src": "/images/places/way-92227425-4be2cb67a2f6.jpg",
+    "width": 960,
+    "height": 1380,
+    "alt": "Колокольня храма Софии Премудрости Божией в Средних Садовниках, 1882 год",
+    "author": "Шерер и Набгольц",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%9A%D0%BE%D0%BB%D0%BE%D0%BA%D0%BE%D0%BB%D1%8C%D0%BD%D1%8F_%D0%BF%D1%80%D0%B8_%D1%86%D0%B5%D1%80%D0%BA%D0%B2%D0%B8_%D0%A1%D0%BE%D1%84%D0%B8%D0%B8_(%D0%9F%D1%80%D0%B5%D0%BC%D1%83%D0%B4%D1%80.%D0%91%D0%BE%D0%B6%D0%B8%D0%B5%D0%B9)(%D0%BD%D0%B0_%D0%A1%D0%BE%D1%84%D0%B8%D0%B9%D1%81.%D0%BD%D0%B0%D0%B1)._1882_607-001_e1t.jpg",
+    "license": "Public domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0._%D0%9A%D0%BE%D0%BB%D0%BE%D0%BA%D0%BE%D0%BB%D1%8C%D0%BD%D1%8F_%D0%BF%D1%80%D0%B8_%D1%86%D0%B5%D1%80%D0%BA%D0%B2%D0%B8_%D0%A1%D0%BE%D1%84%D0%B8%D0%B8_(%D0%9F%D1%80%D0%B5%D0%BC%D1%83%D0%B4%D1%80.%D0%91%D0%BE%D0%B6%D0%B8%D0%B5%D0%B9)(%D0%BD%D0%B0_%D0%A1%D0%BE%D1%84%D0%B8%D0%B9%D1%81.%D0%BD%D0%B0%D0%B1)._1882_607-001_e1t.jpg",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
+  "osm:relation:20346140": {
+    "thumbnail": "/images/places/relation-20346140-24dd0e4545b8.jpg",
+    "src": "/images/places/relation-20346140-c8b449f13291.jpg",
+    "width": 960,
+    "height": 591,
+    "alt": "Кокоревское подворье на Софийской набережной, 34",
+    "author": "Ludvig14",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_SofiyskayaEmbankment34_192_3547.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
+  "osm:way:161280389": {
+    "thumbnail": "/images/places/way-161280389-d631975d19d3.jpg",
+    "src": "/images/places/way-161280389-ad23793e6ebc.jpg",
+    "width": 960,
+    "height": 640,
+    "alt": "Большой Москворецкий мост, май 2022 года",
+    "author": "Retired electrician",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Bolshoy_Moskvoretsky_Bridge_May_2022_02.jpg",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
+  "osm:relation:9969079": {
+    "thumbnail": "/images/places/relation-9969079-c3e26abb30c3.jpg",
+    "src": "/images/places/relation-9969079-da40efc7a8f7.jpg",
+    "width": 960,
+    "height": 827,
+    "alt": "Храм Георгия Победоносца в Ендове",
+    "author": "Sergey Ashmarin",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Church_of_St_George_in_Endova_-_Moscow,_Russia_-_panoramio.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
+  "osm:way:385991667": {
+    "thumbnail": "/images/places/way-385991667-ee397fd81eff.jpg",
+    "src": "/images/places/way-385991667-b5061ee097b3.jpg",
+    "width": 960,
+    "height": 720,
+    "alt": "Ведомственный дом Общества электрического освещения на Садовнической, 11, 2019 год; в источнике обозначен как строение 6",
+    "author": "AndyVolykhov",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0,_%D0%A1%D0%B0%D0%B4%D0%BE%D0%B2%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D1%83%D0%BB%D0%B8%D1%86%D0%B0,_11,_%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BD%D0%B8%D0%B5_6.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
+  "osm:relation:9529826": {
+    "thumbnail": "/images/places/relation-9529826-d0432a53b48e.jpg",
+    "src": "/images/places/relation-9529826-41be78aef086.jpg",
+    "width": 500,
+    "height": 602,
+    "alt": "Церковь Николая Чудотворца в Заяицком, 1883 год. Из альбома Николая Найдёнова",
+    "author": "Альбом Николая Александровича Найдёнова; фотограф не указан",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:N.A.Naidenov_(1883)._3.2.11_Nikolay_Zayaitsky.jpg",
+    "license": "Public domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:N.A.Naidenov_(1883)._3.2.11_Nikolay_Zayaitsky.jpg",
+    "retrievedAt": "2026-10-08",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан.",
+    "gallery": [
+      {
+        "thumbnail": "/images/places/relation-9529826-c7e85d078bb9.jpg",
+        "src": "/images/places/relation-9529826-ce28f0497bb9.jpg",
+        "width": 800,
+        "height": 600,
+        "alt": "Интерьер храма Николая Чудотворца в Заяицком, 1920-е годы. Фото Николая Лебедева",
+        "author": "Николай Николаевич Лебедев",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_St_Nicholas-Zayaitsky_church_interior_(N.N.Lebedev,_1920s).jpg",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_St_Nicholas-Zayaitsky_church_interior_(N.N.Lebedev,_1920s).jpg",
+        "retrievedAt": "2026-10-08",
+        "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+      }
+    ]
+  }
+}

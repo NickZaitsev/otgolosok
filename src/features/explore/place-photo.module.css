@@ -13,6 +13,7 @@
 }
 
 .banner {
+  position: relative;
   min-height: var(--control-min);
   padding: 0;
   overflow: hidden;
@@ -148,4 +149,51 @@
 [data-expanded] .banner {
   height: auto;
   aspect-ratio: var(--photo-ratio);
+}
+
+.count {
+  position: absolute;
+  right: var(--space-sm);
+  bottom: var(--space-sm);
+  padding: 0.25rem 0.5rem;
+  color: var(--surface-island);
+  background: var(--map-green);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-secondary);
+}
+
+.navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+  font-size: var(--text-secondary);
+}
+
+.navigation button {
+  min-height: var(--control-min);
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--map-green);
+  background: var(--control-soft);
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.navigation button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.navigation button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.caption {
+  margin: var(--space-sm) 0;
+  font-size: var(--text-body);
+  line-height: 1.4;
 }

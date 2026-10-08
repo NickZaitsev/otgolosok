@@ -103,7 +103,7 @@ export function StorySheet({ story, walkHref, startRef, onStart, onClose, onWalk
     handle={expand ? <SheetHandle expanded={expanded} onExpand={expand.onExpand} onCollapse={expand.onCollapse} controls="story-sheet"
       expandLabel={t("Читать историю полностью")} collapseLabel={t("Свернуть историю")} /> : null}
     // Only catalog places have photos; the index flag holds the banner until the detail arrives.
-    media={catalog ? <PlacePhotoBanner key={story.id} photo={loaded.story?.photo} pending={story.hasPhoto === true && loaded.status === "loading"} title={displayTitle}
+    media={catalog ? <PlacePhotoBanner key={story.id} placeId={story.id} photo={loaded.story?.photo} pending={story.hasPhoto === true && loaded.status === "loading"} title={displayTitle}
       // In the peek the photo is part of the preview and expands the story like its title and text.
       onPreview={peek ? expand.onExpand : undefined} /> : null}
     header={header}

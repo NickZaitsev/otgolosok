@@ -296,4 +296,8 @@ export const exploreTranslations: Translations = {
   "{distance} м по прямой · готовая история.": ["{distance} m away in a straight line · story ready.", "直线距离 {distance} 米 · 故事已完成。"],
   "Связь прервалась.": ["The connection was interrupted.", "连接已中断。"],
   "Исследование остановлено.": ["Research stopped.", "调研已停止。"],
+  "Фото {current} из {total}": ["Photo {current} of {total}", "照片 {current}/{total}"],
+  "Фотографии места": ["Place photos", "地点照片"],
+  "Предыдущее фото": ["Previous photo", "上一张照片"],
+  "Следующее фото": ["Next photo", "下一张照片"],
 };

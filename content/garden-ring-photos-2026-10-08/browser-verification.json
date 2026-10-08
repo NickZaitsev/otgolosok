@@ -1,0 +1,653 @@
+{
+  "checkedAt": "2026-10-08T13:31:52.015986+00:00",
+  "base": "https://otgolosok.online",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "total": 69,
+  "loaded": 68,
+  "items": [
+    {
+      "walk": "ostozhenka",
+      "stop": 1,
+      "placeId": "osm:node:7428358397",
+      "src": "https://otgolosok.online/images/places/node-7428358397-ca055e568c29.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 2,
+      "placeId": "osm:relation:18096252",
+      "src": "https://otgolosok.online/api/place-images/a18a39d674333a79cb02f18cb33a6f87b2f63d4c7e630f4f9c5155a569564b8d.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 3,
+      "placeId": "osm:way:52434941",
+      "src": "https://otgolosok.online/api/place-images/9c0346727099c1b25b8632c40102258c48ba48e9ee73a490d288c238cccd368e.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 4,
+      "placeId": "osm:node:12233205875",
+      "src": "https://otgolosok.online/images/places/node-12233205875-3a278b869612.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 5,
+      "placeId": "osm:node:12236419787",
+      "src": "https://otgolosok.online/images/places/node-12236419787-e1f3b48202ce.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 6,
+      "placeId": "osm:way:193498236",
+      "src": "https://otgolosok.online/api/place-images/4d07cdccfaaed19959badd0740f24fc9e76254632a59623fe53a400b0af4f747.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 7,
+      "placeId": "osm:way:47978268",
+      "src": "https://otgolosok.online/api/place-images/a56f0cb1a5fbabf42adbb935889cf3235cef577ab93ebfdcafdbc488db2b37af.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 8,
+      "placeId": "osm:way:76618921",
+      "src": "https://otgolosok.online/api/place-images/f6a5c51693c40a12e673449fd34a1bf1e7794e192e8bb0cc697c684e852e2b93.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 9,
+      "placeId": "osm:relation:1850015",
+      "src": "https://otgolosok.online/api/place-images/1a962499356511d4c688faaffbefd81e7b93d5d981abea332a6b0b0c0f0cee5a.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 10,
+      "placeId": "osm:way:76633316",
+      "src": "https://otgolosok.online/images/places/way-76633316-97a36d11f78d.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 11,
+      "placeId": "osm:way:76633314",
+      "src": "https://otgolosok.online/api/place-images/b3a2bebd3d29b7d012c943b1bb9fca11812e397e9d66d19c528d99831ac873e4.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 12,
+      "placeId": "osm:relation:6011324",
+      "src": "https://otgolosok.online/api/place-images/a981013f6a9cf625c63d6926e34162ddc19fc0491f814ee82d1b163699441ace.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 1,
+      "placeId": "osm:way:47294368",
+      "src": "https://otgolosok.online/images/places/way-47294368-7d79c51dfdde.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 2,
+      "placeId": "osm:way:300426887",
+      "src": "https://otgolosok.online/api/place-images/7c500761911af585dc673af9a0fe40be6e58d3b129d740e85ca8a281d4ad35dd.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 3,
+      "placeId": "osm:node:3423510101",
+      "src": "https://otgolosok.online/images/places/node-3423510101-24dc97304bb4.jpg",
+      "naturalWidth": 439,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 4,
+      "placeId": "osm:way:160317025",
+      "src": "https://otgolosok.online/api/place-images/2b9534119d1514f5bb4fad6c922958451a33b7ceade6b0d65d9683943d546a1f.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 5,
+      "placeId": "osm:way:300426888",
+      "src": "https://otgolosok.online/api/place-images/f17d7e6bb9d54780a1b9653310b0695e3f3a26a76dbf738f44dd4f60b20fb0d0.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 6,
+      "placeId": "osm:way:32783700",
+      "src": "https://otgolosok.online/api/place-images/05e37226460b2422008d7b23807f944cccde77e3251bc36418dae84fe6714f90.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 7,
+      "placeId": "osm:node:3466483914",
+      "src": "https://otgolosok.online/images/places/node-3466483914-3f268166555a.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 8,
+      "placeId": "osm:way:47296416",
+      "src": "https://otgolosok.online/images/places/way-47296416-3820351dd233.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 9,
+      "placeId": "osm:relation:18626008",
+      "src": "https://otgolosok.online/images/places/relation-18626008-a33e4d5a94b4.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 10,
+      "placeId": "osm:way:47296531",
+      "src": "https://otgolosok.online/api/place-images/73f6cffbbcc60b8bf822fc07c9aad21e651b961a0988266a28bbd1bcc9b76f8a.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 11,
+      "placeId": "osm:way:46525731",
+      "src": "https://otgolosok.online/api/place-images/ff1ffd57ea0fe3ef79f5fabfd5d6abb6a6b7087c5063d117fe772ee13aa41778.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 12,
+      "placeId": "osm:way:47031131",
+      "src": "https://otgolosok.online/api/place-images/48b72f0da678b569778e65f6b5443fd15b5002773a65e788b224c2fded7d82e6.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 13,
+      "placeId": "osm:way:47031092",
+      "src": "https://otgolosok.online/api/place-images/eea53467c71f11d39bbe25c287b8cc829a05df140e582e290b46ee5d3271b8ed.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 14,
+      "placeId": "osm:relation:18135199",
+      "src": "https://otgolosok.online/api/place-images/c11a5c99f581261a0bbbea19a8d3726572a62a3fba45d3e0af060f803d0b9648.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 1,
+      "placeId": "osm:relation:1794442",
+      "src": "https://otgolosok.online/images/places/relation-1794442-c84e244143b8.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded",
+      "gallery": [
+        {
+          "alt": "Первый Большой Каменный мост, 1852 год. Фото Роджера Фентона",
+          "src": "https://otgolosok.online/images/places/relation-1794442-c84e244143b8.jpg",
+          "credit": [
+            "Первый Большой Каменный мост, 1852 год. Фото Роджера Фентона",
+            "Фото: Роджер Фентон. Wikimedia Commons · Public domain"
+          ],
+          "links": [
+            "https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%9A%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D0%BE%D1%81%D1%82.jpg",
+            "https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B5%D1%80%D0%B2%D1%8B%D0%B9_%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%BE%D0%B9_%D0%9A%D0%B0%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D0%BE%D1%81%D1%82.jpg"
+          ]
+        },
+        {
+          "alt": "Прежний Большой Каменный мост (1858–1938). Фотохром, около 1890–1900 годов",
+          "src": "https://otgolosok.online/images/places/relation-1794442-b8ab83886577.jpg",
+          "credit": [
+            "Прежний Большой Каменный мост (1858–1938). Фотохром, около 1890–1900 годов",
+            "Фото: Photochrom Print Collection, Library of Congress. Wikimedia Commons · Public domain"
+          ],
+          "links": [
+            "https://commons.wikimedia.org/wiki/File:The_Cathedral_of_St._Saviour,_(i.e.,_Christ_the_Savior),_and_the_Kamennyj,_(i.e.,_Kamennyi_Most),_Bridge,_Moscow,_Russia-LCCN2001697452.jpg",
+            "https://commons.wikimedia.org/wiki/File:The_Cathedral_of_St._Saviour,_(i.e.,_Christ_the_Savior),_and_the_Kamennyj,_(i.e.,_Kamennyi_Most),_Bridge,_Moscow,_Russia-LCCN2001697452.jpg"
+          ]
+        },
+        {
+          "alt": "Нынешний Большой Каменный мост, 12 августа 2019 года",
+          "src": "https://otgolosok.online/images/places/relation-1794442-d62ca3c0eed9.jpg",
+          "credit": [
+            "Нынешний Большой Каменный мост, 12 августа 2019 года",
+            "Фото: GAlexandrova. Wikimedia Commons · CC BY-SA 4.0"
+          ],
+          "links": [
+            "https://commons.wikimedia.org/wiki/File:7244._Bolshoy_Kamenny_Bridge_across_the_Moskva_River.jpg",
+            "https://creativecommons.org/licenses/by-sa/4.0"
+          ]
+        }
+      ]
+    },
+    {
+      "walk": "island",
+      "stop": 2,
+      "placeId": "osm:way:48859891",
+      "src": "https://otgolosok.online/images/places/way-48859891-cb65adcd3898.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded",
+      "gallery": [
+        {
+          "alt": "Палаты Аверкия Кириллова, 18 марта 1927 года. Фото Александра Губарева",
+          "src": "https://otgolosok.online/images/places/way-48859891-cb65adcd3898.jpg",
+          "credit": [
+            "Палаты Аверкия Кириллова, 18 марта 1927 года. Фото Александра Губарева",
+            "Фото: Александр Александрович Губарев. Wikimedia Commons · Public domain"
+          ],
+          "links": [
+            "https://commons.wikimedia.org/wiki/File:5699678_%D0%90.%D0%90.%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%91%D0%B5%D1%80%D1%81%D0%B5%D0%BD%D0%B5%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F,_%D0%BF%D0%B0%D0%BB%D0%B0%D1%82%D1%8B_%D0%90%D0%B2%D0%B5%D1%80%D0%BA%D0%B8%D1%8F_%D0%9A%D0%B8%D1%80%D0%B8%D0%BB%D0%BB%D0%BE%D0%B2%D0%B0,_1927-03-18.jpg",
+            "https://commons.wikimedia.org/wiki/File:5699678_%D0%90.%D0%90.%D0%93%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2_-_%D0%91%D0%B5%D1%80%D1%81%D0%B5%D0%BD%D0%B5%D0%B2%D1%81%D0%BA%D0%B0%D1%8F_%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F,_%D0%BF%D0%B0%D0%BB%D0%B0%D1%82%D1%8B_%D0%90%D0%B2%D0%B5%D1%80%D0%BA%D0%B8%D1%8F_%D0%9A%D0%B8%D1%80%D0%B8%D0%BB%D0%BB%D0%BE%D0%B2%D0%B0,_1927-03-18.jpg"
+          ]
+        },
+        {
+          "alt": "Палаты Аверкия Кириллова и храм Николы на Берсеневке. Панорама Замоскворечья, 1867 год",
+          "src": "https://otgolosok.online/images/places/way-48859891-b990711ce710.jpg",
+          "credit": [
+            "Палаты Аверкия Кириллова и храм Николы на Берсеневке. Панорама Замоскворечья, 1867 год",
+            "Фото: Автор неизвестен. Wikimedia Commons · Public domain"
+          ],
+          "links": [
+            "https://commons.wikimedia.org/wiki/File:1867_Moscow_BW_big_7.jpg",
+            "https://commons.wikimedia.org/wiki/File:1867_Moscow_BW_big_7.jpg"
+          ]
+        }
+      ]
+    },
+    {
+      "walk": "island",
+      "stop": 3,
+      "placeId": "osm:way:42766224",
+      "src": "https://otgolosok.online/api/place-images/bcec38d58d90b47df6c413cc3bbba410a1e7e42055e0069b0026f0398e2b7d8a.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 4,
+      "placeId": "osm:way:92227425",
+      "src": "https://otgolosok.online/images/places/way-92227425-4be2cb67a2f6.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 5,
+      "placeId": "osm:relation:20346140",
+      "src": "https://otgolosok.online/images/places/relation-20346140-c8b449f13291.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 6,
+      "placeId": "osm:way:44185735",
+      "src": "https://otgolosok.online/api/place-images/47505c6d1737a9c97b8150e9439ba3c6a016d2396cee8e623ea994ad3335d564.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 7,
+      "placeId": "osm:way:161280389",
+      "src": "https://otgolosok.online/images/places/way-161280389-ad23793e6ebc.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 8,
+      "placeId": "osm:relation:9969079",
+      "src": "https://otgolosok.online/images/places/relation-9969079-da40efc7a8f7.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 9,
+      "placeId": "osm:way:385991667",
+      "src": "https://otgolosok.online/images/places/way-385991667-b5061ee097b3.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 10,
+      "placeId": "osm:node:6303242526",
+      "src": "https://otgolosok.online/images/places/node-6303242526-10e5fc3bf986.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 11,
+      "placeId": "osm:relation:9529826",
+      "src": "https://otgolosok.online/images/places/relation-9529826-41be78aef086.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded",
+      "gallery": [
+        {
+          "alt": "Церковь Николая Чудотворца в Заяицком, 1883 год. Из альбома Николая Найдёнова",
+          "src": "https://otgolosok.online/images/places/relation-9529826-41be78aef086.jpg",
+          "credit": [
+            "Церковь Николая Чудотворца в Заяицком, 1883 год. Из альбома Николая Найдёнова",
+            "Фото: Альбом Николая Александровича Найдёнова; фотограф не указан. Wikimedia Commons · Public domain"
+          ],
+          "links": [
+            "https://commons.wikimedia.org/wiki/File:N.A.Naidenov_(1883)._3.2.11_Nikolay_Zayaitsky.jpg",
+            "https://commons.wikimedia.org/wiki/File:N.A.Naidenov_(1883)._3.2.11_Nikolay_Zayaitsky.jpg"
+          ]
+        },
+        {
+          "alt": "Интерьер храма Николая Чудотворца в Заяицком, 1920-е годы. Фото Николая Лебедева",
+          "src": "https://otgolosok.online/images/places/relation-9529826-ce28f0497bb9.jpg",
+          "credit": [
+            "Интерьер храма Николая Чудотворца в Заяицком, 1920-е годы. Фото Николая Лебедева",
+            "Фото: Николай Николаевич Лебедев. Wikimedia Commons · Public domain"
+          ],
+          "links": [
+            "https://commons.wikimedia.org/wiki/File:Moscow,_St_Nicholas-Zayaitsky_church_interior_(N.N.Lebedev,_1920s).jpg",
+            "https://commons.wikimedia.org/wiki/File:Moscow,_St_Nicholas-Zayaitsky_church_interior_(N.N.Lebedev,_1920s).jpg"
+          ]
+        }
+      ]
+    },
+    {
+      "walk": "island",
+      "stop": 12,
+      "placeId": "osm:relation:8443298",
+      "src": "https://otgolosok.online/api/place-images/301213aa1f587195e1da291771195c1534f8fd463c4106ae820351bc1aa44937.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 13,
+      "placeId": "osm:way:53854158",
+      "src": "https://otgolosok.online/api/place-images/16191f31a7d3306df9c65205e6d92b3df23e2d83924a96d64c7dcf6b52ccff33.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 14,
+      "placeId": "osm:way:51988398",
+      "src": "https://otgolosok.online/api/place-images/6925556514302fff732415743f00b64c4aed13c12dc74165f6ff47a159d9a4ae.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "island",
+      "stop": 15,
+      "placeId": "osm:relation:1323532",
+      "src": "https://otgolosok.online/images/places/relation-1323532-6c3e2b746959.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 1,
+      "placeId": "osm:node:2715045290",
+      "src": "https://otgolosok.online/api/place-images/693f2b0a20d8f02ceb77f3d090973934c57d0d04419ae3e88907dca6d78dd686.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 2,
+      "placeId": "osm:node:1733057309",
+      "src": "https://otgolosok.online/images/places/node-1733057309-27d118f76513.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 3,
+      "placeId": "osm:relation:7968458",
+      "src": "https://otgolosok.online/api/place-images/472a574978eb73e37fade125f1d103e04f9038b03c11652c326396738737cb6d.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 4,
+      "placeId": "osm:relation:14352897",
+      "src": "https://otgolosok.online/api/place-images/c2c2429e5bbcaf499910168d5ea37bf9495b93c43e887302581612d53202c9fe.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 5,
+      "placeId": "osm:way:37771167",
+      "src": "https://otgolosok.online/api/place-images/f286e6fc4d5b33a82aeef9549e1712703de65895c6535440e5771a8336026205.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 6,
+      "placeId": "osm:way:151077511",
+      "src": "https://otgolosok.online/api/place-images/5ffcf6080d9283ed5ed1852674ef94c53849bfaec1d1f6a7ef598fcc796cc1b5.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 7,
+      "placeId": "osm:way:151077489",
+      "src": "https://otgolosok.online/api/place-images/65c14995eb1064422a7f5c896d487ec66e3371c8be17ffc722f645c4bba008fc.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 8,
+      "placeId": "osm:node:266720662",
+      "src": "https://otgolosok.online/api/place-images/0d62780ad2b879b6f88872328b28d883c3f733f1f799b22b62133f23f14415d2.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 9,
+      "placeId": "osm:node:3008136198",
+      "photo": "missing",
+      "reason": "No verified photo of the Moscow monument"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 10,
+      "placeId": "osm:way:37769988",
+      "src": "https://otgolosok.online/api/place-images/731bf16fad85d802fb22c0d6fd87ed15d27e1e043fc9387fb6ba5e2ddd837b78.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 11,
+      "placeId": "osm:relation:55214",
+      "src": "https://otgolosok.online/api/place-images/a4544285c02343dda9cae5abe352e03d9c32cff265f1c1fae6535800df1222a0.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 12,
+      "placeId": "osm:relation:17443827",
+      "src": "https://otgolosok.online/api/place-images/36fd719435a68ec4d25f33363731281812b98c07ac62934446bf3f059e899898.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 13,
+      "placeId": "osm:relation:17361989",
+      "src": "https://otgolosok.online/images/places/relation-17361989-1372839cb8ba.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 14,
+      "placeId": "osm:relation:9854949",
+      "src": "https://otgolosok.online/api/place-images/613377ed697adc9651dd089d9038bd35778cf00ffc28af7a40fa32dd28f3602f.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 1,
+      "placeId": "osm:relation:225031",
+      "src": "https://otgolosok.online/api/place-images/8b7cb67178359b5bdc8a1cfba9db7354400c191f089a5bd015d60e6ead36454d.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 2,
+      "placeId": "osm:way:31482145",
+      "src": "https://otgolosok.online/api/place-images/3c564dc679f49d6551d6bc9f45c96adb24430e96170649f204791de70d2dfcc5.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 3,
+      "placeId": "osm:relation:451292",
+      "src": "https://otgolosok.online/api/place-images/da37d4ecb2cedab39a64566d8d7a3a210204c5c2d84ca493e051d5d5e780c37e.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 4,
+      "placeId": "osm:relation:451293",
+      "src": "https://otgolosok.online/api/place-images/226322812a27fc959b2f80a43c45813962af9a9e7559e74c41111d115b10b228.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 5,
+      "placeId": "osm:relation:2669481",
+      "src": "https://otgolosok.online/api/place-images/c9d5eb5d6710687aac26fe1875b796e8a1b47b1a86a44a4b8acf191ecb56ad43.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 6,
+      "placeId": "osm:relation:2669538",
+      "src": "https://otgolosok.online/api/place-images/d61e0e321c8be86a32f53b7edb51c3dfdcd6f3a3b4d4b384cf3666abf6c7ac3f.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 7,
+      "placeId": "osm:node:253124200",
+      "src": "https://otgolosok.online/api/place-images/ec7f1c96c42fd1a5fec38053a4bc99c8f5eb8fa0bf45e59e330f1d93e2ddfa7b.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 8,
+      "placeId": "osm:node:5181346005",
+      "src": "https://otgolosok.online/images/places/node-5181346005-028f7baca04c.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 9,
+      "placeId": "osm:way:31560938",
+      "src": "https://otgolosok.online/api/place-images/5377ed22743bcb315032ae23f950ce6568e6e173a65ed10249cede95aa9f6e24.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 10,
+      "placeId": "osm:relation:3366117",
+      "src": "https://otgolosok.online/api/place-images/eaf8fe55e7dc369464679bcad344ccc9668daef5fe30ef32e09c5cf322eea2de.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 11,
+      "placeId": "osm:relation:7583383",
+      "src": "https://otgolosok.online/api/place-images/627090ccd1567dbdf45112da4d603d288d64b33e0e0059477c13b79bfd305f19.jpg",
+      "naturalWidth": 500,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 12,
+      "placeId": "osm:way:52597841",
+      "src": "https://otgolosok.online/api/place-images/9978e1696a93db7a38fe319bab4bee6d55542449b297e23d23a97702a1bbd4c0.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 13,
+      "placeId": "osm:relation:16685841",
+      "src": "https://otgolosok.online/api/place-images/db03ef625391876e4e48a9d1178b38d3dd1981bd8d3df6add5bc046a4e9bebd7.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 14,
+      "placeId": "osm:relation:16682984",
+      "src": "https://otgolosok.online/api/place-images/3e15e26c5f49e50cba22b66cc7c35fe908de63dbe383750e4f7664351227ea9d.jpg",
+      "naturalWidth": 960,
+      "photo": "loaded"
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "checkedAt": "2026-10-08T13:32:46.542578+00:00",
+  "images": [
+    {
+      "path": "/images/places/node-3423510101-24dc97304bb4.jpg",
+      "sha256": "24dc97304bb45fcc8370f5ac2aa70d37dd54a603b92c2cbc929d601185fefd8a"
+    },
+    {
+      "path": "/images/places/node-3423510101-3481cc30e8b1.jpg",
+      "sha256": "3481cc30e8b1ee8ef6b0a7238053f4dc42b51075403cedc4cf79abe3b68b72a5"
+    },
+    {
+      "path": "/images/places/relation-1794442-075cd4aae574.jpg",
+      "sha256": "075cd4aae574f8da57818094674009fc733249e28df9a360b7e9f9ed4ab4d82e"
+    },
+    {
+      "path": "/images/places/relation-1794442-9d41cb75b88b.jpg",
+      "sha256": "9d41cb75b88bb782a3470bf78ca7288787ddbd5a5a6e88360de5ee65a2bfd85e"
+    },
+    {
+      "path": "/images/places/relation-1794442-a3e8199dd9ef.jpg",
+      "sha256": "a3e8199dd9efa67ae6cd485280e4fb7c14a18927d59533474be4321e114e6503"
+    },
+    {
+      "path": "/images/places/relation-1794442-b8ab83886577.jpg",
+      "sha256": "b8ab838865771646705ad743d1aaf3bdf75dceaa1febc540a5c837a482e3ea47"
+    },
+    {
+      "path": "/images/places/relation-1794442-c84e244143b8.jpg",
+      "sha256": "c84e244143b83c69fddf63f804a0060547eb8c12d4e70148f25bbfa0c9d56c8e"
+    },
+    {
+      "path": "/images/places/relation-1794442-d62ca3c0eed9.jpg",
+      "sha256": "d62ca3c0eed969690bcdc3f7d7e15c08afc60b5249af006e32eaed352bd7997f"
+    },
+    {
+      "path": "/images/places/relation-18626008-55aaf0ac32d8.jpg",
+      "sha256": "55aaf0ac32d884e2c0bcbf7553331f056db8d83f466b6b1106290ddf730c0e99"
+    },
+    {
+      "path": "/images/places/relation-18626008-a33e4d5a94b4.jpg",
+      "sha256": "a33e4d5a94b493e74de6533bd9ba6061f3ac33751535ae91a1988a46b7a3e27c"
+    },
+    {
+      "path": "/images/places/relation-20346140-24dd0e4545b8.jpg",
+      "sha256": "24dd0e4545b8e60c4735bb8b73bcb7969b2e59420b1639ac3d5b4ccf1f081f83"
+    },
+    {
+      "path": "/images/places/relation-20346140-c8b449f13291.jpg",
+      "sha256": "c8b449f132916f4b269c608e912faf21ad8464f62e87ecc2d9bd6b89a585569f"
+    },
+    {
+      "path": "/images/places/relation-9529826-41be78aef086.jpg",
+      "sha256": "41be78aef086dbf0c8714637a4dafb97a1768874235a150dc0ec38a36a17f245"
+    },
+    {
+      "path": "/images/places/relation-9529826-c7e85d078bb9.jpg",
+      "sha256": "c7e85d078bb9777243f428a69d0336b1790bb4a411b8305b3e3bee7f1a84a9fb"
+    },
+    {
+      "path": "/images/places/relation-9529826-ce28f0497bb9.jpg",
+      "sha256": "ce28f0497bb9057b147d1d27ffa397c852398b49c81a93af301818153cf9b9bd"
+    },
+    {
+      "path": "/images/places/relation-9529826-d0432a53b48e.jpg",
+      "sha256": "d0432a53b48e4ddcf00c29aab38ba5c98837b2b42d4e3381276fb53a250754d2"
+    },
+    {
+      "path": "/images/places/relation-9969079-c3e26abb30c3.jpg",
+      "sha256": "c3e26abb30c3ef28cd54ff8c832b16f8f76399a29626364b536824f9b7610a83"
+    },
+    {
+      "path": "/images/places/relation-9969079-da40efc7a8f7.jpg",
+      "sha256": "da40efc7a8f776b5850d40b265f2289ea87550056b8a4f2d1963c999153fe3d5"
+    },
+    {
+      "path": "/images/places/way-161280389-ad23793e6ebc.jpg",
+      "sha256": "ad23793e6ebc1725d95ad32793dddb1e3a43f4196a679712bc80fb10ee25b6e4"
+    },
+    {
+      "path": "/images/places/way-161280389-d631975d19d3.jpg",
+      "sha256": "d631975d19d37cf144365f40fc23c185a55369f52233e304b0754ce8464aaf9f"
+    },
+    {
+      "path": "/images/places/way-385991667-b5061ee097b3.jpg",
+      "sha256": "b5061ee097b331fb9c77e9e83da4d4cdab48c717f13faf2726e2b637c4c13afa"
+    },
+    {
+      "path": "/images/places/way-385991667-ee397fd81eff.jpg",
+      "sha256": "ee397fd81eff58e30bd212da3e41ff3239bc81b2ceafa1bfd7f47a9fa5fb8410"
+    },
+    {
+      "path": "/images/places/way-48859891-b990711ce710.jpg",
+      "sha256": "b990711ce710b707820f934c04a90fa094405dc14a79db7161af3c8084e8d6ae"
+    },
+    {
+      "path": "/images/places/way-48859891-cb65adcd3898.jpg",
+      "sha256": "cb65adcd38983a1d267abbb7f4e32a9a8cd7adcac7bf1e11e456fe1f7cb56a2a"
+    },
+    {
+      "path": "/images/places/way-48859891-fd2b14b49bd5.jpg",
+      "sha256": "fd2b14b49bd52e6b682f30f2e569982031e67807b3d39cbba26a89a380c23275"
+    },
+    {
+      "path": "/images/places/way-48859891-fe87673b5fdc.jpg",
+      "sha256": "fe87673b5fdc71b16e205b87f68b42769dfed575d44ce054ee141872b77f03b7"
+    },
+    {
+      "path": "/images/places/way-76633316-97a36d11f78d.jpg",
+      "sha256": "97a36d11f78d759a62c50b5475a70907433fabcb8b74db82eabd9b94d873761d"
+    },
+    {
+      "path": "/images/places/way-76633316-f93ce5c67f8e.jpg",
+      "sha256": "f93ce5c67f8effcf1a4af211dce4b972aef7a832ccaf4dad41779d84834461f8"
+    },
+    {
+      "path": "/images/places/way-92227425-4be2cb67a2f6.jpg",
+      "sha256": "4be2cb67a2f641bf2f48bd9fce9d6e66622382e553128762258a613018f4e2a3"
+    },
+    {
+      "path": "/images/places/way-92227425-ab7fb553c529.jpg",
+      "sha256": "ab7fb553c529ad5d3746b04393c90d643ad39489f180f0e1e33507f7f8cbceeb"
+    }
+  ],
+  "walks": [
+    {
+      "walk": "ostozhenka",
+      "shareToken": "524711ec-1ccc-494f-abf8-e6bb82e8f8ac",
+      "documentAndChaptersUnchanged": true,
+      "stops": 12
+    },
+    {
+      "walk": "povarskaya",
+      "shareToken": "e7f37feb-1f3b-4241-ba79-54d2c1fe7146",
+      "documentAndChaptersUnchanged": true,
+      "stops": 14
+    },
+    {
+      "walk": "island",
+      "shareToken": "b767d997-643e-43e6-a309-2d726af78efd",
+      "documentAndChaptersUnchanged": true,
+      "stops": 15
+    },
+    {
+      "walk": "shvivaya",
+      "shareToken": "a0884d1f-7068-4ecd-af63-63da698c1bee",
+      "documentAndChaptersUnchanged": true,
+      "stops": 14
+    },
+    {
+      "walk": "tverskaya",
+      "shareToken": "2978ed49-2842-4501-9690-a5e7b1201bd5",
+      "documentAndChaptersUnchanged": true,
+      "stops": 14
+    }
+  ]
+}

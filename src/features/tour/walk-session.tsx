@@ -42,7 +42,7 @@ function StopPhoto({ placeId, stopId, title }: { placeId?: string; stopId: strin
   const place = usePlaceStory(placeId);
   const photos = historicalWalkPhotos(stopId);
   return <>
-    {placeId ? <PlacePhotoBanner photo={place.story?.photo} title={title} /> : null}
+    {placeId ? <PlacePhotoBanner placeId={placeId} photo={place.story?.photo} title={title} /> : null}
     {photos.length ? <section className={historicalStyles.gallery} aria-labelledby={`${stopId}-historical-title`}>
       <h3 id={`${stopId}-historical-title`} className={historicalStyles.heading}>{t("Исторические снимки")}</h3>
       <ul className={historicalStyles.list}>{photos.map(photo => <li key={photo.cid} className={historicalStyles.item}>

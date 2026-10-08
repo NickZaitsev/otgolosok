@@ -1,0 +1,629 @@
+{
+  "total": 69,
+  "initialReady": 57,
+  "added": 11,
+  "expectedReady": 68,
+  "items": [
+    {
+      "walk": "ostozhenka",
+      "stop": 1,
+      "placeId": "osm:node:7428358397",
+      "title": "Дом Перцовой: художники и «Мурава»",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 2,
+      "placeId": "osm:relation:18096252",
+      "title": "Илия Обыденный: храм, который отстояли прихожане",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 3,
+      "placeId": "osm:way:52434941",
+      "title": "Цветковская галерея: собрание в красном тереме",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 4,
+      "placeId": "osm:node:12233205875",
+      "title": "Пречистенские курсы: рабочие за партами",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 5,
+      "placeId": "osm:node:12236419787",
+      "title": "Сергей Мицкевич: врач и директор музея",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 6,
+      "placeId": "osm:way:193498236",
+      "title": "Мультимедиа Арт Музей: старый фасад и новые залы",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 7,
+      "placeId": "osm:way:47978268",
+      "title": "Доходный дом Кекушевой: каштаны на фасаде",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 8,
+      "placeId": "osm:way:76618921",
+      "title": "Тургенев на Остоженке: семья и литературная работа",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 9,
+      "placeId": "osm:relation:1850015",
+      "title": "Дом Всеволожских: деревянные колонны и усадебный двор",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 10,
+      "placeId": "osm:way:76633316",
+      "title": "Усадьба Скосыревой и Абрикосовых",
+      "status": "place-unpublished",
+      "after": "editorial",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 11,
+      "placeId": "osm:way:76633314",
+      "title": "Старообрядческий храм: история двух названий",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "ostozhenka",
+      "stop": 12,
+      "placeId": "osm:relation:6011324",
+      "title": "Музей Москвы",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 1,
+      "placeId": "osm:way:47294368",
+      "title": "Усадьба Грачёвых: фабрикант и архитекторы",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 2,
+      "placeId": "osm:way:300426887",
+      "title": "Дом-музей М. Ю. Лермонтова",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 3,
+      "placeId": "osm:node:3423510101",
+      "title": "Елена Гнесина: квартира внутри академии",
+      "status": "place-unpublished",
+      "after": "editorial",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 4,
+      "placeId": "osm:way:160317025",
+      "title": "Посольство Литвы в Москве",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 5,
+      "placeId": "osm:way:300426888",
+      "title": "Дом-музей Марины Цветаевой",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 6,
+      "placeId": "osm:way:32783700",
+      "title": "Борисоглебский переулок у посольства Монголии",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 7,
+      "placeId": "osm:node:3466483914",
+      "title": "Остроухов: домашняя коллекция становится музеем",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 8,
+      "placeId": "osm:way:47296416",
+      "title": "Горький на Поварской: литературный музей в усадьбе",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 9,
+      "placeId": "osm:relation:18626008",
+      "title": "Дом Шереметьева: чтение «Полтавы»",
+      "status": "missing",
+      "after": "editorial",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 10,
+      "placeId": "osm:way:47296531",
+      "title": "Особняк Понизовского: модерн после переделки",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 11,
+      "placeId": "osm:way:46525731",
+      "title": "Мастерская «12» Никиты Михалкова",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 12,
+      "placeId": "osm:way:47031131",
+      "title": "Центральный дом литераторов: корпус на Большой Никитской",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 13,
+      "placeId": "osm:way:47031092",
+      "title": "Усадьба Долгоруковых и Соллогуба: два уличных фронта",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "povarskaya",
+      "stop": 14,
+      "placeId": "osm:relation:18135199",
+      "title": "Московский планетарий",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 1,
+      "placeId": "osm:relation:1794442",
+      "title": "Большой Каменный мост",
+      "status": "missing",
+      "after": "editorial",
+      "gallerySize": 3
+    },
+    {
+      "walk": "island",
+      "stop": 2,
+      "placeId": "osm:way:48859891",
+      "title": "Палаты Аверкия Кириллова",
+      "status": "missing",
+      "after": "editorial",
+      "gallerySize": 2
+    },
+    {
+      "walk": "island",
+      "stop": 3,
+      "placeId": "osm:way:42766224",
+      "title": "Дом на набережной",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 4,
+      "placeId": "osm:way:92227425",
+      "title": "Храм Софии Премудрости Божией в Средних Садовниках",
+      "status": "missing",
+      "after": "editorial",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 5,
+      "placeId": "osm:relation:20346140",
+      "title": "Кокоревское подворье",
+      "status": "missing",
+      "after": "editorial",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 6,
+      "placeId": "osm:way:44185735",
+      "title": "Отель «Балчуг Кемпински Москва»",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 7,
+      "placeId": "osm:way:161280389",
+      "title": "Большой Москворецкий мост",
+      "status": "missing",
+      "after": "editorial",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 8,
+      "placeId": "osm:relation:9969079",
+      "title": "Храм Георгия Победоносца в Ендове",
+      "status": "missing",
+      "after": "editorial",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 9,
+      "placeId": "osm:way:385991667",
+      "title": "Ведомственный дом МОГЭС",
+      "status": "missing",
+      "after": "editorial",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 10,
+      "placeId": "osm:node:6303242526",
+      "title": "Мемориальная музей-квартира Г. М. Кржижановского",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 11,
+      "placeId": "osm:relation:9529826",
+      "title": "Церковь Николая Чудотворца в Заяицком",
+      "status": "missing",
+      "after": "editorial",
+      "gallerySize": 2
+    },
+    {
+      "walk": "island",
+      "stop": 12,
+      "placeId": "osm:relation:8443298",
+      "title": "Храм Архангела Михаила (Покрова Пресвятой Богородицы) в Овчинниках",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 13,
+      "placeId": "osm:way:53854158",
+      "title": "Палаты в Среднем Овчинниковском переулке",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 14,
+      "placeId": "osm:way:51988398",
+      "title": "Московский Дом самодеятельного творчества, строение 4",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "island",
+      "stop": 15,
+      "placeId": "osm:relation:1323532",
+      "title": "Смирнов: фамилия на торговом фасаде",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 1,
+      "placeId": "osm:node:2715045290",
+      "title": "Дом Высоцкого на Таганке",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 2,
+      "placeId": "osm:node:1733057309",
+      "title": "Музей холодной войны «Бункер-42»",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 3,
+      "placeId": "osm:relation:7968458",
+      "title": "Храм Успения Пресвятой Богородицы в Гончарах",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 4,
+      "placeId": "osm:relation:14352897",
+      "title": "Храм святителя Николая в Котельниках",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 5,
+      "placeId": "osm:way:37771167",
+      "title": "Дом Тутолмина — здание Института философии РАН",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 6,
+      "placeId": "osm:way:151077511",
+      "title": "Храм святого великомученика Никиты за Яузой",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 7,
+      "placeId": "osm:way:151077489",
+      "title": "Музей русской иконы им. Михаила Абрамова",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 8,
+      "placeId": "osm:node:266720662",
+      "title": "Жилой дом на Котельнической набережной",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 9,
+      "placeId": "osm:node:3008136198",
+      "title": "Памятник Дмитрию Донскому",
+      "status": "missing",
+      "after": "missing",
+      "gallerySize": 0
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 10,
+      "placeId": "osm:way:37769988",
+      "title": "Храм преподобного Симеона Столпника за Яузой",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 11,
+      "placeId": "osm:relation:55214",
+      "title": "Всероссийская государственная библиотека иностранной литературы имени М. И. Рудомино",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 12,
+      "placeId": "osm:relation:17443827",
+      "title": "Храм Троицы Живоначальной в Серебряниках",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 13,
+      "placeId": "osm:relation:17361989",
+      "title": "Воспитательный дом: огромный замысел и трудная жизнь",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "shvivaya",
+      "stop": 14,
+      "placeId": "osm:relation:9854949",
+      "title": "Всех Святых на Кулишках: храм рядом с метро",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 1,
+      "placeId": "osm:relation:225031",
+      "title": "Гостиница «Националь»",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 2,
+      "placeId": "osm:way:31482145",
+      "title": "The Carlton Moscow (в источниках — «The Ritz-Carlton, Moscow» / «Ритц-Карлтон»)",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 3,
+      "placeId": "osm:relation:451292",
+      "title": "Центральный телеграф",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 4,
+      "placeId": "osm:relation:451293",
+      "title": "Саввинское подворье",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 5,
+      "placeId": "osm:relation:2669481",
+      "title": "Московский Художественный театр имени А. П. Чехова",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 6,
+      "placeId": "osm:relation:2669538",
+      "title": "Храм бессребреников Космы и Дамиана в Шубине",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 7,
+      "placeId": "osm:node:253124200",
+      "title": "Памятник Юрию Долгорукому",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 8,
+      "placeId": "osm:node:5181346005",
+      "title": "Музей-квартира А. Б. Гольденвейзера",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 9,
+      "placeId": "osm:way:31560938",
+      "title": "Дом Нирнзее",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 10,
+      "placeId": "osm:relation:3366117",
+      "title": "Пушкинская площадь: икона, монастырь и исчезнувшие дома",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 11,
+      "placeId": "osm:relation:7583383",
+      "title": "Храм Рождества Богородицы в Путинках",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 12,
+      "placeId": "osm:way:52597841",
+      "title": "Ленком",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 13,
+      "placeId": "osm:relation:16685841",
+      "title": "Государственный центральный музей современной истории России",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    },
+    {
+      "walk": "tverskaya",
+      "stop": 14,
+      "placeId": "osm:relation:16682984",
+      "title": "Концертный зал имени П. И. Чайковского",
+      "status": "ready",
+      "after": "ready",
+      "gallerySize": 1
+    }
+  ]
+}
