@@ -173,6 +173,11 @@ export function createAccountStore(db, now = Date.now) {
     ...createWalkImprovementStore(db, { now, transaction }),
     ...createPlaceFeedbackStore(db, { now, transaction }),
     ...launches,
+    telegramSubject(userId) {
+      const rows = db.prepare("SELECT providerId,accountId FROM account WHERE userId=?").all(userId);
+      if (rows.length !== 1 || rows[0].providerId !== "telegram" || typeof rows[0].accountId !== "string" || !rows[0].accountId) return null;
+      return rows[0].accountId;
+    },
     updateProfile(userId, name) { const value=cleanName(name),time=timestamp();db.prepare("UPDATE user SET name=?,updatedAt=? WHERE id=?").run(value,time,userId);return value; },
     listWalks(userId, limit=20,after=null) { limit=Math.min(50,Math.max(1,limit));const c=cursor(after),rows=c?db.prepare("SELECT * FROM user_walks WHERE user_id=? AND (updated_at<? OR (updated_at=? AND id<?)) ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,c.time,c.time,c.id,limit+1):db.prepare("SELECT * FROM user_walks WHERE user_id=? ORDER BY updated_at DESC,id DESC LIMIT ?").all(userId,limit+1);const result=page(rows,limit,listItem);return {walks:result.items,nextCursor:result.nextCursor,hasMore:Boolean(result.nextCursor)}; },
     getWalk(userId,id) { return viewWalk(db.prepare("SELECT * FROM user_walks WHERE id=? AND user_id=?").get(id,userId)) ?? null; },

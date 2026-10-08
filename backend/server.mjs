@@ -26,8 +26,9 @@ import { startContentWorker } from "./content-pipeline.mjs";
 import { createPlaceImageService, createWikimediaClient, placeImageUserAgent, startPlaceImageWorker } from "./place-images.mjs";
 import { openOsmGeocoder } from "./osm-geocoder.mjs";
 import { openFoodIndex, isCellLat as isFoodCellLat, isCellLon as isFoodCellLon } from "./food-places.mjs";
-import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword } from "./auth.mjs";
+import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword, publicAccountUser, freshTelegramSession } from "./auth.mjs";
 import { favoriteSummary } from "./favorite-summary.mjs";
+import { loadTelegramAuthConfig, telegramEmail } from "./telegram-auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
 import { createWalkLaunchRoutes } from "./walk-launch-routes.mjs";
 import { createTopWalks } from "./walk-top.mjs";
@@ -175,16 +176,25 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
     try {
       const url=new URL(req.url,"http://localhost");
       const session=auth?await authSession(auth,req):null;
-      if(auth&&url.pathname==="/api/auth/session") {json(res,200,{user:session?{id:session.user.id,email:session.user.email,name:session.user.name,role:session.user.role}:null,csrfToken:session?sessionCsrfToken(authSecret,session.session.id):null});return;}
+      if(auth&&url.pathname==="/api/auth/session") {json(res,200,{user:session?publicAccountUser(session.user,session.session,accountStore,true):null,csrfToken:session?sessionCsrfToken(authSecret,session.session.id):null});return;}
       if(auth&&url.pathname.startsWith("/api/auth/")){await authRequestHandler(auth)(req,res);return;}
       if(url.pathname==="/api/auth/session"&&!auth){json(res,200,{user:null});return;}
       if(url.pathname==="/api/me"||url.pathname.startsWith("/api/me/")) {
         if(!session||!accountStore){json(res,401,{error:{code:"UNAUTHORIZED",message:"Войдите в аккаунт."}});return;}
         if(!origin||req.headers.origin&&req.headers.origin!==origin||req.headers["sec-fetch-site"]==="cross-site") {json(res,403,{error:{code:"FORBIDDEN",message:"Same-origin request required."}});return;}
         if(!["GET","HEAD"].includes(req.method)&&!validSessionCsrf(authSecret,session.session.id,req.headers["x-csrf-token"])) {json(res,403,{error:{code:"CSRF",message:"Обновите страницу и повторите действие."}});return;}
-        if(url.pathname==="/api/me"&&req.method==="GET"){json(res,200,{user:{id:session.user.id,email:session.user.email,name:session.user.name}});return;}
-        if(url.pathname==="/api/me"&&req.method==="PATCH"){const input=await body(req);if(Object.keys(input).some(k=>k!=="name"))throw failure("BAD_REQUEST");const name=accountStore.updateProfile(session.user.id,input.name);json(res,200,{user:{id:session.user.id,email:session.user.email,name}});return;}
-        if(url.pathname==="/api/me"&&req.method==="DELETE"){const input=await body(req);if(Object.keys(input).some(key=>key!=="password")||!await verifySessionPassword(auth,req,input.password)){json(res,403,{error:{code:"PASSWORD_INVALID",message:"Неверный пароль."}});return;}store.revokeWalkResearchAccess?.(accountStore.researchJobIds(session.user.id));accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;}
+        if(url.pathname==="/api/me"&&req.method==="GET"){json(res,200,{user:publicAccountUser(session.user,session.session,accountStore)});return;}
+        if(url.pathname==="/api/me"&&req.method==="PATCH"){const input=await body(req);if(Object.keys(input).some(k=>k!=="name"))throw failure("BAD_REQUEST");const name=accountStore.updateProfile(session.user.id,input.name);json(res,200,{user:publicAccountUser({...session.user,name},session.session,accountStore)});return;}
+        if(url.pathname==="/api/me"&&req.method==="DELETE") {
+          const input=await body(req),subject=accountStore.telegramSubject(session.user.id);
+          if(subject && session.user.email===telegramEmail(subject)) {
+            if(Object.keys(input).length)throw failure("BAD_REQUEST");
+            if(!freshTelegramSession(session.session)){json(res,403,{error:{code:"REAUTH_REQUIRED",message:"Повторите вход через Telegram перед удалением аккаунта."}});return;}
+          } else if(Object.keys(input).some(key=>key!=="password")||!await verifySessionPassword(auth,req,input.password)) {
+            json(res,403,{error:{code:"PASSWORD_INVALID",message:"Неверный пароль."}});return;
+          }
+          store.revokeWalkResearchAccess?.(accountStore.researchJobIds(session.user.id));accountStore.deleteAccountData(session.user.id);json(res,200,{success:true});return;
+        }
         const accountQuery=()=>{const entries=[...url.searchParams];if(entries.some(([key,value])=>!['limit','cursor'].includes(key)||(key==='limit'&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure('BAD_REQUEST');return {limit:Number(url.searchParams.get('limit')??20),after:url.searchParams.get('cursor')};};
         if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery()))));return;}
         if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
@@ -884,7 +894,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   store.recoverContentJobs();
   const port=Number(process.env.PORT??4175);
   const appOrigin=process.env.APP_ORIGIN??`http://127.0.0.1:${port}`;
-  const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production"});
+  const authRuntime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:appOrigin,secret:process.env.BETTER_AUTH_SECRET,production:process.env.NODE_ENV==="production",telegram:loadTelegramAuthConfig()});
   const accountStore=createAccountStore(authRuntime.accountDatabase);
   if(process.env.PROMO_WALKS_TOKEN)ensurePromoWalksUser(authRuntime.accountDatabase);
   const osmGeocoder=openOsmGeocoder(join(directory,"osm-addresses.sqlite"));

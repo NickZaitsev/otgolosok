@@ -1,6 +1,8 @@
 import { DatabaseSync } from "node:sqlite";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { betterAuth } from "better-auth";
+import { createAuthMiddleware, APIError } from "better-auth/api";
+import { createTelegramAuthPlugin, telegramEmail } from "./telegram-auth.mjs";
 import { getMigrations } from "better-auth/db/migration";
 
 function openAuthDatabase(path) {
@@ -9,8 +11,8 @@ function openAuthDatabase(path) {
   return database;
 }
 
-/** @param {{databasePath: string, baseURL: string, secret?: string, production?: boolean}} options */
-export async function createAuth({ databasePath, baseURL, secret, production = process.env.NODE_ENV === "production" }) {
+/** @param {{databasePath: string, baseURL: string, secret?: string, production?: boolean, telegram?: Parameters<typeof createTelegramAuthPlugin>[0], telegramDependencies?: Parameters<typeof createTelegramAuthPlugin>[1]}} options */
+export async function createAuth({ databasePath, baseURL, secret, production = process.env.NODE_ENV === "production", telegram = null, telegramDependencies = {} }) {
   if (!baseURL) throw new Error("APP_ORIGIN is required for authentication");
   if (production && (!secret || secret.length < 32)) throw new Error("BETTER_AUTH_SECRET must contain at least 32 characters");
   const database = openAuthDatabase(databasePath);
@@ -19,12 +21,32 @@ export async function createAuth({ databasePath, baseURL, secret, production = p
     appName: "Отголосок", baseURL, basePath: "/api/auth", database,
     secret: secret || "development-only-better-auth-secret-32",
     trustedOrigins: [baseURL],
+    plugins: [createTelegramAuthPlugin(telegram, telegramDependencies)],
+    account: { accountLinking: { enabled: false }, encryptOAuthTokens: true },
+    hooks: { before: createAuthMiddleware(async ctx => {
+      // OAuth login CSRF must also be rejected before the first session exists.
+      if (ctx.path === "/sign-in/social" && (ctx.headers?.get("origin") !== new URL(baseURL).origin || ctx.headers?.get("sec-fetch-site") === "cross-site")) {
+        throw new APIError("FORBIDDEN", { message: "Вход возможен только с сайта Отголоска." });
+      }
+    }) },
+    databaseHooks: { session: { create: { before: async (session, ctx) => ({ data: {
+      ...session,
+      authProvider: ctx?.path === "/callback/:id" && ctx.params?.id === "telegram" ? "telegram" : "password",
+    } }) } } },
     emailAndPassword: { enabled: true, minPasswordLength: 10, maxPasswordLength: 128 },
-    user: { additionalFields: { role: { type: "string", required: false, defaultValue: "user", input: false } } },
+    user: {
+      additionalFields: { role: { type: "string", required: false, defaultValue: "user", input: false } },
+      validateUserInfo: ({ user, source }) => {
+        const reserved = typeof user.email === "string" && user.email.toLowerCase().endsWith("@users.telegram.invalid");
+        if (!reserved) return;
+        if (source.method === "oauth" && source.oauth.providerId === "telegram" && typeof source.oauth.profile.sub === "string" && user.email === telegramEmail(source.oauth.profile.sub)) return;
+        return { error: "reserved_email", errorDescription: "Этот адрес недоступен для регистрации." };
+      },
+    },
     // Better Auth refreshes expiresAt at most once a day. Seven days is the
     // inactivity window; authSession separately enforces the 30 day absolute
     // lifetime from the immutable createdAt value.
-    session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
+    session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24, additionalFields: { authProvider: { type: "string", required: false, input: false } } },
     rateLimit: { enabled: true, window: 60, max: 20, storage: "database" },
     advanced: {
       // The session cookie has an explicit __Host name below. Disabling the
@@ -40,6 +62,8 @@ export async function createAuth({ databasePath, baseURL, secret, production = p
   };
   const { runMigrations } = await getMigrations(options);
   await runMigrations();
+  // A Telegram identity cannot belong to two users, including simultaneous callbacks.
+  database.exec("CREATE UNIQUE INDEX IF NOT EXISTS account_telegram_identity ON account(providerId,accountId) WHERE providerId='telegram'");
   const auth = betterAuth(options);
   // Better Auth keeps transactions open across awaits on its connection (sign-up
   // hashes the password inside one). Account data gets a separate connection so
@@ -123,5 +147,22 @@ export function authRequestHandler(auth) {
     headers["cache-control"] = "no-store";
     res.writeHead(response.status, headers);
     res.end(Buffer.from(await response.arrayBuffer()));
+  };
+}
+
+export const TELEGRAM_REAUTH_WINDOW_MS = 5 * 60 * 1000;
+
+export function freshTelegramSession(session, now = Date.now()) {
+  const created = new Date(session.createdAt).getTime();
+  return session.authProvider === "telegram" && Number.isFinite(created) && now >= created && now - created <= TELEGRAM_REAUTH_WINDOW_MS;
+}
+
+export function publicAccountUser(user, session, accountStore, withRole = false) {
+  const reserved = typeof user.email === "string" && user.email.toLowerCase().endsWith("@users.telegram.invalid");
+  const subject = reserved ? accountStore?.telegramSubject(user.id) : null;
+  const telegram = Boolean(subject && telegramEmail(subject) === user.email);
+  return { id: user.id, email: reserved ? null : user.email, name: user.name,
+    ...(withRole ? { role: user.role } : {}),
+    ...(telegram ? { authMethod: "telegram", requiresReauthentication: !freshTelegramSession(session) } : {}),
   };
 }

@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AppHeader } from "../navigation/app-header";
 import { ExploreIcon } from "../explore/icons";
-import { accountApi, type AuthUser, getSession, signOut, signOutEverywhere } from "../auth/client";
+import { accountApi, type AuthUser, getSession, getTelegramAuthorizationUrl, signOut, signOutEverywhere } from "../auth/client";
 import { AUTH_CHANNEL, isSignOutChannelEvent, isSignOutStorageEvent } from "../auth/session-events";
 import { savedStories } from "../generator/offline";
 import type { GenerationJob } from "../generator/types";
@@ -17,6 +17,7 @@ import { useI18n } from "@/lib/i18n/provider";
 type RequestItem = { jobId: string; operation: string; createdAt: string };
 type Favorite = { type: string; id: string; createdAt: string; title?: string; href?: string | null };
 type Section = "requests" | "favorites";
+const TELEGRAM_DELETE_USER_KEY = "otgolosok:account:telegram-delete-user";
 const SOCIAL_LINKS = [
   { title: "Telegram", note: "Новости и истории мест", href: "https://t.me/otgolosok_online",
     logo: <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#229ed9" /><path fill="#fff" d="M5.5 11.8l11.6-4.5c.5-.2 1 .1.8.9l-2 9.3c-.1.6-.5.8-1 .5l-3-2.2-1.5 1.4c-.2.2-.3.3-.6.3l.2-3.1 5.6-5c.2-.2 0-.4-.4-.1l-6.9 4.3-3-.9c-.6-.2-.7-.6.2-.9z" /></svg> },
@@ -39,6 +40,7 @@ export function Account() {
   const [loaded, setLoaded] = useState(false);
   const [confirmAction, setConfirmAction] = useState<"logout" | "all" | "delete" | null>(null);
   const [password, setPassword] = useState("");
+  const telegramDeleteHandled = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -55,6 +57,13 @@ export function Account() {
         if (!active) return;
         if (!current) { signedOut(); return; }
         setUser(current); setName(current.name); setLoaded(true);
+        if (!telegramDeleteHandled.current && new URLSearchParams(location.search).get("telegramDelete") === "1") {
+          telegramDeleteHandled.current = true;
+          const expectedUserId = sessionStorage.getItem(TELEGRAM_DELETE_USER_KEY);
+          sessionStorage.removeItem(TELEGRAM_DELETE_USER_KEY);
+          if (expectedUserId && expectedUserId === current.id) setConfirmAction("delete");
+          else setNotice(t("Удаление отменено: после подтверждения вошёл другой аккаунт."));
+        }
         await Promise.all([
           accountApi("/api/me/requests").then(data => { if (active) { setRequests(data.requests); setCursors(v => ({ ...v, requests: data.nextCursor ?? null })); } }).catch(e => fail("requests", e)),
           accountApi("/api/me/favorites").then(data => { if (active) { setFavorites(data.favorites); setCursors(v => ({ ...v, favorites: data.nextCursor ?? null })); } }).catch(e => fail("favorites", e)),
@@ -63,7 +72,7 @@ export function Account() {
       } catch (caught) { fail("profile", caught); if (active) setLoaded(true); }
     })();
     return () => { active = false; channel?.close(); removeEventListener("storage", onStorage); };
-  }, [attempt, locale]);
+  }, [attempt, locale, t]);
 
   async function loadMore(kind: Section) {
     const cursor = cursors[kind]; if (!cursor || busy) return; setBusy(kind);
@@ -82,12 +91,18 @@ export function Account() {
     finally { setBusy(null); }
   }
   async function confirm(event: FormEvent) {
-    event.preventDefault(); if (!confirmAction || busy) return; setBusy("settings");
+    event.preventDefault();
+    if (!confirmAction || busy) return;
+    if (confirmAction === "delete" && user?.authMethod === "telegram" && user.requiresReauthentication) {
+      await reauthenticateTelegram();
+      return;
+    }
+    setBusy("settings");
     try {
       // Private offline copies are removed best-effort: an unavailable Cache Storage must not block leaving the account.
       const clearPrivateCopies = () => user ? clearOfflineScope(user.id).catch(() => {}) : Promise.resolve();
       if (confirmAction === "delete") {
-        await accountApi("/api/me", { method: "DELETE", body: JSON.stringify({ password }) });
+        await accountApi("/api/me", { method: "DELETE", body: JSON.stringify(user?.authMethod === "telegram" ? {} : { password }) });
         await clearPrivateCopies();
       } else {
         // signOut() also signs out locally when the server is unreachable, then reports it.
@@ -95,15 +110,34 @@ export function Account() {
         finally { await clearPrivateCopies(); }
       }
       setPassword(""); location.replace(path("/"));
-    } catch (caught) { setErrors(current => ({ ...current, settings: toUserMessage(caught, "Не удалось выполнить действие.", locale) })); }
+    } catch (caught) {
+      const code = caught && typeof caught === "object" && "code" in caught ? String(caught.code) : "";
+      if (confirmAction === "delete" && user?.authMethod === "telegram" && code === "REAUTH_REQUIRED") {
+        setUser(current => current ? { ...current, requiresReauthentication: true } : current);
+        setNotice(t("Срок подтверждения Telegram истёк. Подтвердите аккаунт ещё раз."));
+      } else setErrors(current => ({ ...current, settings: toUserMessage(caught, "Не удалось выполнить действие.", locale) }));
+    }
     finally { setBusy(null); setPassword(""); }
+  }
+  async function reauthenticateTelegram() {
+    if (!user || busy) return;
+    setBusy("settings"); setErrors(current => { const next = { ...current }; delete next.settings; return next; });
+    try {
+      const returnTo = path("/account?telegramDelete=1");
+      const authorizationURL = await getTelegramAuthorizationUrl(returnTo, locale, location.origin);
+      sessionStorage.setItem(TELEGRAM_DELETE_USER_KEY, user.id);
+      location.replace(authorizationURL);
+    } catch (caught) {
+      if (sessionStorage.getItem(TELEGRAM_DELETE_USER_KEY) === user.id) sessionStorage.removeItem(TELEGRAM_DELETE_USER_KEY);
+      setErrors(current => ({ ...current, settings: toUserMessage(caught, "Не удалось подтвердить аккаунт через Telegram.", locale) }));
+    } finally { setBusy(null); }
   }
   const more = (kind: Section) => cursors[kind] && <button className="ui-button secondary" disabled={busy !== null} onClick={() => void loadMore(kind)}>{t("Показать ещё")}</button>;
   return <main className="ui-page profile-page"><AppHeader />
     {Object.entries(errors).map(([key, text]) => <p key={key} role="alert" className="ui-notice">{text} <button className="profile-link" onClick={() => { setErrors({}); setAttempt(v => v + 1); }}>{t("Повторить загрузку")}</button></p>)}
     {!loaded && <p role="status">{t("Открываем профиль…")}</p>}
     {user && <>
-      <header className="profile-hero"><div className="profile-avatar" aria-hidden="true">{user.name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toLocaleUpperCase(languageTag)}</div><div className="profile-identity"><h1>{user.name}</h1><p>{user.email}</p></div><button type="button" className="profile-edit" aria-label={t("Редактировать профиль")} aria-expanded={editing} aria-controls="profile-edit-form" disabled={busy !== null} onClick={() => { setName(user.name); setEditing(value => !value); setNotice(""); }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m16 3 5 5M4 20l5-1L21 7a2 2 0 0 0-4-4L5 15z" /></svg></button></header>
+      <header className="profile-hero"><div className="profile-avatar" aria-hidden="true">{user.name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toLocaleUpperCase(languageTag)}</div><div className="profile-identity"><h1>{user.name}</h1><p>{user.authMethod === "telegram" || !user.email ? t("Telegram") : user.email}</p></div><button type="button" className="profile-edit" aria-label={t("Редактировать профиль")} aria-expanded={editing} aria-controls="profile-edit-form" disabled={busy !== null} onClick={() => { setName(user.name); setEditing(value => !value); setNotice(""); }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m16 3 5 5M4 20l5-1L21 7a2 2 0 0 0-4-4L5 15z" /></svg></button></header>
       {editing && <form id="profile-edit-form" className="profile-edit-form" onSubmit={save}><label className="ui-field">{t("Ваше имя")}<input autoFocus value={name} onChange={e => setName(e.target.value)} required maxLength={80} autoComplete="name" disabled={busy !== null} /></label><div className="ui-row"><button className="ui-button" disabled={busy !== null || !name.trim() || name.trim() === user.name}>{t("Сохранить изменения")}</button><button type="button" className="ui-button quiet" disabled={busy !== null} onClick={() => { setEditing(false); setName(user.name); }}>{t("Отменить")}</button></div></form>}
       {notice && <p className="ui-notice" role="status">{notice}</p>}
       <Link className="profile-history" href={path("/history")}><span className="profile-icon" aria-hidden="true"><ExploreIcon name="walk" /></span><span><strong>{t("Мои прогулки")}</strong><small>{t("Сохранённые маршруты и черновики")}</small></span><span aria-hidden="true">→</span></Link>
@@ -111,7 +145,7 @@ export function Account() {
       <section className="profile-section"><h2>{t("Сохранённое")}</h2><details><summary>{t("Избранное")} <span>{favorites.length || ""}</span></summary>{favorites.length ? <ul className="profile-list">{favorites.map(item => <li key={`${item.type}:${item.id}`}>{item.href && /^\/(?:walk)?\?/.test(item.href) ? <Link href={path(item.href)}>{item.title || t("Сохранённый материал")}</Link> : <span>{t("Материал недоступен")}</span>}</li>)}</ul> : <p className="ui-muted">{t("Здесь появятся любимые истории и прогулки.")}</p>}{more("favorites")}</details><details><summary>{t("Доступно без сети")} <span>{offline.length || ""}</span></summary>{offline.length ? <ul className="profile-list">{offline.map(item => <li key={item.id}><Link href={path(`/?job=${item.id}`)}>{item.story?.title || t("Сохранённая история")}</Link><small>{item.address}</small></li>)}</ul> : <p className="ui-muted">{t("Откройте прогулку и сохраните готовые записи для прослушивания без интернета.")}</p>}</details><details><summary>{t("Подготовка историй")}</summary>{requests.length ? <ul className="profile-list">{requests.map(item => <li key={`${item.jobId}:${item.createdAt}`}><Link href={path(item.operation === "walk_research" ? "/?walk=create&resume=1" : `/?job=${item.jobId}`)}>{t(item.operation === "walk_research" ? "Исследование прогулки" : "История места")}</Link><small>{new Date(item.createdAt).toLocaleString(languageTag)}</small></li>)}</ul> : <p className="ui-muted">{t("Вы ещё не заказывали истории.")}</p>}{more("requests")}</details></section></div>
       <section className="profile-section profile-social" aria-labelledby="profile-social-title"><h2 id="profile-social-title">{t("Отголосок в соцсетях")}</h2><ul className="profile-social-links">{SOCIAL_LINKS.map(link => <li key={link.href}><a href={link.href} target="_blank" rel="noopener noreferrer">{link.logo}<span><strong>{link.title}</strong><small>{t(link.note)}</small></span></a></li>)}</ul></section>
       <section className="profile-section profile-settings"><h2>{t("Настройки аккаунта")}</h2><div className="ui-row"><button className="ui-button quiet" onClick={() => setConfirmAction("logout")}>{t("Выйти")}</button><button className="ui-button quiet" onClick={() => setConfirmAction("all")}>{t("Выйти на всех устройствах")}</button><button className="profile-link profile-danger" onClick={() => setConfirmAction("delete")}>{t("Удалить аккаунт")}</button></div>
-      {confirmAction && <form className="profile-confirm" onSubmit={confirm}><h3>{t(confirmAction === "delete" ? "Удалить аккаунт навсегда?" : "Подтвердите выход")}</h3><p>{t(confirmAction === "delete" ? "Прогулки в аккаунте и избранное будут удалены без возможности восстановления. Локальные черновики останутся." : "Приватные материалы для прослушивания без сети будут удалены с этого устройства. Прогулки в аккаунте сохранятся.")}</p>{confirmAction === "delete" && <label className="ui-field">{t("Текущий пароль")}<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128} /></label>}<div className="ui-row"><button className="ui-button danger" disabled={busy !== null}>{t(confirmAction === "delete" ? "Удалить навсегда" : "Подтвердить выход")}</button><button type="button" className="ui-button secondary" disabled={busy !== null} onClick={() => { setConfirmAction(null); setPassword(""); }}>{t("Отмена")}</button></div></form>}
+      {confirmAction && <form className="profile-confirm" onSubmit={confirm}><h3>{t(confirmAction === "delete" ? "Удалить аккаунт навсегда?" : "Подтвердите выход")}</h3><p>{t(confirmAction === "delete" ? "Прогулки в аккаунте и избранное будут удалены без возможности восстановления. Локальные черновики останутся." : "Приватные материалы для прослушивания без сети будут удалены с этого устройства. Прогулки в аккаунте сохранятся.")}</p>{confirmAction === "delete" && user.authMethod !== "telegram" && <label className="ui-field">{t("Текущий пароль")}<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128} /></label>}<div className="ui-row">{confirmAction === "delete" && user.authMethod === "telegram" && user.requiresReauthentication ? <button type="button" className="ui-button" disabled={busy !== null} onClick={()=>void reauthenticateTelegram()}>{t(busy === "settings" ? "Открываем Telegram…" : "Подтвердить в Telegram")}</button> : <button className="ui-button danger" disabled={busy !== null}>{t(confirmAction === "delete" ? "Удалить навсегда" : "Подтвердить выход")}</button>}<button type="button" className="ui-button secondary" disabled={busy !== null} onClick={() => { setConfirmAction(null); setPassword(""); }}>{t("Отмена")}</button></div></form>}
       </section>
     </>}
   </main>;

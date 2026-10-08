@@ -39,7 +39,7 @@ test("ordinary users cannot use editor API while an editor session can",async t=
 
 test("account deletion requires the current password and cancels private research",async t=>{
   let deleted=false,revoked=null;
-  const accountStore={researchJobIds:()=>["research-1"],deleteAccountData:()=>{deleted=true;}};
+  const accountStore={telegramSubject:()=>null,researchJobIds:()=>["research-1"],deleteAccountData:()=>{deleted=true;}};
   const store=createStore(":memory:",{maxActive:20});/** @type {any} */ (store).revokeWalkResearchAccess=ids=>{revoked=ids;};
   const f=await listen(t,{accountStore,store});
   assert.equal((await fetch(f.base+"/api/me",{method:"DELETE",headers:f.headers,body:JSON.stringify({password:"wrong-password"})})).status,403);assert.equal(deleted,false);
