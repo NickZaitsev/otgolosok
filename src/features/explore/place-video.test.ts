@@ -24,9 +24,10 @@ it("загружает YouTube только по нажатию, сохраня�
   await render(); expect(container.querySelector("iframe")).toBeNull();
   await click("Смотреть видео");
   const iframe = container.querySelector("iframe")!;
-  expect(iframe.src).toBe("https://www.youtube-nocookie.com/embed/abcdefghijk?playsinline=1&rel=0");
+  expect(iframe.src).toBe("https://www.youtube-nocookie.com/embed/abcdefghijk?playsinline=1&rel=0&controls=0&iv_load_policy=3&autoplay=1");
   expect(iframe.getAttribute("referrerpolicy")).toBe("strict-origin-when-cross-origin");
   expect(iframe.title).toContain("Мост");
+  expect(container.querySelector('dialog')?.getAttribute('aria-label')).toBe("Видео: Мост");
   expect(container.querySelector('a[href="https://www.youtube.com/watch?v=abcdefghijk"]')).not.toBeNull();
   await click("Закрыть видео"); expect(container.querySelector("iframe")).toBeNull();
   expect(document.activeElement).toBe(container.querySelector("[data-video-trigger]"));

@@ -1,0 +1,19 @@
+{
+  "baseCommit": "45ce739680e21f8dfc692a2b69e376f7c29ae790",
+  "files": [
+    "src/features/explore/place-photo.tsx",
+    "src/features/explore/place-photo.module.css",
+    "src/features/explore/place-photo.test.ts",
+    "src/features/explore/place-video.tsx",
+    "src/features/explore/place-video.module.css",
+    "src/features/explore/place-video.test.ts"
+  ],
+  "sha256": {
+    "src/features/explore/place-photo.tsx": "88beeef878032247d2f98074fd1651edfeda74d6a18aa23334cde3cdf8799845",
+    "src/features/explore/place-photo.module.css": "da793cbe93f2147e05cbc59e4dec5f68f4cdb07ecef114ff0be73c75fdafcd0b",
+    "src/features/explore/place-photo.test.ts": "c31b2ed65f4b883fd7ce9f81da9235235980648189137b5a6aa1c9757efa5e73",
+    "src/features/explore/place-video.tsx": "5989eb5f3282b34c043f48ca6215be2eee888330ad08bd8013494e23daf5fd99",
+    "src/features/explore/place-video.module.css": "aa3d13ff2090c3fb7151a94c3e74284f9c04f648c8d8c110d528a9139ee49e71",
+    "src/features/explore/place-video.test.ts": "23c681de5d1568b53605ae646b278b3231fcd7642adf0cb66a914f6b78837591"
+  }
+}

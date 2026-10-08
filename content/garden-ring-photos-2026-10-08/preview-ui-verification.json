@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-10-08T16:10:25.813473+00:00",
+  "base": "https://otgolosok.online",
+  "cases": [
+    {
+      "context": "bridge-preview",
+      "arrows": true,
+      "nativeTouchSwipeBothDirections": true,
+      "swipeDoesNotOpenDialog": true,
+      "videoIcon": true,
+      "videoUnderline": true
+    },
+    {
+      "context": "youtube-minimal",
+      "parameters": "https://www.youtube-nocookie.com/embed/bgkho60Se_Y?playsinline=1&rel=0&controls=0&iv_load_policy=3&autoplay=1",
+      "playback": {
+        "time": 0.296436,
+        "paused": false,
+        "duration": 79.521
+      },
+      "duplicateTitleRemoved": true,
+      "footerRemoved": true,
+      "nativeTouchPauseResume": true
+    },
+    {
+      "context": "palaty-preview",
+      "nativeTouchSwipe": true,
+      "selectedPhotoOpensInViewer": true,
+      "boundaryDisabled": true
+    },
+    {
+      "context": "video-layout",
+      "viewport": [
+        320,
+        568
+      ],
+      "closeVisible": true,
+      "noHorizontalOverflow": true,
+      "iframeBounds": {
+        "x": 32,
+        "y": 84,
+        "width": 256,
+        "height": 452
+      },
+      "focusReturned": true
+    },
+    {
+      "context": "video-layout",
+      "viewport": [
+        844,
+        390
+      ],
+      "closeVisible": true,
+      "noHorizontalOverflow": true,
+      "iframeBounds": {
+        "x": 166,
+        "y": 84,
+        "width": 512,
+        "height": 274
+      },
+      "focusReturned": true
+    },
+    {
+      "context": "video-layout",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "closeVisible": true,
+      "noHorizontalOverflow": true,
+      "iframeBounds": {
+        "x": 464,
+        "y": 216,
+        "width": 512,
+        "height": 620
+      },
+      "focusReturned": true
+    },
+    {
+      "context": "map-card",
+      "viewport": [
+        390,
+        844
+      ],
+      "previewArrowsDoNotExpand": true,
+      "nativeTouchSwipeDoesNotExpand": true,
+      "tapExpandsStory": true,
+      "expandedSelectedPhotoOpens": true
+    }
+  ]
+}

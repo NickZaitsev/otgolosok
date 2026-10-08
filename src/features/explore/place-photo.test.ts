@@ -8,7 +8,8 @@ vi.mock("@/lib/i18n/provider", () => ({ useI18n: () => ({ locale: "ru", t: (s: s
 vi.mock("next/image", () => ({ default: (props: Record<string, unknown>) => { const imageProps = { ...props }; delete imageProps.unoptimized; return createElement("img", imageProps); } }));
 let container: HTMLDivElement, root: Root;
 const click = async (label: string) => {
-  const button = [...container.querySelectorAll("button")].find(node => node.textContent === label || node.getAttribute("aria-label") === label);
+  const scope = container.querySelector("dialog[open]") ?? container;
+  const button = [...scope.querySelectorAll("button")].find(node => node.textContent === label || node.getAttribute("aria-label") === label);
   expect(button, label).toBeDefined();
   await act(async () => button!.click());
 };
@@ -17,6 +18,50 @@ beforeEach(() => {
   container = document.createElement("div"); document.body.append(container); root = createRoot(container);
   HTMLDialogElement.prototype.showModal = function () { this.setAttribute("open", ""); };
   HTMLDialogElement.prototype.close = function () { this.removeAttribute("open"); this.dispatchEvent(new Event("close")); };
+});
+
+const pointer = async (target: Element, type: string, x: number, y: number) => {
+  const event = new MouseEvent(type, {bubbles:true, clientX:x, clientY:y, button:0});
+  Object.defineProperties(event, {pointerId:{value:1}, isPrimary:{value:true}, pointerType:{value:"touch"}});
+  await act(async () => target.dispatchEvent(event));
+};
+
+it("листит обложки стрелками без открытия галереи и открывает выбранный кадр", async () => {
+  await act(async () => root.render(createElement(PlacePhotoBanner, {placeId:"osm:way:48859891", title:"Палаты"})));
+  expect(container.querySelector('[aria-label="Предыдущее фото"]')?.getAttribute('disabled')).toBe("");
+  await click("Следующее фото");
+  expect(container.querySelector('[data-photo-banner] img')?.getAttribute('alt')).toContain("1867");
+  expect(container.querySelector("dialog[open]")).toBeNull();
+  expect(container.querySelector('[aria-label="Следующее фото"]')?.getAttribute('disabled')).toBe("");
+  await click("Открыть фото: Палаты");
+  expect(container.querySelector('dialog[open] img')?.getAttribute('alt')).toContain("1867");
+});
+
+it("свайп меняет превью, подавляет случайное открытие и не выходит за края", async () => {
+  await act(async () => root.render(createElement(PlacePhotoBanner, {placeId:"osm:way:48859891", title:"Палаты"})));
+  const banner=container.querySelector('[data-photo-banner]')!;
+  await pointer(banner,"pointerdown",200,60); await pointer(banner,"pointermove",110,65); await pointer(banner,"pointerup",110,65);
+  await act(async () => (banner as HTMLButtonElement).click());
+  expect(container.querySelector('[data-photo-banner] img')?.getAttribute('alt')).toContain("1867");
+  expect(container.querySelector("dialog[open]")).toBeNull();
+  await pointer(banner,"pointerdown",200,60); await pointer(banner,"pointerup",90,60);
+  expect(container.querySelector('[data-photo-banner] img')?.getAttribute('alt')).toContain("1867");
+  await pointer(banner,"pointerdown",90,60); await pointer(banner,"pointerup",200,60);
+  expect(container.querySelector('[data-photo-banner] img')?.getAttribute('alt')).toContain("1927");
+  await pointer(banner,"pointerdown",100,60); await pointer(banner,"pointerup",110,160);
+  expect(container.querySelector('[data-photo-banner] img')?.getAttribute('alt')).toContain("1927");
+  await pointer(banner,"pointerdown",200,60); await pointer(banner,"pointercancel",110,60); await pointer(banner,"pointerup",110,60);
+  expect(container.querySelector('[data-photo-banner] img')?.getAttribute('alt')).toContain("1927");
+});
+
+it("стрелки в свёрнутой карточке меняют снимок, сохраняя обычное нажатие для открытия истории", async () => {
+  const expand=vi.fn();
+  await act(async () => root.render(createElement(PlacePhotoBanner, {placeId:"osm:way:48859891", title:"Палаты", onPreview:expand})));
+  await click("Следующее фото");
+  expect(container.querySelector('[data-photo-banner] img')?.getAttribute('alt')).toContain("1867");
+  expect(expand).not.toHaveBeenCalled();
+  await act(async () => (container.querySelector('[data-photo-banner]') as HTMLElement).click());
+  expect(expand).toHaveBeenCalledOnce();
 });
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); });
 

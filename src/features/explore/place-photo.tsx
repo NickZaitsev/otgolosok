@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useId, useRef, useState, type CSSProperties } from "react";
+import { useId, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { ExploreIcon } from "./icons";
 import type { PlacePhoto } from "./place-story";
 import { placePhotoGallery } from "./place-photo-gallery";
@@ -37,15 +37,52 @@ export function PlacePhotoBanner({ photo: suppliedPhoto, placeId, pending = fals
   const trigger = useRef<HTMLButtonElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const dialogTitle = useId();
+  const swipe = useRef<{ id: number; x: number; y: number } | null>(null);
+  const suppressClick = useRef(false);
 
   // Static on purpose: no shimmer, so it is safe with reduced motion.
   if (!photo && pending) return <span aria-hidden="true" className={styles.placeholder} data-photo-placeholder />;
   if (!photo || bannerFailed) return null;
   const image = <Image unoptimized src={photo.src} width={photo.width} height={photo.height} alt={photo.alt}
-    loading="eager" onError={() => { if (bannerIndex + 1 < photos.length) setBannerIndex(index => index + 1); else setBannerFailed(true); }} />;
+    draggable={false} loading="eager" onError={() => { if (bannerIndex + 1 < photos.length) setBannerIndex(index => index + 1); else setBannerFailed(true); }} />;
   // The expanded story shows the photo whole, but a tall one no taller than 4:5: the text must stay in sight.
   const ratio = { "--photo-ratio": Math.max(photo.width / photo.height, TALLEST_RATIO) } as CSSProperties;
-  if (onPreview) return <span className={`${styles.banner} ${styles.preview}`} style={ratio} onClick={onPreview} data-photo-banner>{image}</span>;
+  const count = photos.length > 1 ? <span className={styles.count}>{t("Фото {current} из {total}", { current: bannerIndex + 1, total: photos.length })}</span> : null;
+  const arrows = photos.length > 1 ? <>
+    <button type="button" className={`${styles.previewArrow} ${styles.previous}`} disabled={bannerIndex === 0}
+      aria-label={t("Предыдущее фото")} onClick={() => setBannerIndex(index => index - 1)}><ExploreIcon name="arrow" /></button>
+    <button type="button" className={`${styles.previewArrow} ${styles.next}`} disabled={bannerIndex === photos.length - 1}
+      aria-label={t("Следующее фото")} onClick={() => setBannerIndex(index => index + 1)}><ExploreIcon name="arrow" /></button>
+  </> : null;
+  function swipeStart(event: PointerEvent<HTMLDivElement>) {
+    suppressClick.current = false;
+    if (photos.length < 2 || !event.isPrimary || event.button !== 0 || (event.target as Element).closest("button:not([data-photo-banner]), a")) return;
+    swipe.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  }
+  const frame = { className: styles.frame, style: ratio,
+    onPointerDown: swipeStart,
+    onPointerMove: (event: PointerEvent<HTMLDivElement>) => {
+      const start = swipe.current;
+      if (!start || start.id !== event.pointerId) return;
+      if (Math.abs(event.clientX - start.x) > 10 && Math.abs(event.clientX - start.x) > Math.abs(event.clientY - start.y) * 1.5) {
+        try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* Захват может закончиться вместе с указателем; жест в пределах фото продолжает работать. */ }
+      }
+    },
+    onPointerUp: (event: PointerEvent<HTMLDivElement>) => {
+      const start = swipe.current; swipe.current = null;
+      if (!start || start.id !== event.pointerId) return;
+      const dx = event.clientX - start.x;
+      if (Math.abs(dx) < 40 || Math.abs(dx) <= Math.abs(event.clientY - start.y) * 1.5) return;
+      setBannerIndex(index => Math.max(0, Math.min(photos.length - 1, index + (dx < 0 ? 1 : -1))));
+      suppressClick.current = true;
+    },
+    onPointerCancel: () => { swipe.current = null; suppressClick.current = false; },
+    onClickCapture: (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!suppressClick.current) return;
+      suppressClick.current = false; event.preventDefault(); event.stopPropagation();
+    },
+  };
+  if (onPreview) return <div {...frame}><span className={`${styles.banner} ${styles.preview}`} onClick={onPreview} data-photo-banner>{image}{count}</span>{arrows}</div>;
 
   function showPhoto() {
     try {
@@ -61,15 +98,15 @@ export function PlacePhotoBanner({ photo: suppliedPhoto, placeId, pending = fals
   }
 
   return <>
-    <button ref={trigger} type="button" className={styles.banner} style={ratio} onClick={showPhoto} data-photo-banner
+    <div {...frame}><button ref={trigger} type="button" className={styles.banner} onClick={showPhoto} data-photo-banner
       aria-label={t("Открыть фото: {title}", { title })} aria-haspopup="dialog">
       {/* The full copy: the 250 px preview would be blurry stretched across the card, and the viewer then opens from cache. */}
       {image}
-      {photos.length > 1 ? <span className={styles.count}>{t("Фото {current} из {total}", { current: bannerIndex + 1, total: photos.length })}</span> : null}
-    </button>
+      {count}
+    </button>{arrows}</div>
     {openFailed ? <p className={styles.status} role="status">{t("Не удалось открыть фотографию. Попробуйте ещё раз.")}</p> : null}
     <dialog ref={dialog} className={styles.viewer} aria-labelledby={dialogTitle}
-      onClose={() => { setOpen(false); trigger.current?.focus({ preventScroll: true }); }}
+      onClose={() => { setOpen(false); setBannerIndex(selected); trigger.current?.focus({ preventScroll: true }); }}
       onClick={event => {
         if (event.target !== event.currentTarget) return;
         const bounds = event.currentTarget.getBoundingClientRect();
