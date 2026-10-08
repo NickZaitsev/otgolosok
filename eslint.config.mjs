@@ -17,6 +17,7 @@ const eslintConfig = defineConfig([
     ".venv/**",
     ".kilo/**",
     ".claude/worktrees/**",
+    ".audit/**",
     "artifacts/**",
     "test-results/**",
     "playwright-report/**",

@@ -29,7 +29,7 @@ process.exit(Number(process.env.TEST_EXIT??0));
 `, { mode: 0o755 });
   const run = (target, variables = [], extra = {}) => spawnSync("make", ["-s", target, ...variables], {
     cwd: resolve(import.meta.dirname, ".."), encoding: "utf8",
-    env: { ...process.env, VPS: "verify@localhost", EMAIL: "", PATH: `${dir}:${process.env.PATH}`, TEST_CAPTURE: capture, ...extra },
+    env: { ...process.env, EMAIL: "", PATH: `${dir}:${process.env.PATH}`, TEST_CAPTURE: capture, ...extra },
   });
   return { dir, capture, run };
 }
@@ -41,7 +41,7 @@ test("deployed Makefile runs on the server without a checkout or SSH back to its
   await writeFile(join(f.dir, "ssh"), "#!/bin/sh\nexit 99\n", { mode: 0o755 });
   const run = (target, variables = [], extra = {}) => spawnSync("make", ["-s", target, ...variables], {
     cwd: f.dir, encoding: "utf8",
-    env: { ...process.env, VPS: "verify@localhost", EMAIL: "", PATH: `${f.dir}:${process.env.PATH}`, TEST_CAPTURE: f.capture, ...extra },
+    env: { ...process.env, EMAIL: "", PATH: `${f.dir}:${process.env.PATH}`, TEST_CAPTURE: f.capture, ...extra },
   });
   assert.match(run("help").stdout, /admin-create-prod/);
   assert.notEqual(run("admin-create-prod").status, 0);
@@ -50,7 +50,7 @@ test("deployed Makefile runs on the server without a checkout or SSH back to its
     const email = "o'brien@example.com";
     const result = run(target, [`EMAIL=${email}`]);
     assert.equal(result.status, 0, result.stderr);
-    assert.deepEqual(JSON.parse(await readFile(f.capture, "utf8")), ["exec", "-it", "--", "otgolosok-generator-generator-1", "node", "/app/backend/editor-account.mjs", email, "/data/auth.sqlite"]);
+    assert.deepEqual(JSON.parse(await readFile(f.capture, "utf8")), ["exec", "-it", "--", "otgolosok-generator-generator-1", "node", "/app/editor-account.mjs", email, "/data/auth.sqlite"]);
   }
   assert.notEqual(run("admin-create-prod", ["EMAIL=admin@example.com"], { TEST_EXIT: "17" }).status, 0);
 });
@@ -70,7 +70,7 @@ test("production Makefile command preserves argument boundaries across both shel
   for (const email of ["admin@example.com", "o'brien@example.com", `admin; touch ${f.dir}/injected; #`, `admin\`touch ${f.dir}/injected\`@example.com`]) {
     const result = f.run("admin-create-prod", [`EMAIL=${email}`, "GENERATOR_CONTAINER=generator-test"]);
     assert.equal(result.status, 0, result.stderr);
-    assert.deepEqual(JSON.parse(await readFile(f.capture, "utf8")), ["exec", "-it", "--", "generator-test", "node", "/app/backend/editor-account.mjs", email, "/data/auth.sqlite"]);
+    assert.deepEqual(JSON.parse(await readFile(f.capture, "utf8")), ["exec", "-it", "--", "generator-test", "node", "/app/editor-account.mjs", email, "/data/auth.sqlite"]);
     await assert.rejects(access(join(f.dir, "injected")), { code: "ENOENT" });
   }
   assert.notEqual(f.run("admin-create-prod", ["EMAIL=admin@example.com"], { TEST_EXIT: "17" }).status, 0);

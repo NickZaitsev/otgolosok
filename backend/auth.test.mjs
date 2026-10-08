@@ -5,17 +5,16 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createServer } from "node:http";
 import { createAuth,authRequestHandler,AUTH_BODY_LIMIT } from "./auth.mjs";
-import { TERMS_VERSION } from "../legal/publication.mjs";
 import { createAccountStore } from "./account-store.mjs";
 
 test("Better Auth email and password creates, reads and revokes a Node HTTP session",async t=>{
   const directory=await mkdtemp(join(tmpdir(),"otg-auth-"));
-  const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"http://127.0.0.1",secret:"auth-test-secret-with-more-than-32-characters",production:false,legalReady:true});
+  const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"http://127.0.0.1",secret:"auth-test-secret-with-more-than-32-characters",production:false});
   const handler=authRequestHandler(runtime.auth),server=createServer(handler);await /** @type {Promise<void>} */ (new Promise(done=>server.listen(0,"127.0.0.1",done)));
   const base=`http://127.0.0.1:${/** @type {import("node:net").AddressInfo} */ (server.address()).port}/api/auth`,headers={Origin:"http://127.0.0.1","Content-Type":"application/json","X-Real-IP":"127.0.0.1"};
   t.after(async()=>{await new Promise(done=>server.close(done));runtime.close();await rm(directory,{recursive:true,force:true});});
-  const shortPassword=await fetch(base+"/sign-up/email",{method:"POST",headers,body:JSON.stringify({name:"Пользователь",email:"short@example.com",password:"short",termsAccepted:true,termsVersion:TERMS_VERSION})});assert.equal(shortPassword.status,400);
-  const signUp=await fetch(base+"/sign-up/email",{method:"POST",headers,body:JSON.stringify({name:"Пользователь",email:"User@Example.com",password:"correct-password",termsAccepted:true,termsVersion:TERMS_VERSION})});assert.equal(signUp.status,200);const rawCookie=signUp.headers.getSetCookie().find(v=>v.startsWith("otgolosok.session="));assert.match(rawCookie,/HttpOnly/i);assert.match(rawCookie,/SameSite=Lax/i);assert.match(rawCookie,/Path=\//i);assert.doesNotMatch(rawCookie,/; Secure/i);const cookie=signUp.headers.getSetCookie().map(v=>v.split(";",1)[0]).join("; ");assert.match(cookie,/otgolosok\.session=/);
+  const shortPassword=await fetch(base+"/sign-up/email",{method:"POST",headers,body:JSON.stringify({name:"Пользователь",email:"short@example.com",password:"short"})});assert.equal(shortPassword.status,400);
+  const signUp=await fetch(base+"/sign-up/email",{method:"POST",headers,body:JSON.stringify({name:"Пользователь",email:"User@Example.com",password:"correct-password"})});assert.equal(signUp.status,200);const rawCookie=signUp.headers.getSetCookie().find(v=>v.startsWith("otgolosok.session="));assert.match(rawCookie,/HttpOnly/i);assert.match(rawCookie,/SameSite=Lax/i);assert.match(rawCookie,/Path=\//i);assert.doesNotMatch(rawCookie,/; Secure/i);const cookie=signUp.headers.getSetCookie().map(v=>v.split(";",1)[0]).join("; ");assert.match(cookie,/otgolosok\.session=/);
   const session=await fetch(base+"/get-session",{headers:{Cookie:cookie}});assert.equal(/** @type {any} */ (await session.json()).user.email,"user@example.com");
   const invalid=await fetch(base+"/sign-in/email",{method:"POST",headers,body:JSON.stringify({email:"user@example.com",password:"wrong-password"})});assert.equal(invalid.status,401);
   const signIn=await fetch(base+"/sign-in/email",{method:"POST",headers,body:JSON.stringify({email:"user@example.com",password:"correct-password"})});assert.equal(signIn.status,200);
@@ -24,13 +23,13 @@ test("Better Auth email and password creates, reads and revokes a Node HTTP sess
 });
 
 test("production sessions use a __Host cookie",async t=>{
-  const directory=await mkdtemp(join(tmpdir(),"otg-auth-production-"));const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"https://example.test",secret:"production-test-secret-with-more-than-32-characters",production:true,legalReady:true});t.after(async()=>{runtime.close();await rm(directory,{recursive:true,force:true});});
-  const handler=authRequestHandler(runtime.auth),response=await new Promise(resolve=>{const req={url:"/api/auth/sign-up/email",method:"POST",headers:{host:"example.test",origin:"https://example.test","content-type":"application/json"},[Symbol.asyncIterator]:async function*(){yield Buffer.from(JSON.stringify({name:"Cookie",email:"cookie@example.test",password:"correct-password",termsAccepted:true,termsVersion:TERMS_VERSION}));}};const res={headers:null,status:null,writeHead(status,headers){this.status=status;this.headers=headers;},end(){resolve(this);}};handler(req,res);});
+  const directory=await mkdtemp(join(tmpdir(),"otg-auth-production-"));const runtime=await createAuth({databasePath:join(directory,"auth.sqlite"),baseURL:"https://example.test",secret:"production-test-secret-with-more-than-32-characters",production:true});t.after(async()=>{runtime.close();await rm(directory,{recursive:true,force:true});});
+  const handler=authRequestHandler(runtime.auth),response=await new Promise(resolve=>{const req={url:"/api/auth/sign-up/email",method:"POST",headers:{host:"example.test",origin:"https://example.test","content-type":"application/json"},[Symbol.asyncIterator]:async function*(){yield Buffer.from(JSON.stringify({name:"Cookie",email:"cookie@example.test",password:"correct-password"}));}};const res={headers:null,status:null,writeHead(status,headers){this.status=status;this.headers=headers;},end(){resolve(this);}};handler(req,res);});
   const cookie=response.headers["set-cookie"].find(value=>value.startsWith("__Host-otgolosok-session="));assert.ok(cookie);assert.match(cookie,/; Secure/i);assert.match(cookie,/; HttpOnly/i);assert.match(cookie,/; SameSite=Lax/i);assert.match(cookie,/; Path=\//i);assert.doesNotMatch(cookie,/; Domain=/i);
 });
 
 test("account data is isolated per Better Auth user and updates use revisions",async t=>{
-  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"account-test-secret-with-more-than-32-characters",production:false,legalReady:true});t.after(()=>runtime.close());
+  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"account-test-secret-with-more-than-32-characters",production:false});t.after(()=>runtime.close());
   const db=runtime.database,store=createAccountStore(db),time=new Date().toISOString();
   db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("u1","Один","one@example.com",1,time,time);
   db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("u2","Два","two@example.com",1,time,time);
@@ -44,7 +43,7 @@ test("account data is isolated per Better Auth user and updates use revisions",a
 });
 
 test("account lists paginate without omissions or duplicates",async t=>{
-  let clock=Date.UTC(2026,8,21,12);const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"pagination-test-secret-with-more-than-32-characters",production:false,legalReady:true});t.after(()=>runtime.close());
+  let clock=Date.UTC(2026,8,21,12);const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"pagination-test-secret-with-more-than-32-characters",production:false});t.after(()=>runtime.close());
   const db=runtime.database,store=createAccountStore(db,()=>clock++),time=new Date(clock).toISOString();
   db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("page-user","Страницы","page@example.com",1,time,time);
   for(let index=0;index<21;index++)store.createWalk("page-user",{title:`Прогулка ${index}`,snapshot:{version:1,title:`Прогулка ${index}`,start:null,stops:[],mode:"loop",minutes:30,route:null,jobs:[],submitting:null},idempotencyKey:`walk-page-${index}`});
@@ -53,7 +52,7 @@ test("account lists paginate without omissions or duplicates",async t=>{
 });
 
 test("walk storage migrates legacy snapshots, keeps account IDs addressable and preserves CAS sharing", async t => {
-  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"walk-storage-test-secret-with-more-than-32-characters",production:false,legalReady:true});
+  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://localhost",secret:"walk-storage-test-secret-with-more-than-32-characters",production:false});
   t.after(()=>runtime.close());
   const db=runtime.database,store=createAccountStore(db),time=new Date().toISOString();
   db.prepare("INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(?,?,?,?,?,?)").run("walk-user","Пользователь","walk@example.com",1,time,time);
@@ -78,7 +77,7 @@ test("walk storage migrates legacy snapshots, keeps account IDs addressable and 
 });
 
 test("oversized auth bodies are refused with 413 before Better Auth reads them",async t=>{
-  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://127.0.0.1",secret:"auth-limit-secret-with-more-than-32-characters",production:false,legalReady:true});
+  const runtime=await createAuth({databasePath:":memory:",baseURL:"http://127.0.0.1",secret:"auth-limit-secret-with-more-than-32-characters",production:false});
   const server=createServer(authRequestHandler(runtime.auth));await /** @type {Promise<void>} */ (new Promise(done=>server.listen(0,"127.0.0.1",done)));
   t.after(async()=>{server.closeAllConnections();await new Promise(done=>server.close(done));runtime.close();});
   const url=`http://127.0.0.1:${/** @type {import("node:net").AddressInfo} */ (server.address()).port}/api/auth/sign-in/email`,headers={Origin:"http://127.0.0.1","Content-Type":"application/json","X-Real-IP":"127.0.0.1"};
@@ -91,45 +90,4 @@ test("oversized auth bodies are refused with 413 before Better Auth reads them",
   assert.equal(streamed.status,413);
   const small=await fetch(url,{method:"POST",headers,body:padded(10)});
   assert.equal(small.status,401);
-});
-
-
-test("registration requires an explicit current agreement and stores server evidence atomically", async t => {
-  const runtime = await createAuth({databasePath: ":memory:", baseURL: "http://localhost", production: false, legalReady: true});
-  t.after(() => runtime.close());
-  let clientIp = 0;
-  const send = body => runtime.auth.handler(new Request("http://localhost/api/auth/sign-up/email", {
-    method: "POST", headers: {Origin: "http://localhost", "Content-Type": "application/json", "X-Real-IP": `10.0.0.${++clientIp}`}, body: JSON.stringify(body),
-  }));
-  const user = {name: "Тест", email: "legal@example.test", password: "correct-password"};
-  for (const fields of [{}, {termsAccepted: false, termsVersion: TERMS_VERSION}, {termsAccepted: "true", termsVersion: TERMS_VERSION}, {termsAccepted: true, termsVersion: "old"}]) {
-    const response = await send({...user, ...fields});
-    assert.equal(response.status, 400);
-    assert.equal((/** @type {any} */ (await response.json())).code, "TERMS_REQUIRED");
-    assert.equal(runtime.database.prepare("SELECT count(*) AS count FROM user").get().count, 0);
-  }
-  const before = Date.now();
-  const accepted = await send({...user, termsAccepted: true, termsVersion: TERMS_VERSION, termsAcceptedAt: "2000-01-01"});
-  assert.equal(accepted.status, 200);
-  const result = /** @type {any} */ (await accepted.json());
-  const stored = runtime.database.prepare("SELECT termsVersion, termsAcceptedAt FROM user WHERE id=?").get(result.user.id);
-  assert.equal(stored.termsVersion, TERMS_VERSION);
-  assert.ok(Date.parse(String(stored.termsAcceptedAt)) >= before && Date.parse(String(stored.termsAcceptedAt)) <= Date.now());
-  assert.equal(result.user.termsVersion, undefined);
-  const cookie = accepted.headers.getSetCookie().map(value => value.split(";", 1)[0]).join("; ");
-  const update = await runtime.auth.handler(new Request("http://localhost/api/auth/update-user", {method: "POST", headers: {Origin: "http://localhost", "Content-Type": "application/json", Cookie: cookie}, body: JSON.stringify({termsVersion: "forged", termsAcceptedAt: "2000-01-01"})}));
-  assert.equal(update.status, 400);
-  assert.deepEqual(runtime.database.prepare("SELECT termsVersion, termsAcceptedAt FROM user WHERE id=?").get(result.user.id), stored);
-  assert.equal(runtime.database.prepare("SELECT count(*) AS count FROM account").get().count, 1);
-});
-
-test("unpublished legal documents prevent registration but preserve existing sign-in", async t => {
-  const runtime = await createAuth({databasePath: ":memory:", baseURL: "http://localhost", production: false, legalReady: false});
-  t.after(() => runtime.close());
-  const response = await runtime.auth.handler(new Request("http://localhost/api/auth/sign-up/email", {method: "POST", headers: {Origin: "http://localhost", "Content-Type": "application/json"}, body: JSON.stringify({name: "Тест", email: "blocked@example.test", password: "correct-password", termsAccepted: true, termsVersion: TERMS_VERSION})}));
-  assert.equal(response.status, 503);
-  assert.equal((/** @type {any} */ (await response.json())).code, "LEGAL_UNAVAILABLE");
-  assert.equal(runtime.database.prepare("SELECT count(*) AS count FROM user").get().count, 0);
-  const signIn = await runtime.auth.handler(new Request("http://localhost/api/auth/sign-in/email", {method: "POST", headers: {Origin: "http://localhost", "Content-Type": "application/json"}, body: JSON.stringify({email: "blocked@example.test", password: "correct-password"})}));
-  assert.equal(signIn.status, 401);
 });

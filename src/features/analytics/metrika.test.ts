@@ -2,21 +2,11 @@
 
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
-vi.mock("../../../legal/publication.mjs", () => ({ LEGAL_READY: true }));
-
 beforeEach(() => {
   vi.resetModules();
   vi.useFakeTimers();
   delete window.ym;
   document.head.innerHTML = "";
-  localStorage.clear();
-});
-
-it("не загружает счётчик и не создаёт очередь без согласия", async () => {
-  const { trackPage } = await import("./metrika");
-  trackPage("https://otgolosok.online/");
-  expect(window.ym).toBeUndefined();
-  expect(document.querySelector("script")).toBeNull();
 });
 
 afterEach(() => {
@@ -25,8 +15,6 @@ afterEach(() => {
 });
 
 it("инициализирует счётчик один раз и учитывает переходы с правильным referer", async () => {
-  const { saveCookieChoice } = await import("../legal/cookie-consent");
-  saveCookieChoice(true, "11111111-1111-4111-8111-111111111111." + "a".repeat(43));
   const { trackPage, METRIKA_ID, METRIKA_SCRIPT } = await import("./metrika");
   trackPage("https://otgolosok.online/");
   trackPage("https://otgolosok.online/");
@@ -35,18 +23,17 @@ it("инициализирует счётчик один раз и учитыв�
   trackPage("https://otgolosok.online/");
   expect(document.querySelectorAll("script")).toHaveLength(1);
   expect(document.querySelector("script")?.src).toBe(METRIKA_SCRIPT);
-  expect(window.ym?.a).toHaveLength(4);
-  expect(window.ym?.a?.[0]).toEqual([METRIKA_ID, "init", expect.objectContaining({ defer: true, webvisor: false, clickmap: false, trackLinks: false, sendTitle: false })]);
+  expect(window.ym?.a).toHaveLength(5);
+  expect(window.ym?.a?.[0]).toEqual([METRIKA_ID, "init", expect.objectContaining({ defer: true, webvisor: true })]);
   expect(window.ym?.a?.slice(1).map(command => command[2])).toEqual([
-    new URL("/", location.origin).href, new URL("/walk", location.origin).href, new URL("/", location.origin).href,
+    "https://otgolosok.online/", "https://otgolosok.online/walk?id=one",
+    "https://otgolosok.online/walk?id=two", "https://otgolosok.online/",
   ]);
-  expect(window.ym?.a?.[2][3]).toEqual(expect.objectContaining({ referer: new URL("/", location.origin).href }));
+  expect(window.ym?.a?.[3][3]).toEqual(expect.objectContaining({ referer: "https://otgolosok.online/walk?id=one" }));
 });
 
 it.each(["error", "timeout"])("ограничивает повторы при %s и очищает очередь после отказа", async failure => {
   const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
-  const { saveCookieChoice } = await import("../legal/cookie-consent");
-  saveCookieChoice(true, "11111111-1111-4111-8111-111111111111." + "a".repeat(43));
   const { trackPage } = await import("./metrika");
   trackPage("https://otgolosok.online/");
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -63,8 +50,6 @@ it.each(["error", "timeout"])("ограничивает повторы при %s
 });
 
 it("после успешной загрузки не запускает повторный скрипт по таймеру", async () => {
-  const { saveCookieChoice } = await import("../legal/cookie-consent");
-  saveCookieChoice(true, "11111111-1111-4111-8111-111111111111." + "a".repeat(43));
   const { trackPage } = await import("./metrika");
   trackPage("https://otgolosok.online/");
   const script = document.querySelector("script")!;
@@ -78,38 +63,7 @@ it("после успешной загрузки не запускает пов�
 it("ошибка стороннего счётчика не прерывает приложение", async () => {
   vi.spyOn(console, "warn").mockImplementation(() => {});
   window.ym = () => { throw new Error("third party error"); };
-  const { saveCookieChoice } = await import("../legal/cookie-consent");
-  saveCookieChoice(true, "11111111-1111-4111-8111-111111111111." + "a".repeat(43));
   const { trackPage } = await import("./metrika");
   expect(() => trackPage("https://otgolosok.online/")).not.toThrow();
-  expect(document.querySelector("script")).toBeNull();
-});
-
-
-it("отзыв отменяет повторы и удаляет только аналитические cookie", async () => {
-  const { saveCookieChoice } = await import("../legal/cookie-consent");
-  saveCookieChoice(true, "11111111-1111-4111-8111-111111111111." + "a".repeat(43));
-  const { trackPage, stopMetrika } = await import("./metrika");
-  trackPage(location.href);
-  document.cookie = "_ym_uid=test; Path=/";
-  document.cookie = "otgolosok.session=keep; Path=/";
-  document.querySelector("script")!.dispatchEvent(new Event("error"));
-  saveCookieChoice(false);
-  stopMetrika();
-  await vi.runAllTimersAsync();
-  trackPage(location.href);
-  expect(document.querySelector("script")).toBeNull();
-  expect(window.ym?.a).toEqual([]);
-  expect(document.cookie).not.toContain("_ym_uid");
-  expect(document.cookie).toContain("otgolosok.session=keep");
-  expect(vi.getTimerCount()).toBe(0);
-});
-
-it.each(["/login", "/account", "/admin", "/en/login", "/zh/account"])("исключает приватный маршрут %s", async path => {
-  const { saveCookieChoice } = await import("../legal/cookie-consent");
-  saveCookieChoice(true, "11111111-1111-4111-8111-111111111111." + "a".repeat(43));
-  const { trackPage } = await import("./metrika");
-  trackPage(new URL(path, location.origin).href);
-  expect(window.ym).toBeUndefined();
   expect(document.querySelector("script")).toBeNull();
 });

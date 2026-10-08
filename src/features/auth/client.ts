@@ -1,6 +1,5 @@
 import { readFetch } from "./read-fetch";
 import { AUTH_CHANNEL, AUTH_EVENT_KEY, SIGNED_OUT_MESSAGE } from "./session-events";
-import { TERMS_VERSION } from "../../../legal/publication.mjs";
 export type AuthUser = { id: string; email: string; name: string; role?: string };
 const CSRF_KEY = "otgolosok:account:csrf";
 const LAST_USER_KEY = "otgolosok:account:last-user";
@@ -10,7 +9,7 @@ async function api(path: string, init?: RequestInit) {
   const response = await ((!init?.method || init.method === "GET") ? readFetch : fetch)(path, { credentials: "same-origin", cache: "no-store", signal: AbortSignal.timeout(20000), ...init,
     headers: { "Content-Type": "application/json", ...(init?.method && !["GET","HEAD"].includes(init.method) && csrf ? {"X-CSRF-Token":csrf} : {}), ...(init?.headers ?? {}) } });
   const value = await response.json().catch(() => ({}));
-  if (!response.ok) throw Object.assign(new Error(value?.message ?? value?.error?.message ?? "Не удалось выполнить запрос."), { status: response.status, code: typeof value?.error?.code === "string" ? value.error.code : typeof value?.code === "string" ? value.code : null });
+  if (!response.ok) throw Object.assign(new Error(value?.message ?? value?.error?.message ?? "Не удалось выполнить запрос."), { status: response.status, code: typeof value?.error?.code === "string" ? value.error.code : null });
   return value;
 }
 export async function getSession(): Promise<AuthUser | null> {
@@ -27,9 +26,9 @@ export async function getSession(): Promise<AuthUser | null> {
   return value.user ?? null;
 }
 export const getLastUserId = () => typeof localStorage === "undefined" ? null : localStorage.getItem(LAST_USER_KEY);
-async function completeAuthentication(path:string,body:Record<string,string|boolean>,message:string){try{const value=await api(path,{method:"POST",body:JSON.stringify(body)});localStorage.removeItem("otgolosok:auth:offline-logout");await getSession();return value;}catch(error){const code=(error as {code?:string}).code;throw new Error(code==="LEGAL_UNAVAILABLE"?"Регистрация временно недоступна.":code==="TERMS_REQUIRED"?"Для регистрации примите актуальные условия использования.":message,{cause:error});}}
+async function completeAuthentication(path:string,body:Record<string,string>,message:string){try{const value=await api(path,{method:"POST",body:JSON.stringify(body)});localStorage.removeItem("otgolosok:auth:offline-logout");await getSession();return value;}catch(error){throw new Error(message,{cause:error});}}
 export const signInWithPassword = (email:string,password:string) => completeAuthentication("/api/auth/sign-in/email",{email,password},"Неверный email или пароль.");
-export const signUpWithPassword = (name:string,email:string,password:string,termsAccepted:boolean) => completeAuthentication("/api/auth/sign-up/email",{name,email,password,termsAccepted,termsVersion:TERMS_VERSION},"Не удалось создать аккаунт. Возможно, этот email уже используется.");
+export const signUpWithPassword = (name:string,email:string,password:string) => completeAuthentication("/api/auth/sign-up/email",{name,email,password},"Не удалось создать аккаунт. Возможно, этот email уже используется.");
 function announceSignOut(){try{new BroadcastChannel(AUTH_CHANNEL).postMessage(SIGNED_OUT_MESSAGE);}catch{/* Storage remains the cross-tab fallback. */}localStorage.setItem(AUTH_EVENT_KEY,String(Date.now()));}
 async function revokePending(){if(!localStorage.getItem("otgolosok:auth:offline-logout"))return;await api("/api/auth/sign-out",{method:"POST",body:"{}"});localStorage.removeItem("otgolosok:auth:offline-logout");}
 if(typeof window!=="undefined"){addEventListener("online",()=>void revokePending().catch(()=>{}));void revokePending().catch(()=>{});}

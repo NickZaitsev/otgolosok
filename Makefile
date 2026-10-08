@@ -78,7 +78,7 @@ admin-create: ## Создать редактора локально; EMAIL=ва�
 admin-create-prod: ## Создать редактора на проде через SSH; EMAIL=ваш@email.ru
 	@test -n $(call shell_quote,$(VPS)) || { printf '%s\n' 'Укажите VPS=user@host в .env.ops' >&2; exit 1; }
 	@test -n $(call shell_quote,$(EMAIL)) || { printf '%s\n' 'Укажите EMAIL: make admin-create-prod EMAIL=ваш@email.ru' >&2; exit 1; }
-	@ssh -t -- $(call shell_quote,$(VPS)) $(call shell_quote,docker exec -it -- $(call shell_quote,$(GENERATOR_CONTAINER)) node /app/backend/editor-account.mjs $(call shell_quote,$(EMAIL)) /data/auth.sqlite)
+	@ssh -t -- $(call shell_quote,$(VPS)) $(call shell_quote,docker exec -it -- $(call shell_quote,$(GENERATOR_CONTAINER)) node /app/editor-account.mjs $(call shell_quote,$(EMAIL)) /data/auth.sqlite)
 
 db-dump: ## Снять базу генератора с прода в backend/data/prod-dump (нужен доступ по SSH)
 	$(NODE) scripts/prod-db.mjs dump

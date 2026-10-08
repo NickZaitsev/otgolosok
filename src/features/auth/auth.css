@@ -9,5 +9,3 @@
 
 .auth-card{max-width:480px;margin:32px auto;background:var(--raised);border:1px solid var(--control-border);border-radius:24px;padding:32px}.auth-card h1{font-family:var(--font-body);font-size:32px;letter-spacing:-.04em}.auth-card .account-button{background:var(--map-green);justify-content:center}.auth-card input{border-radius:12px}.auth-card>p{font-size:16px}.auth-card .kicker{font-size:12px}.auth-card .text-button{font-size:14px;min-height:48px;color:var(--map-green)}
 @media(max-width:600px){.auth-card{margin:16px auto;padding:24px}}
-
-.auth-card .auth-terms{display:flex;font-size:var(--text-control);font-weight:400}.auth-card .auth-terms input{width:20px;min-height:20px;padding:0;border-radius:0}.auth-card .auth-terms a,.auth-card .auth-hint a{text-decoration:underline}

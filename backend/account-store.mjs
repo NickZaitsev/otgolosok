@@ -9,7 +9,6 @@ import { validateWalkDocument, migrateLegacyDraft } from "./walk-document.mjs";
 import { createWalkLaunchStore } from "./walk-launches.mjs";
 import { moderatedTextHash } from "./walk-listing.mjs";
 import { PROMO_WALKS_USER_ID } from "./promo-walks.mjs";
-import { createLegalConsentStore } from "./legal-consent.mjs";
 
 export { moderatedTextHash };
 export const WALK_VISIBILITIES = ["private", "shared", "public"];
@@ -168,7 +167,6 @@ export function createAccountStore(db, now = Date.now) {
   const launches = createWalkLaunchStore(db, { now, transaction });
   const promo = createPromoQueueStore(db, { now, transaction });
   return {
-    legalConsents: createLegalConsentStore(db, { now }),
     ...promo,
     ...createSharedWalkAdminStore(db, { viewWalk, documentOf, launchCounts: launches.launchCounts, promoStates: promo.promoStates, now }),
     ...createWalkReviewStore(db, { now, transaction }),
