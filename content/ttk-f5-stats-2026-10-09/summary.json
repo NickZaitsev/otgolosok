@@ -1,0 +1,69 @@
+{
+  "snapshotAt": "2026-10-09T07:47:23.975Z",
+  "boundary": {
+    "osmRelationId": 2094286,
+    "fileSha256": "e5dd91709a7a5786afb59b67ba52cecc829adc466a877bd610af5b4aeb1cf8cc",
+    "header": {
+      "osmosis_replication_timestamp": "2026-10-02T23:00:00Z",
+      "osmosis_replication_sequence_number": "",
+      "generator": "https://download.BBBike.org",
+      "pbf_dense_nodes": "true"
+    },
+    "areaKm2": 83.40699942964218,
+    "perimeterKm": 34.91824145861659,
+    "coordinates": 606,
+    "valid": true
+  },
+  "insidePoints": 3086,
+  "publishedPoints": 1078,
+  "audioProviders": {
+    "f5": 703,
+    "eleven_v4": 286,
+    "eleven_v3": 88
+  },
+  "f5Count": 703,
+  "wordBins": {
+    "<50": 34,
+    "50–99": 540,
+    "100–149": 128,
+    "150–200": 1,
+    ">200": 0
+  },
+  "below100": 574,
+  "atLeast100": 129,
+  "wordRange": [
+    17,
+    150
+  ],
+  "missingFiles": 0,
+  "audioTextMismatches": 0,
+  "unapprovedAudioRows": 0,
+  "mapDetailAudioMismatches": 0,
+  "roadStripPoints": 6,
+  "roadStripF5": 1,
+  "rayCrosscheckPoints": 4706,
+  "publicSpotChecks": [
+    {
+      "placeId": "osm:node:4142981447",
+      "textId": "bfab8985-7042-4b99-9ea8-3584a3916e2a",
+      "wordCount": 17,
+      "audioSha256": "067bcf0f522bd763e3bf70cc502abd3c227fe19bb4b064c3ff9d1ef0b0d111f0",
+      "matches": true
+    },
+    {
+      "placeId": "osm:relation:13590832",
+      "textId": "f749dbbf-9d31-479d-9b83-17dbfa4f0604",
+      "wordCount": 72,
+      "audioSha256": "6e5811728b36f92e20cf2e0bc600507a27bc4b3dd945d31c3a9fda5c68dbd036",
+      "matches": true
+    },
+    {
+      "placeId": "osm:relation:2377386",
+      "textId": "a0759894-96cf-406d-a38f-2a00362741e4",
+      "wordCount": 150,
+      "audioSha256": "44a82549b729eeb2f75e6343c324e5f0016f064457ac59b1c4fc723cbdd0ff92",
+      "matches": true
+    }
+  ],
+  "previous198F5Overlap": 0
+}
