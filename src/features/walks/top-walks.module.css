@@ -21,7 +21,6 @@
   width: 100%;
   min-width: 0;
   min-height: var(--control-min);
-  padding: 0 var(--space-md);
   color: var(--map-green);
   background: var(--surface-island);
   border: 1px solid var(--field-border);

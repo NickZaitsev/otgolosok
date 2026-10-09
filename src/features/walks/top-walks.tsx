@@ -112,9 +112,9 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
   };
   const reset = () => changeFilters(emptyFilters);
   const controls = filterable ? <div className={styles.filters} role="group" aria-label={t("Фильтры прогулок")}>
-      <label>{t("Ближайшее метро к старту")}<select value={filters.start} onChange={event => changeFilters({ start: event.target.value })}><option value="">{t("Любая станция")}</option>{facets.starts.map(name => <option key={name} value={name}>{name}</option>)}</select></label>
-      <label>{t("Ближайшее метро к финишу")}<select value={filters.end} onChange={event => changeFilters({ end: event.target.value })}><option value="">{t("Любая станция")}</option>{facets.ends.map(name => <option key={name} value={name}>{name}</option>)}</select></label>
-      <label>{t("Продолжительность")}<select value={filters.duration} onChange={event => changeFilters({ duration: event.target.value as TopDuration })}>
+      <label className="ui-select-field">{t("Ближайшее метро к старту")}<select value={filters.start} onChange={event => changeFilters({ start: event.target.value })}><option value="">{t("Любая станция")}</option>{facets.starts.map(name => <option key={name} value={name}>{name}</option>)}</select></label>
+      <label className="ui-select-field">{t("Ближайшее метро к финишу")}<select value={filters.end} onChange={event => changeFilters({ end: event.target.value })}><option value="">{t("Любая станция")}</option>{facets.ends.map(name => <option key={name} value={name}>{name}</option>)}</select></label>
+      <label className="ui-select-field">{t("Продолжительность")}<select value={filters.duration} onChange={event => changeFilters({ duration: event.target.value as TopDuration })}>
         <option value="">{t("Любая продолжительность")}</option><option value="up-to-30">{t("До 30 минут")}</option><option value="31-to-60">{t("31–60 минут")}</option><option value="61-to-90">{t("61–90 минут")}</option>
       </select></label>
       {selected ? <button type="button" className={styles.reset} onClick={reset}>{t("Сбросить фильтры")}</button> : null}

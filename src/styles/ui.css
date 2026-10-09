@@ -143,6 +143,34 @@
     outline-offset: 3px;
   }
 
+  /* The label and select share a grid cell with a chevron that keeps its inset. */
+  .ui-select-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ui-select-field select {
+    grid-row: 2;
+    grid-column: 1;
+    appearance: none;
+    padding-inline: var(--space-md) var(--space-2xl);
+    cursor: pointer;
+  }
+
+  .ui-select-field::after {
+    grid-row: 2;
+    grid-column: 1;
+    place-self: center end;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-inline-end: var(--space-md);
+    border-inline-end: 2px solid currentcolor;
+    border-block-end: 2px solid currentcolor;
+    transform: translateY(-25%) rotate(45deg);
+    pointer-events: none;
+    content: "";
+  }
+
   .ui-notice {
     padding: 12px 16px;
     border-radius: 12px;
