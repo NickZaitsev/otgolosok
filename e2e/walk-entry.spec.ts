@@ -22,7 +22,7 @@ test("вход с промежуточной остановки игнориру
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
   await expect(page.getByRole("heading", { name: entry.title, exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: `Остановка 3 из ${route.walk!.steps.length}` })).toBeVisible();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.getByRole("heading", { name: route.walk!.steps[3].title, exact: true })).toBeVisible();
 });
 

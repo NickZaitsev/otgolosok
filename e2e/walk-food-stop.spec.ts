@@ -79,7 +79,7 @@ test("заведение становится остановкой между с
 test("во время прогулки заведение на текущем участке становится следующей целью", async ({ page }) => {
   await openLocal(page);
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.getByRole("button", { name: "Остановка 2 из 3" })).toBeVisible();
   await foodButton(page).click();
   // The bakery lies on the way from stop 1 to stop 2, which the walker is walking now.
@@ -88,7 +88,7 @@ test("во время прогулки заведение на текущем у
   await foodButton(page).click();
   await expect(page.getByRole("button", { name: "Остановка 2 из 4" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Пекарня по пути", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.getByRole("heading", { name: "Остановка 2", exact: true })).toBeVisible();
   // Reopened, the list no longer repeats the old notice and still marks the venue as a stop.
   await foodButton(page).click();

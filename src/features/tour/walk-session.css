@@ -15,7 +15,8 @@
 .walk-session-context{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px}
 .walk-session-location{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:0;border:0;background:none;color:var(--map-green);font:inherit;font-size:13px;line-height:1.3;white-space:nowrap}
 .walk-session-location>span{width:8px;height:8px;flex:none;border-radius:50%;background:var(--map-green)}
-.walk-session-location--failed{color:var(--warning-ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+/* A finger-sized target: the negative margins keep the 26 px line, so the title does not move. */
+.walk-session-location--failed{min-height:44px;margin-block:-9px;color:var(--warning-ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .walk-session-location--failed>span{background:var(--warning-ink)}
 .walk-session-muted{margin-top:10px}
 .walk-session-heading-actions{display:flex;flex:none;gap:8px}

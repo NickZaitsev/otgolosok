@@ -1,4 +1,4 @@
-import { test, expect, type Page, type Locator } from "./support/test";
+import { test, expect, recordCookieRefusal, type Page, type Locator } from "./support/test";
 import { draftToWalkDocument } from "../src/features/walks/adapters";
 import type { FoodPlace } from "../src/features/food/types";
 
@@ -73,13 +73,13 @@ for (const [width, height] of [[390, 844], [1440, 900], [568, 400], [320, 568]])
     await foodButton(page).click();
     await expect(pins).toHaveCount(0);
     await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
-    await page.getByRole("button", { name: "Дальше", exact: true }).click();
+    await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
     await foodButton(page).click();
     await expect(drawer(page).getByText(/^Позади/)).toBeVisible();
     await expect(row(page, places[0].name)).toBeHidden();
     await expect(row(page, places[3].name)).toBeVisible();
     await insideWindow(page.locator('[data-sheet-part="footer"]'), width, height);
-    await expect(page.getByRole("button", { name: "Дальше", exact: true })).toBeInViewport({ ratio: 1 });
+    await expect(page.getByRole("button", { name: /^Дальше(:|$)/ })).toBeInViewport({ ratio: 1 });
     await shot("food-during-walk");
     const activePath = await page.locator('[data-route-part="active"]').first().elementHandle();
     await row(page, places[3].name).click();
@@ -106,11 +106,13 @@ for (const [width, height] of [[390, 844], [1440, 900], [568, 400], [320, 568]])
 
 test("стрелка назад стоит в футере перед «Поесть рядом»", async ({ page }) => {
   await open(page);
-  const order = () => page.locator('[data-sheet-part="footer"] > *').evaluateAll(nodes => nodes.map(node => node.getAttribute("aria-label") ?? node.textContent?.trim()));
+  // Only the footer's controls: the «Дальше: …» line and the mini player are not part of the row.
+  // The visible label comes first: the main action's aria-label also names the next stop.
+  const order = () => page.locator('[data-sheet-part="footer"] > :is(button, a)').evaluateAll(nodes => nodes.map(node => node.textContent?.trim() || node.getAttribute("aria-label")));
   await expect(foodButton(page)).toBeVisible();
   expect(await order()).toEqual(["Изменить маршрут", "Поесть рядом", "Начать прогулку"]);
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.getByRole("button", { name: "Предыдущая остановка", exact: true })).toBeVisible();
   expect(await order()).toEqual(["Предыдущая остановка", "Поесть рядом", "Дальше"]);
 });
@@ -121,7 +123,7 @@ const footerShape = (page: Page) => page.locator('[data-sheet-part="footer"]').e
   const label = document.createRange();
   label.selectNodeContents(primary.firstChild!);
   const box = (el: Element) => el.getBoundingClientRect();
-  const icons = [...footer.children].filter(el => el !== primary).map(box);
+  const icons = [...footer.querySelectorAll(":scope > :is(button, a)")].filter(el => el !== primary).map(box);
   const action = box(primary), frame = box(footer);
   return {
     label: primary.textContent,
@@ -142,9 +144,9 @@ for (const [width, height] of [[393, 852], [390, 844], [360, 640], [320, 568], [
     const tidy = { lines: 1, round: true, stretched: false, inside: true };
     await expect.poll(() => footerShape(page)).toEqual({ label: "Начать прогулку", ...tidy });
     await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
-    await page.getByRole("button", { name: "Дальше", exact: true }).click();
+    await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
     await expect.poll(() => footerShape(page)).toEqual({ label: "Дальше", ...tidy });
-    await page.getByRole("button", { name: "Дальше", exact: true }).click();
+    await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
     await expect.poll(() => footerShape(page)).toEqual({ label: "К финишу", ...tidy });
   });
 }
@@ -217,6 +219,7 @@ for (const [width, height] of [[390, 844], [320, 568], [568, 320]]) {
 
 test("часы обновляются на новой минуте и при повторном открытии списка", async ({ page }) => {
   await page.clock.install({ time: new Date("2026-10-04T18:59:00Z") });
+  await recordCookieRefusal(page);
   await open(page, { timed: true });
   await foodButton(page).click();
   await expect(row(page, places[0].name)).toContainText("Открыто до 22:00");

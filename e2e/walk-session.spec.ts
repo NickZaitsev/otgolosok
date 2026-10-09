@@ -29,11 +29,11 @@ test("прогулка с конца меняет остановки и фини
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
   await expect(direction).toHaveCount(0);
   await expect(page.getByRole("heading", { name: stops[1].address, exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.getByRole("heading", { name: stops[0].address, exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Предыдущая остановка" }).click();
   await expect(page.getByRole("heading", { name: stops[1].address, exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await page.getByRole("button", { name: "К финишу", exact: true }).click();
   await expect(page.getByRole("heading", { name: start.address, exact: true })).toBeVisible();
   await expect(page.locator('[data-route-part="active"]')).toHaveCount(1);
@@ -57,7 +57,7 @@ test("прогресс двух направлений независим и о�
   await page.getByRole("button", { name: "Пройти прогулку с конца" }).click();
   await expect(page.getByRole("button", { name: "Начать прогулку", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.getByRole("heading", { name: chapter.title, exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByRole("button", { name: "Пройти прогулку с конца" })).toHaveAttribute("aria-pressed", "true");
@@ -109,7 +109,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 
     await expect.poll(() => markerIsFree(page, '[data-marker="endpoint"]'), { message: "старт виден" }).toBe(true);
     await expect.poll(() => markerIsFree(page, '[data-marker="pin"][title^="Остановка 1:"]'), { message: "первая остановка видна" }).toBe(true);
     await page.screenshot({ path: info.outputPath("walk-approach.png") });
-    await page.getByRole("button", { name: "Дальше", exact: true }).click();
+    await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
     await expect(page.getByRole("heading", { name: stops[1].address, exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Предыдущая остановка" }).click();
     await expect(page.getByRole("heading", { name: stops[0].address, exact: true })).toBeVisible();
@@ -122,7 +122,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 
     expect(boxes.bottom).toBe(12);
     expect(boxes.right).toBeLessThanOrEqual(boxes.width);
     await page.screenshot({ path: info.outputPath("walk-session.png") });
-    await page.getByRole("button", { name: "Дальше", exact: true }).click();
+    await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
     await page.getByRole("button", { name: "Завершить", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Прогулка завершена" })).toBeVisible();
     await expect(map).toBeVisible();
@@ -182,7 +182,7 @@ test("после последней остановки прогулка ведё
   const finish = { address: "Москва, Арбат, 9", location: { lat: 55.754, lon: 37.601 } };
   await setup(page, false, finish);
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.getByRole("heading", { name: stops[1].address, exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Завершить", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "К финишу", exact: true }).click();
@@ -247,7 +247,7 @@ test("аудио, текст и список остановок открываю
   await page.getByRole("button", { name: "Слушать историю", exact: true }).click();
   await expect(page.getByRole("button", { name: "Пауза", exact: true })).toBeVisible();
   await expect.poll(() => page.locator("audio").evaluate(el => (el as HTMLAudioElement).playbackRate)).toBe(1.25);
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.locator(".walk-session-tools button").first()).toHaveText("Остановка 3 из 4");
   await expect(page.getByRole("button", { name: "Слушать историю", exact: true })).toBeVisible();
   await expect.poll(() => page.locator("audio").evaluate(el => (el as HTMLAudioElement).paused)).toBe(true);
@@ -292,7 +292,7 @@ test("крестик в карточке прерывает прогулку т�
   await setup(page);
   await expect(page.getByRole("button", { name: "Прервать прогулку" })).toHaveCount(0);
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.getByRole("heading", { name: stops[1].address, exact: true })).toBeVisible();
 
   const stop = page.getByRole("button", { name: "Прервать прогулку" });
@@ -331,7 +331,7 @@ test("отказ аудио не блокирует переход к следу
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
   await page.getByRole("button", { name: "Слушать историю", exact: true }).click();
   await expect(page.getByRole("button", { name: "Повторить запуск звука", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Дальше", exact: true }).click();
+  await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
   await expect(page.getByRole("heading", { name: "Название с оврагом внутри", exact: true })).toBeVisible();
 });
 
@@ -374,14 +374,15 @@ test("гостевая прогулка показывает опубликов�
 
 // Остановка у места из каталога с редакционным фото: сервер подставил его рассказ.
 const photoPlace = "osm:way:35814561";
+const placeWithoutPhoto = "osm:node:999999999";
 const editorial = editorialPhotos[photoPlace];
 const placePhoto = { thumbnail: editorial.thumbnail, src: editorial.src, width: editorial.width, height: editorial.height, alt: editorial.alt,
   author: editorial.author, sourceUrl: editorial.sourceUrl, license: editorial.license, licenseUrl: editorial.licenseUrl };
 
 /** `story`: the stop tells the place's published story; `place`: the stop only names the catalog place, as with a test placeholder. */
-async function openPhotoStop(page: Page, photo: typeof placePhoto | null = placePhoto, link: "story" | "place" = "story") {
+async function openPhotoStop(page: Page, photo: typeof placePhoto | null = placePhoto, link: "story" | "place" = "story", place = photoPlace) {
   const document = draftToWalkDocument({ version: 1, title: "К кинотеатру", start, destination: null, mode: "loop", minutes: 30,
-    stops: [{ ...stops[0], ...(link === "story" ? { contentId: photoPlace } : {}), placeId: photoPlace }], route: { stops, geometry: [start.location, stops[0].location, start.location], distanceM: 400, walkingMinutes: 6, attribution: "OSM" }, jobs: [], submitting: null }, id);
+    stops: [{ ...stops[0], ...(link === "story" ? { contentId: place } : {}), placeId: place }], route: { stops, geometry: [start.location, stops[0].location, start.location], distanceM: 400, walkingMinutes: 6, attribution: "OSM" }, jobs: [], submitting: null }, id);
   await page.addInitScript(({ id, document }) => {
     localStorage.setItem("otgolosok:walks:v2", JSON.stringify({ version: 2, legacyId: null, items: { [id]: { document, revision: 0 } } }));
   }, { id, document });
@@ -389,7 +390,7 @@ async function openPhotoStop(page: Page, photo: typeof placePhoto | null = place
   await page.route("**/api/food/**", route => route.fulfill({ status: 503, json: { error: "FOOD_INDEX_UNAVAILABLE" } }));
   await page.route("**/api/story-walks/resolve", route => route.fulfill({ json: { document, revision: 0, contentVersion: "f".repeat(64), chapters: [{ id: document.stops[0].id, status: "text_ready",
     story: { title: "Кинотеатр «Художественный»", address: stops[0].address, paragraphs: [{ text: "Рассказ о кинотеатре.", factIds: [] }], sources: [], facts: [] }, audio: null }] } }));
-  await page.route(`**/api/content/places/${photoPlace}`, route => route.fulfill({ json: { place: { id: photoPlace,
+  await page.route(`**/api/content/places/${place}`, route => route.fulfill({ json: { place: { id: place,
     text: { story: { paragraphs: [{ text: "Рассказ о кинотеатре." }] }, audio: null }, ...(photo ? { photo } : {}) } } }));
   await page.goto(`/walk?local=${id}`);
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
@@ -428,7 +429,8 @@ test("остановка у места из каталога без расска
 });
 
 test("остановка у места без фото не оставляет пустого места в панели", async ({ page }) => {
-  await openPhotoStop(page, null);
+  // У кинотеатра есть редакционное фото (place-images-editorial.json): нужно место совсем без снимков.
+  await openPhotoStop(page, null, "story", placeWithoutPhoto);
   await expect(page.getByText("Без истории", { exact: true })).toHaveCount(0);
   await expect(page.locator(".walk-session-photo [data-photo-banner]")).toHaveCount(0);
   await expect(page.locator(".walk-session-photo")).toBeHidden();
@@ -453,8 +455,8 @@ for (const viewport of [{ width: 320, height: 568 }, { width: 844, height: 390 }
 // Одна остановка с длинной историей и аудио: панель прогулки становится самой высокой.
 const catalog = routeData as Route;
 const longStop = routeToWalkView({ ...catalog, walk: { ...catalog.walk!, steps: catalog.walk!.steps.slice(-1) } });
-const mapControls = { "отдалить": 'button[aria-label="Отдалить"]', "приблизить": 'button[aria-label="Приблизить"]',
-  "геопозиция": 'button[aria-label="Моё местоположение"]', "подпись OSM": '[data-region="attribution"]' };
+// Кнопок масштаба на карте больше нет (45ce739): масштаб меняется жестами и колесом.
+const mapControls = { "геопозиция": 'button[aria-label="Моё местоположение"]', "подпись OSM": '[data-region="attribution"]' };
 
 // Кнопка свободна, если она целиком в окне, на неё не заходят панель и навигация (до старта), а в её центре — она сама.
 function controlsState(page: Page) {
@@ -513,7 +515,7 @@ async function checkPanelStates(page: Page, check: (state: string) => Promise<vo
   await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: longStop }));
   await page.goto("/walk?catalog=paveletskaya");
   await expect(page.getByRole("button", { name: "Начать прогулку", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Приблизить", exact: true })).toBeVisible();
+  await expect(page.locator('[data-region="attribution"]')).toBeVisible();
   await check("до старта");
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
   await expect(page.getByRole("button", { name: "Моё местоположение", exact: true })).toBeVisible();
@@ -531,17 +533,20 @@ for (const [width, height] of [[390, 844], [320, 568], [667, 375], [568, 320], [
     await page.setViewportSize({ width, height });
     await checkPanelStates(page, async state => {
       const controls = await controlsState(page);
-      expect(Object.keys(controls), state).toEqual(expect.arrayContaining(["отдалить", "приблизить", "подпись OSM"]));
+      expect(Object.keys(controls), state).toEqual(expect.arrayContaining(["подпись OSM"]));
       expect(controls, state).toEqual(Object.fromEntries(Object.keys(controls).map(name => [name, "свободна"])));
       // На 320×568 карточка с плеером оставляет карте меньше наименьшей рамки вписывания (MIN_BOX в map-view.ts),
       // и метка может зайти под карточку — как на стартовой карте; на остальных экранах она видна.
       if (height > 568) await expect.poll(() => firstStopIsVisible(page), { message: `первая остановка видна: ${state}` }).toBe(true);
       await expect(page.locator('[data-region="header"]').getByRole("link", { name: "Отголосок, на главную" }), state).toBeVisible();
-      const header = (await page.locator('[data-region="header"]').boundingBox())!;
-      const zoom = (await page.getByRole("button", { name: "Приблизить", exact: true }).boundingBox())!;
-      const sameRow = Math.abs(zoom.y - header.y) <= 1;
-      if (width >= 844) expect(sameRow, `широкая шапка в одну строку: ${state}`).toBe(true);
-      expect(sameRow ? zoom.x >= header.x + header.width : zoom.y >= header.y + header.height + 7, `кнопки карты не перекрывают шапку: ${state}`).toBe(true);
+      // Кнопки карты, когда они есть (геопозиция появляется с первой точкой), не заходят на шапку.
+      const mapButtons = page.locator('[data-region="controls"]');
+      if (await mapButtons.count()) {
+        const header = (await page.locator('[data-region="header"]').boundingBox())!;
+        const buttons = (await mapButtons.boundingBox())!;
+        const sameRow = Math.abs(buttons.y - header.y) <= 1;
+        expect(sameRow ? buttons.x >= header.x + header.width : buttons.y >= header.y + header.height + 7, `кнопки карты не перекрывают шапку: ${state}`).toBe(true);
+      }
       const panel = await edges(page, ".walk-session-panel");
       const nav = page.locator('[data-region="nav"]');
       if (state === "до старта") {

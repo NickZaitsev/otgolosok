@@ -8,13 +8,22 @@ export type { Locator, Page } from "@playwright/test";
  * Every e2e test runs with silent media. Headless Chromium mutes itself, but WebKit
  * plays real story audio through the speakers, and so does any browser run with --headed.
  */
+/**
+ * Records an explicit refusal of analytics before the app starts. A test that installs a fake clock calls it again
+ * afterwards: init scripts run in order, so the choice is then dated by the fake clock — a choice from the real
+ * «future» is invalid and brings the consent banner back over the page.
+ */
+export function recordCookieRefusal(page: import("@playwright/test").Page) {
+  return page.addInitScript(({ key, version }) => {
+    localStorage.setItem(key, JSON.stringify({version, analytics: false, decidedAt: Date.now()}));
+  }, { key: COOKIE_CONSENT_KEY, version: COOKIE_CONSENT_VERSION });
+}
+
 export const test = base.extend<{ silentMedia: void; essentialCookies: boolean; cookieChoice: void }>({
   essentialCookies: [true, { option: true }],
   cookieChoice: [async ({ page, essentialCookies }, use) => {
     // Scenarios unrelated to consent use the app after an explicit refusal.
-    if (essentialCookies) await page.addInitScript(({ key, version }) => {
-      localStorage.setItem(key, JSON.stringify({version, analytics: false, decidedAt: Date.now()}));
-    }, { key: COOKIE_CONSENT_KEY, version: COOKIE_CONSENT_VERSION });
+    if (essentialCookies) await recordCookieRefusal(page);
     await use();
   }, { auto: true }],
   silentMedia: [async ({ page }, use) => {
