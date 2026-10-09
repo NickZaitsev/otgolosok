@@ -1,40 +1,124 @@
 {
-  "checkedAt": "2026-10-09T08:44:51.683Z",
+  "checkedAt": "2026-10-09T10:15:43.682Z",
   "items": [
     {
       "order": 1,
       "placeId": "osm:relation:2234282",
       "title": "Культурный центр «Москвич»",
-      "cardStatus": 404,
+      "cardStatus": 200,
       "preview": {
-        "status": "missing_card"
+        "status": "ready",
+        "alt": "Культурный центр «Москвич»",
+        "author": "Homa-Balamut",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9A%D1%83%D0%BB%D1%8C%D1%82%D1%83%D1%80%D0%BD%D1%8B%D0%B9_%D1%86%D0%B5%D0%BD%D1%82%D1%80_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B8%D1%87_%D0%B2%D0%B5%D1%81%D0%BD%D0%B0_2020.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "files": {
+          "thumbnail": {
+            "url": "/images/places/relation-2234282-ad365f1891c9.jpg",
+            "bytes": 12076,
+            "sha256": "ad365f1891c97d8f1f9c3ffba218c339c22b561aedfa85c3444fab9a1b03f4b5",
+            "width": 250,
+            "height": 188
+          },
+          "src": {
+            "url": "/images/places/relation-2234282-fbbd9c8d2393.jpg",
+            "bytes": 176896,
+            "sha256": "fbbd9c8d23934d39e75b074dc523ac7ba7f2efd8bc229ecd5f8aa47484de25f3",
+            "width": 960,
+            "height": 720
+          }
+        }
       }
     },
     {
       "order": 2,
       "placeId": "osm:way:27175377",
       "title": "Спортивный центр «Москвич»",
-      "cardStatus": 404,
+      "cardStatus": 200,
       "preview": {
-        "status": "missing_card"
+        "status": "ready",
+        "alt": "Спортивный центр «Москвич»",
+        "author": "Serkorolev",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moskvich_stad.jpg",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "files": {
+          "thumbnail": {
+            "url": "/images/places/way-27175377-f66f9d6d3730.jpg",
+            "bytes": 8808,
+            "sha256": "f66f9d6d3730d8a5151c56ec84905a92d343e7ca46ed380e3c9adc8c9110fa17",
+            "width": 250,
+            "height": 188
+          },
+          "src": {
+            "url": "/images/places/way-27175377-3083d327cbfc.jpg",
+            "bytes": 125075,
+            "sha256": "3083d327cbfcb900e0d97ec7eef337cb462d3a8773e9026496fb70933cb7e240",
+            "width": 960,
+            "height": 723
+          }
+        }
       }
     },
     {
       "order": 3,
       "placeId": "osm:way:27175355",
       "title": "Пруд Садки",
-      "cardStatus": 404,
+      "cardStatus": 200,
       "preview": {
-        "status": "missing_card"
+        "status": "ready",
+        "alt": "Пруд Садки",
+        "author": "AltynAsyr",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pond_Sadki.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "files": {
+          "thumbnail": {
+            "url": "/images/places/way-27175355-a7c62c0453f5.jpg",
+            "bytes": 11162,
+            "sha256": "a7c62c0453f5f9bf16b306bac11d56999ea0b7dc7f44f168f48f10ef06144f98",
+            "width": 250,
+            "height": 188
+          },
+          "src": {
+            "url": "/images/places/way-27175355-3876c15ea4cb.jpg",
+            "bytes": 164428,
+            "sha256": "3876c15ea4cba5dddee2d54617d09bc6dc695f18aa4fb33b7540c469f8ed2385",
+            "width": 960,
+            "height": 720
+          }
+        }
       }
     },
     {
       "order": 4,
       "placeId": "osm:node:3955434301",
       "title": "«Шурик и Лида»",
-      "cardStatus": 404,
+      "cardStatus": 200,
       "preview": {
-        "status": "missing_card"
+        "status": "ready",
+        "alt": "Иллюстрация к истории «Шурик и Лида»: два студента читают вместе",
+        "author": "Отголосок",
+        "sourceUrl": "https://otgolosok.online/images/places/node-3955434301-48142337a8d6.jpg",
+        "license": "Создано с помощью OpenAI",
+        "licenseUrl": "https://openai.com/policies/terms-of-use/",
+        "files": {
+          "thumbnail": {
+            "url": "/images/places/node-3955434301-8d935efdbc28.jpg",
+            "bytes": 17486,
+            "sha256": "8d935efdbc28ee4d0baf7f9f5acf5bd4e269fc10efc8b123f3b359f5d01e3b86",
+            "width": 250,
+            "height": 188
+          },
+          "src": {
+            "url": "/images/places/node-3955434301-48142337a8d6.jpg",
+            "bytes": 175569,
+            "sha256": "48142337a8d61f159dfd8fcf9611505da29b41b509dab46c12b357d6f47929b4",
+            "width": 960,
+            "height": 720
+          }
+        }
       }
     },
     {
@@ -71,9 +155,30 @@
       "order": 6,
       "placeId": "osm:relation:7486952",
       "title": "Люблинский пруд",
-      "cardStatus": 404,
+      "cardStatus": 200,
       "preview": {
-        "status": "missing_card"
+        "status": "ready",
+        "alt": "Люблинский пруд",
+        "author": "Englishrussia",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lyublinsky_Pond.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "files": {
+          "thumbnail": {
+            "url": "/images/places/relation-7486952-573d4385fdb3.jpg",
+            "bytes": 6256,
+            "sha256": "573d4385fdb38d50ca119309fc0f971c04c6bb180a427aa811014ddd75ddf54a",
+            "width": 250,
+            "height": 188
+          },
+          "src": {
+            "url": "/images/places/relation-7486952-fbec53faddcc.jpg",
+            "bytes": 104030,
+            "sha256": "fbec53faddccfee6532a24c3bc0195e1f0f0b85fe7087ff36cac635d8077d412",
+            "width": 960,
+            "height": 720
+          }
+        }
       }
     },
     {
@@ -82,16 +187,58 @@
       "title": "Дворец Николая Дурасова",
       "cardStatus": 200,
       "preview": {
-        "status": "missing_photo"
+        "status": "ready",
+        "alt": "Дворец Николая Дурасова",
+        "author": "Anton Zelenov",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Durasov_Palace.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "files": {
+          "thumbnail": {
+            "url": "/images/places/relation-7486944-9dc54271025c.jpg",
+            "bytes": 17588,
+            "sha256": "9dc54271025c99172affe8c26192789c88f266e647dbb9165a84ebf3c9d077d6",
+            "width": 250,
+            "height": 167
+          },
+          "src": {
+            "url": "/images/places/relation-7486944-21f598ef5958.jpg",
+            "bytes": 267260,
+            "sha256": "21f598ef5958651397d9d5cbb5d333a0967754c3762a8dad9b69c447e8834a66",
+            "width": 960,
+            "height": 640
+          }
+        }
       }
     },
     {
       "order": 8,
       "placeId": "osm:way:48222941",
       "title": "Театральное здание",
-      "cardStatus": 404,
+      "cardStatus": 200,
       "preview": {
-        "status": "missing_card"
+        "status": "ready",
+        "alt": "Театральное здание",
+        "author": "Tipa.melnik",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%A3%D1%81%D0%B0%D0%B4%D1%8C%D0%B1%D0%B0_%D0%BB%D1%8E%D0%B1%D0%BB%D0%B8%D0%BD%D0%BE_%D1%82%D0%B5%D0%B0%D1%82%D1%80.JPG",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "files": {
+          "thumbnail": {
+            "url": "/images/places/way-48222941-99f219f4d2da.jpg",
+            "bytes": 11890,
+            "sha256": "99f219f4d2daa8e2866a378de7a39cb204c56af7d100a89760c0c9663ec158e1",
+            "width": 250,
+            "height": 188
+          },
+          "src": {
+            "url": "/images/places/way-48222941-ad31e9c864fa.jpg",
+            "bytes": 120581,
+            "sha256": "ad31e9c864faebef0223774826b021bd39e76f4a2fc0139210133c2438a90a2f",
+            "width": 960,
+            "height": 720
+          }
+        }
       }
     },
     {
@@ -101,7 +248,7 @@
       "cardStatus": 200,
       "preview": {
         "status": "ready",
-        "alt": "Жилой дом",
+        "alt": "Жилой дом актёров",
         "author": "Rishalampone",
         "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dom_4str4.jpg",
         "license": "CC BY-SA 4.0",
@@ -128,9 +275,30 @@
       "order": 10,
       "placeId": "osm:way:203868822",
       "title": "Театральная школа",
-      "cardStatus": 404,
+      "cardStatus": 200,
       "preview": {
-        "status": "missing_card"
+        "status": "ready",
+        "alt": "Театральная школа",
+        "author": "Guldfisken",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%A2%D0%B5%D0%B0%D1%82%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%D1%88%D0%BA%D0%BE%D0%BB%D0%B0,_%D1%83%D1%81%D0%B0%D0%B4%D1%8C%D0%B1%D0%B0_%D0%9B%D1%8E%D0%B1%D0%BB%D0%B8%D0%BD%D0%BE_(%D0%B4%D0%BE%D0%BC_%D0%94%D1%83%D1%80%D0%B0%D1%81%D0%BE%D0%B2%D0%B0).JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "files": {
+          "thumbnail": {
+            "url": "/images/places/way-203868822-fdf97ccbaa78.jpg",
+            "bytes": 15528,
+            "sha256": "fdf97ccbaa78a7abb77332a157ef21c085427936d215d2e7931bf2f58b03b2f0",
+            "width": 250,
+            "height": 166
+          },
+          "src": {
+            "url": "/images/places/way-203868822-d1c4d02b36b3.jpg",
+            "bytes": 206691,
+            "sha256": "d1c4d02b36b3632ed94c69a36d8d69c3ce267631e3027bbb847e86706b2d7a23",
+            "width": 960,
+            "height": 638
+          }
+        }
       }
     },
     {
@@ -140,7 +308,7 @@
       "cardStatus": 200,
       "preview": {
         "status": "ready",
-        "alt": "Флигель театральной школы (бывший пансион для дворянских детей)",
+        "alt": "Бывший пансион для дворянских детей",
         "author": "NVO",
         "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Lyublino_Park_Dacha_1.jpg",
         "license": "CC BY 3.0",
@@ -170,7 +338,7 @@
       "cardStatus": 200,
       "preview": {
         "status": "ready",
-        "alt": "Западный флигель оранжереи усадьбы Люблино",
+        "alt": "Западный флигель оранжереи",
         "author": "Artempris",
         "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%97%D0%B0%D0%BF%D0%B0%D0%B4%D0%BD%D1%8B%D0%B9_%D1%84%D0%BB%D0%B8%D0%B3%D0%B5%D0%BB%D1%8C_%D0%9E%D1%80%D0%B0%D0%BD%D0%B6%D0%B5%D1%80%D0%B5%D0%B8_%D0%A3%D1%81%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B_%D0%94%D1%83%D1%80%D0%B0%D1%81%D0%BE%D0%B2%D0%B0.JPG",
         "license": "CC BY-SA 3.0",

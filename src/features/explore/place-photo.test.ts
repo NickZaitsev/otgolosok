@@ -65,6 +65,19 @@ it("стрелки в свёрнутой карточке меняют сним�
 });
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); });
 
+it("обозначает редакционную иллюстрацию и её источник без ссылки на Wikimedia", async () => {
+  await act(async () => root.render(createElement(PlacePhotoBanner, { title: "Шурик и Лида", photo: {
+    thumbnail: "/images/places/node-3955434301-thumb.jpg", src: "/images/places/node-3955434301-full.jpg",
+    width: 960, height: 720, alt: "Иллюстрация: два студента читают вместе", author: "Отголосок",
+    sourceUrl: "https://otgolosok.online/images/places/node-3955434301-full.jpg",
+    license: "Создано с помощью OpenAI", licenseUrl: "https://openai.com/policies/terms-of-use/",
+  } })));
+  await click("Открыть фото: Шурик и Лида");
+  expect(container.querySelector("dialog")?.textContent).toContain("Иллюстрация:");
+  expect(container.querySelector('dialog a[href^="https://otgolosok.online/"]')?.textContent).toBe("Отголосок");
+  expect(container.querySelector("dialog")?.textContent).not.toContain("Wikimedia Commons");
+});
+
 it("показывает архивное превью, переключает подписи и авторство, ограничивает края и возвращает фокус", async () => {
   await act(async () => root.render(createElement(PlacePhotoBanner, { placeId: "osm:way:48859891", title: "Палаты", pending: true })));
   expect(container.querySelector("[data-photo-banner] img")).not.toBeNull();

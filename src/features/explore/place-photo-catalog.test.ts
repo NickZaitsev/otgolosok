@@ -14,7 +14,9 @@ describe("редакционный каталог фотографий", () => {
     expect(photo.alt.trim().length).toBeGreaterThan(5);
     expect(photo.author?.trim().length).toBeGreaterThan(0);
     expect(photo.license.trim().length).toBeGreaterThan(0);
-    expect(new URL(photo.sourceUrl).hostname).toBe("commons.wikimedia.org");
+    const source = new URL(photo.sourceUrl);
+    expect(source.hostname === "commons.wikimedia.org" ||
+      (source.origin === "https://otgolosok.online" && source.pathname === photo.src)).toBe(true);
     expect(["https:", "http:"]).toContain(new URL(photo.licenseUrl).protocol);
     expect(photo.width).toBeGreaterThan(0);
     expect(photo.height).toBeGreaterThan(0);

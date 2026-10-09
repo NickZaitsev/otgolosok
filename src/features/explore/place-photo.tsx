@@ -48,6 +48,7 @@ export function PlacePhotoBanner({ photo: suppliedPhoto, placeId, pending = fals
   // The expanded story shows the photo whole, but a tall one no taller than 4:5: the text must stay in sight.
   const ratio = { "--photo-ratio": Math.max(photo.width / photo.height, TALLEST_RATIO) } as CSSProperties;
   const sameCaption = currentPhoto.alt.trim().replace(/\s+/gu, " ").toLocaleLowerCase("ru") === title.trim().replace(/\s+/gu, " ").toLocaleLowerCase("ru");
+  const illustrated = new URL(currentPhoto.sourceUrl).hostname === "otgolosok.online";
   const count = photos.length > 1 ? <span className={styles.count}>{t("Фото {current} из {total}", { current: bannerIndex + 1, total: photos.length })}</span> : null;
   const arrowsFor = (index: number, change: (step: number) => void) => photos.length > 1 ? <>
     <button type="button" className={`${styles.previewArrow} ${styles.previous}`} disabled={index === 0}
@@ -134,7 +135,7 @@ export function PlacePhotoBanner({ photo: suppliedPhoto, placeId, pending = fals
       {photos.length > 1 ? <span className={styles.count} role="status">{t("Фото {current} из {total}", { current: selected + 1, total: photos.length })}</span> : null}
       </div>
       {!sameCaption ? <p className={styles.caption} lang="ru">{currentPhoto.alt}</p> : null}
-      <p className={styles.credit}>{t("Фото:")} {currentPhoto.author ? `${currentPhoto.author}. ` : null}<a href={currentPhoto.sourceUrl} target="_blank" rel="noopener noreferrer">Wikimedia Commons</a> · <a href={currentPhoto.licenseUrl} target="_blank" rel="noopener noreferrer">{currentPhoto.license}</a></p>
+      <p className={styles.credit}>{t(illustrated ? "Иллюстрация:" : "Фото:")} {currentPhoto.author ? `${currentPhoto.author}. ` : null}<a href={currentPhoto.sourceUrl} target="_blank" rel="noopener noreferrer">{illustrated ? "Отголосок" : "Wikimedia Commons"}</a> · <a href={currentPhoto.licenseUrl} target="_blank" rel="noopener noreferrer">{currentPhoto.license}</a></p>
     </dialog>
   </>;
 }

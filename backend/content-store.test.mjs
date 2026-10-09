@@ -694,6 +694,19 @@ test("the editorial catalog is mirrored, wins over the sync and rejects malforme
   assert.equal(store.getPlaceImageRow("osm:node:1").source, "editorial");
 });
 
+test("first-party editorial illustrations require their own published image as source", t => {
+  const store = photoStore(t);
+  const src = "/images/places/node-1-bbbbbbbbbbbb.jpg";
+  const illustration = { ...editorialPhoto, src, sourceUrl: `https://otgolosok.online${src}`,
+    license: "Создано с помощью OpenAI", licenseUrl: "https://openai.com/policies/terms-of-use/" };
+  assert.deepEqual(store.syncEditorialPlaceImages({ "osm:node:1": illustration }), { editorial: 1, removed: 0 });
+  assert.equal(store.getPublishedPlace("osm:node:1").photo.sourceUrl, illustration.sourceUrl);
+  for (const sourceUrl of ["https://otgolosok.online/images/places/other.jpg", "http://otgolosok.online" + src,
+    `https://otgolosok.online${src}?x=1`, "https://other.example" + src])
+    assert.throws(() => store.syncEditorialPlaceImages({ "osm:node:1": { ...illustration, sourceUrl } }),
+      { code: "INVALID_EDITORIAL_CATALOG" }, sourceUrl);
+});
+
 test("due photos are published, non-editorial places, missing rows first", t => {
   const store = photoStore(t), ids = at => store.listDuePlaceImages({ now: at }).map(entry => entry.place.id);
   assert.deepEqual(ids("2026-10-01T00:00:00.000Z"), ["osm:node:1", "osm:way:2"]);

@@ -1,8 +1,8 @@
 {
-  "checkedAt": "2026-10-09T08:49:18.141Z",
+  "checkedAt": "2026-10-09T10:07:36.459Z",
   "complete": true,
   "audioDirectory": "backend/data/tekstilshchiki-volzhskaya-2026-10-08/audio",
-  "totalDurationSec": 923.2,
+  "totalDurationSec": 924.8800000000001,
   "items": [
     {
       "order": 1,
@@ -93,18 +93,18 @@
       "order": 6,
       "placeId": "osm:relation:7486952",
       "title": "Люблинский пруд",
-      "sourceTextSha256": "73635c9e1a5dafdce278bfd3c13b6a855016ec3a1986dc108148e048922e7529",
-      "spokenTextSha256": "6b266c1f692ad62610a1d60a6a995acf2e7bcadab43b9e155c24ef8f163aba33",
+      "sourceTextSha256": "091274829438d7aa99091c0b95b4309d646505e31e02c36a9a68c213aa949d73",
+      "spokenTextSha256": "62141506b88b1b6303911de29fe6f1592ccede7da035dd5f43870f6cd3de058f",
       "actualVoiceId": "JVYtLnrrrMG4dcGbtdAw",
-      "url": "/api/story-audio/5e882c81628dafe869232ac84588ac1be75b1ca72cb637c5d44d10bb0e070bdf.mp3",
-      "sha256": "5e882c81628dafe869232ac84588ac1be75b1ca72cb637c5d44d10bb0e070bdf",
-      "bytes": 565101,
-      "durationSec": 70.56,
+      "url": "/api/story-audio/f120ee44ec75244d6c26b3170847aaa0ba2e8606a3e5d3d3989c89a2f12425a2.mp3",
+      "sha256": "f120ee44ec75244d6c26b3170847aaa0ba2e8606a3e5d3d3989c89a2f12425a2",
+      "bytes": 578541,
+      "durationSec": 72.24,
       "model": "eleven_v4",
       "voice": "9ivxhQ6xIsHd6R3Xc635",
       "provider": "elevenlabs",
       "synthetic": true,
-      "measuredDurationSec": 70.56
+      "measuredDurationSec": 72.24
     },
     {
       "order": 7,
@@ -209,6 +209,6 @@
       "measuredDurationSec": 69.12
     }
   ],
-  "verifiedAt": "2026-10-09T08:50:11.928Z",
-  "measuredTotalDurationSec": 923.2
+  "verifiedAt": "2026-10-09T10:16:55.488Z",
+  "measuredTotalDurationSec": 924.8800000000001
 }

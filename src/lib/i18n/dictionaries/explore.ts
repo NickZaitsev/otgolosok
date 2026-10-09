@@ -118,6 +118,7 @@ export const exploreTranslations: Translations = {
   "Закрыть фото": ["Close photo", "关闭照片"],
   "Фотография не загрузилась. Проверьте подключение и попробуйте ещё раз.": ["The photo did not load. Check your connection and try again.", "照片加载失败。请检查网络后重试。"],
   "Фото:": ["Photo:", "照片："],
+  "Иллюстрация:": ["Illustration:", "插图："],
   "{title} — история в «Отголоске»": ["{title} — a story on Otgolosok", "{title} — Otgolosok 上的故事"],
   "Поделиться": ["Share", "分享"],
   "Ссылка скопирована.": ["Link copied.", "链接已复制。"],

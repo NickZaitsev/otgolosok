@@ -2,10 +2,10 @@
   "shareUrl": "https://otgolosok.online/walk?share=7cabbb84-06c4-445d-abf4-faf49a98aa5c",
   "stops": 12,
   "ready": 12,
-  "audioDurationSec": 923.2,
+  "audioDurationSec": 924.88,
   "distanceM": 5921,
   "walkingMinutes": 70,
-  "photos": 11,
+  "photos": 12,
   "rows": [
     {
       "placeId": "osm:relation:2234282",
@@ -59,8 +59,17 @@
       "placeId": "osm:node:3955434301",
       "words": 163,
       "durationSec": 75.84,
-      "photo": false,
-      "photoFiles": []
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/images/places/node-3955434301-8d935efdbc28.jpg",
+          "sha256": "8d935efdbc28ee4d0baf7f9f5acf5bd4e269fc10efc8b123f3b359f5d01e3b86"
+        },
+        {
+          "url": "/images/places/node-3955434301-48142337a8d6.jpg",
+          "sha256": "48142337a8d61f159dfd8fcf9611505da29b41b509dab46c12b357d6f47929b4"
+        }
+      ]
     },
     {
       "placeId": "osm:relation:7486979",
@@ -80,8 +89,8 @@
     },
     {
       "placeId": "osm:relation:7486952",
-      "words": 146,
-      "durationSec": 70.56,
+      "words": 149,
+      "durationSec": 72.24,
       "photo": true,
       "photoFiles": [
         {

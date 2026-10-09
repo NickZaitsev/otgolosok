@@ -129,8 +129,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 76.96
+        "synthetic": true
       }
     },
     {
@@ -251,8 +250,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 78.4
+        "synthetic": true
       }
     },
     {
@@ -379,8 +377,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 81.68
+        "synthetic": true
       }
     },
     {
@@ -493,8 +490,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 75.84
+        "synthetic": true
       }
     },
     {
@@ -644,8 +640,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 80.72
+        "synthetic": true
       }
     },
     {
@@ -655,7 +650,7 @@
         "address": "Люблинский пруд",
         "paragraphs": [
           {
-            "text": "Люблинский пруд устроен на речке Голяди, а дворец стоит на склоне заметно выше воды. Отсюда хорошо читается устройство усадьбы: архитектура, склон, открытая вода и дорожки работали вместе. Пруд играл важную роль в парковой композиции начала XIX века.",
+            "text": "Люблинский пруд устроен на Чурилихе, которую также называли Голедянкой, а дворец стоит на склоне заметно выше воды. Отсюда хорошо читается устройство усадьбы: архитектура, склон, открытая вода и дорожки работали вместе. Пруд играл важную роль в парковой композиции начала XIX века.",
             "factIds": [
               "f1-1",
               "f1-2"
@@ -675,7 +670,7 @@
             ]
           }
         ],
-        "wordCount": 146,
+        "wordCount": 149,
         "verification": "editorial",
         "effectiveProfile": "story-v1",
         "audioDisposition": "eligible",
@@ -687,6 +682,12 @@
             "publisher": "Правительство Москвы"
           },
           {
+            "id": "water",
+            "title": "Реконструкция реки Чурилихи: исторические названия и каскад прудов",
+            "url": "https://xn--b1aesfkbbawel.xn--p1ai/vodojomy-v-rabote/reka-churilikha/",
+            "publisher": "ГУП «Мосводосток»"
+          },
+          {
             "id": "concept",
             "title": "Постановление Москвы № 943-ПП и концепция усадьбы «Люблино»",
             "url": "https://www.garant.ru/products/ipo/prime/doc/288310/",
@@ -696,9 +697,10 @@
         "facts": [
           {
             "id": "f1-1",
-            "claim": "Пруд устроен на речке Голяди; дворец стоит на склоне значительно выше воды",
+            "claim": "Пруд устроен на Чурилихе, также известной как Голедянка; дворец стоит на склоне выше воды",
             "sourceIds": [
-              "estate"
+              "estate",
+              "water"
             ]
           },
           {
@@ -762,18 +764,17 @@
         "order": 6,
         "placeId": "osm:relation:7486952",
         "title": "Люблинский пруд",
-        "sourceTextSha256": "73635c9e1a5dafdce278bfd3c13b6a855016ec3a1986dc108148e048922e7529",
-        "spokenTextSha256": "6b266c1f692ad62610a1d60a6a995acf2e7bcadab43b9e155c24ef8f163aba33",
+        "sourceTextSha256": "091274829438d7aa99091c0b95b4309d646505e31e02c36a9a68c213aa949d73",
+        "spokenTextSha256": "62141506b88b1b6303911de29fe6f1592ccede7da035dd5f43870f6cd3de058f",
         "actualVoiceId": "JVYtLnrrrMG4dcGbtdAw",
-        "url": "/api/story-audio/5e882c81628dafe869232ac84588ac1be75b1ca72cb637c5d44d10bb0e070bdf.mp3",
-        "sha256": "5e882c81628dafe869232ac84588ac1be75b1ca72cb637c5d44d10bb0e070bdf",
-        "bytes": 565101,
-        "durationSec": 70.56,
+        "url": "/api/story-audio/f120ee44ec75244d6c26b3170847aaa0ba2e8606a3e5d3d3989c89a2f12425a2.mp3",
+        "sha256": "f120ee44ec75244d6c26b3170847aaa0ba2e8606a3e5d3d3989c89a2f12425a2",
+        "bytes": 578541,
+        "durationSec": 72.24,
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 70.56
+        "synthetic": true
       }
     },
     {
@@ -915,8 +916,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 72.32
+        "synthetic": true
       }
     },
     {
@@ -1055,8 +1055,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 86.16
+        "synthetic": true
       }
     },
     {
@@ -1190,8 +1189,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 66.08
+        "synthetic": true
       }
     },
     {
@@ -1354,8 +1352,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 93.36
+        "synthetic": true
       }
     },
     {
@@ -1516,8 +1513,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 72
+        "synthetic": true
       }
     },
     {
@@ -1666,8 +1662,7 @@
         "model": "eleven_v4",
         "voice": "9ivxhQ6xIsHd6R3Xc635",
         "provider": "elevenlabs",
-        "synthetic": true,
-        "measuredDurationSec": 69.12
+        "synthetic": true
       }
     }
   ]

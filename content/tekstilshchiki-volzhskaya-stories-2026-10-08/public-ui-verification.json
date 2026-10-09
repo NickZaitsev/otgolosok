@@ -12,7 +12,7 @@
       "order": 1,
       "title": "Культурный центр «Москвич»",
       "played": true,
-      "readyState": 3,
+      "readyState": 4,
       "duration": 76.96
     },
     {
@@ -33,7 +33,7 @@
       "order": 4,
       "title": "«Шурик и Лида»",
       "played": true,
-      "readyState": 4,
+      "readyState": 3,
       "duration": 75.84
     },
     {
@@ -47,14 +47,14 @@
       "order": 6,
       "title": "Люблинский пруд",
       "played": true,
-      "readyState": 4,
-      "duration": 70.56
+      "readyState": 3,
+      "duration": 72.24
     },
     {
       "order": 7,
       "title": "Дворец Николая Дурасова",
       "played": true,
-      "readyState": 4,
+      "readyState": 3,
       "duration": 72.32
     },
     {
@@ -68,7 +68,7 @@
       "order": 9,
       "title": "Жилой дом актёров",
       "played": true,
-      "readyState": 4,
+      "readyState": 3,
       "duration": 66.08
     },
     {
@@ -82,7 +82,7 @@
       "order": 11,
       "title": "Бывший пансион для дворянских детей",
       "played": true,
-      "readyState": 3,
+      "readyState": 4,
       "duration": 72
     },
     {

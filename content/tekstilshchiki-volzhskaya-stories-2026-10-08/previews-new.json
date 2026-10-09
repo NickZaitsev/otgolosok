@@ -48,6 +48,22 @@
     "modifications": "Снимок уменьшен и перекодирован в JPEG; превью обрезается при показе."
   },
   {
+    "order": 4,
+    "placeId": "osm:node:3955434301",
+    "thumbnail": "/images/places/node-3955434301-8d935efdbc28.jpg",
+    "src": "/images/places/node-3955434301-48142337a8d6.jpg",
+    "width": 960,
+    "height": 720,
+    "alt": "Иллюстрация к истории «Шурик и Лида»: два студента читают вместе",
+    "author": "Отголосок",
+    "sourceUrl": "https://otgolosok.online/images/places/node-3955434301-48142337a8d6.jpg",
+    "license": "Создано с помощью OpenAI",
+    "licenseUrl": "https://openai.com/policies/terms-of-use/",
+    "createdAt": "2026-10-09",
+    "type": "generated_illustration",
+    "modifications": "Оригинальная редакционная иллюстрация создана с помощью OpenAI; JPEG уменьшены для превью."
+  },
+  {
     "order": 6,
     "placeId": "osm:relation:7486952",
     "commonsFile": "File:Lyublinsky Pond.jpg",

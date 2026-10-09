@@ -3904,5 +3904,16 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "retrievedAt": "2026-10-09",
     "modifications": "Снимок уменьшен и перекодирован в JPEG; превью обрезается при показе."
+  },
+  "osm:node:3955434301": {
+    "thumbnail": "/images/places/node-3955434301-8d935efdbc28.jpg",
+    "src": "/images/places/node-3955434301-48142337a8d6.jpg",
+    "width": 960,
+    "height": 720,
+    "alt": "Иллюстрация к истории «Шурик и Лида»: два студента читают вместе",
+    "author": "Отголосок",
+    "sourceUrl": "https://otgolosok.online/images/places/node-3955434301-48142337a8d6.jpg",
+    "license": "Создано с помощью OpenAI",
+    "licenseUrl": "https://openai.com/policies/terms-of-use/"
   }
 }

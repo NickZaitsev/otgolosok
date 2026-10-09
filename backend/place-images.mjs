@@ -144,7 +144,9 @@ export function editorialPlaceImages(catalog) {
     if (!isPositiveInt(photo.width) || !isPositiveInt(photo.height)) throw bad("size");
     for (const field of ["alt", "author", "license"]) if (typeof photo[field] !== "string" || !photo[field].trim()) throw bad(field);
     const sourceUrl = httpUrl(photo.sourceUrl), licenseUrl = httpUrl(photo.licenseUrl);
-    if (!sourceUrl || new URL(sourceUrl).hostname !== "commons.wikimedia.org") throw bad("sourceUrl");
+    const source = sourceUrl && new URL(sourceUrl);
+    if (!source || (source.hostname !== "commons.wikimedia.org" &&
+      !(source.origin === "https://otgolosok.online" && source.pathname === photo.src && !source.search && !source.hash))) throw bad("sourceUrl");
     if (!licenseUrl) throw bad("licenseUrl");
     return { placeId, thumbnailUrl: photo.thumbnail, srcUrl: photo.src, width: photo.width, height: photo.height, alt: photo.alt.trim(),
       author: photo.author.trim(), license: photo.license.trim(), licenseUrl, sourceUrl };
