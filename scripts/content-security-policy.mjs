@@ -14,7 +14,7 @@ const directives = [
   ["style-src", "'self' 'unsafe-inline'"],
   // VersaTiles serves the vector basemap tiles and glyphs (fetched, so connect-src);
   // OSM raster tiles are the fallback when WebGL is unavailable.
-  ["img-src", `'self' data: blob: https://tile.openstreetmap.org https://img.pastvu.com ${analytics}`],
+  ["img-src", `'self' data: blob: https://tile.openstreetmap.org https://img.pastvu.com https://live.staticflickr.com ${analytics}`],
   ["frame-src", `'self' blob: https://www.youtube-nocookie.com ${analytics}`],
   ["child-src", `'self' blob: ${analytics}`],
   ["font-src", "'self'"],

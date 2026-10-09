@@ -19,14 +19,14 @@
       "order": 2,
       "title": "Спортивный центр «Москвич»",
       "played": true,
-      "readyState": 4,
+      "readyState": 3,
       "duration": 78.4
     },
     {
       "order": 3,
       "title": "Пруд Садки",
       "played": true,
-      "readyState": 4,
+      "readyState": 3,
       "duration": 81.68
     },
     {
@@ -40,42 +40,42 @@
       "order": 5,
       "title": "Парк имени Шкулёва",
       "played": true,
-      "readyState": 4,
+      "readyState": 3,
       "duration": 80.72
     },
     {
       "order": 6,
       "title": "Люблинский пруд",
       "played": true,
-      "readyState": 3,
+      "readyState": 4,
       "duration": 72.24
     },
     {
       "order": 7,
       "title": "Дворец Николая Дурасова",
       "played": true,
-      "readyState": 3,
+      "readyState": 4,
       "duration": 72.32
     },
     {
       "order": 8,
       "title": "Театральное здание",
       "played": true,
-      "readyState": 3,
+      "readyState": 4,
       "duration": 86.16
     },
     {
       "order": 9,
       "title": "Жилой дом актёров",
       "played": true,
-      "readyState": 3,
+      "readyState": 4,
       "duration": 66.08
     },
     {
       "order": 10,
       "title": "Театральная школа",
       "played": true,
-      "readyState": 3,
+      "readyState": 4,
       "duration": 93.36
     },
     {

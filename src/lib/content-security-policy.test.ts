@@ -44,6 +44,8 @@ describe("content security policy", () => {
     const directive = (name: string) => contentSecurityPolicy([]).split("; ").find(d => d.startsWith(`${name} `));
     expect(directive("connect-src")).toContain("connect-src 'self' https://tiles.versatiles.org ");
     expect(directive("img-src")).toContain("img-src 'self' data: blob: https://tile.openstreetmap.org ");
+    expect(directive("img-src")).toContain("https://live.staticflickr.com");
+    expect(directive("script-src")).not.toContain("flickr");
     expect(directive("worker-src")).toBe("worker-src 'self' blob:");
     expect(directive("script-src")).toContain("script-src 'self' https://mc.yandex.ru ");
   });

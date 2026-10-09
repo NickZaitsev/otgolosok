@@ -62,12 +62,12 @@
       "photo": true,
       "photoFiles": [
         {
-          "url": "/images/places/node-3955434301-8d935efdbc28.jpg",
-          "sha256": "8d935efdbc28ee4d0baf7f9f5acf5bd4e269fc10efc8b123f3b359f5d01e3b86"
+          "url": "https://live.staticflickr.com/65535/49953438251_37d4c7ba6f_q.jpg",
+          "sha256": "d7c92357e82eae2852c2e40a6b0368dd920743904361933b65ea05ee5feeef14"
         },
         {
-          "url": "/images/places/node-3955434301-48142337a8d6.jpg",
-          "sha256": "48142337a8d61f159dfd8fcf9611505da29b41b509dab46c12b357d6f47929b4"
+          "url": "https://live.staticflickr.com/65535/49953438251_37d4c7ba6f_b.jpg",
+          "sha256": "d3c7bec791a098133213f4853ec5148310cee1834a4ac777b9f2b3ec9e0a7cf8"
         }
       ]
     },

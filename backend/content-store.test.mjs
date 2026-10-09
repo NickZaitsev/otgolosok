@@ -707,6 +707,24 @@ test("first-party editorial illustrations require their own published image as s
       { code: "INVALID_EDITORIAL_CATALOG" }, sourceUrl);
 });
 
+test("Flickr editorial embeds require matching photo IDs and the original page", t => {
+  const store = photoStore(t);
+  const flickr = { ...editorialPhoto,
+    thumbnail: "https://live.staticflickr.com/65535/49953438251_37d4c7ba6f_q.jpg",
+    src: "https://live.staticflickr.com/65535/49953438251_37d4c7ba6f_b.jpg",
+    sourceUrl: "https://www.flickr.com/photos/absolutenull/49953438251/",
+    license: "Все права защищены; встраивание Flickr" };
+  assert.deepEqual(store.syncEditorialPlaceImages({ "osm:node:1": flickr }), { editorial: 1, removed: 0 });
+  assert.equal(store.getPublishedPlace("osm:node:1").photo.src, flickr.src);
+  for (const broken of [
+    { thumbnail: flickr.thumbnail.replace("49953438251", "49953438252") },
+    { src: flickr.src.replace("_b.jpg", "_q.jpg") },
+    { sourceUrl: flickr.sourceUrl.replace("49953438251", "49953438252") },
+    { thumbnail: flickr.thumbnail.replace("live.staticflickr.com", "other.example") },
+  ]) assert.throws(() => store.syncEditorialPlaceImages({ "osm:node:1": { ...flickr, ...broken } }),
+    { code: "INVALID_EDITORIAL_CATALOG" });
+});
+
 test("due photos are published, non-editorial places, missing rows first", t => {
   const store = photoStore(t), ids = at => store.listDuePlaceImages({ now: at }).map(entry => entry.place.id);
   assert.deepEqual(ids("2026-10-01T00:00:00.000Z"), ["osm:node:1", "osm:way:2"]);

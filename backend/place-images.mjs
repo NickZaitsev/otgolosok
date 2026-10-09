@@ -26,6 +26,8 @@ const BAD_TITLE = /[#<>[\]|{}\u0000-\u001f]/;
 const MEDIA_HOSTS = new Set(["upload.wikimedia.org", "thumb.wikimedia.org"]);
 const EDITORIAL_ID = /^osm:(?:node|way|relation):\d+$/;
 const EDITORIAL_PATH = /^\/images\/places\/[a-z0-9-]+\.jpg$/;
+const FLICKR_IMAGE = /^https:\/\/live\.staticflickr\.com\/\d+\/(\d+)_([a-f0-9]+)_(?:q|b)\.jpg$/;
+const FLICKR_PAGE = /^https:\/\/www\.flickr\.com\/photos\/[^/?#]+\/(\d+)\/?$/;
 const CHUNK = 50;
 
 const chunks = (items, size = CHUNK) => Array.from({ length: Math.ceil(items.length / size) }, (_, index) => items.slice(index * size, (index + 1) * size));
@@ -140,13 +142,20 @@ export function editorialPlaceImages(catalog) {
   return Object.entries(catalog).map(([placeId, photo]) => {
     const bad = field => fail("INVALID_EDITORIAL_CATALOG", `Editorial photo ${placeId}: invalid ${field}`);
     if (!EDITORIAL_ID.test(placeId)) throw bad("place id");
-    if (!EDITORIAL_PATH.test(photo?.thumbnail) || !EDITORIAL_PATH.test(photo?.src) || photo.thumbnail === photo.src) throw bad("file paths");
+    const local = EDITORIAL_PATH.test(photo?.thumbnail) && EDITORIAL_PATH.test(photo?.src);
+    const flickrThumb = typeof photo?.thumbnail === "string" && FLICKR_IMAGE.exec(photo.thumbnail);
+    const flickrFull = typeof photo?.src === "string" && FLICKR_IMAGE.exec(photo.src);
+    const flickr = flickrThumb && flickrFull && flickrThumb[1] === flickrFull[1] && flickrThumb[2] === flickrFull[2] &&
+      photo.thumbnail.endsWith("_q.jpg") && photo.src.endsWith("_b.jpg");
+    if ((!local && !flickr) || photo.thumbnail === photo.src) throw bad("file paths");
     if (!isPositiveInt(photo.width) || !isPositiveInt(photo.height)) throw bad("size");
     for (const field of ["alt", "author", "license"]) if (typeof photo[field] !== "string" || !photo[field].trim()) throw bad(field);
     const sourceUrl = httpUrl(photo.sourceUrl), licenseUrl = httpUrl(photo.licenseUrl);
     const source = sourceUrl && new URL(sourceUrl);
-    if (!source || (source.hostname !== "commons.wikimedia.org" &&
-      !(source.origin === "https://otgolosok.online" && source.pathname === photo.src && !source.search && !source.hash))) throw bad("sourceUrl");
+    const flickrPage = typeof photo.sourceUrl === "string" && FLICKR_PAGE.exec(photo.sourceUrl);
+    if (!source || (flickr ? (!flickrPage || flickrPage[1] !== flickrFull[1]) :
+      (source.hostname !== "commons.wikimedia.org" &&
+      !(source.origin === "https://otgolosok.online" && source.pathname === photo.src && !source.search && !source.hash)))) throw bad("sourceUrl");
     if (!licenseUrl) throw bad("licenseUrl");
     return { placeId, thumbnailUrl: photo.thumbnail, srcUrl: photo.src, width: photo.width, height: photo.height, alt: photo.alt.trim(),
       author: photo.author.trim(), license: photo.license.trim(), licenseUrl, sourceUrl };

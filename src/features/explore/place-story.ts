@@ -5,7 +5,7 @@ import { mapCellStore } from "./map-cells";
 import { openDataAttribution, type SourceAttribution, type StorySourceRef } from "./source-attribution";
 import { isLocale, type Locale } from "@/lib/i18n/locale";
 
-/** A place photo served from our own origin, with the author and license credit shown under the full image. */
+/** A place photo from our origin or an approved Flickr embed, with its author and source shown in the viewer. */
 export type PlacePhoto = {
   src: string;
   thumbnail: string;
@@ -44,6 +44,8 @@ function remember(key: string, story: PlaceStory) {
 }
 
 const PHOTO_PATH = /^(?:\/api\/place-images\/[a-f0-9]{64}|\/images\/places\/[a-z0-9-]+)\.jpg$/;
+const FLICKR_IMAGE = /^https:\/\/live\.staticflickr\.com\/\d+\/(\d+)_([a-f0-9]+)_(q|b)\.jpg$/;
+const FLICKR_PAGE = /^https:\/\/www\.flickr\.com\/photos\/[^/?#]+\/(\d+)\/?$/;
 const text = (value: unknown) => typeof value === "string" && value.trim() ? value.trim() : undefined;
 const webUrl = (value: unknown) => {
   if (typeof value !== "string") return undefined;
@@ -56,8 +58,14 @@ const size = (value: unknown) => Number.isSafeInteger(value) && (value as number
 export function parsePlacePhoto(value: unknown): PlacePhoto | undefined {
   if (!value || typeof value !== "object") return undefined;
   const photo = value as Record<string, unknown>;
-  const thumbnail = typeof photo.thumbnail === "string" && PHOTO_PATH.test(photo.thumbnail) ? photo.thumbnail : undefined;
-  const src = typeof photo.src === "string" && PHOTO_PATH.test(photo.src) ? photo.src : undefined;
+  const local = typeof photo.thumbnail === "string" && PHOTO_PATH.test(photo.thumbnail) && typeof photo.src === "string" && PHOTO_PATH.test(photo.src);
+  const flickrThumb = typeof photo.thumbnail === "string" && FLICKR_IMAGE.exec(photo.thumbnail);
+  const flickrFull = typeof photo.src === "string" && FLICKR_IMAGE.exec(photo.src);
+  const flickr = flickrThumb && flickrFull && flickrThumb[1] === flickrFull[1] && flickrThumb[2] === flickrFull[2] &&
+    flickrThumb[3] === "q" && flickrFull[3] === "b" && typeof photo.sourceUrl === "string" &&
+    FLICKR_PAGE.exec(photo.sourceUrl)?.[1] === flickrFull[1];
+  const thumbnail = local || flickr ? photo.thumbnail as string : undefined;
+  const src = local || flickr ? photo.src as string : undefined;
   const width = size(photo.width), height = size(photo.height), alt = text(photo.alt), license = text(photo.license);
   const sourceUrl = webUrl(photo.sourceUrl), licenseUrl = webUrl(photo.licenseUrl);
   if (photo.author !== null && typeof photo.author !== "string") return undefined;

@@ -174,6 +174,16 @@ it("reads the place photo, including an editorial copy and a photo without an au
   expect(storyWith(null)).toEqual({ paragraphs: ["Абзац."], actualLocale: "ru" });
 });
 
+it("reads a linked Flickr embed only when the source identifies the same photo", () => {
+  const flickr = { ...photo,
+    thumbnail: "https://live.staticflickr.com/65535/49953438251_37d4c7ba6f_q.jpg",
+    src: "https://live.staticflickr.com/65535/49953438251_37d4c7ba6f_b.jpg",
+    sourceUrl: "https://www.flickr.com/photos/absolutenull/49953438251/" };
+  expect(storyWith(flickr).photo).toEqual(flickr);
+  expect(storyWith({ ...flickr, sourceUrl: "https://www.flickr.com/photos/absolutenull/49953438252/" }).photo).toBeUndefined();
+  expect(storyWith({ ...flickr, src: flickr.src.replace("_b.jpg", "_q.jpg") }).photo).toBeUndefined();
+});
+
 it.each([
   ["a foreign host", { thumbnail: "https://upload.wikimedia.org/a.jpg" }],
   ["a path traversal", { src: `/api/place-images/../${"2".repeat(64)}.jpg` }],
