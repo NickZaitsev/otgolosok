@@ -94,6 +94,16 @@ export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP
         }
       }
       const stations = part => [...new Set(valid.flatMap(walk => walk[part] ? [walk[part].name] : []))].sort((a, b) => a.localeCompare(b, "ru"));
+      // Line colors for the filter options sit apart from the name lists, which older cached clients still read as strings.
+      const lines = new Map();
+      for (const walk of valid) for (const station of [walk.startMetro, walk.endMetro]) {
+        if (!station) continue;
+        const known = lines.get(station.name) ?? new Map();
+        for (const line of station.lines) known.set(line.id, line);
+        lines.set(station.name, known);
+      }
+      const stationLines = [...lines].sort(([a], [b]) => a.localeCompare(b, "ru"))
+        .map(([name, known]) => ({ name, lines: [...known.values()].sort((a, b) => Number(a.id) - Number(b.id)) }));
       const filtered = valid.map((walk, rank) => ({ ...walk, rank: rank + 1 }))
         .filter(walk => (!startMetro || walk.startMetro?.name === startMetro)
           && (!endMetro || walk.endMetro?.name === endMetro)
@@ -103,7 +113,7 @@ export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP
         kind: item.kind, id: item.id, title: item.title, ...meta, rating: ratingSummary(item), rank,
         preview: routePreview(geometry), mapPreview: routeMapPreview(geometry), startMetro: start, endMetro: end,
       })), total: filtered.length, nextOffset: offset + page.length < filtered.length ? offset + page.length : null,
-      filters: { starts: stations("startMetro"), ends: stations("endMetro") } };
+      filters: { starts: stations("startMetro"), ends: stations("endMetro"), stations: stationLines } };
     },
   };
 }

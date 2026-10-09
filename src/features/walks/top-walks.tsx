@@ -7,6 +7,7 @@ import { toUserMessage } from "@/lib/errors/user-message";
 import { formatRatingSummary } from "../reviews/model";
 import { loadJson } from "./walk-loader";
 import { formatTopWalkMeta, metroTextColor, topWalkHref, topWalksUrl, validateTopWalkPage, type MetroStation, type TopDuration, type TopFilters, type TopWalk, type TopWalkPage } from "./top-model";
+import { MetroSelect } from "./metro-select";
 import styles from "./top-walks.module.css";
 
 type Ready = TopWalkPage & { status: "ready"; more: "idle" | "loading" | "error"; moreError: string };
@@ -58,7 +59,7 @@ function MetroMark({ station }: { station: MetroStation | null }) {
 export function TopWalks({ filterable = false }: { filterable?: boolean }) {
   const { locale, path, t } = useI18n();
   const [filters, setFilters] = useState<TopFilters>(emptyFilters);
-  const [facets, setFacets] = useState<TopWalkPage["filters"]>({ starts: [], ends: [] });
+  const [facets, setFacets] = useState<TopWalkPage["filters"]>({ starts: [], ends: [], stations: [] });
   const [state, setState] = useState<State>({ status: "loading" });
   const [attempt, setAttempt] = useState(0);
   const sentinel = useRef<HTMLDivElement>(null);
@@ -111,9 +112,11 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
     setState({ status: "loading" }); setFilters(next);
   };
   const reset = () => changeFilters(emptyFilters);
+  const lines = new Map(facets.stations.map(station => [station.name, station.lines]));
+  const metroOptions = (names: string[]) => names.map(name => ({ name, lines: lines.get(name) ?? [] }));
   const controls = filterable ? <div className={styles.filters} role="group" aria-label={t("Фильтры прогулок")}>
-      <label className="ui-select-field">{t("Ближайшее метро к старту")}<select value={filters.start} onChange={event => changeFilters({ start: event.target.value })}><option value="">{t("Любая станция")}</option>{facets.starts.map(name => <option key={name} value={name}>{name}</option>)}</select></label>
-      <label className="ui-select-field">{t("Ближайшее метро к финишу")}<select value={filters.end} onChange={event => changeFilters({ end: event.target.value })}><option value="">{t("Любая станция")}</option>{facets.ends.map(name => <option key={name} value={name}>{name}</option>)}</select></label>
+      <MetroSelect label={t("Ближайшее метро к старту")} value={filters.start} options={metroOptions(facets.starts)} onChange={start => changeFilters({ start })} />
+      <MetroSelect label={t("Ближайшее метро к финишу")} value={filters.end} options={metroOptions(facets.ends)} onChange={end => changeFilters({ end })} />
       <label className="ui-select-field">{t("Продолжительность")}<select value={filters.duration} onChange={event => changeFilters({ duration: event.target.value as TopDuration })}>
         <option value="">{t("Любая продолжительность")}</option><option value="up-to-30">{t("До 30 минут")}</option><option value="31-to-60">{t("31–60 минут")}</option><option value="61-to-90">{t("61–90 минут")}</option>
       </select></label>

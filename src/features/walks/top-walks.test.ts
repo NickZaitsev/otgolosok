@@ -4,7 +4,7 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import metroData from "../../../backend/metro-stations.json";
-import { filterTopWalks, formatTopWalkMeta, metroTextColor, storyCountLabel, topWalksUrl, validateTopWalkPage, validateTopWalks } from "./top-model";
+import { filterTopWalks, formatTopWalkMeta, metroTextColor, searchMetroOptions, storyCountLabel, topWalksUrl, validateTopWalkPage, validateTopWalks } from "./top-model";
 import { TopWalks } from "./top-walks";
 
 const TOKEN = "22222222-2222-4222-8222-222222222222";
@@ -16,7 +16,10 @@ const shared = { kind: "shared", id: TOKEN, title: "Арбат", walkingMinutes:
   preview: [[8, 50], [92, 50]], mapPreview: null, startMetro: { name: "Арбатская", distanceM: 90, lines: [{ id: "3", name: "Арбатско-Покровская", color: "#0072ba" }] },
   endMetro: { name: "Смоленская", distanceM: 180, lines: [] } };
 const page = (walks: unknown[], nextOffset: number | null = null, total = walks.length) => ({ walks, nextOffset, total,
-  filters: { starts: ["Арбатская", "Павелецкая"], ends: ["Смоленская", "Тульская"] } });
+  filters: { starts: ["Арбатская", "Павелецкая"], ends: ["Смоленская", "Тульская"], stations: [
+    { name: "Арбатская", lines: [{ id: "3", name: "Арбатско-Покровская", color: "#0072ba" }] }, { name: "Павелецкая", lines },
+    { name: "Смоленская", lines: [] }, { name: "Тульская", lines: [{ id: "9", name: "Серпуховско-Тимирязевская", color: "#adacac" }] },
+  ] } });
 
 describe("модель топа", () => {
   it("принимает карту, линии метро и метаданные страницы", () => {
@@ -43,9 +46,36 @@ describe("модель топа", () => {
     ["тайл вне карты", page([{ ...catalog, mapPreview: { ...mapPreview, tiles: [{ ...mapPreview.tiles[0], x: -1 }] } }])],
     ["слишком много прогулок", page(Array.from({ length: 21 }, () => catalog))],
     ["непродвигающаяся страница", page([catalog], 0)],
-    ["неверный список станций", { ...page([catalog]), filters: { starts: [""], ends: [] } }],
+    ["неверный список станций", { ...page([catalog]), filters: { starts: [""], ends: [], stations: [] } }],
+    ["станция фильтра без названия", { ...page([catalog]), filters: { starts: [], ends: [], stations: [{ name: "", lines: [] }] } }],
+    ["небезопасный цвет линии в фильтре", { ...page([catalog]), filters: { starts: [], ends: [], stations: [{ name: "Тульская", lines: [{ ...lines[0], color: "url(x)" }] }] } }],
   ])("отклоняет: %s", (_name, value) => {
     expect(() => validateTopWalkPage(value)).toThrow(TypeError);
+  });
+
+  it("без линий от сервера берёт их из станций прогулок", () => {
+    const legacy = validateTopWalkPage({ ...page([catalog, shared]), filters: { starts: ["Павелецкая"], ends: ["Тульская"] } });
+    expect(legacy.filters.stations).toEqual([
+      { name: "Павелецкая", lines }, { name: "Тульская", lines }, { name: "Арбатская", lines: shared.startMetro.lines }, { name: "Смоленская", lines: [] },
+    ]);
+  });
+
+  const options = [
+    { name: "Белорусская", lines: [{ id: "2", name: "Замоскворецкая", color: "#4fb04f" }] },
+    { name: "Китай-город", lines: [{ id: "6", name: "Калужско-Рижская", color: "#f07e24" }] },
+    { name: "Новокузнецкая", lines: [] },
+    { name: "Кузнецкий Мост", lines: [] },
+    { name: "Щёлковская", lines: [] },
+  ];
+  it.each([
+    ["пустой запрос оставляет порядок", "  ", ["Белорусская", "Китай-город", "Новокузнецкая", "Кузнецкий Мост", "Щёлковская"]],
+    ["начало названия раньше середины", "кузн", ["Кузнецкий Мост", "Новокузнецкая"]],
+    ["второе слово через дефис", "город", ["Китай-город"]],
+    ["регистр и ё не важны", "ЩЕЛК", ["Щёлковская"]],
+    ["по названию линии", "замоскв", ["Белорусская"]],
+    ["нет совпадений", "xyz", []],
+  ])("поиск станции: %s", (_name, query, expected) => {
+    expect(searchMetroOptions(options, query).map(option => option.name)).toEqual(expected);
   });
 
   it("фильтрует границы длительности вместе с метро", () => {
@@ -141,8 +171,8 @@ describe("список топа", () => {
     });
     await render(true);
     const selects = [...container.querySelectorAll<HTMLSelectElement>("select")];
-    expect(selects).toHaveLength(3);
-    await act(async () => { selects[2].value = "up-to-30"; selects[2].dispatchEvent(new Event("change", { bubbles: true })); });
+    expect(selects).toHaveLength(1);
+    await act(async () => { selects[0].value = "up-to-30"; selects[0].dispatchEvent(new Event("change", { bubbles: true })); });
     expect(container.querySelectorAll("ol > li")).toHaveLength(1);
     expect(container.querySelector("ol > li span[class*=rank]")?.textContent).toBe("2");
     expect(container.querySelector("[role=status]")?.textContent).toBe("Найдено: 1");
@@ -186,7 +216,7 @@ describe("список топа", () => {
     await render(true);
     await act(async () => { container.querySelector<HTMLButtonElement>("button[class*=moreButton]")!.click(); });
     expect(resolveMore).toBeDefined();
-    const duration = container.querySelectorAll<HTMLSelectElement>("select")[2];
+    const duration = container.querySelectorAll<HTMLSelectElement>("select")[0];
     duration.focus();
     await act(async () => { duration.value = "up-to-30"; duration.dispatchEvent(new Event("change", { bubbles: true })); });
     expect(document.activeElement).toBe(duration);
@@ -196,6 +226,72 @@ describe("список топа", () => {
     expect(container.querySelectorAll("ol > li")).toHaveLength(1);
     expect(container.querySelector("ol > li")?.textContent).not.toContain("Кожевники");
     expect(container.querySelector("[role=alert]")).toBeNull();
+  });
+
+  const picker = (label: string) => {
+    const field = [...container.querySelectorAll("div")].find(div => div.firstElementChild?.textContent === label && div.querySelector("button[aria-haspopup=listbox]"))!;
+    return { field, trigger: field.querySelector<HTMLButtonElement>("button[aria-haspopup=listbox]")!, search: () => field.querySelector<HTMLInputElement>("input[role=combobox]") };
+  };
+  const key = (target: Element, name: string) => act(async () => { target.dispatchEvent(new KeyboardEvent("keydown", { key: name, bubbles: true })); });
+  const type = (input: HTMLInputElement, text: string) => act(async () => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, text);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+
+  it("станцию находят поиском с клавиатуры и видят цвета её линий", async () => {
+    fetcher.mockResolvedValue(ok(page([catalog, shared])));
+    await render(true);
+    const start = picker("Ближайшее метро к старту");
+    expect(start.trigger.getAttribute("aria-expanded")).toBe("false");
+    expect(start.trigger.textContent).toBe("Любая станция");
+    await act(async () => { start.trigger.click(); });
+    const search = start.search()!;
+    expect(document.activeElement).toBe(search);
+    const options = () => [...start.field.querySelectorAll("[role=option]")];
+    expect(options().map(option => option.textContent)).toEqual(["Любая станция", "АрбатскаяАрбатско-Покровская", "ПавелецкаяЗамоскворецкая"]);
+    expect(options()[0].getAttribute("aria-selected")).toBe("true");
+    expect(options()[2].querySelector("[title=Замоскворецкая]")?.getAttribute("style")).toContain("background-color: rgb(79, 176, 79)");
+    await type(search, "пав");
+    expect(options().map(option => option.getAttribute("id"))).toEqual([search.getAttribute("aria-activedescendant")]);
+    await key(search, "Enter");
+    expect(fetcher.mock.calls.at(-1)?.[0]).toBe(`/api/top-walks?start=${encodeURIComponent("Павелецкая")}`);
+    expect(start.search()).toBeNull();
+    expect(document.activeElement).toBe(start.trigger);
+    expect(start.trigger.textContent).toBe("Павелецкая");
+    expect(start.trigger.querySelector("[title=Замоскворецкая]")).not.toBeNull();
+  });
+
+  it("буква на закрытом поле начинает поиск, Escape закрывает без выбора, пустой поиск сообщает об этом", async () => {
+    fetcher.mockResolvedValue(ok(page([catalog, shared])));
+    await render(true);
+    const end = picker("Ближайшее метро к финишу");
+    await key(end.trigger, "т");
+    expect(end.search()?.value).toBe("т");
+    expect([...end.field.querySelectorAll("[role=option]")].map(option => option.textContent)).toEqual(["ТульскаяСерпуховско-Тимирязевская"]);
+    await type(end.search()!, "метро без названия");
+    expect(end.field.querySelector("[role=status]")?.textContent).toBe("Станция не найдена");
+    await key(end.search()!, "Escape");
+    expect(end.search()).toBeNull();
+    expect(document.activeElement).toBe(end.trigger);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it("стрелками доходят до «Любая станция» и снимают фильтр; щелчок вне списка закрывает его", async () => {
+    fetcher.mockResolvedValue(ok(page([catalog, shared])));
+    await render(true);
+    const start = picker("Ближайшее метро к старту");
+    await act(async () => { start.trigger.click(); });
+    await key(start.search()!, "ArrowDown");
+    await key(start.search()!, "Enter");
+    expect(fetcher.mock.calls.at(-1)?.[0]).toBe(`/api/top-walks?start=${encodeURIComponent("Арбатская")}`);
+    await act(async () => { start.trigger.click(); });
+    expect(start.field.querySelector("[aria-selected=true]")?.textContent).toContain("Арбатская");
+    await key(start.search()!, "ArrowUp");
+    await key(start.search()!, "Enter");
+    expect(fetcher.mock.calls.at(-1)?.[0]).toBe("/api/top-walks");
+    await act(async () => { start.trigger.click(); });
+    await act(async () => { document.body.dispatchEvent(new Event("pointerdown", { bubbles: true })); });
+    expect(start.search()).toBeNull();
   });
 
   it("пустой топ зовёт открыть свою прогулку", async () => {

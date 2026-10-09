@@ -118,7 +118,9 @@ test("the top lists approved public walks only, without private data; the catalo
   const { walks, total, nextOffset, filters } = response.data;
   assert.equal(total, 1);
   assert.equal(nextOffset, null);
-  assert.deepEqual(filters, { starts: ["Арбатская"], ends: ["Арбатская"] });
+  assert.deepEqual(filters, { starts: ["Арбатская"], ends: ["Арбатская"], stations: [{ name: "Арбатская", lines: [
+    { id: "3", name: "Арбатско-Покровская", color: "#0072ba" }, { id: "4", name: "Филевская", color: "#1ebcef" },
+  ] }] }, "filter options keep plain names and add every line of the station");
   assert.deepEqual(walks.map((/** @type {any} */ item) => [item.kind, item.id]), [["shared", approved.shareToken]]);
   const item = walks.find((/** @type {any} */ entry) => entry.kind === "shared");
   assert.deepEqual({ kind: item.kind, id: item.id, title: item.title, walkingMinutes: item.walkingMinutes, distanceM: item.distanceM,

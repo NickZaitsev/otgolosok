@@ -4,6 +4,8 @@ import { translate } from "@/lib/i18n/translate";
 
 export type MetroLine = { id: string; name: string; color: string };
 export type MetroStation = { name: string; distanceM: number; lines: MetroLine[] };
+/** A metro filter option: station name with every line it serves. */
+export type MetroOption = { name: string; lines: MetroLine[] };
 export type MapPreview = {
   zoom: number;
   tiles: Array<{ x: number; y: number; left: number; top: number }>;
@@ -39,7 +41,7 @@ export type TopWalkPage = {
   walks: TopWalk[];
   total: number;
   nextOffset: number | null;
-  filters: { starts: string[]; ends: string[] };
+  filters: { starts: string[]; ends: string[]; stations: MetroOption[] };
 };
 
 export const record = (value: unknown): Record<string, unknown> => {
@@ -91,20 +93,24 @@ function mapPreview(value: unknown): MapPreview | null {
   return { zoom, tiles, points: points(map.points, 256) };
 }
 
-function metro(value: unknown): MetroStation | null {
-  if (value === undefined || value === null) return null;
-  const station = record(value);
-  if (typeof station.name !== "string" || !station.name.trim() || station.name.length > 100 || !Number.isSafeInteger(station.distanceM)
-    || (station.distanceM as number) < 0 || (station.distanceM as number) > 1500) throw new TypeError("Неверная станция метро.");
-  const rawLines = station.lines ?? [];
-  if (!Array.isArray(rawLines) || rawLines.length > 8) throw new TypeError("Неверные линии метро.");
-  const lines = rawLines.map(raw => {
+const stationName = (value: unknown) => typeof value === "string" && Boolean(value.trim()) && value.length <= 100;
+
+function metroLines(value: unknown = []): MetroLine[] {
+  if (!Array.isArray(value) || value.length > 8) throw new TypeError("Неверные линии метро.");
+  return value.map(raw => {
     const line = record(raw);
     if (typeof line.id !== "string" || !/^\d{1,3}$/.test(line.id) || typeof line.name !== "string" || !line.name.trim()
       || line.name.length > 100 || typeof line.color !== "string" || !/^#[0-9a-fA-F]{6}$/.test(line.color)) throw new TypeError("Неверная линия метро.");
     return { id: line.id, name: line.name, color: line.color };
   });
-  return { name: station.name, distanceM: station.distanceM as number, lines };
+}
+
+function metro(value: unknown): MetroStation | null {
+  if (value === undefined || value === null) return null;
+  const station = record(value);
+  if (!stationName(station.name) || !Number.isSafeInteger(station.distanceM)
+    || (station.distanceM as number) < 0 || (station.distanceM as number) > 1500) throw new TypeError("Неверная станция метро.");
+  return { name: station.name as string, distanceM: station.distanceM as number, lines: metroLines(station.lines) };
 }
 
 function validateTopWalk(raw: unknown, index: number): TopWalk {
@@ -126,9 +132,22 @@ export function validateTopWalks(value: unknown): TopWalk[] {
 }
 
 function stationOptions(value: unknown): string[] {
-  if (!Array.isArray(value) || value.length > 1000 || value.some(name => typeof name !== "string" || !name.trim() || name.length > 100))
-    throw new TypeError("Неверный список станций.");
+  if (!Array.isArray(value) || value.length > 1000 || !value.every(stationName)) throw new TypeError("Неверный список станций.");
   return value as string[];
+}
+
+/** Line colors of the filter options; a server without them yields bare names. */
+function stationLines(value: unknown, walks: TopWalk[]): MetroOption[] {
+  if (value === undefined) {
+    const known = new Map(walks.flatMap(walk => [walk.startMetro, walk.endMetro]).flatMap(station => station ? [[station.name, station.lines] as const] : []));
+    return [...known].map(([name, lines]) => ({ name, lines }));
+  }
+  if (!Array.isArray(value) || value.length > 2000) throw new TypeError("Неверный список станций.");
+  return value.map(raw => {
+    const station = record(raw);
+    if (!stationName(station.name)) throw new TypeError("Неверный список станций.");
+    return { name: station.name as string, lines: metroLines(station.lines) };
+  });
 }
 
 export function validateTopWalkPage(value: unknown): TopWalkPage {
@@ -140,7 +159,7 @@ export function validateTopWalkPage(value: unknown): TopWalkPage {
   const filters = page.filters === undefined ? { starts: [...new Set(walks.flatMap(walk => walk.startMetro ? [walk.startMetro.name] : []))],
     ends: [...new Set(walks.flatMap(walk => walk.endMetro ? [walk.endMetro.name] : []))] } : record(page.filters);
   return { walks, total: total as number, nextOffset: nextOffset as number | null,
-    filters: { starts: stationOptions(filters.starts), ends: stationOptions(filters.ends) } };
+    filters: { starts: stationOptions(filters.starts), ends: stationOptions(filters.ends), stations: stationLines(filters.stations, walks) } };
 }
 
 export function topWalkHref(walk: Pick<TopWalk, "kind" | "id">) {
@@ -178,4 +197,19 @@ export function formatTopWalkMeta(walk: Pick<TopWalk, "walkingMinutes" | "distan
   return translate(locale, "{minutes} мин · {distance} км · {stories}", {
     minutes: Math.round(walk.walkingMinutes), distance: km, stories: storyCountLabel(walk.stopCount, locale),
   });
+}
+
+const searchKey = (text: string) => text.toLocaleLowerCase("ru").replaceAll("ё", "е").replace(/\s+/g, " ").trim();
+
+/** Stations whose name or line matches the query, ignoring case and ё; name prefixes come first. */
+export function searchMetroOptions(options: MetroOption[], query: string): MetroOption[] {
+  const key = searchKey(query);
+  if (!key) return options;
+  const scored = options.flatMap(option => {
+    const name = searchKey(option.name);
+    const score = name.startsWith(key) ? 0 : name.split(/[\s-]/).some(word => word.startsWith(key)) ? 1 : name.includes(key) ? 2
+      : option.lines.some(line => searchKey(line.name).includes(key)) ? 3 : -1;
+    return score < 0 ? [] : [{ option, score }];
+  });
+  return scored.sort((a, b) => a.score - b.score).map(item => item.option);
 }
