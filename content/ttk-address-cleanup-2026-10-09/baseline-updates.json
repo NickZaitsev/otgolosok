@@ -1,0 +1,1586 @@
+[
+  {
+    "placeId": "osm:node:10572977039",
+    "name": "Мемориальный музей-квартира Тимирязева Климента Аркадьевича",
+    "initialTextId": "f7be0fce-a8e6-4c80-9c88-82dc1f697ce0",
+    "initialSourceTextSha256": "079495dbda2aca0d13a4ee08f3463097332c75c50d416934c792661875bfdefa",
+    "currentTextId": "ffc78fc3-e52d-4a31-a797-1f7c28e4e6e9",
+    "currentSourceTextSha256": "48b410a5d815e3f988cd34182e8cfb5585bd723a174a8a7e889da31206633868",
+    "initialAudioSha256": "52399d649f09c28e811af2fc7fb40b69e4416a8a605192c7ab9115cd079dd28d",
+    "currentAudio": {
+      "url": "/api/story-audio/7aa57769ae9f29d4392021daa435179edbedbab04b846d11dc68c54bbde06c4d.mp3",
+      "sha256": "7aa57769ae9f29d4392021daa435179edbedbab04b846d11dc68c54bbde06c4d",
+      "bytes": 954861,
+      "durationSec": 119.328,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Вручную перечитаны все абзацы текущей параллельной одобренной редакции: справочных адресов нет, исторические топонимы содержательны, минимум 100 слов достигнут. Текущие факты и источники сохранены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:node:13352615294",
+    "name": "Доходный дом и аптека В.К. Феррейна",
+    "initialTextId": "bc49cf58-8d7d-48e2-b8ab-d72cac907e73",
+    "initialSourceTextSha256": "d1c253da4537a789157b6b5d79104b32efb300f2810924135866f20765871d6a",
+    "currentTextId": "4f5a97c0-ea13-4732-a7fd-ef066a3a47ef",
+    "currentSourceTextSha256": "ce01d1bc87f47c42e3ff78d53661e577df9810ff06b0c0ba5aabf94fe8e3cd3d",
+    "initialAudioSha256": "6e238e8f8be7ec407905a61eb10c17a5184cafa9493e11bc6c82fedc133c1419",
+    "currentAudio": {
+      "url": "/api/story-audio/8650d9ef774fd9aa59d0873887fef0f4e9b12db9891487a3a842266dc6c4a65e.mp3",
+      "sha256": "8650d9ef774fd9aa59d0873887fef0f4e9b12db9891487a3a842266dc6c4a65e",
+      "bytes": 707181,
+      "durationSec": 88.368,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:node:2322476565",
+    "name": "В. А. Тропинину",
+    "initialTextId": "fb2b0038-4ec4-467e-b29b-12d8b1bdb486",
+    "initialSourceTextSha256": "99785a4a810cd85e5fbcb7ced96513b2e928300d3d418788fa5b9b7c7127d9e8",
+    "currentTextId": "f7296dd5-5d00-48e8-ad10-d736981f9bb4",
+    "currentSourceTextSha256": "b166b48ad8dcd4e55e4f49433d89dafbaebfe600733f1c4610447801dff485ea",
+    "initialAudioSha256": "4a3c87df552827a25f7a150a1962f15248e95a8ebb6e8d69b35bc8a38f9f16a8",
+    "currentAudio": {
+      "url": "/api/story-audio/91e15061c7d041bac5b38f98f617c0aec88a926b3020da12d2d583cd16877655.mp3",
+      "sha256": "91e15061c7d041bac5b38f98f617c0aec88a926b3020da12d2d583cd16877655",
+      "bytes": 1001709,
+      "durationSec": 125.184,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:node:273354762",
+    "name": "Галерея искусства стран Европы и Америки XIX—XX веков",
+    "initialTextId": "8d6ca0d0-12c6-4fec-a07e-4f42bc410d47",
+    "initialSourceTextSha256": "e3baf5290880eab63eaf209abeacccaf6b3df56a226a442f9a5b6ec09b5a3795",
+    "currentTextId": "da64471d-1cbd-49ec-8081-9b199383e4e8",
+    "currentSourceTextSha256": "c8aaebba6ee399f00b85b45c56e79e265e41793bde3a07066dd65f4908db98f6",
+    "initialAudioSha256": "26d68c8e74ffac245ae625b5d757adc5282747afd5985bd8addc0b66482ac659",
+    "currentAudio": {
+      "url": "/api/story-audio/7554d395851f704696d0e8270c320d2133e5127a8fb8092d4b67d2aa232557c3.mp3",
+      "sha256": "7554d395851f704696d0e8270c320d2133e5127a8fb8092d4b67d2aa232557c3",
+      "bytes": 1017069,
+      "durationSec": 127.104,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:node:4088301220",
+    "name": "Мемориальная квартира-музей Е. Б. Вахтангова",
+    "initialTextId": "1ee7befd-8cbc-4495-ae63-4c4060d86f64",
+    "initialSourceTextSha256": "825fe4e083e0bcf1c9b08076879c570c2e9cafc84e958a23b8b9d391eac7e216",
+    "currentTextId": "e7180b06-fa46-4ec7-befa-ee1253b9e330",
+    "currentSourceTextSha256": "f5824db89c9e612389b1a9fbd376bdbaa1dfd68c0744ff15463bc3abfae33661",
+    "initialAudioSha256": "3a00fab49f2b1cad72f7c4fa0c3abc737850293296e45822651e6bfe630b45be",
+    "currentAudio": {
+      "url": "/api/story-audio/9f1064c80764b832069d4396700bdbce49c7c6164e43335c16562c4e3b4b6203.mp3",
+      "sha256": "9f1064c80764b832069d4396700bdbce49c7c6164e43335c16562c4e3b4b6203",
+      "bytes": 817965,
+      "durationSec": 102.216,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:node:916076835",
+    "name": "Ивану Фёдорову",
+    "initialTextId": "98bc3217-b94f-47e9-a206-824c0d910e0f",
+    "initialSourceTextSha256": "e4ccb6ca8f7d8616a2f68d0cdcc3fd54c231fdf9ea4847ad2f59d6b850aaf9e4",
+    "currentTextId": "291ed95a-ab66-4172-9ddc-db8e3f2ed524",
+    "currentSourceTextSha256": "6bef7608177ee2d695f32150daf020a197939f3c12b932f85fb1783db2134ee2",
+    "initialAudioSha256": "3dc3b066ff79159b54963fde55692b082e2ad58996fbf79c545b9ab62921a078",
+    "currentAudio": {
+      "url": "/api/story-audio/31247ec388a8cc5e591f99cd4aa599a29b6f2b156cf962d5a04229a01aaceedb.mp3",
+      "sha256": "31247ec388a8cc5e591f99cd4aa599a29b6f2b156cf962d5a04229a01aaceedb",
+      "bytes": 750765,
+      "durationSec": 93.816,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:10048315",
+    "name": "Галерея Ильи Глазунова",
+    "initialTextId": "2b37b514-4646-486f-bfc6-1cf33c19f638",
+    "initialSourceTextSha256": "8f0a8927f0f153316c51f78b55eb66bd7ffd57db4096a5e639182baa6325dc6f",
+    "currentTextId": "b57193c7-136d-4219-b557-ad3f013a185d",
+    "currentSourceTextSha256": "822f95c33c97c644c3462fd6244d474299c46a7d08e063e29e8d4d2be968675d",
+    "initialAudioSha256": "65f1932a09e43537f9b085ac07796bdf413450c4abfb7829302e8d2fb3a7c838",
+    "currentAudio": {
+      "url": "/api/story-audio/98e46f6bb5fcb9ff3a3803556d501bcfce0f66df3304908d2cfca6fd723dd4bb.mp3",
+      "sha256": "98e46f6bb5fcb9ff3a3803556d501bcfce0f66df3304908d2cfca6fd723dd4bb",
+      "bytes": 990765,
+      "durationSec": 123.816,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:15344965",
+    "name": "Храм мученицы Татианы при МГУ",
+    "initialTextId": "797cc2cc-7914-4ee3-b0be-c9b82f79fd7b",
+    "initialSourceTextSha256": "90e33b594504c22c28d7a38bb2514d69523c37c9ed4c6075d9bf571348da82fc",
+    "currentTextId": "489d258e-7dc7-4067-a708-8edeaa77f6f7",
+    "currentSourceTextSha256": "7f773aa2f9de2adc1d456a75d9994f54a9ac9a2c76fac241f7cb354d63dffd6f",
+    "initialAudioSha256": "3f4aa9f1f534d9db2de9a883c1a513926d04cd952a617ad425cafac0eb663181",
+    "currentAudio": {
+      "url": "/api/story-audio/78cc9f89a1ff260012830dc8b63727b3ac4a8010dc4e258e2e0de023c70bf0ba.mp3",
+      "sha256": "78cc9f89a1ff260012830dc8b63727b3ac4a8010dc4e258e2e0de023c70bf0ba",
+      "bytes": 1029165,
+      "durationSec": 128.616,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Вручную перечитаны все абзацы текущей параллельной одобренной редакции: справочных адресов нет, исторические топонимы содержательны, минимум 100 слов достигнут. Текущие факты и источники сохранены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:19075670",
+    "name": "Старый Английский Двор",
+    "initialTextId": "57ebec52-7d88-4c6d-a9e1-e93ce3e09d28",
+    "initialSourceTextSha256": "ec705dc771b2695816fe37396fe4111e18e525f1f1ace9cf758e71cfb35169ac",
+    "currentTextId": "bceff75b-a85f-457e-b5a2-41ec96445cf7",
+    "currentSourceTextSha256": "9efc13ed356afe876ebf56164379cb3aa9f66b3b070130d821b9d1209e2cccd8",
+    "initialAudioSha256": "bff45e1b98b5805c500e7ae5ecbdcdce1e6c5c7ef609a854cefffd3c1719e8b0",
+    "currentAudio": {
+      "url": "/api/story-audio/0da682f569ee5896031cf8534fef615c9c1ad28e76491020988c739f0de89042.mp3",
+      "sha256": "0da682f569ee5896031cf8534fef615c9c1ad28e76491020988c739f0de89042",
+      "bytes": 735405,
+      "durationSec": 91.896,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:19077852",
+    "name": "Палаты бояр Романовых",
+    "initialTextId": "00e84d54-883d-4144-8855-b72aed3fea25",
+    "initialSourceTextSha256": "b06fb2eaee7f82b3132cd36879f1209f3d2dce62cbec1b5abd127ad8912ccf8d",
+    "currentTextId": "8f22dc26-1078-431b-9e91-3f4c5793e888",
+    "currentSourceTextSha256": "5fdd5582a58c5dde2b00665e55d3d547e382b630dd93b4de4fe09438d5da1fc3",
+    "initialAudioSha256": "6f1c799b605e6b48193859f570f076ec97acc35d192e81a959f2d298abe72da5",
+    "currentAudio": {
+      "url": "/api/story-audio/327ffa69d94382ddbd923d9f1c4500814fec27453b5b4108cd6730dff7797907.mp3",
+      "sha256": "327ffa69d94382ddbd923d9f1c4500814fec27453b5b4108cd6730dff7797907",
+      "bytes": 735405,
+      "durationSec": 91.896,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:19079948",
+    "name": "Храм Варвары Великомученицы на Варварке",
+    "initialTextId": "176bc271-e0f6-4a76-bb7e-c5d13b343f18",
+    "initialSourceTextSha256": "fb5ebd57794775a3a0f3e28cd887b54190c031a6e27fce2cb2bd36b2f308c725",
+    "currentTextId": "359d0345-e4bb-41f6-8f9b-b30e8057501c",
+    "currentSourceTextSha256": "24dec9210e65be453b3c91bb009c7803fa5b232069163c978fb375b15c57536e",
+    "initialAudioSha256": "a3178d1590c71b4f17f717af4718f2d3de8faef5fdb468c37d5e93e7e7b37b0c",
+    "currentAudio": {
+      "url": "/api/story-audio/a703933205f0ffc0f0a57e12c004167a0af24b952b276596f56f9b31076f7c2e.mp3",
+      "sha256": "a703933205f0ffc0f0a57e12c004167a0af24b952b276596f56f9b31076f7c2e",
+      "bytes": 727149,
+      "durationSec": 90.864,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:19083613",
+    "name": "Храм Максима Блаженного на Варварке",
+    "initialTextId": "38ad40eb-0f85-406d-ad2b-5fb90df15133",
+    "initialSourceTextSha256": "20d648fc18e0f53c59bd8cb4556540642f89ffaca3682ccb0de9b738b2c71e20",
+    "currentTextId": "15cc5a7b-e4e7-4106-9c6d-380138768f57",
+    "currentSourceTextSha256": "9baa3f22504bdd2d733a66eb96110d81942a6c73c84f51cb442e3809d8944a5b",
+    "initialAudioSha256": "d2f86d57672e43baedaeafb059e6b063a7406bb245e65a726ddd3273d6c53ba0",
+    "currentAudio": {
+      "url": "/api/story-audio/95b03220809347eb5b8d7869192403bf26d43cae71f3b01ca5f6c094c6e04843.mp3",
+      "sha256": "95b03220809347eb5b8d7869192403bf26d43cae71f3b01ca5f6c094c6e04843",
+      "bytes": 750765,
+      "durationSec": 93.816,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:2424377",
+    "name": "Храм Священномученика Антипы на Колымажном дворе",
+    "initialTextId": "32027de5-afde-4d84-a9ee-6ede90006aa6",
+    "initialSourceTextSha256": "58e4c713596c8e4d6a5273a5a560eff1409a603bf8d28cc1087909fc7340bf62",
+    "currentTextId": "9d110727-c8c6-4aa7-9f66-f03d5b462f80",
+    "currentSourceTextSha256": "cc5943d35ec56f5cd17ce6d1a0ec39793460eb3a4fdbdbd6825564d26302d6df",
+    "initialAudioSha256": "a65882eb79f18f616ee356c0857079dd0c6dda45b9bf5063d4afa400198a3fc7",
+    "currentAudio": {
+      "url": "/api/story-audio/20830c136c1cd354b552c6758fde8332b1882730e8dbb4dcbcfa6fed9c28ca37.mp3",
+      "sha256": "20830c136c1cd354b552c6758fde8332b1882730e8dbb4dcbcfa6fed9c28ca37",
+      "bytes": 1008621,
+      "durationSec": 126.048,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:5371125",
+    "name": "Особняк Арсения Морозова",
+    "initialTextId": "7e55c3bc-78d9-4947-b41f-879fdec37e29",
+    "initialSourceTextSha256": "14e84246a4449f27f8af2a9e241fc6f1a01cf083981a90ad4af80308cd69c56f",
+    "currentTextId": "ff9fc2a4-efc0-403f-9335-b3e6d9e4d7e3",
+    "currentSourceTextSha256": "0d9b692634112bd2f35ec06434c83af17832e91df1de8f868267dc99cdf68e57",
+    "initialAudioSha256": "0a1a6c577e50548bb45740957c78d3ca94781cf3e01c69791a7789f42a302660",
+    "currentAudio": {
+      "url": "/api/story-audio/516c470f35aad9c2061f1d7f6f25f81ba971703c1920fe3b1a71ca3116f38b6b.mp3",
+      "sha256": "516c470f35aad9c2061f1d7f6f25f81ba971703c1920fe3b1a71ca3116f38b6b",
+      "bytes": 919725,
+      "durationSec": 114.936,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Вручную перечитаны все абзацы текущей параллельной одобренной редакции: справочных адресов нет, исторические топонимы содержательны, минимум 100 слов достигнут. Текущие факты и источники сохранены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:5969167",
+    "name": "Дом Пашкова",
+    "initialTextId": "f64021d1-80d8-4dc4-adff-1c368b087b3b",
+    "initialSourceTextSha256": "704ae01477f8e4cdf6eb0ab425142aa233d61aa1d3fd27e2af71aab656ecf7d5",
+    "currentTextId": "7ca780be-9b0b-4274-8a14-b6ed3fafba72",
+    "currentSourceTextSha256": "2e23cc3ca1f65a781df3209e01212481d7d276ed0a216a1ab784f812e71c5a53",
+    "initialAudioSha256": "44dc55816ee92545e8eb38846c35e0fde1ca06de8c4032b4c1fe700314020dda",
+    "currentAudio": {
+      "url": "/api/story-audio/a1d6f9d8a9d4ad07b5fcf969c5701096848284eca3178887ed69e8167ee2ea78.mp3",
+      "sha256": "a1d6f9d8a9d4ad07b5fcf969c5701096848284eca3178887ed69e8167ee2ea78",
+      "bytes": 975981,
+      "durationSec": 121.968,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:85761",
+    "name": "Метрополь",
+    "initialTextId": "d0936b86-29c9-4574-8a7b-fb8fdb27cbbe",
+    "initialSourceTextSha256": "ab2baf034a90b13bbe127b7a07c287a633505fb2d6954a2378dc5c28e25c6ae2",
+    "currentTextId": "c9649e66-3e13-4fdc-96b9-2fa1d35ff990",
+    "currentSourceTextSha256": "c399aa9fe95af824c43162cd06d444c93289bd15eb04f0567047b98532909e95",
+    "initialAudioSha256": "0273e97b52f653336274a165ecfde6f56555c179c80f97c0dc9807c1c3d332c4",
+    "currentAudio": {
+      "url": "/api/story-audio/fe0c85fb7765247b9f89e1b65715cf2b4e142dfdda8ab707e28286ea0b758654.mp3",
+      "sha256": "fe0c85fb7765247b9f89e1b65715cf2b4e142dfdda8ab707e28286ea0b758654",
+      "bytes": 716205,
+      "durationSec": 89.496,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:relation:9303001",
+    "name": "Историко-архивный институт РГГУ",
+    "initialTextId": "ab9cf0db-28fc-4397-8cc5-08e28457b0f7",
+    "initialSourceTextSha256": "11891b38bf4e4093f6a00565fffda810ccb9fd0424502ef661fe22669a0665bb",
+    "currentTextId": "e1dba746-4adf-43e3-9f4a-3ef0387a848c",
+    "currentSourceTextSha256": "fd06aff77e6525022c07dd4ac34937f14fe1870705396668390eb19e706d8cc8",
+    "initialAudioSha256": "cf0129c57fabf69830da1153dbc0fe3ee1e2171a528aedb0220bb165d9bb77e5",
+    "currentAudio": {
+      "url": "/api/story-audio/c94b0f7452e6fb5a28ace0489d6666092683ed7f18439cfd67d3f686639e7c1d.mp3",
+      "sha256": "c94b0f7452e6fb5a28ace0489d6666092683ed7f18439cfd67d3f686639e7c1d",
+      "bytes": 766125,
+      "durationSec": 95.736,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:104202024",
+    "name": "Усадьба Самсонова",
+    "initialTextId": "3162b5c4-3c8a-446a-b3ef-32afa022f3a5",
+    "initialSourceTextSha256": "61fdb786f99fbe0205601099d1c93952265a6ddfb432222641033aca9dfa27f7",
+    "currentTextId": "a4ac8cdd-9a1a-4f8d-a1be-30011ade89af",
+    "currentSourceTextSha256": "0bfa20739849bf7a9329614a98dbc43712417dc24933a8d6533a9584f92c3e5f",
+    "initialAudioSha256": "dc482c697ef30e95a01f030252eb766cf9d43019ba2254d781017c6961129a5d",
+    "currentAudio": {
+      "url": "/api/story-audio/8b1dfd58bb4625c633a661f081e2bd3a75cfeda3ec051a1984c1c162e5f1ed45.mp3",
+      "sha256": "8b1dfd58bb4625c633a661f081e2bd3a75cfeda3ec051a1984c1c162e5f1ed45",
+      "bytes": 884589,
+      "durationSec": 110.544,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:252370791",
+    "name": "Храм иконы Божией Матери «Знамение»",
+    "initialTextId": "e92e95bb-bb36-4ffb-bdba-7422531d3e56",
+    "initialSourceTextSha256": "d8e4340cad31d3aa9258da17dc6461d553556f2cc3ef55032a9664e6dc7d1f90",
+    "currentTextId": "50fde2c7-c7ee-4b1d-97c4-58566fdc9c40",
+    "currentSourceTextSha256": "b1829c0ee2549812eae5e6094903c42fbe9fc311c7c49435639aaaf4f834e19f",
+    "initialAudioSha256": "2f1f89d1eb48ea4bb92b0aa983016dec170a36fd40cf57645bf512b5ad16e6f9",
+    "currentAudio": {
+      "url": "/api/story-audio/55dcada5d648b7ca51680441a8b28888bbb02c859ca6c10563af243338928ede.mp3",
+      "sha256": "55dcada5d648b7ca51680441a8b28888bbb02c859ca6c10563af243338928ede",
+      "bytes": 996525,
+      "durationSec": 124.536,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Вручную перечитаны все абзацы текущей параллельной одобренной редакции: справочных адресов нет, исторические топонимы содержательны, минимум 100 слов достигнут. Текущие факты и источники сохранены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:31497220",
+    "name": "Центральная тяговая подстанция Т-3 Московского метрополитена",
+    "initialTextId": "c863b379-3bdd-4723-a396-d4f24e90ccab",
+    "initialSourceTextSha256": "255ae98bbdf762a7d06b9ca259eb7e0e04c48e8edf68514a79a89375d5529df1",
+    "currentTextId": "f62cddcf-95f0-434c-85d2-7ae59b54e8ca",
+    "currentSourceTextSha256": "0339d6ef1b5803eb995e9ab9cac3587fe9893e81bd76a543273215f61c1a29ce",
+    "initialAudioSha256": "365efcbbc9ad1d2d44591d8d6dcbadc38678b889953d1c3dda9fd59fe5844c82",
+    "currentAudio": {
+      "url": "/api/story-audio/47699aa9de8a6277b642413e48a67b882c07ba165f9d7c3dc12a24e1dc8731ec.mp3",
+      "sha256": "47699aa9de8a6277b642413e48a67b882c07ba165f9d7c3dc12a24e1dc8731ec",
+      "bytes": 883821,
+      "durationSec": 110.448,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Вручную перечитаны все абзацы текущей параллельной одобренной редакции: справочных адресов нет, исторические топонимы содержательны, минимум 100 слов достигнут. Текущие факты и источники сохранены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:32693359",
+    "name": "Усадьба Лопухиных",
+    "initialTextId": "4dabc99b-8cd5-4d1b-8e02-96e6311b5a32",
+    "initialSourceTextSha256": "1463c012b0faf090d0e0e3a851bf55d5048eb03beb9330a32f6c139b00388547",
+    "currentTextId": "2d88b411-824e-4d3a-964b-8f17d18dc9c9",
+    "currentSourceTextSha256": "8577ce3e88e23ad9bce8d08bb095b58e6627220e605a66319aa0812b0e78b18b",
+    "initialAudioSha256": "67df5dee888934f3bf7931de7cc29de8955856665a4ddcf6818406399fa0b75c",
+    "currentAudio": {
+      "url": "/api/story-audio/d90d2cf063781c3f11e2aec54c4ee1a328156fd631fef78f2803726f22217899.mp3",
+      "sha256": "d90d2cf063781c3f11e2aec54c4ee1a328156fd631fef78f2803726f22217899",
+      "bytes": 956781,
+      "durationSec": 119.568,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:32693719",
+    "name": "Усадьба Вяземских-Долгоруковых",
+    "initialTextId": "41d9f562-69a1-47c1-9fed-254e901302d9",
+    "initialSourceTextSha256": "87e8bea6c0c53f061710ede15f7143f1635a38529e0e99259a1302ed7ca99788",
+    "currentTextId": "c1f0da78-f666-4fd6-b9cb-686f8e3a2b7d",
+    "currentSourceTextSha256": "3bcd5ba8dcc0be7327d0fa039b0b8049b38f1ae80db5d00614695a9ea8f298f2",
+    "initialAudioSha256": "02efc387519fefd1dbe8eba7b8e4805ff9820924d9cb02779dd1eba62a3cbf06",
+    "currentAudio": {
+      "url": "/api/story-audio/c1196c2c9102decf28a81fc1410017e4d4d70e9804994a3d3b81e9e81b6def95.mp3",
+      "sha256": "c1196c2c9102decf28a81fc1410017e4d4d70e9804994a3d3b81e9e81b6def95",
+      "bytes": 994029,
+      "durationSec": 124.224,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 4,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:47513393",
+    "name": "посольство Италии",
+    "initialTextId": "18947c8a-616f-4adf-9cfb-da8e500ccb88",
+    "initialSourceTextSha256": "7cac7109405af7260e230cc88b0009e9e86e02d37ee8b28537dc4c75b1de1872",
+    "currentTextId": "d5a2f43e-44f2-4998-a408-4b6e0980ce26",
+    "currentSourceTextSha256": "1b3f30e3876c6e6cf9ae5d12077474f9267990a5c53dbf7140e41ba921f34dc7",
+    "initialAudioSha256": "6e0aab45b95fb452b5b688e8413a0b127c6130a067474f428bdc7d60b9cd893f",
+    "currentAudio": {
+      "url": "/api/story-audio/ad2437d0fae47d2c579d26249a04dea6317821508fd7aa9db538ac984496d0a6.mp3",
+      "sha256": "ad2437d0fae47d2c579d26249a04dea6317821508fd7aa9db538ac984496d0a6",
+      "bytes": 837741,
+      "durationSec": 104.688,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:47584795",
+    "name": "посольство Дании",
+    "initialTextId": "3d596616-d6e7-4089-94a8-ac696c424ee9",
+    "initialSourceTextSha256": "9cebd44b2eb28fb3558b6562324588f07ebe1a851f4a1a98233cd9c695f36a5f",
+    "currentTextId": "39fe33ee-d5ca-47a4-baf1-593fd86ed760",
+    "currentSourceTextSha256": "eb37aa7e3907912a908fd06861d8b0ad11975957c1c52a9b0eaaa3e6d10f419b",
+    "initialAudioSha256": "177345eb05ec8b0ee7f6008972d7a5cc83d47efb0ac5abed440cafc9d249f9d1",
+    "currentAudio": {
+      "url": "/api/story-audio/445dff3627118c36f55c409320459cacbb804d7b36a7ae1a1e34c32f1e902916.mp3",
+      "sha256": "445dff3627118c36f55c409320459cacbb804d7b36a7ae1a1e34c32f1e902916",
+      "bytes": 796269,
+      "durationSec": 99.504,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:50885565",
+    "name": "Торгово-промышленная палата РФ",
+    "initialTextId": "175b2a40-2666-40a1-8cc5-6f3c3bf167b6",
+    "initialSourceTextSha256": "fb7390ba937e68dfec852e1b7df41cf7dfd6a5eb3e2b94832c774ce0aece221c",
+    "currentTextId": "8ad83c94-952b-46dc-a2d5-132c08619d05",
+    "currentSourceTextSha256": "d18ac7b675fe6881c0ec2bfd25cc3ad806ffcad821a134d0a90e95f4144bf434",
+    "initialAudioSha256": "14b0ec798f6803862fb891e7d49bdcbdadbdf01ea3e431e37afe76c4a3ba2191",
+    "currentAudio": {
+      "url": "/api/story-audio/265ccceff0bdfc65ecbf72a4f6a7c2bb54c08ba8e88f9737cb32c45107ea0aca.mp3",
+      "sha256": "265ccceff0bdfc65ecbf72a4f6a7c2bb54c08ba8e88f9737cb32c45107ea0aca",
+      "bytes": 691245,
+      "durationSec": 86.376,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:52467191",
+    "name": "Церковь Троицы в Никитниках",
+    "initialTextId": "71a55052-87d4-4661-a2fb-7aaf925a45cc",
+    "initialSourceTextSha256": "d8f17751d332a77fb04c1bf937f21942ac4675b69eaa8056db6311366600d518",
+    "currentTextId": "78c8e819-262d-46ed-8101-a12fe12dc0bc",
+    "currentSourceTextSha256": "caa92b09151c816f8bf511c4306be501db8395751ffd20c9634ae923685d403b",
+    "initialAudioSha256": "c8e0013d314ac2fb7aafb940c9f8a120f66f7f5c52626252ab37c2a88b32a166",
+    "currentAudio": {
+      "url": "/api/story-audio/6626a0bbc1370db85b706104642f108167ee0ad5903b8f944684fb2aa9882f32.mp3",
+      "sha256": "6626a0bbc1370db85b706104642f108167ee0ad5903b8f944684fb2aa9882f32",
+      "bytes": 737325,
+      "durationSec": 92.136,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "unchanged"
+  },
+  {
+    "placeId": "osm:way:84690464",
+    "name": "Собор Спаса Нерукотворного Образа в Заиконоспасском монастыре",
+    "initialTextId": "66b5e3d8-d2a9-417a-b4ad-937273d70993",
+    "initialSourceTextSha256": "6bf2610eafaf6fcf05488ec88e7d00f5ecdf3dffd48d50a536f365a6f5df7ae1",
+    "currentTextId": "5a266cb0-cb03-4eed-9417-22ea37bd017a",
+    "currentSourceTextSha256": "8d7c70b625e11d438dfb4ba62009161b0f275a87a01ea647858b8797b76d9bef",
+    "initialAudioSha256": "dcd9d2364bc3c953c6e7bb9cb4f3b6de849f6866b165ee282d17383e131ed982",
+    "currentAudio": {
+      "url": "/api/story-audio/7bbdcc2b4f939b5c8d9735a15219532785e2d51a9dd76f913394e0e8622a6e6c.mp3",
+      "sha256": "7bbdcc2b4f939b5c8d9735a15219532785e2d51a9dd76f913394e0e8622a6e6c",
+      "bytes": 774381,
+      "durationSec": 96.768,
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "provider": "elevenlabs",
+      "synthetic": true
+    },
+    "capturedAt": "2026-10-09T11:58:01.639Z",
+    "review": {
+      "approved": true,
+      "issues": [],
+      "checks": {
+        "noReferenceAddresses": true,
+        "supported": true,
+        "subjectAligned": true,
+        "substantive": true,
+        "coherent": true,
+        "sourceChains": true
+      },
+      "paragraphChecks": [
+        {
+          "paragraph": 1,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 2,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        },
+        {
+          "paragraph": 3,
+          "supported": true,
+          "noReferenceAddress": true,
+          "issue": ""
+        }
+      ],
+      "reviewer": "manual:codex",
+      "supportBasis": "current-approved-story",
+      "method": "Редакторская проверка актуального одобренного рассказа: все абзацы прочитаны, почтовые справки отсутствуют, факты и ссылки исходной редакции сохранены; новые исторические утверждения не добавлены."
+    },
+    "action": "changed"
+  }
+]
