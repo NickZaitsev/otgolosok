@@ -1,0 +1,13 @@
+{
+  "routeId": "R05",
+  "documentValid": true,
+  "stops": 13,
+  "allStoryRefsOsm": true,
+  "uniquePhysicalPoints": 13,
+  "allOriginalPhysicalPointsPreserved": true,
+  "allOriginalCenterCoordinatesPreserved": true,
+  "allOriginalStoryAddressesPreserved": true,
+  "distanceM": 2923,
+  "walkingMinutes": 37,
+  "fieldChecked": false
+}

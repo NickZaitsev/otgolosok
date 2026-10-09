@@ -3237,17 +3237,17 @@
     "modifications": "Размер уменьшен; превью обрезается при показе."
   },
   "osm:way:251330231": {
-    "thumbnail": "/images/places/way-251330231-17ae9fd40bcd.jpg",
-    "src": "/images/places/way-251330231-15dd5230b058.jpg",
+    "src": "/images/places/way-251330231-4ca3a8b82ce2.jpg",
+    "thumbnail": "/images/places/way-251330231-283a31c5b47f.jpg",
     "width": 960,
-    "height": 640,
-    "alt": "Большой Кисловский переулок со стороны Большой Никитской улицы. Контекстный снимок апреля 2016 года, до присвоения имени скверу Строителей Москвы.",
-    "author": "Gennady Grachev from Moscow, Russia",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Bolshoy_Kislovsky_Lane_from_Bolshaya_Nikitskaya_Street_(30892088092).jpg",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
-    "retrievedAt": "2026-10-05",
-    "modifications": "Размер уменьшен; превью обрезается при показе."
+    "height": 636,
+    "alt": "Сквер перед центральной тяговой подстанцией Т-3 на Большой Никитской улице. Снимок 2016 года, до присвоения имени скверу Строителей Москвы.",
+    "author": "Rakoon",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:0070_31st_of_July_2016_in_Moscow.jpg",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "retrievedAt": "2026-10-09",
+    "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
   },
   "osm:way:289507858": {
     "thumbnail": "/images/places/way-289507858-04e906368dac.jpg",
@@ -3915,5 +3915,31 @@
     "sourceUrl": "https://www.flickr.com/photos/absolutenull/49953438251/",
     "license": "Все права защищены; встраивание Flickr",
     "licenseUrl": "https://www.flickrhelp.com/hc/en-us/articles/24282601008404-Embed-your-Flickr-content"
+  },
+  "osm:relation:4168584": {
+    "src": "/images/places/relation-4168584-006787fedb46.jpg",
+    "thumbnail": "/images/places/relation-4168584-71a1c7746ede.jpg",
+    "width": 960,
+    "height": 540,
+    "alt": "Главное здание Российской государственной библиотеки. Вид со стороны Моховой улицы, 2022 год.",
+    "author": "Kirill Borisenko",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:State_Library_named_after_Lenin_(wide_view).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "retrievedAt": "2026-10-09",
+    "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
+  },
+  "osm:way:52444324": {
+    "src": "/images/places/way-52444324-bcc247944af9.jpg",
+    "thumbnail": "/images/places/way-52444324-cac889e8c2a5.jpg",
+    "width": 960,
+    "height": 1280,
+    "alt": "Лабораторный корпус Московского университета на Большой Никитской улице, 4. Фасад со стороны улицы, 2008 год.",
+    "author": "NVO",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Bolshaya_Nikitskaya_4.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "retrievedAt": "2026-10-09",
+    "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
   }
 }

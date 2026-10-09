@@ -1,0 +1,52 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "touchDevice": true,
+  "walks": [
+    {
+      "walkId": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
+      "shareUrl": "https://otgolosok.online/walk?share=b2823a83-f861-46f2-834b-b7873960882a",
+      "chapterId": "boulevard-stop-4",
+      "sha256": "1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453",
+      "playing": [
+        {
+          "timeSec": 1.010938,
+          "paused": false,
+          "error": null
+        }
+      ],
+      "pauseChecked": true,
+      "titleChecked": true,
+      "expandedParagraphsChecked": 6
+    },
+    {
+      "walkId": "83294f8e-3775-5aa8-b841-8b97dcd23229",
+      "shareUrl": "https://otgolosok.online/walk?share=79d53539-d6c4-4880-80b7-0fc2bdd6cb6b",
+      "chapterId": "r03-stop-12",
+      "sha256": "1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453",
+      "playing": [
+        {
+          "timeSec": 1.008367,
+          "paused": false,
+          "error": null
+        }
+      ],
+      "pauseChecked": true,
+      "titleChecked": true,
+      "expandedParagraphsChecked": 6
+    }
+  ],
+  "javascriptErrors": [],
+  "audioHttp": [
+    {
+      "status": 206,
+      "url": "https://otgolosok.online/api/story-audio/1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453.mp3"
+    },
+    {
+      "status": 206,
+      "url": "https://otgolosok.online/api/story-audio/1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453.mp3"
+    }
+  ]
+}

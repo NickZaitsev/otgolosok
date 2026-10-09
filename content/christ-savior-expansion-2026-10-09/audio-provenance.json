@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-09T11:33:11.222Z",
+  "checked": 1,
+  "entries": [
+    {
+      "placeId": "osm:relation:7314898",
+      "textId": "eaae613f-a19c-4de7-975d-381585198deb",
+      "audioJobId": "cb281665-cc76-46e0-a842-b003fe27de3a",
+      "state": "succeeded",
+      "sourceTextSha256": "639e0bb58e237ff146c2a9136b91a7a74683706a1a2a6acd2ad80270c7abe4d0",
+      "spokenTextSha256": "8cec4e41fea34efa75b66341f1f50582f12dd9cfb23b09a66e4c2e2f0c9fa2dc",
+      "normalizerVersion": "ru-normalizr-0.3.0-tts",
+      "requestedModel": "eleven_v4",
+      "legacyProfileWithoutModel": false,
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voice": "9ivxhQ6xIsHd6R3Xc635",
+      "sha256": "1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453",
+      "uploadAndReceiptMatch": true,
+      "approvedSourceTextMatch": true
+    }
+  ]
+}

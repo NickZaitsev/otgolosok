@@ -1,0 +1,401 @@
+{
+  "routeId": "R05",
+  "mapSource": "BBBike Moscow.osm.pbf, local 2026-09-22",
+  "boundaryFile": "content/garden-ring-intros-2026-10-03/boundary.geojson",
+  "fieldChecked": false,
+  "startMetroOsmNode": {
+    "type": "node",
+    "id": 265976907,
+    "lat": 55.7522967,
+    "lon": 37.6088923,
+    "tags": {
+      "colour": "lightblue",
+      "network": "Московский метрополитен",
+      "note": "Александровский сад;Библиотека имени Ленина;Арбатская",
+      "operator": "ГУП «Московский метрополитен»",
+      "railway": "subway_entrance",
+      "ref": "6",
+      "wheelchair": "no"
+    }
+  },
+  "destinationMetroOsmNode": {
+    "type": "node",
+    "id": 265977319,
+    "lat": 55.7521438,
+    "lon": 37.6016704,
+    "tags": {
+      "check_date:wheelchair": "2025-12-13",
+      "colour": "lightblue",
+      "description": "Филёвская линия",
+      "entrance": "entrance",
+      "network": "Московский метрополитен",
+      "operator": "ГУП «Московский метрополитен»",
+      "railway": "subway_entrance",
+      "ref": "1",
+      "wheelchair": "no"
+    }
+  },
+  "originalOrderPreservedExcept": [7, 8],
+  "orderChangeReason": "Сквер восточнее подстанции: сначала сквер, затем подстанция по ходу движения на запад.",
+  "stops": [
+    {
+      "placeId": "osm:relation:4168584",
+      "title": "Главное здание Российской государственной библиотеки",
+      "originalOrder": 1,
+      "routeOrder": 1,
+      "location": {
+        "lat": 55.7521397,
+        "lon": 37.6080369
+      },
+      "triggerLocation": {
+        "lat": 55.7521433,
+        "lon": 37.6080038
+      },
+      "listeningWayId": 524514656,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "excellent",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 2.11,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, улица Воздвиженка, 3/5 с5",
+      "storyAddressPreserved": "Москва, улица Воздвиженка, 3/5, строение 5",
+      "accessNote": "Рассказ слушается на публичной улице; текущий доступ и видимость фасада не проверены."
+    },
+    {
+      "placeId": "osm:way:32693733",
+      "title": "Государственный научно-исследовательский музей архитектуры имени А. В. Щусева",
+      "originalOrder": 2,
+      "routeOrder": 2,
+      "location": {
+        "lat": 55.7523865,
+        "lon": 37.6076819
+      },
+      "triggerLocation": {
+        "lat": 55.7525553,
+        "lon": 37.6077146
+      },
+      "listeningWayId": 687973848,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "excellent",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 18.88,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, Староваганьковский переулок, 25",
+      "storyAddressPreserved": "119019, Москва, ул. Воздвиженка, 5/25",
+      "accessNote": "Рассказ слушается на публичной улице; текущий доступ и видимость фасада не проверены."
+    },
+    {
+      "placeId": "osm:way:252370791",
+      "title": "Храм иконы Божией Матери «Знамение» на Шереметевом дворе",
+      "originalOrder": 3,
+      "routeOrder": 3,
+      "location": {
+        "lat": 55.7539847,
+        "lon": 37.6096804
+      },
+      "triggerLocation": {
+        "lat": 55.7542249,
+        "lon": 37.6084147
+      },
+      "listeningWayId": 252374572,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "good",
+        "surface": "paving_stones",
+        "width": "1.5"
+      },
+      "triggerDistanceFromCenterM": 83.57,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, Романов переулок, 2/6 с8",
+      "storyAddressPreserved": "Москва, Романов переулок, д. 2/6, стр. 8",
+      "accessNote": "Храм на Шереметевом дворе расположен внутри квартала. Слушаем на публичном тротуаре Романова переулка, не проходим через ворота или Аллею Романов. Текущие ворота и обзор храма с улицы не проверены."
+    },
+    {
+      "placeId": "osm:node:10572977039",
+      "title": "Мемориальный музей-квартира К. А. Тимирязева",
+      "originalOrder": 4,
+      "routeOrder": 4,
+      "location": {
+        "lat": 55.754143,
+        "lon": 37.6095016
+      },
+      "triggerLocation": {
+        "lat": 55.7543568,
+        "lon": 37.6085027
+      },
+      "listeningWayId": 252374572,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "good",
+        "surface": "paving_stones",
+        "width": "1.5"
+      },
+      "triggerDistanceFromCenterM": 66.86,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": null,
+      "storyAddressPreserved": "Москва, Романов переулок, дом 4, строение 2, помещение IX (комнаты 17, 18)",
+      "accessNote": "Музей-квартира находится в доме в глубине квартала. Слушаем на тротуаре Романова переулка; посещение квартиры и проход во двор не требуются. Видимость здания с тротуара не подтверждена."
+    },
+    {
+      "placeId": "osm:relation:15344965",
+      "title": "Храм мученицы Татианы при МГУ",
+      "originalOrder": 5,
+      "routeOrder": 5,
+      "location": {
+        "lat": 55.7545287,
+        "lon": 37.6118673
+      },
+      "triggerLocation": {
+        "lat": 55.7545225,
+        "lon": 37.611905
+      },
+      "listeningWayId": 133638147,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 2.46,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, Большая Никитская улица, 1",
+      "storyAddressPreserved": "Москва, Большая Никитская улица, 1",
+      "accessNote": "Остановка на тротуаре Моховой у угла Большой Никитской. Вход в храм и на территорию МГУ не требуется."
+    },
+    {
+      "placeId": "osm:way:52444324",
+      "title": "Лабораторный корпус факультета психологии МГУ",
+      "originalOrder": 6,
+      "routeOrder": 6,
+      "location": {
+        "lat": 55.7553032,
+        "lon": 37.6109201
+      },
+      "triggerLocation": {
+        "lat": 55.7551196,
+        "lon": 37.6107344
+      },
+      "listeningWayId": 142900821,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 23.49,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, Большая Никитская улица, 4",
+      "storyAddressPreserved": "Москва, Большая Никитская улица, 4",
+      "accessNote": "Остановка на тротуаре Большой Никитской, без прохода на территорию факультета МГУ. Обзор конкретного корпуса и текущие ограничения не проверены."
+    },
+    {
+      "placeId": "osm:way:251330231",
+      "title": "сквер Строителей Москвы",
+      "originalOrder": 8,
+      "routeOrder": 7,
+      "location": {
+        "lat": 55.7555974,
+        "lon": 37.6084341
+      },
+      "triggerLocation": {
+        "lat": 55.7556273,
+        "lon": 37.6084374
+      },
+      "listeningWayId": 580214948,
+      "listeningWayTags": {
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "good",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 3.33,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": null,
+      "storyAddressPreserved": "Москва, район Арбат, у пересечения Большого Кисловского переулка и Большой Никитской улицы",
+      "accessNote": "Рассказ слушается на публичной улице; текущий доступ и видимость фасада не проверены."
+    },
+    {
+      "placeId": "osm:way:31497220",
+      "title": "Центральная тяговая подстанция Т-3 Московского метрополитена",
+      "originalOrder": 7,
+      "routeOrder": 8,
+      "location": {
+        "lat": 55.7554018,
+        "lon": 37.6077317
+      },
+      "triggerLocation": {
+        "lat": 55.7557946,
+        "lon": 37.6081474
+      },
+      "listeningWayId": 593891794,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "excellent",
+        "surface": "paving_stones",
+        "width": "2.2"
+      },
+      "triggerDistanceFromCenterM": 50.83,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, Большая Никитская улица, 7 с1",
+      "storyAddressPreserved": "Москва, Большая Никитская улица, дом 7, строение 1",
+      "accessNote": "Подстанция — действующий технический объект. Слушаем на публичном тротуаре Большой Никитской, за ограду не заходим. Видимость здания через сквер на месте не проверена."
+    },
+    {
+      "placeId": "osm:way:52813016",
+      "title": "Жилой дом, 1903 г., архитектор А. М. Щеглов — Посольство Эстонии",
+      "originalOrder": 9,
+      "routeOrder": 9,
+      "location": {
+        "lat": 55.7553688,
+        "lon": 37.6015716
+      },
+      "triggerLocation": {
+        "lat": 55.7553473,
+        "lon": 37.6014929
+      },
+      "listeningWayId": 255070714,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 5.47,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, Малый Кисловский переулок, 5/8А",
+      "storyAddressPreserved": "Москва, Малый Кисловский переулок, 5/8А",
+      "accessNote": "Посольство Эстонии: только публичный тротуар Малого Кисловского переулка, вход на дипломатическую территорию не требуется."
+    },
+    {
+      "placeId": "osm:way:52813020",
+      "title": "Посольство Королевства Нидерландов в городской усадьбе В. В. Думнова — Н. Л. Маркова",
+      "originalOrder": 10,
+      "routeOrder": 10,
+      "location": {
+        "lat": 55.7546074,
+        "lon": 37.6024825
+      },
+      "triggerLocation": {
+        "lat": 55.7546476,
+        "lon": 37.6027441
+      },
+      "listeningWayId": 533681922,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 16.97,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, Калашный переулок, 6",
+      "storyAddressPreserved": "Москва, Калашный переулок, дом 6, строение 1",
+      "accessNote": "Посольство Нидерландов: остановка на публичном тротуаре у Калашного и Малого Кисловского переулков, без входа за ограду."
+    },
+    {
+      "placeId": "osm:relation:5371125",
+      "title": "Особняк Арсения Морозова",
+      "originalOrder": 11,
+      "routeOrder": 11,
+      "location": {
+        "lat": 55.753152,
+        "lon": 37.6038536
+      },
+      "triggerLocation": {
+        "lat": 55.7529807,
+        "lon": 37.6038224
+      },
+      "listeningWayId": 177804698,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones",
+        "width": "4"
+      },
+      "triggerDistanceFromCenterM": 19.15,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, улица Воздвиженка, 16 с1",
+      "storyAddressPreserved": "Москва, улица Воздвиженка, дом 16, строение 1",
+      "accessNote": "Особняк используется как Дом приёмов Правительства РФ. Рассказ слушается с тротуара Воздвиженки, вход на участок не предполагается."
+    },
+    {
+      "placeId": "osm:relation:5371134",
+      "title": "Усадьба Шаховского — Краузе — Осиповских",
+      "originalOrder": 12,
+      "routeOrder": 12,
+      "location": {
+        "lat": 55.7533999,
+        "lon": 37.6030112
+      },
+      "triggerLocation": {
+        "lat": 55.7530245,
+        "lon": 37.60297
+      },
+      "listeningWayId": 177804698,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones",
+        "width": "4"
+      },
+      "triggerDistanceFromCenterM": 41.82,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, улица Воздвиженка, 18/9",
+      "storyAddressPreserved": "Москва, улица Воздвиженка, дом 18/9",
+      "accessNote": "Рассказ слушается на публичной улице; текущий доступ и видимость фасада не проверены."
+    },
+    {
+      "placeId": "osm:way:35814561",
+      "title": "Кинотеатр «Художественный»",
+      "originalOrder": 13,
+      "routeOrder": 13,
+      "location": {
+        "lat": 55.7521984,
+        "lon": 37.6022289
+      },
+      "triggerLocation": {
+        "lat": 55.7521693,
+        "lon": 37.6022299
+      },
+      "listeningWayId": 687558237,
+      "listeningWayTags": {
+        "highway": "footway",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 3.24,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "physicalAddressPreserved": "Москва, Арбатская площадь, 14",
+      "storyAddressPreserved": "Москва, Арбатская площадь, дом 14, строение 1",
+      "accessNote": "Рассказ слушается на публичной улице; текущий доступ и видимость фасада не проверены."
+    }
+  ]
+}

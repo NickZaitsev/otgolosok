@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-09",
+  "command": "pnpm check",
+  "exitCode": 0,
+  "frontendTests": 2125,
+  "backendTests": 1080,
+  "pythonTests": 26,
+  "pythonSubtests": 78,
+  "editorialContractTests": 7,
+  "editorialContractCommand": "node --test content/vozdvizhenka-walk-2026-10-09/verify.test.mjs content/christ-savior-expansion-2026-10-09/verify.test.mjs",
+  "lintErrors": 0,
+  "lintWarnings": 148,
+  "typecheckPassed": true,
+  "buildPassed": true,
+  "cspPages": 29,
+  "serviceWorkerFiles": 87
+}

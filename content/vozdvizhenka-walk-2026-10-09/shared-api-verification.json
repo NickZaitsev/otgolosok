@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-10-09T11:38:02Z",
+  "afterGeneratorCatalogReload": true,
+  "pointsChecked": [
+    "osm:node:10572977039",
+    "osm:relation:15344965",
+    "osm:relation:4168584",
+    "osm:relation:5371125",
+    "osm:relation:5371134",
+    "osm:way:251330231",
+    "osm:way:252370791",
+    "osm:way:31497220",
+    "osm:way:32693733",
+    "osm:way:35814561",
+    "osm:way:52444324",
+    "osm:way:52813016",
+    "osm:way:52813020"
+  ],
+  "walks": [
+    {
+      "routeId": "r05",
+      "shareUrl": "https://otgolosok.online/walk?share=27a548e6-1ed3-4456-bde2-f79a5e27e1fe",
+      "readyChapters": 13,
+      "currentTextAndAudioMatch": true,
+      "documentAndDestinationUnchanged": true,
+      "revision": 1
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-10-09T11:33:36Z",
+  "checked": 1,
+  "errors": [],
+  "entries": [
+    {
+      "placeId": "osm:relation:7314898",
+      "title": "Храм Христа Спасителя",
+      "textId": "eaae613f-a19c-4de7-975d-381585198deb",
+      "wordCount": 387,
+      "sourceTextSha256": "639e0bb58e237ff146c2a9136b91a7a74683706a1a2a6acd2ad80270c7abe4d0",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453.mp3",
+        "sha256": "1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453",
+        "bytes": 1655661,
+        "durationSec": 206.928,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453",
+          "bytes": 1655661,
+          "durationSec": 206.86475
+        },
+        {
+          "sha256": "099c205214d7d08c06235ac4ea9820625d1b516d7e18ef933d0b2aec615190d4",
+          "bytes": 435885,
+          "durationSec": 54.4
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/8c1912bf87777f9839e2d5b43dae9af918f537013e60b2754efec2aae74145b5.jpg",
+        "src": "/api/place-images/d20c2f122e8b07f2bba8512feca551cc3ea48066c738abb527f0e469dee5cd51.jpg",
+        "width": 960,
+        "height": 878,
+        "alt": "Храм Христа Спасителя",
+        "author": "Alvesgaspar",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_July_2011-7a.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/d20c2f122e8b07f2bba8512feca551cc3ea48066c738abb527f0e469dee5cd51.jpg",
+          "width": 960,
+          "height": 878,
+          "bytes": 206728
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/8c1912bf87777f9839e2d5b43dae9af918f537013e60b2754efec2aae74145b5.jpg",
+          "width": 250,
+          "height": 229,
+          "bytes": 18849
+        }
+      ]
+    }
+  ]
+}

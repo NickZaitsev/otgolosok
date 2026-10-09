@@ -1,0 +1,708 @@
+{
+  "checkedAt": "2026-10-09T11:36:13Z",
+  "checked": 13,
+  "errors": [],
+  "entries": [
+    {
+      "placeId": "osm:node:10572977039",
+      "title": "Мемориальный музей-квартира К. А. Тимирязева",
+      "textId": "ffc78fc3-e52d-4a31-a797-1f7c28e4e6e9",
+      "wordCount": 223,
+      "sourceTextSha256": "48b410a5d815e3f988cd34182e8cfb5585bd723a174a8a7e889da31206633868",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/7aa57769ae9f29d4392021daa435179edbedbab04b846d11dc68c54bbde06c4d.mp3",
+        "sha256": "7aa57769ae9f29d4392021daa435179edbedbab04b846d11dc68c54bbde06c4d",
+        "bytes": 954861,
+        "durationSec": 119.328,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "7aa57769ae9f29d4392021daa435179edbedbab04b846d11dc68c54bbde06c4d",
+          "bytes": 954861,
+          "durationSec": 119.28
+        },
+        {
+          "sha256": "52399d649f09c28e811af2fc7fb40b69e4416a8a605192c7ab9115cd079dd28d",
+          "bytes": 400749,
+          "durationSec": 50.010667
+        }
+      ],
+      "photo": {
+        "thumbnail": "/images/places/node-10572977039-92131860d7f2.jpg",
+        "src": "/images/places/node-10572977039-50cd5068a9e3.jpg",
+        "width": 960,
+        "height": 1441,
+        "alt": "Историческое убранство мемориального музея-квартиры Климента Тимирязева в Романовом переулке. Фотография интерьера.",
+        "author": "timmuseum.timacad.ru",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Museum_Timiryazeva.png",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/images/places/node-10572977039-50cd5068a9e3.jpg",
+          "width": 960,
+          "height": 1441,
+          "bytes": 198572
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/node-10572977039-92131860d7f2.jpg",
+          "width": 250,
+          "height": 375,
+          "bytes": 24290
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:15344965",
+      "title": "Храм мученицы Татианы при МГУ",
+      "textId": "489d258e-7dc7-4067-a708-8edeaa77f6f7",
+      "wordCount": 227,
+      "sourceTextSha256": "7f773aa2f9de2adc1d456a75d9994f54a9ac9a2c76fac241f7cb354d63dffd6f",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/78cc9f89a1ff260012830dc8b63727b3ac4a8010dc4e258e2e0de023c70bf0ba.mp3",
+        "sha256": "78cc9f89a1ff260012830dc8b63727b3ac4a8010dc4e258e2e0de023c70bf0ba",
+        "bytes": 1029165,
+        "durationSec": 128.616,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "78cc9f89a1ff260012830dc8b63727b3ac4a8010dc4e258e2e0de023c70bf0ba",
+          "bytes": 1029165,
+          "durationSec": 128.56
+        },
+        {
+          "sha256": "3f4aa9f1f534d9db2de9a883c1a513926d04cd952a617ad425cafac0eb663181",
+          "bytes": 420333,
+          "durationSec": 52.464
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/15f2f853d368ee784d2d7aa0036c119df2bc4094ce186435c60e8d36e7c5c54c.jpg",
+        "src": "/api/place-images/c34f737bc4e10ad962c5195f6d888fd489295b87d07ab8b04376abac697b1f70.jpg",
+        "width": 500,
+        "height": 616,
+        "alt": "Храм мученицы Татианы при МГУ",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Mokhovaya_01.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/c34f737bc4e10ad962c5195f6d888fd489295b87d07ab8b04376abac697b1f70.jpg",
+          "width": 500,
+          "height": 616,
+          "bytes": 94848
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/15f2f853d368ee784d2d7aa0036c119df2bc4094ce186435c60e8d36e7c5c54c.jpg",
+          "width": 250,
+          "height": 308,
+          "bytes": 31850
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:4168584",
+      "title": "Главное здание Российской государственной библиотеки",
+      "textId": "52a09ee9-4b22-412d-a09a-b25a34eee09f",
+      "wordCount": 116,
+      "sourceTextSha256": "69a2179917aaa634c51933045c8d12909fb8b370b3ff4430e542be58d0ec28d8",
+      "changed": false,
+      "audio": {
+        "url": "/api/story-audio/df0db8ac9611c4759ec2f8f413e15887b461df6e5848fd5998bcc21e699c5c35.mp3",
+        "sha256": "df0db8ac9611c4759ec2f8f413e15887b461df6e5848fd5998bcc21e699c5c35",
+        "bytes": 522285,
+        "durationSec": 65.256,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "df0db8ac9611c4759ec2f8f413e15887b461df6e5848fd5998bcc21e699c5c35",
+          "bytes": 522285,
+          "durationSec": 65.2
+        }
+      ],
+      "photo": {
+        "thumbnail": "/images/places/relation-4168584-71a1c7746ede.jpg",
+        "src": "/images/places/relation-4168584-006787fedb46.jpg",
+        "width": 960,
+        "height": 540,
+        "alt": "Главное здание Российской государственной библиотеки. Вид со стороны Моховой улицы, 2022 год.",
+        "author": "Kirill Borisenko",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:State_Library_named_after_Lenin_(wide_view).jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/images/places/relation-4168584-006787fedb46.jpg",
+          "width": 960,
+          "height": 540,
+          "bytes": 130477
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/relation-4168584-71a1c7746ede.jpg",
+          "width": 250,
+          "height": 141,
+          "bytes": 14009
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:5371125",
+      "title": "Особняк Арсения Морозова",
+      "textId": "ff9fc2a4-efc0-403f-9335-b3e6d9e4d7e3",
+      "wordCount": 226,
+      "sourceTextSha256": "0d9b692634112bd2f35ec06434c83af17832e91df1de8f868267dc99cdf68e57",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/516c470f35aad9c2061f1d7f6f25f81ba971703c1920fe3b1a71ca3116f38b6b.mp3",
+        "sha256": "516c470f35aad9c2061f1d7f6f25f81ba971703c1920fe3b1a71ca3116f38b6b",
+        "bytes": 919725,
+        "durationSec": 114.936,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "516c470f35aad9c2061f1d7f6f25f81ba971703c1920fe3b1a71ca3116f38b6b",
+          "bytes": 919725,
+          "durationSec": 114.88
+        },
+        {
+          "sha256": "0a1a6c577e50548bb45740957c78d3ca94781cf3e01c69791a7789f42a302660",
+          "bytes": 461805,
+          "durationSec": 57.637333
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/f40743b9fc91a5ec009fe60ca65e32b500ea3cbc7905f2ba4df3693d2bfcbe44.jpg",
+        "src": "/api/place-images/a71610bf3915a691a43bf03cc7a16ff9bf9ffc739dd0e180acde43fde9ca7c4e.jpg",
+        "width": 500,
+        "height": 500,
+        "alt": "Особняк Арсения Морозова",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_Vozdvizhenka_Morozov_House_08-2016.jpg",
+        "license": "FAL",
+        "licenseUrl": "http://artlibre.org/licence/lal/en"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/a71610bf3915a691a43bf03cc7a16ff9bf9ffc739dd0e180acde43fde9ca7c4e.jpg",
+          "width": 500,
+          "height": 500,
+          "bytes": 85345
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/f40743b9fc91a5ec009fe60ca65e32b500ea3cbc7905f2ba4df3693d2bfcbe44.jpg",
+          "width": 250,
+          "height": 250,
+          "bytes": 25353
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:5371134",
+      "title": "Усадьба Шаховского — Краузе — Осиповских",
+      "textId": "7d231e77-bc8d-4f94-b6ef-c1e291e97d2e",
+      "wordCount": 107,
+      "sourceTextSha256": "830bca3aa9ac33856a378f8d8320e52745f402b067c95084ba98a4ed8024a951",
+      "changed": false,
+      "audio": {
+        "url": "/api/story-audio/3b6e15cac49e23c5c8566265f00489f775c7841d5375118817e0978f961e41ce.mp3",
+        "sha256": "3b6e15cac49e23c5c8566265f00489f775c7841d5375118817e0978f961e41ce",
+        "bytes": 441645,
+        "durationSec": 55.176,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "3b6e15cac49e23c5c8566265f00489f775c7841d5375118817e0978f961e41ce",
+          "bytes": 441645,
+          "durationSec": 55.12
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/166d1f08425dc878e1e66ccd46b3a97b0ffada2a78765f3d74be7e2ef873baa0.jpg",
+        "src": "/api/place-images/5f82a566eb328797df104651a057d91343fb7425ccf04933850842fc0897e37b.jpg",
+        "width": 960,
+        "height": 480,
+        "alt": "Усадьба Шаховского — Краузе — Осиповских",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_Vozdvizhenka18_manor_08-2016.jpg",
+        "license": "FAL",
+        "licenseUrl": "http://artlibre.org/licence/lal/en"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/5f82a566eb328797df104651a057d91343fb7425ccf04933850842fc0897e37b.jpg",
+          "width": 960,
+          "height": 480,
+          "bytes": 144220
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/166d1f08425dc878e1e66ccd46b3a97b0ffada2a78765f3d74be7e2ef873baa0.jpg",
+          "width": 250,
+          "height": 125,
+          "bytes": 14791
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:251330231",
+      "title": "сквер Строителей Москвы",
+      "textId": "4713641b-e95e-4e15-97de-13ca5e5cc651",
+      "wordCount": 105,
+      "sourceTextSha256": "1a9f7b421bac4bbbd5dc072d9916369b48832b39aa25ecbc4b08159e60e44572",
+      "changed": false,
+      "audio": {
+        "url": "/api/story-audio/f7cff2858f51286518219fe8704ee39d2a3dba132f130ff02496339320ce0008.mp3",
+        "sha256": "f7cff2858f51286518219fe8704ee39d2a3dba132f130ff02496339320ce0008",
+        "bytes": 435885,
+        "durationSec": 54.456,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "f7cff2858f51286518219fe8704ee39d2a3dba132f130ff02496339320ce0008",
+          "bytes": 435885,
+          "durationSec": 54.4
+        }
+      ],
+      "photo": {
+        "thumbnail": "/images/places/way-251330231-283a31c5b47f.jpg",
+        "src": "/images/places/way-251330231-4ca3a8b82ce2.jpg",
+        "width": 960,
+        "height": 636,
+        "alt": "Сквер перед центральной тяговой подстанцией Т-3 на Большой Никитской улице. Снимок 2016 года, до присвоения имени скверу Строителей Москвы.",
+        "author": "Rakoon",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:0070_31st_of_July_2016_in_Moscow.jpg",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/images/places/way-251330231-4ca3a8b82ce2.jpg",
+          "width": 960,
+          "height": 636,
+          "bytes": 231472
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/way-251330231-283a31c5b47f.jpg",
+          "width": 250,
+          "height": 166,
+          "bytes": 18960
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:252370791",
+      "title": "Храм иконы Божией Матери «Знамение» на Шереметевом дворе",
+      "textId": "50fde2c7-c7ee-4b1d-97c4-58566fdc9c40",
+      "wordCount": 224,
+      "sourceTextSha256": "b1829c0ee2549812eae5e6094903c42fbe9fc311c7c49435639aaaf4f834e19f",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/55dcada5d648b7ca51680441a8b28888bbb02c859ca6c10563af243338928ede.mp3",
+        "sha256": "55dcada5d648b7ca51680441a8b28888bbb02c859ca6c10563af243338928ede",
+        "bytes": 996525,
+        "durationSec": 124.536,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "55dcada5d648b7ca51680441a8b28888bbb02c859ca6c10563af243338928ede",
+          "bytes": 996525,
+          "durationSec": 124.48
+        },
+        {
+          "sha256": "2f1f89d1eb48ea4bb92b0aa983016dec170a36fd40cf57645bf512b5ad16e6f9",
+          "bytes": 431469,
+          "durationSec": 53.850667
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/ed67af4ebd4777582537ca3368eed5a8b441a27e939aa1d9067662f7d37ce532.jpg",
+        "src": "/api/place-images/b1091c7dedac7779de5b807d47e5f87acb21bd16369d35cc102f2a10ca88023d.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Храм иконы Божией Матери «Знамение» на Шереметевом дворе",
+        "author": "Petrovitch",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%A6%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C_%D0%97%D0%BD%D0%B0%D0%BC%D0%B5%D0%BD%D0%B8%D1%8F_%D0%91%D0%BE%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D0%B8%D1%86%D1%8B_%D0%BD%D0%B0_%D0%A8%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D1%82%D1%8C%D0%B5%D0%B2%D0%BE%D0%BC_%D0%94%D0%B2%D0%BE%D1%80%D0%B5_3.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/b1091c7dedac7779de5b807d47e5f87acb21bd16369d35cc102f2a10ca88023d.jpg",
+          "width": 960,
+          "height": 720,
+          "bytes": 175192
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/ed67af4ebd4777582537ca3368eed5a8b441a27e939aa1d9067662f7d37ce532.jpg",
+          "width": 250,
+          "height": 187,
+          "bytes": 17402
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:31497220",
+      "title": "Центральная тяговая подстанция Т-3 Московского метрополитена",
+      "textId": "f62cddcf-95f0-434c-85d2-7ae59b54e8ca",
+      "wordCount": 221,
+      "sourceTextSha256": "0339d6ef1b5803eb995e9ab9cac3587fe9893e81bd76a543273215f61c1a29ce",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/47699aa9de8a6277b642413e48a67b882c07ba165f9d7c3dc12a24e1dc8731ec.mp3",
+        "sha256": "47699aa9de8a6277b642413e48a67b882c07ba165f9d7c3dc12a24e1dc8731ec",
+        "bytes": 883821,
+        "durationSec": 110.448,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "47699aa9de8a6277b642413e48a67b882c07ba165f9d7c3dc12a24e1dc8731ec",
+          "bytes": 883821,
+          "durationSec": 110.4
+        },
+        {
+          "sha256": "365efcbbc9ad1d2d44591d8d6dcbadc38678b889953d1c3dda9fd59fe5844c82",
+          "bytes": 406701,
+          "durationSec": 50.757333
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/7b9ca3117ba096120758d89a132691469b0cbadf4d8817918a8938ac90baf246.jpg",
+        "src": "/api/place-images/f3a18af0352b0d786621c5578abc0e5ce0771c45ec585296cd334b5f90963004.jpg",
+        "width": 960,
+        "height": 722,
+        "alt": "Центральная тяговая подстанция Т-3 Московского метрополитена",
+        "author": "Shakko",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Bolshaya_Nikitskaya_7-10_by_shakko_(2015)_03.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/f3a18af0352b0d786621c5578abc0e5ce0771c45ec585296cd334b5f90963004.jpg",
+          "width": 960,
+          "height": 722,
+          "bytes": 203586
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/7b9ca3117ba096120758d89a132691469b0cbadf4d8817918a8938ac90baf246.jpg",
+          "width": 250,
+          "height": 188,
+          "bytes": 15733
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:32693733",
+      "title": "Государственный научно-исследовательский музей архитектуры имени А. В. Щусева",
+      "textId": "feaaef09-466e-4205-a4ab-b9db90be9b75",
+      "wordCount": 107,
+      "sourceTextSha256": "412ab7c02c2ee28d1b9f90704784c17b42bd18aa01f5c3270db8ade1ecd2c522",
+      "changed": false,
+      "audio": {
+        "url": "/api/story-audio/a8d65d107e76fa87490c4d0f8890050dbe37ec6029d7e3da7121a231d36eccb5.mp3",
+        "sha256": "a8d65d107e76fa87490c4d0f8890050dbe37ec6029d7e3da7121a231d36eccb5",
+        "bytes": 459501,
+        "durationSec": 57.408,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "a8d65d107e76fa87490c4d0f8890050dbe37ec6029d7e3da7121a231d36eccb5",
+          "bytes": 459501,
+          "durationSec": 57.36
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/66006b25fc0ed96e082b0de7382164973c2a4cde927e249045bd571485ab3c67.jpg",
+        "src": "/api/place-images/1f615c9f1aab0f0a2831ea886a417b8c24f9bddbbfe5dace6d3efe977dcbb3f0.jpg",
+        "width": 500,
+        "height": 559,
+        "alt": "Государственный научно-исследовательский музей архитектуры имени А. В. Щусева",
+        "author": "Ludvig14",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_ArchitectureMuseum_0922.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/1f615c9f1aab0f0a2831ea886a417b8c24f9bddbbfe5dace6d3efe977dcbb3f0.jpg",
+          "width": 500,
+          "height": 559,
+          "bytes": 85330
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/66006b25fc0ed96e082b0de7382164973c2a4cde927e249045bd571485ab3c67.jpg",
+          "width": 250,
+          "height": 280,
+          "bytes": 25607
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:35814561",
+      "title": "Кинотеатр «Художественный»",
+      "textId": "3aec3d91-28ef-49d7-a165-d192b9c047f6",
+      "wordCount": 109,
+      "sourceTextSha256": "ce26f5d77754148f5ec7715110831dadfd3843ae5b23b9b88f4cc8688211c109",
+      "changed": false,
+      "audio": {
+        "url": "/api/story-audio/36b565550c88405d8fd80094228482fec44c41cded3df386c1200372c28b869e.mp3",
+        "sha256": "36b565550c88405d8fd80094228482fec44c41cded3df386c1200372c28b869e",
+        "bytes": 502509,
+        "durationSec": 62.784,
+        "model": "eleven_v3",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "36b565550c88405d8fd80094228482fec44c41cded3df386c1200372c28b869e",
+          "bytes": 502509,
+          "durationSec": 62.72
+        }
+      ],
+      "photo": {
+        "thumbnail": "/images/places/way-35814561-e20677b9f416.jpg",
+        "src": "/images/places/way-35814561-15f04ced063b.jpg",
+        "width": 1280,
+        "height": 800,
+        "alt": "Художественный (кинотеатр, Москва)",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_Arts_Cinema_asv2021-07_img4.jpg",
+        "license": "FAL",
+        "licenseUrl": "http://artlibre.org/licence/lal/en"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/images/places/way-35814561-15f04ced063b.jpg",
+          "width": 1280,
+          "height": 800,
+          "bytes": 268565
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/way-35814561-e20677b9f416.jpg",
+          "width": 250,
+          "height": 156,
+          "bytes": 15823
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:52444324",
+      "title": "Лабораторный корпус факультета психологии МГУ",
+      "textId": "c27166e1-5d59-4100-b84e-79bda6319465",
+      "wordCount": 121,
+      "sourceTextSha256": "ea84684be9ab62fd9d65f17468bc1b3ba7e1161e0abc9ead185a893a8b0baa87",
+      "changed": false,
+      "audio": {
+        "url": "/api/story-audio/05d6929723c3f81de69572b17593816eb07970f42f7fd08aea90a1dbdce4ba35.mp3",
+        "sha256": "05d6929723c3f81de69572b17593816eb07970f42f7fd08aea90a1dbdce4ba35",
+        "bytes": 512109,
+        "durationSec": 63.984,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "05d6929723c3f81de69572b17593816eb07970f42f7fd08aea90a1dbdce4ba35",
+          "bytes": 512109,
+          "durationSec": 63.92
+        }
+      ],
+      "photo": {
+        "thumbnail": "/images/places/way-52444324-cac889e8c2a5.jpg",
+        "src": "/images/places/way-52444324-bcc247944af9.jpg",
+        "width": 960,
+        "height": 1280,
+        "alt": "Лабораторный корпус Московского университета на Большой Никитской улице, 4. Фасад со стороны улицы, 2008 год.",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Bolshaya_Nikitskaya_4.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/images/places/way-52444324-bcc247944af9.jpg",
+          "width": 960,
+          "height": 1280,
+          "bytes": 356415
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/way-52444324-cac889e8c2a5.jpg",
+          "width": 250,
+          "height": 333,
+          "bytes": 28266
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:52813016",
+      "title": "Жилой дом, 1903 г., архитектор А. М. Щеглов — Посольство Эстонии",
+      "textId": "8002cad4-f430-4d84-9a9c-fb6cc69e8d15",
+      "wordCount": 105,
+      "sourceTextSha256": "2cc2bf88ad5d199d478841aba4ccfdee38f1a89017826feace83546e742010f5",
+      "changed": false,
+      "audio": {
+        "url": "/api/story-audio/769c6b0c378ae9ab7abc36d70df456c6526c6d679ebfb4acd0af04f5d5bc556e.mp3",
+        "sha256": "769c6b0c378ae9ab7abc36d70df456c6526c6d679ebfb4acd0af04f5d5bc556e",
+        "bytes": 531885,
+        "durationSec": 66.456,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "769c6b0c378ae9ab7abc36d70df456c6526c6d679ebfb4acd0af04f5d5bc556e",
+          "bytes": 531885,
+          "durationSec": 66.4
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/29100935834e94ed5d99f99f858ec9657287b66281d0e2cc2e3a4f9607bdce00.jpg",
+        "src": "/api/place-images/ad2a147866ff80d46b3b12f5e81b4a17d231e884a3f522942821c27feef83f40.jpg",
+        "width": 500,
+        "height": 455,
+        "alt": "Жилой дом, 1903 г., архитектор А. М. Щеглов — Посольство Эстонии",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Maly_Kislovsky_5,_Embassy_of_Estonia.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/ad2a147866ff80d46b3b12f5e81b4a17d231e884a3f522942821c27feef83f40.jpg",
+          "width": 500,
+          "height": 455,
+          "bytes": 103697
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/29100935834e94ed5d99f99f858ec9657287b66281d0e2cc2e3a4f9607bdce00.jpg",
+          "width": 250,
+          "height": 228,
+          "bytes": 28507
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:52813020",
+      "title": "Посольство Королевства Нидерландов в городской усадьбе В. В. Думнова — Н. Л. Маркова",
+      "textId": "48e55246-9fb6-48e2-8234-69d5fb921a6e",
+      "wordCount": 106,
+      "sourceTextSha256": "0a75410fde0e9b95119d598facb3045c020b6c8514fb6409b6a0d72fa56837a9",
+      "changed": false,
+      "audio": {
+        "url": "/api/story-audio/e31bd8cb54976830c592ed88caa2c205c1434acbef51abef68e8f6463c26d1bd.mp3",
+        "sha256": "e31bd8cb54976830c592ed88caa2c205c1434acbef51abef68e8f6463c26d1bd",
+        "bytes": 482541,
+        "durationSec": 60.288,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "e31bd8cb54976830c592ed88caa2c205c1434acbef51abef68e8f6463c26d1bd",
+          "bytes": 482541,
+          "durationSec": 60.24
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/3916080d70968bbd6bd2a2b23e2a0315f3ab98888b7cafcf041f9f28a908ff0b.jpg",
+        "src": "/api/place-images/4a3b6fb79073cf19ec6c36b1aa95ab2d4d05a176579e5b5df9e4094bd355bedf.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Посольство Королевства Нидерландов в городской усадьбе В. В. Думнова — Н. Л. Маркова",
+        "author": "AndyVolykhov",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0,_%D0%9A%D0%B0%D0%BB%D0%B0%D1%88%D0%BD%D1%8B%D0%B9_%D0%BF%D0%B5%D1%80%D0%B5%D1%83%D0%BB%D0%BE%D0%BA,_6,_%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BD%D0%B8%D0%B5_1.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/4a3b6fb79073cf19ec6c36b1aa95ab2d4d05a176579e5b5df9e4094bd355bedf.jpg",
+          "width": 960,
+          "height": 720,
+          "bytes": 183483
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/3916080d70968bbd6bd2a2b23e2a0315f3ab98888b7cafcf041f9f28a908ff0b.jpg",
+          "width": 250,
+          "height": 187,
+          "bytes": 18462
+        }
+      ]
+    }
+  ]
+}

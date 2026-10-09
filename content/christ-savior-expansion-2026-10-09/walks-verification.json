@@ -1,0 +1,358 @@
+{
+  "checkedAt": "2026-10-09T11:41:11Z",
+  "placeId": "osm:relation:7314898",
+  "textId": "eaae613f-a19c-4de7-975d-381585198deb",
+  "title": "Храм Христа Спасителя",
+  "sourceTextSha256": "639e0bb58e237ff146c2a9136b91a7a74683706a1a2a6acd2ad80270c7abe4d0",
+  "wordCount": 387,
+  "addressLocationPhotoPreserved": true,
+  "oldAudio": {
+    "url": "/api/story-audio/099c205214d7d08c06235ac4ea9820625d1b516d7e18ef933d0b2aec615190d4.mp3",
+    "sha256": "099c205214d7d08c06235ac4ea9820625d1b516d7e18ef933d0b2aec615190d4",
+    "bytes": 435885,
+    "durationSec": 54.456,
+    "model": "eleven_v3",
+    "voice": "9ivxhQ6xIsHd6R3Xc635",
+    "provider": "elevenlabs",
+    "synthetic": true
+  },
+  "audio": {
+    "url": "/api/story-audio/1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453.mp3",
+    "sha256": "1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453",
+    "bytes": 1655661,
+    "durationSec": 206.928,
+    "model": "eleven_v4",
+    "voice": "9ivxhQ6xIsHd6R3Xc635",
+    "provider": "elevenlabs",
+    "synthetic": true
+  },
+  "files": [
+    {
+      "sha256": "099c205214d7d08c06235ac4ea9820625d1b516d7e18ef933d0b2aec615190d4",
+      "bytes": 435885,
+      "durationSec": 54.4,
+      "decoded": true
+    },
+    {
+      "sha256": "1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453",
+      "bytes": 1655661,
+      "durationSec": 206.86475,
+      "decoded": true
+    }
+  ],
+  "walks": [
+    {
+      "id": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
+      "title": "По бульварному кольцу от Кропоткинской до Тверской",
+      "shareUrl": "https://otgolosok.online/walk?share=b2823a83-f861-46f2-834b-b7873960882a",
+      "revision": 1,
+      "chapterId": "boulevard-stop-4",
+      "documentUnchanged": true,
+      "readyChapters": 28,
+      "chapterAudioMatches": true,
+      "currentAudioDurationSec": 2583.0,
+      "affectedChapters": [
+        {
+          "chapterId": "boulevard-stop-4",
+          "status": "ready",
+          "audioUrl": "/api/story-audio/1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453.mp3",
+          "sha256": "1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453",
+          "durationSec": 206.928
+        }
+      ],
+      "unchangedChaptersChecked": 27,
+      "unchangedChapterAudio": [
+        {
+          "chapterId": "boulevard-stop-1",
+          "audioUrl": "/api/story-audio/a29364956cc45092c12a5d4eb3760d7d87d6811d4cb199868709c992e4672ed5.mp3",
+          "sha256": "a29364956cc45092c12a5d4eb3760d7d87d6811d4cb199868709c992e4672ed5",
+          "durationSec": 140.928,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-2",
+          "audioUrl": "/api/story-audio/13bc3a9896b1464152ea3f3004854ede97a9462e010cad1fb93fec5bde0fad4c.mp3",
+          "sha256": "13bc3a9896b1464152ea3f3004854ede97a9462e010cad1fb93fec5bde0fad4c",
+          "durationSec": 69.744,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-3",
+          "audioUrl": "/api/story-audio/318b06e71264772b0cd2f5a93469306fa69368e394080e2dc4722e9140a22b38.mp3",
+          "sha256": "318b06e71264772b0cd2f5a93469306fa69368e394080e2dc4722e9140a22b38",
+          "durationSec": 55.248,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-5",
+          "audioUrl": "/api/story-audio/8149c580a6c83891b6dc18d9088b936b497f79ff5317fb2dac85b6511c05fcfc.mp3",
+          "sha256": "8149c580a6c83891b6dc18d9088b936b497f79ff5317fb2dac85b6511c05fcfc",
+          "durationSec": 58.464,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-6",
+          "audioUrl": "/api/story-audio/d124473f1c73c85be58c39e3bfe95a07f48433562b42b8aa9723564e98ea0502.mp3",
+          "sha256": "d124473f1c73c85be58c39e3bfe95a07f48433562b42b8aa9723564e98ea0502",
+          "durationSec": 153.576,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-7",
+          "audioUrl": "/api/story-audio/079665f4b7549d8db053dcc028e7fe8ae7c4b0a78946029a56e27bf96a7edf6d.mp3",
+          "sha256": "079665f4b7549d8db053dcc028e7fe8ae7c4b0a78946029a56e27bf96a7edf6d",
+          "durationSec": 56.376,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-8",
+          "audioUrl": "/api/story-audio/0a7e4c1ddcc23a92c5628e34534bc8c5fec0a297ced121f67cae36d6b9e93124.mp3",
+          "sha256": "0a7e4c1ddcc23a92c5628e34534bc8c5fec0a297ced121f67cae36d6b9e93124",
+          "durationSec": 58.128,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-9",
+          "audioUrl": "/api/story-audio/244fa834f673359675056a5fcbe3c1d8fa6c76e2a9b38369495b0ea4d6a3d053.mp3",
+          "sha256": "244fa834f673359675056a5fcbe3c1d8fa6c76e2a9b38369495b0ea4d6a3d053",
+          "durationSec": 53.256,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-10",
+          "audioUrl": "/api/story-audio/9108fa15bc8fb6cb651735b37532361aff1e8df239ed0186fc911faf7c7eab7d.mp3",
+          "sha256": "9108fa15bc8fb6cb651735b37532361aff1e8df239ed0186fc911faf7c7eab7d",
+          "durationSec": 167.256,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-11",
+          "audioUrl": "/api/story-audio/d1c1e29009d98f7bc86c16ae06cf63b2f9d1df8f78e55ea4b2ac7d9388ee83b5.mp3",
+          "sha256": "d1c1e29009d98f7bc86c16ae06cf63b2f9d1df8f78e55ea4b2ac7d9388ee83b5",
+          "durationSec": 134.544,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-12",
+          "audioUrl": "/api/story-audio/36b565550c88405d8fd80094228482fec44c41cded3df386c1200372c28b869e.mp3",
+          "sha256": "36b565550c88405d8fd80094228482fec44c41cded3df386c1200372c28b869e",
+          "durationSec": 62.784,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-13",
+          "audioUrl": "/api/story-audio/7180493dfc4934cc52c74226ab9936d02aa8c2a9a24438fe88025f22f04929b8.mp3",
+          "sha256": "7180493dfc4934cc52c74226ab9936d02aa8c2a9a24438fe88025f22f04929b8",
+          "durationSec": 63.096,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-14",
+          "audioUrl": "/api/story-audio/f7641af699600502509facb960464e16b13fdc28a7a3ed3aed9c5d9ad10049c1.mp3",
+          "sha256": "f7641af699600502509facb960464e16b13fdc28a7a3ed3aed9c5d9ad10049c1",
+          "durationSec": 42.288,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-15",
+          "audioUrl": "/api/story-audio/088055c78073aae42858c32df3c811b718932bcb7a93288aa56c490a0eead43a.mp3",
+          "sha256": "088055c78073aae42858c32df3c811b718932bcb7a93288aa56c490a0eead43a",
+          "durationSec": 140.688,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-16",
+          "audioUrl": "/api/story-audio/6d21b8103a6929c8cbfd6b8672369d9b156cb3c285ddc68eaefc11baf59fcbd1.mp3",
+          "sha256": "6d21b8103a6929c8cbfd6b8672369d9b156cb3c285ddc68eaefc11baf59fcbd1",
+          "durationSec": 59.664,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-17",
+          "audioUrl": "/api/story-audio/be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4.mp3",
+          "sha256": "be11494df4b0b97909db61be578b9f98cdf59c7c10c7dfe9faaf1cbe08b7ddb4",
+          "durationSec": 42.384,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-18",
+          "audioUrl": "/api/story-audio/220ed64b151b7bfb0d76425a852b0a25c5c03471189eda68c9f847c986288c4a.mp3",
+          "sha256": "220ed64b151b7bfb0d76425a852b0a25c5c03471189eda68c9f847c986288c4a",
+          "durationSec": 60.384,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-19",
+          "audioUrl": "/api/story-audio/218509f2d98dda9b3115393635d720c8f8a196528cbe3c99b6c29a9a4dac794d.mp3",
+          "sha256": "218509f2d98dda9b3115393635d720c8f8a196528cbe3c99b6c29a9a4dac794d",
+          "durationSec": 54.288,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-20",
+          "audioUrl": "/api/story-audio/abc7ade3730a05cc66c564e29b5d181aea7fab321373eb430d6748078fdcea01.mp3",
+          "sha256": "abc7ade3730a05cc66c564e29b5d181aea7fab321373eb430d6748078fdcea01",
+          "durationSec": 65.328,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-21",
+          "audioUrl": "/api/story-audio/da4df1eff43636ab6bddf0757fc49140b48a326180824fd8f3aca162180b1c6a.mp3",
+          "sha256": "da4df1eff43636ab6bddf0757fc49140b48a326180824fd8f3aca162180b1c6a",
+          "durationSec": 150.144,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-23",
+          "audioUrl": "/api/story-audio/e5d4a1d6e75e024e6c17c8b75bd4870944b6395e88bcdd8a06353d3a823f0e99.mp3",
+          "sha256": "e5d4a1d6e75e024e6c17c8b75bd4870944b6395e88bcdd8a06353d3a823f0e99",
+          "durationSec": 62.208,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-24",
+          "audioUrl": "/api/story-audio/478effda97c4da066095d0031d78f96c95f258b044c88a844007e6062ca740c9.mp3",
+          "sha256": "478effda97c4da066095d0031d78f96c95f258b044c88a844007e6062ca740c9",
+          "durationSec": 171.744,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-25",
+          "audioUrl": "/api/story-audio/12a9561f2365fd05bca63b272057f3c89ec4b93ce2a630f0379951788249917c.mp3",
+          "sha256": "12a9561f2365fd05bca63b272057f3c89ec4b93ce2a630f0379951788249917c",
+          "durationSec": 52.056,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-26",
+          "audioUrl": "/api/story-audio/b862bdfaa4c6e145c0ca4710bb2f9f8e25078abe1eca480aef5e0835d752e10d.mp3",
+          "sha256": "b862bdfaa4c6e145c0ca4710bb2f9f8e25078abe1eca480aef5e0835d752e10d",
+          "durationSec": 58.128,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-27",
+          "audioUrl": "/api/story-audio/9cfc335fba2d02192c586ee7d5e460f2bb83a474637ff78bb106471991a84a4e.mp3",
+          "sha256": "9cfc335fba2d02192c586ee7d5e460f2bb83a474637ff78bb106471991a84a4e",
+          "durationSec": 54.456,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-28",
+          "audioUrl": "/api/story-audio/f4dd8a2ba77b15496c83b16e78fb247953ca1bc80ad817217f81a1e3e76a1730.mp3",
+          "sha256": "f4dd8a2ba77b15496c83b16e78fb247953ca1bc80ad817217f81a1e3e76a1730",
+          "durationSec": 151.104,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "boulevard-stop-31",
+          "audioUrl": "/api/story-audio/d7944d21ad144de76516cc0605b89929ed16ccd2c653189df0c82715cb7e4f55.mp3",
+          "sha256": "d7944d21ad144de76516cc0605b89929ed16ccd2c653189df0c82715cb7e4f55",
+          "durationSec": 137.808,
+          "originalAudioPreserved": true
+        }
+      ]
+    },
+    {
+      "id": "83294f8e-3775-5aa8-b841-8b97dcd23229",
+      "title": "Знаменка и Волхонка: от усадеб к музеям",
+      "shareUrl": "https://otgolosok.online/walk?share=79d53539-d6c4-4880-80b7-0fc2bdd6cb6b",
+      "revision": 1,
+      "chapterId": "r03-stop-12",
+      "documentUnchanged": true,
+      "readyChapters": 12,
+      "chapterAudioMatches": true,
+      "currentAudioDurationSec": 1333.488,
+      "affectedChapters": [
+        {
+          "chapterId": "r03-stop-12",
+          "status": "ready",
+          "audioUrl": "/api/story-audio/1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453.mp3",
+          "sha256": "1c98166626c7d745494a584cb750c9fc4fc6d6afe8fb7415f94743555e221453",
+          "durationSec": 206.928
+        }
+      ],
+      "unchangedChaptersChecked": 11,
+      "unchangedChapterAudio": [
+        {
+          "chapterId": "r03-stop-1",
+          "audioUrl": "/api/story-audio/a1d6f9d8a9d4ad07b5fcf969c5701096848284eca3178887ed69e8167ee2ea78.mp3",
+          "sha256": "a1d6f9d8a9d4ad07b5fcf969c5701096848284eca3178887ed69e8167ee2ea78",
+          "durationSec": 121.968,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-2",
+          "audioUrl": "/api/story-audio/a6d5dea60f693cb7965a568a82195dda26cbced634be8f5a79697d92e9cffbfe.mp3",
+          "sha256": "a6d5dea60f693cb7965a568a82195dda26cbced634be8f5a79697d92e9cffbfe",
+          "durationSec": 65.424,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-3",
+          "audioUrl": "/api/story-audio/2a26196f7a5a193fafcd7d92b15c993baf26d756bef287c9b668927e64b24618.mp3",
+          "sha256": "2a26196f7a5a193fafcd7d92b15c993baf26d756bef287c9b668927e64b24618",
+          "durationSec": 65.496,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-4",
+          "audioUrl": "/api/story-audio/c1196c2c9102decf28a81fc1410017e4d4d70e9804994a3d3b81e9e81b6def95.mp3",
+          "sha256": "c1196c2c9102decf28a81fc1410017e4d4d70e9804994a3d3b81e9e81b6def95",
+          "durationSec": 124.224,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-5",
+          "audioUrl": "/api/story-audio/d90d2cf063781c3f11e2aec54c4ee1a328156fd631fef78f2803726f22217899.mp3",
+          "sha256": "d90d2cf063781c3f11e2aec54c4ee1a328156fd631fef78f2803726f22217899",
+          "durationSec": 119.568,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-6",
+          "audioUrl": "/api/story-audio/20830c136c1cd354b552c6758fde8332b1882730e8dbb4dcbcfa6fed9c28ca37.mp3",
+          "sha256": "20830c136c1cd354b552c6758fde8332b1882730e8dbb4dcbcfa6fed9c28ca37",
+          "durationSec": 126.048,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-7",
+          "audioUrl": "/api/story-audio/3c53088afed367680021971e134a49ffe79bc8235a315bdece1e7d4fd064899a.mp3",
+          "sha256": "3c53088afed367680021971e134a49ffe79bc8235a315bdece1e7d4fd064899a",
+          "durationSec": 57.984,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-8",
+          "audioUrl": "/api/story-audio/7554d395851f704696d0e8270c320d2133e5127a8fb8092d4b67d2aa232557c3.mp3",
+          "sha256": "7554d395851f704696d0e8270c320d2133e5127a8fb8092d4b67d2aa232557c3",
+          "durationSec": 127.104,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-9",
+          "audioUrl": "/api/story-audio/91e15061c7d041bac5b38f98f617c0aec88a926b3020da12d2d583cd16877655.mp3",
+          "sha256": "91e15061c7d041bac5b38f98f617c0aec88a926b3020da12d2d583cd16877655",
+          "durationSec": 125.184,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-10",
+          "audioUrl": "/api/story-audio/98e46f6bb5fcb9ff3a3803556d501bcfce0f66df3304908d2cfca6fd723dd4bb.mp3",
+          "sha256": "98e46f6bb5fcb9ff3a3803556d501bcfce0f66df3304908d2cfca6fd723dd4bb",
+          "durationSec": 123.816,
+          "originalAudioPreserved": true
+        },
+        {
+          "chapterId": "r03-stop-11",
+          "audioUrl": "/api/story-audio/13bc3a9896b1464152ea3f3004854ede97a9462e010cad1fb93fec5bde0fad4c.mp3",
+          "sha256": "13bc3a9896b1464152ea3f3004854ede97a9462e010cad1fb93fec5bde0fad4c",
+          "durationSec": 69.744,
+          "originalAudioPreserved": true
+        }
+      ]
+    }
+  ],
+  "receiptAndUploadMatch": true
+}

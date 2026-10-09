@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-09T11:30:15.108Z",
+  "dryRunWritesNothing": true,
+  "finalEntryConflictRollsBackAll": true,
+  "originalPlacesPreserved": 1,
+  "originalTextRowsAndAudioPreserved": 2,
+  "newTextRows": 1,
+  "newAudioIntents": 1,
+  "applyAfterQueuePreservesReceipt": true,
+  "queueReplayAddsNoJobs": true,
+  "synthesisPerformed": false
+}
