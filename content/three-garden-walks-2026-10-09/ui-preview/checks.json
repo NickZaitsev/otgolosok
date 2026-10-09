@@ -1,0 +1,12 @@
+{
+  "fullCheck": "pnpm check",
+  "passed": true,
+  "frontendFiles": 138,
+  "frontendTests": 2109,
+  "focusedTests": 69,
+  "regressionsReproducedBeforeFix": [
+    "duplicate photo caption",
+    "automatic focus scroll hiding photo at 320×568"
+  ],
+  "twoIndependentTypographyReviews": true
+}

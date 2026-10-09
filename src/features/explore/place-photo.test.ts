@@ -136,3 +136,20 @@ it("при ошибке обложки показывает следующий �
   await act(async () => container.querySelector("[data-photo-banner] img")!.dispatchEvent(new Event("error")));
   expect(container.querySelector("[data-photo-banner]")).toBeNull();
 });
+
+it.each([
+  ["Музей Толстого", false],
+  ["  Музей\u00a0Толстого  ", false],
+  ["музей толстого", false],
+  ["Музей Толстого, фасад в 1910 году", true],
+])("подпись «%s» дополняет заголовок только самостоятельными сведениями", async (alt, visible) => {
+  const photo = { thumbnail: "/images/places/museum-thumb.jpg", src: "/images/places/museum.jpg", width: 960, height: 640, alt, author: "Автор снимка", sourceUrl: "https://commons.wikimedia.org/wiki/File:Museum.jpg", license: "CC BY-SA 3.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0" };
+  await act(async () => root.render(createElement(PlacePhotoBanner, { photo, title: "Музей Толстого" })));
+  await click("Открыть фото: Музей Толстого");
+  const viewer = container.querySelector("dialog[open]")!;
+  expect(viewer.querySelector("h3")?.textContent).toBe("Музей Толстого");
+  expect(viewer.querySelector('p[lang="ru"]')?.textContent ?? null).toBe(visible ? alt : null);
+  expect(viewer.querySelector("img")?.getAttribute("alt")).toBe(alt);
+  expect(viewer.textContent).toContain("Автор снимка");
+  expect(viewer.querySelectorAll("a")).toHaveLength(2);
+});

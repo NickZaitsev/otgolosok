@@ -434,3 +434,30 @@ it("карта перед промежуточным стартом показы
   expect(south).toBeGreaterThan(entryRoute.walk!.start.location.lat);
   expect(south).toBeGreaterThan(entryChapters[0].location.lat);
 });
+
+it("при переходе к другой остановке возвращает карточку к фото, сохраняя прокрутку той же остановки", async () => {
+  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+  const container = document.createElement("div");
+  document.body.append(container);
+  const root = createRoot(container);
+  const props = {
+    route, chapters, active: true, completed: false, user: null, positionFailed: false, resume: false,
+    titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
+    onStart: () => {}, onSelect: () => {}, onStop: () => {}, player: null, story: null, settings: null, audioError: "",
+  };
+  try {
+    await act(async () => root.render(createElement(WalkSession, { ...props, index: 0 })));
+    const panel = container.querySelector<HTMLElement>(".walk-session-panel")!;
+    panel.scrollTop = 180;
+    await act(async () => root.render(createElement(WalkSession, { ...props, index: 0, positionFailed: true })));
+    expect(panel.scrollTop).toBe(180);
+    await act(async () => root.render(createElement(WalkSession, { ...props, index: 1 })));
+    expect(panel.scrollTop).toBe(0);
+    expect(container.querySelector("h1")?.textContent).toBe(chapters[1].title);
+  } finally {
+    await act(async () => root.unmount());
+    container.remove();
+    vi.unstubAllGlobals();
+  }
+});

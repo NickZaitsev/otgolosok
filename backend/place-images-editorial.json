@@ -3788,6 +3788,32 @@
       }
     ]
   },
+  "osm:relation:8914102": {
+    "thumbnail": "/images/places/relation-8914102-9cdaffabf8f4.jpg",
+    "src": "/images/places/relation-8914102-7c0c87b3e87a.jpg",
+    "width": 960,
+    "height": 646,
+    "alt": "Усадьба Ивана Морозова на Пречистенке, 21. Фото 24 мая 2012 года",
+    "author": "А.Савин, Википедия",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Prechistenka_05.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "retrievedAt": "2026-10-09",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
+  "osm:node:8898082919": {
+    "thumbnail": "/images/places/node-8898082919-9a592fdff8d2.jpg",
+    "src": "/images/places/node-8898082919-162813cfb8a2.jpg",
+    "width": 960,
+    "height": 960,
+    "alt": "Доходный дом Ивана Исакова на Пречистенке, 28, построенный Львом Кекушевым",
+    "author": "NVO",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Prechistenka_28_May_2008_01.JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "retrievedAt": "2026-10-09",
+    "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+  },
   "osm:relation:2234282": {
     "thumbnail": "/images/places/relation-2234282-ad365f1891c9.jpg",
     "src": "/images/places/relation-2234282-fbbd9c8d2393.jpg",

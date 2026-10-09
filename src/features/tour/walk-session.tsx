@@ -131,6 +131,10 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
     setFocus(chapters.length ? null : route.walk?.start.location ?? null);
   }
   const chapter = chapters[index];
+  const panelRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    if (panelRef.current) panelRef.current.scrollTop = 0;
+  }, [chapter?.id, active, completed]);
   const geometry = useMemo(() => (route.walk?.path.coordinates ?? []).map(([lon, lat]) => ({ lat, lon })), [route.walk?.path]);
   const foodVisible = drawer === "food" && !completed;
   const foodMode = documentFoodMode ?? (route.walk && route.walk.start.location.lat === route.walk.finish.location.lat && route.walk.start.location.lon === route.walk.finish.location.lon ? "loop" : "open");
@@ -237,6 +241,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   function improve() { setDrawer(null); onImprove?.(); }
   const distance = (route.walk?.distance_m ?? 0) / 1000;
   const hasText = Boolean(chapter?.content.story.paragraphs.length);
+  const heading = completed ? t("Прогулка завершена") : active ? chapter?.title ?? route.walk?.finish.address ?? t("Прогулка") : route.title.trim() || t("Ваш маршрут");
   const canStart = geometry.length > 1;
   // After the last stop comes the way to the finish, when it lies elsewhere.
   const next = index + 1 < chapters.length || (finishLeg && index + 1 === chapters.length);
@@ -245,7 +250,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   const locationLabel = t(positionFailed ? "Геопозиции нет" : user ? "Положение определено" : "Определяем положение…");
   const following = active && index + 1 < chapters.length ? t("Дальше: {title}", { title: chapters[index + 1].title }) : "";
 
-  const panel = <section className={`walk-session-panel ${foodStyles.panel}`} data-region="sheet" aria-labelledby="walk-session-title">
+  const panel = <section ref={panelRef} className={`walk-session-panel ${foodStyles.panel}`} data-region="sheet" aria-labelledby="walk-session-title">
       {/* Like the player, the photo yields its room to an open drawer. */}
       {active && chapter && !drawer ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} stopId={chapter.id} title={chapter.title} /></div> : null}
       <div className={`${foodStyles.body}${foodVisible || foodManifestError ? ` ${foodStyles.bodyScrollable}` : ""}`}>
@@ -257,7 +262,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
             : ratingLabel}</> : null}</p> : null}
             {active ? positionFailed ? <button type="button" className="walk-session-location walk-session-location--failed" aria-expanded={drawer === "position"} onClick={retryPosition}><span aria-hidden="true" />{locationLabel}</button>
               : <span className="walk-session-location" role="status"><span aria-hidden="true" />{locationLabel}</span> : null}</div>
-          <h1 id="walk-session-title" ref={titleRef} tabIndex={-1}>{completed ? t("Прогулка завершена") : active ? chapter?.title ?? route.walk?.finish.address ?? t("Прогулка") : route.title.trim() || t("Ваш маршрут")}</h1>
+          <h1 id="walk-session-title" className={heading.length > 70 ? "walk-session-title--long" : undefined} ref={titleRef} tabIndex={-1}>{heading}</h1>
         </div>
         {!completed ? <div className="walk-session-heading-actions">
           {/* The cross belongs to the card: during the walk it interrupts it after a confirmation, before the start it leaves for the map. */}

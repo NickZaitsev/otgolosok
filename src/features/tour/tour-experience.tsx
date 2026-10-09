@@ -191,12 +191,12 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   }, []);
 
   useEffect(() => {
-    if (phase !== "reading") walkTitleRef.current?.focus();
+    if (phase !== "reading") walkTitleRef.current?.focus({ preventScroll: universal });
     if (phase === "reading" && restoreFocusRef.current) {
       startButtonRef.current?.focus();
       restoreFocusRef.current = false;
     }
-  }, [phase, chapterIndex]);
+  }, [phase, chapterIndex, universal]);
 
   useEffect(() => {
     const media = mediaRef.current;
