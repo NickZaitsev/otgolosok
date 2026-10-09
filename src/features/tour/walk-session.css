@@ -78,7 +78,8 @@
 .walk-session-settings,.walk-session-offline{display:grid;gap:12px}
 .walk-session-settings label{display:grid;gap:6px;font-size:14px}
 /* 16 px: on a smaller font Safari on iPhone zooms the page into the focused field. */
-.walk-session-settings select{width:100%;min-height:var(--field-min);padding:0 12px;border:1px solid var(--field-border);border-radius:12px;background:var(--field-surface);color:inherit;font:inherit;font-size:16px;font-weight:400;line-height:1.4}
+/* .ui-select-field turns off the native look: WebKit keeps a native select 23 px tall whatever its height. */
+.walk-session-settings select{width:100%;min-height:var(--field-min);padding:0 var(--space-2xl) 0 12px;border:1px solid var(--field-border);border-radius:12px;background:var(--field-surface);color:inherit;font:inherit;font-size:16px;font-weight:400;line-height:1.4}
 .walk-session-settings button,.walk-session-offline button{min-height:var(--control-min);border:0;background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}
 .walk-session :is(button,a,select,input):focus-visible{outline:3px solid #246b90;outline-offset:3px}
 .walk-session .story-text p{font-size:15px;line-height:1.65;margin-bottom:12px}

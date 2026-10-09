@@ -424,8 +424,8 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
         player={walkPlayer(false)} miniPlayer={walkPlayer(true)}
         story={<><StoryText story={walkContent.story} contentLocale={contentLocale} />{walkContent.sources.length ? <StorySources content={walkContent} contentLocale={contentLocale} open={showSources} onToggle={toggleSources} /> : null}</>}
         settings={<div className="walk-session-settings">
-          <label>{t("Переключение остановок")}<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{t(advanceModeLabels[mode])}</option>)}</select></label>
-          <label>{t("Скорость аудио")}<select value={settings.rate} onChange={event => updateSettings({ rate: Number(event.target.value) as PlaybackRate })}>{playbackRates.map(rate => <option key={rate} value={rate}>{rate.toLocaleString(languageTag)}×</option>)}</select></label>
+          <label className="ui-select-field">{t("Переключение остановок")}<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{t(advanceModeLabels[mode])}</option>)}</select></label>
+          <label className="ui-select-field">{t("Скорость аудио")}<select value={settings.rate} onChange={event => updateSettings({ rate: Number(event.target.value) as PlaybackRate })}>{playbackRates.map(rate => <option key={rate} value={rate}>{rate.toLocaleString(languageTag)}×</option>)}</select></label>
           {offlineControls}
         </div>} offline={offlineControls ? <div className="walk-session-offline">{offlineControls}</div> : null} /> : isWalking ? (
         <ClassicWalkView route={route} chapters={chapters} chapterIndex={chapterIndex} titleRef={walkTitleRef} contentLocale={contentLocale}
