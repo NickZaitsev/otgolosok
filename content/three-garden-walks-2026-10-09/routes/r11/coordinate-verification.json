@@ -1,0 +1,454 @@
+{
+  "routeId": "R11",
+  "mapSource": "BBBike Moscow.osm.pbf, local 2026-09-22",
+  "boundaryFile": "content/garden-ring-intros-2026-10-03/boundary.geojson",
+  "fieldChecked": false,
+  "startMetroOsmNode": {
+    "type": "node",
+    "id": 60730297,
+    "lat": 55.758865,
+    "lon": 37.6180335,
+    "tags": {
+      "colour": "darkgreen",
+      "door": "yes",
+      "entrance": "exit",
+      "indoor": "door",
+      "level": "0",
+      "network": "Московский метрополитен",
+      "note": "Охотный Ряд; Театральная",
+      "operator": "ГУП «Московский метрополитен»",
+      "railway": "subway_entrance",
+      "ref": "9"
+    }
+  },
+  "destinationMetroOsmNode": {
+    "type": "node",
+    "id": 969292044,
+    "lat": 55.7531036,
+    "lon": 37.6330086,
+    "tags": {
+      "check_date:wheelchair": "2024-03-16",
+      "colour": "orange",
+      "network": "Московский метрополитен",
+      "operator": "ГУП «Московский метрополитен»",
+      "railway": "subway_entrance",
+      "ref": "14",
+      "wheelchair": "no"
+    }
+  },
+  "stops": [
+    {
+      "placeId": "osm:relation:85761",
+      "title": "Гостиница «Метрополь»",
+      "location": {
+        "lat": 55.7581844,
+        "lon": 37.6214052
+      },
+      "triggerLocation": {
+        "lat": 55.7581152,
+        "lon": 37.6209996
+      },
+      "listeningWayId": 142894021,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "asphalt",
+        "width": "6.5"
+      },
+      "triggerDistanceFromCenterM": 26.52,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:node:916076835",
+      "title": "Памятник первопечатнику Ивану Фёдорову",
+      "location": {
+        "lat": 55.7589978,
+        "lon": 37.6235051
+      },
+      "triggerLocation": {
+        "lat": 55.758965,
+        "lon": 37.6235315
+      },
+      "listeningWayId": 669001201,
+      "listeningWayTags": {
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 4.0,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:node:13352615294",
+      "title": "Доходный дом и аптека В. К. Феррейна",
+      "location": {
+        "lat": 55.758649,
+        "lon": 37.624349
+      },
+      "triggerLocation": {
+        "lat": 55.7585945,
+        "lon": 37.6244781
+      },
+      "listeningWayId": 22744522,
+      "listeningWayTags": {
+        "highway": "pedestrian",
+        "lit": "yes",
+        "name": "Никольская улица",
+        "name:be": "Нікольская вуліца",
+        "name:de": "Nikolausstraße",
+        "name:en": "Nikolskaya Street",
+        "name:ru": "Никольская улица",
+        "old_name": "улица 25 Октября",
+        "omkum:old_name": "улица 25-го Октября (1930 г.) Никольская улица (до 1917 г.)",
+        "postal_code": "109012",
+        "smoothness": "good",
+        "surface": "paving_stones",
+        "width": "10",
+        "wikidata": "Q4320845",
+        "wikipedia": "ru:Никольская улица (Москва)"
+      },
+      "triggerDistanceFromCenterM": 10.1,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:9303001",
+      "title": "Историко-архивный институт РГГУ",
+      "location": {
+        "lat": 55.75767,
+        "lon": 37.6222555
+      },
+      "triggerLocation": {
+        "lat": 55.7574098,
+        "lon": 37.6228403
+      },
+      "listeningWayId": 22744522,
+      "listeningWayTags": {
+        "highway": "pedestrian",
+        "lit": "yes",
+        "name": "Никольская улица",
+        "name:be": "Нікольская вуліца",
+        "name:de": "Nikolausstraße",
+        "name:en": "Nikolskaya Street",
+        "name:ru": "Никольская улица",
+        "old_name": "улица 25 Октября",
+        "omkum:old_name": "улица 25-го Октября (1930 г.) Никольская улица (до 1917 г.)",
+        "postal_code": "109012",
+        "smoothness": "good",
+        "surface": "paving_stones",
+        "width": "10",
+        "wikidata": "Q4320845",
+        "wikipedia": "ru:Никольская улица (Москва)"
+      },
+      "triggerDistanceFromCenterM": 46.64,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Историко-архивный институт: точка на пешеходной Никольской улице, проход в институт не требуется."
+    },
+    {
+      "placeId": "osm:way:84690464",
+      "title": "Собор Спаса Нерукотворного Образа в Заиконоспасском монастыре",
+      "location": {
+        "lat": 55.7566848,
+        "lon": 37.6211128
+      },
+      "triggerLocation": {
+        "lat": 55.7564711,
+        "lon": 37.6214814
+      },
+      "listeningWayId": 22744522,
+      "listeningWayTags": {
+        "highway": "pedestrian",
+        "lit": "yes",
+        "name": "Никольская улица",
+        "name:be": "Нікольская вуліца",
+        "name:de": "Nikolausstraße",
+        "name:en": "Nikolskaya Street",
+        "name:ru": "Никольская улица",
+        "old_name": "улица 25 Октября",
+        "omkum:old_name": "улица 25-го Октября (1930 г.) Никольская улица (до 1917 г.)",
+        "postal_code": "109012",
+        "smoothness": "good",
+        "surface": "paving_stones",
+        "width": "10",
+        "wikidata": "Q4320845",
+        "wikipedia": "ru:Никольская улица (Москва)"
+      },
+      "triggerDistanceFromCenterM": 33.11,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Заиконоспасский собор во дворе монастыря. Слушаем на Никольской у подхода к монастырю; открытие двора и обзор собора не подтверждены."
+    },
+    {
+      "placeId": "osm:node:928056489",
+      "title": "Богоявленский монастырь",
+      "location": {
+        "lat": 55.755722,
+        "lon": 37.6232681
+      },
+      "triggerLocation": {
+        "lat": 55.7568262,
+        "lon": 37.6224385
+      },
+      "listeningWayId": 681360010,
+      "listeningWayTags": {
+        "highway": "pedestrian",
+        "lanes": "2",
+        "lit": "yes",
+        "motor_vehicle": "destination",
+        "name": "Богоявленский переулок",
+        "name:be": "Багаяўленскі завулак",
+        "name:ru": "Богоявленский переулок",
+        "omkum:old_name": "Куйбышевский проезд (1938 г.) Блюхеровский переулок (1930 г.) Богоявленский переулок (до 1917 г.)",
+        "postal_code": "109012",
+        "smoothness": "good",
+        "surface": "paving_stones",
+        "vehicle": "destination",
+        "wikidata": "Q4089827",
+        "wikipedia": "ru:Богоявленский переулок"
+      },
+      "triggerDistanceFromCenterM": 133.3,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:9308383",
+      "title": "Церковь Космы и Дамиана в Старых Панех",
+      "location": {
+        "lat": 55.7561481,
+        "lon": 37.6260616
+      },
+      "triggerLocation": {
+        "lat": 55.756159,
+        "lon": 37.6260481
+      },
+      "listeningWayId": 231856200,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "excellent",
+        "surface": "paving_stones",
+        "width": "1.6"
+      },
+      "triggerDistanceFromCenterM": 1.48,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:way:84632785",
+      "title": "Церковь Ильи Пророка в Новгородском подворье",
+      "location": {
+        "lat": 55.7544471,
+        "lon": 37.6239106
+      },
+      "triggerLocation": {
+        "lat": 55.7543419,
+        "lon": 37.6240434
+      },
+      "listeningWayId": 300800949,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "excellent",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 14.35,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:way:50885565",
+      "title": "Московская товарная биржа",
+      "location": {
+        "lat": 55.7548504,
+        "lon": 37.6263324
+      },
+      "triggerLocation": {
+        "lat": 55.7550028,
+        "lon": 37.6261724
+      },
+      "listeningWayId": 1159222850,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 19.68,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:19079948",
+      "title": "Храм Варвары Великомученицы на Варварке",
+      "location": {
+        "lat": 55.7523107,
+        "lon": 37.6261095
+      },
+      "triggerLocation": {
+        "lat": 55.7524425,
+        "lon": 37.626054
+      },
+      "listeningWayId": 124912860,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 15.06,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:19075670",
+      "title": "Старый Английский двор",
+      "location": {
+        "lat": 55.7522477,
+        "lon": 37.6269918
+      },
+      "triggerLocation": {
+        "lat": 55.7525516,
+        "lon": 37.6268616
+      },
+      "listeningWayId": 124912860,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 34.76,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:19083613",
+      "title": "Храм Максима Блаженного на Варварке",
+      "location": {
+        "lat": 55.752505,
+        "lon": 37.6275631
+      },
+      "triggerLocation": {
+        "lat": 55.7526449,
+        "lon": 37.6274977
+      },
+      "listeningWayId": 124912860,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 16.09,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:19080710",
+      "title": "Собор иконы Божией Матери «Знамение» (Знаменский собор)",
+      "location": {
+        "lat": 55.7523957,
+        "lon": 37.6290936
+      },
+      "triggerLocation": {
+        "lat": 55.7528099,
+        "lon": 37.6291203
+      },
+      "listeningWayId": 124912860,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 46.09,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:19077852",
+      "title": "Палаты бояр Романовых",
+      "location": {
+        "lat": 55.7526893,
+        "lon": 37.6291549
+      },
+      "triggerLocation": {
+        "lat": 55.752789,
+        "lon": 37.6294721
+      },
+      "listeningWayId": 124912860,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 22.73,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Палаты Романовых: отдельная остановка на тротуаре Варварки у подхода к палатам, восточнее триггера Знаменского собора. Два объекта различаются, вход в музей не требуется."
+    },
+    {
+      "placeId": "osm:relation:7596233",
+      "title": "Храм святителя Николая Мирликийского «Красный звон»",
+      "location": {
+        "lat": 55.7536947,
+        "lon": 37.6294233
+      },
+      "triggerLocation": {
+        "lat": 55.7535989,
+        "lon": 37.6291797
+      },
+      "listeningWayId": 1159222843,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway"
+      },
+      "triggerDistanceFromCenterM": 18.59,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:way:52467191",
+      "title": "Церковь Троицы Живоначальной в Никитниках",
+      "location": {
+        "lat": 55.7540894,
+        "lon": 37.631609
+      },
+      "triggerLocation": {
+        "lat": 55.753569,
+        "lon": 37.6326754
+      },
+      "listeningWayId": 300800914,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones",
+        "width": "8"
+      },
+      "triggerDistanceFromCenterM": 88.31,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Церковь в Никитниках внутри квартала. Слушаем на публичном тротуаре Китайгородского проезда у подхода к Никитникову переулку без прохода под зданием; обзор храма не подтверждён."
+    }
+  ]
+}

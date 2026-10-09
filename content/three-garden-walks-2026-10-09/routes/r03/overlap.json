@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-09T09:24:18.975Z",
+  "formula": "100 × общие физические объекты / min(число уникальных объектов A, число уникальных объектов B)",
+  "existingWalksChecked": 31,
+  "aliasesChecked": 6297,
+  "plannedWalksChecked": 12,
+  "maxExistingPercent": 16.67,
+  "maxPlannedPercent": 0,
+  "existingOverlaps": [
+    {
+      "title": "По бульварному кольцу от Кропоткинской до Тверской",
+      "shareUrl": "https://otgolosok.online/walk?share=b2823a83-f861-46f2-834b-b7873960882a",
+      "commonIds": [
+        "osm:relation:2150666",
+        "osm:relation:7314898"
+      ],
+      "common": 2,
+      "physicalStops": 28,
+      "percent": 16.67
+    }
+  ],
+  "plannedOverlaps": [],
+  "unresolvedNearby": []
+}

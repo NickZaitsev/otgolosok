@@ -1,0 +1,11 @@
+{
+  "healthy": true,
+  "deploymentLockHeld": true,
+  "activeTasksBefore": 0,
+  "allTaskIdsAndStatesPreserved": true,
+  "catalogEntries": 296,
+  "runningCatalogUpdated": true,
+  "readOnlyRootFilesystemPreserved": true,
+  "oldImage": "sha256:5d232c32371e352d21b6cc4cd79ac65f3f6b6e90860d3cc665937d12cd31f04a",
+  "newImage": "sha256:75f890f591e7192b9925e238d6edd0b719c62d2a78478cd89e0998cf7261c030"
+}

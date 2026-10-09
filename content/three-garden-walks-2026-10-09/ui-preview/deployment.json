@@ -1,0 +1,16 @@
+{
+  "files": 806,
+  "checksumsMatch": true,
+  "backup": "/srv/sites/otgolosok.softmg.tech/backups/preview-static-20261009-aeae4db/before",
+  "deploymentLockHeld": true,
+  "containersRestarted": false,
+  "retainedPreviousAssets": true,
+  "commit": "aeae4db",
+  "cleanGitArchiveBuild": true,
+  "dependencyInstall": "pnpm install --offline --frozen-lockfile --ignore-scripts",
+  "checkedAt": "2026-10-09T10:19:08.215850+00:00",
+  "concurrentStaticBuildBeforeMountRefresh": true,
+  "finalWalkHtmlSha256": "eb5aae066cf6e94fbb46c185e1f4ef90898ab34652a1f448e882869b3c20e0d0",
+  "publicMountedAndHostHtmlMatch": true,
+  "productionUiVerifiedAfterMountRefresh": true
+}

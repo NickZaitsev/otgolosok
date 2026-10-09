@@ -1,0 +1,499 @@
+{
+  "checkedAt": "2026-10-09T10:12:34.623645+00:00",
+  "shareUrl": "https://otgolosok.online/walk?share=724e2620-fa56-4b10-8516-b9d383989180",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "touchDevice": true,
+  "stops": [
+    {
+      "stop": 1,
+      "placeId": "osm:relation:85761",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "fe0c85fb7765247b9f89e1b65715cf2b4e142dfdda8ab707e28286ea0b758654",
+        "playing": [
+          {
+            "timeSec": 1.018236,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 2,
+      "placeId": "osm:node:916076835",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "31247ec388a8cc5e591f99cd4aa599a29b6f2b156cf962d5a04229a01aaceedb",
+        "playing": [
+          {
+            "timeSec": 1.004644,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 3,
+      "placeId": "osm:node:13352615294",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "8650d9ef774fd9aa59d0873887fef0f4e9b12db9891487a3a842266dc6c4a65e",
+        "playing": [
+          {
+            "timeSec": 1.113355,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 4,
+      "placeId": "osm:relation:9303001",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "c94b0f7452e6fb5a28ace0489d6666092683ed7f18439cfd67d3f686639e7c1d",
+        "playing": [
+          {
+            "timeSec": 1.033718,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 5,
+      "placeId": "osm:way:84690464",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "7bbdcc2b4f939b5c8d9735a15219532785e2d51a9dd76f913394e0e8622a6e6c",
+        "playing": [
+          {
+            "timeSec": 1.065076,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 6,
+      "placeId": "osm:node:928056489",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "a3df701c04c4e5c40f8b3ef891b9cbc8f9a267c4b6793904f2ed7a0e13cf8629",
+        "playing": [
+          {
+            "timeSec": 1.049678,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 7,
+      "placeId": "osm:relation:9308383",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "dad458de3b8d8dd5471609ab9dbdc8f28b1e5c80878d86089f9aaac6df94cedd",
+        "playing": [
+          {
+            "timeSec": 1.149615,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 8,
+      "placeId": "osm:way:84632785",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "6fb81b14f761d8a3587d45259d6eef7286538165798c9eebfafc265ecd795626",
+        "playing": [
+          {
+            "timeSec": 1.09446,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 9,
+      "placeId": "osm:way:50885565",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "265ccceff0bdfc65ecbf72a4f6a7c2bb54c08ba8e88f9737cb32c45107ea0aca",
+        "playing": [
+          {
+            "timeSec": 1.069184,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 10,
+      "placeId": "osm:relation:19079948",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "a703933205f0ffc0f0a57e12c004167a0af24b952b276596f56f9b31076f7c2e",
+        "playing": [
+          {
+            "timeSec": 1.070818,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 11,
+      "placeId": "osm:relation:19075670",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "0da682f569ee5896031cf8534fef615c9c1ad28e76491020988c739f0de89042",
+        "playing": [
+          {
+            "timeSec": 1.03463,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 12,
+      "placeId": "osm:relation:19083613",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "95b03220809347eb5b8d7869192403bf26d43cae71f3b01ca5f6c094c6e04843",
+        "playing": [
+          {
+            "timeSec": 1.099137,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 13,
+      "placeId": "osm:relation:19080710",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "b756f67400467aa9d2751f479da9dade15fdd014ba50a732fbf551c50c50cfe4",
+        "playing": [
+          {
+            "timeSec": 1.08786,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 14,
+      "placeId": "osm:relation:19077852",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "327ffa69d94382ddbd923d9f1c4500814fec27453b5b4108cd6730dff7797907",
+        "playing": [
+          {
+            "timeSec": 1.016637,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 15,
+      "placeId": "osm:relation:7596233",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "d991873c5f1a3718983800b92864bf55bf0e2d2f45ea5e3cb6b67aa89e34930c",
+        "playing": [
+          {
+            "timeSec": 1.094861,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 16,
+      "placeId": "osm:way:52467191",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "6626a0bbc1370db85b706104642f108167ee0ad5903b8f944684fb2aa9882f32",
+        "playing": [
+          {
+            "timeSec": 1.015862,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    }
+  ],
+  "finishChecked": true,
+  "destinationCheckedBeforeStart": true,
+  "javascriptErrors": [],
+  "audioHttp": [
+    {
+      "url": "https://otgolosok.online/api/story-audio/fe0c85fb7765247b9f89e1b65715cf2b4e142dfdda8ab707e28286ea0b758654.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/31247ec388a8cc5e591f99cd4aa599a29b6f2b156cf962d5a04229a01aaceedb.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/8650d9ef774fd9aa59d0873887fef0f4e9b12db9891487a3a842266dc6c4a65e.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/c94b0f7452e6fb5a28ace0489d6666092683ed7f18439cfd67d3f686639e7c1d.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/7bbdcc2b4f939b5c8d9735a15219532785e2d51a9dd76f913394e0e8622a6e6c.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/a3df701c04c4e5c40f8b3ef891b9cbc8f9a267c4b6793904f2ed7a0e13cf8629.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/dad458de3b8d8dd5471609ab9dbdc8f28b1e5c80878d86089f9aaac6df94cedd.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/6fb81b14f761d8a3587d45259d6eef7286538165798c9eebfafc265ecd795626.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/265ccceff0bdfc65ecbf72a4f6a7c2bb54c08ba8e88f9737cb32c45107ea0aca.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/a703933205f0ffc0f0a57e12c004167a0af24b952b276596f56f9b31076f7c2e.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/0da682f569ee5896031cf8534fef615c9c1ad28e76491020988c739f0de89042.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/95b03220809347eb5b8d7869192403bf26d43cae71f3b01ca5f6c094c6e04843.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/b756f67400467aa9d2751f479da9dade15fdd014ba50a732fbf551c50c50cfe4.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/327ffa69d94382ddbd923d9f1c4500814fec27453b5b4108cd6730dff7797907.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/d991873c5f1a3718983800b92864bf55bf0e2d2f45ea5e3cb6b67aa89e34930c.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/6626a0bbc1370db85b706104642f108167ee0ad5903b8f944684fb2aa9882f32.mp3",
+      "status": 206
+    }
+  ],
+  "photoHttp": [
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:85761",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/bf9d351d03fde8de80857fc31c64b873b781e9f6da4e41ee9f4551b9262c29da.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:node:916076835",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/3b97feff5f1a9772baed7d32f5e0dc73752ad813bb4d69415d9596555f8ccb68.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:node:13352615294",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/ab56afbb22988457f01b07a88b1015e33c71d62c4375d20dd14a706fba7f11cb.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:9303001",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/071c51f24c5e52636205ba7ae1fffd3de942462a9b72f6354a8b9f133e4a8aa2.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:way:84690464",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/21209b1b61e0d5ae219ad0864b6de19cded39254f195ce694cc5f29e770da1ce.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:node:928056489",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/af181c27b31a2d0b6d719eaac4e32c2b68a2ddac00ab977c48744c1b630f0a7d.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:9308383",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/54e72a2e9ca65217ef11ba92a81c89b2b5ed94323bfe9ae63d1bd47c0004024f.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/images/places/way-84632785-c00a8336c8b6.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:way:84632785",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:way:50885565",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/c12240d33254c82b42363f244f3425cc9360fc668c4e1cdcf272cd0e4601f54b.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:19079948",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/b8c4aa304bb977c822cab89e3ef85cb61316cc81cc843137341266c9427f325f.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:19075670",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/d1bff1f5e1e566ff614c88ff162a76f22ca98a4c29f3a3182198074159b4ec8d.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:19083613",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/a5230af0e673efc90e02e506c1b1007da519cd15f52fdb36c5ad2c14e92cc63e.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:19080710",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/8ca0048f21f1ee97742483c0520eb833a999840af2a4bc62462698e703169521.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:19077852",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/0ac79db0278d4ca3fc9d71b5ae5507f9e2fb7acf570c3176685a0ca2291d71a1.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:7596233",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/18b9f7feacac5b63e3f5db240faab07dfa4443aad86f246b6a6aa8eea8d29832.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:way:52467191",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/654d2495827cf4d71f07c184310830a3c1d1433c179d1cf17913d723e76ccebc.jpg",
+      "status": 200
+    }
+  ],
+  "fieldChecked": false
+}

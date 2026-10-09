@@ -1,0 +1,1942 @@
+{
+  "checked": 42,
+  "validExisting": 40,
+  "entries": [
+    {
+      "route": "R01",
+      "placeId": "osm:way:45818589",
+      "title": "Белые палаты",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/afc0f36c495ac1f3532f45eea671dd3283d9077ad7e3411e3c878594f4b27851.jpg",
+        "src": "/api/place-images/823578d1d1e2ce0892af17499c8c336fc891ebaa3588486cf74818e2c80b55a6.jpg",
+        "width": 960,
+        "height": 756,
+        "alt": "Белые палаты",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Prechistenka_01.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-45818589-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-45818589-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            756
+          ],
+          "bytes": 188749,
+          "sha256": "823578d1d1e2ce0892af17499c8c336fc891ebaa3588486cf74818e2c80b55a6",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            197
+          ],
+          "bytes": 22178,
+          "sha256": "afc0f36c495ac1f3532f45eea671dd3283d9077ad7e3411e3c878594f4b27851",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:relation:9464684",
+      "title": "Усадьба Хрущёвых-Селезнёвых",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/23f41bacbd747bccace3ceee6097c4fac1558f6219abc5647ba1745ebcbfe8a9.jpg",
+        "src": "/api/place-images/1a049de0b34ed8d9b8eab65fa5e6d3fcb80cdb84899ddf82c1dd3227ed3aa704.jpg",
+        "width": 960,
+        "height": 531,
+        "alt": "Усадьба Хрущёвых-Селезнёвых",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Prechistenka_pushkin_museum_corner.jpg",
+        "license": "CC BY-SA 2.5",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-9464684-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-9464684-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            531
+          ],
+          "bytes": 159449,
+          "sha256": "1a049de0b34ed8d9b8eab65fa5e6d3fcb80cdb84899ddf82c1dd3227ed3aa704",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            138
+          ],
+          "bytes": 14398,
+          "sha256": "23f41bacbd747bccace3ceee6097c4fac1558f6219abc5647ba1745ebcbfe8a9",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:node:2798179186",
+      "title": "Государственный музей-заповедник Л. Н. Толстого — Литературная экспозиция на Пречистенке",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/b96bcc3403e7c3ebf60445fdfc65971528b3bf4fdfaa544bfefc638f97a73e5f.jpg",
+        "src": "/api/place-images/b8159d2630ab7c4264f0564fb0acb0a22d4ffda2694cd2a94f96a98d2ddb4e53.jpg",
+        "width": 960,
+        "height": 478,
+        "alt": "Государственный музей-заповедник Л. Н. Толстого — Литературная экспозиция на Пречистенке",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Prechistenka_04.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-2798179186-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-2798179186-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            478
+          ],
+          "bytes": 138312,
+          "sha256": "b8159d2630ab7c4264f0564fb0acb0a22d4ffda2694cd2a94f96a98d2ddb4e53",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            124
+          ],
+          "bytes": 16803,
+          "sha256": "b96bcc3403e7c3ebf60445fdfc65971528b3bf4fdfaa544bfefc638f97a73e5f",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:way:129212972",
+      "title": "Центральный дом учёных",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/dd885133f7e09535eff7efa62e90e63367fec9e3a0e73d5318bbb81dd2694e5d.jpg",
+        "src": "/api/place-images/531457a5838b5e2955a8a22eb124c9c1109607cbc3e589146bee78587742c6c4.jpg",
+        "width": 500,
+        "height": 625,
+        "alt": "Центральный дом учёных",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Prechistenka_16_fence_Mar_2009_02.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-129212972-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-129212972-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            625
+          ],
+          "bytes": 142951,
+          "sha256": "531457a5838b5e2955a8a22eb124c9c1109607cbc3e589146bee78587742c6c4",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            312
+          ],
+          "bytes": 37022,
+          "sha256": "dd885133f7e09535eff7efa62e90e63367fec9e3a0e73d5318bbb81dd2694e5d",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:way:412738928",
+      "title": "Флигель городской усадьбы Бибиковых — Д. В. Давыдова",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/fe7778d0456e79dd9517d6ce1cf108711d7a4a346874483b05e93e8eeb0c2e4a.jpg",
+        "src": "/api/place-images/1a7dccad3c48ba7941a5fb1ece707bed0d1dee234f8ea049b1513b1dfea1d8ba.jpg",
+        "width": 500,
+        "height": 536,
+        "alt": "Флигель городской усадьбы Бибиковых — Д. В. Давыдова",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Prechistenka_17-10_Aug_2008_01.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-412738928-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-412738928-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            536
+          ],
+          "bytes": 88124,
+          "sha256": "1a7dccad3c48ba7941a5fb1ece707bed0d1dee234f8ea049b1513b1dfea1d8ba",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            268
+          ],
+          "bytes": 25442,
+          "sha256": "fe7778d0456e79dd9517d6ce1cf108711d7a4a346874483b05e93e8eeb0c2e4a",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:relation:8914102",
+      "title": "Усадьба Морозова на Пречистенке",
+      "existingPhoto": null,
+      "valid": false,
+      "errors": [
+        "no_published_photo"
+      ],
+      "files": {},
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": true,
+      "replacement": {
+        "thumbnail": "/images/places/relation-8914102-9cdaffabf8f4.jpg",
+        "src": "/images/places/relation-8914102-7c0c87b3e87a.jpg",
+        "width": 960,
+        "height": 646,
+        "alt": "Усадьба Ивана Морозова на Пречистенке, 21. Фото 24 мая 2012 года",
+        "author": "А.Савин, Википедия",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Prechistenka_05.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "retrievedAt": "2026-10-09",
+        "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+      },
+      "preparedFiles": {
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/relation-8914102-9cdaffabf8f4.jpg",
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/relation-8914102-7c0c87b3e87a.jpg"
+      }
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:node:8898082919",
+      "title": "Доходный дом И. П. Исакова",
+      "existingPhoto": null,
+      "valid": false,
+      "errors": [
+        "no_published_photo"
+      ],
+      "files": {},
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": true,
+      "replacement": {
+        "thumbnail": "/images/places/node-8898082919-9a592fdff8d2.jpg",
+        "src": "/images/places/node-8898082919-162813cfb8a2.jpg",
+        "width": 960,
+        "height": 960,
+        "alt": "Доходный дом Ивана Исакова на Пречистенке, 28, построенный Львом Кекушевым",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Prechistenka_28_May_2008_01.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "retrievedAt": "2026-10-09",
+        "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+      },
+      "preparedFiles": {
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/node-8898082919-9a592fdff8d2.jpg",
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/node-8898082919-162813cfb8a2.jpg"
+      }
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:node:5591184668",
+      "title": "Усадьба Охотниковых",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/fd2a85b124c7806dba94ce3f24eb8b977ea78e5db72e450471debe5b1c2db0b5.jpg",
+        "src": "/api/place-images/7198002a75f46e161633314c15b2c55ad33a0785af08f49a789f60f562b1550b.jpg",
+        "width": 960,
+        "height": 638,
+        "alt": "Усадьба Охотниковых",
+        "author": "Sigwald",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Prechistenka_32,_b.1_2015_01.JPG",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-5591184668-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-5591184668-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            638
+          ],
+          "bytes": 191299,
+          "sha256": "7198002a75f46e161633314c15b2c55ad33a0785af08f49a789f60f562b1550b",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            166
+          ],
+          "bytes": 15928,
+          "sha256": "fd2a85b124c7806dba94ce3f24eb8b977ea78e5db72e450471debe5b1c2db0b5",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:way:104202024",
+      "title": "Усадьба Самсонова — главный дом",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/76d6727f183570a02cd786604420dde62ca5848bbb58d58344da28483692e2c4.jpg",
+        "src": "/api/place-images/aeed0347cb6d8589bdec6e015c50b3579ba298a4a79b6bde9320ec345c151cc9.jpg",
+        "width": 960,
+        "height": 540,
+        "alt": "Усадьба Самсонова — главный дом",
+        "author": "Artem Svetlov",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%93%D0%BE%D1%80%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D1%8F_%D1%83%D1%81%D0%B0%D0%B4%D1%8C%D0%B1%D0%B0_%D0%A1%D0%B0%D0%BC%D1%81%D0%BE%D0%BD%D0%BE%D0%B2%D0%B0_%D0%B2_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5_2015-09-17.jpg",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-104202024-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-104202024-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            540
+          ],
+          "bytes": 139754,
+          "sha256": "aeed0347cb6d8589bdec6e015c50b3579ba298a4a79b6bde9320ec345c151cc9",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            141
+          ],
+          "bytes": 13226,
+          "sha256": "76d6727f183570a02cd786604420dde62ca5848bbb58d58344da28483692e2c4",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:way:47584795",
+      "title": "Дом М. К. Морозовой — посольство Королевства Дания",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/81d66d3815ef26b709f437466edbedd989b6d239e1d6acb609bdcc24c125dd97.jpg",
+        "src": "/api/place-images/5c397f47dbcb80da881464efcc4fc883b2ecb3aedc9d71775d05d0ea99a1649f.jpg",
+        "width": 500,
+        "height": 568,
+        "alt": "Дом М. К. Морозовой — посольство Королевства Дания",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Prechistensky_9_01.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-47584795-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-47584795-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            568
+          ],
+          "bytes": 95912,
+          "sha256": "5c397f47dbcb80da881464efcc4fc883b2ecb3aedc9d71775d05d0ea99a1649f",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            284
+          ],
+          "bytes": 27395,
+          "sha256": "81d66d3815ef26b709f437466edbedd989b6d239e1d6acb609bdcc24c125dd97",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:relation:10967050",
+      "title": "Храм Успения Пресвятой Богородицы на Могильцах",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/54adb33bf6a526061e5f7e131f7a2bb04d07b6481b4d0a955b07acc5fed66a56.jpg",
+        "src": "/api/place-images/4eb5c9d16cc614a5129dc6918e1673f14ca9e361c6f92c94abdaf51f6a2effd0.jpg",
+        "width": 960,
+        "height": 717,
+        "alt": "Храм Успения Пресвятой Богородицы на Могильцах",
+        "author": "Adges van Hepsu",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%A6%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D1%8C_%D0%A3%D1%81%D0%BF%D0%B5%D0%BD%D0%B8%D1%8F_%D0%BD%D0%B0_%D0%BC%D0%BE%D0%B3%D0%B8%D0%BB%D1%8C%D1%86%D0%B0%D1%85_%D0%BD%D0%BE%D1%8F%D0%B1%D1%80%D1%8C_2012.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-10967050-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-10967050-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            717
+          ],
+          "bytes": 241176,
+          "sha256": "4eb5c9d16cc614a5129dc6918e1673f14ca9e361c6f92c94abdaf51f6a2effd0",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            187
+          ],
+          "bytes": 20419,
+          "sha256": "54adb33bf6a526061e5f7e131f7a2bb04d07b6481b4d0a955b07acc5fed66a56",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:way:47513393",
+      "title": "Особняк Берга — Посольство Италии в России",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/10bd8c5838b2e46fe18c9e66afaf6cf54e17507b0bdac63e1999c04a2f161be7.jpg",
+        "src": "/api/place-images/ee5f1a7c635582cd31ddf928f593093e6ec2c95b26f1b1b95fc358aafc83ec30.jpg",
+        "width": 500,
+        "height": 405,
+        "alt": "Особняк Берга — Посольство Италии в России",
+        "author": "User:Kalan",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Embassy_of_Italy_in_Moscow,_building.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-47513393-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-47513393-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            405
+          ],
+          "bytes": 81749,
+          "sha256": "ee5f1a7c635582cd31ddf928f593093e6ec2c95b26f1b1b95fc358aafc83ec30",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            202
+          ],
+          "bytes": 22640,
+          "sha256": "10bd8c5838b2e46fe18c9e66afaf6cf54e17507b0bdac63e1999c04a2f161be7",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:node:4088301220",
+      "title": "Музей-квартира Евгения Вахтангова",
+      "existingPhoto": {
+        "thumbnail": "/images/places/node-4088301220-20b183aec9d5.jpg",
+        "src": "/images/places/node-4088301220-524d3db606fe.jpg",
+        "width": 960,
+        "height": 1534,
+        "alt": "Исторический рисованный портрет Евгения Вахтангова. Иллюстрация к биографии режиссёра; музей-квартира не показан.",
+        "author": "Scanned and processed by Mariluna",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vakhtangov_Yevgeny_1921.jpg",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/File:Vakhtangov_Yevgeny_1921.jpg#Licensing"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-4088301220-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-4088301220-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            1534
+          ],
+          "bytes": 222951,
+          "sha256": "524d3db606fef4bdb3b6591ce6af9c38a6add54eff42c18a10ea1406139943d2",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            399
+          ],
+          "bytes": 20368,
+          "sha256": "20b183aec9d5871b3abcd87b501a0f4438392cc1cfaffb16e31934fd85208100",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "visualNote": "Сохранён имеющийся исторический портрет Евгения Вахтангова 1921 года; это иллюстрация героя рассказа, а не фасад музея.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R01",
+      "placeId": "osm:way:47512415",
+      "title": "Особняк Маргариты Морозовой",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/904cf59118570fe4ee4c81eca611008c083d37e14d1c32cad17c4737afe362fb.jpg",
+        "src": "/api/place-images/08310e49e68efaa740bedea801c49c4da20e219104192a66d56f508a1b587492.jpg",
+        "width": 500,
+        "height": 375,
+        "alt": "Особняк Маргариты Морозовой",
+        "author": "aramis7",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9E%D1%81%D0%BE%D0%B1%D0%BD%D1%8F%D0%BA_%D0%9C%D0%BE%D1%80%D0%BE%D0%B7%D0%BE%D0%B2%D1%8B%D1%85_%D0%BD%D0%B0_%D0%A1%D0%BC%D0%BE%D0%BB%D0%B5%D0%BD%D1%81%D0%BA%D0%BE%D0%BC_%D0%B1%D1%83%D0%BB%D1%8C%D0%B2%D0%B0%D1%80%D0%B5.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-47512415-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-47512415-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            375
+          ],
+          "bytes": 80934,
+          "sha256": "08310e49e68efaa740bedea801c49c4da20e219104192a66d56f508a1b587492",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            187
+          ],
+          "bytes": 24258,
+          "sha256": "904cf59118570fe4ee4c81eca611008c083d37e14d1c32cad17c4737afe362fb",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:relation:5969167",
+      "title": "Дом Пашкова",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/12db0158d2bcb7ef52864c1022a812abf84d7599c5ff401535e48ac2d1a0a3e3.jpg",
+        "src": "/api/place-images/daa8d0e1e49377f79ad4388b0abfd73035f49de9c2dd92515f9c6458e472e1f6.jpg",
+        "width": 960,
+        "height": 702,
+        "alt": "Дом Пашкова",
+        "author": "Ludvig14",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_PashkovHouse_I43.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-5969167-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-5969167-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            702
+          ],
+          "bytes": 193529,
+          "sha256": "daa8d0e1e49377f79ad4388b0abfd73035f49de9c2dd92515f9c6458e472e1f6",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            183
+          ],
+          "bytes": 13551,
+          "sha256": "12db0158d2bcb7ef52864c1022a812abf84d7599c5ff401535e48ac2d1a0a3e3",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:node:5630505421",
+      "title": "Галерея Александра Шилова",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/9358f849fca49c9d6968a11ce17ee7dd8c35d3f6d69ecaa3149e14b2c877e9c7.jpg",
+        "src": "/api/place-images/3bc66573fb228f532fa4bf64df3f6469dc1087adec092957e23beb3ba84204f8.jpg",
+        "width": 960,
+        "height": 761,
+        "alt": "Галерея Александра Шилова",
+        "author": "Юрий Д.К.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_2025._Shilov_Gallery.jpg",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-5630505421-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-5630505421-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            761
+          ],
+          "bytes": 202426,
+          "sha256": "3bc66573fb228f532fa4bf64df3f6469dc1087adec092957e23beb3ba84204f8",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            198
+          ],
+          "bytes": 18785,
+          "sha256": "9358f849fca49c9d6968a11ce17ee7dd8c35d3f6d69ecaa3149e14b2c877e9c7",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:way:47853856",
+      "title": "Усадьба Апраксиных — Бутурлиных, дом Бутурлина",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/e8fbe45ff59503d231371fd048e6ddeec4d5655d2a71322442bc8fb6e332cae8.jpg",
+        "src": "/api/place-images/1895206a6132bdd93f30809741edb6141f4c88d80b443776f960b57c0ebbe70c.jpg",
+        "width": 960,
+        "height": 638,
+        "alt": "Усадьба Апраксиных — Бутурлиных, дом Бутурлина",
+        "author": "Sigwald",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Znamenka_12_2015.JPG",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-47853856-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-47853856-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            638
+          ],
+          "bytes": 217174,
+          "sha256": "1895206a6132bdd93f30809741edb6141f4c88d80b443776f960b57c0ebbe70c",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            166
+          ],
+          "bytes": 18291,
+          "sha256": "e8fbe45ff59503d231371fd048e6ddeec4d5655d2a71322442bc8fb6e332cae8",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:way:32693719",
+      "title": "Усадьба Вяземских-Долгоруковых",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/6701935855d93d318916229b9b2440e0336995320bf8063abeb34f02a06fd8d6.jpg",
+        "src": "/api/place-images/61c4476320fd74c21d7b88a4079102ce0096617e7cfaf81acd8f650e93b426c6.jpg",
+        "width": 500,
+        "height": 375,
+        "alt": "Усадьба Вяземских-Долгоруковых",
+        "author": "Shakko",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vyazemskiy-Dolgorukiy_estate_(Znamenskiy_lane)_01_by_shakko.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-32693719-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-32693719-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            375
+          ],
+          "bytes": 100603,
+          "sha256": "61c4476320fd74c21d7b88a4079102ce0096617e7cfaf81acd8f650e93b426c6",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            187
+          ],
+          "bytes": 26774,
+          "sha256": "6701935855d93d318916229b9b2440e0336995320bf8063abeb34f02a06fd8d6",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:way:32693359",
+      "title": "Главный дом усадьбы Лопухиных («Дом с палатами»)",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/0615675db7782ccd0d3ff4289304dc91796822f4ffbbec99f499d1f03ec913fc.jpg",
+        "src": "/api/place-images/3d7fa0f207767c3fe934da88b8a6ffc9629fdf084a7fd6d4940a07c36f36e4f6.jpg",
+        "width": 960,
+        "height": 638,
+        "alt": "Главный дом усадьбы Лопухиных («Дом с палатами»)",
+        "author": "Sigwald",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_M._Znamenskiy_3-5_c4_2015_2.JPG",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-32693359-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-32693359-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            638
+          ],
+          "bytes": 178761,
+          "sha256": "3d7fa0f207767c3fe934da88b8a6ffc9629fdf084a7fd6d4940a07c36f36e4f6",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            166
+          ],
+          "bytes": 15985,
+          "sha256": "0615675db7782ccd0d3ff4289304dc91796822f4ffbbec99f499d1f03ec913fc",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:relation:2424377",
+      "title": "Храм священномученика Антипы на Колымажном дворе",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/cac4a1d8a25a5b80d333ba804bf6a3c21c5816585eac5fd88890fbabdc7ec085.jpg",
+        "src": "/api/place-images/b49ea57910a73088fd1aabf4d74633c203bfd32f992e05c7df5dbe1b0421eb22.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Храм священномученика Антипы на Колымажном дворе",
+        "author": "Shakko",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Church_of_Saint_Antipas_of_Pergamum_in_Kolymazhny_Dvor_(2010s)_by_shakko_03.JPG",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-2424377-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-2424377-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            720
+          ],
+          "bytes": 164506,
+          "sha256": "b49ea57910a73088fd1aabf4d74633c203bfd32f992e05c7df5dbe1b0421eb22",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            187
+          ],
+          "bytes": 17292,
+          "sha256": "cac4a1d8a25a5b80d333ba804bf6a3c21c5816585eac5fd88890fbabdc7ec085",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:relation:2421978",
+      "title": "Главное здание Государственного музея изобразительных искусств имени А. С. Пушкина",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/f9582434de80645d317ddfd0aec3650958edbc6c16fb28872f9a64d60d91bb3f.jpg",
+        "src": "/api/place-images/add3bc104234868dcb3f0f98ebbcfbd4e8fa69c08f11aa68c2cd47b980802472.jpg",
+        "width": 500,
+        "height": 375,
+        "alt": "Главное здание Государственного музея изобразительных искусств имени А. С. Пушкина",
+        "author": "user:Ghirlandajo",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gmii.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-2421978-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-2421978-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            375
+          ],
+          "bytes": 64759,
+          "sha256": "add3bc104234868dcb3f0f98ebbcfbd4e8fa69c08f11aa68c2cd47b980802472",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            187
+          ],
+          "bytes": 19846,
+          "sha256": "f9582434de80645d317ddfd0aec3650958edbc6c16fb28872f9a64d60d91bb3f",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:node:273354762",
+      "title": "Галерея искусства стран Европы и Америки XIX—XX веков",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/3a4f645e30128c4925be8ddffc86e0d3b7a10e9f02f1abad2c5825f76b359e76.jpg",
+        "src": "/api/place-images/e2499735f5d0bb2ab77613673f86e16cfda48772ecb68216b16c5ebf4f13f6a3.jpg",
+        "width": 960,
+        "height": 677,
+        "alt": "Галерея искусства стран Европы и Америки XIX—XX веков",
+        "author": "User:Shakko",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pushkin_museum_-_19th_and_20th_Century_European_and_American_Art_-_building_02_by_shakko.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-273354762-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-273354762-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            677
+          ],
+          "bytes": 147514,
+          "sha256": "e2499735f5d0bb2ab77613673f86e16cfda48772ecb68216b16c5ebf4f13f6a3",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            176
+          ],
+          "bytes": 13511,
+          "sha256": "3a4f645e30128c4925be8ddffc86e0d3b7a10e9f02f1abad2c5825f76b359e76",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:node:2322476565",
+      "title": "Мемориальная доска Василию Андреевичу Тропинину",
+      "existingPhoto": {
+        "thumbnail": "/images/places/node-2322476565-c938403c49e3.jpg",
+        "src": "/images/places/node-2322476565-b2ecf5d023ee.jpg",
+        "width": 960,
+        "height": 640,
+        "alt": "Дом на Волхонке, 9, с мемориальной доской Василию Тропинину. Общий вид фасада.",
+        "author": "Mos.ru",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Volhonka,_9.jpg",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-2322476565-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-2322476565-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            640
+          ],
+          "bytes": 173791,
+          "sha256": "b2ecf5d023ee3b7fd9468cdd035979cbbd6947c081370a4491feca8d978f0ba3",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            167
+          ],
+          "bytes": 15382,
+          "sha256": "c938403c49e3c3c7c811ce86f827554b5c68a05803d884316a5f183e763e613e",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "visualNote": "Сохранён снимок дома на Волхонке, 9, где находится мемориальная доска Тропинину; сама доска на общем плане не читается.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:relation:10048315",
+      "title": "Галерея Ильи Глазунова",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/fa41aecbb0c057789afc4706c9da4fbe682a505697e5cf5f4df27a20c2c4fb2d.jpg",
+        "src": "/api/place-images/6744174f71f41b6752cfc3aafb38241ed06b359f2b0009b6869e8dbe83525816.jpg",
+        "width": 960,
+        "height": 562,
+        "alt": "Галерея Ильи Глазунова",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Volkhonka_01.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-10048315-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-10048315-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            562
+          ],
+          "bytes": 173960,
+          "sha256": "6744174f71f41b6752cfc3aafb38241ed06b359f2b0009b6869e8dbe83525816",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            146
+          ],
+          "bytes": 18619,
+          "sha256": "fa41aecbb0c057789afc4706c9da4fbe682a505697e5cf5f4df27a20c2c4fb2d",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:relation:2150666",
+      "title": "Дом Института русского языка РАН",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/2f33ccaf40de08265006bc6ae2eaf5809dc91cf953af4b29d448c314944bfdb9.jpg",
+        "src": "/api/place-images/003f6ed049d026ae54a3b49041d9ad62c0d5ad90629b917b7c8c73a086c0bc9f.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Дом Института русского языка РАН",
+        "author": "Shuvaev",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Volkhonka_Street_18-2.JPG",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-2150666-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-2150666-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            720
+          ],
+          "bytes": 156910,
+          "sha256": "003f6ed049d026ae54a3b49041d9ad62c0d5ad90629b917b7c8c73a086c0bc9f",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            187
+          ],
+          "bytes": 17433,
+          "sha256": "2f33ccaf40de08265006bc6ae2eaf5809dc91cf953af4b29d448c314944bfdb9",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R03",
+      "placeId": "osm:relation:7314898",
+      "title": "Храм Христа Спасителя",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/8c1912bf87777f9839e2d5b43dae9af918f537013e60b2754efec2aae74145b5.jpg",
+        "src": "/api/place-images/d20c2f122e8b07f2bba8512feca551cc3ea48066c738abb527f0e469dee5cd51.jpg",
+        "width": 960,
+        "height": 878,
+        "alt": "Храм Христа Спасителя",
+        "author": "Alvesgaspar",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_July_2011-7a.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-7314898-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-7314898-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            878
+          ],
+          "bytes": 206728,
+          "sha256": "d20c2f122e8b07f2bba8512feca551cc3ea48066c738abb527f0e469dee5cd51",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            229
+          ],
+          "bytes": 18849,
+          "sha256": "8c1912bf87777f9839e2d5b43dae9af918f537013e60b2754efec2aae74145b5",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:relation:85761",
+      "title": "Гостиница «Метрополь»",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/6ec517187e45e2abd3046fa58686fb041d812d244bad40ee0da814f356063282.jpg",
+        "src": "/api/place-images/bf9d351d03fde8de80857fc31c64b873b781e9f6da4e41ee9f4551b9262c29da.jpg",
+        "width": 960,
+        "height": 768,
+        "alt": "Гостиница «Метрополь»",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_Hotel_Metropol_asv2018-08.jpg",
+        "license": "FAL",
+        "licenseUrl": "http://artlibre.org/licence/lal/en"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-85761-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-85761-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            768
+          ],
+          "bytes": 202004,
+          "sha256": "bf9d351d03fde8de80857fc31c64b873b781e9f6da4e41ee9f4551b9262c29da",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            200
+          ],
+          "bytes": 19224,
+          "sha256": "6ec517187e45e2abd3046fa58686fb041d812d244bad40ee0da814f356063282",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:node:916076835",
+      "title": "Памятник первопечатнику Ивану Фёдорову",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/9ddf21fac66210d93d7f5934979c3e48f8e79f383996a7300831027eb7845ded.jpg",
+        "src": "/api/place-images/3b97feff5f1a9772baed7d32f5e0dc73752ad813bb4d69415d9596555f8ccb68.jpg",
+        "width": 500,
+        "height": 750,
+        "alt": "Памятник первопечатнику Ивану Фёдорову",
+        "author": "Андрей Ю. Вуколов",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B0%D0%BC%D1%8F%D1%82%D0%BD%D0%B8%D0%BA_%D0%98%D0%B2%D0%B0%D0%BD%D1%83_%D0%A4%D0%B5%D0%B4%D0%BE%D1%80%D0%BE%D0%B2%D1%83_%D0%B2_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-916076835-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-916076835-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            750
+          ],
+          "bytes": 108625,
+          "sha256": "3b97feff5f1a9772baed7d32f5e0dc73752ad813bb4d69415d9596555f8ccb68",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            375
+          ],
+          "bytes": 34556,
+          "sha256": "9ddf21fac66210d93d7f5934979c3e48f8e79f383996a7300831027eb7845ded",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:node:13352615294",
+      "title": "Доходный дом и аптека В. К. Феррейна",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/dd0df6d49b205c1c7b44d6b84b13e101636c267e005a2806ef81f321e1bcb1d9.jpg",
+        "src": "/api/place-images/ab56afbb22988457f01b07a88b1015e33c71d62c4375d20dd14a706fba7f11cb.jpg",
+        "width": 500,
+        "height": 714,
+        "alt": "Доходный дом и аптека В. К. Феррейна",
+        "author": "Ludvig14",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_Nikolskaya21_G09.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-13352615294-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-13352615294-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            714
+          ],
+          "bytes": 128909,
+          "sha256": "ab56afbb22988457f01b07a88b1015e33c71d62c4375d20dd14a706fba7f11cb",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            357
+          ],
+          "bytes": 37936,
+          "sha256": "dd0df6d49b205c1c7b44d6b84b13e101636c267e005a2806ef81f321e1bcb1d9",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:relation:9303001",
+      "title": "Историко-архивный институт РГГУ",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/ddf4274d41534dd9f9bc756830f25df7edd30b483c5e455888b239dcd24ad1e9.jpg",
+        "src": "/api/place-images/071c51f24c5e52636205ba7ae1fffd3de942462a9b72f6354a8b9f133e4a8aa2.jpg",
+        "width": 500,
+        "height": 512,
+        "alt": "Историко-архивный институт РГГУ",
+        "author": "Ludvig14",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_PrintYard_G06.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-9303001-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-9303001-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            512
+          ],
+          "bytes": 85763,
+          "sha256": "071c51f24c5e52636205ba7ae1fffd3de942462a9b72f6354a8b9f133e4a8aa2",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            256
+          ],
+          "bytes": 25649,
+          "sha256": "ddf4274d41534dd9f9bc756830f25df7edd30b483c5e455888b239dcd24ad1e9",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:way:84690464",
+      "title": "Собор Спаса Нерукотворного Образа в Заиконоспасском монастыре",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/779b3d8e5e2bebdd2340be2aef0f84f7be31630276067f70f5c9983172d6c230.jpg",
+        "src": "/api/place-images/21209b1b61e0d5ae219ad0864b6de19cded39254f195ce694cc5f29e770da1ce.jpg",
+        "width": 960,
+        "height": 924,
+        "alt": "Собор Спаса Нерукотворного Образа в Заиконоспасском монастыре",
+        "author": "Ludvig14",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_ZaikonospasskyMonastery_G23.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-84690464-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-84690464-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            924
+          ],
+          "bytes": 241125,
+          "sha256": "21209b1b61e0d5ae219ad0864b6de19cded39254f195ce694cc5f29e770da1ce",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            241
+          ],
+          "bytes": 22004,
+          "sha256": "779b3d8e5e2bebdd2340be2aef0f84f7be31630276067f70f5c9983172d6c230",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:node:928056489",
+      "title": "Богоявленский монастырь",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/30d53c7558433cefa26312937d7c6a7531b80f9c50bc04183369a4fc301549a8.jpg",
+        "src": "/api/place-images/af181c27b31a2d0b6d719eaac4e32c2b68a2ddac00ab977c48744c1b630f0a7d.jpg",
+        "width": 500,
+        "height": 667,
+        "alt": "Богоявленский монастырь",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_Bogoyavlensky_asv2021-07_img3.jpg",
+        "license": "FAL",
+        "licenseUrl": "http://artlibre.org/licence/lal/en"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-928056489-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-928056489-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            667
+          ],
+          "bytes": 99068,
+          "sha256": "af181c27b31a2d0b6d719eaac4e32c2b68a2ddac00ab977c48744c1b630f0a7d",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            333
+          ],
+          "bytes": 29225,
+          "sha256": "30d53c7558433cefa26312937d7c6a7531b80f9c50bc04183369a4fc301549a8",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:relation:9308383",
+      "title": "Церковь Космы и Дамиана в Старых Панех",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/8cbbe0acd033735c3e2031cbfe7cc21de69f824a3fae1a2de48bb955302c6c34.jpg",
+        "src": "/api/place-images/54e72a2e9ca65217ef11ba92a81c89b2b5ed94323bfe9ae63d1bd47c0004024f.jpg",
+        "width": 500,
+        "height": 791,
+        "alt": "Церковь Космы и Дамиана в Старых Панех",
+        "author": "Николай Аввакумов",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kosma_Damian_Kitay_gorod1.JPG",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-9308383-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-9308383-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            791
+          ],
+          "bytes": 116978,
+          "sha256": "54e72a2e9ca65217ef11ba92a81c89b2b5ed94323bfe9ae63d1bd47c0004024f",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            395
+          ],
+          "bytes": 37899,
+          "sha256": "8cbbe0acd033735c3e2031cbfe7cc21de69f824a3fae1a2de48bb955302c6c34",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:way:84632785",
+      "title": "Церковь Ильи Пророка в Новгородском подворье",
+      "existingPhoto": {
+        "thumbnail": "/images/places/way-84632785-0890a9db5db3.jpg",
+        "src": "/images/places/way-84632785-c00a8336c8b6.jpg",
+        "width": 960,
+        "height": 1280,
+        "alt": "Церковь Ильи Пророка на Ильинке, исторический вид до реставрации. Фотография shakko, 2012 год.",
+        "author": "shakko",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Church_of_Elijah_the_Prophet_in_Ilyinka_by_shakko_01.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-84632785-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-84632785-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            1280
+          ],
+          "bytes": 253920,
+          "sha256": "c00a8336c8b6b7972c6bb04b8af6e970d92539dbe7325dd29c5d8950ca553341",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            333
+          ],
+          "bytes": 23892,
+          "sha256": "0890a9db5db3d80be6f0182277558c928f8db3eeb483dbde8bc6c63926ed11ce",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:way:50885565",
+      "title": "Московская товарная биржа",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/3f6bc91d5cb3fc6cfa425f11a096621b1cd9e2246e1e203c7656363211678d3f.jpg",
+        "src": "/api/place-images/c12240d33254c82b42363f244f3425cc9360fc668c4e1cdcf272cd0e4601f54b.jpg",
+        "width": 500,
+        "height": 417,
+        "alt": "Московская товарная биржа",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_Old_Exchange_asv2021-07_img2.jpg",
+        "license": "FAL",
+        "licenseUrl": "http://artlibre.org/licence/lal/en"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-50885565-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-50885565-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            417
+          ],
+          "bytes": 86076,
+          "sha256": "c12240d33254c82b42363f244f3425cc9360fc668c4e1cdcf272cd0e4601f54b",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            208
+          ],
+          "bytes": 24359,
+          "sha256": "3f6bc91d5cb3fc6cfa425f11a096621b1cd9e2246e1e203c7656363211678d3f",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:relation:19079948",
+      "title": "Храм Варвары Великомученицы на Варварке",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/bfe3c4e856e32a0b29e2987964acfe61843262ac3b303e456d36925c15086f0a.jpg",
+        "src": "/api/place-images/b8c4aa304bb977c822cab89e3ef85cb61316cc81cc843137341266c9427f325f.jpg",
+        "width": 500,
+        "height": 638,
+        "alt": "Храм Варвары Великомученицы на Варварке",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Varvarka_2_(3).jpg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19079948-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19079948-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            638
+          ],
+          "bytes": 101312,
+          "sha256": "b8c4aa304bb977c822cab89e3ef85cb61316cc81cc843137341266c9427f325f",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            319
+          ],
+          "bytes": 29344,
+          "sha256": "bfe3c4e856e32a0b29e2987964acfe61843262ac3b303e456d36925c15086f0a",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:relation:19075670",
+      "title": "Старый Английский двор",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/bd53bb8764e3f0a26d89e2d76a5846b310c0b70bca54c6de977fdf1b731f742d.jpg",
+        "src": "/api/place-images/d1bff1f5e1e566ff614c88ff162a76f22ca98a4c29f3a3182198074159b4ec8d.jpg",
+        "width": 500,
+        "height": 385,
+        "alt": "Старый Английский двор",
+        "author": "Reda Kerbush",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Old_English_Court_in_Moscow_1.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19075670-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19075670-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            385
+          ],
+          "bytes": 78498,
+          "sha256": "d1bff1f5e1e566ff614c88ff162a76f22ca98a4c29f3a3182198074159b4ec8d",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            192
+          ],
+          "bytes": 23074,
+          "sha256": "bd53bb8764e3f0a26d89e2d76a5846b310c0b70bca54c6de977fdf1b731f742d",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:relation:19083613",
+      "title": "Храм Максима Блаженного на Варварке",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/fe66c7bcdfdffa51d9539af37531b8b7410dd4049976dbfe958d7c61471c0003.jpg",
+        "src": "/api/place-images/a5230af0e673efc90e02e506c1b1007da519cd15f52fdb36c5ad2c14e92cc63e.jpg",
+        "width": 500,
+        "height": 566,
+        "alt": "Храм Максима Блаженного на Варварке",
+        "author": "Ludvig14",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_StMaximusChurch_1713.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19083613-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19083613-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            566
+          ],
+          "bytes": 100787,
+          "sha256": "a5230af0e673efc90e02e506c1b1007da519cd15f52fdb36c5ad2c14e92cc63e",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            283
+          ],
+          "bytes": 30815,
+          "sha256": "fe66c7bcdfdffa51d9539af37531b8b7410dd4049976dbfe958d7c61471c0003",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:relation:19080710",
+      "title": "Собор иконы Божией Матери «Знамение» (Знаменский собор)",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/0799d25c2ffc086319e46bd6d91239010d3bd0f988150482ac51559e043f21f6.jpg",
+        "src": "/api/place-images/8ca0048f21f1ee97742483c0520eb833a999840af2a4bc62462698e703169521.jpg",
+        "width": 500,
+        "height": 396,
+        "alt": "Собор иконы Божией Матери «Знамение» (Знаменский собор)",
+        "author": "Reda Kerbush",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Church_of_the_Theotokos_of_the_Sign_(Znamensky_Monastery)_1.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19080710-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19080710-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            396
+          ],
+          "bytes": 83920,
+          "sha256": "8ca0048f21f1ee97742483c0520eb833a999840af2a4bc62462698e703169521",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            198
+          ],
+          "bytes": 25701,
+          "sha256": "0799d25c2ffc086319e46bd6d91239010d3bd0f988150482ac51559e043f21f6",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:relation:19077852",
+      "title": "Палаты бояр Романовых",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/12f0b74071a6f5b6c400cc40f2f4996c924f26c370c0839e83f67f6fef5ada9c.jpg",
+        "src": "/api/place-images/0ac79db0278d4ca3fc9d71b5ae5507f9e2fb7acf570c3176685a0ca2291d71a1.jpg",
+        "width": 500,
+        "height": 428,
+        "alt": "Палаты бояр Романовых",
+        "author": "Ludvig14",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_ZnamenskyMonRomanovChambers_D49.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19077852-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-19077852-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            428
+          ],
+          "bytes": 100043,
+          "sha256": "0ac79db0278d4ca3fc9d71b5ae5507f9e2fb7acf570c3176685a0ca2291d71a1",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            214
+          ],
+          "bytes": 25697,
+          "sha256": "12f0b74071a6f5b6c400cc40f2f4996c924f26c370c0839e83f67f6fef5ada9c",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:relation:7596233",
+      "title": "Храм святителя Николая Мирликийского «Красный звон»",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/aed78ce8ccc78366cb5cbf060f22dc53383a5f836c8e7de894737ce3e726ed8c.jpg",
+        "src": "/api/place-images/18b9f7feacac5b63e3f5db240faab07dfa4443aad86f246b6a6aa8eea8d29832.jpg",
+        "width": 500,
+        "height": 671,
+        "alt": "Храм святителя Николая Мирликийского «Красный звон»",
+        "author": "Lodo27 from Moscow, Russia",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Church_of_Saint_Nicholas_Red_Jingle_10.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-7596233-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-7596233-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            500,
+            671
+          ],
+          "bytes": 100539,
+          "sha256": "18b9f7feacac5b63e3f5db240faab07dfa4443aad86f246b6a6aa8eea8d29832",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            335
+          ],
+          "bytes": 30345,
+          "sha256": "aed78ce8ccc78366cb5cbf060f22dc53383a5f836c8e7de894737ce3e726ed8c",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    },
+    {
+      "route": "R11",
+      "placeId": "osm:way:52467191",
+      "title": "Церковь Троицы Живоначальной в Никитниках",
+      "existingPhoto": {
+        "thumbnail": "/api/place-images/1d90db53d97cca4fbe61f87fb083716f73cace0d9265fa0ed75c70e69cba4e24.jpg",
+        "src": "/api/place-images/654d2495827cf4d71f07c184310830a3c1d1433c179d1cf17913d723e76ccebc.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Церковь Троицы Живоначальной в Никитниках",
+        "author": "Lodo27 from Moscow, Russia",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Holy_Trinity_Church_in_Nikitniki_03.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "valid": true,
+      "errors": [],
+      "files": {
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-52467191-src.jpg",
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/osm-way-52467191-thumbnail.jpg"
+      },
+      "decoded": {
+        "src": {
+          "dimensions": [
+            960,
+            720
+          ],
+          "bytes": 242474,
+          "sha256": "654d2495827cf4d71f07c184310830a3c1d1433c179d1cf17913d723e76ccebc",
+          "mime": "image/jpeg"
+        },
+        "thumbnail": {
+          "dimensions": [
+            250,
+            187
+          ],
+          "bytes": 22177,
+          "sha256": "1d90db53d97cca4fbe61f87fb083716f73cace0d9265fa0ed75c70e69cba4e24",
+          "mime": "image/jpeg"
+        }
+      },
+      "visualVerified": true,
+      "visualMethod": "Ручной просмотр контакт-листа и сопоставление объекта с названным Commons-источником.",
+      "preparedReplacement": false
+    }
+  ],
+  "replacements": [
+    {
+      "placeId": "osm:relation:8914102",
+      "reason": "no_published_photo",
+      "commonsFile": "File:Moscow 05-2012 Prechistenka 05.jpg",
+      "photo": {
+        "thumbnail": "/images/places/relation-8914102-9cdaffabf8f4.jpg",
+        "src": "/images/places/relation-8914102-7c0c87b3e87a.jpg",
+        "width": 960,
+        "height": 646,
+        "alt": "Усадьба Ивана Морозова на Пречистенке, 21. Фото 24 мая 2012 года",
+        "author": "А.Савин, Википедия",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Prechistenka_05.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "retrievedAt": "2026-10-09",
+        "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+      },
+      "files": {
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/relation-8914102-9cdaffabf8f4.jpg",
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/relation-8914102-7c0c87b3e87a.jpg"
+      },
+      "original": "artifacts/three-garden-walks-2026-10-09/photos/osm-relation-8914102-original.jpg",
+      "visualVerified": true
+    },
+    {
+      "placeId": "osm:node:8898082919",
+      "reason": "no_published_photo",
+      "commonsFile": "File:Moscow, Prechistenka 28 May 2008 01.JPG",
+      "photo": {
+        "thumbnail": "/images/places/node-8898082919-9a592fdff8d2.jpg",
+        "src": "/images/places/node-8898082919-162813cfb8a2.jpg",
+        "width": 960,
+        "height": 960,
+        "alt": "Доходный дом Ивана Исакова на Пречистенке, 28, построенный Львом Кекушевым",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Prechistenka_28_May_2008_01.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "retrievedAt": "2026-10-09",
+        "modifications": "Размер уменьшен и файл перекодирован в JPEG; кадр не обрезан."
+      },
+      "files": {
+        "thumbnail": "artifacts/three-garden-walks-2026-10-09/photos/node-8898082919-9a592fdff8d2.jpg",
+        "src": "artifacts/three-garden-walks-2026-10-09/photos/node-8898082919-162813cfb8a2.jpg"
+      },
+      "original": "artifacts/three-garden-walks-2026-10-09/photos/osm-node-8898082919-original.jpg",
+      "visualVerified": true
+    }
+  ],
+  "checkedAt": "2026-10-09T08:56:00.356915+00:00",
+  "readyAfterPublication": 42,
+  "missingExisting": 2,
+  "brokenExisting": 0,
+  "networkNote": "Первый массовый проход с 4 потоками получил временные HTTP503 для28 точек. Повтор HTTP/2 с двумя потоками, паузой1,2с и bounded retries подтвердил200 и JPEG-декодирование всех80 существующих файлов.",
+  "routes": {
+    "R01": {
+      "checked": 14,
+      "validExisting": 12,
+      "preparedReplacements": 2
+    },
+    "R03": {
+      "checked": 12,
+      "validExisting": 12,
+      "preparedReplacements": 0
+    },
+    "R11": {
+      "checked": 16,
+      "validExisting": 16,
+      "preparedReplacements": 0
+    }
+  }
+}

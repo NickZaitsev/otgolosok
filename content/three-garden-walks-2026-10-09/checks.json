@@ -1,0 +1,22 @@
+{
+  "pnpmCheck": {
+    "passed": true,
+    "frontendTestFiles": 138,
+    "frontendTests": 2109,
+    "backendTests": 1079,
+    "lintErrors": 0,
+    "typecheckPassed": true,
+    "pythonChecksPassed": true,
+    "productionBuildPassed": true
+  },
+  "editorialContract": {
+    "command": "node --test content/three-garden-walks-2026-10-09/verify.test.mjs",
+    "passed": true,
+    "tests": 3
+  },
+  "editorialContractEslintPassed": true,
+  "publicPointsChecked": 42,
+  "publicSharedWalksChecked": 3,
+  "mobileStopsAudioPhotoTextChecked": 42,
+  "productionLongTitleViewportsChecked": 4
+}

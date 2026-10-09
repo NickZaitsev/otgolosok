@@ -1,0 +1,214 @@
+{
+  "checkedAt": "2026-10-09T10:10:48Z",
+  "items": [
+    {
+      "placeId": "osm:relation:5969167",
+      "textId": "7ca780be-9b0b-4274-8a14-b6ed3fafba72",
+      "wordCount": 222,
+      "sha256": "a1d6f9d8a9d4ad07b5fcf969c5701096848284eca3178887ed69e8167ee2ea78",
+      "durationSec": 121.92,
+      "audio": {
+        "url": "/api/story-audio/a1d6f9d8a9d4ad07b5fcf969c5701096848284eca3178887ed69e8167ee2ea78.mp3",
+        "sha256": "a1d6f9d8a9d4ad07b5fcf969c5701096848284eca3178887ed69e8167ee2ea78",
+        "bytes": 975981,
+        "durationSec": 121.968,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:node:5630505421",
+      "textId": "a33e02aa-f4d1-4754-bb1f-d970fc921675",
+      "wordCount": 112,
+      "sha256": "a6d5dea60f693cb7965a568a82195dda26cbced634be8f5a79697d92e9cffbfe",
+      "durationSec": 65.36,
+      "audio": {
+        "url": "/api/story-audio/a6d5dea60f693cb7965a568a82195dda26cbced634be8f5a79697d92e9cffbfe.mp3",
+        "sha256": "a6d5dea60f693cb7965a568a82195dda26cbced634be8f5a79697d92e9cffbfe",
+        "bytes": 523629,
+        "durationSec": 65.424,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:way:47853856",
+      "textId": "73a06bbf-3f01-4b1d-8407-382147991f4a",
+      "wordCount": 118,
+      "sha256": "2a26196f7a5a193fafcd7d92b15c993baf26d756bef287c9b668927e64b24618",
+      "durationSec": 65.44,
+      "audio": {
+        "url": "/api/story-audio/2a26196f7a5a193fafcd7d92b15c993baf26d756bef287c9b668927e64b24618.mp3",
+        "sha256": "2a26196f7a5a193fafcd7d92b15c993baf26d756bef287c9b668927e64b24618",
+        "bytes": 524205,
+        "durationSec": 65.496,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:way:32693719",
+      "textId": "c1f0da78-f666-4fd6-b9cb-686f8e3a2b7d",
+      "wordCount": 231,
+      "sha256": "c1196c2c9102decf28a81fc1410017e4d4d70e9804994a3d3b81e9e81b6def95",
+      "durationSec": 124.16,
+      "audio": {
+        "url": "/api/story-audio/c1196c2c9102decf28a81fc1410017e4d4d70e9804994a3d3b81e9e81b6def95.mp3",
+        "sha256": "c1196c2c9102decf28a81fc1410017e4d4d70e9804994a3d3b81e9e81b6def95",
+        "bytes": 994029,
+        "durationSec": 124.224,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:way:32693359",
+      "textId": "2d88b411-824e-4d3a-964b-8f17d18dc9c9",
+      "wordCount": 238,
+      "sha256": "d90d2cf063781c3f11e2aec54c4ee1a328156fd631fef78f2803726f22217899",
+      "durationSec": 119.52,
+      "audio": {
+        "url": "/api/story-audio/d90d2cf063781c3f11e2aec54c4ee1a328156fd631fef78f2803726f22217899.mp3",
+        "sha256": "d90d2cf063781c3f11e2aec54c4ee1a328156fd631fef78f2803726f22217899",
+        "bytes": 956781,
+        "durationSec": 119.568,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:relation:2424377",
+      "textId": "9d110727-c8c6-4aa7-9f66-f03d5b462f80",
+      "wordCount": 228,
+      "sha256": "20830c136c1cd354b552c6758fde8332b1882730e8dbb4dcbcfa6fed9c28ca37",
+      "durationSec": 126.0,
+      "audio": {
+        "url": "/api/story-audio/20830c136c1cd354b552c6758fde8332b1882730e8dbb4dcbcfa6fed9c28ca37.mp3",
+        "sha256": "20830c136c1cd354b552c6758fde8332b1882730e8dbb4dcbcfa6fed9c28ca37",
+        "bytes": 1008621,
+        "durationSec": 126.048,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:relation:2421978",
+      "textId": "07059209-cf80-4501-a6e9-91fdeaec2146",
+      "wordCount": 101,
+      "sha256": "3c53088afed367680021971e134a49ffe79bc8235a315bdece1e7d4fd064899a",
+      "durationSec": 57.92,
+      "audio": {
+        "url": "/api/story-audio/3c53088afed367680021971e134a49ffe79bc8235a315bdece1e7d4fd064899a.mp3",
+        "sha256": "3c53088afed367680021971e134a49ffe79bc8235a315bdece1e7d4fd064899a",
+        "bytes": 464109,
+        "durationSec": 57.984,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:node:273354762",
+      "textId": "da64471d-1cbd-49ec-8081-9b199383e4e8",
+      "wordCount": 232,
+      "sha256": "7554d395851f704696d0e8270c320d2133e5127a8fb8092d4b67d2aa232557c3",
+      "durationSec": 127.04,
+      "audio": {
+        "url": "/api/story-audio/7554d395851f704696d0e8270c320d2133e5127a8fb8092d4b67d2aa232557c3.mp3",
+        "sha256": "7554d395851f704696d0e8270c320d2133e5127a8fb8092d4b67d2aa232557c3",
+        "bytes": 1017069,
+        "durationSec": 127.104,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:node:2322476565",
+      "textId": "f7296dd5-5d00-48e8-ad10-d736981f9bb4",
+      "wordCount": 242,
+      "sha256": "91e15061c7d041bac5b38f98f617c0aec88a926b3020da12d2d583cd16877655",
+      "durationSec": 125.12,
+      "audio": {
+        "url": "/api/story-audio/91e15061c7d041bac5b38f98f617c0aec88a926b3020da12d2d583cd16877655.mp3",
+        "sha256": "91e15061c7d041bac5b38f98f617c0aec88a926b3020da12d2d583cd16877655",
+        "bytes": 1001709,
+        "durationSec": 125.184,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:relation:10048315",
+      "textId": "b57193c7-136d-4219-b557-ad3f013a185d",
+      "wordCount": 240,
+      "sha256": "98e46f6bb5fcb9ff3a3803556d501bcfce0f66df3304908d2cfca6fd723dd4bb",
+      "durationSec": 123.76,
+      "audio": {
+        "url": "/api/story-audio/98e46f6bb5fcb9ff3a3803556d501bcfce0f66df3304908d2cfca6fd723dd4bb.mp3",
+        "sha256": "98e46f6bb5fcb9ff3a3803556d501bcfce0f66df3304908d2cfca6fd723dd4bb",
+        "bytes": 990765,
+        "durationSec": 123.816,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:relation:2150666",
+      "textId": "0873f5cf-ea3d-4aa0-a289-b46cd5cabb71",
+      "wordCount": 119,
+      "sha256": "f37559a98196b186772714a69c79a9e025beb148660826c47798794647a9ccaa",
+      "durationSec": 74.48,
+      "audio": {
+        "url": "/api/story-audio/f37559a98196b186772714a69c79a9e025beb148660826c47798794647a9ccaa.mp3",
+        "sha256": "f37559a98196b186772714a69c79a9e025beb148660826c47798794647a9ccaa",
+        "bytes": 596589,
+        "durationSec": 74.544,
+        "model": "eleven_v3",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    },
+    {
+      "placeId": "osm:relation:7314898",
+      "textId": "b950c85d-f2c5-4850-8353-7ce564030c5b",
+      "wordCount": 104,
+      "sha256": "099c205214d7d08c06235ac4ea9820625d1b516d7e18ef933d0b2aec615190d4",
+      "durationSec": 54.4,
+      "audio": {
+        "url": "/api/story-audio/099c205214d7d08c06235ac4ea9820625d1b516d7e18ef933d0b2aec615190d4.mp3",
+        "sha256": "099c205214d7d08c06235ac4ea9820625d1b516d7e18ef933d0b2aec615190d4",
+        "bytes": 435885,
+        "durationSec": 54.456,
+        "model": "eleven_v3",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      }
+    }
+  ],
+  "measuredDurationSec": 1185.1200000000001,
+  "minimumDurationSec": 900,
+  "complete": true,
+  "mp3Decoded": true,
+  "providerModelVoiceAndSourceVerified": true
+}

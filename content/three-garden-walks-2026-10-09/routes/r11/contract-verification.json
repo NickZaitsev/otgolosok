@@ -1,0 +1,10 @@
+{
+  "routeId": "R11",
+  "documentValid": true,
+  "stops": 16,
+  "allStoryRefsOsm": true,
+  "uniquePhysicalPoints": 16,
+  "distanceM": 3139,
+  "walkingMinutes": 40,
+  "fieldChecked": false
+}

@@ -1,0 +1,315 @@
+{
+  "routeId": "R03",
+  "mapSource": "BBBike Moscow.osm.pbf, local 2026-09-22",
+  "boundaryFile": "content/garden-ring-intros-2026-10-03/boundary.geojson",
+  "fieldChecked": false,
+  "startMetroOsmNode": {
+    "type": "node",
+    "id": 252325617,
+    "lat": 55.7505326,
+    "lon": 37.609241,
+    "tags": {
+      "colour": "gray",
+      "network": "Московский метрополитен",
+      "note": "Боровицкая",
+      "operator": "ГУП «Московский метрополитен»",
+      "railway": "subway_entrance",
+      "ref": "7",
+      "wheelchair": "no"
+    }
+  },
+  "destinationMetroOsmNode": {
+    "type": "node",
+    "id": 3235207679,
+    "lat": 55.745828,
+    "lon": 37.6052909,
+    "tags": {
+      "colour": "red",
+      "network": "Московский метрополитен",
+      "operator": "ГУП «Московский метрополитен»",
+      "railway": "subway_entrance",
+      "ref": "2"
+    }
+  },
+  "stops": [
+    {
+      "placeId": "osm:relation:5969167",
+      "title": "Дом Пашкова",
+      "location": {
+        "lat": 55.7495727,
+        "lon": 37.6085104
+      },
+      "triggerLocation": {
+        "lat": 55.74951,
+        "lon": 37.6088961
+      },
+      "listeningWayId": 177804703,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "good",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 25.12,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:node:5630505421",
+      "title": "Галерея Александра Шилова",
+      "location": {
+        "lat": 55.7490545,
+        "lon": 37.608298
+      },
+      "triggerLocation": {
+        "lat": 55.7491619,
+        "lon": 37.6083899
+      },
+      "listeningWayId": 133636919,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 13.25,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:way:47853856",
+      "title": "Усадьба Апраксиных — Бутурлиных, дом Бутурлина",
+      "location": {
+        "lat": 55.7507351,
+        "lon": 37.6055842
+      },
+      "triggerLocation": {
+        "lat": 55.7502286,
+        "lon": 37.6051366
+      },
+      "listeningWayId": 133636907,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones",
+        "width": "2.5"
+      },
+      "triggerDistanceFromCenterM": 62.9,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Дом Бутурлина расположен в глубине школьной усадьбы. Слушаем на улице Знаменке, не заходим за ограду; обзор самого дома с тротуара не подтверждён."
+    },
+    {
+      "placeId": "osm:way:32693719",
+      "title": "Усадьба Вяземских-Долгоруковых",
+      "location": {
+        "lat": 55.7473021,
+        "lon": 37.6028304
+      },
+      "triggerLocation": {
+        "lat": 55.7474531,
+        "lon": 37.6021793
+      },
+      "listeningWayId": 161298615,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "asphalt",
+        "width": "1"
+      },
+      "triggerDistanceFromCenterM": 44.06,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Усадьба Вяземских-Долгоруковых: остановка на тротуаре Большого Знаменского переулка, вход на музейную территорию не требуется."
+    },
+    {
+      "placeId": "osm:way:32693359",
+      "title": "Главный дом усадьбы Лопухиных («Дом с палатами»)",
+      "location": {
+        "lat": 55.7466309,
+        "lon": 37.6036856
+      },
+      "triggerLocation": {
+        "lat": 55.7470668,
+        "lon": 37.6042078
+      },
+      "listeningWayId": 142894156,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 58.45,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Дом Лопухиных находится в глубине музейного участка. Слушаем на тротуаре Малого Знаменского переулка; обзор дома не подтверждён."
+    },
+    {
+      "placeId": "osm:relation:2424377",
+      "title": "Храм священномученика Антипы на Колымажном дворе",
+      "location": {
+        "lat": 55.7480362,
+        "lon": 37.6055264
+      },
+      "triggerLocation": {
+        "lat": 55.748159,
+        "lon": 37.6051778
+      },
+      "listeningWayId": 181749860,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 25.73,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:2421978",
+      "title": "Главное здание Государственного музея изобразительных искусств имени А. С. Пушкина",
+      "location": {
+        "lat": 55.7475618,
+        "lon": 37.605501
+      },
+      "triggerLocation": {
+        "lat": 55.7473612,
+        "lon": 37.606563
+      },
+      "listeningWayId": 181749860,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 70.08,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:node:273354762",
+      "title": "Галерея искусства стран Европы и Америки XIX—XX веков",
+      "location": {
+        "lat": 55.7464881,
+        "lon": 37.6053051
+      },
+      "triggerLocation": {
+        "lat": 55.7466157,
+        "lon": 37.6054484
+      },
+      "listeningWayId": 142894156,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 16.78,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:node:2322476565",
+      "title": "Мемориальная доска Василию Андреевичу Тропинину",
+      "location": {
+        "lat": 55.7471848,
+        "lon": 37.6075246
+      },
+      "triggerLocation": {
+        "lat": 55.7471938,
+        "lon": 37.6075001
+      },
+      "listeningWayId": 142894019,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "asphalt"
+      },
+      "triggerDistanceFromCenterM": 1.83,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:10048315",
+      "title": "Галерея Ильи Глазунова",
+      "location": {
+        "lat": 55.7464122,
+        "lon": 37.6071561
+      },
+      "triggerLocation": {
+        "lat": 55.7466573,
+        "lon": 37.6067231
+      },
+      "listeningWayId": 142894019,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "asphalt"
+      },
+      "triggerDistanceFromCenterM": 38.43,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:2150666",
+      "title": "Дом Института русского языка РАН",
+      "location": {
+        "lat": 55.7451115,
+        "lon": 37.6030377
+      },
+      "triggerLocation": {
+        "lat": 55.7450656,
+        "lon": 37.6031117
+      },
+      "listeningWayId": 160827705,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 6.89,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    },
+    {
+      "placeId": "osm:relation:7314898",
+      "title": "Храм Христа Спасителя",
+      "location": {
+        "lat": 55.7439394,
+        "lon": 37.6070525
+      },
+      "triggerLocation": {
+        "lat": 55.7455541,
+        "lon": 37.6052394
+      },
+      "listeningWayId": 723322917,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 212.37,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены."
+    }
+  ]
+}

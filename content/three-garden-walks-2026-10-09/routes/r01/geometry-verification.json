@@ -1,0 +1,398 @@
+{
+  "checkedAt": "2026-10-09T09:03:10.836283+00:00",
+  "routeId": "R01",
+  "stops": [
+    {
+      "placeId": "osm:way:45818589",
+      "title": "Белые палаты",
+      "location": {
+        "lat": 55.743864,
+        "lon": 37.6001994
+      },
+      "triggerLocation": {
+        "lat": 55.7440689,
+        "lon": 37.5999747
+      },
+      "listeningWayId": 330011326,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 26.77,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.01,
+      "triggerDistanceFromBoundaryM": 988.45,
+      "localOsmBuildingWayId": 45818589,
+      "triggerDistanceFromBuildingOutlineM": 5.37
+    },
+    {
+      "placeId": "osm:relation:9464684",
+      "title": "Усадьба Хрущёвых-Селезнёвых",
+      "location": {
+        "lat": 55.7435766,
+        "lon": 37.5980146
+      },
+      "triggerLocation": {
+        "lat": 55.7435446,
+        "lon": 37.598051
+      },
+      "listeningWayId": 330043269,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 4.22,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.04,
+      "triggerDistanceFromBoundaryM": 858.7
+    },
+    {
+      "placeId": "osm:node:2798179186",
+      "title": "Государственный музей-заповедник Л. Н. Толстого — Литературная экспозиция на Пречистенке",
+      "location": {
+        "lat": 55.7428122,
+        "lon": 37.5969685
+      },
+      "triggerLocation": {
+        "lat": 55.7428881,
+        "lon": 37.5968874
+      },
+      "listeningWayId": 330097205,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 9.85,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.0,
+      "triggerDistanceFromBoundaryM": 772.48
+    },
+    {
+      "placeId": "osm:way:129212972",
+      "title": "Центральный дом учёных",
+      "location": {
+        "lat": 55.7436365,
+        "lon": 37.5960227
+      },
+      "triggerLocation": {
+        "lat": 55.743045,
+        "lon": 37.596831
+      },
+      "listeningWayId": 330043278,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones",
+        "width": "2.8"
+      },
+      "triggerDistanceFromCenterM": 82.96,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.02,
+      "triggerDistanceFromBoundaryM": 772.6,
+      "localOsmBuildingWayId": 129212972,
+      "triggerDistanceFromBuildingOutlineM": 23.94
+    },
+    {
+      "placeId": "osm:way:412738928",
+      "title": "Флигель городской усадьбы Бибиковых — Д. В. Давыдова",
+      "location": {
+        "lat": 55.7417006,
+        "lon": 37.5945938
+      },
+      "triggerLocation": {
+        "lat": 55.7416152,
+        "lon": 37.5944733
+      },
+      "listeningWayId": 330011322,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "asphalt",
+        "width": "1"
+      },
+      "triggerDistanceFromCenterM": 12.12,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromBoundaryM": 572.81,
+      "localOsmBuildingWayId": 412738928,
+      "triggerDistanceFromBuildingOutlineM": 2.1
+    },
+    {
+      "placeId": "osm:relation:8914102",
+      "title": "Усадьба Морозова на Пречистенке",
+      "location": {
+        "lat": 55.7411053,
+        "lon": 37.592894
+      },
+      "triggerLocation": {
+        "lat": 55.7411356,
+        "lon": 37.5928512
+      },
+      "listeningWayId": 330097207,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones",
+        "width": "3"
+      },
+      "triggerDistanceFromCenterM": 4.3,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.04,
+      "triggerDistanceFromBoundaryM": 470.48
+    },
+    {
+      "placeId": "osm:node:8898082919",
+      "title": "Доходный дом И. П. Исакова",
+      "location": {
+        "lat": 55.7413137,
+        "lon": 37.5927968
+      },
+      "triggerLocation": {
+        "lat": 55.7412847,
+        "lon": 37.5928371
+      },
+      "listeningWayId": 483989660,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "asphalt"
+      },
+      "triggerDistanceFromCenterM": 4.09,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromBoundaryM": 483.46
+    },
+    {
+      "placeId": "osm:node:5591184668",
+      "title": "Усадьба Охотниковых",
+      "location": {
+        "lat": 55.7408059,
+        "lon": 37.5904968
+      },
+      "triggerLocation": {
+        "lat": 55.7405281,
+        "lon": 37.5907884
+      },
+      "listeningWayId": 483989665,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "asphalt",
+        "width": "2.1"
+      },
+      "triggerDistanceFromCenterM": 35.87,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromBoundaryM": 337.93
+    },
+    {
+      "placeId": "osm:way:104202024",
+      "title": "Усадьба Самсонова — главный дом",
+      "location": {
+        "lat": 55.7394644,
+        "lon": 37.5889993
+      },
+      "triggerLocation": {
+        "lat": 55.7395945,
+        "lon": 37.5888294
+      },
+      "listeningWayId": 289471074,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones",
+        "width": "2.2"
+      },
+      "triggerDistanceFromCenterM": 17.95,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 3.13,
+      "triggerDistanceFromBoundaryM": 184.78,
+      "localOsmBuildingWayId": 104202024,
+      "triggerDistanceFromBuildingOutlineM": 1.75
+    },
+    {
+      "placeId": "osm:way:47584795",
+      "title": "Дом М. К. Морозовой — посольство Королевства Дания",
+      "location": {
+        "lat": 55.743635,
+        "lon": 37.591927
+      },
+      "triggerLocation": {
+        "lat": 55.7437704,
+        "lon": 37.5919722
+      },
+      "listeningWayId": 483989641,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 15.32,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Посольство Дании: только публичный тротуар Пречистенского переулка.",
+      "triggerGapFromRouteM": 0.05,
+      "triggerDistanceFromBoundaryM": 491.83,
+      "localOsmBuildingWayId": 47584795,
+      "triggerDistanceFromBuildingOutlineM": 1.44
+    },
+    {
+      "placeId": "osm:relation:10967050",
+      "title": "Храм Успения Пресвятой Богородицы на Могильцах",
+      "location": {
+        "lat": 55.7438406,
+        "lon": 37.590782
+      },
+      "triggerLocation": {
+        "lat": 55.7439142,
+        "lon": 37.5908199
+      },
+      "listeningWayId": 330369212,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 8.52,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.02,
+      "triggerDistanceFromBoundaryM": 424.71
+    },
+    {
+      "placeId": "osm:way:47513393",
+      "title": "Особняк Берга — Посольство Италии в России",
+      "location": {
+        "lat": 55.7429224,
+        "lon": 37.5876217
+      },
+      "triggerLocation": {
+        "lat": 55.7429958,
+        "lon": 37.5880006
+      },
+      "listeningWayId": 330507456,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "smoothness": "intermediate",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 25.07,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Посольство Италии: только публичный тротуар Денежного переулка.",
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromBoundaryM": 230.88,
+      "localOsmBuildingWayId": 47513393,
+      "triggerDistanceFromBuildingOutlineM": 5.63
+    },
+    {
+      "placeId": "osm:node:4088301220",
+      "title": "Музей-квартира Евгения Вахтангова",
+      "location": {
+        "lat": 55.7436859,
+        "lon": 37.5878856
+      },
+      "triggerLocation": {
+        "lat": 55.7436672,
+        "lon": 37.5877923
+      },
+      "listeningWayId": 1035750610,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "surface": "asphalt"
+      },
+      "triggerDistanceFromCenterM": 6.2,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Рассказ слушается на публичной улице; доступность на месте и обзор не проверены.",
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromBoundaryM": 233.88
+    },
+    {
+      "placeId": "osm:way:47512415",
+      "title": "Особняк Маргариты Морозовой",
+      "location": {
+        "lat": 55.7436922,
+        "lon": 37.5843507
+      },
+      "triggerLocation": {
+        "lat": 55.7437477,
+        "lon": 37.5843334
+      },
+      "listeningWayId": 1289207185,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "smoothness": "intermediate",
+        "surface": "paving_stones"
+      },
+      "triggerDistanceFromCenterM": 6.27,
+      "centerInsideBoundary": true,
+      "triggerInsideBoundary": true,
+      "accessNote": "Остановка на внутренней стороне Смоленского бульвара; контур Садового кольца не пересекаем.",
+      "triggerGapFromRouteM": 0.04,
+      "triggerDistanceFromBoundaryM": 24.71,
+      "localOsmBuildingWayId": 47512415,
+      "triggerDistanceFromBuildingOutlineM": 1.86
+    }
+  ],
+  "distanceM": 3387,
+  "walkingMinutes": 43,
+  "geometryVertices": 336,
+  "geometryMeasuredDistanceM": 3396.56,
+  "startGapM": 0.02,
+  "destinationGapM": 0.04,
+  "startInsideBoundary": true,
+  "destinationInsideBoundary": true,
+  "boundaryFile": "content/garden-ring-intros-2026-10-03/boundary.geojson",
+  "boundarySampleStepM": 10,
+  "boundarySamplesChecked": 885,
+  "outsideBoundarySampleCount": 0,
+  "outsideBoundarySamples": [],
+  "routeGeometrySha256": "6e85a815edf0ff1de6ea3f5323c472b41fde2a0e7c910532489abce9901ec2c6",
+  "mapSource": "BBBike Moscow.osm.pbf, local 2026-09-22",
+  "router": "https://valhalla1.openstreetmap.de/route",
+  "routerCosting": "pedestrian",
+  "routerChunkLocationLimit": 10,
+  "fieldChecked": false,
+  "notes": [
+    "Триггеры и выходы метро проверены по локальному OSM от 22.09.2026. Доступность на месте и видимость фасадов не проверялись.",
+    "Каждый отрезок пешеходной линии проверен на нахождение внутри контура Садового кольца с шагом не более 10 метров.",
+    "Закрытые территории, внутренние дворы и посещение музеев не входят в маршрут. Отдельные здания в глубине участков описаны в accessNote.",
+    "Исторические сведения в рассказах проходят отдельную проверку; сведения карты не считаются историческим источником."
+  ]
+}

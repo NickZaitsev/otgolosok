@@ -1,0 +1,74 @@
+{
+  "productionDataLocalFrontend": false,
+  "viewports": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "title": "Государственный музей-заповедник Л. Н. Толстого — Литературная экспозиция на Пречистенке",
+      "font": "18px",
+      "titleHeight": 97.1875,
+      "photoHeight": 120,
+      "photoTop": 238.1875,
+      "visiblePhotoHeight": 120,
+      "footerBottom": 811,
+      "closeWidth": 44,
+      "overflow": false,
+      "duplicateCaptionHidden": true,
+      "creditPreserved": true
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "title": "Государственный музей-заповедник Л. Н. Толстого — Литературная экспозиция на Пречистенке",
+      "font": "16px",
+      "titleHeight": 107.96875,
+      "photoHeight": 96,
+      "photoTop": 155.390625,
+      "visiblePhotoHeight": 96,
+      "footerBottom": 543,
+      "closeWidth": 44,
+      "overflow": false,
+      "duplicateCaptionHidden": true,
+      "creditPreserved": true
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "title": "Государственный музей-заповедник Л. Н. Толстого — Литературная экспозиция на Пречистенке",
+      "font": "16px",
+      "titleHeight": 64.78125,
+      "photoHeight": 96,
+      "photoTop": 21,
+      "visiblePhotoHeight": 96,
+      "footerBottom": 365,
+      "closeWidth": 44,
+      "overflow": false,
+      "duplicateCaptionHidden": true,
+      "creditPreserved": true
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Государственный музей-заповедник Л. Н. Толстого — Литературная экспозиция на Пречистенке",
+      "font": "18px",
+      "titleHeight": 72.890625,
+      "photoHeight": 150.21875,
+      "photoTop": 255,
+      "visiblePhotoHeight": 150.21875,
+      "footerBottom": 867,
+      "closeWidth": 44,
+      "overflow": false,
+      "duplicateCaptionHidden": true,
+      "creditPreserved": true
+    }
+  ],
+  "errors": []
+}
