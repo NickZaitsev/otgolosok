@@ -13,9 +13,9 @@ const start = { address: "Москва, Арбат, 1", location: { lat: 55.75, 
 let ids = 0;
 const uuid = () => `00000000-0000-4000-8000-${String(++ids).padStart(12, "0")}`;
 /** @param {string} title */
-const routed = title => ({ version: 2, id: uuid(), title, description: "", city: "Москва", mode: "open", minutes: 30, start,
+const routed = (title, walkingMinutes = 45) => ({ version: 2, id: uuid(), title, description: "", city: "Москва", mode: "open", minutes: 30, start,
   stops: [{ id: uuid(), place: stop, storyRef: null, transition: "", nextHint: "" }],
-  route: { geometry: [start.location, stop.location], distanceM: 3200, walkingMinutes: 45, attribution: "OSM" }, fieldChecked: false });
+  route: { geometry: [start.location, stop.location], distanceM: 3200, walkingMinutes, attribution: "OSM" }, fieldChecked: false });
 
 /** @param {any} t @param {{ launchLimit?: number, walkLimit?: number }} [options] */
 async function fixture(t, { launchLimit = 60, walkLimit = 30 } = {}) {
@@ -46,8 +46,8 @@ async function fixture(t, { launchLimit = 60, walkLimit = 30 } = {}) {
   };
   let key = 0;
   /** @param {string} title @param {"private" | "shared" | "public"} visibility @param {"approve" | "hide" | null} [decision] */
-  const walk = (title, visibility, decision = null, owner = "anna") => {
-    const created = accountStore.createWalk(owner, { title, snapshot: routed(title), idempotencyKey: `top-walk-${key++}` });
+  const walk = (title, visibility, decision = null, owner = "anna", walkingMinutes = 45) => {
+    const created = accountStore.createWalk(owner, { title, snapshot: routed(title, walkingMinutes), idempotencyKey: `top-walk-${key++}` });
     const result = visibility === "private" ? created : accountStore.setWalkVisibility(owner, created.id, created.revision, visibility);
     if (decision) accountStore.moderateWalkListing(result.id, { action: decision, revision: result.revision });
     return result;
@@ -115,16 +115,66 @@ test("the top lists approved public walks only, without private data; the catalo
   const response = await call("/api/top-walks");
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("cache-control"), "no-store");
-  const { walks } = response.data;
+  const { walks, total, nextOffset, filters } = response.data;
+  assert.equal(total, 1);
+  assert.equal(nextOffset, null);
+  assert.deepEqual(filters, { starts: ["Арбатская"], ends: ["Арбатская"] });
   assert.deepEqual(walks.map((/** @type {any} */ item) => [item.kind, item.id]), [["shared", approved.shareToken]]);
   const item = walks.find((/** @type {any} */ entry) => entry.kind === "shared");
-  assert.deepEqual(item, { kind: "shared", id: approved.shareToken, title: "Одобренная", walkingMinutes: 45, distanceM: 3200, stopCount: 1, rating: { average: 5, count: 1 },
-    preview: [[26.4, 92], [73.6, 8]],
-    startMetro: { name: "Арбатская", distanceM: 255 }, endMetro: { name: "Арбатская", distanceM: 129 } });
+  assert.deepEqual({ kind: item.kind, id: item.id, title: item.title, walkingMinutes: item.walkingMinutes, distanceM: item.distanceM,
+    stopCount: item.stopCount, rating: item.rating, rank: item.rank, preview: item.preview },
+  { kind: "shared", id: approved.shareToken, title: "Одобренная", walkingMinutes: 45, distanceM: 3200, stopCount: 1,
+    rating: { average: 5, count: 1 }, rank: 1, preview: [[26.4, 92], [73.6, 8]] });
+  assert.deepEqual(item.startMetro, { name: "Арбатская", distanceM: 255, lines: [
+    { id: "3", name: "Арбатско-Покровская", color: "#0072ba" }, { id: "4", name: "Филевская", color: "#1ebcef" },
+  ] });
+  assert.equal(item.endMetro.name, "Арбатская");
+  assert.ok(item.mapPreview.tiles.length >= 1 && item.mapPreview.tiles.length <= 4);
+  assert.ok(item.mapPreview.points.every((/** @type {number[]} */ point) => point.every(value => value >= 0 && value <= 256)));
   assert.equal(walks[0].kind, "shared", "a launched walk ranks above one with no launches");
   for (const secretValue of ["anna", "Анна", "@example.test", approved.id, "launches"]) assert.equal(response.text.includes(secretValue), false, secretValue);
   assert.equal(accountStore.launchTotals().get(`account:${approved.id}`), 1);
   assert.equal((await call("/api/top-walks?limit=5")).status, 400);
+});
+
+test("the top pages through every approved walk, with no duplicates or private walks", async t => {
+  const { call, walk } = await fixture(t);
+  const approved = Array.from({ length: 23 }, (_, index) => walk(`Открытая ${index + 1}`, "public", "approve"));
+  walk("Личная", "private"); walk("На проверке", "public");
+  const first = (await call("/api/top-walks")).data, second = (await call("/api/top-walks?offset=20")).data;
+  assert.equal(first.walks.length, 20);
+  assert.equal(first.total, 23);
+  assert.equal(first.nextOffset, 20);
+  assert.equal(second.walks.length, 3);
+  assert.equal(second.total, 23);
+  assert.equal(second.nextOffset, null);
+  assert.deepEqual(new Set([...first.walks, ...second.walks].map(item => item.id)), new Set(approved.map(item => item.shareToken)));
+  assert.deepEqual([...first.walks, ...second.walks].map(item => item.rank), Array.from({ length: 23 }, (_, index) => index + 1));
+  assert.deepEqual((await call("/api/top-walks?offset=40")).data.walks, []);
+  assert.deepEqual((await call("/api/top-walks?offset=23")).data, { walks: [], total: 23, nextOffset: null, filters: first.filters });
+  assert.equal((await call("/api/top-walks?offset=22")).data.walks.length, 1);
+});
+
+test("a full last page of 20 ends without requesting an empty next page", async t => {
+  const { call, walk } = await fixture(t);
+  for (let index = 0; index < 20; index += 1) walk(`Открытая ${index + 1}`, "public", "approve");
+  const page = (await call("/api/top-walks")).data;
+  assert.equal(page.walks.length, 20);
+  assert.equal(page.total, 20);
+  assert.equal(page.nextOffset, null);
+});
+
+test("duration and metro filters apply before pagination; bad query parameters are rejected", async t => {
+  const { call, walk } = await fixture(t);
+  for (const minutes of [30, 30.5, 31, 60, 60.5, 61, 90]) walk(`Маршрут ${minutes}`, "public", "approve", "anna", minutes);
+  for (const [duration, expected] of [["up-to-30", [30]], ["31-to-60", [30.5, 31, 60]], ["61-to-90", [60.5, 61, 90]]]) {
+    const page = (await call(`/api/top-walks?duration=${duration}&start=${encodeURIComponent("Арбатская")}`)).data;
+    assert.deepEqual(page.walks.map((/** @type {any} */ item) => item.walkingMinutes).sort((a, b) => a - b), expected);
+    assert.equal(page.total, expected.length);
+  }
+  assert.equal((await call("/api/top-walks?end=Несуществующая")).data.total, 0);
+  for (const query of ["?limit=5", "?offset=-1", "?offset=01", "?offset=1.5", "?offset=1e3", "?offset=10000000", "?offset=0&offset=20", "?duration=unknown", "?start=x&bad=y"])
+    assert.equal((await call(`/api/top-walks${query}`)).status, 400, query);
 });
 
 test("a damaged approved walk gives its place to the next one", async t => {

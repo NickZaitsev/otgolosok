@@ -2,22 +2,45 @@ import type { ReviewSummary } from "../reviews/model";
 import { localeTag, type Locale } from "@/lib/i18n/locale";
 import { translate } from "@/lib/i18n/translate";
 
-/** One entry of the public «Топ прогулок»: no launch counts and no author by design. */
+export type MetroLine = { id: string; name: string; color: string };
+export type MetroStation = { name: string; distanceM: number; lines: MetroLine[] };
+export type MapPreview = {
+  zoom: number;
+  tiles: Array<{ x: number; y: number; left: number; top: number }>;
+  points: Array<[number, number]>;
+};
+export type TopDuration = "" | "up-to-30" | "31-to-60" | "61-to-90";
+export type TopFilters = { start: string; end: string; duration: TopDuration };
+
+/** White or black metro letter chosen for WCAG text contrast on the line color. */
+export function metroTextColor(hex: string) {
+  const channels = [1, 3, 5].map(position => parseInt(hex.slice(position, position + 2), 16) / 255)
+    .map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  const luminance = channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+  return luminance > 0.179 ? "#000000" : "#ffffff";
+}
+
+/** One public walk. Rank belongs to the unfiltered top. */
 export type TopWalk = {
   kind: "catalog" | "shared";
-  /** Catalog slug or share token. */
   id: string;
   title: string;
   walkingMinutes: number;
   distanceM: number;
   stopCount: number;
   rating: ReviewSummary;
+  rank: number;
   preview: Array<[number, number]> | null;
+  mapPreview: MapPreview | null;
   startMetro: MetroStation | null;
   endMetro: MetroStation | null;
 };
-
-export type MetroStation = { name: string; distanceM: number };
+export type TopWalkPage = {
+  walks: TopWalk[];
+  total: number;
+  nextOffset: number | null;
+  filters: { starts: string[]; ends: string[] };
+};
 
 export const record = (value: unknown): Record<string, unknown> => {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new TypeError("Ожидался объект.");
@@ -45,40 +68,99 @@ export function validateWalkCard(item: Record<string, unknown>): Pick<TopWalk, "
   };
 }
 
-function preview(value: unknown): TopWalk["preview"] {
-  if (value === undefined || value === null) return null;
+function points(value: unknown, max: number): Array<[number, number]> {
   if (!Array.isArray(value) || value.length < 2 || value.length > 80 || !value.every(point =>
-    Array.isArray(point) && point.length === 2 && point.every(coordinate => typeof coordinate === "number" && Number.isFinite(coordinate) && coordinate >= 0 && coordinate <= 100))) throw new TypeError("Неверная схема маршрута.");
+    Array.isArray(point) && point.length === 2 && point.every(coordinate => typeof coordinate === "number" && Number.isFinite(coordinate) && coordinate >= 0 && coordinate <= max))) throw new TypeError("Неверная схема маршрута.");
   return value as Array<[number, number]>;
+}
+
+function mapPreview(value: unknown): MapPreview | null {
+  if (value === undefined || value === null) return null;
+  const map = record(value);
+  if (!Number.isSafeInteger(map.zoom) || (map.zoom as number) < 0 || (map.zoom as number) > 16 || !Array.isArray(map.tiles) || map.tiles.length < 1 || map.tiles.length > 4)
+    throw new TypeError("Неверная карта маршрута.");
+  const zoom = map.zoom as number, maximumTile = 2 ** zoom;
+  const tiles = map.tiles.map(raw => {
+    const tile = record(raw);
+    if (!["x", "y", "left", "top"].every(key => typeof tile[key] === "number" && Number.isFinite(tile[key]))
+      || !Number.isSafeInteger(tile.x) || !Number.isSafeInteger(tile.y) || (tile.x as number) < 0 || (tile.x as number) >= maximumTile
+      || (tile.y as number) < 0 || (tile.y as number) >= maximumTile || Math.abs(tile.left as number) > 256 || Math.abs(tile.top as number) > 256)
+      throw new TypeError("Неверная карта маршрута.");
+    return { x: tile.x as number, y: tile.y as number, left: tile.left as number, top: tile.top as number };
+  });
+  return { zoom, tiles, points: points(map.points, 256) };
 }
 
 function metro(value: unknown): MetroStation | null {
   if (value === undefined || value === null) return null;
   const station = record(value);
-  if (typeof station.name !== "string" || !station.name.trim() || station.name.length > 100 || !Number.isSafeInteger(station.distanceM) || (station.distanceM as number) < 0 || (station.distanceM as number) > 1500) throw new TypeError("Неверная станция метро.");
-  return { name: station.name, distanceM: station.distanceM as number };
+  if (typeof station.name !== "string" || !station.name.trim() || station.name.length > 100 || !Number.isSafeInteger(station.distanceM)
+    || (station.distanceM as number) < 0 || (station.distanceM as number) > 1500) throw new TypeError("Неверная станция метро.");
+  const rawLines = station.lines ?? [];
+  if (!Array.isArray(rawLines) || rawLines.length > 8) throw new TypeError("Неверные линии метро.");
+  const lines = rawLines.map(raw => {
+    const line = record(raw);
+    if (typeof line.id !== "string" || !/^\d{1,3}$/.test(line.id) || typeof line.name !== "string" || !line.name.trim()
+      || line.name.length > 100 || typeof line.color !== "string" || !/^#[0-9a-fA-F]{6}$/.test(line.color)) throw new TypeError("Неверная линия метро.");
+    return { id: line.id, name: line.name, color: line.color };
+  });
+  return { name: station.name, distanceM: station.distanceM as number, lines };
 }
 
-function validateTopWalk(raw: unknown): TopWalk {
+function validateTopWalk(raw: unknown, index: number): TopWalk {
   const item = record(raw);
   if (item.kind !== "catalog" && item.kind !== "shared") throw new TypeError("Неверный вид прогулки.");
   const id = item.id;
   if (typeof id !== "string" || !(item.kind === "catalog" ? CATALOG_WALK_ID : WALK_UUID).test(id)) throw new TypeError("Неверный идентификатор прогулки.");
-  return { kind: item.kind, id, ...validateWalkCard(item), preview: preview(item.preview), startMetro: metro(item.startMetro), endMetro: metro(item.endMetro) };
+  const rank = item.rank ?? index + 1;
+  if (!Number.isSafeInteger(rank) || (rank as number) < 1) throw new TypeError("Неверное место в топе.");
+  return { kind: item.kind, id, ...validateWalkCard(item), rank: rank as number,
+    preview: item.preview === undefined || item.preview === null ? null : points(item.preview, 100), mapPreview: mapPreview(item.mapPreview),
+    startMetro: metro(item.startMetro), endMetro: metro(item.endMetro) };
 }
 
 export function validateTopWalks(value: unknown): TopWalk[] {
   const walks = record(value).walks;
-  if (!Array.isArray(walks)) throw new TypeError("Ожидался список прогулок.");
+  if (!Array.isArray(walks) || walks.length > 20) throw new TypeError("Ожидался список из 20 прогулок.");
   return walks.map(validateTopWalk);
+}
+
+function stationOptions(value: unknown): string[] {
+  if (!Array.isArray(value) || value.length > 1000 || value.some(name => typeof name !== "string" || !name.trim() || name.length > 100))
+    throw new TypeError("Неверный список станций.");
+  return value as string[];
+}
+
+export function validateTopWalkPage(value: unknown): TopWalkPage {
+  const page = record(value), walks = validateTopWalks(value);
+  const total = page.total ?? walks.length, nextOffset = page.nextOffset ?? null;
+  if (!Number.isSafeInteger(total) || (total as number) < walks.length || (total as number) > 1_000_000
+    || nextOffset !== null && (!Number.isSafeInteger(nextOffset) || (nextOffset as number) < 1 || (nextOffset as number) > (total as number)))
+    throw new TypeError("Неверная страница прогулок.");
+  const filters = page.filters === undefined ? { starts: [...new Set(walks.flatMap(walk => walk.startMetro ? [walk.startMetro.name] : []))],
+    ends: [...new Set(walks.flatMap(walk => walk.endMetro ? [walk.endMetro.name] : []))] } : record(page.filters);
+  return { walks, total: total as number, nextOffset: nextOffset as number | null,
+    filters: { starts: stationOptions(filters.starts), ends: stationOptions(filters.ends) } };
 }
 
 export function topWalkHref(walk: Pick<TopWalk, "kind" | "id">) {
   return walk.kind === "catalog" ? `/walk?catalog=${encodeURIComponent(walk.id)}` : `/walk?share=${encodeURIComponent(walk.id)}`;
 }
 
-export function filterTopWalks(walks: TopWalk[], start: string, end: string): TopWalk[] {
-  return walks.filter(walk => (!start || walk.startMetro?.name === start) && (!end || walk.endMetro?.name === end));
+export function topWalksUrl(offset: number, filters: TopFilters): string {
+  const params = new URLSearchParams();
+  if (offset) params.set("offset", String(offset));
+  if (filters.start) params.set("start", filters.start);
+  if (filters.end) params.set("end", filters.end);
+  if (filters.duration) params.set("duration", filters.duration);
+  return `/api/top-walks${params.size ? `?${params}` : ""}`;
+}
+
+export function filterTopWalks(walks: TopWalk[], start: string, end: string, duration: TopDuration = ""): TopWalk[] {
+  return walks.filter(walk => (!start || walk.startMetro?.name === start) && (!end || walk.endMetro?.name === end)
+    && (!duration || duration === "up-to-30" && walk.walkingMinutes <= 30
+      || duration === "31-to-60" && walk.walkingMinutes > 30 && walk.walkingMinutes <= 60
+      || duration === "61-to-90" && walk.walkingMinutes > 60 && walk.walkingMinutes <= 90));
 }
 
 const storyWords: Record<string, string> = { one: "история", few: "истории", many: "историй", other: "истории" };

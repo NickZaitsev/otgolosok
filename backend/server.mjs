@@ -32,7 +32,7 @@ import { createLegalConsentRoute } from "./legal-consent.mjs";
 import { loadTelegramAuthConfig, telegramEmail } from "./telegram-auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
 import { createWalkLaunchRoutes } from "./walk-launch-routes.mjs";
-import { createTopWalks } from "./walk-top.mjs";
+import { createTopWalks, TOP_DURATIONS } from "./walk-top.mjs";
 import { createNearbyWalks } from "./walk-nearby.mjs";
 import { inWalkBounds } from "./walk-document.mjs";
 import { createReviewRateLimiter } from "./walk-reviews.mjs";
@@ -702,9 +702,12 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
       if(await placeFeedback.public(req,res,url,session))return;
       if(url.pathname==="/api/top-walks") {
         if(!["GET","HEAD"].includes(req.method)){res.setHeader("Allow","GET, HEAD");json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;}
-        if(url.search)throw failure("BAD_REQUEST");
+        const entries=[...url.searchParams],allowed=new Set(["offset","start","end","duration"]),keys=new Set(entries.map(([key])=>key));
+        const offsetText=url.searchParams.get("offset")??"0",startMetro=url.searchParams.get("start")??"",endMetro=url.searchParams.get("end")??"",duration=url.searchParams.get("duration")??"";
+        if(keys.size!==entries.length||entries.some(([key])=>!allowed.has(key))||!/^(0|[1-9]\d{0,6})$/.test(offsetText)
+          ||startMetro.length>100||endMetro.length>100||(duration!==""&&!TOP_DURATIONS.includes(duration)))throw failure("BAD_REQUEST");
         if(!topWalks){json(res,503,{error:{code:"UNAVAILABLE",message:"Топ прогулок временно недоступен."}});return;}
-        json(res,200,{walks:topWalks.list()});return;
+        json(res,200,topWalks.list({offset:Number(offsetText),startMetro,endMetro,duration}));return;
       }
       if(url.pathname==="/api/walks/nearby") {
         if(!["GET","HEAD"].includes(req.method)){res.setHeader("Allow","GET, HEAD");json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;}

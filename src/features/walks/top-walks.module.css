@@ -8,6 +8,7 @@
 
 .filters label {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xs);
   min-width: 0;
   color: var(--map-green);
@@ -16,7 +17,9 @@
 }
 
 .filters select {
+  box-sizing: border-box;
   width: 100%;
+  min-width: 0;
   min-height: var(--control-min);
   padding: 0 var(--space-md);
   color: var(--map-green);
@@ -69,8 +72,9 @@
 }
 
 .card {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(5.5rem, 27%, 7.5rem);
+  grid-template-columns: minmax(0, 1fr) clamp(6.25rem, 30%, 8rem);
   gap: var(--space-sm);
   align-items: stretch;
   min-width: 0;
@@ -90,7 +94,19 @@
   transform: translateY(-2px);
 }
 
-.card:focus-visible {
+.card:focus-within {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.cardOverlay {
+  position: absolute;
+  z-index: var(--z-raise);
+  inset: 0;
+  border-radius: inherit;
+}
+
+.cardOverlay:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 3px;
 }
@@ -150,25 +166,41 @@
   line-height: 1.35;
 }
 
-.metro > span {
+.metroRow {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.375rem;
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
-.metroMark {
+.metroLines {
+  display: inline-flex;
   flex: none;
-  color: var(--map-orange);
+  align-items: center;
+}
+
+.metroMark {
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-right: 0.125rem;
+  color: var(--field-surface);
+  background: var(--map-muted);
+  border-radius: 50%;
+  font-size: var(--text-map-label);
   font-weight: var(--weight-bold);
+  line-height: 1;
 }
 
 .preview {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 7rem;
+  align-self: start;
+  width: 100%;
+  aspect-ratio: 1;
   overflow: hidden;
   background-color: var(--notice-surface);
   background-image:
@@ -179,12 +211,21 @@
   border-radius: var(--radius-md);
 }
 
+.previewWrap {
+  position: relative;
+  z-index: var(--z-map-ui);
+  display: block;
+  align-self: start;
+  min-width: 0;
+  width: 100%;
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+
 .previewRoute {
   width: 100%;
   height: 100%;
-  min-height: 6rem;
-  padding: 0.35rem;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .previewRoute polyline {
@@ -193,6 +234,15 @@
   stroke-width: 4;
   stroke-linecap: round;
   stroke-linejoin: round;
+  filter: drop-shadow(0 0 2px var(--field-surface));
+}
+
+.previewRouteMap polyline {
+  stroke-width: 9;
+}
+
+.previewRouteMap circle {
+  stroke-width: 5;
 }
 
 .previewRoute circle {
@@ -213,19 +263,19 @@
   font-size: var(--text-section);
 }
 
-.previewCaption {
+.attribution {
   position: absolute;
-  right: 0.25rem;
-  bottom: 0.25rem;
-  left: 0.25rem;
-  padding: 0.125rem;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0.125rem 0.2rem;
   color: var(--map-green);
   background: var(--surface-island-glass);
-  border-radius: 0.25rem;
-  font-size: var(--text-meta);
-  font-weight: var(--weight-medium);
-  line-height: 1.2;
-  text-align: center;
+  font-size: var(--text-map-label);
+  line-height: 1.1;
+  text-align: right;
+  pointer-events: auto;
+  text-decoration: underline;
 }
 
 .empty {
@@ -236,4 +286,34 @@
   border-radius: var(--radius-lg);
   font-size: var(--text-control);
   text-align: center;
+}
+
+.loadMore {
+  display: grid;
+  justify-items: center;
+  margin: 0 0 var(--space-xl);
+  color: var(--map-muted);
+  text-align: center;
+}
+
+.moreButton {
+  min-height: var(--control-min);
+  padding: 0 var(--space-lg);
+  color: var(--map-green);
+  background: var(--surface-island);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+}
+
+.moreButton[aria-disabled="true"] {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.moreButton:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
 }

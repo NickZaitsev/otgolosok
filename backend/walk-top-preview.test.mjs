@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { nearestMetro, routePreview } from "./walk-top-preview.mjs";
+import { nearestMetro, routeMapPreview, routePreview } from "./walk-top-preview.mjs";
 
 test("маршрут целиком помещается в превью, сохраняя поворот и концы", () => {
   const points = routePreview([
@@ -21,6 +21,19 @@ test("длинный маршрут не раздувает ответ API и с
   assert.ok(preview[0][1] > preview.at(-1)[1]);
 });
 
+test("карта в превью охватывает весь маршрут и только видимые тайлы", () => {
+  const short = routeMapPreview([{ lat: 55.75, lon: 37.60 }, { lat: 55.751, lon: 37.601 }]);
+  const long = routeMapPreview([{ lat: 55.75, lon: 37.60 }, { lat: 55.79, lon: 37.64 }]);
+  assert.ok(short.zoom > long.zoom);
+  for (const preview of [short, long]) {
+    assert.ok(preview.tiles.length >= 1 && preview.tiles.length <= 4);
+    assert.ok(preview.points.every(([x, y]) => x >= 38 && x <= 218 && y >= 38 && y <= 218));
+    assert.ok(preview.tiles.every(tile => tile.x >= 0 && tile.y >= 0 && tile.x < 2 ** preview.zoom && tile.y < 2 ** preview.zoom));
+  }
+  assert.equal(routeMapPreview([{ lat: 55.75, lon: 37.6 }]), null);
+  assert.equal(routeMapPreview([{ lat: NaN, lon: 37.6 }, { lat: 55.75, lon: 37.7 }]), null);
+});
+
 test("явное название метро у старта важнее соседней станции пересадки", () => {
   const point = { lat: 55.75, lon: 37.6 };
   const stations = [{ name: "Менделеевская", lat: 55.7505, lon: 37.6 }, { name: "Новослободская", lat: 55.75, lon: 37.6 }];
@@ -28,4 +41,14 @@ test("явное название метро у старта важнее сос
   assert.equal(nearestMetro(point, stations, "обычный адрес")?.name, "Новослободская");
   assert.equal(nearestMetro({ lat: 56, lon: 38 }, stations), null);
   assert.equal(nearestMetro(null, stations), null);
+});
+
+test("пересадка сохраняет цвета всех линий одной станции", () => {
+  const point = { lat: 55.75, lon: 37.6 };
+  const stations = [
+    { name: "Арбатская", lat: 55.75, lon: 37.6, line: { id: "3", name: "Синяя", color: "#0072ba" } },
+    { name: "Арбатская", lat: 55.7501, lon: 37.6, line: { id: "4", name: "Голубая", color: "#1ebcef" } },
+    { name: "Арбатская", lat: 55.76, lon: 37.6, line: { id: "8", name: "Далёкая", color: "#ffcd1c" } },
+  ];
+  assert.deepEqual(nearestMetro(point, stations)?.lines.map(line => line.id), ["3", "4"]);
 });

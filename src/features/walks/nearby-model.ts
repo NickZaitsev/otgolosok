@@ -14,7 +14,7 @@ export const NEARBY_LIMIT = 5;
  * saved in this browser; both are the user's own («Ваша»). New responses describe the remaining
  * route from `entryStopId`; fields omitted by an older backend remain valid.
  */
-export type NearbyWalk = Omit<TopWalk, "kind" | "preview" | "startMetro" | "endMetro"> & {
+export type NearbyWalk = Omit<TopWalk, "kind" | "rank" | "preview" | "mapPreview" | "startMetro" | "endMetro"> & {
   kind: "catalog" | "shared" | "own" | "local";
   startDistanceM: number;
   entryStopId?: string;
