@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { nearestMetro, routeMapPreview, routePreview } from "./walk-top-preview.mjs";
+import metroData from "./metro-stations.json" with { type: "json" };
+import { insideCircleStations, nearestMetro, routeMapPreview, routePreview } from "./walk-top-preview.mjs";
 
 test("маршрут целиком помещается в превью, сохраняя поворот и концы", () => {
   const points = routePreview([
@@ -51,4 +52,21 @@ test("пересадка сохраняет цвета всех линий од�
     { name: "Арбатская", lat: 55.76, lon: 37.6, line: { id: "8", name: "Далёкая", color: "#ffcd1c" } },
   ];
   assert.deepEqual(nearestMetro(point, stations)?.lines.map(line => line.id), ["3", "4"]);
+});
+
+test("внутри Кольцевой: станции кольца, центра и короткие пересадки на кольцо", async t => {
+  const inside = insideCircleStations(metroData.stations);
+  /** @type {Array<[string, boolean]>} */
+  const cases = [
+    ["Павелецкая", true], ["Киевская", true], ["Комсомольская", true], ["Охотный ряд", true], ["Китай-город", true],
+    ["Чкаловская", true], ["Марксистская", true], ["Менделеевская", true], ["Серпуховская", true],
+    ["Улица 1905 года", false], ["Динамо", false], ["Спартак", false], ["Савёловская", false], ["Шаболовская", false], ["Бауманская", false],
+  ];
+  for (const [name, expected] of cases) await t.test(name, () => assert.equal(inside.has(name), expected));
+  // A name counts when any of its platforms qualifies, so no qualifying name may also mark a distant station.
+  const ring = metroData.stations.filter(station => station.line.id === "5");
+  const farthest = Math.max(...metroData.stations.filter(station => inside.has(station.name))
+    .map(station => Math.min(...ring.map(platform => Math.hypot((platform.lat - station.lat) * 111, (platform.lon - station.lon) * 63)))));
+  assert.ok(farthest < 3, `${farthest} km`);
+  assert.equal(insideCircleStations(metroData.stations.filter(station => station.line.id !== "5")).size, 0, "без кольца зоны нет");
 });

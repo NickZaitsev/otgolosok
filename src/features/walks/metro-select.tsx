@@ -5,9 +5,10 @@ import { useI18n } from "@/lib/i18n/provider";
 import { searchMetroOptions, type MetroLine, type MetroOption } from "./top-model";
 import styles from "./metro-select.module.css";
 
-function LineDots({ lines }: { lines: MetroLine[] }) {
+/** Filled dots for a station's lines; a zone draws its line as a ring. */
+function LineDots({ lines, zone = false }: { lines: MetroLine[]; zone?: boolean }) {
   return <span className={styles.dots} aria-hidden="true">{lines.length
-    ? lines.map(line => <span key={line.id} className={styles.dot} title={line.name} style={{ backgroundColor: line.color }} />)
+    ? lines.map(line => <span key={line.id} className={`${styles.dot} ${zone ? styles.zone : ""}`} title={line.name} style={zone ? { borderColor: line.color } : { backgroundColor: line.color }} />)
     : <span className={`${styles.dot} ${styles.dotUnknown}`} />}</span>;
 }
 
@@ -26,7 +27,7 @@ export function MetroSelect({ label, value, options, onChange }: { label: string
   const matches = useMemo(() => searchMetroOptions(options, query), [options, query]);
   // «Any station» stays first while the field is empty and drops out of a search.
   const items = query.trim() ? matches : [any, ...matches];
-  const selected = options.find(option => option.name === value) ?? (value ? { name: value, lines: [] } : null);
+  const selected: MetroOption | null = options.find(option => option.name === value) ?? (value ? { name: value, lines: [] } : null);
 
   const show = (initial = "") => {
     const start = initial ? searchMetroOptions(options, initial) : [any, ...options];
@@ -67,8 +68,8 @@ export function MetroSelect({ label, value, options, onChange }: { label: string
     <span id={labelId} className={styles.label}>{label}</span>
     <button ref={trigger} type="button" className={styles.trigger} aria-haspopup="listbox" aria-expanded={open} aria-labelledby={`${labelId} ${id}-value`}
       onClick={() => open ? close(false) : show()} onKeyDown={onTriggerKey}>
-      {selected ? <LineDots lines={selected.lines} /> : null}
-      <span id={`${id}-value`} className={selected ? styles.value : styles.placeholder}>{selected ? selected.name : t("Любая станция")}</span>
+      {selected ? <LineDots lines={selected.lines} zone={Boolean(selected.label)} /> : null}
+      <span id={`${id}-value`} className={selected ? styles.value : styles.placeholder}>{selected ? selected.label ?? selected.name : t("Любая станция")}</span>
     </button>
     {open ? <div className={styles.popup}>
       <input ref={search} className={styles.search} type="search" role="combobox" value={query} placeholder={t("Найти станцию или линию")}
@@ -79,8 +80,8 @@ export function MetroSelect({ label, value, options, onChange }: { label: string
         {items.map((option, index) => <li key={option.name || "any"} id={`${id}-option-${index}`} data-index={index} role="option" aria-selected={option.name === value}
           className={`${styles.option} ${index === active ? styles.active : ""}`}
           onPointerDown={event => event.preventDefault()} onPointerMove={() => setActive(index)} onClick={() => choose(option)}>
-          {option.name ? <><LineDots lines={option.lines} /><span className={styles.name}>{option.name}</span>
-            {option.lines.length ? <span className={styles.lineNames}>{option.lines.map(line => line.name).join(", ")}</span> : null}</>
+          {option.name ? <><LineDots lines={option.lines} zone={Boolean(option.label)} /><span className={styles.name}>{option.label ?? option.name}</span>
+            {option.hint || option.lines.length ? <span className={styles.lineNames}>{option.hint ?? option.lines.map(line => line.name).join(", ")}</span> : null}</>
             : <span className={styles.name}>{t("Любая станция")}</span>}
         </li>)}
       </ul> : <p className={styles.empty} role="status">{t("Станция не найдена")}</p>}

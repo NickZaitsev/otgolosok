@@ -1,12 +1,16 @@
 import { catalogWalkView, listedCatalogRoutes } from "./walk-catalog.mjs";
 import metroData from "./metro-stations.json" with { type: "json" };
-import { nearestMetro, routeMapPreview, routePreview } from "./walk-top-preview.mjs";
+import { insideCircleStations, nearestMetro, routeMapPreview, routePreview } from "./walk-top-preview.mjs";
 
 export const TOP_LIMIT = 20;
 export const TOP_PRIOR_WEIGHT = 5;
 export const CATALOG_LISTED_AT = new Date(0).toISOString();
 
 export const TOP_DURATIONS = ["up-to-30", "31-to-60", "61-to-90"];
+/** Metro filter value for every station on or inside the Circle line; station names never start with «@». */
+export const INSIDE_CIRCLE = "@circle";
+const insideCircle = insideCircleStations(metroData.stations);
+const matchesMetro = (station, filter) => !filter || (filter === INSIDE_CIRCLE ? Boolean(station && insideCircle.has(station.name)) : station?.name === filter);
 export function matchesTopDuration(minutes, duration) {
   if (!duration) return true;
   if (duration === "up-to-30") return minutes <= 30;
@@ -103,10 +107,9 @@ export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP
         lines.set(station.name, known);
       }
       const stationLines = [...lines].sort(([a], [b]) => a.localeCompare(b, "ru"))
-        .map(([name, known]) => ({ name, lines: [...known.values()].sort((a, b) => Number(a.id) - Number(b.id)) }));
+        .map(([name, known]) => ({ name, lines: [...known.values()].sort((a, b) => Number(a.id) - Number(b.id)), insideCircle: insideCircle.has(name) }));
       const filtered = valid.map((walk, rank) => ({ ...walk, rank: rank + 1 }))
-        .filter(walk => (!startMetro || walk.startMetro?.name === startMetro)
-          && (!endMetro || walk.endMetro?.name === endMetro)
+        .filter(walk => matchesMetro(walk.startMetro, startMetro) && matchesMetro(walk.endMetro, endMetro)
           && matchesTopDuration(walk.meta.walkingMinutes, duration));
       const page = filtered.slice(offset, offset + limit);
       return { walks: page.map(({ item, geometry, meta, rank, startMetro: start, endMetro: end }) => ({

@@ -4,8 +4,14 @@ import { translate } from "@/lib/i18n/translate";
 
 export type MetroLine = { id: string; name: string; color: string };
 export type MetroStation = { name: string; distanceM: number; lines: MetroLine[] };
-/** A metro filter option: station name with every line it serves. */
-export type MetroOption = { name: string; lines: MetroLine[] };
+/**
+ * A metro filter option: the filter value (a station name or a zone such as {@link INSIDE_CIRCLE}) with its lines.
+ * A zone shows `label` instead of the value and `hint` under it.
+ */
+export type MetroOption = { name: string; lines: MetroLine[]; insideCircle?: boolean; label?: string; hint?: string };
+/** Filter value for every station on or inside the Circle line; station names never start with «@». */
+export const INSIDE_CIRCLE = "@circle";
+export const CIRCLE_LINE: MetroLine = { id: "5", name: "Кольцевая", color: "#915133" };
 export type MapPreview = {
   zoom: number;
   tiles: Array<{ x: number; y: number; left: number; top: number }>;
@@ -140,13 +146,13 @@ function stationOptions(value: unknown): string[] {
 function stationLines(value: unknown, walks: TopWalk[]): MetroOption[] {
   if (value === undefined) {
     const known = new Map(walks.flatMap(walk => [walk.startMetro, walk.endMetro]).flatMap(station => station ? [[station.name, station.lines] as const] : []));
-    return [...known].map(([name, lines]) => ({ name, lines }));
+    return [...known].map(([name, lines]) => ({ name, lines, insideCircle: false }));
   }
   if (!Array.isArray(value) || value.length > 2000) throw new TypeError("Неверный список станций.");
   return value.map(raw => {
     const station = record(raw);
-    if (!stationName(station.name)) throw new TypeError("Неверный список станций.");
-    return { name: station.name as string, lines: metroLines(station.lines) };
+    if (!stationName(station.name) || station.insideCircle !== undefined && typeof station.insideCircle !== "boolean") throw new TypeError("Неверный список станций.");
+    return { name: station.name as string, lines: metroLines(station.lines), insideCircle: station.insideCircle === true };
   });
 }
 
@@ -206,9 +212,9 @@ export function searchMetroOptions(options: MetroOption[], query: string): Metro
   const key = searchKey(query);
   if (!key) return options;
   const scored = options.flatMap(option => {
-    const name = searchKey(option.name);
+    const name = searchKey(option.label ?? option.name);
     const score = name.startsWith(key) ? 0 : name.split(/[\s-]/).some(word => word.startsWith(key)) ? 1 : name.includes(key) ? 2
-      : option.lines.some(line => searchKey(line.name).includes(key)) ? 3 : -1;
+      : option.lines.some(line => searchKey(line.name).includes(key)) || option.hint && searchKey(option.hint).includes(key) ? 3 : -1;
     return score < 0 ? [] : [{ option, score }];
   });
   return scored.sort((a, b) => a.score - b.score).map(item => item.option);

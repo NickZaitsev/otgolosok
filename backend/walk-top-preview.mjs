@@ -95,3 +95,28 @@ export function nearestMetro(point, stations, address = "", maximumM = 1500) {
     .sort((a, b) => Number(a.id) - Number(b.id));
   return { name: nearest.name, distanceM: nearest.distanceM, lines };
 }
+
+export const CIRCLE_LINE_ID = "5";
+
+/**
+ * Names of stations on the Circle line, inside the ring it draws, or a short transfer away from it
+ * (Марксистская at Таганская, Менделеевская at Новослободская). The ring is the polygon of Circle line
+ * stations ordered by angle around their centre; a name counts when any of its platforms qualifies.
+ */
+export function insideCircleStations(stations, transferM = 400) {
+  const ring = stations.filter(station => station.line?.id === CIRCLE_LINE_ID);
+  if (ring.length < 3) return new Set();
+  const centre = { lat: ring.reduce((sum, station) => sum + station.lat, 0) / ring.length, lon: ring.reduce((sum, station) => sum + station.lon, 0) / ring.length };
+  const polygon = ring.map(station => [station.lon, station.lat])
+    .sort((a, b) => Math.atan2(a[1] - centre.lat, a[0] - centre.lon) - Math.atan2(b[1] - centre.lat, b[0] - centre.lon));
+  const inside = ({ lat, lon }) => {
+    let result = false;
+    for (let index = 0, previous = polygon.length - 1; index < polygon.length; previous = index++) {
+      const [x1, y1] = polygon[index], [x2, y2] = polygon[previous];
+      if ((y1 > lat) !== (y2 > lat) && lon < (x2 - x1) * (lat - y1) / (y2 - y1) + x1) result = !result;
+    }
+    return result;
+  };
+  return new Set(stations.filter(station => station.line?.id === CIRCLE_LINE_ID || inside(station)
+    || ring.some(platform => distanceM(platform, station) <= transferM)).map(station => station.name));
+}

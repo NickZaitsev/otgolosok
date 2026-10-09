@@ -29,6 +29,8 @@ export const walksTranslations: Translations = {
   "Ближайшее метро к финишу": ["Nearest metro to the finish", "终点附近的地铁站"],
   "Любая станция": ["Any station", "任意站点"],
   "Найти станцию или линию": ["Find a station or line", "搜索站点或线路"],
+  "Внутри Кольцевой": ["Inside the Circle line", "环线以内"],
+  "Станции Кольцевой линии и центра": ["Circle line and central stations", "环线及市中心车站"],
   "Поиск: {label}": ["Search: {label}", "搜索：{label}"],
   "Станция не найдена": ["No station found", "未找到站点"],
   "Продолжительность": ["Duration", "时长"],

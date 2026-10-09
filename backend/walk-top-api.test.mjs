@@ -120,7 +120,7 @@ test("the top lists approved public walks only, without private data; the catalo
   assert.equal(nextOffset, null);
   assert.deepEqual(filters, { starts: ["Арбатская"], ends: ["Арбатская"], stations: [{ name: "Арбатская", lines: [
     { id: "3", name: "Арбатско-Покровская", color: "#0072ba" }, { id: "4", name: "Филевская", color: "#1ebcef" },
-  ] }] }, "filter options keep plain names and add every line of the station");
+  ], insideCircle: true }] }, "filter options keep plain names and add every line of the station");
   assert.deepEqual(walks.map((/** @type {any} */ item) => [item.kind, item.id]), [["shared", approved.shareToken]]);
   const item = walks.find((/** @type {any} */ entry) => entry.kind === "shared");
   assert.deepEqual({ kind: item.kind, id: item.id, title: item.title, walkingMinutes: item.walkingMinutes, distanceM: item.distanceM,
@@ -175,6 +175,7 @@ test("duration and metro filters apply before pagination; bad query parameters a
     assert.equal(page.total, expected.length);
   }
   assert.equal((await call("/api/top-walks?end=Несуществующая")).data.total, 0);
+  assert.equal((await call("/api/top-walks?start=%40circle&end=%40circle")).data.total, 7, "Арбатская lies inside the Circle line");
   for (const query of ["?limit=5", "?offset=-1", "?offset=01", "?offset=1.5", "?offset=1e3", "?offset=10000000", "?offset=0&offset=20", "?duration=unknown", "?start=x&bad=y"])
     assert.equal((await call(`/api/top-walks${query}`)).status, 400, query);
 });

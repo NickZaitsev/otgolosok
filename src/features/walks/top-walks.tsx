@@ -6,7 +6,7 @@ import { useI18n } from "@/lib/i18n/provider";
 import { toUserMessage } from "@/lib/errors/user-message";
 import { formatRatingSummary } from "../reviews/model";
 import { loadJson } from "./walk-loader";
-import { formatTopWalkMeta, metroTextColor, topWalkHref, topWalksUrl, validateTopWalkPage, type MetroStation, type TopDuration, type TopFilters, type TopWalk, type TopWalkPage } from "./top-model";
+import { CIRCLE_LINE, formatTopWalkMeta, INSIDE_CIRCLE, metroTextColor, topWalkHref, topWalksUrl, validateTopWalkPage, type MetroOption, type MetroStation, type TopDuration, type TopFilters, type TopWalk, type TopWalkPage } from "./top-model";
 import { MetroSelect } from "./metro-select";
 import styles from "./top-walks.module.css";
 
@@ -112,11 +112,16 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
     setState({ status: "loading" }); setFilters(next);
   };
   const reset = () => changeFilters(emptyFilters);
-  const lines = new Map(facets.stations.map(station => [station.name, station.lines]));
-  const metroOptions = (names: string[]) => names.map(name => ({ name, lines: lines.get(name) ?? [] }));
+  const known = new Map(facets.stations.map(station => [station.name, station]));
+  // «Inside the Circle line» leads the list when one of its stations has walks, and stays while it is the chosen filter.
+  const metroOptions = (names: string[], value: string): MetroOption[] => {
+    const options = names.map(name => known.get(name) ?? { name, lines: [] });
+    const circle = { name: INSIDE_CIRCLE, lines: [CIRCLE_LINE], label: t("Внутри Кольцевой"), hint: t("Станции Кольцевой линии и центра") };
+    return options.some(option => option.insideCircle) || value === INSIDE_CIRCLE ? [circle, ...options] : options;
+  };
   const controls = filterable ? <div className={styles.filters} role="group" aria-label={t("Фильтры прогулок")}>
-      <MetroSelect label={t("Ближайшее метро к старту")} value={filters.start} options={metroOptions(facets.starts)} onChange={start => changeFilters({ start })} />
-      <MetroSelect label={t("Ближайшее метро к финишу")} value={filters.end} options={metroOptions(facets.ends)} onChange={end => changeFilters({ end })} />
+      <MetroSelect label={t("Ближайшее метро к старту")} value={filters.start} options={metroOptions(facets.starts, filters.start)} onChange={start => changeFilters({ start })} />
+      <MetroSelect label={t("Ближайшее метро к финишу")} value={filters.end} options={metroOptions(facets.ends, filters.end)} onChange={end => changeFilters({ end })} />
       <label className="ui-select-field">{t("Продолжительность")}<select value={filters.duration} onChange={event => changeFilters({ duration: event.target.value as TopDuration })}>
         <option value="">{t("Любая продолжительность")}</option><option value="up-to-30">{t("До 30 минут")}</option><option value="31-to-60">{t("31–60 минут")}</option><option value="61-to-90">{t("61–90 минут")}</option>
       </select></label>
