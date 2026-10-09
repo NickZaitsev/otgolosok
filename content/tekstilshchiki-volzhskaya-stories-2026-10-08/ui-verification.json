@@ -1,0 +1,85 @@
+{
+  "stops": 12,
+  "photosLoaded": 4,
+  "totalDuration": 923.2,
+  "items": [
+    {
+      "title": "Культурный центр «Москвич»",
+      "duration": 76.96,
+      "imageLoaded": null,
+      "audioPlayed": true
+    },
+    {
+      "title": "Спортивный центр «Москвич»",
+      "duration": 78.4,
+      "imageLoaded": null,
+      "audioPlayed": true
+    },
+    {
+      "title": "Пруд Садки",
+      "duration": 81.68,
+      "imageLoaded": null,
+      "audioPlayed": true
+    },
+    {
+      "title": "«Шурик и Лида»",
+      "duration": 75.84,
+      "imageLoaded": null,
+      "audioPlayed": true
+    },
+    {
+      "title": "Парк имени Шкулёва",
+      "duration": 80.72,
+      "imageLoaded": true,
+      "audioPlayed": true
+    },
+    {
+      "title": "Люблинский пруд",
+      "duration": 70.56,
+      "imageLoaded": null,
+      "audioPlayed": true
+    },
+    {
+      "title": "Дворец Николая Дурасова",
+      "duration": 72.32,
+      "imageLoaded": null,
+      "audioPlayed": true
+    },
+    {
+      "title": "Театральное здание",
+      "duration": 86.16,
+      "imageLoaded": null,
+      "audioPlayed": true
+    },
+    {
+      "title": "Жилой дом актёров",
+      "duration": 66.08,
+      "imageLoaded": true,
+      "audioPlayed": true
+    },
+    {
+      "title": "Театральная школа",
+      "duration": 93.36,
+      "imageLoaded": null,
+      "audioPlayed": true
+    },
+    {
+      "title": "Бывший пансион для дворянских детей",
+      "duration": 72,
+      "imageLoaded": true,
+      "audioPlayed": true
+    },
+    {
+      "title": "Западный флигель оранжереи",
+      "duration": 69.12,
+      "imageLoaded": true,
+      "audioPlayed": true
+    }
+  ],
+  "checkedAt": "2026-10-09T08:54:52.339Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "javascriptErrors": 0
+}

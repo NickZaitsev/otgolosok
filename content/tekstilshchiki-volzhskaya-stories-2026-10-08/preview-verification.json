@@ -1,0 +1,197 @@
+{
+  "checkedAt": "2026-10-09T08:44:51.683Z",
+  "items": [
+    {
+      "order": 1,
+      "placeId": "osm:relation:2234282",
+      "title": "Культурный центр «Москвич»",
+      "cardStatus": 404,
+      "preview": {
+        "status": "missing_card"
+      }
+    },
+    {
+      "order": 2,
+      "placeId": "osm:way:27175377",
+      "title": "Спортивный центр «Москвич»",
+      "cardStatus": 404,
+      "preview": {
+        "status": "missing_card"
+      }
+    },
+    {
+      "order": 3,
+      "placeId": "osm:way:27175355",
+      "title": "Пруд Садки",
+      "cardStatus": 404,
+      "preview": {
+        "status": "missing_card"
+      }
+    },
+    {
+      "order": 4,
+      "placeId": "osm:node:3955434301",
+      "title": "«Шурик и Лида»",
+      "cardStatus": 404,
+      "preview": {
+        "status": "missing_card"
+      }
+    },
+    {
+      "order": 5,
+      "placeId": "osm:relation:7486979",
+      "title": "Парк имени Шкулёва",
+      "cardStatus": 200,
+      "preview": {
+        "status": "ready",
+        "alt": "Парк имени Шкулёва",
+        "author": "Yubkitutu",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%90%D0%BB%D0%BB%D0%B5%D0%B8_%D0%B2_%D0%9F%D0%B0%D1%80%D0%BA%D0%B5_%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8_%D0%A8%D0%BA%D1%83%D0%BB%D0%B5%D0%B2%D0%B0.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "files": {
+          "thumbnail": {
+            "url": "/api/place-images/1405a6f8e9c4d7135c950de5e27463c16a7d262611109a892121d25da19f7fdb.jpg",
+            "bytes": 22374,
+            "sha256": "1405a6f8e9c4d7135c950de5e27463c16a7d262611109a892121d25da19f7fdb",
+            "width": 250,
+            "height": 187
+          },
+          "src": {
+            "url": "/api/place-images/71e35b9f1c66d94ed533cfed09d4a8d3319b9a691e157e7df626075186d69b42.jpg",
+            "bytes": 85366,
+            "sha256": "71e35b9f1c66d94ed533cfed09d4a8d3319b9a691e157e7df626075186d69b42",
+            "width": 500,
+            "height": 375
+          }
+        }
+      }
+    },
+    {
+      "order": 6,
+      "placeId": "osm:relation:7486952",
+      "title": "Люблинский пруд",
+      "cardStatus": 404,
+      "preview": {
+        "status": "missing_card"
+      }
+    },
+    {
+      "order": 7,
+      "placeId": "osm:relation:7486944",
+      "title": "Дворец Николая Дурасова",
+      "cardStatus": 200,
+      "preview": {
+        "status": "missing_photo"
+      }
+    },
+    {
+      "order": 8,
+      "placeId": "osm:way:48222941",
+      "title": "Театральное здание",
+      "cardStatus": 404,
+      "preview": {
+        "status": "missing_card"
+      }
+    },
+    {
+      "order": 9,
+      "placeId": "osm:way:48222938",
+      "title": "Жилой дом актёров",
+      "cardStatus": 200,
+      "preview": {
+        "status": "ready",
+        "alt": "Жилой дом",
+        "author": "Rishalampone",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dom_4str4.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+        "files": {
+          "thumbnail": {
+            "url": "/api/place-images/b20ef74d08dc554323fadb9500a628558d8a4e1c13708d4a3892b578de82297b.jpg",
+            "bytes": 25481,
+            "sha256": "b20ef74d08dc554323fadb9500a628558d8a4e1c13708d4a3892b578de82297b",
+            "width": 250,
+            "height": 304
+          },
+          "src": {
+            "url": "/api/place-images/fcdac5406a813733f7a32af2241785d811f94469e16beb818785a24bf5fefe42.jpg",
+            "bytes": 93776,
+            "sha256": "fcdac5406a813733f7a32af2241785d811f94469e16beb818785a24bf5fefe42",
+            "width": 500,
+            "height": 608
+          }
+        }
+      }
+    },
+    {
+      "order": 10,
+      "placeId": "osm:way:203868822",
+      "title": "Театральная школа",
+      "cardStatus": 404,
+      "preview": {
+        "status": "missing_card"
+      }
+    },
+    {
+      "order": 11,
+      "placeId": "osm:way:48222937",
+      "title": "Бывший пансион для дворянских детей",
+      "cardStatus": 200,
+      "preview": {
+        "status": "ready",
+        "alt": "Флигель театральной школы (бывший пансион для дворянских детей)",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Lyublino_Park_Dacha_1.jpg",
+        "license": "CC BY 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+        "files": {
+          "thumbnail": {
+            "url": "/api/place-images/50cb234233b07f4cad8f110d91d8220a465df82a6440959ee4bd72810db39a2c.jpg",
+            "bytes": 28277,
+            "sha256": "50cb234233b07f4cad8f110d91d8220a465df82a6440959ee4bd72810db39a2c",
+            "width": 250,
+            "height": 248
+          },
+          "src": {
+            "url": "/api/place-images/a3cf25b7f44b1cce2db06fa8056cacc88eda47583138da7908023680d325b18d.jpg",
+            "bytes": 101750,
+            "sha256": "a3cf25b7f44b1cce2db06fa8056cacc88eda47583138da7908023680d325b18d",
+            "width": 500,
+            "height": 496
+          }
+        }
+      }
+    },
+    {
+      "order": 12,
+      "placeId": "osm:way:48222942",
+      "title": "Западный флигель оранжереи",
+      "cardStatus": 200,
+      "preview": {
+        "status": "ready",
+        "alt": "Западный флигель оранжереи усадьбы Люблино",
+        "author": "Artempris",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%97%D0%B0%D0%BF%D0%B0%D0%B4%D0%BD%D1%8B%D0%B9_%D1%84%D0%BB%D0%B8%D0%B3%D0%B5%D0%BB%D1%8C_%D0%9E%D1%80%D0%B0%D0%BD%D0%B6%D0%B5%D1%80%D0%B5%D0%B8_%D0%A3%D1%81%D0%B0%D0%B4%D1%8C%D0%B1%D1%8B_%D0%94%D1%83%D1%80%D0%B0%D1%81%D0%BE%D0%B2%D0%B0.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+        "files": {
+          "thumbnail": {
+            "url": "/api/place-images/d24ad268e641c44070ce50efcfcb32d5f60ba9e3771adaccc97556ecec9c0435.jpg",
+            "bytes": 18217,
+            "sha256": "d24ad268e641c44070ce50efcfcb32d5f60ba9e3771adaccc97556ecec9c0435",
+            "width": 250,
+            "height": 187
+          },
+          "src": {
+            "url": "/api/place-images/8690139e316270d99bffe96f8fb7604e167b5158ab1f3b6f961a05fccc5a5172.jpg",
+            "bytes": 217821,
+            "sha256": "8690139e316270d99bffe96f8fb7604e167b5158ab1f3b6f961a05fccc5a5172",
+            "width": 960,
+            "height": 720
+          }
+        }
+      }
+    }
+  ]
+}
