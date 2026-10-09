@@ -1,0 +1,96 @@
+{
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "played": 12,
+  "finishReached": true,
+  "completed": true,
+  "errors": [],
+  "rows": [
+    {
+      "order": 1,
+      "title": "Культурный центр «Москвич»",
+      "played": true,
+      "readyState": 3,
+      "duration": 76.96
+    },
+    {
+      "order": 2,
+      "title": "Спортивный центр «Москвич»",
+      "played": true,
+      "readyState": 4,
+      "duration": 78.4
+    },
+    {
+      "order": 3,
+      "title": "Пруд Садки",
+      "played": true,
+      "readyState": 4,
+      "duration": 81.68
+    },
+    {
+      "order": 4,
+      "title": "«Шурик и Лида»",
+      "played": true,
+      "readyState": 4,
+      "duration": 75.84
+    },
+    {
+      "order": 5,
+      "title": "Парк имени Шкулёва",
+      "played": true,
+      "readyState": 4,
+      "duration": 80.72
+    },
+    {
+      "order": 6,
+      "title": "Люблинский пруд",
+      "played": true,
+      "readyState": 4,
+      "duration": 70.56
+    },
+    {
+      "order": 7,
+      "title": "Дворец Николая Дурасова",
+      "played": true,
+      "readyState": 4,
+      "duration": 72.32
+    },
+    {
+      "order": 8,
+      "title": "Театральное здание",
+      "played": true,
+      "readyState": 3,
+      "duration": 86.16
+    },
+    {
+      "order": 9,
+      "title": "Жилой дом актёров",
+      "played": true,
+      "readyState": 4,
+      "duration": 66.08
+    },
+    {
+      "order": 10,
+      "title": "Театральная школа",
+      "played": true,
+      "readyState": 3,
+      "duration": 93.36
+    },
+    {
+      "order": 11,
+      "title": "Бывший пансион для дворянских детей",
+      "played": true,
+      "readyState": 3,
+      "duration": 72
+    },
+    {
+      "order": 12,
+      "title": "Западный флигель оранжереи",
+      "played": true,
+      "readyState": 3,
+      "duration": 69.12
+    }
+  ]
+}

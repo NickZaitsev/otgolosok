@@ -1,0 +1,194 @@
+{
+  "shareUrl": "https://otgolosok.online/walk?share=7cabbb84-06c4-445d-abf4-faf49a98aa5c",
+  "stops": 12,
+  "ready": 12,
+  "audioDurationSec": 923.2,
+  "distanceM": 5921,
+  "walkingMinutes": 70,
+  "photos": 11,
+  "rows": [
+    {
+      "placeId": "osm:relation:2234282",
+      "words": 158,
+      "durationSec": 76.96,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/images/places/relation-2234282-ad365f1891c9.jpg",
+          "sha256": "ad365f1891c97d8f1f9c3ffba218c339c22b561aedfa85c3444fab9a1b03f4b5"
+        },
+        {
+          "url": "/images/places/relation-2234282-fbbd9c8d2393.jpg",
+          "sha256": "fbbd9c8d23934d39e75b074dc523ac7ba7f2efd8bc229ecd5f8aa47484de25f3"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:27175377",
+      "words": 155,
+      "durationSec": 78.4,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/images/places/way-27175377-f66f9d6d3730.jpg",
+          "sha256": "f66f9d6d3730d8a5151c56ec84905a92d343e7ca46ed380e3c9adc8c9110fa17"
+        },
+        {
+          "url": "/images/places/way-27175377-3083d327cbfc.jpg",
+          "sha256": "3083d327cbfcb900e0d97ec7eef337cb462d3a8773e9026496fb70933cb7e240"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:27175355",
+      "words": 164,
+      "durationSec": 81.68,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/images/places/way-27175355-a7c62c0453f5.jpg",
+          "sha256": "a7c62c0453f5f9bf16b306bac11d56999ea0b7dc7f44f168f48f10ef06144f98"
+        },
+        {
+          "url": "/images/places/way-27175355-3876c15ea4cb.jpg",
+          "sha256": "3876c15ea4cba5dddee2d54617d09bc6dc695f18aa4fb33b7540c469f8ed2385"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:node:3955434301",
+      "words": 163,
+      "durationSec": 75.84,
+      "photo": false,
+      "photoFiles": []
+    },
+    {
+      "placeId": "osm:relation:7486979",
+      "words": 164,
+      "durationSec": 80.72,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/api/place-images/1405a6f8e9c4d7135c950de5e27463c16a7d262611109a892121d25da19f7fdb.jpg",
+          "sha256": "1405a6f8e9c4d7135c950de5e27463c16a7d262611109a892121d25da19f7fdb"
+        },
+        {
+          "url": "/api/place-images/71e35b9f1c66d94ed533cfed09d4a8d3319b9a691e157e7df626075186d69b42.jpg",
+          "sha256": "71e35b9f1c66d94ed533cfed09d4a8d3319b9a691e157e7df626075186d69b42"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:7486952",
+      "words": 146,
+      "durationSec": 70.56,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/images/places/relation-7486952-573d4385fdb3.jpg",
+          "sha256": "573d4385fdb38d50ca119309fc0f971c04c6bb180a427aa811014ddd75ddf54a"
+        },
+        {
+          "url": "/images/places/relation-7486952-fbec53faddcc.jpg",
+          "sha256": "fbec53faddccfee6532a24c3bc0195e1f0f0b85fe7087ff36cac635d8077d412"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:7486944",
+      "words": 140,
+      "durationSec": 72.32,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/images/places/relation-7486944-9dc54271025c.jpg",
+          "sha256": "9dc54271025c99172affe8c26192789c88f266e647dbb9165a84ebf3c9d077d6"
+        },
+        {
+          "url": "/images/places/relation-7486944-21f598ef5958.jpg",
+          "sha256": "21f598ef5958651397d9d5cbb5d333a0967754c3762a8dad9b69c447e8834a66"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:48222941",
+      "words": 179,
+      "durationSec": 86.16,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/images/places/way-48222941-99f219f4d2da.jpg",
+          "sha256": "99f219f4d2daa8e2866a378de7a39cb204c56af7d100a89760c0c9663ec158e1"
+        },
+        {
+          "url": "/images/places/way-48222941-ad31e9c864fa.jpg",
+          "sha256": "ad31e9c864faebef0223774826b021bd39e76f4a2fc0139210133c2438a90a2f"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:48222938",
+      "words": 141,
+      "durationSec": 66.08,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/api/place-images/b20ef74d08dc554323fadb9500a628558d8a4e1c13708d4a3892b578de82297b.jpg",
+          "sha256": "b20ef74d08dc554323fadb9500a628558d8a4e1c13708d4a3892b578de82297b"
+        },
+        {
+          "url": "/api/place-images/fcdac5406a813733f7a32af2241785d811f94469e16beb818785a24bf5fefe42.jpg",
+          "sha256": "fcdac5406a813733f7a32af2241785d811f94469e16beb818785a24bf5fefe42"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:203868822",
+      "words": 188,
+      "durationSec": 93.36,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/images/places/way-203868822-fdf97ccbaa78.jpg",
+          "sha256": "fdf97ccbaa78a7abb77332a157ef21c085427936d215d2e7931bf2f58b03b2f0"
+        },
+        {
+          "url": "/images/places/way-203868822-d1c4d02b36b3.jpg",
+          "sha256": "d1c4d02b36b3632ed94c69a36d8d69c3ce267631e3027bbb847e86706b2d7a23"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:48222937",
+      "words": 145,
+      "durationSec": 72,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/api/place-images/50cb234233b07f4cad8f110d91d8220a465df82a6440959ee4bd72810db39a2c.jpg",
+          "sha256": "50cb234233b07f4cad8f110d91d8220a465df82a6440959ee4bd72810db39a2c"
+        },
+        {
+          "url": "/api/place-images/a3cf25b7f44b1cce2db06fa8056cacc88eda47583138da7908023680d325b18d.jpg",
+          "sha256": "a3cf25b7f44b1cce2db06fa8056cacc88eda47583138da7908023680d325b18d"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:48222942",
+      "words": 139,
+      "durationSec": 69.12,
+      "photo": true,
+      "photoFiles": [
+        {
+          "url": "/api/place-images/d24ad268e641c44070ce50efcfcb32d5f60ba9e3771adaccc97556ecec9c0435.jpg",
+          "sha256": "d24ad268e641c44070ce50efcfcb32d5f60ba9e3771adaccc97556ecec9c0435"
+        },
+        {
+          "url": "/api/place-images/8690139e316270d99bffe96f8fb7604e167b5158ab1f3b6f961a05fccc5a5172.jpg",
+          "sha256": "8690139e316270d99bffe96f8fb7604e167b5158ab1f3b6f961a05fccc5a5172"
+        }
+      ]
+    }
+  ]
+}

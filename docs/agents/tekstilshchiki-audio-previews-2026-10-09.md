@@ -1,5 +1,7 @@
 # Озвучка и превью «Текстильщики» → «Волжская»
 
+**Позднее прогулка опубликована:** [итоговая проверка и ссылка](tekstilshchiki-release-2026-10-09.md). Состояние публичных карточек ниже зафиксировано до выпуска.
+
 9 октября 2026 года [двенадцать маршрутных рассказов](../../content/tekstilshchiki-volzhskaya-stories-2026-10-08/README.md) озвучены через ElevenLabs `eleven_v4`, голос «Отголосок2». Все файлы хранятся локально в `backend/data/tekstilshchiki-volzhskaya-2026-10-08/audio/`, а их SHA-256, длина и происхождение перечислены в [квитанции](../../content/tekstilshchiki-volzhskaya-stories-2026-10-08/audio-verification.json). Сумма измеренных ffprobe длительностей — **923,20 секунды (15:23)**; стандарт 15 минут выполнен.
 
 Первый расчёт после записи дал 888,88 секунды. История Театральной школы дополнена фактами о клубе юных автомобилистов, гримировочных и дальнейшей судьбе артистов из [городской концепции](https://www.garant.ru/products/ipo/prime/doc/288310/) и [музейной публикации](https://ostankino-museum.ru/%C2%ABbudni-i-prazdniki-krepostnogo-teatra.-krepostnoj-teatr-rossii-vtoroj-polovinyi-xviii-%E2%80%93-nachala-xix-veka%C2%BB.-iz-kollekczii-muzeya-usadbyi-ostankino). Перезаписана только десятая глава; остальные одиннадцать аудиофайлов переиспользованы из кеша. Новый текст — 188 слов, сумма двенадцати текстов — 1870 слов.
