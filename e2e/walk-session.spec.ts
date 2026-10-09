@@ -224,8 +224,17 @@ test("аудио, текст и список остановок открываю
   await readStory.click();
   await expect(page.locator(".walk-session-drawer .story-text")).toBeVisible();
   await expect(readStory).toHaveAttribute("aria-expanded", "true");
+  // Ящик занимает место плеера, но звуком по-прежнему управляет мини-плеер в закреплённом футере.
+  const miniPlayer = page.locator(".walk-session-actions").getByRole("region", { name: "Плеер истории" });
+  await expect(miniPlayer).toBeVisible();
+  await miniPlayer.getByRole("button", { name: "Продолжить", exact: true }).click();
+  await expect.poll(() => page.locator("audio").evaluate(el => (el as HTMLAudioElement).paused)).toBe(false);
+  await miniPlayer.getByRole("button", { name: "Пауза", exact: true }).click();
+  await expect.poll(() => page.locator("audio").evaluate(el => (el as HTMLAudioElement).paused)).toBe(true);
   await readStory.click();
   await expect(page.locator(".walk-session-drawer .story-text")).toHaveCount(0);
+  await expect(page.getByRole("region", { name: "Плеер истории" })).toHaveCount(1);
+  await expect(miniPlayer).toHaveCount(0);
   await expect(readStory.locator("span")).toHaveCSS("text-decoration-line", "underline");
   await page.getByRole("button", { name: "Настройки прогулки" }).click();
   await page.getByLabel("Переключение остановок").selectOption("manual");
@@ -253,6 +262,29 @@ test("аудио, текст и список остановок открываю
   await expect(page.locator(".walk-session")).toHaveCount(0);
   // Закрытая во время прогулки страница не оставляет стартовую карту без навигации.
   await expect(page.getByRole("navigation", { name: "Основная навигация" })).toBeVisible();
+});
+
+test("с клавиатуры фокус не прячется под мини-плеером в закреплённом футере", async ({ page }) => {
+  // На низком горизонтальном экране мини-плеер заметно поднимает футер: прокрутка к фокусу должна это учитывать.
+  await page.setViewportSize({ width: 568, height: 320 });
+  await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: routeToWalkView(routeData as Route) }));
+  await page.goto("/walk?catalog=paveletskaya");
+  await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+  await page.getByRole("button", { name: "Настройки прогулки" }).click();
+  await expect(page.locator(".walk-session-actions").getByRole("region", { name: "Плеер истории" })).toBeVisible();
+  await page.locator("#walk-session-title").focus();
+  const covered: string[] = [];
+  for (let step = 0; step < 12; step++) {
+    await page.keyboard.press("Tab");
+    const hidden = await page.evaluate(() => new Promise<string | null>(resolve => requestAnimationFrame(() => {
+      const focused = document.activeElement as HTMLElement | null;
+      const footer = document.querySelector(".walk-session-actions")!;
+      if (!focused?.closest(".walk-session-panel") || footer.contains(focused)) return resolve(null);
+      resolve(focused.getBoundingClientRect().bottom > footer.getBoundingClientRect().top ? focused.getAttribute("aria-label") ?? focused.textContent ?? "" : null);
+    })));
+    if (hidden !== null) covered.push(hidden);
+  }
+  expect(covered).toEqual([]);
 });
 
 test("крестик в карточке прерывает прогулку только после подтверждения", async ({ page }) => {

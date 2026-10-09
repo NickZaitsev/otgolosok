@@ -154,7 +154,8 @@
   gap: 6px;
 }
 
-.walkButtons button {
+.walkButtons button,
+.mini button {
   font: inherit;
   cursor: pointer;
   transition:
@@ -162,7 +163,8 @@
     background-color 0.15s ease;
 }
 
-.walkButtons button:active:not(:disabled) {
+.walkButtons button:active:not(:disabled),
+.mini button:active:not(:disabled) {
   transform: scale(0.96);
 }
 
@@ -210,13 +212,45 @@
   box-shadow: var(--shadow-player-toggle);
 }
 
-.walk :is(button, input):focus-visible {
+/* The mini player floats above the footer actions while a drawer is open. */
+.mini {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px 6px 6px;
+  border: 1px solid var(--border-island);
+  border-radius: 999px;
+  background: var(--field-surface);
+  box-shadow: var(--shadow-control);
+}
+
+.mini .walkTimeline {
+  gap: 2px;
+}
+
+.miniToggle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--map-green);
+  color: var(--surface-island);
+  cursor: pointer;
+}
+
+.walk :is(button, input):focus-visible,
+.mini :is(button, input):focus-visible {
   outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .walkButtons button {
+  .walkButtons button,
+  .mini button {
     transition: none;
   }
 

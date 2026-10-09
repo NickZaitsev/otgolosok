@@ -386,6 +386,8 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const canSeek = !walkUsesTestAudio && mediaDuration > 0 && !["loading", "unlocking", "locked"].includes(audioStatus);
   const audioButtonLabel = t(audioStatus === "loading" ? "Отменить запуск" : audioStatus === "playing" ? "Пауза" : audioStatus === "paused" ? "Продолжить" : audioStatus === "ended" ? "Слушать ещё раз" : audioStatus === "unlocking" ? "Включить звук" : audioStatus === "blocked" || audioStatus === "error" ? "Повторить запуск звука" : walkUsesTestAudio ? "Проверить звук" : walkAudioUrl ? "Слушать историю" : "Аудио ещё не готово");
   const player: PlayerState = { status: audioStatus, position: playbackTime, duration, canSeek, label: audioButtonLabel, source: walkAudioUrl, testTone: walkUsesTestAudio };
+  const walkPlayer = (mini: boolean) => walkAudioUrl ? <AudioPlayerControls compact walk mini={mini} position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
+    label={audioButtonLabel} onToggle={toggleAudio} onSeek={audio.seek} /> : null;
   const toggleSources = () => setShowSources((value) => !value);
   // During the walk it sits in the settings, before the start in «Остановки», where the settings button is gone.
   const offlineControls = offlineRef || shellStatus ? <>
@@ -419,8 +421,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
         hasReview={Boolean(reviews.mine)} ratingCount={reviews.summary?.count ?? null} reviews={reviewTarget ? <WalkReviews reviews={reviews} onRate={() => setRateOpen(true)} /> : null} onRate={() => setRateOpen(true)}
         onImprove={reviewTarget ? () => setImproveOpen(true) : null}
         audioError={audioStatus === "blocked" || audioStatus === "error" ? t("Не удалось включить аудио. Нажмите «Повторить запуск звука».") : ""}
-        player={walkAudioUrl ? <AudioPlayerControls compact walk position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
-          label={audioButtonLabel} rate={settings.rate} onToggle={toggleAudio} onSeek={audio.seek} onRate={rate => updateSettings({ rate })} /> : null}
+        player={walkPlayer(false)} miniPlayer={walkPlayer(true)}
         story={<><StoryText story={walkContent.story} contentLocale={contentLocale} />{walkContent.sources.length ? <StorySources content={walkContent} contentLocale={contentLocale} open={showSources} onToggle={toggleSources} /> : null}</>}
         settings={<div className="walk-session-settings">
           <label>{t("Переключение остановок")}<select value={settings.advance} onChange={event => updateSettings({ advance: event.target.value as AdvanceMode })}>{advanceModes.map(mode => <option key={mode} value={mode}>{t(advanceModeLabels[mode])}</option>)}</select></label>

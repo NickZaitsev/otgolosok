@@ -67,7 +67,7 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean, locale: Lo
 }
 
 export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1, openingIndex = 0,
-  titleRef, startRef, onStart, onSelect, onStop, player, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
+  titleRef, startRef, onStart, onSelect, onStop, player, miniPlayer = null, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
   positionDenied = false, onRetryPosition = noop, direction = "forward", foodMode: documentFoodMode, onDirectionChange, onAddFood = null, contentLocale = "ru", audioAvailable = false }: {
   direction?: WalkDirection;
   foodMode?: "open" | "loop";
@@ -90,7 +90,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   titleRef: RefObject<HTMLHeadingElement | null>; startRef: RefObject<HTMLButtonElement | null>;
   /** Starts the walk: from the saved place, or from stop `index` when the walker picked one in «Остановки». */
   onStart: (index?: number) => void; onSelect: (index: number) => void; onStop: (completed?: boolean) => void;
-  player: ReactNode; story: ReactNode; audioError: string;
+  player: ReactNode; miniPlayer?: ReactNode; story: ReactNode; audioError: string;
   /** Playback settings, shown only during the walk: before the start they are noise on the card. */
   settings: ReactNode;
   /** The offline copy controls before the start, under the route in «Остановки»: the copy is saved before going out. */
@@ -314,6 +314,8 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
       {foodManifestError ? <p role="status" className="walk-session-notice">{t("Не удалось загрузить заведения")} <button type="button" className={foodStyles.retry} onClick={food.retry}>{t("Повторить")}</button></p> : null}
       </div>
       <footer className={`${foodStyles.actions} walk-session-actions${completed && reviews ? " walk-session-actions--finish" : ""}`} data-sheet-part="footer">
+        {/* A drawer takes the player's place, but the story keeps playing: its controls stay in the pinned footer. */}
+        {active && drawer && miniPlayer ? <div className="walk-session-mini">{miniPlayer}</div> : null}
         {following ? <p className="walk-session-following" title={following}>{following}</p> : null}
         {completed ? reviews ? <>
           <button type="button" className="walk-session-primary" aria-haspopup="dialog" onClick={onRate}>{t(hasReview ? "Изменить отзыв" : "Оставить отзыв")}</button>

@@ -16,7 +16,8 @@ type Props = {
   onSeek: (seconds: number) => void;
 } & (
   // The compact player has no speed buttons: the walk sets the speed in its settings.
-  | { compact: true; walk?: boolean; rate?: PlaybackRate; onRate?: (rate: PlaybackRate) => void }
+  // The mini walk player stays in the card's footer while a drawer covers the full one.
+  | { compact: true; walk?: boolean; mini?: boolean; rate?: PlaybackRate; onRate?: (rate: PlaybackRate) => void }
   | { compact?: false; rate: PlaybackRate; onRate: (rate: PlaybackRate) => void }
 );
 
@@ -38,23 +39,33 @@ export function AudioPlayerControls(props: Props) {
   const { className, position, duration, canSeek, playing, label, onToggle, onSeek } = props;
   const maximum = Number.isFinite(duration) && duration > 0 ? duration : 0;
   const current = Math.min(maximum, Math.max(0, position));
+  const timeline = <div className={styles.walkTimeline}>
+    <input type="range" min={0} max={maximum || 1} step="any" value={current} disabled={!canSeek}
+      style={{ "--progress": maximum ? current / maximum : 0 } as CSSProperties}
+      aria-label={t("Позиция воспроизведения")} aria-valuetext={t("{current} из {duration}", { current: formatPlaybackTime(current), duration: formatPlaybackTime(maximum) })}
+      onChange={event => onSeek(Number(event.target.value))} />
+    <div className={styles.time} aria-hidden="true"><span>{formatPlaybackTime(current)}</span><span>{formatPlaybackTime(maximum)}</span></div>
+  </div>;
+  const toggleIcon = <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">{playing ? <path d="M6 4h4v16H6zM14 4h4v16h-4z" /> : <path d="m8 4 12 8-12 8z" />}</svg>;
+  const skip = (direction: "back" | "forward") => direction === "back"
+    ? <button type="button" className={styles.walkSkip} aria-label={t("Назад на 15 секунд")}
+      disabled={!canSeek || current <= 0} onClick={() => onSeek(Math.max(0, current - 15))}><SkipIcon direction="back" /></button>
+    : <button type="button" className={styles.walkSkip} aria-label={t("Вперёд на 15 секунд")}
+      disabled={!canSeek || current >= maximum} onClick={() => onSeek(Math.min(maximum, current + 15))}><SkipIcon direction="forward" /></button>;
+  if (props.compact && props.walk && props.mini) return <section className={cx(styles.mini, className)} aria-label={t("Плеер истории")}>
+    <button type="button" className={styles.miniToggle} onClick={onToggle} aria-label={label}>{toggleIcon}</button>
+    {timeline}
+    {skip("back")}
+  </section>;
   if (props.compact && props.walk) return <section className={cx(styles.walk, className)} aria-label={t("Плеер истории")}>
-    <div className={styles.walkTimeline}>
-      <input type="range" min={0} max={maximum || 1} step="any" value={current} disabled={!canSeek}
-        style={{ "--progress": maximum ? current / maximum : 0 } as CSSProperties}
-        aria-label={t("Позиция воспроизведения")} aria-valuetext={t("{current} из {duration}", { current: formatPlaybackTime(current), duration: formatPlaybackTime(maximum) })}
-        onChange={event => onSeek(Number(event.target.value))} />
-      <div className={styles.time} aria-hidden="true"><span>{formatPlaybackTime(current)}</span><span>{formatPlaybackTime(maximum)}</span></div>
-    </div>
+    {timeline}
     <div className={styles.walkButtons}>
-      <button type="button" className={styles.walkSkip} aria-label={t("Назад на 15 секунд")}
-        disabled={!canSeek || current <= 0} onClick={() => onSeek(Math.max(0, current - 15))}><SkipIcon direction="back" /></button>
+      {skip("back")}
       <button type="button" className={styles.walkToggle} onClick={onToggle} aria-label={label}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">{playing ? <path d="M6 4h4v16H6zM14 4h4v16h-4z" /> : <path d="m8 4 12 8-12 8z" />}</svg>
+        {toggleIcon}
         <span>{label}</span>
       </button>
-      <button type="button" className={styles.walkSkip} aria-label={t("Вперёд на 15 секунд")}
-        disabled={!canSeek || current >= maximum} onClick={() => onSeek(Math.min(maximum, current + 15))}><SkipIcon direction="forward" /></button>
+      {skip("forward")}
     </div>
   </section>;
   if (props.compact) return <section className={cx(styles.compact, className)} aria-label={t("Плеер истории")}>
