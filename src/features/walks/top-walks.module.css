@@ -266,15 +266,15 @@
   position: absolute;
   right: 0;
   bottom: 0;
-  left: 0;
-  padding: 0.125rem 0.2rem;
+  padding: 0.125rem 0.25rem;
   color: var(--map-green);
   background: var(--surface-island-glass);
+  border-radius: var(--radius-sm) 0 var(--radius-md) 0;
   font-size: var(--text-map-label);
-  line-height: 1.1;
-  text-align: right;
+  line-height: 1.2;
   pointer-events: auto;
   text-decoration: underline;
+  white-space: nowrap;
 }
 
 .empty {

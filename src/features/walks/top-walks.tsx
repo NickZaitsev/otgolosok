@@ -138,7 +138,7 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
             </span> : null}
           </span>
           <span className={styles.previewWrap}><RoutePreview walk={walk} />
-            {walk.mapPreview ? <a className={styles.attribution} href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap<br />contributors</a> : null}
+            {walk.mapPreview ? <a className={styles.attribution} href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a> : null}
           </span>
       </li>)}
     </ol> : <p className={styles.empty}>{selected ? t("По выбранным фильтрам прогулок нет.") : t("В топе пока пусто. Откройте свою прогулку всем — после проверки она появится здесь.")} {selected ? <button type="button" className={styles.retry} onClick={reset}>{t("Сбросить фильтры")}</button> : null}</p>}
