@@ -1,0 +1,11 @@
+{
+  "pnpmCheckPassed": true,
+  "frontendTestFiles": 138,
+  "frontendTests": 2109,
+  "backendTests": 1079,
+  "pythonTests": 26,
+  "pythonSubtests": 78,
+  "newAndOldMp3ShaSizeAndDurationVerified": true,
+  "publishedWalkChaptersVerified": 2,
+  "mobilePlaybackVerified": 2
+}

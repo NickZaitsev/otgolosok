@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-09T11:00:41.238Z",
+  "placeId": "osm:relation:2150666",
+  "textId": "0873f5cf-ea3d-4aa0-a289-b46cd5cabb71",
+  "requestId": "e0563987-39a5-5f69-8cd1-18bcd6d2c3d0",
+  "audioJobId": "f4637ca0-534a-46db-aac3-d2fe39dbd88e",
+  "state": "succeeded",
+  "attempts": 1,
+  "sourceTextSha256": "cf77b81d08f2715c1d44a6185acebdd7a579ef879ff479e12e66d5380d9da272",
+  "spokenTextSha256": "c576171bf6888c774801051367f0927e27cbe308c49d7d38b05611fdc3d6b223",
+  "requestedProvider": "elevenlabs",
+  "requestedModel": "eleven_v4",
+  "requestedVoice": "9ivxhQ6xIsHd6R3Xc635",
+  "normalizerVersion": "ru-normalizr-0.3.0-tts",
+  "storyAddressPhotoPreserved": true,
+  "oldAudio": {
+    "url": "/api/story-audio/f37559a98196b186772714a69c79a9e025beb148660826c47798794647a9ccaa.mp3",
+    "sha256": "f37559a98196b186772714a69c79a9e025beb148660826c47798794647a9ccaa",
+    "bytes": 596589,
+    "durationSec": 74.544,
+    "model": "eleven_v3",
+    "voice": "9ivxhQ6xIsHd6R3Xc635",
+    "provider": "elevenlabs",
+    "synthetic": true
+  },
+  "audio": {
+    "url": "/api/story-audio/13bc3a9896b1464152ea3f3004854ede97a9462e010cad1fb93fec5bde0fad4c.mp3",
+    "sha256": "13bc3a9896b1464152ea3f3004854ede97a9462e010cad1fb93fec5bde0fad4c",
+    "bytes": 558189,
+    "durationSec": 69.744,
+    "model": "eleven_v4",
+    "voice": "9ivxhQ6xIsHd6R3Xc635",
+    "provider": "elevenlabs",
+    "synthetic": true
+  },
+  "receiptAndUploadMatch": true,
+  "error": null
+}

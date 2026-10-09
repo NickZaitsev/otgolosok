@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-09T11:00:42Z",
+  "placeId": "osm:relation:2150666",
+  "textId": "0873f5cf-ea3d-4aa0-a289-b46cd5cabb71",
+  "title": "Дом Института русского языка РАН",
+  "sourceTextSha256": "cf77b81d08f2715c1d44a6185acebdd7a579ef879ff479e12e66d5380d9da272",
+  "wordCount": 119,
+  "storyAddressPhotoPreserved": true,
+  "oldAudio": {
+    "url": "/api/story-audio/f37559a98196b186772714a69c79a9e025beb148660826c47798794647a9ccaa.mp3",
+    "sha256": "f37559a98196b186772714a69c79a9e025beb148660826c47798794647a9ccaa",
+    "bytes": 596589,
+    "durationSec": 74.544,
+    "model": "eleven_v3",
+    "voice": "9ivxhQ6xIsHd6R3Xc635",
+    "provider": "elevenlabs",
+    "synthetic": true
+  },
+  "audio": {
+    "url": "/api/story-audio/13bc3a9896b1464152ea3f3004854ede97a9462e010cad1fb93fec5bde0fad4c.mp3",
+    "sha256": "13bc3a9896b1464152ea3f3004854ede97a9462e010cad1fb93fec5bde0fad4c",
+    "bytes": 558189,
+    "durationSec": 69.744,
+    "model": "eleven_v4",
+    "voice": "9ivxhQ6xIsHd6R3Xc635",
+    "provider": "elevenlabs",
+    "synthetic": true
+  },
+  "files": [
+    {
+      "sha256": "f37559a98196b186772714a69c79a9e025beb148660826c47798794647a9ccaa",
+      "bytes": 596589,
+      "durationSec": 74.48,
+      "decoded": true
+    },
+    {
+      "sha256": "13bc3a9896b1464152ea3f3004854ede97a9462e010cad1fb93fec5bde0fad4c",
+      "bytes": 558189,
+      "durationSec": 69.68,
+      "decoded": true
+    }
+  ],
+  "walks": [
+    {
+      "id": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
+      "title": "По бульварному кольцу от Кропоткинской до Тверской",
+      "shareUrl": "https://otgolosok.online/walk?share=b2823a83-f861-46f2-834b-b7873960882a",
+      "revision": 1,
+      "chapterId": "boulevard-stop-2",
+      "documentUnchanged": true,
+      "readyChapters": 28,
+      "chapterAudioMatches": true,
+      "currentAudioDurationSec": 2430.528
+    },
+    {
+      "id": "83294f8e-3775-5aa8-b841-8b97dcd23229",
+      "title": "Знаменка и Волхонка: от усадеб к музеям",
+      "shareUrl": "https://otgolosok.online/walk?share=79d53539-d6c4-4880-80b7-0fc2bdd6cb6b",
+      "revision": 1,
+      "chapterId": "r03-stop-11",
+      "documentUnchanged": true,
+      "readyChapters": 12,
+      "chapterAudioMatches": true,
+      "currentAudioDurationSec": 1181.016
+    }
+  ],
+  "receiptAndUploadMatch": true,
+  "r03MeasuredAudioSec": 1180.32,
+  "r03RemainingElevenAudioHashesUnchanged": true
+}
