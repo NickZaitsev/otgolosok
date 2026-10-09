@@ -38,7 +38,7 @@ function RoutePreview({ walk }: { walk: TopWalk }) {
   const points = map?.points ?? walk.preview;
   const first = points?.[0], last = points?.at(-1);
   return <span className={styles.preview} ref={frame} aria-hidden="true">
-    {points && first && last ? <svg className={`${styles.previewRoute} ${map ? styles.previewRouteMap : ""}`} viewBox={map ? "0 0 256 256" : "0 0 100 100"} preserveAspectRatio="xMidYMid meet">
+    {points && first && last ? <svg className={`${styles.previewRoute} ${map ? styles.previewRouteMap : ""}`} viewBox={map ? "0 0 256 256" : "0 0 100 100"} preserveAspectRatio={map ? "xMidYMid slice" : "xMidYMid meet"}>
       {map?.tiles.map(tile => <image key={`${attempt}-${tile.x}-${tile.y}`} href={tileUrl(map.zoom, tile.x, tile.y)} x={tile.left} y={tile.top} width="256" height="256" onError={onTileError} />)}
       <polyline points={points.map(([x, y]) => `${x},${y}`).join(" ")} />
       <circle className={styles.previewStart} cx={first[0]} cy={first[1]} r={map ? 9 : 5} />

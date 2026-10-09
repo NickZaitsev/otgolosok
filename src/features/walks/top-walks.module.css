@@ -277,6 +277,17 @@
   white-space: nowrap;
 }
 
+@container page (width < 37.5rem) {
+  .title {
+    font-size: var(--text-body);
+  }
+
+  .preview,
+  .previewWrap {
+    aspect-ratio: 4 / 5;
+  }
+}
+
 .empty {
   padding: var(--space-xl) var(--space-lg);
   margin: 0 0 var(--space-xl);

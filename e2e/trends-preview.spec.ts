@@ -1,6 +1,6 @@
 import { expect, test } from "./support/test";
 
-test("мини-карта показывает компактный источник внутри превью", async ({ page }) => {
+test("мини-карта и заголовок адаптируются к ширине экрана", async ({ page }) => {
   await page.setViewportSize({ width: 1360, height: 900 });
   await page.route("**/api/top-walks**", route => route.fulfill({ json: {
     walks: [{ kind: "catalog", id: "sample-route", title: "Прогулка", walkingMinutes: 30,
@@ -23,4 +23,20 @@ test("мини-карта показывает компактный источн
   });
   expect(position.inside).toBe(true);
   expect(position.widthShare).toBeLessThan(0.9);
+
+  const preview = credit.locator("..");
+  const title = page.locator("ol strong").first();
+  const desktopTitleSize = await title.evaluate(element => parseFloat(getComputedStyle(element).fontSize));
+  const desktopPreview = await preview.boundingBox();
+  expect(desktopPreview).not.toBeNull();
+  expect(desktopPreview!.height / desktopPreview!.width).toBeCloseTo(1, 1);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileTitleSize = await title.evaluate(element => parseFloat(getComputedStyle(element).fontSize));
+  const mobilePreview = await preview.boundingBox();
+  expect(mobilePreview).not.toBeNull();
+  expect(mobileTitleSize).toBeLessThan(desktopTitleSize);
+  expect(mobileTitleSize).toBeGreaterThanOrEqual(18);
+  expect(mobilePreview!.height / mobilePreview!.width).toBeGreaterThan(1.2);
+  expect(mobilePreview!.height / mobilePreview!.width).toBeLessThan(1.3);
 });
