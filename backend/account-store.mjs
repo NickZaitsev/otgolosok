@@ -286,9 +286,9 @@ export function createAccountStore(db, now = Date.now) {
     },
     /** Approved public walks and catalog walks with their published rating sums, plus the global rating prior. */
     listTopCandidates() {
-      const walks=db.prepare(`SELECT w.id,w.title,w.share_token,w.listing_updated_at,COALESCE(r.sum,0) AS rating_sum,COALESCE(r.count,0) AS rating_count
+      const walks=db.prepare(`SELECT w.id,w.title,w.share_token,w.listing_updated_at,w.revision,COALESCE(r.sum,0) AS rating_sum,COALESCE(r.count,0) AS rating_count
         FROM user_walks w ${ACCOUNT_RATINGS} WHERE ${PUBLISHED_WALK}`).all()
-        .map(row=>({id:row.id,title:row.title,shareToken:row.share_token,listedAt:row.listing_updated_at,ratingSum:Number(row.rating_sum),ratingCount:Number(row.rating_count)}));
+        .map(row=>({id:row.id,title:row.title,shareToken:row.share_token,listedAt:row.listing_updated_at,revision:Number(row.revision),ratingSum:Number(row.rating_sum),ratingCount:Number(row.rating_count)}));
       return {walks,...ratingContext()};
     },
     /**

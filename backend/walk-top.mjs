@@ -60,6 +60,20 @@ export const ratingSummary = ({ ratingSum, ratingCount }) =>
   ({ average: ratingCount ? Math.round(ratingSum / ratingCount * 100) / 100 : null, count: ratingCount });
 
 /**
+ * Ranking candidates of the published catalog walks: their rating sums and launches.
+ * @param {{ builtinRoutes: any[], store: any, catalogRatings: Map<string, {ratingSum: number, ratingCount: number}>, launches: Map<string, number> }} options
+ */
+export function catalogCandidates({ builtinRoutes, store, catalogRatings, launches }) {
+  return listedCatalogRoutes(builtinRoutes).flatMap(route => {
+    const published = store.getPublishedWalk(route.id);
+    if (!published) return [];
+    const rating = catalogRatings.get(route.id) ?? { ratingSum: 0, ratingCount: 0 };
+    return [{ key: `catalog:${route.id}`, kind: "catalog", id: route.id, title: String(published.title ?? route.title), route: published,
+      ...rating, launches: launches.get(`catalog:${route.id}`) ?? 0, listedAt: CATALOG_LISTED_AT }];
+  });
+}
+
+/**
  * Public ranking of catalog walks and editor-approved public account walks. Launch counts,
  * owners and authors never leave this module.
  * @param {{ accountStore: any, store: any, builtinRoutes: any[], limit?: number }} options
@@ -69,13 +83,7 @@ export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP
     list({ offset = 0, startMetro = "", endMetro = "", duration = "" } = {}) {
       const { walks, catalogRatings, priorMean } = accountStore.listTopCandidates();
       const launches = accountStore.launchTotals();
-      const catalog = listedCatalogRoutes(builtinRoutes).flatMap(route => {
-        const published = store.getPublishedWalk(route.id);
-        if (!published) return [];
-        const rating = catalogRatings.get(route.id) ?? { ratingSum: 0, ratingCount: 0 };
-        return [{ key: `catalog:${route.id}`, kind: "catalog", id: route.id, title: String(published.title ?? route.title), route: published,
-          ...rating, launches: launches.get(`catalog:${route.id}`) ?? 0, listedAt: CATALOG_LISTED_AT }];
-      });
+      const catalog = catalogCandidates({ builtinRoutes, store, catalogRatings, launches });
       const account = walks.map(walk => ({ key: `account:${walk.id}`, kind: "shared", id: walk.shareToken, walkId: walk.id, title: walk.title,
         ratingSum: walk.ratingSum, ratingCount: walk.ratingCount, launches: launches.get(`account:${walk.id}`) ?? 0, listedAt: walk.listedAt ?? CATALOG_LISTED_AT }));
       // Decode in small batches: invalid or route-less walks do not count toward a page.
