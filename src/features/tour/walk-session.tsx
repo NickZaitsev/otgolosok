@@ -24,8 +24,7 @@ import { legFitPoints, legRange, openingFitPoints, routeLegCuts } from "./route-
 import type { AdvanceMode } from "./walk-settings";
 import { StopWalkDialog } from "./stop-walk-dialog";
 import type { OwnWalk } from "../walks/own-walk";
-import { historicalWalkPhotos } from "./historical-photos";
-import historicalStyles from "./historical-photos.module.css";
+import { HistoricalPhotos } from "./historical-photos-viewer";
 import "./walk-session.css";
 import foodStyles from "./walk-food.module.css";
 import type { WalkDirection } from "./walk-direction";
@@ -39,23 +38,9 @@ import { translate } from "@/lib/i18n/translate";
 const noop = () => {};
 
 /** The photo of the catalog place a stop tells about, as on its map card; nothing while it loads or without one. */
-function StopPhoto({ placeId, stopId, title }: { placeId?: string; stopId: string; title: string }) {
-  const { t } = useI18n();
+function StopPhoto({ placeId, title }: { placeId?: string; title: string }) {
   const place = usePlaceStory(placeId);
-  const photos = historicalWalkPhotos(stopId);
-  return <>
-    {placeId ? <PlacePhotoBanner placeId={placeId} photo={place.story?.photo} title={title} /> : null}
-    {photos.length ? <section className={historicalStyles.gallery} aria-labelledby={`${stopId}-historical-title`}>
-      <h3 id={`${stopId}-historical-title`} className={historicalStyles.heading}>{t("Исторические снимки")}</h3>
-      <ul className={historicalStyles.list}>{photos.map(photo => <li key={photo.cid} className={historicalStyles.item}>
-        <a className={historicalStyles.link} href={`https://pastvu.com/p/${photo.cid}`} target="_blank" rel="noopener noreferrer">
-          <img className={historicalStyles.image} src={photo.src} alt={t("{title}, {year} год", { title: photo.title, year: photo.year })} loading="lazy" />
-          <span className={historicalStyles.caption}>{photo.year} · {photo.title}</span>
-          <span className={historicalStyles.source}>{t("Открыть на PastVu")}</span>
-        </a>
-      </li>)}</ul>
-    </section> : null}
-  </>;
+  return placeId ? <PlacePhotoBanner placeId={placeId} photo={place.story?.photo} title={title} /> : null;
 }
 
 /**
@@ -263,7 +248,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
       {active && !completed ? <div className="walk-session-handle"><SheetHandle expanded={!compact} onExpand={unfold} onCollapse={fold} controls="walk-session-card"
         expandLabel={t("Развернуть карточку")} collapseLabel={t("Свернуть карточку")} /></div> : null}
       {/* Like the player, the photo yields its room to an open drawer and to the folded card. */}
-      {active && chapter && !drawer && !compact ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} stopId={chapter.id} title={chapter.title} /></div> : null}
+      {active && chapter && !drawer && !compact ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} title={chapter.title} /></div> : null}
       <div className={`${foodStyles.body}${foodVisible || foodManifestError ? ` ${foodStyles.bodyScrollable}` : ""}`}>
       <header className="walk-session-heading">
         <div>
@@ -292,6 +277,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         {!active && canStart && onDirectionChange ? <button type="button" aria-label={t("Пройти прогулку с конца")} aria-pressed={direction === "reverse"} onClick={() => { setDrawer(null); onDirectionChange(direction === "forward" ? "reverse" : "forward"); }}>{t(direction === "reverse" ? "Направление: с конца" : "Направление: с начала")}</button> : null}
         {active && hasText ? <button type="button" className="walk-session-read" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}><ExploreIcon name="book" /><span>{t("Читать историю")}</span></button> : null}
         {active && chapter ? <PlaceVideo key={chapter.id} compact placeId={chapter.place_id} title={chapter.title} /> : null}
+        {active && chapter ? <HistoricalPhotos key={`photos-${chapter.id}`} walkId={route.id} stopId={chapter.id} /> : null}
         {/* Settings sit with the walk's other tools: in the heading a second button left a gap under a one-line title. */}
         {active ? <button type="button" aria-label={t("Настройки прогулки")} aria-expanded={drawer === "settings"} onClick={() => setDrawer(drawer === "settings" ? null : "settings")}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor"/><circle cx="15" cy="17" r="3" fill="currentColor"/></svg>{t("Настройки")}
