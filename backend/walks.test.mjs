@@ -896,3 +896,23 @@ test('traceTunnels offsets later legs by the shared joint vertex',async()=>{
   const aborted=new AbortController();aborted.abort();
   assert.equal(await traceTunnels(legs,{fetchImpl,traceUrl:TRACE,signal:aborted.signal}),null);
 });
+
+test('a Kazan walk is planned in Kazan and never mixes cities',async()=>{
+  const kazan={address:'Казань, улица Баумана, 19',location:{lat:55.7905,lon:49.1146}};
+  const kazanStop=n=>({address:`Казань, улица Баумана, ${n+20}`,location:{lat:55.7905+n*0.001,lon:49.1146}});
+  const manual=fixture((url,o)=>route(JSON.parse(o.body)));
+  const result=await manual.plan({start:kazan,mode:'open',minutes:30,stops:[kazanStop(1),kazanStop(2)]});
+  assert.deepEqual(result.stops,[kazanStop(1),kazanStop(2)]);
+  // Overpass answers around the start: a Moscow building there is dropped, Kazan ones get Kazan addresses.
+  const elements=[1,2,3].map(n=>({type:'way',id:n,center:kazanStop(n).location,tags:{building:'yes','addr:street':'улица Баумана','addr:housenumber':String(n+20),historic:'building'}}));
+  elements.push({type:'way',id:9,center:stop(1).location,tags:{building:'yes','addr:street':'Арбат','addr:housenumber':'3',historic:'building'}});
+  const auto=fixture((url,o)=>url.includes('osm')?{elements}:route(JSON.parse(o.body)));
+  const found=await auto.plan({start:kazan,mode:'loop',minutes:30});
+  assert.ok(found.stops.length>0);
+  for(const item of found.stops)assert.match(item.address,/^Казань, улица Баумана, \d+$/);
+  const {plan,calls}=fixture(()=>{throw new Error('must not fetch');});
+  for(const value of [{start:kazan,mode:'loop',minutes:30,stops:[kazanStop(1),stop(1)]},{start,mode:'loop',minutes:30,stops:[kazanStop(1)]},
+    {start:kazan,mode:'open',minutes:30,stops:[kazanStop(1)],destination:stop(2)}])
+    await assert.rejects(plan(value),{code:'WALK_INVALID'});
+  assert.equal(calls.length,0);
+});

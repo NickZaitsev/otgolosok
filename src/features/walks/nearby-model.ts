@@ -1,3 +1,4 @@
+import { withoutCity } from "../../../backend/cities.mjs";
 import { computeWalkEntry } from "../../../backend/walk-entry.mjs";
 import type { Coordinates } from "../tour/types";
 import type { LocalWalkItem } from "./local-store";
@@ -78,7 +79,7 @@ export function walkFinish(document: Pick<WalkDocument, "mode" | "destination" |
 
 /** «до Садовническая улица, 5»: the stored address without the city; «по кругу, обратно к старту» for a loop. */
 export function formatFinish(finish: string | null) {
-  return finish === null ? "по кругу, обратно к старту" : `до ${finish.replace(/^Москва,\s*/, "")}`;
+  return finish === null ? "по кругу, обратно к старту" : `до ${withoutCity(finish)}`;
 }
 
 /**

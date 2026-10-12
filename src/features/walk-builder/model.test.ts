@@ -12,6 +12,10 @@ describe("walk draft", () => {
     expect(storyAddressKey("Москва ул Зеленая 10/1")).not.toBe(storyAddressKey("Москва ул Зеленая 10/2"));
     expect(storyAddressKey("Москва ул Зеленая 10-1")).not.toBe(storyAddressKey("Москва ул Зеленая 10 1"));
   });
+  it("keeps a Kazan address in Kazan, as the backend does", () => {
+    expect(storyAddressKey("Казань, улица Баумана, 19")).toBe("казань улица баумана 19");
+    expect(storyAddressKey("Казанская улица, 7")).toBe("москва казанская улица 7");
+  });
   it("upserts a backend ID and restores old duplicates using the last known state", () => {
     const old = { place: start, id: "12345678-1234-1234-1234-123456789abc", stage: "failed" as const };
     const retried = { ...old, place: { ...stop, address: "МОСКВА. улица Первая 1" }, stage: "queued" as const };

@@ -106,3 +106,16 @@ test("offline geocoding adds street, district and host-building search hints whi
   const existing=enrichOsmContext({...place,postalAddress:"Москва, Своя улица, 2"},{nearbyElements:[]});
   assert.equal(existing.locationHint,"Москва, Своя улица, 2");
 });
+
+test("a Kazan place is researched as a Kazan place", () => {
+  const place = { name: "Дом Кекина", postalAddress: null, location: { lat: 55.7939, lon: 49.1288 },
+    tags: { historic: "building", "addr:street": "улица Горького" } };
+  const prompt = researchPrompt(null, place);
+  assert.match(prompt, /story about this Kazan place\./);
+  assert.equal(contextOf(prompt).locationHint, "Казань, улица Горького");
+  assert.match(researchPrompt("Казань, улица Баумана, 19"), /about this Kazan place\./);
+  assert.match(researchPrompt("Москва, Арбат, 1"), /about this Moscow place\./);
+  assert.equal(osmPostalAddress({ "addr:street": "улица Баумана", "addr:housenumber": "19" }, "Казань"), "Казань, улица Баумана, 19");
+  assert.equal(osmPostalAddress({ "addr:street": "Арбат", "addr:housenumber": "1" }), "Москва, Арбат, 1");
+  assert.equal(osmPostalAddress({ "addr:city": "Казань", "addr:street": "улица Баумана", "addr:housenumber": "19" }), "Казань, улица Баумана, 19");
+});

@@ -1,8 +1,9 @@
+import { cityAt } from "./cities.mjs";
 import { MAX_WALK_STOPS, MAX_ROUTE_TUNNELS } from "./walk-document.mjs";
 import discoveryCatalog from './walk-discovery-catalog.json' with { type: 'json' };
 
 const fail = (code) => Object.assign(new Error(code), {code});
-const inBox = (p) => p && typeof p.lat === 'number' && typeof p.lon === 'number' && Number.isFinite(p.lat) && Number.isFinite(p.lon) && p.lat >= 55.48 && p.lat <= 55.98 && p.lon >= 37.30 && p.lon <= 37.95;
+const inBox = (p) => p && cityAt(p.lat, p.lon) !== null;
 const keys = (v, allowed) => v && typeof v === 'object' && !Array.isArray(v) && Object.keys(v).every(k => allowed.includes(k));
 const clean = (v, max) => typeof v === 'string' && v.length <= max && !/[\p{Cc}\p{Cf}<>]/u.test(v) ? v.trim().replace(/\s+/g, ' ') : '';
 // Signals that a building may carry researchable history. A name alone qualifies
@@ -267,6 +268,9 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
     // The first stop may be the start building itself; every other pair stays apart.
     const distinct=[start,...stops,...(destination?[destination]:[])];
     if(distinct.some((p,i)=>distinct.slice(0,i).some((q,j)=>!(stops.length&&i===1&&j===0)&&distance(p.location,q.location)<5)))throw fail('WALK_INVALID');
+    // A walk stays in one city: its router tiles and addresses belong to that city.
+    const city=cityAt(start.location.lat,start.location.lon);
+    if(distinct.some(p=>cityAt(p.location.lat,p.location.lon)!==city))throw fail('WALK_INVALID');
     if(!routerUrl)throw fail('WALK_UNAVAILABLE');
     limitClient(client);
     await acquire();
@@ -454,12 +458,12 @@ export function createWalkPlanner({fetchImpl=fetch, now=Date.now,
         };
         for(const e of elements) {
           const t=e?.tags,p=e?.center??e;
-          if(!t||!inBox(p)||!clean(t.building,80)||t.building==='no'||!notable(t))continue;
+          if(!t||cityAt(p?.lat,p?.lon)!==city||!clean(t.building,80)||t.building==='no'||!notable(t))continue;
           const street=clean(t['addr:street'],160),house=clean(t['addr:housenumber'],40);
           if(!street||!house||!/^\d[\p{L}\p{N}\s/.,-]*$/u.test(house))continue;
           const catalogId=['node','way','relation'].includes(e.type)&&Number.isSafeInteger(e.id)?`osm:${e.type}:${e.id}`:null;
           const published=catalogId?suppliedById.get(catalogId):null;
-          addCandidate({address:`Москва, ${street}, ${house}`,location:{lat:p.lat,lon:p.lon},catalogId,contentRank:published?readinessRank[published.readiness]:0,catalogRank:published?1:0,
+          addCandidate({address:`${city.name}, ${street}, ${house}`,location:{lat:p.lat,lon:p.lon},catalogId,contentRank:published?readinessRank[published.readiness]:0,catalogRank:published?1:0,
             ...(published?{placeId:published.id}:{}),...(published&&published.readiness!=='none'?{contentId:published.id}:{})});
         }
         for(const item of supplied)addCandidate({address:clean(item.address,240),location:{lat:item.location.lat,lon:item.location.lon},catalogId:item.id,

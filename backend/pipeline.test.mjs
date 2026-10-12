@@ -38,3 +38,15 @@ test("source pages are retried only after network errors and busy or failing ser
   for(const [error,expected] of [[{code:"NETWORK_ERROR"},true],[{code:"BAD_STATUS",status:503,retryable:true},true],[{code:"BAD_STATUS",status:404,retryable:false},false],
     [{code:"TIMEOUT"},false],[{code:"DNS_REJECTED"},false],[{code:"BAD_CONTENT_TYPE"},false]])assert.equal(isTransient(error),expected,JSON.stringify(error));
 });
+
+test("an address keeps the city it names and otherwise gets the given one", () => {
+  for (const [input, city, expected] of [
+    ["Кожевническая улица, 16", undefined, "Москва, Кожевническая улица, 16"],
+    ["Москва, Арбат, 1", undefined, "Москва, Арбат, 1"],
+    ["Казань, улица Баумана, 19", undefined, "Казань, улица Баумана, 19"],
+    ["улица Баумана, 19", "Казань", "Казань, улица Баумана, 19"],
+    ["Казанская улица, 7", undefined, "Москва, Казанская улица, 7"],
+  ]) assert.equal(normalizeAddress(input, city), expected, input);
+  // Moscow keys stay as before: the city prefix is part of the hashed address.
+  assert.equal(addressKey(normalizeAddress("Арбат, 1")), addressKey("Москва, Арбат, 1"));
+});

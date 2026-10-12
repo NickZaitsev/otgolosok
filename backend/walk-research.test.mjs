@@ -362,3 +362,15 @@ for (const [code, message] of [['WALK_START_UNREACHABLE', 'Сюда не дой�
   assert.deepEqual(job.error, { code, message }); assert.equal(publicWalkResearch(job).canRetry, false);
   assert.equal(f.calls.audio, 0); assert.equal(f.calls.draft, 0);
 });
+
+test('research stays in the city of its start and names candidates by that city', async () => {
+  const kazan = { ...input, start: { address: 'Казань, улица Баумана, 19', location: { lat: 55.7905, lon: 49.1146 } } };
+  assert.throws(() => validateWalkResearch({ ...kazan, mode: 'open', destination: { address: 'Москва, Финишная улица, 2', location: { lat: 55.755, lon: 37.61 } } }), { code: 'BAD_REQUEST' });
+  assert.equal(validateWalkResearch({ ...kazan, mode: 'open', destination: { address: 'Казань, Кремлёвская улица, 2', location: { lat: 55.7963, lon: 49.1088 } } }).destination.address, 'Финиш прогулки');
+  const elements = [
+    ...Array.from({ length: 3 }, (_, i) => ({ type: 'way', id: i + 1, center: { lat: 55.7915 + i * .001, lon: 49.1146 }, tags: { building: 'yes', 'addr:street': 'улица Баумана', 'addr:housenumber': `${i + 30}` } })),
+    { type: 'way', id: 9, center: { lat: 55.752, lon: 37.61 }, tags: { building: 'yes', 'addr:street': 'Тестовая улица', 'addr:housenumber': '2' } },
+  ];
+  const result = await createResearchDiscovery({ fetchImpl: async () => Response.json({ elements }) })(validateWalkResearch(kazan));
+  assert.deepEqual(result.map(item => item.place.address), ['Казань, улица Баумана, 30', 'Казань, улица Баумана, 31', 'Казань, улица Баумана, 32']);
+});

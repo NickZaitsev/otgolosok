@@ -1,8 +1,9 @@
+import { cityAt } from './cities.mjs';
 import { addressKey, failure, normalizeAddress, sha256 } from './domain.mjs';
 import { createWalkPlanner } from './walks.mjs';
 
 const keys = (v, allowed) => v && typeof v === 'object' && !Array.isArray(v) && Object.keys(v).every(k => allowed.includes(k));
-const inBox = p => keys(p, ['lat', 'lon']) && Number.isFinite(p.lat) && Number.isFinite(p.lon) && p.lat >= 55.48 && p.lat <= 55.98 && p.lon >= 37.30 && p.lon <= 37.95;
+const inBox = p => keys(p, ['lat', 'lon']) && cityAt(p.lat, p.lon) !== null;
 const clean = (v, max) => typeof v === 'string' && v.length <= max && !/[\p{Cc}\p{Cf}<>]/u.test(v) ? v.trim().replace(/\s+/g, ' ') : '';
 const distance = (a, b) => {
   const rad = Math.PI / 180;
@@ -19,7 +20,7 @@ export function validateWalkResearch(input, lookup = false) {
     || !['loop', 'open'].includes(input.mode) || ![30, 60, 90].includes(input.minutes)
     || !keys(input.start, ['address', 'location']) || !inBox(input.start.location)
     || (!lookup && !clean(input.start.address, 240))) throw failure('BAD_REQUEST');
-  if (input.destination != null && (input.mode !== 'open' || !keys(input.destination,['address','location']) || !inBox(input.destination.location) || (!lookup && !clean(input.destination.address,240)) || distance(input.start.location,input.destination.location)<25)) throw failure('BAD_REQUEST');
+  if (input.destination != null && (input.mode !== 'open' || !keys(input.destination,['address','location']) || !inBox(input.destination.location) || cityAt(input.destination.location.lat, input.destination.location.lon) !== cityAt(input.start.location.lat, input.start.location.lon) || (!lookup && !clean(input.destination.address,240)) || distance(input.start.location,input.destination.location)<25)) throw failure('BAD_REQUEST');
   const destination = input.destination ? { address: 'Финиш прогулки', location: {lat:Number(input.destination.location.lat.toFixed(6)),lon:Number(input.destination.location.lon.toFixed(6))} } : null;
   const { lat, lon } = input.start.location;
   if (!lookup) validateRecoveryToken(input.recoveryToken);
@@ -47,7 +48,8 @@ export function createResearchDiscovery({ fetchImpl = fetch, endpoint = process.
     const deadline = AbortSignal.any([controller.signal, ...(signal ? [signal] : [])]);
     let timer;
     const run = async () => {
-      const radius = Math.min(1800, request.minutes * 20), { lat, lon } = request.start.location;
+      const radius = Math.min(1800, request.minutes * 20), { lat, lon } = request.start.location, city = cityAt(lat, lon);
+      if (!city) throw failure('BAD_REQUEST');
       const query = `[out:json][timeout:8];nwr(around:${radius},${lat},${lon})[building]["addr:street"]["addr:housenumber"];out center tags 160;`;
       const response = await fetchImpl(endpoint, { method: 'POST', redirect: 'error', signal: deadline,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'User-Agent': 'Otgolosok/0.1' }, body: new URLSearchParams({ data: query }).toString() });
@@ -72,12 +74,12 @@ export function createResearchDiscovery({ fetchImpl = fetch, endpoint = process.
       for (const e of data.elements) {
         const t = e?.tags, p = e?.center ?? e;
         const location = { lat: p?.lat, lon: p?.lon };
-        if (!['node', 'way', 'relation'].includes(e?.type) || !Number.isSafeInteger(e.id) || e.id <= 0 || !inBox(location)
+        if (!['node', 'way', 'relation'].includes(e?.type) || !Number.isSafeInteger(e.id) || e.id <= 0 || cityAt(location.lat, location.lon) !== city
           || !clean(t?.building, 80) || t.building === 'no') continue;
         const street = clean(t['addr:street'], 160), house = clean(t['addr:housenumber'], 40);
         if (!street || !/^\d[\p{L}\p{N}\s/.,-]*$/u.test(house) || distance(request.start.location, location) > radius || distance(request.start.location, location) < 60) continue;
         let address;
-        try { address = normalizeAddress(`Москва, ${street}, ${house}`); } catch { continue; }
+        try { address = normalizeAddress(`${city.name}, ${street}, ${house}`); } catch { continue; }
         candidates.push({ place: { address, location }, provenance: { source: 'OpenStreetMap', type: e.type, id: e.id,
           url: `https://www.openstreetmap.org/${e.type}/${e.id}`, fetchedAt: new Date().toISOString(), radius } });
       }

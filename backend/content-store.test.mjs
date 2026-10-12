@@ -785,3 +785,16 @@ test("draft eligibility matches the bulk research counter, including drafts with
   const page = store.listDrafts();
   assert.equal(page.items.filter(item => item.researchEligible).length, page.unresearched);
 });
+
+test("Kazan places get Kazan addresses and nearby queries work in both cities",t=>{
+  const store=createStore(":memory:");t.after(()=>store.close());
+  store.importPlaces({...catalog,places:[...catalog.places,
+    {placeId:"osm:way:3",osmType:"way",osmId:3,name:"Дом Кекина",location:{lat:55.7939,lon:49.1288},tags:{historic:"building","addr:street":"улица Горького","addr:housenumber":"8/9"}},
+    {placeId:"osm:node:4",osmType:"node",osmId:4,name:"Сююмбике",location:{lat:55.8004,lon:49.1051},tags:{historic:"tower"}},
+  ]});
+  assert.deepEqual(store.listWalkCandidates({lat:55.797,lon:49.12,radius:2000}).map(item=>[item.id,item.address]),
+    [["osm:way:3","Казань, улица Горького, 8/9"],["osm:node:4","Казань, Сююмбике"]]);
+  assert.deepEqual(store.listWalkCandidates({lat:55.75,lon:37.61,radius:2000}).map(item=>item.address),["Москва, Памятник","Москва, Арбат, 1"]);
+  assert.deepEqual(store.listPlaces({lat:55.7939,lon:49.1288,radius:100}).places.map(item=>item.id),["osm:way:3"]);
+  for(const [lat,lon] of [[55.8,43],[0,0]])assert.throws(()=>store.listWalkCandidates({lat,lon,radius:2000}),{code:"BAD_REQUEST"},`${lat},${lon}`);
+});

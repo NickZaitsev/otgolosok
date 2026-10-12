@@ -37,3 +37,11 @@ test("planner tunnels are carried into the document, and their absence leaves no
   assert.deepEqual(document.route.tunnels, [[0, 1]]);
   assert.equal("tunnels" in planToWalkDocument(plan([stop]), options("loop")).route, false);
 });
+
+test("the document takes the city of its start", () => {
+  const kazanStart = { address: "метро «Кремлёвская»", location: { lat: 55.7953, lon: 49.1074 } };
+  const kazanPlan = { stops: [{ address: "Казань, Кремлёвская улица, 2", location: { lat: 55.7963, lon: 49.1088 } }],
+    geometry: [kazanStart.location, { lat: 55.7963, lon: 49.1088 }], distanceM: 400, walkingMinutes: 6, attribution: "© OpenStreetMap contributors" };
+  assert.equal(planToWalkDocument(kazanPlan, { ...options("open"), start: kazanStart }).city, "Казань");
+  assert.equal(planToWalkDocument(plan([{ address: "Сретенский бульвар", location: { lat: 55.766, lon: 37.637 } }]), options("loop")).city, "Москва");
+});

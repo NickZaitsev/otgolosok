@@ -1,15 +1,13 @@
 // Shared, dependency-free wire contract for walk documents and public views.
+import { cityAt, cityByName } from "./cities.mjs";
 export const MAX_WALK_STOPS = 40;
 const invalid = () => Object.assign(new Error("Некорректные данные прогулки."), { code: "BAD_REQUEST" });
 const object = value => value !== null && typeof value === "object" && !Array.isArray(value);
 const fields = (value, allowed) => object(value) && Object.keys(value).every(key => allowed.includes(key));
 const string = (value, limit, empty = false) => typeof value === "string" && value.length <= limit && (empty || value.trim().length > 0) && !/[\p{Cc}\p{Cf}<>]/u.test(value);
 const uuid = value => typeof value === "string" && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(value);
-/** Coordinates a walk may use: Moscow. */
-export const WALK_BOUNDS = Object.freeze({ south: 55.48, north: 55.98, west: 37.30, east: 37.95 });
-/** @param {unknown} lat @param {unknown} lon */
-export const inWalkBounds = (lat, lon) => typeof lat === "number" && typeof lon === "number" && Number.isFinite(lat) && Number.isFinite(lon)
-  && lat >= WALK_BOUNDS.south && lat <= WALK_BOUNDS.north && lon >= WALK_BOUNDS.west && lon <= WALK_BOUNDS.east;
+/** Coordinates a walk may use: inside a covered city (see cities.mjs). @param {unknown} lat @param {unknown} lon */
+export const inWalkBounds = (lat, lon) => cityAt(lat, lon) !== null;
 const point = value => fields(value, ["lat", "lon"]) && inWalkBounds(value.lat, value.lon);
 const place = value => fields(value, ["address", "location"]) && string(value.address, 180) && point(value.location);
 const reference = value => value === null || (fields(value, ["kind", "id"]) && ((value.kind === "job" && uuid(value.id)) || (value.kind === "osm" && /^osm:(node|way|relation):\d+$/.test(value.id)) || (value.kind === "catalog" && /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id))));
@@ -55,8 +53,15 @@ const localization = value => value === null || fields(value, ["requestedLocale"
 /** @typedef {{document:WalkDocument,sourceDocument?:WalkDocument,documentLocalization?:null|{requestedLocale:'ru'|'en'|'zh',contentLocale:'ru'|'en'|'zh',fallbackReason:null|'missing'|'draft'|'stale'},revision:number,contentVersion:string,requestedLocale?:'ru'|'en'|'zh',chapters:Array<{id:string,status:string,story:object|null,audio:object|null,localization?:null|{requestedLocale:'ru'|'en'|'zh',contentLocale:'ru'|'en'|'zh',fallbackReason:null|'missing'|'draft'|'stale'}}>}} WalkView */
 
 export function validateWalkDocument(value) {
-  if (!fields(value, ["version", "id", "title", "description", "city", "mode", "minutes", "start", "destination", "stops", "route", "fieldChecked"]) || value.version !== 2 || !(uuid(value.id) || /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id)) || !string(value.title, 120) || !string(value.description, 1000, true) || value.city !== "Москва" || !["open", "loop"].includes(value.mode) || ![15, 30, 60, 90].includes(value.minutes) || !(value.start === null || place(value.start)) || (value.destination != null && (value.mode !== "open" || !place(value.destination))) || !Array.isArray(value.stops) || value.stops.length > MAX_WALK_STOPS || !value.stops.every(stop) || (value.start === null && value.stops.length !== 0) || new Set(value.stops.map(item => item.id)).size !== value.stops.length || !route(value.route) || (value.route !== null && (value.start === null || (value.stops.length === 0 && !value.destination))) || typeof value.fieldChecked !== "boolean" || JSON.stringify(value).length > 100000) throw invalid();
+  if (!fields(value, ["version", "id", "title", "description", "city", "mode", "minutes", "start", "destination", "stops", "route", "fieldChecked"]) || value.version !== 2 || !(uuid(value.id) || /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id)) || !string(value.title, 120) || !string(value.description, 1000, true) || cityByName(value.city) === null || !["open", "loop"].includes(value.mode) || ![15, 30, 60, 90].includes(value.minutes) || !(value.start === null || place(value.start)) || (value.destination != null && (value.mode !== "open" || !place(value.destination))) || !Array.isArray(value.stops) || value.stops.length > MAX_WALK_STOPS || !value.stops.every(stop) || (value.start === null && value.stops.length !== 0) || new Set(value.stops.map(item => item.id)).size !== value.stops.length || !route(value.route) || (value.route !== null && (value.start === null || (value.stops.length === 0 && !value.destination))) || typeof value.fieldChecked !== "boolean" || JSON.stringify(value).length > 100000 || !inOneCity(value)) throw invalid();
   return value;
+}
+
+// Every coordinate of a walk lies in the city it names: a route never leaves its city.
+function inOneCity(value) {
+  const city = cityByName(value.city);
+  const points = [value.start?.location, value.destination?.location, ...value.stops.flatMap(item => [item.place.location, item.triggerLocation]), ...(value.route?.geometry ?? [])];
+  return points.every(item => item === undefined || cityAt(item.lat, item.lon) === city);
 }
 
 // The stable UUID is assigned by the owner of the local/account record. Neither
@@ -79,7 +84,7 @@ export function migrateLegacyDraft(value, walkId) {
   const includeStart = Boolean(value.start && link(value.start));
   const stops = (includeStart ? locations : value.stops).map((item, index) => ({ id: hash(index), place: item, storyRef: link(item), transition: "", nextHint: "" }));
   const savedRoute = value.route;
-  const converted = { version: 2, id: walkId, title: value.title || "Моя прогулка", description: "", city: "Москва", mode: value.mode, minutes: value.minutes, start: value.start, ...(value.destination ? {destination:value.destination} : {}), stops,
+  const converted = { version: 2, id: walkId, title: value.title || "Моя прогулка", description: "", city: (value.start ? cityAt(value.start.location.lat, value.start.location.lon) : null)?.name ?? "Москва", mode: value.mode, minutes: value.minutes, start: value.start, ...(value.destination ? {destination:value.destination} : {}), stops,
     route: savedRoute ? { geometry: savedRoute.geometry, distanceM: savedRoute.distanceM, walkingMinutes: savedRoute.walkingMinutes, attribution: savedRoute.attribution, ...(savedRoute.tunnels === undefined ? {} : { tunnels: savedRoute.tunnels }) } : null,
     fieldChecked: false };
   return validateWalkDocument(converted);

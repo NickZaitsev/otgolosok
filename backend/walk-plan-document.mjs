@@ -1,3 +1,4 @@
+import { cityAt } from "./cities.mjs";
 import { validateWalkDocument } from "./walk-document.mjs";
 
 // Server-side twin of draftToWalkDocument (src/features/walks/adapters.ts):
@@ -14,7 +15,7 @@ const place = value => ({ address: address(value.address), location: { lat: valu
  */
 export function planToWalkDocument(plan, { id, title, description, mode, minutes, start }) {
   const document = {
-    version: 2, id, title, description, city: "Москва", mode, minutes,
+    version: 2, id, title, description, city: cityAt(start.location.lat, start.location.lon)?.name ?? "", mode, minutes,
     start: place(start),
     stops: plan.stops.map((stop, index) => ({
       id: `${id}-stop-${index}`.slice(0, 128),

@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { MOSCOW, regionCityAt } from "./cities.mjs";
 import { sha256 } from "./domain.mjs";
 import { assessPlaceEligibility, CONTENT_PROFILE_VERSION } from "./place-eligibility.mjs";
 import { osmPostalAddress } from "./osm-context.mjs";
@@ -53,7 +54,7 @@ function diagnosisSources(found,fetched,failures) {
 }
 
 function addressOf(place) {
-  return osmPostalAddress(place.tags);
+  return osmPostalAddress(place.tags, regionCityAt(place.location?.lat, place.location?.lon)?.name ?? MOSCOW.name);
 }
 
 function viewPlace(row) {
@@ -298,7 +299,7 @@ export function createContentStore({db,now,transaction}) {
     },
     listPlaces({limit=50,offset=0,q="",status="all",lat=null,lon=null,radius=null,bounds=null}={}) {
       if(!Number.isSafeInteger(limit)||limit<1||limit>100||!Number.isSafeInteger(offset)||offset<0||typeof q!=="string"||q.length>200||!["all","ready","draft","missing"].includes(status)
-        ||([lat,lon,radius].some(value=>value!==null)&&(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||lat<55.05||lat>56.05||lon<36.75||lon>38.25||radius<50||radius>5000)))throw fail("BAD_REQUEST");
+        ||([lat,lon,radius].some(value=>value!==null)&&(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||regionCityAt(lat,lon)===null||radius<50||radius>5000)))throw fail("BAD_REQUEST");
       if(bounds!==null && (typeof bounds!=="object" || ![bounds.west,bounds.south,bounds.east,bounds.north].every(Number.isFinite)
         || bounds.west < -180 || bounds.east > 180 || bounds.south < -90 || bounds.north > 90
         || bounds.west >= bounds.east || bounds.south >= bounds.north || [lat,lon,radius].some(value=>value!==null)))throw fail("BAD_REQUEST");
@@ -325,7 +326,7 @@ export function createContentStore({db,now,transaction}) {
      * @param {{lat?: number, lon?: number, radius?: number, limit?: number, published?: boolean}} [options]
      */
     listWalkCandidates({lat,lon,radius,limit=500,published=false}={}) {
-      if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||lat<55.05||lat>56.05||lon<36.75||lon>38.25||radius<50||radius>5000||!Number.isSafeInteger(limit)||limit<1||limit>500||typeof published!=="boolean")throw fail("BAD_REQUEST");
+      if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||regionCityAt(lat,lon)===null||radius<50||radius>5000||!Number.isSafeInteger(limit)||limit<1||limit>500||typeof published!=="boolean")throw fail("BAD_REQUEST");
       const latDelta=radius/111320,lonDelta=radius/(111320*Math.cos(lat*Math.PI/180));
       const distanceSql=`6371000*2*asin(min(1,sqrt(pow(sin(radians(p.lat-?)/2),2)+cos(radians(?))*cos(radians(p.lat))*pow(sin(radians(p.lon-?)/2),2))))`;
       const rows=db.prepare(`SELECT * FROM (SELECT p.id,p.name,p.address,p.lat,p.lon,
@@ -335,7 +336,7 @@ export function createContentStore({db,now,transaction}) {
         ${distanceSql} distance_m FROM places p WHERE p.archived=0 AND p.lat BETWEEN ? AND ? AND p.lon BETWEEN ? AND ? AND ${distanceSql}<=?)
         WHERE ?=0 OR audio_json IS NOT NULL OR (story_json IS NOT NULL AND (verification IS NULL OR verification<>'test_placeholder'))
         ORDER BY distance_m,name,id LIMIT ?`).all(lat,lat,lon,lat-latDelta,lat+latDelta,lon-lonDelta,lon+lonDelta,lat,lat,lon,radius,published?1:0,limit);
-      return rows.map(row=>({id:row.id,address:(row.address??`Москва, ${row.name}`).slice(0,180),location:{lat:row.lat,lon:row.lon},
+      return rows.map(row=>({id:row.id,address:(row.address??`${regionCityAt(row.lat,row.lon)?.name??MOSCOW.name}, ${row.name}`).slice(0,180),location:{lat:row.lat,lon:row.lon},
         readiness:row.audio_json?"audio":row.story_json&&row.verification!=="test_placeholder"?"story":"none"}));
     },
     getPlace(id) {

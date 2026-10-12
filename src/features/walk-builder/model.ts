@@ -1,3 +1,4 @@
+import { cityInAddress, MOSCOW } from "../../../backend/cities.mjs";
 import { MAX_WALK_STOPS, validTunnels } from "../../../backend/walk-document.mjs";
 import type { Coordinates } from "../tour/types";
 import { isMoscowPoint } from "../explore/map-jobs";
@@ -37,7 +38,7 @@ export const placeKey = (p: Place) => `${p.address.trim().toLocaleLowerCase("ru"
 // Match normalizeAddress + the unhashed addressKey input in backend/domain.mjs.
 export function storyAddressKey(address: string) {
   const normalized = address.normalize("NFKC").trim().replace(/\s+/g, " ");
-  return (/москва/iu.test(normalized) ? normalized : `Москва, ${normalized}`)
+  return (cityInAddress(normalized) ? normalized : `${MOSCOW.name}, ${normalized}`)
     .toLocaleLowerCase("ru").replace(/ё/g, "е").replace(/[.,]/g, " ").replace(/\s+/g, " ").trim();
 }
 export function rememberStory(jobs: StoryRef[], job: StoryRef): StoryRef[] {

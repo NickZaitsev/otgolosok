@@ -171,3 +171,23 @@ test("a document keeps its route tunnels, and migration carries them over", () =
   assert.deepEqual(migrateLegacyDraft(legacy, id).route.tunnels, [[0, 1]]);
   assert.equal("tunnels" in migrateLegacyDraft({ ...legacy, route: { ...legacy.route, tunnels: undefined } }, id).route, false);
 });
+
+test("a walk lies wholly in the city it names", () => {
+  const kazanStart = place("Казань, улица Баумана, 19", 55.7905, 49.1146);
+  const kazanStop = place("Казань, Кремлёвская улица, 2", 55.7963, 49.1088);
+  const kazan = () => ({ ...walk(), city: "Казань", start: kazanStart,
+    stops: [{ id: chapter, place: kazanStop, storyRef: null, transition: "", nextHint: "", triggerLocation: point(55.7962, 49.1089) }],
+    route: { geometry: [kazanStart.location, kazanStop.location], distanceM: 800, walkingMinutes: 10, attribution: "OSM" } });
+  assert.deepEqual(validateWalkDocument(kazan()), kazan());
+  /** @type {Array<[string, () => any]>} */
+  const cases = [
+    ["Москва с остановкой в Казани", () => { const document = walk(); document.stops[0].place = kazanStop; return document; }],
+    ["Казань с московским стартом", () => ({ ...kazan(), start })],
+    ["Казань с точкой маршрута в Москве", () => { const document = kazan(); document.route.geometry[1] = stop.location; return document; }],
+    ["Казань с точкой прослушивания в Москве", () => { const document = kazan(); document.stops[0].triggerLocation = stop.location; return document; }],
+    ["Казань с финишем в Москве", () => ({ ...kazan(), destination: stop })],
+    ["неизвестный город", () => ({ ...walk(), city: "Санкт-Петербург" })],
+    ["город не строкой", () => ({ ...walk(), city: null })],
+  ];
+  for (const [name, make] of cases) assert.throws(() => validateWalkDocument(make()), { code: "BAD_REQUEST" }, name);
+});

@@ -1,3 +1,4 @@
+import { MOSCOW, regionCityAt } from "./cities.mjs";
 import discoveryCatalog from "./walk-discovery-catalog.json" with { type: "json" };
 
 const text = value => typeof value === "string" ? value.trim() : "";
@@ -27,12 +28,13 @@ function objectType(tags) {
   return null;
 }
 
-export function osmPostalAddress(tags = {}) {
+/** @param {Record<string, string>} [tags] @param {string} [cityName] the city of the point when the tags name none */
+export function osmPostalAddress(tags = {}, cityName = MOSCOW.name) {
   tags ??= {};
   if (text(tags["addr:full"])) return text(tags["addr:full"]);
   const street = text(tags["addr:street"]) || text(tags["addr:place"]);
   const number = text(tags["addr:housenumber"]);
-  return street && number ? `${text(tags["addr:city"]) || "Москва"}, ${street}, ${number}` : null;
+  return street && number ? `${text(tags["addr:city"]) || cityName}, ${street}, ${number}` : null;
 }
 
 function nearbyLandmarks(place, elements) {
@@ -50,7 +52,7 @@ function nearbyLandmarks(place, elements) {
     const a = Math.sin(dy / 2) ** 2 + Math.cos(place.location.lat * radians) * Math.cos(point.lat * radians) * Math.sin(dx / 2) ** 2;
     const distance = 6371000 * 2 * Math.asin(Math.min(1, Math.sqrt(a)));
     if (distance > 300) continue;
-    const address = osmPostalAddress(element.tags);
+    const address = osmPostalAddress(element.tags, regionCityAt(point.lat, point.lon)?.name);
     if (address) candidates.push({ osmId: id, name: text(element.tags?.name) || null, address,
       distanceMeters: Math.round(distance), location: point });
   }
@@ -71,10 +73,11 @@ export function enrichOsmContext(place, { nearbyElements = discoveryCatalog.elem
     .map(text)).slice(0, 8);
   const type = objectType(tags);
   const qualify = (name, prefix = type) => prefix && !namedTypes.test(name) ? `${prefix} ${name}` : name;
-  const postalAddress = text(place.postalAddress) || text(place.address) || osmPostalAddress(tags);
+  const cityName = regionCityAt(place.location?.lat, place.location?.lon)?.name ?? MOSCOW.name;
+  const postalAddress = text(place.postalAddress) || text(place.address) || osmPostalAddress(tags, cityName);
   const geocoded = place.locationContext?.status === "matched" ? place.locationContext : null;
   const locationHint = postalAddress || unique([
-    text(tags["addr:city"]) || "Москва", text(tags["addr:suburb"]) || text(geocoded?.district?.name),
+    text(tags["addr:city"]) || cityName, text(tags["addr:suburb"]) || text(geocoded?.district?.name),
     text(tags["addr:street"]) || text(tags["addr:place"]) || (text(geocoded?.street?.name) ? `около ${geocoded.street.name}` : ""),
   ]).join(", ");
   const searchName = qualify(names[0] || "");

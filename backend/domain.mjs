@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { cityInAddress, MOSCOW } from "./cities.mjs";
 import { STORY_WORDS, storyWordsInRange } from "./story-limits.mjs";
 
 export const PIPELINE_VERSION = "place-history-v6";
@@ -7,12 +8,13 @@ export const TERMINAL = new Set(["ready", "failed", "insufficient_evidence", "re
 export const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 export function failure(code, message = code) { return Object.assign(new Error(message), { code }); }
 
-export function normalizeAddress(value) {
+/** An address that names no city is completed with `cityName`. @param {unknown} value @param {string} [cityName] */
+export function normalizeAddress(value, cityName = MOSCOW.name) {
   if (typeof value !== "string") throw failure("INVALID_ADDRESS");
   const address = value.normalize("NFKC").trim().replace(/\s+/g, " ");
   if (address.length < 6 || address.length > 180 || !/\d/.test(address) ||
       !/^[\p{L}\p{N}\s.,/()№–—-]+$/u.test(address) || /^[-\d.,\s]+$/.test(address)) throw failure("INVALID_ADDRESS");
-  return /москва/iu.test(address) ? address : `Москва, ${address}`;
+  return cityInAddress(address) ? address : `${cityName}, ${address}`;
 }
 
 export function addressKey(address) {
