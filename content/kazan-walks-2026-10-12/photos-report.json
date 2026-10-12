@@ -1,0 +1,223 @@
+[
+ {
+  "placeId": "osm:node:1153018102",
+  "title": "Памятник Мусе Джалилю",
+  "status": "ok",
+  "file": "Памятник Герою Советского Союза Мусе Джалилю вечером.JPG",
+  "license": "CC BY-SA 4.0",
+  "author": "Insider"
+ },
+ {
+  "placeId": "osm:relation:15958803",
+  "title": "Спасская башня",
+  "status": "ok",
+  "file": "Kazan Kremlin Spasskaya Tower 08-2016 img2.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:way:1177567734",
+  "title": "Спасо-Преображенский собор",
+  "status": "ok",
+  "file": "Kazan Kremlin former monastery 08-2016.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:way:259988409",
+  "title": "Благовещенский собор",
+  "status": "ok",
+  "file": "Kazan Kremlin Annunciation Cathedral 08-2016.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:way:228963085",
+  "title": "Башня Сююмбике",
+  "status": "ok",
+  "file": "Kazan Kremlin Soyembika Tower 08-2016 img1.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:way:684275777",
+  "title": "Мавзолей казанских ханов",
+  "status": "ok",
+  "file": "Могилы казанских ханов в Кремле; 2009.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Yuriy75"
+ },
+ {
+  "placeId": "osm:way:90161987",
+  "title": "Пушечный двор",
+  "status": "ok",
+  "file": "Cannon yard of Kazan Kremlin (2023-08-01) 01.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Vyacheslav Kirillin"
+ },
+ {
+  "placeId": "osm:way:230132591",
+  "title": "Кул-Шариф",
+  "status": "ok",
+  "file": "Kazan Kremlin Qolsharif Mosque 08-2016 img2.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:node:1348003477",
+  "title": "Национальный музей Республики Татарстан",
+  "status": "ok",
+  "file": "Национальный музей Республики Татарстан.JPG",
+  "license": "CC BY-SA 3.0",
+  "author": "Денис Петьовка"
+ },
+ {
+  "placeId": "osm:way:90178098",
+  "title": "Петропавловский собор",
+  "status": "ok",
+  "file": "Петрапаўлаўскі сабор у Казані.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Murdic"
+ },
+ {
+  "placeId": "osm:node:2288261386",
+  "title": "Карета Екатерины II",
+  "status": "ok",
+  "file": "Bauman street, Kazan - panoramio.jpg",
+  "license": "CC BY 3.0",
+  "author": "Artem Korzhimanov"
+ },
+ {
+  "placeId": "osm:way:99325935",
+  "title": "Колокольня Богоявленского собора",
+  "status": "ok",
+  "file": "Bell tower in kazan 01.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Alx0yago"
+ },
+ {
+  "placeId": "osm:node:1145710437",
+  "title": "Памятник Фёдору Шаляпину",
+  "status": "ok",
+  "file": "Chaliapin monument, Kazan (2020-03-03) 01.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Engelberthumperdink"
+ },
+ {
+  "placeId": "osm:node:1185938872",
+  "title": "Памятник Габдулле Тукаю",
+  "status": "ok",
+  "file": "Памятник Г.Тукаю (г. Казань, ул. Пушкина) - 3.JPG",
+  "license": "CC BY-SA 4.0",
+  "author": "Алексеев Игорь Евгеньевич"
+ },
+ {
+  "placeId": "osm:way:108249744",
+  "title": "Мечеть Нурулла",
+  "status": "ok",
+  "file": "Kazan Nurulla Mosque 08-2016.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:way:157537968",
+  "title": "Галеевская мечеть",
+  "status": "ok",
+  "file": "Kazan Galeev Mosque 2024-07-16 2119.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Mike1979 Russia"
+ },
+ {
+  "placeId": "osm:node:5316345744",
+  "title": "Музей Каюма Насыри",
+  "status": "ok",
+  "file": "Kayum Nasyri museum (2021-07-06) 03.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Engelberthumperdink"
+ },
+ {
+  "placeId": "osm:way:133264786",
+  "title": "Голубая мечеть",
+  "status": "ok",
+  "file": "Голубая мечеть Казань.jpg",
+  "license": "CC0",
+  "author": "Mandarin839"
+ },
+ {
+  "placeId": "osm:node:2494989015",
+  "title": "Литературный музей Габдуллы Тукая",
+  "status": "ok",
+  "file": "Дом Шамиля 02.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Olesssya"
+ },
+ {
+  "placeId": "osm:way:143954521",
+  "title": "Юнусовская площадь",
+  "status": "no_candidate"
+ },
+ {
+  "placeId": "osm:way:157495501",
+  "title": "Дом Беркутова",
+  "status": "ok",
+  "file": "Дом Беркутова.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Anisantha"
+ },
+ {
+  "placeId": "osm:way:157430560",
+  "title": "Татарская усадьба",
+  "status": "ok",
+  "file": "Казань, купеческая усадьба Сабитовых.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Anisantha"
+ },
+ {
+  "placeId": "osm:way:157430566",
+  "title": "Медресе «Марджания»",
+  "status": "ok",
+  "file": "Madrasa Marjaniya (2024-04-01) 04.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Vyacheslav Kirillin"
+ },
+ {
+  "placeId": "osm:way:133264462",
+  "title": "Мечеть аль-Марджани",
+  "status": "ok",
+  "file": "Kazan Marjani Mosque 08-2016 img2.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:way:133264399",
+  "title": "Апанаевская мечеть",
+  "status": "ok",
+  "file": "Kazan Apanayev Mosque 08-2016 img1.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:way:133960449",
+  "title": "Казанская учительская семинария",
+  "status": "ok",
+  "file": "Казанская учительская семинария.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Anisantha"
+ },
+ {
+  "placeId": "osm:relation:3873061",
+  "title": "Парк Тысячелетия",
+  "status": "ok",
+  "file": "Millennium park, Kazan (2021-09-19) 06.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Engelberthumperdink"
+ },
+ {
+  "placeId": "osm:way:104635635",
+  "title": "Храм Воздвижения Святого Креста",
+  "status": "ok",
+  "file": "Kazan Exaltation of the Holy Cross Church 2024-07-17 2331.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Mike1979 Russia"
+ }
+]
