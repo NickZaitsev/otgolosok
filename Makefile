@@ -4,6 +4,7 @@ SHELL := /bin/sh
 
 PNPM ?= pnpm
 DOCKER_COMPOSE ?= docker compose
+# Quoted in recipes: pnpm exports NODE as an absolute path, which may contain spaces (fnm on macOS).
 NODE ?= node
 # The production SSH address is not published: set VPS=user@host in the gitignored .env.ops.
 -include .env.ops
@@ -73,7 +74,7 @@ docker-config: ## Validate Compose without printing credentials
 
 admin-create: ## Создать редактора локально; EMAIL=ваш@email.ru [AUTH_DB_PATH=путь]
 	@test -n $(call shell_quote,$(EMAIL)) || { printf '%s\n' 'Укажите EMAIL: make admin-create EMAIL=ваш@email.ru' >&2; exit 1; }
-	@$(NODE) scripts/set-editor.mjs $(call shell_quote,$(EMAIL)) $(if $(AUTH_DB_PATH),$(call shell_quote,$(AUTH_DB_PATH)))
+	@$(call shell_quote,$(NODE)) scripts/set-editor.mjs $(call shell_quote,$(EMAIL)) $(if $(AUTH_DB_PATH),$(call shell_quote,$(AUTH_DB_PATH)))
 
 admin-create-prod: ## Создать редактора на проде через SSH; EMAIL=ваш@email.ru
 	@test -n $(call shell_quote,$(VPS)) || { printf '%s\n' 'Укажите VPS=user@host в .env.ops' >&2; exit 1; }
@@ -81,28 +82,28 @@ admin-create-prod: ## Создать редактора на проде чере
 	@ssh -t -- $(call shell_quote,$(VPS)) $(call shell_quote,docker exec -it -- $(call shell_quote,$(GENERATOR_CONTAINER)) node /app/backend/editor-account.mjs $(call shell_quote,$(EMAIL)) /data/auth.sqlite)
 
 db-dump: ## Снять базу генератора с прода в backend/data/prod-dump (нужен доступ по SSH)
-	$(NODE) scripts/prod-db.mjs dump
+	$(call shell_quote,$(NODE)) scripts/prod-db.mjs dump
 
 db-pack: ## Упаковать выгрузку в архив для передачи другому разработчику
-	$(NODE) scripts/prod-db.mjs pack
+	$(call shell_quote,$(NODE)) scripts/prod-db.mjs pack
 
 db-import: ## Импортировать выгрузку в backend/data, сохранив прежнюю базу
-	$(NODE) scripts/prod-db.mjs import
+	$(call shell_quote,$(NODE)) scripts/prod-db.mjs import
 
 db-restore: ## Вернуть последнюю сохранённую локальную базу
-	$(NODE) scripts/prod-db.mjs restore
+	$(call shell_quote,$(NODE)) scripts/prod-db.mjs restore
 
 db-info: ## Показать состав локальной базы генератора
-	$(NODE) scripts/prod-db.mjs info
+	$(call shell_quote,$(NODE)) scripts/prod-db.mjs info
 
 db-prune-audio: ## Удалить старые аудиофайлы без ссылок в базе
-	$(NODE) scripts/prune-audio.mjs
+	$(call shell_quote,$(NODE)) scripts/prune-audio.mjs
 
 place-images: ## Подобрать и обновить фото мест из Wikidata/Commons (аргументы: PLACE_IMAGES_ARGS)
-	$(NODE) backend/sync-place-images.mjs $(PLACE_IMAGES_ARGS)
+	$(call shell_quote,$(NODE)) backend/sync-place-images.mjs $(PLACE_IMAGES_ARGS)
 
 place-images-prune: ## Удалить файлы фото мест без ссылок в базе
-	$(NODE) backend/sync-place-images.mjs --prune
+	$(call shell_quote,$(NODE)) backend/sync-place-images.mjs --prune
 
 osm-import: ## Собрать каталог достопримечательностей; PBF=path/to/Moscow.osm.pbf
 	python scripts/import-osm-attractions.py $(PBF) --output backend/data/osm-attractions.json $(OSM_IMPORT_ARGS)
@@ -111,4 +112,4 @@ osm-food: ## Собрать индекс заведений; PBF=path/to/Moscow.
 	$(if $(OSM_PYTHON),$(call shell_quote,$(OSM_PYTHON)),python) scripts/build-osm-food-index.py $(call shell_quote,$(PBF)) --output backend/data/osm-food.sqlite
 
 osm-load: ## Загрузить собранный каталог в SQLite
-	$(NODE) scripts/load-osm-catalog.mjs backend/data/osm-attractions.json
+	$(call shell_quote,$(NODE)) scripts/load-osm-catalog.mjs backend/data/osm-attractions.json

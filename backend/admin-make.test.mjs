@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, writeFile, readFile, access, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, symlink, writeFile, readFile, access, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { existsSync } from "node:fs";
@@ -74,6 +74,17 @@ test("production Makefile command preserves argument boundaries across both shel
     await assert.rejects(access(join(f.dir, "injected")), { code: "ENOENT" });
   }
   assert.notEqual(f.run("admin-create-prod", ["EMAIL=admin@example.com"], { TEST_EXIT: "17" }).status, 0);
+});
+
+// pnpm exports NODE as the absolute node path; under fnm on macOS it lies in «Application Support».
+test("local Makefile commands run a node whose path contains spaces", posixOnly, async t => {
+  const f = await fixture(t);
+  const bin = join(f.dir, "node bin");
+  await mkdir(bin);
+  await symlink(process.execPath, join(bin, "node"));
+  const result = f.run("admin-create", ["EMAIL=admin@example.com", `AUTH_DB_PATH=${f.dir}/missing.sqlite`], { NODE: join(bin, "node") });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Не удалось открыть базу авторизации/);
 });
 
 test("local Makefile command passes an explicit database path including spaces", posixOnly, async t => {
