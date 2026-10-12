@@ -264,6 +264,79 @@ test("аудио, текст и список остановок открываю
   await expect(page.getByRole("navigation", { name: "Основная навигация" })).toBeVisible();
 });
 
+test.describe("свёрнутая карточка на телефоне", () => {
+  test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
+
+  test("свайп по ручке вниз оставляет плеер и открывает карту, вверх возвращает карточку", async ({ page }, info) => {
+    await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: routeToWalkView(routeData as Route) }));
+    await page.goto("/walk?catalog=paveletskaya");
+    await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+    const panel = page.locator(".walk-session-panel");
+    // На сенсорном экране сворачивает ручка, шеврон для мыши спрятан.
+    await expect(page.locator(".walk-session-fold")).toBeHidden();
+    const grip = page.getByRole("button", { name: "Свернуть карточку" });
+    await expect(grip).toBeVisible();
+    const open = (await panel.boundingBox())!;
+    // A real finger: touch events through the DevTools protocol, which the browser turns into pointer events.
+    const cdp = await page.context().newCDPSession(page);
+    const swipe = async (dy: number) => {
+      const box = (await page.locator(".walk-session-handle button").boundingBox())!;
+      const x = box.x + box.width / 2, y = box.y + box.height / 2;
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+      for (let step = 1; step <= 4; step++) await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: y + dy * step / 4 }] });
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    };
+    // Without the photo the grip's touch area stays above the title.
+    const clearOfTitle = async () => {
+      const grip = (await page.locator(".walk-session-handle button").boundingBox())!;
+      const title = (await page.locator("#walk-session-title").boundingBox())!;
+      expect(grip.y + grip.height).toBeLessThanOrEqual(title.y + 1);
+    };
+    await swipe(80);
+    await expect(panel).toHaveAttribute("data-folded", "");
+    await expect(page.locator(".walk-session-actions").getByRole("region", { name: "Плеер истории" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^Дальше(:|$)/ })).toBeVisible();
+    await expect(page.locator(".walk-session-tools, .walk-session-photo")).toHaveCount(0);
+    await clearOfTitle();
+    const folded = (await panel.boundingBox())!;
+    expect(folded.height).toBeLessThan(open.height / 2);
+    expect(folded.y + folded.height).toBeCloseTo(open.y + open.height, 0);
+    await page.screenshot({ path: info.outputPath("walk-folded-phone.png") });
+    // Свёрнутой карточка остаётся и на следующей остановке.
+    await page.getByRole("button", { name: /^Дальше(:|$)/ }).click();
+    await expect(panel).toHaveAttribute("data-folded", "");
+    await swipe(-80);
+    await expect(panel).not.toHaveAttribute("data-folded", "");
+    await expect(page.locator(".walk-session-tools")).toBeVisible();
+    // A swipe ends with a click on the grip; it must not toggle the card back.
+    await page.waitForTimeout(300);
+    await expect(panel).not.toHaveAttribute("data-folded", "");
+    await page.getByRole("button", { name: "Настройки прогулки" }).click();
+    await expect(page.locator(".walk-session-photo")).toHaveCount(0);
+    await clearOfTitle();
+  });
+});
+
+test("на компьютере карточку прогулки сворачивает и разворачивает шеврон рядом с крестиком", async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.route("**/api/story-walks/paveletskaya/view", route => route.fulfill({ json: routeToWalkView(routeData as Route) }));
+  await page.goto("/walk?catalog=paveletskaya");
+  await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
+  await expect(page.locator(".walk-session-handle")).toBeHidden();
+  const panel = page.locator(".walk-session-panel");
+  const open = (await panel.boundingBox())!;
+  await page.getByRole("button", { name: "Свернуть карточку" }).click();
+  await expect(panel).toHaveAttribute("data-folded", "");
+  await expect(page.locator(".walk-session-actions").getByRole("region", { name: "Плеер истории" })).toBeVisible();
+  expect((await panel.boundingBox())!.height).toBeLessThan(open.height * .6);
+  await page.screenshot({ path: info.outputPath("walk-folded-desktop.png") });
+  const expand = page.getByRole("button", { name: "Развернуть карточку" });
+  await expect(expand).toBeFocused();
+  await expand.click();
+  await expect(panel).not.toHaveAttribute("data-folded", "");
+  await expect(page.getByRole("button", { name: "Свернуть карточку" })).toBeFocused();
+});
+
 test("с клавиатуры фокус не прячется под мини-плеером в закреплённом футере", async ({ page }) => {
   // На низком горизонтальном экране мини-плеер заметно поднимает футер: прокрутка к фокусу должна это учитывать.
   await page.setViewportSize({ width: 568, height: 320 });

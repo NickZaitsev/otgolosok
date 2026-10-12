@@ -1,6 +1,6 @@
 /* The map, its header and buttons, and where the card stands come from MapShell; this file only styles the card. */
 .walk-session{color:var(--map-green,#203e38);font-family:var(--font-body),sans-serif}
-.walk-session-panel{display:flex;flex-direction:column;min-height:0;max-height:100%;overflow-y:auto;overscroll-behavior:contain;scroll-padding-bottom:calc(var(--control-primary-min) * 2 + 2rem);padding:20px;pointer-events:auto;border:1px solid #203e3818;border-radius:24px;background:#fffaf0;box-shadow:0 8px 30px #203e3824}
+.walk-session-panel{position:relative;display:flex;flex-direction:column;min-height:0;max-height:100%;overflow-y:auto;overscroll-behavior:contain;scroll-padding-bottom:calc(var(--control-primary-min) * 2 + 2rem);padding:20px;pointer-events:auto;border:1px solid #203e3818;border-radius:24px;background:#fffaf0;box-shadow:0 8px 30px #203e3824}
 /* The panel is a column so that on a short screen its flexible parts shrink instead of the whole panel scrolling:
    the open drawer scrolls inside itself and the photo yields height, so the footer with the main action stays visible.
    The panel still scrolls as a last resort when the fixed parts alone do not fit. */
@@ -22,6 +22,18 @@
 .walk-session-muted{margin-top:10px}
 .walk-session-heading-actions{display:flex;flex:none;gap:8px}
 .walk-session-icon{flex:none;width:var(--control-min);height:var(--control-min);display:grid;place-items:center;border:0;border-radius:50%;color:inherit;background:#203e380a;cursor:pointer}
+/* Folding the running walk's card (data-folded): touch gets the grip hanging from the card's top edge, light over the photo;
+   a mouse gets the chevron beside the cross, which points where the card goes. One of them is on screen, so a screen reader hears one. */
+.walk-session-handle{position:absolute;top:0;left:50%;z-index:2;transform:translateX(-50%)}
+.walk-session-panel:has(.walk-session-photo:not(:empty)) .walk-session-handle{--handle-color:#fffaf0;--handle-shadow:0 0 0 1px #203e3866}
+.walk-session-fold{display:none}
+.walk-session-panel[data-folded] .walk-session-fold svg{transform:rotate(180deg)}
+@media(pointer:fine){.walk-session-handle{display:none}.walk-session-fold{display:grid}}
+/* Without the photo under it, the grip gets a strip of its own: its touch area must not cover the title or «Геопозиции нет». */
+@media not (pointer:fine){.walk-session-panel:has(>.walk-session-handle):not(:has(>.walk-session-photo:not(:empty))){padding-top:var(--control-min)}}
+/* Folded, the card is one line of title above the mini player and the actions. */
+.walk-session-panel[data-folded] .walk-session-heading h1{font-size:17px;line-height:1.3;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;overflow-wrap:normal}
+.walk-session-panel[data-folded] .walk-session-actions{margin-top:12px}
 .walk-session-address{font-size:14px;line-height:1.5;margin:0 0 8px;color:var(--map-muted);overflow-wrap:anywhere}
 .walk-session-tools{display:flex;align-items:center;flex-wrap:wrap;gap:0 16px}
 .walk-session-tools:has(button,a){margin-top:12px}

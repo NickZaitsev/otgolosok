@@ -156,7 +156,8 @@ test("на 568×320 фокус в прокручиваемой панели не
   await page.getByRole("button", { name: "Начать прогулку", exact: true }).click();
   await page.getByRole("button", { name: "Настройки" }).click();
   await page.locator(".walk-session-panel").evaluate(el => { el.scrollTop = 0; });
-  await page.locator(".walk-session-panel :is(button, a, select)").first().focus();
+  // The first control the keyboard reaches: the folding grip is hidden for a mouse and takes no focus.
+  await page.locator(".walk-session-panel :is(button, a, select):visible").first().focus();
   const covered: string[] = [];
   for (let step = 0; step < 20; step += 1) {
     const state = await page.evaluate(() => {

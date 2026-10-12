@@ -17,6 +17,7 @@ import { useHideNavigation } from "../navigation/navigation-visibility";
 import { MapShell } from "../shell/map-shell";
 import { MapControlButton } from "../shell/map-controls";
 import { MapNotice } from "../shell/map-status-notice";
+import { SheetHandle } from "../shell/sheet-handle";
 import type { ContentLocale, Coordinates, Route } from "./types";
 import { highlightedLeg, type StopStage, type WalkChapter } from "./walk-plan";
 import { legFitPoints, legRange, openingFitPoints, routeLegCuts } from "./route-legs";
@@ -124,6 +125,13 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   const [focus, setFocus] = useState<MapFocus | null>(null);
   const [drawer, setDrawer] = useState<"stops" | "story" | "settings" | "reviews" | "position" | "food" | null>(null);
   const [confirmStop, setConfirmStop] = useState(false);
+  // A folded card keeps only the title, the mini player and the actions, so the map shows where to go next.
+  // It stays folded from stop to stop; an open drawer unfolds it while open, and the next walk starts unfolded.
+  const [folded, setFolded] = useState(false);
+  if (folded && !active) setFolded(false);
+  const compact = folded && active && !completed && !drawer;
+  function fold() { setDrawer(null); setFolded(true); }
+  function unfold() { setFolded(false); }
   const [focusedDirection, setFocusedDirection] = useState(direction);
   if (focusedDirection !== direction) {
     setFocusedDirection(direction);
@@ -134,7 +142,7 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   const panelRef = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     if (panelRef.current) panelRef.current.scrollTop = 0;
-  }, [chapter?.id, active, completed]);
+  }, [chapter?.id, active, completed, compact]);
   const geometry = useMemo(() => (route.walk?.path.coordinates ?? []).map(([lon, lat]) => ({ lat, lon })), [route.walk?.path]);
   const foodVisible = drawer === "food" && !completed;
   const foodMode = documentFoodMode ?? (route.walk && route.walk.start.location.lat === route.walk.finish.location.lat && route.walk.start.location.lon === route.walk.finish.location.lon ? "loop" : "open");
@@ -250,31 +258,36 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
   const locationLabel = t(positionFailed ? "Геопозиции нет" : user ? "Положение определено" : "Определяем положение…");
   const following = active && index + 1 < chapters.length ? t("Дальше: {title}", { title: chapters[index + 1].title }) : "";
 
-  const panel = <section ref={panelRef} className={`walk-session-panel ${foodStyles.panel}`} data-region="sheet" aria-labelledby="walk-session-title">
-      {/* Like the player, the photo yields its room to an open drawer. */}
-      {active && chapter && !drawer ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} stopId={chapter.id} title={chapter.title} /></div> : null}
+  const panel = <section ref={panelRef} id="walk-session-card" className={`walk-session-panel ${foodStyles.panel}`} data-region="sheet" data-folded={compact ? "" : undefined} aria-labelledby="walk-session-title">
+      {/* Touch folds the card with the grip (a swipe or a tap); a mouse uses the chevron beside the cross (walk-session.css). */}
+      {active && !completed ? <div className="walk-session-handle"><SheetHandle expanded={!compact} onExpand={unfold} onCollapse={fold} controls="walk-session-card"
+        expandLabel={t("Развернуть карточку")} collapseLabel={t("Свернуть карточку")} /></div> : null}
+      {/* Like the player, the photo yields its room to an open drawer and to the folded card. */}
+      {active && chapter && !drawer && !compact ? <div className="walk-session-photo"><StopPhoto key={chapter.id} placeId={chapter.place_id} stopId={chapter.id} title={chapter.title} /></div> : null}
       <div className={`${foodStyles.body}${foodVisible || foodManifestError ? ` ${foodStyles.bodyScrollable}` : ""}`}>
       <header className="walk-session-heading">
         <div>
           {/* During the walk the stop number lives on the «Остановки» button; this line is left for the hint and the finish. */}
-          <div className="walk-session-context">{meta ? <p className="walk-session-meta">{meta}{!active && !completed && ratingLabel ? <> · {reviews
+          {compact ? null : <div className="walk-session-context">{meta ? <p className="walk-session-meta">{meta}{!active && !completed && ratingLabel ? <> · {reviews
             ? <button type="button" className="walk-session-rating" aria-expanded={drawer === "reviews"} onClick={toggleReviews}>{ratingLabel}</button>
             : ratingLabel}</> : null}</p> : null}
             {active ? positionFailed ? <button type="button" className="walk-session-location walk-session-location--failed" aria-expanded={drawer === "position"} onClick={retryPosition}><span aria-hidden="true" />{locationLabel}</button>
-              : <span className="walk-session-location" role="status"><span aria-hidden="true" />{locationLabel}</span> : null}</div>
+              : <span className="walk-session-location" role="status"><span aria-hidden="true" />{locationLabel}</span> : null}</div>}
           <h1 id="walk-session-title" className={heading.length > 70 ? "walk-session-title--long" : undefined} ref={titleRef} tabIndex={-1}>{heading}</h1>
         </div>
         {!completed ? <div className="walk-session-heading-actions">
+          {active ? <button type="button" className="walk-session-icon walk-session-fold" aria-expanded={!compact} aria-controls="walk-session-card"
+            aria-label={t(compact ? "Развернуть карточку" : "Свернуть карточку")} onClick={compact ? unfold : fold}><ExploreIcon name="chevron" /></button> : null}
           {/* The cross belongs to the card: during the walk it interrupts it after a confirmation, before the start it leaves for the map. */}
           {active ? <button type="button" className="walk-session-icon" aria-label={t("Прервать прогулку")} aria-haspopup="dialog" onClick={() => setConfirmStop(true)}><ExploreIcon name="close" /></button>
             : <Link className="walk-session-icon" href={path("/")} prefetch={false} aria-label={t("Закрыть прогулку")} onClick={() => onStop()}><ExploreIcon name="close" /></Link>}
         </div> : null}
       </header>
       {!active && !completed && !foodVisible ? own?.notes.map(note => <p key={note} className="walk-session-muted">{note}</p>) : null}
-      {active && !drawer ? player : null}
+      {active && !drawer && !compact ? player : null}
       {active && audioError ? <p className="walk-session-notice" role="status">{audioError}</p> : null}
-      {active && chapter && !chapter.audio && !hasText ? <p className="walk-session-muted">{t("Без истории")}</p> : null}
-      {!completed && !foodVisible ? <div className="walk-session-tools">
+      {active && chapter && !chapter.audio && !hasText && !compact ? <p className="walk-session-muted">{t("Без истории")}</p> : null}
+      {!completed && !foodVisible && !compact ? <div className="walk-session-tools">
         {chapters.length > 0 ? <button type="button" aria-expanded={drawer === "stops"} onClick={() => setDrawer(drawer === "stops" ? null : "stops")}><ExploreIcon name="list" />{active && chapter ? t("Остановка {current} из {total}", { current: index + 1, total: chapters.length }) : t("Остановки · {count}", { count: chapters.length })}</button> : null}
         {!active && canStart && onDirectionChange ? <button type="button" aria-label={t("Пройти прогулку с конца")} aria-pressed={direction === "reverse"} onClick={() => { setDrawer(null); onDirectionChange(direction === "forward" ? "reverse" : "forward"); }}>{t(direction === "reverse" ? "Направление: с конца" : "Направление: с начала")}</button> : null}
         {active && hasText ? <button type="button" className="walk-session-read" aria-expanded={drawer === "story"} onClick={() => setDrawer(drawer === "story" ? null : "story")}><ExploreIcon name="book" /><span>{t("Читать историю")}</span></button> : null}
@@ -316,12 +329,12 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         </>}
       </div> : null}
       {completed && onImprove ? <button type="button" className="walk-session-rate" aria-haspopup="dialog" onClick={improve}>{t("Что улучшить в прогулке?")}</button> : null}
-      {foodManifestError ? <p role="status" className="walk-session-notice">{t("Не удалось загрузить заведения")} <button type="button" className={foodStyles.retry} onClick={food.retry}>{t("Повторить")}</button></p> : null}
+      {foodManifestError && !compact ? <p role="status" className="walk-session-notice">{t("Не удалось загрузить заведения")} <button type="button" className={foodStyles.retry} onClick={food.retry}>{t("Повторить")}</button></p> : null}
       </div>
       <footer className={`${foodStyles.actions} walk-session-actions${completed && reviews ? " walk-session-actions--finish" : ""}`} data-sheet-part="footer">
-        {/* A drawer takes the player's place, but the story keeps playing: its controls stay in the pinned footer. */}
-        {active && drawer && miniPlayer ? <div className="walk-session-mini">{miniPlayer}</div> : null}
-        {following ? <p className="walk-session-following" title={following}>{following}</p> : null}
+        {/* A drawer or the folded card takes the player's place, but the story keeps playing: its controls stay in the pinned footer. */}
+        {active && (drawer || compact) && miniPlayer ? <div className="walk-session-mini">{miniPlayer}</div> : null}
+        {following && !compact ? <p className="walk-session-following" title={following}>{following}</p> : null}
         {completed ? reviews ? <>
           <button type="button" className="walk-session-primary" aria-haspopup="dialog" onClick={onRate}>{t(hasReview ? "Изменить отзыв" : "Оставить отзыв")}</button>
           <Link className="walk-session-secondary" href={path("/")}>{t("На карту")}</Link>

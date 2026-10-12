@@ -200,6 +200,8 @@ export const walksTranslations: Translations = {
   "Рядом нашлось мест только на {shortfall} мин из {minutes}. Измените начало прогулки.": ["Nearby places cover only {shortfall} of {minutes} minutes. Change the starting point.", "附近地点只能组成 {shortfall}/{minutes} 分钟的路线。请更改起点。"],
   "Скопировать ссылку": ["Copy link", "复制链接"],
   "Скопируйте ссылку: {url}": ["Copy this link: {url}", "请复制此链接：{url}"],
+  "Свернуть карточку": ["Collapse card", "收起卡片"],
+  "Развернуть карточку": ["Expand card", "展开卡片"],
   "Скорость {rate}": ["Speed {rate}", "速度 {rate}"],
   "Скорость аудио": ["Audio speed", "音频速度"],
   "Скорость рассказа": ["Narration speed", "讲述速度"],

@@ -175,8 +175,9 @@ it.each([
 ])("кнопка настроек есть только во время прогулки, в строке инструментов: active=%s → %s", (active, shown) => {
   const document = sessionDocument({ active });
   expect(Boolean(document.querySelector(".walk-session-tools [aria-label='Настройки прогулки']"))).toBe(shown);
-  // The heading keeps only the cross, so a one-line title leaves no gap under it.
-  expect(document.querySelectorAll(".walk-session-heading-actions .walk-session-icon")).toHaveLength(1);
+  // Settings stay out of the heading: it keeps the cross and, for a mouse during the walk, the fold chevron beside it.
+  expect(document.querySelectorAll(".walk-session-heading-actions .walk-session-icon:not(.walk-session-fold)")).toHaveLength(1);
+  expect(document.querySelectorAll(".walk-session-heading-actions .walk-session-fold")).toHaveLength(active ? 1 : 0);
 });
 
 it("адреса старта и финиша не занимают карточку до старта", () => {
@@ -459,5 +460,103 @@ it("при переходе к другой остановке возвраща�
     await act(async () => root.unmount());
     container.remove();
     vi.unstubAllGlobals();
+  }
+});
+
+async function mountFoldable() {
+  vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+  const container = document.createElement("div");
+  document.body.append(container);
+  const root = createRoot(container);
+  const props = {
+    route, chapters, index: 0, completed: false, user: null, positionFailed: false, resume: false,
+    titleRef: createRef<HTMLHeadingElement>(), startRef: createRef<HTMLButtonElement>(),
+    onStart: () => {}, onSelect: () => {}, onStop: () => {}, story: null, audioError: "",
+    player: createElement("p", { "data-testid": "player" }, "плеер"), miniPlayer: createElement("p", { "data-testid": "mini" }, "мини"),
+    settings: createElement("p", null, "настройки"),
+  };
+  const render = (active: boolean, index = 0) => act(async () => root.render(createElement(WalkSession, { ...props, active, index })));
+  await render(true);
+  const panel = () => container.querySelector<HTMLElement>(".walk-session-panel")!;
+  const fold = () => container.querySelector<HTMLButtonElement>(".walk-session-fold")!;
+  const grip = () => container.querySelector<HTMLButtonElement>(".walk-session-handle button")!;
+  const has = (selector: string) => container.querySelector(selector) !== null;
+  const unmount = async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); };
+  return { container, render, panel, fold, grip, has, unmount };
+}
+
+it("свёрнутая карточка прогулки оставляет заголовок, мини-плеер и кнопки, а шеврон разворачивает её", async () => {
+  const card = await mountFoldable();
+  try {
+    expect(card.panel().hasAttribute("data-folded")).toBe(false);
+    expect(card.has("[data-testid=player]")).toBe(true);
+    expect(card.fold().getAttribute("aria-label")).toBe("Свернуть карточку");
+
+    await act(async () => card.fold().click());
+    expect(card.panel().hasAttribute("data-folded")).toBe(true);
+    expect(card.has("[data-testid=player]")).toBe(false);
+    expect(card.container.querySelector(".walk-session-mini [data-testid=mini]")).not.toBeNull();
+    expect(card.has(".walk-session-tools")).toBe(false);
+    expect(card.has(".walk-session-context")).toBe(false);
+    expect(card.has(".walk-session-following")).toBe(false);
+    expect(card.container.querySelector("h1")?.textContent).toBe(chapters[0].title);
+    expect(card.container.querySelector(".walk-session-primary")?.textContent).toBe("Дальше");
+    expect(card.fold().getAttribute("aria-expanded")).toBe("false");
+    expect(card.grip().getAttribute("aria-label")).toBe("Развернуть карточку");
+
+    // The walker goes on with the card folded: the next stop keeps it so.
+    await card.render(true, 1);
+    expect(card.panel().hasAttribute("data-folded")).toBe(true);
+
+    await act(async () => card.fold().click());
+    expect(card.panel().hasAttribute("data-folded")).toBe(false);
+    expect(card.has("[data-testid=player]")).toBe(true);
+    expect(card.has(".walk-session-mini")).toBe(false);
+  } finally {
+    await card.unmount();
+  }
+});
+
+it("сворачивание закрывает открытую шторку, а новая прогулка начинается развёрнутой", async () => {
+  const card = await mountFoldable();
+  try {
+    const settings = [...card.container.querySelectorAll<HTMLButtonElement>(".walk-session-tools button")].find(button => button.textContent === "Настройки")!;
+    await act(async () => settings.click());
+    expect(card.has(".walk-session-drawer")).toBe(true);
+    await act(async () => card.grip().click());
+    expect(card.has(".walk-session-drawer")).toBe(false);
+    expect(card.panel().hasAttribute("data-folded")).toBe(true);
+
+    await card.render(false);
+    expect(card.has(".walk-session-handle")).toBe(false);
+    expect(card.has(".walk-session-fold")).toBe(false);
+    await card.render(true);
+    expect(card.panel().hasAttribute("data-folded")).toBe(false);
+  } finally {
+    await card.unmount();
+  }
+});
+
+it.each([
+  ["вниз", 0, 80, true],
+  ["вверх после сворачивания", 80, 0, false],
+  ["вбок", 0, 0, false],
+])("свайп по ручке %s сворачивает карточку — %s", async (_, fromY, toY, folded) => {
+  const card = await mountFoldable();
+  try {
+    if (fromY > toY) await act(async () => card.grip().click());
+    const sideways = fromY === toY;
+    const grip = card.grip();
+    grip.setPointerCapture = () => {};
+    const pointer = (type: string, x: number, y: number) => grip.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 1, button: 0, clientX: x, clientY: y }));
+    await act(async () => {
+      pointer("pointerdown", 100, fromY);
+      pointer("pointerup", sideways ? 180 : 100, toY);
+      grip.click();
+    });
+    expect(card.panel().hasAttribute("data-folded")).toBe(folded);
+  } finally {
+    await card.unmount();
   }
 });
