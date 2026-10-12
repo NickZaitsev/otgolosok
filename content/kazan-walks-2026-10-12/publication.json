@@ -1,0 +1,202 @@
+{
+  "bundleId": "kazan-center-k01-k02-2026-10-12",
+  "at": "2026-10-12T14:41:45.468Z",
+  "results": [
+    {
+      "placeId": "osm:node:1153018102",
+      "textId": "5881c53f-26dc-5b97-8f52-26a61df1308f",
+      "wordCount": 154,
+      "resumed": false,
+      "audioJobId": "7c356b66-5b95-4c80-9231-d3177a579617"
+    },
+    {
+      "placeId": "osm:relation:15958803",
+      "textId": "24131550-4384-5cd1-8a45-6ffc0ffa3432",
+      "wordCount": 157,
+      "resumed": false,
+      "audioJobId": "81f31d39-fe81-446b-85cd-125dd0d1621b"
+    },
+    {
+      "placeId": "osm:way:1177567734",
+      "textId": "09867e48-11eb-5b5c-95cd-0959e4cb4f28",
+      "wordCount": 136,
+      "resumed": false,
+      "audioJobId": "bc83ae00-3ba2-49ce-8a90-1999ab467184"
+    },
+    {
+      "placeId": "osm:way:259988409",
+      "textId": "994cdce1-d292-5835-8798-8510f25bdda6",
+      "wordCount": 170,
+      "resumed": false,
+      "audioJobId": "6c1cfbbb-ff9e-4af9-9beb-c44ddb4215c8"
+    },
+    {
+      "placeId": "osm:way:228963085",
+      "textId": "940bd7ac-a14e-592b-a5bc-516e4ad73e05",
+      "wordCount": 135,
+      "resumed": false,
+      "audioJobId": "06f38fc9-b0df-458d-a1c5-7f45a02c6211"
+    },
+    {
+      "placeId": "osm:way:684275777",
+      "textId": "26cf7dae-9e07-5843-8a3a-d8fcba8ea845",
+      "wordCount": 122,
+      "resumed": false,
+      "audioJobId": "5c68984c-abe5-4cf7-a3af-1844647de36a"
+    },
+    {
+      "placeId": "osm:way:90161987",
+      "textId": "503c9dc9-84d5-5707-a8f9-1a07cf5445a2",
+      "wordCount": 129,
+      "resumed": false,
+      "audioJobId": "7fcd5ab1-323d-474d-8680-4876bb694c5b"
+    },
+    {
+      "placeId": "osm:way:230132591",
+      "textId": "e787af01-e8d5-5097-b2ca-42a11d101c2e",
+      "wordCount": 133,
+      "resumed": false,
+      "audioJobId": "a3b5be88-7e70-447d-b009-ac8a1b30ae66"
+    },
+    {
+      "placeId": "osm:node:1348003477",
+      "textId": "2a974c58-af3e-5059-afd6-45668ee840ae",
+      "wordCount": 135,
+      "resumed": false,
+      "audioJobId": "4c614c77-f32b-4bfb-bc7d-cda30b76e793"
+    },
+    {
+      "placeId": "osm:way:90178098",
+      "textId": "8fa9fd7a-628a-59ef-8cac-8cd5d3a72085",
+      "wordCount": 143,
+      "resumed": false,
+      "audioJobId": "e570d0e2-1374-4d20-9a07-92a9754e0ffa"
+    },
+    {
+      "placeId": "osm:node:2288261386",
+      "textId": "62bf09dd-bb6f-567b-a09a-c711435417ab",
+      "wordCount": 131,
+      "resumed": false,
+      "audioJobId": "741a8614-14c1-4858-abe0-004599bb7094"
+    },
+    {
+      "placeId": "osm:way:99325935",
+      "textId": "a858910b-8cf6-5eca-9e7e-22d8a668177e",
+      "wordCount": 124,
+      "resumed": false,
+      "audioJobId": "78467dd2-a339-4cc2-aa89-b358f798c401"
+    },
+    {
+      "placeId": "osm:node:1145710437",
+      "textId": "15fd3ad1-fc06-5eee-8cfd-aa0a35b602d7",
+      "wordCount": 124,
+      "resumed": false,
+      "audioJobId": "67bd849c-aee2-4930-9745-008e3d31bbae"
+    },
+    {
+      "placeId": "osm:node:1185938872",
+      "textId": "6385e6d7-516c-533b-9c68-7914af0424cd",
+      "wordCount": 131,
+      "resumed": false,
+      "audioJobId": "d69ed1ba-d918-4a6a-ad74-18d39cb6f276"
+    },
+    {
+      "placeId": "osm:way:108249744",
+      "textId": "7ccfac83-9a6b-5cdd-a0d6-c4d382919c6f",
+      "wordCount": 187,
+      "resumed": false,
+      "audioJobId": "a91dd65e-8e1b-430a-8897-11df096ddf50"
+    },
+    {
+      "placeId": "osm:way:157537968",
+      "textId": "60359efe-0c4e-597b-b0ce-ce07993304b5",
+      "wordCount": 145,
+      "resumed": false,
+      "audioJobId": "1b0729e6-9ddc-42b2-a4d4-35dca0865c33"
+    },
+    {
+      "placeId": "osm:node:5316345744",
+      "textId": "88f84b8b-2409-5acf-820f-6dc54e429639",
+      "wordCount": 158,
+      "resumed": false,
+      "audioJobId": "56cb5dfb-26ac-4b29-b473-ed9a1290b680"
+    },
+    {
+      "placeId": "osm:way:133264786",
+      "textId": "4b7018fa-3cb4-55a4-b4df-f3adfd50cf87",
+      "wordCount": 110,
+      "resumed": false,
+      "audioJobId": "3e108c96-5cbe-40b3-9ea4-58085117690c"
+    },
+    {
+      "placeId": "osm:node:2494989015",
+      "textId": "451a5af5-0880-5d33-98a5-e52d29674480",
+      "wordCount": 136,
+      "resumed": false,
+      "audioJobId": "c93d6197-a1be-484e-9842-7a8ed1d094ae"
+    },
+    {
+      "placeId": "osm:way:143954521",
+      "textId": "6e20ea32-5c37-5701-97f3-06248542b23c",
+      "wordCount": 119,
+      "resumed": false,
+      "audioJobId": "c7279729-b39d-4459-a3c6-ba7dd1ff7c64"
+    },
+    {
+      "placeId": "osm:way:157495501",
+      "textId": "73e0fff3-1622-589d-9dc1-ac43a7b889d8",
+      "wordCount": 115,
+      "resumed": false,
+      "audioJobId": "03b9b7a8-9efa-4395-a55e-0e17b8b95e8a"
+    },
+    {
+      "placeId": "osm:way:157430560",
+      "textId": "2030438b-0ac1-5b59-a475-79506c92799f",
+      "wordCount": 104,
+      "resumed": false,
+      "audioJobId": "8a4967fb-5742-47b6-8130-814a1729f618"
+    },
+    {
+      "placeId": "osm:way:157430566",
+      "textId": "ec44a228-0da2-5510-9704-f9ce67959236",
+      "wordCount": 117,
+      "resumed": false,
+      "audioJobId": "2b791abd-147d-4aac-924e-bc310ad1e016"
+    },
+    {
+      "placeId": "osm:way:133264462",
+      "textId": "6fcc5480-9a08-5096-a4e1-f857b90cfb57",
+      "wordCount": 141,
+      "resumed": false,
+      "audioJobId": "39e9d61b-6a85-48d1-bfbc-4a6cc838441f"
+    },
+    {
+      "placeId": "osm:way:133264399",
+      "textId": "0aae77f0-7ff3-5cfb-b6df-97ca730769ba",
+      "wordCount": 173,
+      "resumed": false,
+      "audioJobId": "baa77385-7aa8-45fb-a000-2ea87a6d0d29"
+    },
+    {
+      "placeId": "osm:way:133960449",
+      "textId": "57611953-1448-575a-a0c4-74b3cdb8a8e7",
+      "wordCount": 127,
+      "resumed": false,
+      "audioJobId": "b90329ee-5f17-4b0d-b850-e14a587df00e"
+    },
+    {
+      "placeId": "osm:relation:3873061",
+      "textId": "733438a2-db1c-5ad1-9841-23c360098b47",
+      "wordCount": 134,
+      "resumed": false,
+      "audioJobId": "210ad458-0885-4739-ad15-52904235f9ca"
+    },
+    {
+      "placeId": "osm:way:104635635",
+      "textId": "2ea1354c-bd36-51a4-8673-3c76f5e1830d",
+      "wordCount": 123,
+      "resumed": false,
+      "audioJobId": "6597b2ce-7a0c-40c2-ac38-2a718bcc6151"
+    }
+  ]
+}
