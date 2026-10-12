@@ -49,11 +49,23 @@ class ImporterTest(unittest.TestCase):
         boundary={"type":"Polygon","coordinates":[[[-1,-1],[30,-1],[30,30],[-1,30],[-1,-1]]]}
         self.assertTrue(MODULE.geometry_covered(geometry,boundary))
     def test_verified_boundary_relation_version_is_recorded(self):
-        handler=MODULE.Attractions(102269)
+        handler=MODULE.Attractions(MODULE.CITIES["moscow"]["region"],102269)
         class Timestamp:
             @staticmethod
             def isoformat(): return "2026-09-16T00:00:00+00:00"
         relation=type("Relation",(),{"id":102269,"version":42,"timestamp":Timestamp()})()
         handler.relation(relation);self.assertEqual(handler.boundary_version["version"],42)
+
+    def test_each_city_keeps_only_its_own_region(self):
+        class Timestamp:
+            @staticmethod
+            def isoformat(): return "2026-10-12T00:00:00+00:00"
+        for city,kept,dropped in (("moscow",(55.75,37.61),(55.79,49.12)),("kazan",(55.79,49.12),(55.75,37.61))):
+            with self.subTest(city=city):
+                handler=MODULE.Attractions(MODULE.CITIES[city]["region"])
+                handler.add("node",1,{"name":"Здесь"},[kept],Timestamp())
+                handler.add("node",2,{"name":"Не здесь"},[dropped],Timestamp())
+                self.assertEqual([item["placeId"] for item in handler.items],["osm:node:1"])
+        self.assertEqual(MODULE.CITIES["kazan"]["boundaryRelation"],3437391)
 
 if __name__=="__main__":unittest.main()

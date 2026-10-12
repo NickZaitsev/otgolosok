@@ -634,18 +634,21 @@ lease отменяется, а новая версия текста и ново�
 ```text
 python scripts/import-osm-attractions.py Moscow.osm.pbf --output backend/data/osm-attractions.json \
   --source-url https://download.geofabrik.de/russia/central-fed-district-latest.osm.pbf \
-  --coverage moscow-admin --boundary-file moscow-boundary.geojson --boundary-relation-id 102269
+  --city moscow --coverage admin --boundary-file moscow-boundary.geojson
 node scripts/load-osm-catalog.mjs backend/data/osm-attractions.json --complete
 ```
 
 Для скрипта импорта нужен `osmium==4.3.1` в отдельном build-окружении. Выходной
-каталог содержит provenance, checksum снимка и ODbL attribution. Полный импорт
-требует extract, содержащий relation Москвы `102269`, и проверенную границу Москвы.
+каталог содержит provenance, checksum снимка и ODbL attribution. Города, их зоны
+каталога и административные relation (Москва `102269`, Казань `3437391`) заданы в
+`backend/cities.json`; каталог собирается для одного города (`--city moscow|kazan`).
+Полный импорт требует extract, содержащий relation города, и проверенную границу.
 Передайте проверенный GeoJSON и зафиксируйте его checksum:
-`--coverage moscow-admin --boundary-file moscow-boundary.geojson`; импорт обрежет
-каталог по Polygon/MultiPolygon и отметит покрытие как административное. Флаг
+`--coverage admin --boundary-file <город>-boundary.geojson`; импорт обрежет
+каталог по Polygon/MultiPolygon и отметит покрытие как `<город>-admin`. Флаг
 `node scripts/load-osm-catalog.mjs ... --complete` принимается только для такого
-каталога с checksum границы; лишь полный импорт архивирует исчезнувшие объекты.
+каталога с checksum границы; полный импорт архивирует исчезнувшие объекты только
+в зоне своего города.
 После загрузки каталог виден в разделе `/admin?section=content`: там можно создать
 партию до 5 000 объектов, поставить её на паузу, продолжить или отменить. Серверный
 воркер готовит тексты последовательно и сохраняет промежуточные стадии. Режим

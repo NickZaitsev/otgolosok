@@ -1,0 +1,53 @@
+{
+  "$comment": "Cities the catalog covers; read by backend/cities.mjs and the OSM build scripts. bounds: where walks and stops may lie; region: the wider catalog area with the outskirts. Areas must not overlap. Kazan: urban district, OSM relation 3437391, 55.603-55.931 N, 48.821-49.381 E.",
+  "cities": [
+    {
+      "id": "moscow",
+      "name": "Москва",
+      "nameEn": "Moscow",
+      "inName": "в Москве",
+      "boundaryRelation": 102269,
+      "bounds": {
+        "south": 55.48,
+        "north": 55.98,
+        "west": 37.3,
+        "east": 37.95
+      },
+      "region": {
+        "south": 55.05,
+        "north": 56.05,
+        "west": 36.75,
+        "east": 38.25
+      },
+      "center": {
+        "lat": 55.752,
+        "lon": 37.6175
+      },
+      "zoom": 14
+    },
+    {
+      "id": "kazan",
+      "name": "Казань",
+      "nameEn": "Kazan",
+      "inName": "в Казани",
+      "boundaryRelation": 3437391,
+      "bounds": {
+        "south": 55.6,
+        "north": 55.94,
+        "west": 48.82,
+        "east": 49.39
+      },
+      "region": {
+        "south": 55.55,
+        "north": 55.99,
+        "west": 48.77,
+        "east": 49.44
+      },
+      "center": {
+        "lat": 55.7963,
+        "lon": 49.1088
+      },
+      "zoom": 15
+    }
+  ]
+}

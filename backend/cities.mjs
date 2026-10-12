@@ -1,8 +1,10 @@
 // Shared, dependency-free registry of the cities the catalog covers. Areas do not
 // overlap, so a coordinate belongs to at most one city and a walk to exactly one.
+// The data lives in cities.json, which the OSM build scripts read as well.
+import data from "./cities.json" with { type: "json" };
 
 /** @typedef {{south:number,north:number,west:number,east:number}} Bounds */
-/** @typedef {{id:"moscow"|"kazan",name:"Москва"|"Казань",nameEn:string,inName:string,bounds:Bounds,region:Bounds,center:{lat:number,lon:number},zoom:number}} City */
+/** @typedef {{id:"moscow"|"kazan",name:"Москва"|"Казань",nameEn:string,inName:string,boundaryRelation:number,bounds:Bounds,region:Bounds,center:{lat:number,lon:number},zoom:number}} City */
 
 /** Freezes a city with its nested areas. @param {City} city @returns {City} */
 const freeze = city => {
@@ -11,18 +13,7 @@ const freeze = city => {
 };
 
 /** @type {readonly City[]} */
-export const CITIES = Object.freeze([
-  // bounds: where walks and stops may lie; region: the wider catalog area with the outskirts.
-  freeze({ id: "moscow", name: "Москва", nameEn: "Moscow", inName: "в Москве",
-    bounds: { south: 55.48, north: 55.98, west: 37.30, east: 37.95 },
-    region: { south: 55.05, north: 56.05, west: 36.75, east: 38.25 },
-    center: { lat: 55.752, lon: 37.6175 }, zoom: 14 }),
-  // The urban district (OSM relation 3437391) spans 55.603–55.931 N, 48.821–49.381 E.
-  freeze({ id: "kazan", name: "Казань", nameEn: "Kazan", inName: "в Казани",
-    bounds: { south: 55.60, north: 55.94, west: 48.82, east: 49.39 },
-    region: { south: 55.55, north: 55.99, west: 48.77, east: 49.44 },
-    center: { lat: 55.7963, lon: 49.1088 }, zoom: 15 }),
-]);
+export const CITIES = Object.freeze(/** @type {City[]} */ (data.cities).map(freeze));
 
 export const MOSCOW = CITIES[0];
 

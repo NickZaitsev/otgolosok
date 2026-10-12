@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import a versioned Moscow attraction catalog from an OSM PBF."""
+"""Import a versioned attraction catalog of one covered city from an OSM PBF."""
 
 import argparse
 import hashlib
@@ -19,6 +19,8 @@ FIELDS = ("name", "name:ru", "alt_name", "old_name", "tourism", "historic", "her
 TOURISM = {"attraction", "museum", "gallery", "artwork", "viewpoint", "zoo", "theme_park"}
 LEISURE = {"park", "garden"}
 TOKEN = re.compile(r"[\wа-яё]+", re.IGNORECASE)
+# Catalog regions and administrative relations of the covered cities, shared with the backend.
+CITIES = {city["id"]: city for city in json.loads((Path(__file__).resolve().parents[1] / "backend/cities.json").read_text(encoding="utf-8"))["cities"]}
 
 
 def distance(a, b):
@@ -36,7 +38,7 @@ def duplicate_candidates(items):
         if qid: by_wikidata.setdefault(qid, []).append(item["placeId"])
     result = [{"reason": "wikidata", "value": qid, "placeIds": ids}
               for qid, ids in by_wikidata.items() if len(ids) > 1]
-    # Only compare nearby normalized names; avoid quadratic comparison across Moscow.
+    # Only compare nearby normalized names; avoid quadratic comparison across the city.
     buckets = {}
     for item in items:
         name = " ".join(TOKEN.findall(item["name"].casefold().replace("ё", "е")))
@@ -102,14 +104,15 @@ _HandlerBase: type = osmium.SimpleHandler if osmium else object
 
 
 class Attractions(_HandlerBase):
-    def __init__(self, boundary_relation_id=None):
-        super().__init__(); self.items = []; self.latest = ""; self.skipped = 0; self.boundary_relation_id = boundary_relation_id; self.boundary_version = None
+    def __init__(self, region, boundary_relation_id=None):
+        super().__init__(); self.items = []; self.latest = ""; self.skipped = 0; self.region = region
+        self.boundary_relation_id = boundary_relation_id; self.boundary_version = None
 
     def add(self, kind, osm_id, tags, points, timestamp, geometry=None):
         if not points:
             self.skipped += 1; return
         point = representative_point(points); lat, lon = point["lat"], point["lon"]
-        if 55.05 <= lat <= 56.05 and 36.75 <= lon <= 38.25:
+        if self.region["south"] <= lat <= self.region["north"] and self.region["west"] <= lon <= self.region["east"]:
             coordinates = [[round(p[1], 7), round(p[0], 7)] for p in points]
             if geometry is None:
                 if kind == "node": geometry = {"type": "Point", "coordinates": coordinates[0]}
@@ -153,17 +156,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("pbf", type=Path)
     parser.add_argument("--output", type=Path, default=Path("backend/data/osm-attractions.json"))
-    parser.add_argument("--coverage", choices=("bounding-box", "moscow-admin"), default="bounding-box")
-    parser.add_argument("--boundary-file", type=Path, help="GeoJSON Polygon/MultiPolygon for verified Moscow boundary")
+    parser.add_argument("--city", choices=sorted(CITIES), default="moscow")
+    parser.add_argument("--coverage", choices=("bounding-box", "admin"), default="bounding-box")
+    parser.add_argument("--boundary-file", type=Path, help="GeoJSON Polygon/MultiPolygon for the verified city boundary")
     parser.add_argument("--source-url", help="Stable download URL recorded as snapshot provenance")
-    parser.add_argument("--boundary-relation-id", type=int, default=102269, help="Verified Moscow administrative relation")
-    args = parser.parse_args(); handler = Attractions(args.boundary_relation_id if args.coverage == "moscow-admin" else None)
-    if args.coverage == "moscow-admin" and not args.boundary_file:
-        raise SystemExit("--coverage moscow-admin requires --boundary-file")
+    parser.add_argument("--boundary-relation-id", type=int, help="Verified administrative relation; defaults to the city's one")
+    args = parser.parse_args(); city = CITIES[args.city]; admin = args.coverage == "admin"
+    handler = Attractions(city["region"], (args.boundary_relation_id or city["boundaryRelation"]) if admin else None)
+    if admin and not args.boundary_file:
+        raise SystemExit("--coverage admin requires --boundary-file")
     handler.apply_file(str(args.pbf), locations=True, idx="flex_mem")
     if not handler.items: raise SystemExit("No attractions found; refusing to replace catalog")
-    if args.coverage == "moscow-admin" and handler.boundary_version is None:
-        raise SystemExit("PBF does not contain the verified Moscow boundary relation; refusing complete coverage")
+    if admin and handler.boundary_version is None:
+        raise SystemExit(f"PBF does not contain the verified {args.city} boundary relation; refusing complete coverage")
     with args.pbf.open("rb") as source:
         checksum = hashlib.file_digest(source, "sha256").hexdigest()
     items = sorted(handler.items, key=lambda item: item["placeId"])
@@ -177,10 +182,10 @@ def main():
     for item in items:
         category = next((f"{key}={item['tags'][key]}" for key in ("tourism", "historic", "heritage", "leisure", "building") if item["tags"].get(key)), "other")
         categories[category] = categories.get(category, 0) + 1
-    result = {"schemaVersion": 1, "rulesVersion": "moscow-attractions-v1", "source": args.source_url or str(args.pbf),
+    result = {"schemaVersion": 1, "rulesVersion": f"{args.city}-attractions-v1", "source": args.source_url or str(args.pbf),
               "sourceSha256": checksum, "latestEdit": handler.latest,
               "license": "ODbL-1.0", "attribution": "© OpenStreetMap contributors",
-              "coverage": "moscow-admin" if args.coverage == "moscow-admin" else "moscow-bounding-box; administrative clipping pending verified boundary",
+              "coverage": f"{args.city}-admin" if admin else f"{args.city}-bounding-box; administrative clipping pending verified boundary",
               "boundary": {"file": str(args.boundary_file), "sha256": boundary_checksum,
                            **(handler.boundary_version or {})} if args.boundary_file else None,
               "report": {"categories": categories, "skippedGeometry": handler.skipped,

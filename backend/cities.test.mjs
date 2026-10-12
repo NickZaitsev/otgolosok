@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { cityAt, cityByName, cityInAddress, regionCityAt, withoutCity } from "./cities.mjs";
+import { CITIES, cityAt, cityByName, cityInAddress, regionCityAt, withoutCity } from "./cities.mjs";
 
 test("a point belongs to the city whose walk area holds it, edges included", () => {
   /** @type {Array<[string, unknown, unknown, string | null]>} */
@@ -53,4 +53,15 @@ test("cityByName knows only the covered cities", () => {
   assert.equal(cityByName("Москва")?.id, "moscow");
   assert.equal(cityByName("Санкт-Петербург"), null);
   assert.equal(cityByName(undefined), null);
+});
+
+test("city areas never overlap and every walk area sits inside its region", () => {
+  const overlap = (a, b) => a.south <= b.north && b.south <= a.north && a.west <= b.east && b.west <= a.east;
+  for (const city of CITIES) {
+    assert.ok(city.region.south <= city.bounds.south && city.region.north >= city.bounds.north
+      && city.region.west <= city.bounds.west && city.region.east >= city.bounds.east, city.id);
+    assert.equal(cityAt(city.center.lat, city.center.lon), city, city.id);
+    for (const other of CITIES) if (other !== city) assert.ok(!overlap(city.region, other.region), `${city.id}/${other.id}`);
+  }
+  assert.equal(new Set(CITIES.map(city => city.name)).size, CITIES.length);
 });

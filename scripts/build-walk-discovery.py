@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the offline Moscow stop catalog from the same OSM PBF as Valhalla.
+"""Build the offline stop catalog of every covered city from the same OSM PBF as Valhalla.
 
 Requires osmium==4.3.1 in a build-only Python environment; see content/walk-builder.md.
 """
@@ -16,6 +16,14 @@ KEYS = ("name", "building", "addr:street", "addr:housenumber", "historic",
         "heritage", "tourism", "wikidata", "wikipedia", "architect")
 REQUIRED = ("building", "addr:street", "addr:housenumber")
 QID = re.compile(r"^Q[1-9][0-9]{0,15}$")
+# Walk areas of the covered cities, shared with the backend.
+CITIES = json.loads((Path(__file__).resolve().parents[1] / "backend/cities.json").read_text(encoding="utf-8"))["cities"]
+
+
+def city_of(lat, lon):
+    """The id of the city whose walk area holds the point, or None."""
+    return next((city["id"] for city in CITIES if city["bounds"]["south"] <= lat <= city["bounds"]["north"]
+                 and city["bounds"]["west"] <= lon <= city["bounds"]["east"]), None)
 
 
 def notable(tags):
@@ -59,7 +67,7 @@ class Buildings(osmium.SimpleHandler):
             return
         lat = round((min(p[0] for p in points) + max(p[0] for p in points)) / 2, 7)
         lon = round((min(p[1] for p in points) + max(p[1] for p in points)) / 2, 7)
-        if 55.48 <= lat <= 55.98 and 37.30 <= lon <= 37.95:
+        if city_of(lat, lon):
             self.elements.append({"type": kind, "id": osm_id, "center": {"lat": lat, "lon": lon}, "tags": tags})
             self.latest_timestamp = max(self.latest_timestamp, timestamp.isoformat())
 
@@ -101,16 +109,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("pbf", type=Path)
     parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "backend/walk-discovery-catalog.json")
+    parser.add_argument("--source-url", default="https://download.bbbike.org/osm/bbbike/Moscow/Moscow.osm.pbf",
+                        help="Download URL or description of the PBF, recorded as provenance")
     args = parser.parse_args()
     handler = Buildings()
     handler.apply_file(str(args.pbf), locations=True, idx="flex_mem")
     if not handler.elements:
-        raise SystemExit("No eligible Moscow buildings; refusing to replace the catalog")
+        raise SystemExit("No eligible buildings in the covered cities; refusing to replace the catalog")
     with args.pbf.open("rb") as source:
         checksum = hashlib.file_digest(source, "sha256").hexdigest()
     catalog = {
         "generatedBy": "scripts/build-walk-discovery.py; do not edit by hand",
-        "source": "https://download.bbbike.org/osm/bbbike/Moscow/Moscow.osm.pbf",
+        "source": args.source_url,
         "sourceSha256": checksum,
         "latestBuildingEdit": handler.latest_timestamp,
         "license": "ODbL-1.0",
@@ -118,7 +128,8 @@ def main():
         "elements": sorted(handler.elements, key=lambda e: (e["type"], e["id"])),
     }
     args.output.write_text(render_catalog(catalog), encoding="utf-8", newline="\n")
-    print(f"Wrote {len(handler.elements)} buildings; skipped {handler.unaddressed} notable buildings without an address "
+    cities = {city["id"]: sum(city_of(e["center"]["lat"], e["center"]["lon"]) == city["id"] for e in handler.elements) for city in CITIES}
+    print(f"Wrote {len(handler.elements)} buildings {cities}; skipped {handler.unaddressed} notable buildings without an address "
           f"and {handler.skipped_geometry} incomplete geometries: {args.output}")
 
 

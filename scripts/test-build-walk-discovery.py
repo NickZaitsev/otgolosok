@@ -11,6 +11,13 @@ MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
 
+class CityTest(unittest.TestCase):
+    def test_buildings_belong_to_a_covered_city_or_none(self):
+        for lat, lon, expected in ((55.75, 37.61, "moscow"), (55.79, 49.12, "kazan"), (55.3, 37.61, None), (55.8, 43.0, None)):
+            with self.subTest(lat=lat, lon=lon):
+                self.assertEqual(MODULE.city_of(lat, lon), expected)
+
+
 class RenderCatalogTest(unittest.TestCase):
     def test_writes_json_with_one_element_per_line(self):
         catalog = {"source": "osm", "elements": [
