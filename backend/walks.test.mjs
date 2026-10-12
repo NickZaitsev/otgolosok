@@ -234,10 +234,12 @@ test('offline discovery applies the radius, building and notability filters with
   await assert.rejects(plan({start,mode:'loop',minutes:30}),{code:'WALK_STOPS_NOT_FOUND'});
 });
 
-test('bundled Moscow catalog supports automatic discovery by default',async()=>{
+test('bundled catalog supports automatic discovery by default',async()=>{
   assert.equal(discoveryCatalog.license,'ODbL-1.0');
-  assert.match(discoveryCatalog.sourceSha256,/^[a-f0-9]{64}$/);
+  // Each covered city records the extract its buildings came from.
+  for(const city of ['moscow','kazan'])assert.match(discoveryCatalog.sources[city].sourceSha256,/^[a-f0-9]{64}$/,city);
   assert.ok(discoveryCatalog.elements.length>1500);
+  assert.ok(discoveryCatalog.elements.filter(e=>e.center.lon>48).length>100);
   // Wikidata and Wikipedia links carry most of the catalog; a name tag is optional.
   assert.ok(discoveryCatalog.elements.filter(e=>!e.tags.name).length>500);
   assert.ok(discoveryCatalog.elements.every(e=>e.tags.building&&e.tags['addr:street']&&e.tags['addr:housenumber']));

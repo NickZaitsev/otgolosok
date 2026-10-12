@@ -73,7 +73,9 @@ export function enrichOsmContext(place, { nearbyElements = discoveryCatalog.elem
     .map(text)).slice(0, 8);
   const type = objectType(tags);
   const qualify = (name, prefix = type) => prefix && !namedTypes.test(name) ? `${prefix} ${name}` : name;
-  const cityName = regionCityAt(place.location?.lat, place.location?.lon)?.name ?? MOSCOW.name;
+  const city = regionCityAt(place.location?.lat, place.location?.lon) ?? MOSCOW, cityName = city.name;
+  // The bundled catalog records one extract per city: the landmarks come from the place's own city.
+  const catalogSource = discoveryCatalog.sources[city.id];
   const postalAddress = text(place.postalAddress) || text(place.address) || osmPostalAddress(tags, cityName);
   const geocoded = place.locationContext?.status === "matched" ? place.locationContext : null;
   const locationHint = postalAddress || unique([
@@ -101,7 +103,7 @@ export function enrichOsmContext(place, { nearbyElements = discoveryCatalog.elem
     ...place, postalAddress, objectType: type, searchName, locationHint,
     alternateNames: names.slice(1),
     searchQueries: unique(searchQueries), nearbyLandmarks: landmarks,
-    nearbyLandmarksSource: geocodedLandmarks.length ? geocoded.source : { source: discoveryCatalog.source, sourceSha256: discoveryCatalog.sourceSha256,
+    nearbyLandmarksSource: geocodedLandmarks.length ? geocoded.source : { source: catalogSource.source, sourceSha256: catalogSource.sourceSha256,
       attribution: discoveryCatalog.attribution },
     objectIdentifiers: identifiers(""), subjectIdentifiers: identifiers("subject:"),
   };

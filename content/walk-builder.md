@@ -76,12 +76,18 @@ but it wastes routing attempts.
 ```sh
 python3 -m venv /tmp/otgolosok-osmium
 /tmp/otgolosok-osmium/bin/pip install osmium==4.3.1
-/tmp/otgolosok-osmium/bin/python scripts/build-walk-discovery.py /path/to/Moscow.osm.pbf
+/tmp/otgolosok-osmium/bin/python scripts/build-walk-discovery.py /path/to/Moscow.osm.pbf \
+  --city moscow --source-url https://download.bbbike.org/osm/bbbike/Moscow/Moscow.osm.pbf
 node --test backend/walks.test.mjs backend/server.test.mjs
 ```
 
+`--city` rebuilds one city of `backend/cities.json` and keeps the buildings and the
+provenance (`sources.<city>`) of the others, so a Kazan extract never touches Moscow.
+
 Review and commit the generated module, then deploy the backend. Source data:
 [BBBike Moscow extract](https://download.bbbike.org/osm/bbbike/Moscow/),
+Kazan is cut from the [Geofabrik Volga district extract](https://download.geofabrik.de/russia/volga-fed-district.html)
+(see `docs/agents/kazan-osm-data.md`),
 [OpenStreetMap attribution and ODbL license](https://www.openstreetmap.org/copyright).
 
 For multiple server processes, add shared rate limiting at the reverse proxy. The application gate is global within a process, not per-client, so it limits upstream consumption but does not provide fair access between users. Keep reverse-proxy request/body timeouts enabled as well.

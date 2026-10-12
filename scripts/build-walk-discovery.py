@@ -51,7 +51,6 @@ class Buildings(osmium.SimpleHandler):
     def __init__(self):
         super().__init__()
         self.elements = []
-        self.latest_timestamp = ""
         self.skipped_geometry = 0
         self.unaddressed = 0
 
@@ -68,8 +67,8 @@ class Buildings(osmium.SimpleHandler):
         lat = round((min(p[0] for p in points) + max(p[0] for p in points)) / 2, 7)
         lon = round((min(p[1] for p in points) + max(p[1] for p in points)) / 2, 7)
         if city_of(lat, lon):
-            self.elements.append({"type": kind, "id": osm_id, "center": {"lat": lat, "lon": lon}, "tags": tags})
-            self.latest_timestamp = max(self.latest_timestamp, timestamp.isoformat())
+            self.elements.append({"type": kind, "id": osm_id, "center": {"lat": lat, "lon": lon}, "tags": tags,
+                                  "timestamp": timestamp.isoformat()})
 
     def node(self, node):
         tags = building_tags(node.tags)
@@ -105,32 +104,41 @@ def render_catalog(catalog):
     return head[:-2] + ',\n  "elements": [\n' + records + "\n  ]\n}\n"
 
 
+def merge_city(catalog, city_id, elements, source):
+    """Replace one city's buildings and provenance; other cities stay byte-for-byte as they were."""
+    if catalog.get("sources") is None:
+        # The single-source format described only Moscow.
+        catalog = {"generatedBy": catalog["generatedBy"], "license": catalog["license"], "attribution": catalog["attribution"],
+                   "sources": {"moscow": {key: catalog[key] for key in ("source", "sourceSha256", "latestBuildingEdit")}},
+                   "elements": catalog["elements"]}
+    kept = [e for e in catalog["elements"] if city_of(e["center"]["lat"], e["center"]["lon"]) != city_id]
+    return {**catalog, "sources": {**catalog["sources"], city_id: source},
+            "elements": sorted(kept + [e for e in elements if city_of(e["center"]["lat"], e["center"]["lon"]) == city_id],
+                               key=lambda e: (e["type"], e["id"]))}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("pbf", type=Path)
+    parser.add_argument("--city", required=True, choices=sorted(city["id"] for city in CITIES),
+                        help="City whose buildings are rebuilt; the catalog keeps the others")
     parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "backend/walk-discovery-catalog.json")
-    parser.add_argument("--source-url", default="https://download.bbbike.org/osm/bbbike/Moscow/Moscow.osm.pbf",
-                        help="Download URL or description of the PBF, recorded as provenance")
+    parser.add_argument("--source-url", required=True, help="Download URL or description of the PBF, recorded as provenance")
     args = parser.parse_args()
     handler = Buildings()
     handler.apply_file(str(args.pbf), locations=True, idx="flex_mem")
-    if not handler.elements:
-        raise SystemExit("No eligible buildings in the covered cities; refusing to replace the catalog")
+    found = [e for e in handler.elements if city_of(e["center"]["lat"], e["center"]["lon"]) == args.city]
+    if not found:
+        raise SystemExit(f"No eligible buildings in {args.city}; refusing to replace the catalog")
     with args.pbf.open("rb") as source:
         checksum = hashlib.file_digest(source, "sha256").hexdigest()
-    catalog = {
-        "generatedBy": "scripts/build-walk-discovery.py; do not edit by hand",
-        "source": args.source_url,
-        "sourceSha256": checksum,
-        "latestBuildingEdit": handler.latest_timestamp,
-        "license": "ODbL-1.0",
-        "attribution": "© OpenStreetMap contributors",
-        "elements": sorted(handler.elements, key=lambda e: (e["type"], e["id"])),
-    }
+    latest = max(e["timestamp"] for e in found)
+    elements = [{key: value for key, value in e.items() if key != "timestamp"} for e in found]
+    catalog = merge_city(json.loads(args.output.read_text(encoding="utf-8")), args.city, elements,
+                         {"source": args.source_url, "sourceSha256": checksum, "latestBuildingEdit": latest})
     args.output.write_text(render_catalog(catalog), encoding="utf-8", newline="\n")
-    cities = {city["id"]: sum(city_of(e["center"]["lat"], e["center"]["lon"]) == city["id"] for e in handler.elements) for city in CITIES}
-    print(f"Wrote {len(handler.elements)} buildings {cities}; skipped {handler.unaddressed} notable buildings without an address "
-          f"and {handler.skipped_geometry} incomplete geometries: {args.output}")
+    print(f"Wrote {len(elements)} {args.city} buildings, {len(catalog['elements'])} in total; skipped {handler.unaddressed} "
+          f"notable buildings without an address and {handler.skipped_geometry} incomplete geometries: {args.output}")
 
 
 if __name__ == "__main__":

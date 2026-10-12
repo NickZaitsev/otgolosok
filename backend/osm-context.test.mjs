@@ -119,3 +119,11 @@ test("a Kazan place is researched as a Kazan place", () => {
   assert.equal(osmPostalAddress({ "addr:street": "Арбат", "addr:housenumber": "1" }), "Москва, Арбат, 1");
   assert.equal(osmPostalAddress({ "addr:city": "Казань", "addr:street": "улица Баумана", "addr:housenumber": "19" }), "Казань, улица Баумана, 19");
 });
+
+test("nearby landmarks name the extract of the place's own city", async () => {
+  const { default: catalog } = await import("./walk-discovery-catalog.json", { with: { type: "json" } });
+  const at = (lat, lon) => enrichOsmContext({ name: "Дом", location: { lat, lon }, tags: { historic: "building" } }, { nearbyElements: [] }).nearbyLandmarksSource.sourceSha256;
+  assert.equal(at(55.7939, 49.1288), catalog.sources.kazan.sourceSha256);
+  assert.equal(at(55.75, 37.61), catalog.sources.moscow.sourceSha256);
+  assert.notEqual(catalog.sources.kazan.sourceSha256, catalog.sources.moscow.sourceSha256);
+});
