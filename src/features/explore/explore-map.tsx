@@ -18,6 +18,7 @@ import { MOSCOW_CENTER, MOSCOW_ZOOM } from "./map-jobs";
 import { markerLook, type MarkerKind, type MarkerLook } from "./map-marker-look";
 import { createMapView, type MapFocus, type MapView } from "./map-view";
 import { chevronMarks, ROUTE_COVERED_DASH, routeRuns } from "./route-style";
+import { WALK_OVERVIEW_COLORS, walksAtPoint } from "./walk-overview";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -105,6 +106,8 @@ export type { MapFocus };
 export type MapViewState = {
   current: { center: Coordinates; zoom: number; focus: MapFocus | null } | null;
 };
+/** A public walk drawn as a thin overview line; colorIndex is the 1-based --walk-overview-N token. */
+export type WalkLine = { key: string; colorIndex: number; line: ReadonlyArray<readonly [number, number]> };
 /** Points the map should show; keepUserView makes it a refinement that yields to a manual pan or zoom. */
 export type MapFitTarget = { points: Coordinates[]; keepUserView: boolean };
 export type ExploreMapProps = {
@@ -129,6 +132,12 @@ export type ExploreMapProps = {
   insets?: MapInsets;
   onViewport?: (area: MapViewport) => void;
   onStatus?: (status: MapStatus) => void;
+  /** Overview lines of public walks, under the route and the markers. */
+  walkLines?: ReadonlyArray<WalkLine>;
+  /** The overview walk drawn solid on top while the others fade. */
+  selectedWalk?: string | null;
+  /** A tap near overview lines selects them (nearest first) instead of picking a point on the map. */
+  onWalks?: (keys: string[]) => void;
 };
 
 const MARKER_CLASS: Record<MarkerKind, string> = {
@@ -141,6 +150,7 @@ const MARKER_CLASS: Record<MarkerKind, string> = {
 };
 
 const CHEVRON_SIZE = 12;
+const WALK_LINE_DASH = "7 6";
 
 /**
  * How far past each edge of the view the route is drawn, in view sizes. Leaflet clips
@@ -192,6 +202,9 @@ export function ExploreMap({
   insets = NO_INSETS,
   onViewport,
   onStatus,
+  walkLines,
+  selectedWalk = null,
+  onWalks,
 }: ExploreMapProps) {
   const { locale, t } = useI18n();
   const container = useRef<HTMLDivElement>(null);
@@ -199,7 +212,7 @@ export function ExploreMap({
     L: typeof Leaflet;
     map: Leaflet.Map;
     view: MapView;
-    colors: { route: string; casing: string; user: string };
+    colors: { route: string; casing: string; user: string; walks: string[] };
     markers: Leaflet.LayerGroup;
     clusters: MapClusters;
     markerById: Map<
@@ -216,20 +229,25 @@ export function ExploreMap({
     route: Leaflet.LayerGroup;
     chevrons: Leaflet.LayerGroup;
     routePane: HTMLElement;
-    renderers: Record<"route" | "routeActive", Leaflet.Renderer>;
+    renderers: Record<"route" | "routeActive" | "walks" | "walkSelected", Leaflet.Renderer>;
+    walkPane: HTMLElement;
+    walkLayer: Leaflet.LayerGroup;
+    walkSelection: Leaflet.LayerGroup;
+    /** Drawn overview lines by walk key, updated by key so a pan does not redraw them all. */
+    walkPaths: Map<string, { path: Leaflet.Polyline; source: WalkLine["line"]; colorIndex: number }>;
     /** The highlighted leg, redrawn with its chevrons after every zoom. */
     activePath: Leaflet.LatLngExpression[] | null;
   } | null>(null);
   // Whether the current view target is the whole route (fitGeometry), not a leg or a focus.
   const routeFitted = useRef(false);
-  const handlers = useRef({ onSelect, onPoint, onViewport, selectedId });
+  const handlers = useRef({ onSelect, onPoint, onViewport, onWalks, selectedId });
   const appliedFocus = useRef<Coordinates | null>(null);
   const [ready, setReady] = useState(false);
   const [tileError, setTileError] = useState(false);
   const [mapError, setMapError] = useState(false);
   useEffect(() => {
-    handlers.current = { onSelect, onPoint, onViewport, selectedId };
-  }, [onSelect, onPoint, onViewport, selectedId]);
+    handlers.current = { onSelect, onPoint, onViewport, onWalks, selectedId };
+  }, [onSelect, onPoint, onViewport, onWalks, selectedId]);
   useEffect(() => {
     onStatus?.({
       phase: mapError ? "failed" : ready ? "ready" : "loading",
@@ -320,12 +338,20 @@ export function ExploreMap({
             .on("tileload", () => setTileError(false))
             .addTo(map);
         }
-        map.on("click", (event: Leaflet.LeafletMouseEvent) =>
+        map.on("click", (event: Leaflet.LeafletMouseEvent) => {
+          // Overview lines are thin and often overlap, so they are hit-tested here with a finger-sized
+          // tolerance instead of listening on the SVG paths, which would yield only the topmost one.
+          const rt = runtime.current;
+          if (rt && handlers.current.onWalks && rt.walkPaths.size) {
+            const lines = [...rt.walkPaths].map(([key, { source }]) => ({ key, pixels: source.map(([lat, lon]) => map.latLngToContainerPoint([lat, lon])) }));
+            const hits = walksAtPoint(event.containerPoint, lines);
+            if (hits.length) { handlers.current.onWalks(hits); return; }
+          }
           handlers.current.onPoint({
             lat: event.latlng.lat,
             lon: event.latlng.lng,
-          }),
-        );
+          });
+        });
         // Route and position colours are tokens; Leaflet draws SVG attributes, so they are read once here.
         const style = getComputedStyle(container.current);
         const token = (name: string) => style.getPropertyValue(name).trim();
@@ -342,11 +368,19 @@ export function ExploreMap({
         const activePane = map.createPane("routeActive");
         activePane.style.zIndex = "420";
         activePane.classList.add(styles.routePane);
+        // Overview walks lie under a walk's own route: they are a background, the route is the task.
+        const walkPane = map.createPane("walks");
+        walkPane.style.zIndex = "402";
+        walkPane.classList.add(styles.walkPane);
+        const walkSelectedPane = map.createPane("walkSelected");
+        walkSelectedPane.style.zIndex = "405";
+        walkSelectedPane.classList.add(styles.walkSelectedPane);
         runtime.current = {
           L,
           map,
           view,
-          colors: { route: routeColor, casing: token("--surface-island"), user: token("--user-position") },
+          colors: { route: routeColor, casing: token("--surface-island"), user: token("--user-position"),
+            walks: Array.from({ length: WALK_OVERVIEW_COLORS }, (_, index) => token(`--walk-overview-${index + 1}`)) },
           markers: L.layerGroup().addTo(map),
           clusters: createMapClusters(L, {
             className: styles.cluster,
@@ -361,7 +395,13 @@ export function ExploreMap({
           renderers: {
             route: L.svg({ pane: "route", padding: ROUTE_RENDER_PADDING }),
             routeActive: L.svg({ pane: "routeActive", padding: ROUTE_RENDER_PADDING }),
+            walks: L.svg({ pane: "walks", padding: ROUTE_RENDER_PADDING }),
+            walkSelected: L.svg({ pane: "walkSelected", padding: ROUTE_RENDER_PADDING }),
           },
+          walkPane,
+          walkLayer: L.layerGroup().addTo(map),
+          walkSelection: L.layerGroup().addTo(map),
+          walkPaths: new Map(),
           activePath: null,
         };
         // Chevrons are spaced in screen pixels; panning keeps layer pixels, zooming does not.
@@ -566,6 +606,46 @@ export function ExploreMap({
   useEffect(() => {
     runtime.current?.view.setInsets(insets);
   }, [insets, ready]);
+
+  useEffect(() => {
+    const rt = runtime.current;
+    if (!rt || !ready) return;
+    const wanted = new Map((walkLines ?? []).map((walk) => [walk.key, walk]));
+    for (const [key, entry] of rt.walkPaths) {
+      const next = wanted.get(key);
+      if (next && next.line === entry.source && next.colorIndex === entry.colorIndex) continue;
+      // removeLayer, not path.remove(): the group would otherwise keep every dropped line until unmount.
+      rt.walkLayer.removeLayer(entry.path);
+      rt.walkPaths.delete(key);
+    }
+    for (const walk of wanted.values()) {
+      if (rt.walkPaths.has(walk.key)) continue;
+      const path = rt.L.polyline(walk.line.map(([lat, lon]) => [lat, lon] as [number, number]), {
+        pane: "walks", renderer: rt.renderers.walks, interactive: false,
+        color: rt.colors.walks[walk.colorIndex - 1] ?? rt.colors.route, weight: 3, opacity: 0.9,
+        dashArray: WALK_LINE_DASH, lineCap: "round", lineJoin: "round",
+      }).addTo(rt.walkLayer);
+      path.getElement()?.setAttribute("data-walk-line", walk.key);
+      rt.walkPaths.set(walk.key, { path, source: walk.line, colorIndex: walk.colorIndex });
+    }
+  }, [walkLines, ready]);
+
+  useEffect(() => {
+    const rt = runtime.current;
+    if (!rt || !ready) return;
+    rt.walkSelection.clearLayers();
+    const entry = selectedWalk ? rt.walkPaths.get(selectedWalk) : undefined;
+    rt.walkPane.classList.toggle(styles.walkDim, Boolean(entry));
+    if (!entry || !selectedWalk) return;
+    const points = entry.source.map(([lat, lon]) => [lat, lon] as [number, number]);
+    const stroke = { pane: "walkSelected", renderer: rt.renderers.walkSelected, interactive: false, lineCap: "round", lineJoin: "round", opacity: 1 } as const;
+    // The same light casing as the route keeps the chosen walk legible over the faded others.
+    rt.L.polyline(points, { ...stroke, color: rt.colors.casing, weight: 8 }).addTo(rt.walkSelection);
+    rt.L.polyline(points, { ...stroke, color: rt.colors.walks[entry.colorIndex - 1] ?? rt.colors.route, weight: 5 })
+      .addTo(rt.walkSelection)
+      .getElement()
+      ?.setAttribute("data-walk-selected", selectedWalk);
+  }, [selectedWalk, walkLines, ready]);
 
   useEffect(() => {
     const rt = runtime.current;

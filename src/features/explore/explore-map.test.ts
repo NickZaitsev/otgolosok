@@ -14,7 +14,7 @@ const mock = vi.hoisted(() => ({
       typeof vi.fn<([lat, lng]: number[], zoom: number) => unknown>
     >;
     panBy: ReturnType<typeof vi.fn>;
-    fire: (event: string) => void;
+    fire: (event: string, payload?: unknown) => void;
     fitBounds: ReturnType<typeof vi.fn>;
   }>,
 }));
@@ -40,6 +40,7 @@ vi.mock("leaflet", () => {
     const group = {
       addTo: vi.fn().mockReturnThis(),
       on: vi.fn().mockReturnThis(),
+      removeLayer: vi.fn((line: { drop?: () => void }) => { line.drop?.(); return group; }),
       clearLayers: vi.fn(() => {
         mock.polylines = mock.polylines.filter((item) => item.group !== group);
         mock.arrows = mock.arrows.filter((item) => item.group !== group);
@@ -57,7 +58,7 @@ vi.mock("leaflet", () => {
       let center = { lat: 0, lng: 0 },
         zoom = 0,
         removed = false;
-      const listeners = new Map<string, Set<() => void>>();
+      const listeners = new Map<string, Set<(payload?: unknown) => void>>();
       const map = {
         setView: vi.fn(([lat, lng]: number[], value: number) => {
           center = { lat, lng };
@@ -69,7 +70,7 @@ vi.mock("leaflet", () => {
           return center;
         },
         getZoom: () => zoom,
-        on: (events: string, handler: () => void) => {
+        on: (events: string, handler: (payload?: unknown) => void) => {
           for (const event of events.split(" ")) {
             if (!listeners.has(event)) listeners.set(event, new Set());
             listeners.get(event)!.add(handler);
@@ -79,8 +80,8 @@ vi.mock("leaflet", () => {
           for (const event of events.split(" "))
             listeners.get(event)?.delete(handler);
         },
-        fire: (event: string) => {
-          listeners.get(event)?.forEach((handler) => handler());
+        fire: (event: string, payload?: unknown) => {
+          listeners.get(event)?.forEach((handler) => handler(payload));
         },
         remove: vi.fn(() => {
           removed = true;
@@ -107,6 +108,7 @@ vi.mock("leaflet", () => {
         },
         // One degree is 10 000 px, enough for a few chevrons on a short test leg.
         latLngToLayerPoint: ([lat, lng]: number[]) => ({ x: lng * 10000, y: -lat * 10000 }),
+        latLngToContainerPoint: ([lat, lng]: number[]) => ({ x: lng * 10000, y: -lat * 10000 }),
         layerPointToLatLng: ([x, y]: number[]) => [-y / 10000, x / 10000],
         getSize: () => ({ x: 390, y: 844 }),
         getMinZoom: () => 3,
@@ -127,7 +129,8 @@ vi.mock("leaflet", () => {
     polyline: (points: number[][], options: Record<string, unknown>) => {
       const entry: (typeof mock.polylines)[number] = { points, options, attributes: new Map() };
       mock.polylines.push(entry);
-      const line = { addTo: (group: unknown) => { entry.group = group; return line; }, getElement: () => element(entry.attributes) };
+      const line = { addTo: (group: unknown) => { entry.group = group; return line; }, getElement: () => element(entry.attributes),
+        drop: () => { mock.polylines = mock.polylines.filter((item) => item !== entry); } };
       return line;
     },
     marker: (_point: unknown, options: Record<string, unknown> & { icon: { html: string } }) => {
@@ -341,7 +344,7 @@ const routeProps = (activeLeg: [number, number] | null = null): Partial<ExploreM
 
 it("draws the route in its own panes below the markers, created once per map", async () => {
   const { cleanup } = await mount(undefined, null, undefined, routeProps());
-  expect(mock.panes.map((pane) => [pane.name, pane.zIndex])).toEqual([["route", "410"], ["food", "590"], ["routeActive", "420"]]);
+  expect(mock.panes.map((pane) => [pane.name, pane.zIndex])).toEqual([["route", "410"], ["food", "590"], ["routeActive", "420"], ["walks", "402"], ["walkSelected", "405"]]);
   expect(mock.polylines.every((line) => line.options.pane === "route")).toBe(true);
   cleanup?.();
 });
@@ -369,14 +372,14 @@ it("dashes the green line over a tunnel and keeps its casing solid", async () =>
 it("fades everything but the leg to walk and marks its direction", async () => {
   const plain = await mount(undefined, null, undefined, routeProps());
   const dim = (pane: (typeof mock.panes)[number]) => [...pane.classes].some((name) => /dim/i.test(name));
-  expect(mock.panes.filter(pane => pane.name !== "food").map(dim)).toEqual([false, false]);
+  expect(mock.panes.filter(pane => pane.name.startsWith("route")).map(dim)).toEqual([false, false]);
   expect(mock.arrows).toEqual([]);
   plain.cleanup?.();
 
   mock.panes = [];
   mock.polylines = [];
   const walking = await mount(undefined, null, undefined, routeProps([5, 8]));
-  expect(mock.panes.filter(pane => pane.name !== "food").map(dim)).toEqual([true, false]);
+  expect(mock.panes.filter(pane => pane.name.startsWith("route")).map(dim)).toEqual([true, false]);
   const parts = mock.polylines.filter((line) => line.attributes.has("data-route")).map((line) => [line.attributes.get("data-route-part"), line.options.pane, line.points.length]);
   expect(parts).toEqual([["rest", "route", 3], ["rest", "route", 3], ["rest", "route", 2], ["rest", "route", 2], ["active", "routeActive", 4]]);
   // 15 px of a 0.0015° leg at 10 000 px per degree: one chevron at its middle, pointing north (up the screen).
@@ -391,5 +394,53 @@ it("fits the map to a leg without letting a redrawn route undo it", async () => 
   const { map, cleanup } = await mount(undefined, null, undefined, { ...routeProps([5, 8]), fitTarget: { points, keepUserView: false } });
   expect(map.fitBounds).toHaveBeenCalledTimes(1);
   expect(map.fitBounds.mock.calls[0][0]).toEqual(points.map((p) => [p.lat, p.lon]));
+  cleanup?.();
+});
+
+// Two parallel north–south walks 0.001° (10 px in the mock projection) apart, and a third far east.
+const walkLines = [
+  { key: "catalog:a", colorIndex: 1, line: [[55.75, 37.6], [55.751, 37.6]] as const },
+  { key: "catalog:b", colorIndex: 2, line: [[55.75, 37.601], [55.751, 37.601]] as const },
+  { key: "catalog:c", colorIndex: 3, line: [[55.75, 37.7], [55.751, 37.7]] as const },
+];
+const click = (lat: number, lon: number) => ({ latlng: { lat, lng: lon }, containerPoint: { x: lon * 10000, y: -lat * 10000 } });
+
+it("draws overview walks as thin dashed lines in their own pane, under the route", async () => {
+  const { cleanup } = await mount(undefined, null, undefined, { walkLines, onWalks: vi.fn() });
+  const lines = mock.polylines.filter((line) => line.attributes.has("data-walk-line"));
+  expect(lines.map((line) => [line.attributes.get("data-walk-line"), line.options.pane, line.options.weight, typeof line.options.dashArray])).toEqual([
+    ["catalog:a", "walks", 3, "string"], ["catalog:b", "walks", 3, "string"], ["catalog:c", "walks", 3, "string"],
+  ]);
+  expect(lines.every((line) => line.options.interactive === false)).toBe(true);
+  cleanup?.();
+});
+
+it("a tap near overview lines offers every walk within reach, nearest first, instead of picking a point", async () => {
+  const onWalks = vi.fn(), onPoint = vi.fn();
+  const { map, cleanup } = await mount(undefined, null, undefined, { walkLines, onWalks, onPoint });
+  map.fire("click", click(55.7505, 37.6007));
+  expect(onWalks).toHaveBeenCalledExactlyOnceWith(["catalog:b", "catalog:a"]);
+  expect(onPoint).not.toHaveBeenCalled();
+  map.fire("click", click(55.7505, 37.65));
+  expect(onPoint).toHaveBeenCalledExactlyOnceWith({ lat: 55.7505, lon: 37.65 });
+  cleanup?.();
+});
+
+it("without overview lines a tap still picks a point", async () => {
+  const onWalks = vi.fn(), onPoint = vi.fn();
+  const { map, cleanup } = await mount(undefined, null, undefined, { walkLines: [], onWalks, onPoint });
+  map.fire("click", click(55.7505, 37.6));
+  expect(onWalks).not.toHaveBeenCalled();
+  expect(onPoint).toHaveBeenCalledOnce();
+  cleanup?.();
+});
+
+it("the chosen walk is drawn solid on a casing while the other overview lines fade", async () => {
+  const { cleanup } = await mount(undefined, null, undefined, { walkLines, selectedWalk: "catalog:b", onWalks: vi.fn() });
+  const selected = mock.polylines.filter((line) => line.options.pane === "walkSelected");
+  expect(selected.map((line) => [line.options.weight, line.options.dashArray ?? null])).toEqual([[8, null], [5, null]]);
+  expect(selected[1].attributes.get("data-walk-selected")).toBe("catalog:b");
+  const walkPane = mock.panes.find((pane) => pane.name === "walks")!;
+  expect([...walkPane.classes].some((name) => /dim/i.test(name))).toBe(true);
   cleanup?.();
 });

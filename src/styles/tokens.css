@@ -122,6 +122,14 @@
   --scrollbar-thumb-hover: rgb(32 62 56 / 45%);
   --scrollbar-thumb-active: rgb(32 62 56 / 60%);
   --route-line: var(--map-green);
+
+  /* Overview lines of all walks on the map: muted, distinct from the terracotta pins and the green route. */
+  --walk-overview-1: #6d5a9c;
+  --walk-overview-2: #2f7d8c;
+  --walk-overview-3: #a0701d;
+  --walk-overview-4: #9a4067;
+  --walk-overview-5: #4a6fa5;
+  --walk-overview-6: #5f7f3a;
   --user-position: var(--focus);
   --text-map-label: 0.6875rem;
   --text-map-pin: 1.1875rem;

@@ -317,4 +317,11 @@ export const exploreTranslations: Translations = {
   "Не удалось открыть видео.": ["Unable to open the video.", "无法打开视频。"],
   "Не удалось загрузить видео.": ["Unable to load the video.", "无法加载视频。"],
   "Повторить загрузку видео": ["Reload video", "重新加载视频"],
+  "Прогулки на карте": ["Walks on the map", "地图上的漫步路线"],
+  "Прогулок здесь: {count}": ["Walks here: {count}", "此处漫步路线：{count}"],
+  "Выберите прогулку": ["Choose a walk", "选择漫步路线"],
+  "Не удалось загрузить прогулки": ["Unable to load walks", "无法加载漫步路线"],
+  "Повторить загрузку прогулок": ["Reload walks", "重新加载漫步路线"],
+  "Загружаем прогулки…": ["Loading walks…", "正在加载漫步路线…"],
+  "Список прогулок на карте: {count}": ["List of walks on the map: {count}", "地图上的漫步路线列表：{count}"],
 };

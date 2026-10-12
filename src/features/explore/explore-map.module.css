@@ -109,8 +109,26 @@
   opacity: 0.3;
 }
 
+/* Overview lines of all walks: a quiet background that fades further while one walk is chosen. */
+.walkPane {
+  opacity: 0.75;
+  transition: opacity 0.2s ease;
+}
+
+.walkPane.walkDim {
+  opacity: 0.25;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .walkPane {
+    transition: none;
+  }
+}
+
 /* Leaflet lifts the max-size limits of SVG in its own overlay pane only; the route renderers live here. */
-.routePane > svg {
+.routePane > svg,
+.walkPane > svg,
+.walkSelectedPane > svg {
   max-width: none;
   max-height: none;
 }

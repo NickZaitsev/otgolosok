@@ -89,6 +89,8 @@ export async function collectViolations(page: Page, options: LayoutOptions, safe
       if (details && !details.open && !details.querySelector(":scope > summary")?.contains(element)) return false;
       const style = getComputedStyle(element);
       if (style.visibility === "hidden" || Number(style.opacity) === 0) return false;
+      // Visually hidden until focused (a skip link): not on screen, so not a tap target.
+      if (style.clipPath === "inset(50%)") return false;
       const rect = element.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0;
     };

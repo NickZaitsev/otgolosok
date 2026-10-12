@@ -58,7 +58,9 @@
 }
 
 /* The tint is translucent: lay it over the island colour, or the map shows through the button. */
-.foodToggle[aria-pressed="true"] {
+
+/* Map layer switches: food places, overview walks. */
+.layerToggle[aria-pressed="true"] {
   background-image: linear-gradient(var(--control-selected) 0 0);
 }
 
@@ -78,4 +80,38 @@
   overflow: hidden;
   white-space: nowrap;
   clip-path: inset(50%);
+}
+
+/*
+ * Overview lines are reached by a tap only; keyboard and screen reader users get the same walks
+ * as a list. The link stays out of sight until it is focused, like a skip link.
+ */
+.walkListLink {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.walkListLink:focus-visible {
+  position: static;
+  width: auto;
+  height: auto;
+  min-height: 2.75rem;
+  padding: 0 var(--space-md);
+  overflow: visible;
+  font: inherit;
+  font-size: var(--text-secondary);
+  font-weight: 600;
+  color: var(--map-green);
+  white-space: nowrap;
+  clip-path: none;
+  background: var(--surface-island);
+  border: 1px solid var(--border-island);
+  border-radius: var(--radius-pill);
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-island);
 }
