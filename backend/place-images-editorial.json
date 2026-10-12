@@ -3941,5 +3941,18 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "retrievedAt": "2026-10-09",
     "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
+  },
+  "osm:node:3008136198": {
+    "thumbnail": "/images/places/node-3008136198-97e006155a96.jpg",
+    "src": "/images/places/node-3008136198-76017fd8f5e0.jpg",
+    "width": 960,
+    "height": 641,
+    "alt": "Конный памятник Дмитрию Донскому в сквере на стрелке Яузской и Николоямской улиц",
+    "author": "Gennady Grachev",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_small_green_between_Yauzskaya_and_Nikoloyamskaya_streets_(1).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "retrievedAt": "2026-10-12",
+    "modifications": "Размер уменьшен Wikimedia Commons; превью обрезается при показе."
   }
 }
