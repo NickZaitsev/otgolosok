@@ -191,6 +191,29 @@ test("a key of another account speaks the default voice with its own copy and sk
   } finally { console.warn = warn; }
 });
 
+test("the first active key uses its mapped copy after the original account is retired", async () => {
+  for (const firstExhausted of [false, true]) {
+    const requests = [];
+    const tts = createElevenLabsTts({
+      apiKeys: [{ apiKey: "first", voice: "FirstCopy" }, { apiKey: "second", voice: "SecondCopy" }],
+      voice: "OriginalVoice", tagNarration,
+      fetchImpl: async (url, init) => {
+        const key = init.headers["xi-api-key"];
+        requests.push([key, new URL(url).pathname.split("/").pop()]);
+        return firstExhausted && key === "first" ? json({ detail: { status: "quota_exceeded" } }, 401) : audio(key);
+      },
+    });
+    const warn = console.warn; console.warn = () => {};
+    try {
+      assert.equal(tts.voice, "OriginalVoice");
+      assert.equal((await tts.speech("Текст.")).toString(), firstExhausted ? "second" : "first");
+      assert.deepEqual(requests, firstExhausted
+        ? [["first", "FirstCopy"], ["second", "SecondCopy"]]
+        : [["first", "FirstCopy"]]);
+    } finally { console.warn = warn; }
+  }
+});
+
 test("a key out of credits hands the request to the next one and is skipped for an hour", async () => {
   let time = 0;
   const used = [];
