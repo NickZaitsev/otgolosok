@@ -5,8 +5,9 @@ import { validVoiceId } from "./tts-voices.mjs";
 
 // https://elevenlabs.io/docs/api-reference/text-to-speech/convert
 export const ELEVENLABS_API = "https://api.elevenlabs.io/v1";
+// The only model allowed for new recordings: eleven_v3 and the others are refused, existing v3 recordings stay playable.
 export const ELEVENLABS_MODEL = "eleven_v4";
-// Eleven v4 accepts up to 10,000 characters per request (v3, still selectable, 5,000); a margin keeps tags and long paragraphs inside both.
+// Eleven v4 accepts up to 10,000 characters per request; a margin keeps tags and long paragraphs inside.
 const MAX_REQUEST_CHARS = 3000;
 const LANGUAGES = new Set(["ru", "en", "zh"]);
 const RETRY = { attempts: 3, baseMs: 1000, maxMs: 10000 };
@@ -119,7 +120,8 @@ export async function listElevenLabsVoices({ apiKey, baseUrl = ELEVENLABS_API, p
  */
 export function createElevenLabsTts({ apiKeys, voice, tagNarration, voices = [], model = ELEVENLABS_MODEL, language = "ru", baseUrl = ELEVENLABS_API, proxyToken, fetchImpl = fetch, now = Date.now }) {
   if (!Array.isArray(apiKeys) || !apiKeys.length || apiKeys.some(key => typeof key?.apiKey !== "string" || !key.apiKey.trim()
-    || (key.voice != null && !validVoiceId(key.voice))) || !validVoiceId(voice) || typeof tagNarration !== "function") throw failure("PROVIDER_CONFIG");
+    || (key.voice != null && !validVoiceId(key.voice))) || !validVoiceId(voice) || typeof tagNarration !== "function"
+    || model !== ELEVENLABS_MODEL) throw failure("PROVIDER_CONFIG");
   if (!LANGUAGES.has(language)) throw failure("TTS_LANGUAGE_UNSUPPORTED");
   const exhaustedUntil = apiKeys.map(() => 0);
 

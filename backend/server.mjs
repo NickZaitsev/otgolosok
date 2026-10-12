@@ -8,7 +8,7 @@ import { createStore } from "./store.mjs";
 import { createProvider } from "./provider.mjs";
 import { createYandexTts } from "./yandex-tts.mjs";
 import { isTtsProvider, ttsVoiceOptions, validVoiceId } from "./tts-voices.mjs";
-import { createElevenLabsTts, elevenLabsApi, elevenLabsApiKeys, listElevenLabsVoices } from "./elevenlabs-tts.mjs";
+import { createElevenLabsTts, ELEVENLABS_MODEL, elevenLabsApi, elevenLabsApiKeys, listElevenLabsVoices } from "./elevenlabs-tts.mjs";
 import { createAudioTagger } from "./audio-tags.mjs";
 import { ELEVENLABS_PROFILE_ID, elevenLabsProfile, startSpeechAudioWorker } from "./speech-audio-worker.mjs";
 import { normalizeAddress, addressKey, publicJob, failure } from "./domain.mjs";
@@ -863,6 +863,8 @@ export async function loadElevenLabsTts(env,provider,logs,fetchImpl=fetch) {
   if(!apiKey)return null;
   if(apiKeys.some(key=>key.voice!==null&&!validVoiceId(key.voice))){console.warn("ElevenLabs is disabled: ELEVENLABS_API_KEYS has a malformed voice id; use key:voiceId");return null;}
   if(!provider){console.warn("ElevenLabs is disabled: audio tags require OPENAI_API_KEY and OPENAI_BASE_URL");return null;}
+  const model=env.ELEVENLABS_MODEL?.trim()||ELEVENLABS_MODEL;
+  if(model!==ELEVENLABS_MODEL){console.warn(`ElevenLabs is disabled: ELEVENLABS_MODEL must be ${ELEVENLABS_MODEL}`);return null;}
   const baseUrl=elevenLabsApi(env.ELEVENLABS_BASE_URL?.trim()),proxyToken=env.ELEVENLABS_PROXY_TOKEN?.trim()||undefined;
   let voices=[];
   try {voices=await listElevenLabsVoices({apiKey,baseUrl,proxyToken,fetchImpl});}
@@ -880,7 +882,7 @@ export async function loadElevenLabsTts(env,provider,logs,fetchImpl=fetch) {
     try {if(!(await listElevenLabsVoices({apiKey:key.apiKey,baseUrl,proxyToken,fetchImpl})).some(item=>item.id===expected))console.warn(`ElevenLabs key #${index+1} does not see the voice ${expected}`);}
     catch(error) {console.warn(`ElevenLabs key #${index+1}: voices are unavailable (${error?.code??"error"})`);}
   }
-  return createElevenLabsTts({apiKeys,voice,voices,tagNarration:createAudioTagger(provider),model:env.ELEVENLABS_MODEL?.trim()||undefined,baseUrl,proxyToken,fetchImpl});
+  return createElevenLabsTts({apiKeys,voice,voices,tagNarration:createAudioTagger(provider),model,baseUrl,proxyToken,fetchImpl});
 }
 
 export const EDITORIAL_PLACE_IMAGES=fileURLToPath(new URL("./place-images-editorial.json",import.meta.url));

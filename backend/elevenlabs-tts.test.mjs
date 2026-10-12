@@ -124,6 +124,17 @@ test("startup enables ElevenLabs only with a text model and falls back to the co
   assert.equal(await loadElevenLabsTts({ ELEVENLABS_API_KEY: "key" }, provider, null, async () => json({}, 401)), null);
 });
 
+test("speech refuses every model except eleven_v4", async () => {
+  const provider = /** @type {any} */ ({ response: async () => ({ text: "" }) });
+  const voicesReply = async () => json({ voices: [{ voice_id: "RuVoice1", name: "Отголосок", labels: { language: "ru" } }] });
+  for (const model of ["eleven_v3", "eleven_multilingual_v2", "ELEVEN_V4"]) {
+    assert.throws(() => createElevenLabsTts({ apiKeys: [{ apiKey: "key" }], voice: "voice1", tagNarration, model }), { code: "PROVIDER_CONFIG" }, model);
+    assert.equal(await loadElevenLabsTts({ ELEVENLABS_API_KEY: "key", ELEVENLABS_MODEL: model }, provider, null, voicesReply), null, model);
+  }
+  for (const model of ["eleven_v4", " eleven_v4 ", "", undefined])
+    assert.equal((await loadElevenLabsTts({ ELEVENLABS_API_KEY: "key", ELEVENLABS_MODEL: model }, provider, null, voicesReply)).ttsModel, "eleven_v4", String(model));
+});
+
 test("a proxy base URL must be plain HTTPS and is used for every request", async () => {
   assert.equal(elevenLabsApi(undefined), "https://api.elevenlabs.io/v1");
   assert.equal(elevenLabsApi("https://elevenlabs-proxy.example/v1/"), "https://elevenlabs-proxy.example/v1");
