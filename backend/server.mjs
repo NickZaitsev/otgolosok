@@ -49,7 +49,7 @@ import { loadLocalTtsConfig } from "./local-tts.mjs";
 import { createTtsApiClient } from "./tts-api-client.mjs";
 import { startTtsApiWorker } from "./tts-api-worker.mjs";
 import { serializeCell } from "./map-cells.mjs";
-import { sendCacheable, sendCacheableJson } from "./http-cache.mjs";
+import { sendCacheable, sendCacheableJson, sendUncachedJson } from "./http-cache.mjs";
 import { SHARE_NOT_FOUND_HTML, SHARE_PAGE_CSP, renderPlaceSharePage, shareLocale, shareUnavailableHtml, sharePathToPlaceId } from "./place-share.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -730,9 +730,9 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
         const [west,south,east,north]=names.map(name=>Number(url.searchParams.get(name)));
         if(south<-90||north>90||west<-180||east>180||west>=east||south>=north||east-west>WALK_MAP_MAX_SPAN||north-south>WALK_MAP_MAX_SPAN)throw failure("BAD_REQUEST");
         if(!walkMap){json(res,503,{error:{code:"UNAVAILABLE",message:"Прогулки на карте временно недоступны."}});return;}
-        // Public walks only, no session. The area is where someone looks at the map, so nginx keeps /api/ no-store;
-        // sendCacheableJson is used for its compression.
-        sendCacheableJson(req,res,JSON.stringify(walkMap.list({west,south,east,north})));return;
+        // Public walks only, no session, but the area is where someone looks at the map: compressed and never cached.
+        // Production has no nginx in front of the backend, so the header has to come from here.
+        sendUncachedJson(req,res,JSON.stringify(walkMap.list({west,south,east,north})));return;
       }
       const publishedWalk=/^\/api\/story-walks\/([a-z0-9][a-z0-9-]{0,127})$/.exec(url.pathname);
       if(req.method==="GET"&&url.pathname==="/api/story-walks"){json(res,200,{walks:listedCatalogRoutes(builtinRoutes).map(route=>({id:route.id,title:route.title,subtitle:route.subtitle,durationMin:route.duration_min}))});return;}

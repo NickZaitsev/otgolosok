@@ -55,7 +55,7 @@ test("without the account store the map layer is unavailable", async t => {
   assert.equal(response.data.error.code, "UNAVAILABLE");
 });
 
-test("an approved public walk in the area comes with its line and an ETag", async t => {
+test("an approved public walk in the area comes with its line, compressed and never cached", async t => {
   const { call, accountStore } = await fixture(t);
   const created = accountStore.createWalk("anna", { title: "Арбат", snapshot: routed(), idempotencyKey: "map-api-walk" });
   const shared = accountStore.setWalkVisibility("anna", created.id, created.revision, "public");
@@ -63,8 +63,11 @@ test("an approved public walk in the area comes with its line and an ETag", asyn
   const response = await call(AREA);
   assert.equal(response.status, 200);
   assert.deepEqual(response.data.walks.map((/** @type {any} */ walk) => [walk.id, walk.line]), [[shared.shareToken, [[55.75, 37.6], [55.751, 37.601]]]]);
-  const etag = response.headers.get("etag");
-  assert.ok(etag);
-  assert.equal((await call(AREA, { headers: { "If-None-Match": etag } })).status, 304);
+  // The area tells where someone looks at the map: no cache may keep it, and no ETag invites one to.
+  assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.equal(response.headers.get("etag"), null);
+  const compressed = await call(AREA, { headers: { "Accept-Encoding": "gzip" } });
+  assert.equal(compressed.headers.get("content-encoding"), "gzip");
+  assert.deepEqual(JSON.parse(compressed.text), response.data);
   assert.deepEqual((await call("/api/walks/map?west=37.3&south=55.5&east=37.4&north=55.6")).data, { walks: [], complete: true });
 });

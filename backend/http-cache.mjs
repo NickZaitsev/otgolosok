@@ -87,3 +87,24 @@ export function sendCacheable(req, res, body, contentType, headers = {}) {
 export function sendCacheableJson(req, res, body) {
   sendCacheable(req, res, body, "application/json; charset=utf-8");
 }
+
+/**
+ * Compressed JSON that no cache may keep (`no-store`, no ETag): for a public body whose request
+ * reveals something about the viewer, such as the map area they look at.
+ * @param {import("node:http").IncomingMessage} req
+ * @param {import("node:http").ServerResponse} res
+ * @param {string} body already serialized JSON
+ */
+export function sendUncachedJson(req, res, body) {
+  const encoding = negotiateEncoding(req.headers["accept-encoding"]);
+  const payload = encoding === "identity" ? Buffer.from(body) : encode(body, etagOf(body), encoding);
+  res.writeHead(200, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Content-Length": payload.length,
+    "Cache-Control": "no-store",
+    Vary: VARY,
+    "X-Content-Type-Options": "nosniff",
+    ...(encoding === "identity" ? {} : { "Content-Encoding": encoding }),
+  });
+  res.end(req.method === "HEAD" ? undefined : payload);
+}
