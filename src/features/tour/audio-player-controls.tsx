@@ -15,13 +15,17 @@ type Props = {
   onToggle: () => void;
   onSeek: (seconds: number) => void;
 } & (
-  // The compact player has no speed buttons: the walk sets the speed in its settings.
-  // The mini walk player stays in the card's footer while a drawer covers the full one.
+  // The compact player shows one speed button that cycles through the rates; the mini walk
+  // player, which stays in the card's footer while a drawer covers the full one, has none.
   | { compact: true; walk?: boolean; mini?: boolean; rate?: PlaybackRate; onRate?: (rate: PlaybackRate) => void }
   | { compact?: false; rate: PlaybackRate; onRate: (rate: PlaybackRate) => void }
 );
 
 const rateLabel = (rate: PlaybackRate, languageTag: string) => `${rate.toLocaleString(languageTag)}×`;
+
+/** The rate after `rate`, wrapping from the fastest back to the slowest. */
+export const nextPlaybackRate = (rate: PlaybackRate): PlaybackRate =>
+  playbackRates[(playbackRates.indexOf(rate) + 1) % playbackRates.length];
 
 /** A circular arrow with the 15-second step inside, mirrored for the forward skip. */
 function SkipIcon({ direction }: { direction: "back" | "forward" }) {
@@ -52,6 +56,11 @@ export function AudioPlayerControls(props: Props) {
       disabled={!canSeek || current <= 0} onClick={() => onSeek(Math.max(0, current - 15))}><SkipIcon direction="back" /></button>
     : <button type="button" className={styles.walkSkip} aria-label={t("Вперёд на 15 секунд")}
       disabled={!canSeek || current >= maximum} onClick={() => onSeek(Math.min(maximum, current + 15))}><SkipIcon direction="forward" /></button>;
+  const rateButton = props.compact && props.rate !== undefined && props.onRate ? (() => {
+    const { rate, onRate } = props;
+    return <button type="button" className={styles.rate} onClick={() => onRate(nextPlaybackRate(rate))}
+      aria-label={t("Скорость рассказа: {rate}", { rate: rateLabel(rate, languageTag) })}>{rateLabel(rate, languageTag)}</button>;
+  })() : null;
   if (props.compact && props.walk && props.mini) return <section className={cx(styles.mini, className)} aria-label={t("Плеер истории")}>
     <button type="button" className={styles.miniToggle} onClick={onToggle} aria-label={label}>{toggleIcon}</button>
     {timeline}
@@ -59,7 +68,8 @@ export function AudioPlayerControls(props: Props) {
   </section>;
   if (props.compact && props.walk) return <section className={cx(styles.walk, className)} aria-label={t("Плеер истории")}>
     {timeline}
-    <div className={styles.walkButtons}>
+    <div className={cx(styles.walkButtons, rateButton && styles.withRate)}>
+      {rateButton}
       {skip("back")}
       <button type="button" className={styles.walkToggle} onClick={onToggle} aria-label={label}>
         {toggleIcon}
@@ -69,7 +79,7 @@ export function AudioPlayerControls(props: Props) {
     </div>
   </section>;
   if (props.compact) return <section className={cx(styles.compact, className)} aria-label={t("Плеер истории")}>
-    <button type="button" aria-label={label} onClick={onToggle}>
+    <button type="button" className={styles.compactToggle} aria-label={label} onClick={onToggle}>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">{playing ? <path d="M6 4h4v16H6zM14 4h4v16h-4z" /> : <path d="m8 4 12 8-12 8z" />}</svg>
     </button>
     <div><input type="range" min={0} max={maximum || 1} step="any" value={current} disabled={!canSeek}
@@ -77,6 +87,7 @@ export function AudioPlayerControls(props: Props) {
       onChange={event => onSeek(Number(event.target.value))} />
       <div className={styles.time} aria-hidden="true"><span>{formatPlaybackTime(current)}</span><span>{formatPlaybackTime(maximum)}</span></div>
     </div>
+    {rateButton}
   </section>;
   const { rate, onRate } = props;
   return <section className={cx("audio-player", className)} aria-label={t("Плеер истории")}>

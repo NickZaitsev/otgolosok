@@ -3,7 +3,7 @@ import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { I18nProvider } from "@/lib/i18n/provider";
-import { AudioPlayerControls } from "./audio-player-controls";
+import { AudioPlayerControls, nextPlaybackRate } from "./audio-player-controls";
 
 let container: HTMLDivElement;
 let root: ReturnType<typeof createRoot>;
@@ -66,4 +66,26 @@ it("мини-плеер под открытым ящиком управляет 
   expect(player.onToggle).toHaveBeenCalledTimes(1);
   expect(player.button("Слушать")!.textContent).toBe("");
   expect(container.querySelector<HTMLInputElement>('input[type="range"]')?.value).toBe("20");
+});
+
+it.each([
+  { rate: 0.8, next: 1 },
+  { rate: 1, next: 1.25 },
+  { rate: 1.25, next: 1.5 },
+  { rate: 1.5, next: 0.8 },
+] as const)("кнопка скорости переключает $rate× на $next×", ({ rate, next }) => {
+  expect(nextPlaybackRate(rate)).toBe(next);
+});
+
+it("плеер прогулки показывает скорость и меняет её одной кнопкой, мини-плеер — без неё", async () => {
+  const onRate = vi.fn();
+  const render = (mini: boolean) => act(async () => root.render(createElement(I18nProvider, { locale: "ru" },
+    createElement(AudioPlayerControls, { compact: true, walk: true, mini, position: 0, duration: 60, canSeek: true, playing: false, label: "Слушать", onSeek: vi.fn(), onToggle: vi.fn(), rate: 1.25, onRate }))));
+  await render(false);
+  const rate = container.querySelector<HTMLButtonElement>('button[aria-label="Скорость рассказа: 1,25×"]')!;
+  expect(rate.textContent).toBe("1,25×");
+  await act(async () => rate.click());
+  expect(onRate).toHaveBeenCalledWith(1.5);
+  await render(true);
+  expect(container.querySelector('button[aria-label^="Скорость рассказа"]')).toBeNull();
 });

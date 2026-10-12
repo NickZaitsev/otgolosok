@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/provider";
 import { AudioPlayerControls } from "./audio-player-controls";
+import { useWalkSettings, type PlaybackRate } from "./walk-settings";
 import styles from "./audio-player-controls.module.css";
 
 type Status = "idle" | "loading" | "playing" | "paused" | "ended" | "error";
@@ -14,6 +15,7 @@ const labels: Record<Status, string> = {
 /**
  * One story's recording outside a walk: the same compact player as the walk panel, over its own
  * hidden audio element. Closing the card stops the sound — a detached element would keep playing.
+ * The speed is the listener's walk setting, so a story and a walk sound alike.
  */
 export function StoryAudioPlayer({ src, className }: { src: string; className?: string }) {
   const { t } = useI18n();
@@ -23,11 +25,22 @@ export function StoryAudioPlayer({ src, className }: { src: string; className?: 
   const [duration, setDuration] = useState(0);
   // A failed preload is not the listener's problem yet: it is retried on «Слушать», and only a failed start is reported.
   const preloadFailed = useRef(false);
+  const { settings: { rate }, updateSettings } = useWalkSettings();
 
   useEffect(() => {
     const audio = audioRef.current;
     return () => audio?.pause();
   }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    // load() resets playbackRate to defaultPlaybackRate, so both carry the choice across a retry.
+    try {
+      audio.defaultPlaybackRate = rate;
+      audio.playbackRate = rate;
+    } catch { /* Some engines reject a rate change while the source loads. */ }
+  }, [rate]);
 
   const toggle = () => {
     const audio = audioRef.current;
@@ -59,7 +72,7 @@ export function StoryAudioPlayer({ src, className }: { src: string; className?: 
       onError={() => { if (status === "idle") preloadFailed.current = true; else setStatus("error"); }} />
     <AudioPlayerControls compact className={styles.flush} position={position} duration={duration} canSeek={Number.isFinite(duration) && duration > 0}
       playing={status === "playing" || status === "loading"} label={t(labels[status])}
-      onToggle={toggle} onSeek={seek} />
+      onToggle={toggle} onSeek={seek} rate={rate} onRate={(next: PlaybackRate) => updateSettings({ rate: next })} />
     {status === "error" ? <p className={styles.error} role="alert">{t("Не удалось включить запись. Проверьте соединение и попробуйте ещё раз.")}</p> : null}
   </div>;
 }

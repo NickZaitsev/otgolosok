@@ -3,6 +3,7 @@ import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import { StoryAudioPlayer } from "./story-audio-player";
+import { parseWalkSettings, WALK_SETTINGS_KEY } from "./walk-settings";
 
 let container: HTMLDivElement;
 let root: Root;
@@ -28,6 +29,7 @@ beforeEach(async () => {
 afterEach(async () => {
   await act(async () => root.unmount());
   vi.restoreAllMocks();
+  window.localStorage.clear();
 });
 
 const audio = () => container.querySelector("audio")!;
@@ -100,6 +102,17 @@ describe("плеер истории вне прогулки", () => {
     await act(async () => audio().dispatchEvent(new Event("error")));
     expect(container.querySelector("[role='alert']")).not.toBeNull();
     expect(button().getAttribute("aria-label")).toBe("Повторить запуск звука");
+  });
+
+  it("играет на сохранённой скорости прогулки и меняет её для всех плееров", async () => {
+    expect(audio().playbackRate).toBe(1);
+    const rate = container.querySelector<HTMLButtonElement>("button[aria-label^='Скорость рассказа']")!;
+    expect(rate.textContent).toBe("1×");
+    await act(async () => rate.click());
+    expect(audio().playbackRate).toBe(1.25);
+    // A retry reloads the source, which falls back to the default rate.
+    expect(audio().defaultPlaybackRate).toBe(1.25);
+    expect(parseWalkSettings(window.localStorage.getItem(WALK_SETTINGS_KEY)).rate).toBe(1.25);
   });
 
   it("останавливает звук, когда карточку закрывают", async () => {

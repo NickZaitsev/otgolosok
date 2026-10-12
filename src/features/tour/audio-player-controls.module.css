@@ -6,7 +6,7 @@
   margin-top: var(--space-sm);
 }
 
-.compact > button {
+.compactToggle {
   display: grid;
   place-items: center;
   flex: none;
@@ -261,4 +261,29 @@
   .walkTimeline input::-moz-range-thumb {
     transition: none;
   }
+}
+
+/* One button cycles the narration speed; the label is the current rate. */
+.rate {
+  flex: none;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 6px;
+  border: 1px solid var(--border-island);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--map-green);
+  font: inherit;
+  font-size: var(--text-meta);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.rate:hover {
+  background: var(--control-selected);
+}
+
+.walkButtons.withRate {
+  grid-template-columns: 52px 44px minmax(0, 1fr) 44px;
 }
