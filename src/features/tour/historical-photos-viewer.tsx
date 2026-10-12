@@ -69,16 +69,17 @@ export function HistoricalPhotos({ walkId, stopId }: { walkId: string; stopId: s
       <div className={viewerStyles.slider}>
         {current && selected !== null ? imageFailed ? <div className={viewerStyles.error} role="status">
           <p>{t("Фотография не загрузилась. Проверьте подключение и попробуйте ещё раз.")}</p>
-          <button type="button" onClick={() => { setAttempt(value => value + 1); setImageFailed(false); }}>{t("Повторить")}</button>
+          <button type="button" className={styles.retry} onClick={() => { setAttempt(value => value + 1); setImageFailed(false); }}>{t("Повторить")}</button>
         </div> : <>
           {/* eslint-disable-next-line @next/next/no-img-element -- размеры снимков PastVu неизвестны, а оптимизатор Next в статической сборке не работает. */}
           <img key={`${current.cid}:${attempt}`} className={viewerStyles.full} src={current.src} alt={alt(selected)} onError={() => setImageFailed(true)} />
         </> : null}
         {photos.length > 1 && selected !== null ? <>
-          <button type="button" className={`${viewerStyles.previewArrow} ${viewerStyles.previous} ${styles.arrow}`} disabled={selected === 0}
-            aria-label={t("Предыдущее фото")} onClick={() => change(-1)}><ExploreIcon name="arrow" /></button>
-          <button type="button" className={`${viewerStyles.previewArrow} ${viewerStyles.next} ${styles.arrow}`} disabled={selected === photos.length - 1}
-            aria-label={t("Следующее фото")} onClick={() => change(1)}><ExploreIcon name="arrow" /></button>
+          {/* Each side of the photo is a tall target: a pointer lights the disc up anywhere over it, a tap need not hit the disc. */}
+          <button type="button" className={`${styles.zone} ${styles.previous}`} disabled={selected === 0}
+            aria-label={t("Предыдущее фото")} onClick={() => change(-1)}><span className={styles.disc}><ExploreIcon name="arrow" /></span></button>
+          <button type="button" className={`${styles.zone} ${styles.next}`} disabled={selected === photos.length - 1}
+            aria-label={t("Следующее фото")} onClick={() => change(1)}><span className={styles.disc}><ExploreIcon name="arrow" /></span></button>
           <span className={viewerStyles.count} role="status">{t("Фото {current} из {total}", { current: selected + 1, total: photos.length })}</span>
         </> : null}
       </div>

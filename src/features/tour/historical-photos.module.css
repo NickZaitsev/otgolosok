@@ -6,13 +6,95 @@
   font-size: var(--text-secondary);
 }
 
-/* Over a photo of any tone: an opaque disc with a shadow, not the translucent one of the banner. */
-.arrow {
-  background: var(--surface-island);
-  box-shadow: var(--shadow-control);
+/* Above the side strips, which cover the failed photo's place too: a tap on it must retry, not turn the photo. */
+.retry {
+  position: relative;
+  z-index: var(--z-raise);
 }
 
-.arrow:disabled {
-  opacity: 0;
-  pointer-events: none;
+/* A side of the photo: the whole strip navigates, the disc in it shows where. */
+.zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  width: min(30%, 10rem);
+  padding: 0 var(--space-sm);
+  color: var(--map-green);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.previous {
+  left: 0;
+  justify-content: flex-start;
+}
+
+.next {
+  right: 0;
+  justify-content: flex-end;
+}
+
+.zone:disabled {
+  display: none;
+}
+
+/* Over a photo of any tone: an opaque disc with a shadow. */
+.disc {
+  display: grid;
+  place-items: center;
+  width: var(--control-min);
+  height: var(--control-min);
+  background: var(--surface-island);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-control);
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.previous .disc svg {
+  transform: rotate(180deg);
+}
+
+.zone:focus-visible {
+  outline: none;
+}
+
+.zone:focus-visible .disc {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .previous:hover {
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--map-green) 45%, transparent),
+      transparent
+    );
+  }
+
+  .next:hover {
+    background: linear-gradient(
+      to left,
+      color-mix(in srgb, var(--map-green) 45%, transparent),
+      transparent
+    );
+  }
+
+  .zone:hover .disc {
+    color: var(--surface-island);
+    background: var(--map-green);
+    transform: scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disc {
+    transition: none;
+  }
 }
