@@ -575,7 +575,8 @@ test("map cells expose only ready places with the latest approved story and audi
     { placeId: "osm:node:4", osmType: "node", osmId: 4, name: "Архивное", location: { lat: 55.5, lon: 37.5 }, tags: {} },
     { placeId: "osm:node:5", osmType: "node", osmId: 5, name: "Черновик", location: { lat: 55.6, lon: 37.6 }, tags: {} },
   ];
-  store.importPlaces({ ...catalog, places }, { complete: true });
+  // Cell edges lie outside the Moscow region, which a complete import would refuse.
+  store.importPlaces({ ...catalog, places });
   store.createBatch({ requestKey: "map-cells-1", placeIds: places.map(place => place.placeId), limit: 5 });
   const story = title => ({ title, paragraphs: [{ text: "Текст", factIds: [] }], facts: [{ id: "f1" }, { id: "f2" }], sources: [{ id: "s1" }] });
   for (let job = store.claimContentJob(); job; job = store.claimContentJob()) {
@@ -611,9 +612,10 @@ test("map cells expose only ready places with the latest approved story and audi
   assert.equal(store.getMapCell(55, 37).points.find(point => point.id === "osm:node:2").durationSec, 42);
   assert.notEqual(etag(), before);
 
-  // A complete import without a place archives it and drops it from the map.
+  // A complete Moscow import without a place archives it and drops it from the map;
+  // node 2 lies outside the Moscow region and survives although the import omits it.
   before = etag();
-  store.importPlaces({ ...catalog, sourceSha256: "c".repeat(64), places: places.filter(place => place.placeId !== "osm:node:4") }, { complete: true });
+  store.importPlaces({ ...catalog, sourceSha256: "c".repeat(64), places: places.filter(place => !["osm:node:2", "osm:node:4"].includes(place.placeId)) }, { complete: true });
   assert.deepEqual(ids(), ["osm:node:1", "osm:node:2"]);
   assert.notEqual(etag(), before);
 
@@ -797,4 +799,17 @@ test("Kazan places get Kazan addresses and nearby queries work in both cities",t
   assert.deepEqual(store.listWalkCandidates({lat:55.75,lon:37.61,radius:2000}).map(item=>item.address),["Москва, Памятник","Москва, Арбат, 1"]);
   assert.deepEqual(store.listPlaces({lat:55.7939,lon:49.1288,radius:100}).places.map(item=>item.id),["osm:way:3"]);
   for(const [lat,lon] of [[55.8,43],[0,0]])assert.throws(()=>store.listWalkCandidates({lat,lon,radius:2000}),{code:"BAD_REQUEST"},`${lat},${lon}`);
+});
+
+test("a complete import archives absent places only in its own city",t=>{
+  const store=createStore(":memory:");t.after(()=>store.close());
+  const kazan={...catalog,sourceSha256:"d".repeat(64),places:[{placeId:"osm:way:3",osmType:"way",osmId:3,name:"Дом Кекина",location:{lat:55.7939,lon:49.1288},tags:{historic:"building"}}]};
+  store.importPlaces(catalog);store.importPlaces(kazan,{complete:true});
+  assert.deepEqual(store.listPlaces().places.map(item=>item.id).sort(),["osm:node:1","osm:way:2","osm:way:3"]);
+  store.importPlaces({...catalog,sourceSha256:"e".repeat(64),places:[catalog.places[0]]},{complete:true});
+  assert.deepEqual(store.listPlaces().places.map(item=>item.id).sort(),["osm:node:1","osm:way:3"]);
+  // A complete import must name one city: a mixed or out-of-area catalog cannot decide what to archive.
+  for(const places of [[...catalog.places,...kazan.places],[{...kazan.places[0],placeId:"osm:node:9",location:{lat:55.8,lon:43}}]])
+    assert.throws(()=>store.importPlaces({...catalog,sourceSha256:"f".repeat(64),places},{complete:true}),{code:"BAD_REQUEST"});
+  assert.deepEqual(store.listPlaces().places.map(item=>item.id).sort(),["osm:node:1","osm:way:3"]);
 });

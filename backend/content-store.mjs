@@ -271,6 +271,9 @@ export function createContentStore({db,now,transaction}) {
     ...translations,
     importPlaces(catalog,{complete=false}={}) {
       if(!catalog||!Array.isArray(catalog.places)||!catalog.places.length||typeof catalog.sourceSha256!=="string")throw fail("BAD_REQUEST");
+      // A complete import replaces one city's catalog: archiving outside it would wipe the other cities.
+      const city=complete?regionCityAt(catalog.places[0]?.location?.lat,catalog.places[0]?.location?.lon):null;
+      if(complete&&(!city||catalog.places.some(place=>regionCityAt(place?.location?.lat,place?.location?.lon)!==city)))throw fail("BAD_REQUEST");
       return transaction(()=>{
         const timestamp=iso(now),id=randomUUID();
         db.prepare("INSERT INTO osm_imports VALUES (?,?,?,?,?,?,?,?)").run(id,String(catalog.source??""),catalog.sourceSha256,
@@ -293,7 +296,7 @@ export function createContentStore({db,now,transaction}) {
           alias.run(place.osmType,String(place.osmId),place.placeId,id);
           photoDue.run(timestamp,place.placeId,placeImageInputHash(tags));
         }
-        if(complete)db.prepare("UPDATE places SET archived=1,updated_at=? WHERE import_id<>?").run(timestamp,id);
+        if(city)db.prepare("UPDATE places SET archived=1,updated_at=? WHERE import_id<>? AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?").run(timestamp,id,city.region.south,city.region.north,city.region.west,city.region.east);
         return {id,count:catalog.places.length,complete,createdAt:timestamp};
       });
     },
