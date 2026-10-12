@@ -1,12 +1,20 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 import { DatabaseSync } from "node:sqlite";
 import { createAccountStore } from "./account-store.mjs";
 import { createStore } from "./store.mjs";
 import { createApp } from "./server.mjs";
 import { nextSlots } from "./promo-slots.mjs";
 
-const snapshot = title => ({ version: 1, title, start: null, stops: [], mode: "loop", minutes: 30, route: null, jobs: [], submitting: null });
+const routed = title => ({
+  version: 2, id: randomUUID(), title, description: "Маршрут", city: "Москва", mode: "open", minutes: 30,
+  start: { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } },
+  destination: { address: "Москва, Арбат, 10", location: { lat: 55.751, lon: 37.601 } }, stops: [],
+  route: { geometry: [{ lat: 55.75, lon: 37.6 }, { lat: 55.751, lon: 37.601 }], distanceM: 400, walkingMinutes: 6, attribution: "OSM" }, fieldChecked: false,
+});
+const snapshot = routed;
+const draft = title => ({ version: 1, title, start: null, stops: [], mode: "loop", minutes: 30, route: null, jobs: [], submitting: null });
 
 /** Account store on a fixed clock with a few walks. */
 function fixture(t, nowIso = "2026-10-05T09:00:00Z") {
@@ -91,6 +99,47 @@ test("claim, report and the full life of an item", t => {
   assert.deepEqual([back.status, back.error], ["queued", null]);
   assert.deepEqual(store.listPromoQueue().items.map(item => item.title), ["В", "Б"]);
   assert.deepEqual(store.listPromoQueue().history.map(item => item.title), ["А"]);
+});
+
+test("publishing a promo makes its shared walk public and approved in the same transaction", t => {
+  const { store } = fixture(t);
+  const created = store.createWalk("one", { title: "Поварская", idempotencyKey: "published-access", snapshot: routed("Поварская") });
+  const shared = store.setWalkVisibility("one", created.id, created.revision, "shared");
+  const queued = store.enqueuePromo(shared.id);
+  const [claimed] = store.claimPromo(1);
+  const ready = store.reportPromo(queued.id, { status: "ready", revision: claimed.revision });
+  assert.deepEqual([store.getWalk("one", shared.id).visibility, store.getWalk("one", shared.id).listingStatus], ["shared", null]);
+  store.reportPromo(ready.id, { status: "published", revision: ready.revision,
+    youtubeUrl: "https://www.youtube.com/shorts/abc", telegramUrl: "https://t.me/c/1" });
+  const publicWalk = store.getWalk("one", shared.id);
+  assert.deepEqual([publicWalk.visibility, publicWalk.listingStatus, publicWalk.shareToken], ["public", "approved", shared.shareToken]);
+  assert.equal(store.listTopCandidates().walks.some(walk => walk.id === shared.id), true);
+});
+
+test("publication rolls back if its walk can no longer be made public", t => {
+  const { store, db } = fixture(t);
+  const created = store.createWalk("one", { title: "Черновик", idempotencyKey: "draft-promo", snapshot: draft("Черновик") });
+  const shared = store.setWalkVisibility("one", created.id, created.revision, "shared");
+  const queued = store.enqueuePromo(shared.id);
+  const [claimed] = store.claimPromo(1);
+  const ready = store.reportPromo(queued.id, { status: "ready", revision: claimed.revision });
+  assert.equal(code(() => store.reportPromo(ready.id, { status: "published", revision: ready.revision,
+    youtubeUrl: "https://www.youtube.com/shorts/abc", telegramUrl: "https://t.me/c/1" })), "WALK_NOT_READY");
+  assert.equal(store.getPromo(ready.id).status, "ready");
+  assert.equal(db.prepare("SELECT youtube_url FROM promo_queue WHERE id=?").get(ready.id).youtube_url, null);
+});
+
+test("publication does not reopen a walk its owner made private", t => {
+  const { store } = fixture(t);
+  const created = store.createWalk("one", { title: "Закрытая", idempotencyKey: "closed-promo", snapshot: routed("Закрытая") });
+  const shared = store.setWalkVisibility("one", created.id, created.revision, "shared");
+  const queued = store.enqueuePromo(shared.id);
+  const [claimed] = store.claimPromo(1);
+  const ready = store.reportPromo(queued.id, { status: "ready", revision: claimed.revision });
+  store.setWalkVisibility("one", shared.id, shared.revision, "private");
+  assert.equal(code(() => store.reportPromo(ready.id, { status: "published", revision: ready.revision,
+    youtubeUrl: "https://www.youtube.com/shorts/abc", telegramUrl: "https://t.me/c/1" })), "CONFLICT");
+  assert.deepEqual([store.getPromo(ready.id).status, store.getWalk("one", shared.id).visibility], ["ready", "private"]);
 });
 
 test("a ready item keeps its slot, postpone goes to the head, cancel needs no URLs", t => {

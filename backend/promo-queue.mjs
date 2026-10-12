@@ -19,9 +19,9 @@ const httpsUrl = value => typeof value === "string" && value.length <= 300 && /^
 
 /**
  * @param {import("node:sqlite").DatabaseSync} db Account database (holds `user_walks`).
- * @param {{ now?: () => number, transaction: <T>(fn: () => T) => T }} options
+ * @param {{ now?: () => number, transaction: <T>(fn: () => T) => T, publishWalk: (walkId: string) => void }} options
  */
-export function createPromoQueueStore(db, { now = Date.now, transaction }) {
+export function createPromoQueueStore(db, { now = Date.now, transaction, publishWalk }) {
   db.exec(`CREATE TABLE IF NOT EXISTS promo_queue (
       id TEXT PRIMARY KEY,
       walk_id TEXT NOT NULL REFERENCES user_walks(id) ON DELETE CASCADE,
@@ -185,6 +185,9 @@ export function createPromoQueueStore(db, { now = Date.now, transaction }) {
         if (!row) return null;
         if (!(TRANSITIONS[row.status] ?? []).includes(next))
           throw conflict(`Переход ${row.status} → ${next} недопустим`);
+        // The video and its walk become public together. A failed access change
+        // rolls back the promo report so Shorts can retry after the walk is fixed.
+        if (next === "published") publishWalk(String(row.walk_id));
         const back = next === "queued";
         db.prepare(`UPDATE promo_queue SET status = ?, position = ?, slot_at = ?, run_id = ?, youtube_url = ?, telegram_url = ?,
           error = ?, revision = revision + 1, updated_at = ? WHERE id = ?`).run(

@@ -166,7 +166,22 @@ export function createAccountStore(db, now = Date.now) {
       ...(snapshot ? {draft:!snapshot.route,walkingMinutes:snapshot.route?.walkingMinutes??null,distanceM:snapshot.route?.distanceM??null} : {})};
   };
   const launches = createWalkLaunchStore(db, { now, transaction });
-  const promo = createPromoQueueStore(db, { now, transaction });
+  const publishPromoWalk = walkId => {
+    const row = db.prepare("SELECT * FROM user_walks WHERE id=?").get(walkId);
+    if (!row || !row.share_token || !linked(row.visibility))
+      throw Object.assign(new Error("Прогулка больше не открыта по ссылке — публикация промо остановлена."), { code: "CONFLICT" });
+    const document = documentOf(row);
+    if (!document?.route)
+      throw Object.assign(new Error("A draft cannot be public"), { code: "WALK_NOT_READY" });
+    const status = row.listing_status === "hidden" ? "hidden" : "approved";
+    const hash = status === "hidden" ? row.listing_text_hash : moderatedTextHash(row.title, document);
+    if (row.visibility === "public" && row.listing_status === status && row.listing_text_hash === hash) return;
+    const time = timestamp();
+    db.prepare(`UPDATE user_walks SET visibility='public', listing_status=?, listing_text_hash=?,
+      listing_updated_at=?, revision=revision+1, updated_at=? WHERE id=?`)
+      .run(status, hash, status === row.listing_status ? row.listing_updated_at ?? time : time, time, walkId);
+  };
+  const promo = createPromoQueueStore(db, { now, transaction, publishWalk: publishPromoWalk });
   return {
     legalConsents: createLegalConsentStore(db, { now }),
     ...promo,
