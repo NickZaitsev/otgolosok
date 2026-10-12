@@ -154,7 +154,10 @@
  {
   "placeId": "osm:way:143954521",
   "title": "Юнусовская площадь",
-  "status": "no_candidate"
+  "status": "ok",
+  "file": "Городская поликлиника № 7. Вид с Юнусовской площади. Казань. РТ. Сентябрь 2013 - panoramio.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Vadim Indeikin"
  },
  {
   "placeId": "osm:way:157495501",
