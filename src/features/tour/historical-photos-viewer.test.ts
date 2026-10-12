@@ -7,11 +7,11 @@ import { HistoricalPhotos } from "./historical-photos-viewer";
 vi.mock("@/lib/i18n/provider", () => ({ useI18n: () => ({ locale: "ru", t: (s: string, values?: Record<string, unknown>) => s.replace(/\{(\w+)\}/g, (_, k: string) => String(values?.[k] ?? k)) }) }));
 const TVERSKAYA = "259d5970-d002-5dc4-b15f-b2a784c2dbb3";
 let container: HTMLDivElement, root: Root;
-const button = (label: string) => [...container.querySelectorAll("button")].find(node => node.getAttribute("aria-label") === label || node.textContent === label);
+const button = (label: string) => [...document.querySelectorAll("button")].find(node => node.getAttribute("aria-label") === label || node.textContent === label);
 const open = async (walkId: string, stopId: string) => {
   await act(async () => root.render(createElement(HistoricalPhotos, { walkId, stopId })));
   await act(async () => button("Исторические снимки · 3")!.click());
-  return container.querySelector("dialog[open]")!;
+  return document.querySelector("dialog[open]")!;
 };
 beforeEach(() => {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
@@ -25,6 +25,9 @@ it("открывает снимки внутри прогулки, а ссылк
   await act(async () => root.render(createElement(HistoricalPhotos, { walkId: TVERSKAYA, stopId: "tverskaya-stop-10" })));
   expect(container.querySelector("a")).toBeNull();
   const dialog = await open(TVERSKAYA, "tverskaya-stop-10");
+  // Inside the walk tools their `button` rule stripped the arrows of their backdrop: the viewer must live in <body>.
+  expect(container.contains(dialog)).toBe(false);
+  expect(dialog.parentElement).toBe(document.body);
   expect(dialog.querySelector("h3")?.textContent).toBe("1901 · Контора Международного общества спальных вагонов на Страстном бульваре");
   expect(dialog.querySelector("img")?.getAttribute("alt")).toBe("Контора Международного общества спальных вагонов на Страстном бульваре, 1901 год");
   expect(dialog.querySelector("a")?.getAttribute("href")).toBe("https://pastvu.com/p/1344568");
@@ -36,10 +39,10 @@ it("листает снимки без выхода за края и возвр�
   await act(async () => button("Следующее фото")!.click());
   await act(async () => button("Следующее фото")!.click());
   expect(button("Следующее фото")?.disabled).toBe(true);
-  expect(container.querySelector("dialog[open] [role=status]")?.textContent).toBe("Фото 3 из 3");
-  expect(container.querySelector("dialog[open] a")?.getAttribute("href")).toBe("https://pastvu.com/p/1036442");
+  expect(document.querySelector("dialog[open] [role=status]")?.textContent).toBe("Фото 3 из 3");
+  expect(document.querySelector("dialog[open] a")?.getAttribute("href")).toBe("https://pastvu.com/p/1036442");
   await act(async () => button("Закрыть фото")!.click());
-  expect(container.querySelector("dialog[open]")).toBeNull();
+  expect(document.querySelector("dialog[open]")).toBeNull();
   expect(document.activeElement).toBe(button("Исторические снимки · 3"));
 });
 

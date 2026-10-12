@@ -5,3 +5,14 @@
   color: var(--map-muted);
   font-size: var(--text-secondary);
 }
+
+/* Over a photo of any tone: an opaque disc with a shadow, not the translucent one of the banner. */
+.arrow {
+  background: var(--surface-island);
+  box-shadow: var(--shadow-control);
+}
+
+.arrow:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
