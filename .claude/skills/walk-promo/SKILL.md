@@ -16,6 +16,10 @@ Before starting, read in `../otgolosok-shorts`: `README.md` (sections «Роли
 «Telegram»), `docs/agents/shared-walks.md`, `docs/agents/cover-art.md`, `docs/agents/telegram.md`
 and the most recent `docs/agents/*-short-*.md` journal — it is the reference for format and checks.
 
+**No abbreviations anywhere in the promo** — hook, video title/description, Telegram post, cover titles:
+spell names out («Третье транспортное кольцо», not «ТТК»; «улица», not «ул.»), even if the story uses
+the short form. The generator rejects them (`*_ABBREVIATION`); keep the same rule in manual edits.
+
 ## 0. Names and folders
 
 - `SLUG` — kebab-case of start/end (e.g. `spartak-tushino`), `DATE` — today, `SEED` — `YYYYMMDD`.
