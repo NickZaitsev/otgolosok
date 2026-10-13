@@ -9,7 +9,7 @@ export const SHARE_PATH = /^\/place\/(node|way|relation)\/([1-9]\d{0,18})$/;
 
 const SITE = "Отголосок";
 const SITE_TITLE = "Отголосок — город говорит рядом";
-const SITE_DESCRIPTION = "Аудиопрогулки по Москве, которые начинаются там, где случилась история.";
+const SITE_DESCRIPTION = "Аудиопрогулки по Москве и Казани, которые начинаются там, где случилась история.";
 const FALLBACK_IMAGE = { path: "/icons/icon-512.png", width: 512, height: 512 };
 const DESCRIPTION_LIMIT = 200;
 const PHOTO_PATH = /^(?:\/api\/place-images\/[a-f0-9]{64}|\/images\/places\/[a-z0-9-]+)\.jpg$/;

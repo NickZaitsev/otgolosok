@@ -4,7 +4,7 @@ export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Отголосок — аудиопрогулки по Москве",
+    name: "Отголосок — аудиопрогулки по Москве и Казани",
     short_name: "Отголосок",
     description:
       "Городские истории с источниками, которые начинаются рядом с местом событий.",

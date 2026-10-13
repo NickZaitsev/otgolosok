@@ -16,7 +16,7 @@ const baseMetadata: Metadata = {
   icons: { icon: "/icon.svg", apple: "/icons/apple-touch-icon.png" },
   title: "Отголосок — город говорит рядом",
   description:
-    "Аудиопрогулки по Москве, которые начинаются там, где случилась история.",
+    "Аудиопрогулки по Москве и Казани, которые начинаются там, где случилась история.",
   applicationName: "Отголосок",
   appleWebApp: {
     capable: true,
@@ -41,9 +41,9 @@ export function RootDocument({ children, locale }: { children: ReactNode; locale
 }
 
 const descriptions = {
-  ru: "Аудиопрогулки по Москве, которые начинаются там, где случилась история.",
-  en: "Audio walks around Moscow, starting where each story happened.",
-  zh: "漫步莫斯科，在故事发生的地方聆听城市往事。",
+  ru: "Аудиопрогулки по Москве и Казани, которые начинаются там, где случилась история.",
+  en: "Audio walks around Moscow and Kazan, starting where each story happened.",
+  zh: "漫步莫斯科和喀山，在故事发生的地方聆听城市往事。",
 };
 const titles = { ru: "Отголосок — город говорит рядом", en: "Otgolosok — the city's stories, right here", zh: "Otgolosok — 聆听身边的城市故事" };
 export function siteMetadata(locale: Locale, pathname = "/"): Metadata {
