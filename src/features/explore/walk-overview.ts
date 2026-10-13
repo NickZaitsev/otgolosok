@@ -1,3 +1,4 @@
+import { regionCityAt } from "../../../backend/cities.mjs";
 import type { ReviewSummary } from "../reviews/model";
 import { fetchWithRetry, RequestError } from "../walk-builder/request";
 import { CATALOG_WALK_ID, record, validateWalkCard, WALK_UUID } from "../walks/top-model";
@@ -12,10 +13,13 @@ export const WALK_HIT_TOLERANCE_PX = 16;
 /** Colours of the overview lines, as CSS custom properties of tokens.css. */
 export const WALK_OVERVIEW_COLORS = 6;
 /**
- * The only region with walks: Moscow with New Moscow and Zelenograd. A request never leaves it,
- * so a zoomed-out desktop view stays within the server's span limit.
+ * The region of a city whose walks a view loads: the catalog region holding the view's centre.
+ * A request never leaves it, so a zoomed-out desktop view stays within the server's span limit.
  */
-export const WALK_REGION: CatalogBounds = { west: 36.8, south: 55.1, east: 38.4, north: 56.2 };
+export function walkRegion(center: { lat: number; lon: number }): CatalogBounds | null {
+  const city = regionCityAt(center.lat, center.lon);
+  return city ? { west: city.region.west, south: city.region.south, east: city.region.east, north: city.region.north } : null;
+}
 /** Requested edges snap outward to this grid: neighbouring views share a request and it reveals less of where one looks. */
 const GRID = 0.01;
 const AREA_HISTORY = 8;
@@ -72,8 +76,8 @@ export const contains = (outer: CatalogBounds, inner: CatalogBounds) =>
 
 /**
  * The area to load for a view: twice the visible width and height (the viewport's required
- * bounds already carry half a zoom step, √2), snapped outward and clipped to {@link WALK_REGION};
- * null when the view is outside the region.
+ * bounds already carry half a zoom step, √2), snapped outward and clipped to the {@link walkRegion} of its centre;
+ * null when the centre is outside every city.
  */
 export function overviewArea(viewport: Pick<MapViewport, "required">): CatalogBounds | null {
   const { west, east, south, north } = viewport.required;
@@ -81,11 +85,13 @@ export function overviewArea(viewport: Pick<MapViewport, "required">): CatalogBo
   const halfX = (east - west) / 2 * scale, midX = (east + west) / 2;
   const top = mercatorY(Math.min(85, north)), bottom = mercatorY(Math.max(-85, south));
   const halfY = (top - bottom) / 2 * scale, midY = (top + bottom) / 2;
+  const region = walkRegion({ lat: latitude(midY), lon: midX });
+  if (!region) return null;
   const area = {
-    west: Math.max(WALK_REGION.west, Math.floor((midX - halfX) / GRID) * GRID),
-    east: Math.min(WALK_REGION.east, Math.ceil((midX + halfX) / GRID) * GRID),
-    south: Math.max(WALK_REGION.south, Math.floor(latitude(midY - halfY) / GRID) * GRID),
-    north: Math.min(WALK_REGION.north, Math.ceil(latitude(midY + halfY) / GRID) * GRID),
+    west: Math.max(region.west, Math.floor((midX - halfX) / GRID) * GRID),
+    east: Math.min(region.east, Math.ceil((midX + halfX) / GRID) * GRID),
+    south: Math.max(region.south, Math.floor(latitude(midY - halfY) / GRID) * GRID),
+    north: Math.min(region.north, Math.ceil(latitude(midY + halfY) / GRID) * GRID),
   };
   if (area.west >= area.east || area.south >= area.north) return null;
   // Snapping in floating point leaves tails like 37.580000000000005; the server takes six decimals.

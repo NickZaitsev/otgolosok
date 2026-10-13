@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import type { MouseEvent, ReactNode, Ref } from "react";
+import { Fragment, type MouseEvent, type ReactNode, type Ref } from "react";
+import { CITIES, type City } from "../city/current-city";
 import { Sheet } from "../shell/sheet";
 import { SheetHandle } from "../shell/sheet-handle";
 import { cx } from "../ui/cx";
@@ -228,13 +229,13 @@ export function LinkNotice({ message, alert = false, onRetry, onClose }: { messa
 }
 
 /** Result of locating the user; when access is denied it explains how to allow it. */
-export function GeoNotice({ message, outside, denied, onMoscow, onRetry, onClose }: {
-  message: string; outside: boolean; denied: boolean; onMoscow: () => void; onRetry: () => void; onClose: () => void;
+export function GeoNotice({ message, outside, denied, onCity, onRetry, onClose }: {
+  message: string; outside: boolean; denied: boolean; onCity: (city: City) => void; onRetry: () => void; onClose: () => void;
 }) {
   const { t } = useI18n();
   return <div className={a.notice}>
     <div>
-      <p role="status">{message}{outside ? <> <span className={styles.nowrap}><button type="button" className={styles.inlineButton} onClick={onMoscow}>{t("Пока доступны истории Москвы.")}</button></span></> : null}</p>
+      <p role="status">{message}{outside ? <> {t("Истории есть в городах:")} {CITIES.map((city, index) => <Fragment key={city.id}>{index ? ", " : null}<button type="button" className={styles.inlineButton} onClick={() => onCity(city)}>{t(city.name)}</button></Fragment>)}.</> : null}</p>
       {denied ? <GeoHelp onRetry={onRetry} /> : null}
     </div>
     <button className={`${a.iconButton} ${styles.top}`} type="button" aria-label={t("Скрыть сообщение")} onClick={onClose}><ExploreIcon name="close" /></button>

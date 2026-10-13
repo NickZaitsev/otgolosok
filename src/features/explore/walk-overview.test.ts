@@ -3,8 +3,9 @@ import { RequestError } from "../walk-builder/request";
 import type { CatalogBounds } from "./catalog-bounds";
 import {
   contains, createWalkOverviewStore, overviewArea, overviewUrl, validateMapWalks, WALK_OVERVIEW_COLORS, WALK_OVERVIEW_TTL_MS,
-  WALK_REGION, walkColorIndex, walksAtPoint,
+  walkColorIndex, walksAtPoint,
 } from "./walk-overview";
+import { CITIES } from "../../../backend/cities.mjs";
 
 const UUID = "00000000-0000-4000-8000-000000000001";
 const raw = (id: string, line: Array<[number, number]>, kind: "catalog" | "shared" = "catalog") =>
@@ -41,13 +42,24 @@ describe("overviewArea", () => {
     for (const edge of Object.values(area)) expect(Math.round(edge * 100) / 100).toBe(edge);
     expect(overviewUrl(area)).toMatch(/^\/api\/walks\/map\?west=\d+\.\d{2}&south=\d+\.\d{2}&east=\d+\.\d{2}&north=\d+\.\d{2}$/);
   });
-  it("обрезает отдалённую карту по региону прогулок", () => {
-    expect(overviewArea(view(34, 54, 41, 57.5))).toEqual(WALK_REGION);
+  const [moscow, kazan] = CITIES;
+  it.each([
+    ["Москвы", moscow, view(34, 54, 41, 57.5)],
+    ["Казани", kazan, view(46, 54, 52, 57.5)],
+  ])("обрезает отдалённую карту по региону %s", (_name, city, value) => {
+    expect(overviewArea(value)).toEqual(city.region);
+  });
+  it("грузит казанские прогулки у Кремля", () => {
+    const area = overviewArea(view(49.1, 55.79, 49.12, 55.8))!;
+    expect(contains(kazan.region, area)).toBe(true);
+    expect(contains(area, { west: 49.1, south: 55.79, east: 49.12, north: 55.8 })).toBe(true);
   });
   it.each([
     ["Петербург", view(30.2, 59.9, 30.4, 60)],
     ["западнее региона даже вдвое шире", view(35, 55.7, 36, 55.8)],
-  ])("без пересечения с регионом ничего не грузит: %s", (_name, value) => expect(overviewArea(value)).toBeNull());
+    // Both cities at once: the centre falls between them, and a request may not span both.
+    ["между Москвой и Казанью", view(37, 55, 49.5, 56.5)],
+  ])("с центром вне городов ничего не грузит: %s", (_name, value) => expect(overviewArea(value)).toBeNull());
 });
 
 describe("walksAtPoint", () => {

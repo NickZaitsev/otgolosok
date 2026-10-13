@@ -13,7 +13,8 @@ import { useAroundFood } from "../food/use-around-food";
 import type { FoodPlace } from "../food/types";
 import { ExploreIcon } from "./icons";
 import { AppNavigation } from "../navigation/app-navigation";
-import { isMoscowPoint, MOSCOW_CENTER, MOSCOW_ZOOM, readMapJobs, rememberMapJob, rememberMapPlace, type MapJob } from "./map-jobs";
+import { cityAtPoint, useCurrentCity, type City } from "../city/current-city";
+import { isMoscowPoint, readMapJobs, rememberMapJob, rememberMapPlace, type MapJob } from "./map-jobs";
 import { nearbyRadiusForAccuracy, recommendNearbyStories, type NearbyRadius } from "./nearby-stories";
 import { isWalkCreation, selectExplorePanel } from "./panel-state";
 import { useMapCatalog } from "./use-map-catalog";
@@ -83,6 +84,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const [nearbyCenter,setNearbyCenter]=useState<Coordinates|null>(null),[nearbyRadius,setNearbyRadius]=useState<NearbyRadius>(200);
   const [geo,setGeo]=useState<"idle"|"loading"|"ready"|"error"|"denied">("idle"),[geoMessage,setGeoMessage]=useState(""),[geoOutside,setGeoOutside]=useState(false);
   const [geoError,setGeoError]=useState<LocateErrorCode|null>(null);
+  const [,chooseCity]=useCurrentCity();
   const geoStatusId=useId();
   const [prompt,setPrompt]=useState(false);
   const [mapHintVisible,setMapHintVisible]=useState(true);
@@ -274,7 +276,8 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     leavePlace();
     setPrompt(false);setSelectedFood(null);closeWalks();setSelected(undefined);setPlace(null);setPlaceError("");setPlaceBusy(true);
     setFocus({...value});setNearbyCenter(value);
-    if(!isMoscowPoint(value)){setPlaceBusy(false);setPlaceError(t("Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку."));return;}
+    // New stories are prepared for Moscow houses only; other cities have ready walks.
+    if(!isMoscowPoint(value)){setPlaceBusy(false);setPlaceError(cityAtPoint(value)?t("Здесь пока можно слушать готовые прогулки. Истории о домах на выбор готовим только в Москве."):t("Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку."));return;}
     const timer=setTimeout(()=>controller.abort("timeout"),12000);
     try {
       const params=new URLSearchParams({lat:String(value.lat),lon:String(value.lon)});
@@ -307,14 +310,15 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
       first=false;
       if(!update.final)return;
       locating.current=null;
-      const inMoscow=isMoscowPoint(point),radius=nearbyRadiusForAccuracy(point.accuracyM);
-      setGeo("ready");setPrompt(false);setGeoOutside(!inMoscow);
-      if(inMoscow&&radius){setNearbyRadius(current=>current>=radius?current:radius);setNearbyCenter(point);}
+      const here=cityAtPoint(point),radius=nearbyRadiusForAccuracy(point.accuracyM);
+      setGeo("ready");setPrompt(false);setGeoOutside(!here);
+      if(here)chooseCity(here);
+      if(here&&radius){setNearbyRadius(current=>current>=radius?current:radius);setNearbyCenter(point);}
       else setNearbyCenter(null);
-      setGeoMessage(!inMoscow?t("Вы сейчас за пределами нашего каталога."):radius?"":Number.isFinite(point.accuracyM)?t("Положение приблизительное: точность около {accuracy} м. Выберите точку на карте, чтобы точно искать рядом.",{accuracy:Math.round(point.accuracyM)}):t("Положение приблизительное. Выберите точку на карте, чтобы точно искать рядом."));
+      setGeoMessage(!here?t("Вы сейчас за пределами нашего каталога."):radius?"":Number.isFinite(point.accuracyM)?t("Положение приблизительное: точность около {accuracy} м. Выберите точку на карте, чтобы точно искать рядом.",{accuracy:Math.round(point.accuracyM)}):t("Положение приблизительное. Выберите точку на карте, чтобы точно искать рядом."));
     });
   }
-  function showMoscow(){setFocus({...MOSCOW_CENTER,zoom:MOSCOW_ZOOM});setGeoMessage("");setGeoOutside(false);}
+  function showCity(city:City){chooseCity(city);setFocus({...city.center,zoom:city.zoom});setGeoMessage("");setGeoOutside(false);}
   // The story is prepared for the house the user picked; its card replaces the place card and shows the progress.
   async function prepareStory(){
     const target=place;
@@ -390,7 +394,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     !creating&&linkedId&&linked.status==="loading"?<LinkNotice key="link" message={t("Открываем историю…")} onClose={()=>leavePlace({replace:true})} />
     :!creating&&linkedId&&(linked.status==="error"||(linked.status==="ready"&&!linkedHeader))?<LinkNotice key="link" message={t("Не удалось открыть историю.")} alert onRetry={linked.status==="error"?linked.retry:undefined} onClose={()=>leavePlace({replace:true})} />
     :!creating&&linkNotice?<LinkNotice key="link" message={linkNotice} onClose={()=>setLinkNotice("")} />:null,
-    !creating&&geoMessage?<GeoNotice key="geo" message={geoMessage} outside={geoOutside} denied={geo==="denied"} onMoscow={showMoscow} onRetry={locate} onClose={()=>{setGeoMessage("");setGeoOutside(false);}} />:null,
+    !creating&&geoMessage?<GeoNotice key="geo" message={geoMessage} outside={geoOutside} denied={geo==="denied"} onCity={showCity} onRetry={locate} onClose={()=>{setGeoMessage("");setGeoOutside(false);}} />:null,
     !creating&&!sheet&&mapHintVisible?<MapHintNotice key="hint" onClose={()=>setMapHintVisible(false)} />:null,
     !creating&&updateAvailable?<a key="update" className={a.notice} href={`/update.html?lang=${locale}`}>{t("Доступна новая версия · обновить")}</a>:null,
   ].filter(Boolean);

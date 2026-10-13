@@ -104,10 +104,6 @@
   color: var(--map-orange);
 }
 
-.nowrap {
-  white-space: nowrap;
-}
-
 .inlineButton {
   display: inline;
   padding: 0;

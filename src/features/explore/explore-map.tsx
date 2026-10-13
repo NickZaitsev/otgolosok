@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import type * as Leaflet from "leaflet";
+import { readCurrentCity } from "../city/current-city";
 import { foodMarkerSvg } from "../food/food-marker";
 import type { FoodKind } from "../food/types";
 import type { Coordinates } from "../tour/types";
@@ -14,7 +15,6 @@ import type { MapStatus } from "../shell/map-status-notice";
 import { cx } from "../ui/cx";
 import { catalogArea, type MapViewport } from "./catalog-bounds";
 import { createMapClusters, loadMapLibrary, type MapClusters } from "./map-clusters";
-import { MOSCOW_CENTER, MOSCOW_ZOOM } from "./map-jobs";
 import { markerLook, type MarkerKind, type MarkerLook } from "./map-marker-look";
 import { createMapView, type MapFocus, type MapView } from "./map-view";
 import { chevronMarks, ROUTE_COVERED_DASH, routeRuns } from "./route-style";
@@ -274,6 +274,8 @@ export function ExploreMap({
         if (disposed || !container.current) return;
         const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
         const saved = viewState?.current;
+        // A map without a saved view opens on the listener's city.
+        const home = readCurrentCity();
         appliedFocus.current = saved?.focus ?? null;
         // Leaflet 1.9 leaves its zoom transition timer alive after remove().
         // Zoom immediately so switching tabs mid-zoom cannot touch a removed map.
@@ -292,8 +294,8 @@ export function ExploreMap({
         }).setView(
           saved
             ? [saved.center.lat, saved.center.lon]
-            : [MOSCOW_CENTER.lat, MOSCOW_CENTER.lon],
-          saved?.zoom ?? MOSCOW_ZOOM,
+            : [home.center.lat, home.center.lon],
+          saved?.zoom ?? home.zoom,
         );
         if (viewState) {
           saveView = () => {

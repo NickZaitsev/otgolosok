@@ -100,3 +100,32 @@ test("браузер без геолокации показывает переч
   await expect(control).toHaveCSS("color", "rgb(152, 46, 36)");
   await page.screenshot({ path: info.outputPath("geolocation-unavailable.png") });
 });
+
+test.describe("город", () => {
+  test("вне каталога предлагает города, выбор открывает Казань и в трендах", async ({ page, context }) => {
+    await context.grantPermissions(["geolocation"]);
+    await context.setGeolocation({ latitude: 59.94, longitude: 30.31, accuracy: 20 });
+    await page.goto("/");
+    await expect(page.getByText("Загружаем карту…")).toHaveCount(0);
+    await page.getByRole("button", { name: "Моё местоположение", exact: true }).click();
+    await expect(page.getByText(/Вы сейчас за пределами нашего каталога\. Истории есть в городах:/)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Москва", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Казань", exact: true }).click();
+    expect(await page.evaluate(() => localStorage.getItem("otgolosok:city:v1"))).toBe("kazan");
+    const top = page.waitForRequest(request => request.url().includes("/api/top-walks"));
+    await page.goto("/trends");
+    expect(new URL((await top).url()).searchParams.get("city")).toBe("kazan");
+    await expect(page.getByRole("group", { name: "Город" }).getByRole("button", { name: "Казань" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("геопозиция в Казани запоминает город", async ({ page, context }) => {
+    await context.grantPermissions(["geolocation"]);
+    await context.setGeolocation({ latitude: 55.7963, longitude: 49.1088, accuracy: 20 });
+    await page.goto("/");
+    await expect(page.getByText("Загружаем карту…")).toHaveCount(0);
+    await page.getByRole("button", { name: "Моё местоположение", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Моё местоположение", exact: true })).toHaveAttribute("data-location-state", "ready");
+    expect(await page.evaluate(() => localStorage.getItem("otgolosok:city:v1"))).toBe("kazan");
+    await expect(page.getByText("Вы сейчас за пределами нашего каталога.", { exact: false })).toHaveCount(0);
+  });
+});
