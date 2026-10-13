@@ -504,9 +504,11 @@ export function createStore(
         checkCapacity();
         const timestamp = isoNow(now);
         const previousAudio = job.data.audio ?? job.data.revoice?.previousAudio ?? null;
+        // The text that was voiced into previousAudio: walks keep serving this pair until the new recording is ready.
+        const previousStory = job.data.audio ? job.data.story : job.data.revoice?.previousStory ?? null;
         return save({ ...job, stage: "queued", error: null, revision: job.revision + 1, updatedAt: timestamp,
           data: { ...job.data, audio: null, ttsProvider, ttsVoice,
-            revoice: { requestedAt: timestamp, previousAudio } } });
+            revoice: { requestedAt: timestamp, previousAudio, ...(previousAudio && previousStory ? { previousStory } : {}) } } });
       });
     },
 

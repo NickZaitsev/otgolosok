@@ -94,3 +94,31 @@ test("translated walk labels keep the source document beside the display project
   assert.equal(fallback.document, document);
   assert.deepEqual(fallback.documentLocalization, { requestedLocale: "en", contentLocale: "ru", fallbackReason: "stale" });
 });
+
+test("a published job stays on the walk with its previous text and recording while a revoice runs or after it fails", () => {
+  const store = createStore(":memory:");
+  try {
+    let job = store.createOrGet({ key: "published", address: b.address });
+    const words = text => `${text} ${"слово ".repeat(60).trim()}`;
+    const story = { title: "Дом", paragraphs: [{ text: words("Прежний текст."), factIds: [] }, { text: words("Второй абзац."), factIds: [] }] };
+    const audio = { url: `/api/story-audio/${"a".repeat(64)}.mp3`, sha256: "a".repeat(64), durationSec: 90 };
+    job = store.update(job.id, { stage: "ready", data: { story, audio } }, job.revision);
+    const document = validateWalkDocument({ version: 2, id, title: "Арбат", description: "", city: "Москва", mode: "open", minutes: 30, start: a,
+      stops: [{ id: first, place: b, storyRef: { kind: "job", id: job.id }, transition: "", nextHint: "" }],
+      route: { geometry: [a.location, b.location], distanceM: 110, walkingMinutes: 2, attribution: "OSM" }, fieldChecked: false });
+    const published = resolveWalkView(document, 0, store).chapters[0];
+    assert.equal(published.status, "ready");
+
+    // An editor replaces the text together with the revoice request: the new text must not appear before its recording.
+    job = store.revoiceAdmin(job.id, job.revision, "openai", null);
+    job = store.update(job.id, { data: { ...job.data, story: { ...story, paragraphs: [{ text: words("Новый текст."), factIds: [] }, story.paragraphs[1]] } } }, job.revision);
+    assert.deepEqual(resolveWalkView(document, 0, store).chapters[0], published);
+
+    job = store.update(job.id, { stage: "failed", error: { code: "PROVIDER_BUSY" } }, job.revision);
+    assert.deepEqual(resolveWalkView(document, 0, store).chapters[0], published);
+
+    // A retry of the failed revoice still remembers the published pair, not the unvoiced new text.
+    store.revoiceAdmin(job.id, job.revision, "openai", null);
+    assert.deepEqual(resolveWalkView(document, 0, store).chapters[0], published);
+  } finally { store.close(); }
+});

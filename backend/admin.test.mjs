@@ -368,7 +368,7 @@ test("revoice queues only the existing story, preserves published audio and occu
   assert.equal(queued.error, null);
   assert.deepEqual(queued.data.story, story);
   assert.equal(queued.data.audio, null);
-  assert.deepEqual(queued.data.revoice, { requestedAt: queued.updatedAt, previousAudio: audio });
+  assert.deepEqual(queued.data.revoice, { requestedAt: queued.updatedAt, previousAudio: audio, previousStory: story });
   assert.equal(queued.data.ttsProvider, "yandex");
   assert.equal(queued.data.ttsVoice, "marina");
   assert.equal(queued.data.privateCheckpoint, "kept");

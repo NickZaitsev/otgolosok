@@ -105,8 +105,10 @@ export function resolveWalkView(raw, revision, store, { requestedLocale = "ru" }
     try { job = publicJob(saved); }
     catch { return { id: stop.id, status: "unavailable", story: null, audio: null, ...localized(requestedLocale, "ru", "missing") }; }
     if (job.address.normalize("NFKC").toLocaleLowerCase("ru").replace(/\W/gu, "") !== stop.place.address.normalize("NFKC").toLocaleLowerCase("ru").replace(/\W/gu, "")) return { id: stop.id, status: "unavailable", story: null, audio: null, ...localized(requestedLocale, "ru", "missing") };
-    const story = job.stage === "ready" ? safeStory(job) : null;
-    const audio = story ? safeAudio(job.audio) : null;
+    // While a published story is re-voiced (or after the revoice failed) the walk keeps the text and recording it already had.
+    const previous = job.stage === "ready" ? null : saved.data?.revoice;
+    const story = job.stage === "ready" ? safeStory(job) : previous?.previousStory ? safeStory({ story: previous.previousStory, address: job.address }) : null;
+    const audio = story ? safeAudio(job.stage === "ready" ? job.audio : previous.previousAudio) : null;
     const localizedAudio = requestedLocale === "ru" || !audio ? audio : { ...audio, language: "ru" };
     const status = story ? audio ? "ready" : "text_ready"
       : ["failed", "review_required", "insufficient_evidence"].includes(job.stage) ? job.stage : "preparing";
