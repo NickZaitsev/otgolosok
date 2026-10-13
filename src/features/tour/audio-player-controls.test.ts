@@ -89,3 +89,10 @@ it("плеер прогулки показывает скорость и мен�
   await render(true);
   expect(container.querySelector('button[aria-label^="Скорость рассказа"]')).toBeNull();
 });
+
+it("кнопка запуска показывает короткую подпись, сохраняя полное название для экранного чтения", async () => {
+  await act(async () => root.render(createElement(I18nProvider, { locale: "ru" },
+    createElement(AudioPlayerControls, { compact: true, walk: true, position: 0, duration: 60, canSeek: true, playing: false, label: "Повторить запуск звука", caption: "Повторить", onSeek: vi.fn(), onToggle: vi.fn() }))));
+  const toggle = container.querySelector<HTMLButtonElement>('button[aria-label="Повторить запуск звука"]')!;
+  expect(toggle.textContent).toBe("Повторить");
+});

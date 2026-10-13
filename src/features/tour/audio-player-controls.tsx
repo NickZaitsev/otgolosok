@@ -17,7 +17,8 @@ type Props = {
 } & (
   // The compact player shows one speed button that cycles through the rates; the mini walk
   // player, which stays in the card's footer while a drawer covers the full one, has none.
-  | { compact: true; walk?: boolean; mini?: boolean; rate?: PlaybackRate; onRate?: (rate: PlaybackRate) => void }
+  // `caption` is a shorter visible text for the walk toggle when `label` would not fit on one line.
+  | { compact: true; walk?: boolean; mini?: boolean; caption?: string; rate?: PlaybackRate; onRate?: (rate: PlaybackRate) => void }
   | { compact?: false; rate: PlaybackRate; onRate: (rate: PlaybackRate) => void }
 );
 
@@ -73,7 +74,7 @@ export function AudioPlayerControls(props: Props) {
       {skip("back")}
       <button type="button" className={styles.walkToggle} onClick={onToggle} aria-label={label}>
         {toggleIcon}
-        <span>{label}</span>
+        <span>{props.caption ?? label}</span>
       </button>
       {skip("forward")}
     </div>

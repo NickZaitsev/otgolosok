@@ -387,7 +387,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
   const audioButtonLabel = t(audioStatus === "loading" ? "Отменить запуск" : audioStatus === "playing" ? "Пауза" : audioStatus === "paused" ? "Продолжить" : audioStatus === "ended" ? "Слушать ещё раз" : audioStatus === "unlocking" ? "Включить звук" : audioStatus === "blocked" || audioStatus === "error" ? "Повторить запуск звука" : walkUsesTestAudio ? "Проверить звук" : walkAudioUrl ? "Слушать историю" : "Аудио ещё не готово");
   const player: PlayerState = { status: audioStatus, position: playbackTime, duration, canSeek, label: audioButtonLabel, source: walkAudioUrl, testTone: walkUsesTestAudio };
   const walkPlayer = (mini: boolean) => walkAudioUrl ? <AudioPlayerControls compact walk mini={mini} position={playbackTime} duration={duration} canSeek={canSeek} playing={audioStatus === "playing"}
-    label={audioButtonLabel} onToggle={toggleAudio} onSeek={audio.seek} rate={settings.rate} onRate={rate => updateSettings({ rate })} /> : null;
+    label={audioButtonLabel} caption={audioStatus === "blocked" || audioStatus === "error" ? t("Повторить") : undefined} onToggle={toggleAudio} onSeek={audio.seek} rate={settings.rate} onRate={rate => updateSettings({ rate })} /> : null;
   const toggleSources = () => setShowSources((value) => !value);
   // During the walk it sits in the settings, before the start in «Остановки», where the settings button is gone.
   const offlineControls = offlineRef || shellStatus ? <>
