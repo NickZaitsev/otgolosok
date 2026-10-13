@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-13T10:29:37.437Z",
+  "existingWalksUnchanged": 37,
+  "walks": [
+    {
+      "routeId": "k03",
+      "id": "ea7e6b98-999f-55ff-ba85-f59329693d1f",
+      "title": "Кремль и университет",
+      "revision": 1,
+      "visibility": "shared",
+      "shareUrl": "https://otgolosok.online/walk?share=68d34bad-7337-4d2d-a5bc-1fff1572a5a0",
+      "physicalStops": 14,
+      "distanceM": 5615,
+      "walkingMinutes": 70,
+      "measuredAudioSec": 1001.1,
+      "fieldChecked": false,
+      "catalogPublished": false
+    },
+    {
+      "routeId": "k04",
+      "id": "95c7d785-fe1c-5fe1-b446-26efa717ab8b",
+      "title": "Сады и площади: от Ленинского сада до «Эрмитажа»",
+      "revision": 1,
+      "visibility": "shared",
+      "shareUrl": "https://otgolosok.online/walk?share=a6c47803-8a19-47df-ac26-90c14a90c968",
+      "physicalStops": 14,
+      "distanceM": 6171,
+      "walkingMinutes": 77,
+      "measuredAudioSec": 1005.3,
+      "fieldChecked": false,
+      "catalogPublished": false
+    }
+  ]
+}
