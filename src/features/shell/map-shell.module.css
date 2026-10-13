@@ -271,6 +271,7 @@
   }
 }
 
-.top > :last-child {
+/* Controls keep to the right edge, also on a wrapped row; the header alone stays at the start. */
+.top > :not(.header):last-child {
   margin-left: auto;
 }

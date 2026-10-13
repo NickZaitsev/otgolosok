@@ -40,6 +40,7 @@ export async function applyLayoutCase(page: Page, layout: LayoutCase) {
 export type Invariant =
   | "viewport" // a region leaves the viewport or enters a safe-area inset
   | "overlap" // two regions intersect, or regions of different kinds are closer than 8 px
+  | "brand" // the header island does not start its row
   | "target" // a control is covered at its centre or is smaller than 44×44
   | "hscroll" // the page or the sheet scrolls horizontally
   | "footer" // the sheet footer is not fully visible
@@ -106,6 +107,13 @@ export async function collectViolations(page: Page, options: LayoutOptions, safe
       const { box } = region;
       if (box.left < safe.left - 0.5 || box.top < safe.top - 0.5 || box.right > safe.right + 0.5 || box.bottom > safe.bottom + 0.5)
         add("viewport", `${region.name} «${describe(region.element)}» ${round(box)} вне ${round(safe)}`);
+    }
+
+    // brand: the header island starts its row, whatever controls stand beside it or are absent.
+    for (const region of regions) {
+      if (region.name !== "header" || !region.element.parentElement) continue;
+      const row = region.element.parentElement.getBoundingClientRect();
+      if (region.box.left > row.left + 0.5) add("brand", `шапка ${round(region.box)} не у начала ряда ${round(toBox(row))}`);
     }
 
     // overlap: regions never intersect; regions of different kinds keep an 8 px gap.
