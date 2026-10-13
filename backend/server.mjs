@@ -708,9 +708,9 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
         const entries=[...url.searchParams],allowed=new Set(["offset","start","end","duration","city"]),keys=new Set(entries.map(([key])=>key));
         const offsetText=url.searchParams.get("offset")??"0",startMetro=url.searchParams.get("start")??"",endMetro=url.searchParams.get("end")??"",duration=url.searchParams.get("duration")??"";
         // Clients before the city switch send no city and mean Moscow.
-        const city=url.searchParams.get("city")??MOSCOW.id;
+        const city=CITIES.find(item=>item.id===(url.searchParams.get("city")??MOSCOW.id))?.id;
         if(keys.size!==entries.length||entries.some(([key])=>!allowed.has(key))||!/^(0|[1-9]\d{0,6})$/.test(offsetText)
-          ||startMetro.length>100||endMetro.length>100||(duration!==""&&!TOP_DURATIONS.includes(duration))||!CITIES.some(item=>item.id===city))throw failure("BAD_REQUEST");
+          ||startMetro.length>100||endMetro.length>100||(duration!==""&&!TOP_DURATIONS.includes(duration))||!city)throw failure("BAD_REQUEST");
         if(!topWalks){json(res,503,{error:{code:"UNAVAILABLE",message:"Топ прогулок временно недоступен."}});return;}
         json(res,200,topWalks.list({offset:Number(offsetText),startMetro,endMetro,duration,city}));return;
       }
