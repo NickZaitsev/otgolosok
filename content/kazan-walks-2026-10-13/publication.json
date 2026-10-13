@@ -1,0 +1,174 @@
+{
+  "bundleId": "kazan-center-k03-k04-2026-10-13",
+  "at": "2026-10-13T09:53:10.627Z",
+  "results": [
+    {
+      "placeId": "osm:relation:15958807",
+      "textId": "3cf87874-5c0b-5591-b931-dce74774bc2d",
+      "wordCount": 159,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:node:12213924368",
+      "textId": "fdf8db57-9fae-563d-9d62-c5aa9860c1bc",
+      "wordCount": 139,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:659039029",
+      "textId": "ab3007e1-eee0-56e6-98d6-65fb21487f3d",
+      "wordCount": 142,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:relation:6303321",
+      "textId": "1f6b217d-3c85-5743-b435-e1521bc050e3",
+      "wordCount": 163,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:relation:6303303",
+      "textId": "8b4c0788-db21-52f2-95c3-545e029ace33",
+      "wordCount": 132,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:relation:6303322",
+      "textId": "74d16ae0-7fe9-59e4-ac76-0ec4040f91ea",
+      "wordCount": 113,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:479025579",
+      "textId": "3ef0b9ef-945b-5e73-bf66-bda510628940",
+      "wordCount": 125,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:90155416",
+      "textId": "f6da7ac7-52e9-58bf-8064-a34c3dd17375",
+      "wordCount": 122,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:relation:14238623",
+      "textId": "c5ebff70-d25a-5611-9bab-26666883bad7",
+      "wordCount": 132,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:node:966489790",
+      "textId": "7c98c56b-7078-5e64-8036-6524bdb8bf42",
+      "wordCount": 131,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:91856512",
+      "textId": "30f8290d-3d7e-5063-8c03-d719f3672e1e",
+      "wordCount": 135,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:83073570",
+      "textId": "8c8743b8-91de-50d9-ae6f-ca30697ec349",
+      "wordCount": 134,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:node:1012203858",
+      "textId": "00c92b92-deff-559f-9dbd-2c32348ca948",
+      "wordCount": 145,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:87009792",
+      "textId": "3359450e-c7d4-57cd-a3f4-2c09654dad82",
+      "wordCount": 137,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:75658841",
+      "textId": "a6e95a91-7723-5fb3-a557-598044c3edea",
+      "wordCount": 142,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:40371211",
+      "textId": "ba12a479-834e-5edf-9a0b-229e1cc9f282",
+      "wordCount": 154,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:relation:18117393",
+      "textId": "44d914ce-7b94-5ae4-9302-ded434df9889",
+      "wordCount": 125,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:node:892767318",
+      "textId": "dd85534d-bb7f-543a-b887-988c746540fb",
+      "wordCount": 124,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:75658002",
+      "textId": "2fe3efa5-e962-5b3d-8b77-70ee46b0cab4",
+      "wordCount": 149,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:82899027",
+      "textId": "98debb15-03e6-539d-b051-abeea3d6d427",
+      "wordCount": 156,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:103455126",
+      "textId": "630266c0-44f3-5d25-96b0-7a9e073d36bf",
+      "wordCount": 127,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:node:2951266146",
+      "textId": "b7fc25bc-7256-50af-8e2f-c1a29a7a16a7",
+      "wordCount": 141,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:node:1230992846",
+      "textId": "d6d84539-073f-5ad6-b92c-155987e38c24",
+      "wordCount": 140,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:277633796",
+      "textId": "28492203-3270-5b63-9fb6-df9674996513",
+      "wordCount": 134,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:node:4850362994",
+      "textId": "aea3d000-d315-51a1-b21b-c34e3bb79c2e",
+      "wordCount": 130,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:81512367",
+      "textId": "5c23ffb1-e11f-52b7-b5f3-a45505c4949a",
+      "wordCount": 144,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:node:2288083505",
+      "textId": "b5c28dc4-74ef-573d-8139-413b2f1c7a43",
+      "wordCount": 146,
+      "resumed": false
+    },
+    {
+      "placeId": "osm:way:82176829",
+      "textId": "a3b0265d-1a2d-5273-b37c-62426d65e390",
+      "wordCount": 144,
+      "resumed": false
+    }
+  ]
+}

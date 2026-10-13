@@ -1,0 +1,226 @@
+[
+ {
+  "placeId": "osm:relation:15958807",
+  "title": "Тайницкая башня",
+  "status": "ok",
+  "file": "Taynitskaya tower of Kazan Kremlin (2).jpg",
+  "license": "CC BY 3.0",
+  "author": "Andris Malygin"
+ },
+ {
+  "placeId": "osm:node:12213924368",
+  "title": "Дворцовая церковь",
+  "status": "ok",
+  "file": "Descent Holy Spirit church, Kazan Kremlin (2022-06-01) 01.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Vyacheslav Kirillin"
+ },
+ {
+  "placeId": "osm:way:659039029",
+  "title": "Ханский двор и Губернаторский дворец",
+  "status": "ok",
+  "file": "Kazan Kremlin Presidential Palace 08-2016.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:relation:6303321",
+  "title": "Присутственные места",
+  "status": "ok",
+  "file": "Казань, Кремль, присутственные места.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "AndyVolykhov"
+ },
+ {
+  "placeId": "osm:relation:6303303",
+  "title": "Юнкерское училище",
+  "status": "ok",
+  "file": "Казань, Кремль, юнкерское училище.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "AndyVolykhov"
+ },
+ {
+  "placeId": "osm:relation:6303322",
+  "title": "Манеж",
+  "status": "ok",
+  "file": "Манеж. Кремль, Казань.JPG",
+  "license": "CC BY-SA 4.0",
+  "author": "Insider"
+ },
+ {
+  "placeId": "osm:way:479025579",
+  "title": "Гауптвахта",
+  "status": "ok",
+  "file": "Kazan Kremlin Guardhouse 2024-07-13 1437.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Mike1979 Russia"
+ },
+ {
+  "placeId": "osm:way:90155416",
+  "title": "Гостинодворская церковь",
+  "status": "ok",
+  "file": "Kazan St Nicholas Gostinodvorskaya Сhurch 2024-07-14 1739.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Mike1979 Russia"
+ },
+ {
+  "placeId": "osm:relation:14238623",
+  "title": "Главное здание Казанского университета",
+  "status": "ok",
+  "file": "Kazan Federal University building 08-2016.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:node:966489790",
+  "title": "Памятник студенту Володе Ульянову",
+  "status": "ok",
+  "file": "Казань. Памятник студенту Володе Ульянову (Ленину) перед главным зданием университета (1).JPG",
+  "license": "CC BY-SA 4.0",
+  "author": "MarSaf"
+ },
+ {
+  "placeId": "osm:way:91856512",
+  "title": "Астрономическая обсерватория",
+  "status": "ok",
+  "file": "Astronomy Observatory of Kazan State University 2 wiki.jpg",
+  "license": "CC BY 3.0",
+  "author": "Короткий Станислав Александрович"
+ },
+ {
+  "placeId": "osm:way:83073570",
+  "title": "Химический институт имени Бутлерова",
+  "status": "ok",
+  "file": "ХИ.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Ildar4016"
+ },
+ {
+  "placeId": "osm:node:1012203858",
+  "title": "Памятник Лобачевскому",
+  "status": "ok",
+  "file": "Lobachevsky monument, Kazan (2024-04-17) 03.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Vyacheslav Kirillin"
+ },
+ {
+  "placeId": "osm:way:87009792",
+  "title": "Дом Ушковой",
+  "status": "ok",
+  "file": "Kazan new ac build and lib.JPG",
+  "license": "CC BY-SA 3.0",
+  "author": "Bushy moustache"
+ },
+ {
+  "placeId": "osm:way:75658841",
+  "title": "Ленинский сад",
+  "status": "ok",
+  "file": "Leninskiy garden, Kazan (2021-05-15) 02.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Engelberthumperdink"
+ },
+ {
+  "placeId": "osm:way:40371211",
+  "title": "Чёрное озеро",
+  "status": "ok",
+  "file": "Black Lake, Kazan.JPG",
+  "license": "CC BY-SA 3.0",
+  "author": "Alaexis"
+ },
+ {
+  "placeId": "osm:relation:18117393",
+  "title": "Церковь Святой Екатерины",
+  "status": "ok",
+  "file": "Kazan luther.JPG",
+  "license": "Public domain",
+  "author": "Dr Jorgen"
+ },
+ {
+  "placeId": "osm:node:892767318",
+  "title": "Площадь Свободы и памятник Ленину",
+  "status": "ok",
+  "file": "Lenin monument, Freedom Square, Kazan (2024-04-22) 01.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Vyacheslav Kirillin"
+ },
+ {
+  "placeId": "osm:way:75658002",
+  "title": "Театр оперы и балета имени Мусы Джалиля",
+  "status": "ok",
+  "file": "Театр оперы и балета. Казань.JPG",
+  "license": "CC BY-SA 3.0",
+  "author": "Денис Петьовка"
+ },
+ {
+  "placeId": "osm:way:82899027",
+  "title": "Фуксовский сад",
+  "status": "ok",
+  "file": "Fuks Garden4.JPG",
+  "license": "CC BY-SA 3.0",
+  "author": "Mario Lanza"
+ },
+ {
+  "placeId": "osm:way:103455126",
+  "title": "Дом Кекина",
+  "status": "ok",
+  "file": "Kazan Kekin Building 08-2016.jpg",
+  "license": "FAL",
+  "author": "A.Savin"
+ },
+ {
+  "placeId": "osm:node:2951266146",
+  "title": "Музей Горького и Шаляпина",
+  "status": "ok",
+  "file": "Ттарстан. Казань. Дом, в котором в 1886 - 1887 гг. жил и работал пекарем Горький Алексей Максимович.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Marat Kamalevsky"
+ },
+ {
+  "placeId": "osm:node:1230992846",
+  "title": "Музей-квартира Мусы Джалиля",
+  "status": "ok",
+  "file": "Казань, улица Горького, 17.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "AndyVolykhov"
+ },
+ {
+  "placeId": "osm:way:277633796",
+  "title": "Особняк Сандецкого",
+  "status": "ok",
+  "file": "Гл здание ГМИИ РТ.JPG",
+  "license": "Public domain",
+  "author": "Екатерина Егорова"
+ },
+ {
+  "placeId": "osm:node:4850362994",
+  "title": "Музей Боратынского",
+  "status": "ok",
+  "file": "Kazan 20180811 050534.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Bogdanov-62"
+ },
+ {
+  "placeId": "osm:way:81512367",
+  "title": "Лядской сад",
+  "status": "ok",
+  "file": "\"Ljadskoj\" garden - Лядской садик - panoramio.jpg",
+  "license": "CC BY-SA 3.0",
+  "author": "Виктор Сотов"
+ },
+ {
+  "placeId": "osm:node:2288083505",
+  "title": "Памятник Державину",
+  "status": "ok",
+  "file": "Derzhavin monument, Kazan (2021-07-06) 02.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Engelberthumperdink"
+ },
+ {
+  "placeId": "osm:way:82176829",
+  "title": "Сад «Эрмитаж»",
+  "status": "ok",
+  "file": "Hermitage garden, Kazan (2024-06-12) 03.jpg",
+  "license": "CC BY-SA 4.0",
+  "author": "Vyacheslav Kirillin"
+ }
+]
