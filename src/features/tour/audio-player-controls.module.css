@@ -67,6 +67,7 @@
   border: 1px solid var(--border-island);
   border-radius: 22px;
   background: var(--field-surface);
+  container: walk-player / inline-size;
 }
 
 .walkTimeline {
@@ -286,4 +287,12 @@
 
 .walkButtons.withRate {
   grid-template-columns: 52px 44px minmax(0, 1fr) 44px;
+}
+
+/* Next to the speed button a narrow player has no room for the label on one line;
+   the toggle keeps its state in aria-label, so only the icon stays visible. */
+@container walk-player (width < 360px) {
+  .withRate .walkToggle span {
+    display: none;
+  }
 }
