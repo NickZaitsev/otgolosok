@@ -172,8 +172,10 @@ export function topWalkHref(walk: Pick<TopWalk, "kind" | "id">) {
   return walk.kind === "catalog" ? `/walk?catalog=${encodeURIComponent(walk.id)}` : `/walk?share=${encodeURIComponent(walk.id)}`;
 }
 
-export function topWalksUrl(offset: number, filters: TopFilters): string {
+/** The top of one city; Moscow, the server's default, is not named, so older cached URLs stay valid. */
+export function topWalksUrl(offset: number, filters: TopFilters, city = "moscow"): string {
   const params = new URLSearchParams();
+  if (city !== "moscow") params.set("city", city);
   if (offset) params.set("offset", String(offset));
   if (filters.start) params.set("start", filters.start);
   if (filters.end) params.set("end", filters.end);

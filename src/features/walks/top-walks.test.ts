@@ -280,6 +280,28 @@ describe("список топа", () => {
     expect(start.trigger.textContent).toBe("Внутри Кольцевой");
   });
 
+  it("переключатель города сбрасывает метро, сохраняет длительность и запоминает выбор", async () => {
+    const kazanWalk = { ...shared, title: "Кремль", startMetro: { name: "Кремлевская", distanceM: 80, lines: [{ id: "49", name: "Центральная", color: "#cd0505" }] }, endMetro: null };
+    fetcher.mockImplementation((url: string) => Promise.resolve(ok(new URL(url, "http://local.test").searchParams.get("city") === "kazan" ? page([kazanWalk]) : page([catalog, shared]))));
+    try {
+      await render(true);
+      const cities = () => [...container.querySelectorAll<HTMLButtonElement>("[role=group][aria-label=Город] button")];
+      expect(cities().map(button => [button.textContent, button.getAttribute("aria-pressed")])).toEqual([["Москва", "true"], ["Казань", "false"]]);
+      const start = picker("Ближайшее метро к старту");
+      await act(async () => { start.trigger.click(); });
+      await type(start.search()!, "Арбат");
+      await key(start.search()!, "Enter");
+      const duration = container.querySelector<HTMLSelectElement>("select")!;
+      await act(async () => { duration.value = "61-to-90"; duration.dispatchEvent(new Event("change", { bubbles: true })); });
+      await act(async () => { cities()[1].click(); });
+      await act(async () => {});
+      expect(fetcher.mock.calls.at(-1)?.[0]).toBe("/api/top-walks?city=kazan&duration=61-to-90");
+      expect(cities()[1].getAttribute("aria-pressed")).toBe("true");
+      expect(localStorage.getItem("otgolosok:city:v1")).toBe("kazan");
+      expect(container.querySelector("ol > li")?.textContent).toContain("Старт: м. Кремлевская");
+    } finally { localStorage.clear(); }
+  });
+
   it("без станций внутри Кольцевой пункта зоны нет", async () => {
     const outside = page([catalog]);
     fetcher.mockResolvedValue(ok({ ...outside, filters: { ...outside.filters, stations: outside.filters.stations.map(station => ({ ...station, insideCircle: false })) } }));

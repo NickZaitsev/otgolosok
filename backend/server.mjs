@@ -4,6 +4,7 @@ import { mkdir, readFile, stat } from "node:fs/promises";
 import { resolve, join, extname, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import { CITIES, MOSCOW } from "./cities.mjs";
 import { createStore } from "./store.mjs";
 import { createProvider } from "./provider.mjs";
 import { createYandexTts } from "./yandex-tts.mjs";
@@ -704,12 +705,14 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
       if(await placeFeedback.public(req,res,url,session))return;
       if(url.pathname==="/api/top-walks") {
         if(!["GET","HEAD"].includes(req.method)){res.setHeader("Allow","GET, HEAD");json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;}
-        const entries=[...url.searchParams],allowed=new Set(["offset","start","end","duration"]),keys=new Set(entries.map(([key])=>key));
+        const entries=[...url.searchParams],allowed=new Set(["offset","start","end","duration","city"]),keys=new Set(entries.map(([key])=>key));
         const offsetText=url.searchParams.get("offset")??"0",startMetro=url.searchParams.get("start")??"",endMetro=url.searchParams.get("end")??"",duration=url.searchParams.get("duration")??"";
+        // Clients before the city switch send no city and mean Moscow.
+        const city=url.searchParams.get("city")??MOSCOW.id;
         if(keys.size!==entries.length||entries.some(([key])=>!allowed.has(key))||!/^(0|[1-9]\d{0,6})$/.test(offsetText)
-          ||startMetro.length>100||endMetro.length>100||(duration!==""&&!TOP_DURATIONS.includes(duration)))throw failure("BAD_REQUEST");
+          ||startMetro.length>100||endMetro.length>100||(duration!==""&&!TOP_DURATIONS.includes(duration))||!CITIES.some(item=>item.id===city))throw failure("BAD_REQUEST");
         if(!topWalks){json(res,503,{error:{code:"UNAVAILABLE",message:"Топ прогулок временно недоступен."}});return;}
-        json(res,200,topWalks.list({offset:Number(offsetText),startMetro,endMetro,duration}));return;
+        json(res,200,topWalks.list({offset:Number(offsetText),startMetro,endMetro,duration,city}));return;
       }
       if(url.pathname==="/api/walks/nearby") {
         if(!["GET","HEAD"].includes(req.method)){res.setHeader("Allow","GET, HEAD");json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;}

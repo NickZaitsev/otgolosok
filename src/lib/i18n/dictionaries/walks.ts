@@ -25,6 +25,7 @@ export const walksTranslations: Translations = {
   "Тренды": ["Trending", "热门"],
   "Фильтры по метро": ["Metro filters", "地铁站筛选"],
   "Фильтры прогулок": ["Walk filters", "漫步路线筛选"],
+  "Город": ["City", "城市"],
   "Ближайшее метро к старту": ["Nearest metro to the start", "起点附近的地铁站"],
   "Ближайшее метро к финишу": ["Nearest metro to the finish", "终点附近的地铁站"],
   "Любая станция": ["Any station", "任意站点"],

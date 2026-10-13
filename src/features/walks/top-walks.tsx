@@ -7,6 +7,7 @@ import { toUserMessage } from "@/lib/errors/user-message";
 import { formatRatingSummary } from "../reviews/model";
 import { loadJson } from "./walk-loader";
 import { CIRCLE_LINE, formatTopWalkMeta, INSIDE_CIRCLE, metroTextColor, topWalkHref, topWalksUrl, validateTopWalkPage, type MetroOption, type MetroStation, type TopDuration, type TopFilters, type TopWalk, type TopWalkPage } from "./top-model";
+import { CITIES, useCurrentCity, type City } from "../city/current-city";
 import { MetroSelect } from "./metro-select";
 import styles from "./top-walks.module.css";
 
@@ -58,6 +59,7 @@ function MetroMark({ station }: { station: MetroStation | null }) {
 /** Public ranking with server-side filters and 20-walk pages. */
 export function TopWalks({ filterable = false }: { filterable?: boolean }) {
   const { locale, path, t } = useI18n();
+  const [city, chooseCity, cityKnown] = useCurrentCity();
   const [filters, setFilters] = useState<TopFilters>(emptyFilters);
   const [facets, setFacets] = useState<TopWalkPage["filters"]>({ starts: [], ends: [], stations: [] });
   const [state, setState] = useState<State>({ status: "loading" });
@@ -66,19 +68,20 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
   const moreController = useRef<AbortController | null>(null);
 
   useEffect(() => {
+    if (!cityKnown) return;
     const controller = new AbortController();
-    loadJson(topWalksUrl(0, filters), controller.signal, validateTopWalkPage)
+    loadJson(topWalksUrl(0, filters, city.id), controller.signal, validateTopWalkPage)
       .then(page => { if (!controller.signal.aborted) { setFacets(page.filters); setState({ status: "ready", ...page, more: "idle", moreError: "" }); } })
       .catch(caught => { if (!controller.signal.aborted) setState({ status: "error", message: toUserMessage(caught, "Не удалось загрузить топ прогулок.", locale) }); });
     return () => { controller.abort(); moreController.current?.abort(); moreController.current = null; };
-  }, [filters, attempt, locale]);
+  }, [filters, attempt, locale, city.id, cityKnown]);
 
   const loadMore = useCallback(() => {
     if (state.status !== "ready" || state.nextOffset === null || state.more !== "idle" || moreController.current) return;
     const offset = state.nextOffset, controller = new AbortController();
     moreController.current = controller;
     setState(current => current.status === "ready" ? { ...current, more: "loading" } : current);
-    loadJson(topWalksUrl(offset, filters), controller.signal, value => {
+    loadJson(topWalksUrl(offset, filters, city.id), controller.signal, value => {
       const page = validateTopWalkPage(value);
       if (page.nextOffset !== null && page.nextOffset <= offset) throw new TypeError("Страница прогулок не продвинулась.");
       return page;
@@ -96,7 +99,7 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
       moreController.current = null;
       setState(current => current.status === "ready" ? { ...current, more: "error", moreError: toUserMessage(caught, "Не удалось загрузить ещё прогулки.", locale) } : current);
     });
-  }, [state, filters, locale]);
+  }, [state, filters, locale, city.id]);
 
   useEffect(() => {
     if (state.status !== "ready" || state.nextOffset === null || state.more !== "idle" || !sentinel.current || typeof IntersectionObserver === "undefined") return;
@@ -112,6 +115,12 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
     setState({ status: "loading" }); setFilters(next);
   };
   const reset = () => changeFilters(emptyFilters);
+  // Stations differ between cities, so a switch drops the metro filters and keeps the duration.
+  const switchCity = (next: City) => {
+    if (next.id === city.id) return;
+    setState({ status: "loading" }); setFacets({ starts: [], ends: [], stations: [] });
+    setFilters(current => ({ ...current, start: "", end: "" })); chooseCity(next);
+  };
   const known = new Map(facets.stations.map(station => [station.name, station]));
   // «Inside the Circle line» leads the list when one of its stations has walks, and stays while it is the chosen filter.
   const metroOptions = (names: string[], value: string): MetroOption[] => {
@@ -119,14 +128,17 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
     const circle = { name: INSIDE_CIRCLE, lines: [CIRCLE_LINE], label: t("Внутри Кольцевой"), hint: t("Станции Кольцевой линии и центра") };
     return options.some(option => option.insideCircle) || value === INSIDE_CIRCLE ? [circle, ...options] : options;
   };
-  const controls = filterable ? <div className={styles.filters} role="group" aria-label={t("Фильтры прогулок")}>
+  const cities = filterable ? <div className={styles.cities} role="group" aria-label={t("Город")}>
+      {CITIES.map(item => <button key={item.id} type="button" aria-pressed={item.id === city.id} onClick={() => switchCity(item)}>{t(item.name)}</button>)}
+    </div> : null;
+  const controls = filterable ? <>{cities}<div className={styles.filters} role="group" aria-label={t("Фильтры прогулок")}>
       <MetroSelect label={t("Ближайшее метро к старту")} value={filters.start} options={metroOptions(facets.starts, filters.start)} onChange={start => changeFilters({ start })} />
       <MetroSelect label={t("Ближайшее метро к финишу")} value={filters.end} options={metroOptions(facets.ends, filters.end)} onChange={end => changeFilters({ end })} />
       <label className="ui-select-field">{t("Продолжительность")}<select value={filters.duration} onChange={event => changeFilters({ duration: event.target.value as TopDuration })}>
         <option value="">{t("Любая продолжительность")}</option><option value="up-to-30">{t("До 30 минут")}</option><option value="31-to-60">{t("31–60 минут")}</option><option value="61-to-90">{t("61–90 минут")}</option>
       </select></label>
       {selected ? <button type="button" className={styles.reset} onClick={reset}>{t("Сбросить фильтры")}</button> : null}
-    </div> : null;
+    </div></> : null;
   if (state.status === "loading") return <>{controls}<p role="status" className="ui-muted">{t("Загружаем топ прогулок…")}</p></>;
   if (state.status === "error") return <>{controls}<p role="alert" className="ui-notice">{state.message}{" "}
     <button type="button" className={styles.retry} onClick={() => { setState({ status: "loading" }); setAttempt(value => value + 1); }}>{t("Повторить")}</button></p></>;

@@ -12,10 +12,12 @@ const KEY = "g".repeat(43);
 const start = { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } }, stop = { address: "Москва, Арбат, 10", location: { lat: 55.751, lon: 37.601 } };
 let ids = 0;
 const uuid = () => `00000000-0000-4000-8000-${String(++ids).padStart(12, "0")}`;
+const kazan = { city: "Казань", start: { address: "Казань, Кремлёвская улица, 2", location: { lat: 55.7957, lon: 49.1059 } },
+  stop: { address: "Казань, площадь Тукая", location: { lat: 55.7871, lon: 49.1219 } } };
 /** @param {string} title */
-const routed = (title, walkingMinutes = 45) => ({ version: 2, id: uuid(), title, description: "", city: "Москва", mode: "open", minutes: 30, start,
-  stops: [{ id: uuid(), place: stop, storyRef: null, transition: "", nextHint: "" }],
-  route: { geometry: [start.location, stop.location], distanceM: 3200, walkingMinutes, attribution: "OSM" }, fieldChecked: false });
+const routed = (title, walkingMinutes = 45, place = { city: "Москва", start, stop }) => ({ version: 2, id: uuid(), title, description: "", city: place.city, mode: "open", minutes: 30, start: place.start,
+  stops: [{ id: uuid(), place: place.stop, storyRef: null, transition: "", nextHint: "" }],
+  route: { geometry: [place.start.location, place.stop.location], distanceM: 3200, walkingMinutes, attribution: "OSM" }, fieldChecked: false });
 
 /** @param {any} t @param {{ launchLimit?: number, walkLimit?: number }} [options] */
 async function fixture(t, { launchLimit = 60, walkLimit = 30 } = {}) {
@@ -46,8 +48,8 @@ async function fixture(t, { launchLimit = 60, walkLimit = 30 } = {}) {
   };
   let key = 0;
   /** @param {string} title @param {"private" | "shared" | "public"} visibility @param {"approve" | "hide" | null} [decision] */
-  const walk = (title, visibility, decision = null, owner = "anna", walkingMinutes = 45) => {
-    const created = accountStore.createWalk(owner, { title, snapshot: routed(title, walkingMinutes), idempotencyKey: `top-walk-${key++}` });
+  const walk = (title, visibility, decision = null, owner = "anna", walkingMinutes = 45, place = undefined) => {
+    const created = accountStore.createWalk(owner, { title, snapshot: routed(title, walkingMinutes, place), idempotencyKey: `top-walk-${key++}` });
     const result = visibility === "private" ? created : accountStore.setWalkVisibility(owner, created.id, created.revision, visibility);
     if (decision) accountStore.moderateWalkListing(result.id, { action: decision, revision: result.revision });
     return result;
@@ -176,8 +178,26 @@ test("duration and metro filters apply before pagination; bad query parameters a
   }
   assert.equal((await call("/api/top-walks?end=Несуществующая")).data.total, 0);
   assert.equal((await call("/api/top-walks?start=%40circle&end=%40circle")).data.total, 7, "Арбатская lies inside the Circle line");
-  for (const query of ["?limit=5", "?offset=-1", "?offset=01", "?offset=1.5", "?offset=1e3", "?offset=10000000", "?offset=0&offset=20", "?duration=unknown", "?start=x&bad=y"])
+  for (const query of ["?city=spb", "?city=", "?city=moscow&city=kazan", "?limit=5", "?offset=-1", "?offset=01", "?offset=1.5", "?offset=1e3", "?offset=10000000", "?offset=0&offset=20", "?duration=unknown", "?start=x&bad=y"])
     assert.equal((await call(`/api/top-walks${query}`)).status, 400, query);
+});
+
+test("each city lists its own walks with its own metro; no city means Moscow", async t => {
+  const { call, walk } = await fixture(t);
+  walk("Арбат", "public", "approve");
+  walk("Кремль", "public", "approve", "anna", 45, kazan);
+  const titles = (/** @type {any} */ page) => page.walks.map((/** @type {any} */ item) => item.title);
+  const moscow = (await call("/api/top-walks")).data, explicit = (await call("/api/top-walks?city=moscow")).data;
+  assert.equal(titles(moscow).includes("Кремль"), false);
+  assert.ok(titles(moscow).includes("Арбат"));
+  assert.deepEqual(explicit, moscow);
+  const page = (await call("/api/top-walks?city=kazan")).data;
+  assert.deepEqual(titles(page), ["Кремль"]);
+  assert.equal(page.walks[0].rank, 1, "the rank counts within the city");
+  assert.deepEqual([page.walks[0].startMetro.name, page.walks[0].endMetro.name], ["Кремлевская", "Площадь Тукая"]);
+  assert.deepEqual(page.filters.stations.map((/** @type {any} */ station) => station.insideCircle), [false, false], "Kazan has no Circle line");
+  assert.equal((await call(`/api/top-walks?city=kazan&start=${encodeURIComponent("Кремлевская")}`)).data.total, 1);
+  assert.equal((await call("/api/top-walks?city=kazan&start=%40circle")).data.total, 0);
 });
 
 test("a damaged approved walk gives its place to the next one", async t => {

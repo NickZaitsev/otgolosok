@@ -1,5 +1,7 @@
 import { catalogWalkView, listedCatalogRoutes } from "./walk-catalog.mjs";
+import { cityAt, cityByName, MOSCOW } from "./cities.mjs";
 import metroData from "./metro-stations.json" with { type: "json" };
+import kazanMetroData from "./metro-stations-kazan.json" with { type: "json" };
 import { insideCircleStations, nearestMetro, routeMapPreview, routePreview } from "./walk-top-preview.mjs";
 
 export const TOP_LIMIT = 20;
@@ -9,8 +11,15 @@ export const CATALOG_LISTED_AT = new Date(0).toISOString();
 export const TOP_DURATIONS = ["up-to-30", "31-to-60", "61-to-90"];
 /** Metro filter value for every station on or inside the Circle line; station names never start with «@». */
 export const INSIDE_CIRCLE = "@circle";
+/** Metro stations of each city; a walk's start and finish are matched only against its own city. */
+const METRO = new Map([["moscow", metroData.stations], ["kazan", kazanMetroData.stations]]);
+// The Circle line is Moscow's: other cities have no «inside the Circle» zone.
 const insideCircle = insideCircleStations(metroData.stations);
-const matchesMetro = (station, filter) => !filter || (filter === INSIDE_CIRCLE ? Boolean(station && insideCircle.has(station.name)) : station?.name === filter);
+const isInsideCircle = (city, name) => city === MOSCOW.id && insideCircle.has(name);
+const matchesMetro = (city, station, filter) => !filter || (filter === INSIDE_CIRCLE ? Boolean(station && isInsideCircle(city, station.name)) : station?.name === filter);
+
+/** The city a walk belongs to: the one its document names, else the one holding its start. @returns {string | null} */
+export const walkCityId = (document, start) => (cityByName(document?.city) ?? (start ? cityAt(start.lat, start.lon) : null))?.id ?? null;
 export function matchesTopDuration(minutes, duration) {
   if (!duration) return true;
   if (duration === "up-to-30") return minutes <= 30;
@@ -80,7 +89,8 @@ export function catalogCandidates({ builtinRoutes, store, catalogRatings, launch
  */
 export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP_LIMIT }) {
   return {
-    list({ offset = 0, startMetro = "", endMetro = "", duration = "" } = {}) {
+    list({ offset = 0, startMetro = "", endMetro = "", duration = "", city = MOSCOW.id } = {}) {
+      const stations = METRO.get(city) ?? [];
       const { walks, catalogRatings, priorMean } = accountStore.listTopCandidates();
       const launches = accountStore.launchTotals();
       const catalog = catalogCandidates({ builtinRoutes, store, catalogRatings, launches });
@@ -99,13 +109,14 @@ export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP
           const geometry = Array.isArray(document.route.geometry) ? document.route.geometry : [];
           const start = document.start?.location ?? geometry[0];
           const end = geometry.at(-1);
+          if (walkCityId(document, start) !== city) continue;
           const loopEnd = document.mode === "loop" && start && end && Math.abs(start.lat - end.lat) < 0.0005 && Math.abs(start.lon - end.lon) < 0.0005;
           valid.push({ item, document, geometry, meta,
-            startMetro: nearestMetro(start, metroData.stations, document.start?.address),
-            endMetro: nearestMetro(end, metroData.stations, loopEnd ? document.start?.address : "") });
+            startMetro: nearestMetro(start, stations, document.start?.address),
+            endMetro: nearestMetro(end, stations, loopEnd ? document.start?.address : "") });
         }
       }
-      const stations = part => [...new Set(valid.flatMap(walk => walk[part] ? [walk[part].name] : []))].sort((a, b) => a.localeCompare(b, "ru"));
+      const names = part => [...new Set(valid.flatMap(walk => walk[part] ? [walk[part].name] : []))].sort((a, b) => a.localeCompare(b, "ru"));
       // Line colors for the filter options sit apart from the name lists, which older cached clients still read as strings.
       const lines = new Map();
       for (const walk of valid) for (const station of [walk.startMetro, walk.endMetro]) {
@@ -115,16 +126,16 @@ export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP
         lines.set(station.name, known);
       }
       const stationLines = [...lines].sort(([a], [b]) => a.localeCompare(b, "ru"))
-        .map(([name, known]) => ({ name, lines: [...known.values()].sort((a, b) => Number(a.id) - Number(b.id)), insideCircle: insideCircle.has(name) }));
+        .map(([name, known]) => ({ name, lines: [...known.values()].sort((a, b) => Number(a.id) - Number(b.id)), insideCircle: isInsideCircle(city, name) }));
       const filtered = valid.map((walk, rank) => ({ ...walk, rank: rank + 1 }))
-        .filter(walk => matchesMetro(walk.startMetro, startMetro) && matchesMetro(walk.endMetro, endMetro)
+        .filter(walk => matchesMetro(city, walk.startMetro, startMetro) && matchesMetro(city, walk.endMetro, endMetro)
           && matchesTopDuration(walk.meta.walkingMinutes, duration));
       const page = filtered.slice(offset, offset + limit);
       return { walks: page.map(({ item, geometry, meta, rank, startMetro: start, endMetro: end }) => ({
         kind: item.kind, id: item.id, title: item.title, ...meta, rating: ratingSummary(item), rank,
         preview: routePreview(geometry), mapPreview: routeMapPreview(geometry), startMetro: start, endMetro: end,
       })), total: filtered.length, nextOffset: offset + page.length < filtered.length ? offset + page.length : null,
-      filters: { starts: stations("startMetro"), ends: stations("endMetro"), stations: stationLines } };
+      filters: { starts: names("startMetro"), ends: names("endMetro"), stations: stationLines } };
     },
   };
 }

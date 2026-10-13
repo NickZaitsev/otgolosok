@@ -1,3 +1,37 @@
+/* The city switch: one pressed segment, each a full touch target. */
+.cities {
+  display: inline-flex;
+  gap: 2px;
+  margin: 0 0 var(--space-md);
+  padding: 2px;
+  background: var(--surface-island);
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-pill);
+}
+
+.cities button {
+  min-width: 6.5rem;
+  min-height: var(--control-min);
+  padding: 0 var(--space-md);
+  color: var(--map-green);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+}
+
+.cities button[aria-pressed="true"] {
+  color: var(--on-dark);
+  background: var(--map-green);
+}
+
+.cities button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
