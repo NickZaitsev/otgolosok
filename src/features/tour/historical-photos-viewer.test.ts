@@ -2,6 +2,7 @@
 import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { historicalWalkPhotos } from "./historical-photos";
 import { HistoricalPhotos } from "./historical-photos-viewer";
 
 vi.mock("@/lib/i18n/provider", () => ({ useI18n: () => ({ locale: "ru", t: (s: string, values?: Record<string, unknown>) => s.replace(/\{(\w+)\}/g, (_, k: string) => String(values?.[k] ?? k)) }) }));
@@ -63,10 +64,21 @@ it("сообщает, если просмотр не открылся", async ()
 
 it.each([
   ["у остановки без снимков", TVERSKAYA, "tverskaya-stop-2"],
-  // Тот же id остановки в другой прогулке — это «Националь», а не Пушкинская площадь.
-  ["у одноимённой остановки другой прогулки", TVERSKAYA, "tverskaya-stop-1"],
+  // Эта остановка есть только в бульварных прогулках: ключ «прогулка:остановка» не даёт снимкам перейти в Тверскую.
+  ["у остановки чужой прогулки", TVERSKAYA, "boulevard-stop-1"],
   ["у неизвестной прогулки", "unknown-walk", "tverskaya-stop-10"],
 ])("ничего не показывает %s", async (_, walkId, stopId) => {
   await act(async () => root.render(createElement(HistoricalPhotos, { walkId, stopId })));
   expect(container.innerHTML).toBe("");
+});
+
+it.each([
+  // Тот же id остановки у бульварной прогулки — Пушкинская площадь, а в Тверской — «Националь».
+  ["0055eb13-d26d-4eab-b1f6-b25900bd7095", "tverskaya-stop-1", 1036442],
+  [TVERSKAYA, "tverskaya-stop-1", 7141],
+  [TVERSKAYA, "tverskaya-stop-3", 1370355],
+  [TVERSKAYA, "tverskaya-stop-9", 230],
+  [TVERSKAYA, "tverskaya-stop-12", 154120],
+])("подбирает снимки по прогулке и остановке: %s %s", (walkId, stopId, cid) => {
+  expect(historicalWalkPhotos(walkId, stopId).map(photo => photo.cid)).toContain(cid);
 });
