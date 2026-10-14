@@ -1,0 +1,14 @@
+{
+  "routeId": "kremlin",
+  "id": "0f8a9c9a-5f34-5ffa-ac3c-e9e663ee7ffb",
+  "title": "Вокруг Кремля: стены, река и город",
+  "revision": 1,
+  "visibility": "shared",
+  "shareUrl": "https://otgolosok.online/walk?share=99c88141-03a3-4d9f-879b-0e1522589fb7",
+  "physicalStops": 12,
+  "distanceM": 4446,
+  "walkingMinutes": 57,
+  "measuredAudioSec": 2086.688958,
+  "fieldChecked": false,
+  "catalogPublished": false
+}

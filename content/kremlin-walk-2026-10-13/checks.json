@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-10-14T13:13:15.715246+00:00",
+  "status": "passed",
+  "projectCheck": {
+    "command": "NODE=node pnpm check",
+    "exitCode": 0,
+    "baseCommit": "4b16c29",
+    "environment": "Отдельная detached рабочая копия HEAD с файлами этой задачи, зависимости установлены pnpm install --offline --frozen-lockfile. Изменения соседней задачи не включены.",
+    "log": "artifacts/kremlin-walk-2026-10-13/check-isolated-final.log",
+    "lint": {
+      "errors": 0,
+      "warnings": 1
+    },
+    "typecheck": "passed",
+    "frontendTests": 2280,
+    "frontendTestFiles": 142,
+    "backendTests": 1202,
+    "ruff": "passed",
+    "pyright": "passed",
+    "pythonTests": 30,
+    "pythonSubtests": 84,
+    "build": "passed"
+  },
+  "sharedWorkspaceCheck": {
+    "command": "NODE=node pnpm check",
+    "status": "failed",
+    "log": "artifacts/kremlin-walk-2026-10-13/check-final.log",
+    "reason": "Две ошибки react-hooks/set-state-in-effect в незавершённых изменениях соседней задачи: src/features/parking/use-around-parking.ts и src/features/walk-builder/walk-creation-panel.tsx. Эти файлы не входят в выпуск прогулки."
+  },
+  "acceptance": {
+    "command": "node --test content/kremlin-walk-2026-10-13/verify.test.mjs",
+    "passed": 4,
+    "failed": 0,
+    "verifiedInSharedAndIsolatedWorktrees": true
+  },
+  "fileChecks": {
+    "eslint": "passed",
+    "prettier": "passed"
+  },
+  "endToEnd": {
+    "localPublication": "local-verification.json",
+    "audioFiles": "verification.json",
+    "audioProvenance": "audio-provenance.json",
+    "publicHttps": "shared-api-verification.json",
+    "mobileBrowser": "ui-verification.json",
+    "readyStops": 12,
+    "minimumMeasuredDurationSec": 161.68,
+    "maximumMeasuredDurationSec": 186.59375,
+    "totalMeasuredDurationSec": 2086.688958,
+    "decodedMp3Files": 31,
+    "checkedImages": 24,
+    "fieldChecked": false
+  }
+}

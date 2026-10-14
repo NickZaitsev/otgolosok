@@ -1,0 +1,767 @@
+{
+  "checkedAt": "2026-10-14T08:12:15Z",
+  "checked": 12,
+  "errors": [],
+  "entries": [
+    {
+      "placeId": "osm:node:1666070895",
+      "title": "Грот «Руины»",
+      "textId": "52798cb0-dce2-485d-bd25-43ae4c4ea5e3",
+      "wordCount": 322,
+      "sourceTextSha256": "ca9a7f126781e2bacf64af9e8439c630e374c1ff9ceaf36b1856e7a721c71cd4",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/072399ccf728b390128ece8e0aa623d138cd5cdbaf610c36ec9e3d660f0a97ba.mp3",
+        "sha256": "072399ccf728b390128ece8e0aa623d138cd5cdbaf610c36ec9e3d660f0a97ba",
+        "bytes": 1356141,
+        "durationSec": 169.488,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "072399ccf728b390128ece8e0aa623d138cd5cdbaf610c36ec9e3d660f0a97ba",
+          "bytes": 1356141,
+          "durationSec": 169.44,
+          "decoded": true
+        },
+        {
+          "sha256": "885540c8a88b4ad9de76f72f1bb3ecc0aaf5ac62143bb28389dec6d9e7a290d7",
+          "bytes": 591213,
+          "durationSec": 73.824,
+          "decoded": true
+        },
+        {
+          "sha256": "2dbe71f85230d7821bc1370039f6eb49a6f8cbb438d140cb7473eaaeaa6684cf",
+          "bytes": 536493,
+          "durationSec": 66.978667,
+          "preservedFrom": "2026-10-13",
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/98985224ec20e27c1ed18ea758204b26f392c469d5366888503fe910d12add4b.jpg",
+        "src": "/api/place-images/e202771dfc2fe528bf8d75890675a418cdaa9ba962123360fd1975a50c1817b3.jpg",
+        "width": 500,
+        "height": 375,
+        "alt": "Грот «Руины»",
+        "author": "Минеева Ю. (Julmin)",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grotto_in_Alexander_Garden3.JPG",
+        "license": "CC BY-SA 1.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/1.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/e202771dfc2fe528bf8d75890675a418cdaa9ba962123360fd1975a50c1817b3.jpg",
+          "width": 500,
+          "height": 375,
+          "bytes": 80914
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/98985224ec20e27c1ed18ea758204b26f392c469d5366888503fe910d12add4b.jpg",
+          "width": 250,
+          "height": 187,
+          "bytes": 22021
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:1360630",
+      "title": "Боровицкая башня",
+      "textId": "2c38d496-e4d1-4287-99fb-be1b59c802e7",
+      "wordCount": 321,
+      "sourceTextSha256": "46e0c729e5f6051d7d194988549c1ec5cdc546fe7a4852946a200b4b5bb606ac",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/06538d0c8ff4313a5fb747f3dedc6bb980b782c45bb36a6df7dda06a16519a83.mp3",
+        "sha256": "06538d0c8ff4313a5fb747f3dedc6bb980b782c45bb36a6df7dda06a16519a83",
+        "bytes": 1336365,
+        "durationSec": 167.016,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "06538d0c8ff4313a5fb747f3dedc6bb980b782c45bb36a6df7dda06a16519a83",
+          "bytes": 1336365,
+          "durationSec": 166.96,
+          "decoded": true
+        },
+        {
+          "sha256": "094945e882bf1d9397523e6ea7e714304e57ca2a163afcde67f8ab7d94494c55",
+          "bytes": 506349,
+          "durationSec": 63.2,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/6101dff1d45e10abd5dacf0b9f9494d5ba15c3dfe13ded7a10714ab98235c156.jpg",
+        "src": "/api/place-images/de0c25acd4def3d929c55d720cce386ce7db5125a16192af1b3eef2051a21633.jpg",
+        "width": 500,
+        "height": 773,
+        "alt": "Боровицкая башня",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2012_Kremlin_02.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/de0c25acd4def3d929c55d720cce386ce7db5125a16192af1b3eef2051a21633.jpg",
+          "width": 500,
+          "height": 773,
+          "bytes": 125147
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/6101dff1d45e10abd5dacf0b9f9494d5ba15c3dfe13ded7a10714ab98235c156.jpg",
+          "width": 250,
+          "height": 386,
+          "bytes": 33672
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:1360651",
+      "title": "Беклемишевская башня",
+      "textId": "3c3c5ca2-2f47-46a8-8b50-e3a9d8be796c",
+      "wordCount": 340,
+      "sourceTextSha256": "474e6e4c0dc3bdfff0e72ff7a3ec5060f86fc85859822dd9aeb12840a46c4e9e",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/06c9eb2188aff00ea2494ed2c21f71801ba0d5da8cb45698c6ebd1b81800bbaa.mp3",
+        "sha256": "06c9eb2188aff00ea2494ed2c21f71801ba0d5da8cb45698c6ebd1b81800bbaa",
+        "bytes": 1436205,
+        "durationSec": 179.496,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "06c9eb2188aff00ea2494ed2c21f71801ba0d5da8cb45698c6ebd1b81800bbaa",
+          "bytes": 1436205,
+          "durationSec": 179.44,
+          "decoded": true
+        },
+        {
+          "sha256": "f8d369b8777b8fea5268d26d5ff64d7666d97552bb79bf53be237226abd9ee28",
+          "bytes": 540141,
+          "durationSec": 67.437333,
+          "decoded": true
+        },
+        {
+          "sha256": "d41a48e863d3795a860fb94a1a37c84a21ae9414870ca60c03ee06e7c265900c",
+          "bytes": 446061,
+          "durationSec": 55.661333,
+          "preservedFrom": "2026-10-13",
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/59ab00181597b0b926e0dd0a7dfa7dbfc6da131007440b29510a0224dd3406a6.jpg",
+        "src": "/api/place-images/dee46835b34faa0da3b8ecad03147d2d19e509aa582cb038782ea088520d97ac.jpg",
+        "width": 330,
+        "height": 653,
+        "alt": "Беклемишевская башня",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:MosKremlin_05-2012_Beklemishev_Tower.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/dee46835b34faa0da3b8ecad03147d2d19e509aa582cb038782ea088520d97ac.jpg",
+          "width": 330,
+          "height": 653,
+          "bytes": 61763
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/59ab00181597b0b926e0dd0a7dfa7dbfc6da131007440b29510a0224dd3406a6.jpg",
+          "width": 250,
+          "height": 495,
+          "bytes": 36891
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:1360656",
+      "title": "Спасская башня",
+      "textId": "73821c05-1cf8-4fbf-83c0-693f7ec6a83e",
+      "wordCount": 328,
+      "sourceTextSha256": "e0f4ea7ec5e8d70c2cd049b9b86f0822889fe1ca1dab02fef5d0978e71235fa4",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/5a03d123970a634fb4aed60b1e6fca4e4970ece25fd12c0d9b330a0170b66d51.mp3",
+        "sha256": "5a03d123970a634fb4aed60b1e6fca4e4970ece25fd12c0d9b330a0170b66d51",
+        "bytes": 1321581,
+        "durationSec": 165.168,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "5a03d123970a634fb4aed60b1e6fca4e4970ece25fd12c0d9b330a0170b66d51",
+          "bytes": 1321581,
+          "durationSec": 165.12,
+          "decoded": true
+        },
+        {
+          "sha256": "14ee43e68a8ebfd83acfd3c7d4a2bcd85efb7df4e910a689d6bd7f06de69cac8",
+          "bytes": 446829,
+          "durationSec": 55.76,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/f2a264f53c1b5170c3bc73e7416a7e0a84f141e854301cb3eb57b07f69b153f6.jpg",
+        "src": "/api/place-images/bbaf1bc15a4c8666bd70c21a27ab00bb96d7cabdaf0e93dd06dbfd466447b47c.jpg",
+        "width": 500,
+        "height": 880,
+        "alt": "Спасская башня",
+        "author": "Юрий Д.К.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Spasskaya_Tower_-_Red_Square_-_Moscow4.jpg",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/bbaf1bc15a4c8666bd70c21a27ab00bb96d7cabdaf0e93dd06dbfd466447b47c.jpg",
+          "width": 500,
+          "height": 880,
+          "bytes": 100213
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/f2a264f53c1b5170c3bc73e7416a7e0a84f141e854301cb3eb57b07f69b153f6.jpg",
+          "width": 250,
+          "height": 440,
+          "bytes": 32130
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:16492515",
+      "title": "Могила Неизвестного Солдата",
+      "textId": "8b26ca64-a1d5-4af6-a9b6-647bb246eac4",
+      "wordCount": 334,
+      "sourceTextSha256": "4a43e19dbac465cc68e0728535ddd06b2e33d14822b5bc1d214aba3c5cecd508",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/7ed5142273e53d34ef63d0e198886d6b70b80b2749bb6f53f8334b5bf68fe47a.mp3",
+        "sha256": "7ed5142273e53d34ef63d0e198886d6b70b80b2749bb6f53f8334b5bf68fe47a",
+        "bytes": 1361901,
+        "durationSec": 170.208,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "7ed5142273e53d34ef63d0e198886d6b70b80b2749bb6f53f8334b5bf68fe47a",
+          "bytes": 1361901,
+          "durationSec": 170.16,
+          "decoded": true
+        },
+        {
+          "sha256": "6a3ddf311b55baac78de9ecc0dcd2ab80a524adad4e79d354f58119ee0f4c05a",
+          "bytes": 474861,
+          "durationSec": 59.28,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/0793ca594c292b461d3feec4489087fac650a509e423c7c54f45a689ec40d93b.jpg",
+        "src": "/api/place-images/326b6fada3af2c193a85f28e919dfe4f550d3640895e1e82f88aea316ea13082.jpg",
+        "width": 960,
+        "height": 640,
+        "alt": "Могила Неизвестного Солдата",
+        "author": "Moscowjob.net",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2014_Moscow_Tomb_of_the_Unknown_Soldier_2.JPG",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/326b6fada3af2c193a85f28e919dfe4f550d3640895e1e82f88aea316ea13082.jpg",
+          "width": 960,
+          "height": 640,
+          "bytes": 154220
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/0793ca594c292b461d3feec4489087fac650a509e423c7c54f45a689ec40d93b.jpg",
+          "width": 250,
+          "height": 167,
+          "bytes": 13705
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:1932724",
+      "title": "Воскресенские ворота",
+      "textId": "0e84b948-b7d1-5d75-b45a-e9a1cb936d1d",
+      "wordCount": 332,
+      "sourceTextSha256": "fa662745f14b45eebcac46b97e8f737e7155cfd9b3883e5e2e70747bbaaac493",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/8554d3dc67e7a333e9750148eaeeff4e098d0b23475d90cac81a48fdea0b51c4.mp3",
+        "sha256": "8554d3dc67e7a333e9750148eaeeff4e098d0b23475d90cac81a48fdea0b51c4",
+        "bytes": 1423917,
+        "durationSec": 177.96,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "8554d3dc67e7a333e9750148eaeeff4e098d0b23475d90cac81a48fdea0b51c4",
+          "bytes": 1423917,
+          "durationSec": 177.894958,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/403ee3a89285ecc626378f00cdbc0b9aa7c48caf57e009532afd4ffeb3dfbde9.jpg",
+        "src": "/api/place-images/11bc6cd5016e4d667ab2a580441f4e936eb97c5acab8bee4095cecc02fc8b255.jpg",
+        "width": 500,
+        "height": 563,
+        "alt": "Воскресенские ворота",
+        "author": "Ludvig14",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:MoscowKremlin_ResurrectionGate_S82.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/11bc6cd5016e4d667ab2a580441f4e936eb97c5acab8bee4095cecc02fc8b255.jpg",
+          "width": 500,
+          "height": 563,
+          "bytes": 93901
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/403ee3a89285ecc626378f00cdbc0b9aa7c48caf57e009532afd4ffeb3dfbde9.jpg",
+          "width": 250,
+          "height": 281,
+          "bytes": 27356
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:3030568",
+      "title": "Собор Василия Блаженного (Покровский собор)",
+      "textId": "e76fccc7-695f-4c14-9143-b653edfbe946",
+      "wordCount": 333,
+      "sourceTextSha256": "4438443112ff1e6c69f30a873bc165bab83230c97d82742d3847edae1e654f6e",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/7b33dd7812b433a988db32cae628a2d4215363d4bc305830a4c6cde9c2c252b8.mp3",
+        "sha256": "7b33dd7812b433a988db32cae628a2d4215363d4bc305830a4c6cde9c2c252b8",
+        "bytes": 1455981,
+        "durationSec": 181.968,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "7b33dd7812b433a988db32cae628a2d4215363d4bc305830a4c6cde9c2c252b8",
+          "bytes": 1455981,
+          "durationSec": 181.92,
+          "decoded": true
+        },
+        {
+          "sha256": "8d4fb2ee65f10c2c22929f45cae7951ecd55e12e2eba19e72de5ddf7273fbba6",
+          "bytes": 572013,
+          "durationSec": 71.418667,
+          "decoded": true
+        },
+        {
+          "sha256": "4ae90278cfaa7dc050634817ba41cc0f37d6e20ccb00ef3b511bdb427916da6f",
+          "bytes": 501549,
+          "durationSec": 62.597333,
+          "preservedFrom": "2026-10-13",
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/fd0988e7fa08e2e61ba2bc5dad8f6ddb06c885c2749040dcd52276f9fa1953c6.jpg",
+        "src": "/api/place-images/b0373e5eaf25fed618f37ce9f6ee597e2f899117a6136efbc0bdb2376065183b.jpg",
+        "width": 500,
+        "height": 750,
+        "alt": "Собор Василия Блаженного (Покровский собор)",
+        "author": "W. Bulach",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:00_0568_Saint_Basil%27s_Cathedral_-_Moscow.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/b0373e5eaf25fed618f37ce9f6ee597e2f899117a6136efbc0bdb2376065183b.jpg",
+          "width": 500,
+          "height": 750,
+          "bytes": 131342
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/fd0988e7fa08e2e61ba2bc5dad8f6ddb06c885c2749040dcd52276f9fa1953c6.jpg",
+          "width": 250,
+          "height": 375,
+          "bytes": 36564
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:3061015",
+      "title": "Кутафья башня",
+      "textId": "7e85776b-3309-4442-9b6c-7385542a9c25",
+      "wordCount": 328,
+      "sourceTextSha256": "c7e3bf4943adac6150d92f421f4ea0dd40446cc392e4de5990f481d12af34e79",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/e7b93bd095860236184aec643840c112b6c34bbe18e4fe6870eaa8c313cd5c32.mp3",
+        "sha256": "e7b93bd095860236184aec643840c112b6c34bbe18e4fe6870eaa8c313cd5c32",
+        "bytes": 1294125,
+        "durationSec": 161.736,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "e7b93bd095860236184aec643840c112b6c34bbe18e4fe6870eaa8c313cd5c32",
+          "bytes": 1294125,
+          "durationSec": 161.68,
+          "decoded": true
+        },
+        {
+          "sha256": "84187d4123d3a7a49873291bb827f1d1727c34d2ccd84c03e18098164f8ce939",
+          "bytes": 596589,
+          "durationSec": 74.488,
+          "decoded": true
+        },
+        {
+          "sha256": "28cf8fa2eae0f10780fd12657c9b9f8653b9c9dc0627297ec83cb5c2a5e315b8",
+          "bytes": 465453,
+          "durationSec": 58.093333,
+          "preservedFrom": "2026-10-13",
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/a5407ed730519de536c456fd2b3d63846296f25a805a85f72d83a0e9a7c9df65.jpg",
+        "src": "/api/place-images/69282577eadef73e2a81ba360d6fcca05bae62b124017a3846bb067c412a90f1.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Кутафья башня",
+        "author": "Минеева Ю. (Julmin)",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kutafiya_Tower2.JPG",
+        "license": "CC BY-SA 1.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/1.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/69282577eadef73e2a81ba360d6fcca05bae62b124017a3846bb067c412a90f1.jpg",
+          "width": 960,
+          "height": 720,
+          "bytes": 174262
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/a5407ed730519de536c456fd2b3d63846296f25a805a85f72d83a0e9a7c9df65.jpg",
+          "width": 250,
+          "height": 187,
+          "bytes": 17369
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:3062892",
+      "title": "Центральный выставочный зал «Манеж»",
+      "textId": "df181ba0-4619-4ce0-8c5d-aa7692442ce6",
+      "wordCount": 330,
+      "sourceTextSha256": "beefd931efb0d9dda9e2b6e81b9f0001881401fb99eeafe05a4f66f24b645eef",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/618efa06f72904c6f787afea04e43c77c756971d46fcb0efa5f99b977c1e75c8.mp3",
+        "sha256": "618efa06f72904c6f787afea04e43c77c756971d46fcb0efa5f99b977c1e75c8",
+        "bytes": 1493421,
+        "durationSec": 186.648,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "618efa06f72904c6f787afea04e43c77c756971d46fcb0efa5f99b977c1e75c8",
+          "bytes": 1493421,
+          "durationSec": 186.59375,
+          "decoded": true
+        },
+        {
+          "sha256": "2a86e422867dc493859cfe746c8d9fd2751784df4e81cc23b4fba957ad5d4ba4",
+          "bytes": 588909,
+          "durationSec": 73.528,
+          "decoded": true
+        },
+        {
+          "sha256": "11eb8cb529bdeac17acab4e3c9a682b0babb29c5f5893bc56c540c9fd2b36a77",
+          "bytes": 464301,
+          "durationSec": 57.944,
+          "preservedFrom": "2026-10-13",
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/4034c673861c67e27991d2777bb92867fe1d07b67c21e49ebb8ad3acfdc78a02.jpg",
+        "src": "/api/place-images/22180360aeced55fc01246defd2fb9b982690523e621bd6f3e5734b375b2fa14.jpg",
+        "width": 960,
+        "height": 640,
+        "alt": "Центральный выставочный зал «Манеж»",
+        "author": "stroi.mos.ru",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9E%D1%82%D0%BA%D1%80%D1%8B%D1%82%D0%B8%D0%B5_%D0%B2%D1%8B%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B8_%C2%AB%D0%93%D0%BE%D1%80%D0%BE%D0%B4_%D0%B4%D0%BB%D1%8F_%D0%BA%D0%B0%D0%B6%D0%B4%D0%BE%D0%B3%D0%BE%C2%BB_%D0%B2_%D0%9C%D0%B0%D0%BD%D0%B5%D0%B6%D0%B5_(%D0%B0%D0%B2%D0%B3%D1%83%D1%81%D1%82_2022)_(44).jpeg",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/22180360aeced55fc01246defd2fb9b982690523e621bd6f3e5734b375b2fa14.jpg",
+          "width": 960,
+          "height": 640,
+          "bytes": 165001
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/4034c673861c67e27991d2777bb92867fe1d07b67c21e49ebb8ad3acfdc78a02.jpg",
+          "width": 250,
+          "height": 167,
+          "bytes": 17990
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:3229147",
+      "title": "Тайницкая башня",
+      "textId": "229fc3ec-c987-4a64-9039-727aba8e7fe7",
+      "wordCount": 320,
+      "sourceTextSha256": "3ab9e87e83dd7dfce4a76fcf8616252f534f9484b46ba98cb1c930ec60b875d2",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/f0ac3836e3435b7814ee9ca8f59b209740b2efa278b2787e455c5fdb4854a6a3.mp3",
+        "sha256": "f0ac3836e3435b7814ee9ca8f59b209740b2efa278b2787e455c5fdb4854a6a3",
+        "bytes": 1351725,
+        "durationSec": 168.936,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "f0ac3836e3435b7814ee9ca8f59b209740b2efa278b2787e455c5fdb4854a6a3",
+          "bytes": 1351725,
+          "durationSec": 168.88,
+          "decoded": true
+        },
+        {
+          "sha256": "987f34a202e1896b64fb110f6d851ebbc4df88fba306bae837e3821410c102c9",
+          "bytes": 965613,
+          "durationSec": 120.610667,
+          "decoded": true
+        },
+        {
+          "sha256": "a5513b96ea17932320aacdf0ea6aa860827167b14486b8ea56adfbef1e475858",
+          "bytes": 396525,
+          "durationSec": 49.485333,
+          "preservedFrom": "2026-10-13",
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/1cba00071b82fa44841ef860922dbe3a3dedd889d48bee2e5bcd29d53b2c21e3.jpg",
+        "src": "/api/place-images/a901e9b4c9e992aef1156c639eb2a858b4ccfe1959024c62c826bc37f8702c71.jpg",
+        "width": 500,
+        "height": 566,
+        "alt": "Тайницкая башня",
+        "author": "Ludvig14",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_Taynitskaya_tower_U69.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/a901e9b4c9e992aef1156c639eb2a858b4ccfe1959024c62c826bc37f8702c71.jpg",
+          "width": 500,
+          "height": 566,
+          "bytes": 127384
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/1cba00071b82fa44841ef860922dbe3a3dedd889d48bee2e5bcd29d53b2c21e3.jpg",
+          "width": 250,
+          "height": 283,
+          "bytes": 33311
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:3330565",
+      "title": "Государственный универсальный магазин (ГУМ)",
+      "textId": "3ef47377-72e1-4830-a79a-4b2f3f04e5d9",
+      "wordCount": 331,
+      "sourceTextSha256": "a1a74eb4573d7b98b2cabb2cd0e05420d6b6474a8649ba2a5934348c8a8f7a5f",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/bf1e893a4cd05911bff2b38caca6a6b0725b05009b8215e8f136e098af3120fa.mp3",
+        "sha256": "bf1e893a4cd05911bff2b38caca6a6b0725b05009b8215e8f136e098af3120fa",
+        "bytes": 1409901,
+        "durationSec": 176.208,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "bf1e893a4cd05911bff2b38caca6a6b0725b05009b8215e8f136e098af3120fa",
+          "bytes": 1409901,
+          "durationSec": 176.16,
+          "decoded": true
+        },
+        {
+          "sha256": "24ac83c020c1559d728a0252869479e73fe9d6c41e114f7bb5b5335f239f6543",
+          "bytes": 574509,
+          "durationSec": 71.736,
+          "decoded": true
+        },
+        {
+          "sha256": "ed58c945564cd9b4d3a827b07f6789fb82db3ad2e073c61f14dfdb44252faa48",
+          "bytes": 143661,
+          "durationSec": 17.874667,
+          "preservedFrom": "2026-10-13",
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/d1db7ddcc7bcd456065fae7031245d18a2d41eac18f1e5d11ec00960e5d92fe0.jpg",
+        "src": "/api/place-images/bc821f77ef82b35aef3c8f32058d7fc61172a8241b7e19bc293a77af611ed3e1.jpg",
+        "width": 960,
+        "height": 338,
+        "alt": "Государственный универсальный магазин (ГУМ)",
+        "author": "Skif-Kerch",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%93%D0%A3%D0%9C_(1).jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/bc821f77ef82b35aef3c8f32058d7fc61172a8241b7e19bc293a77af611ed3e1.jpg",
+          "width": 960,
+          "height": 338,
+          "bytes": 118322
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/d1db7ddcc7bcd456065fae7031245d18a2d41eac18f1e5d11ec00960e5d92fe0.jpg",
+          "width": 250,
+          "height": 88,
+          "bytes": 9877
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:5963922",
+      "title": "Государственный исторический музей",
+      "textId": "ec7ac055-a3e0-4a24-b8de-c881bd1d8128",
+      "wordCount": 333,
+      "sourceTextSha256": "72e4a462ea1e3f7d03e579ed7d9f9676e2b176f39d4acee05c8c0d5992870cdc",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/3bf7f2eac285879a74a7b7541a9d12cdb24d1d54859c798c3b77820f8ec75a3b.mp3",
+        "sha256": "3bf7f2eac285879a74a7b7541a9d12cdb24d1d54859c798c3b77820f8ec75a3b",
+        "bytes": 1460205,
+        "durationSec": 182.496,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "3bf7f2eac285879a74a7b7541a9d12cdb24d1d54859c798c3b77820f8ec75a3b",
+          "bytes": 1460205,
+          "durationSec": 182.44025,
+          "decoded": true
+        },
+        {
+          "sha256": "c47511f050603c6cf8e03970d9add54acfbd272f7df33d7184eb127c0d6099b9",
+          "bytes": 631533,
+          "durationSec": 78.864,
+          "decoded": true
+        },
+        {
+          "sha256": "69e869509b7975bc0254ece7bd70f86756e47e8dccb249c52d0a9abb7474c2f8",
+          "bytes": 460845,
+          "durationSec": 57.509333,
+          "preservedFrom": "2026-10-13",
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/cd0b93cada302aebc7c94cbb3bcf8b0c160b0625a81bac4d9f5f4db8cff13b29.jpg",
+        "src": "/api/place-images/9e291c259e06b92560d985a46833f45cb54233d1dc020659d4d65984ff484bd6.jpg",
+        "width": 960,
+        "height": 763,
+        "alt": "Государственный исторический музей",
+        "author": "Alvesgaspar",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_July_2011-1a.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/9e291c259e06b92560d985a46833f45cb54233d1dc020659d4d65984ff484bd6.jpg",
+          "width": 960,
+          "height": 763,
+          "bytes": 224682
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/cd0b93cada302aebc7c94cbb3bcf8b0c160b0625a81bac4d9f5f4db8cff13b29.jpg",
+          "width": 250,
+          "height": 199,
+          "bytes": 18781
+        }
+      ]
+    }
+  ],
+  "fullDecodeCheckedAt": "2026-10-14T11:23:37.729499+00:00",
+  "allCurrentAndPreviousMp3Decoded": true
+}

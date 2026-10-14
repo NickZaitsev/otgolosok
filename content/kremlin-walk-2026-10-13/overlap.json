@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-13T11:33:32.049Z",
+  "existingWalksChecked": 39,
+  "aliasesChecked": 7195,
+  "maxExistingPercent": 0,
+  "existingOverlaps": [],
+  "unresolvedNearby": [],
+  "formula": "100 × общие физические объекты / min(число уникальных объектов A, число уникальных объектов B)"
+}

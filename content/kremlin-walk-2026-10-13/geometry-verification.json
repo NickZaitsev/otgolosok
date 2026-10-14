@@ -1,0 +1,388 @@
+{
+  "checkedAt": "2026-10-13T11:52:17.020035+00:00",
+  "routeDistanceM": 4446,
+  "walkingMinutes": 57,
+  "geometryMeasuredDistanceM": 4442.54,
+  "geometryVertices": 349,
+  "geometrySampleStepM": 10,
+  "geometrySampleCount": 644,
+  "routeInsideGardenRing": true,
+  "outsideGardenRingSamples": 0,
+  "startGapM": 0.013,
+  "destinationGapM": 0.038,
+  "stopOrderPreserved": true,
+  "stops": [
+    {
+      "number": 1,
+      "id": "osm:relation:3062892",
+      "name": "Манеж",
+      "triggerLocation": {
+        "lat": 55.7534186,
+        "lon": 37.6130631
+      },
+      "triggerGapFromRouteM": 0.01,
+      "triggerDistanceFromPlaceM": 19.13,
+      "listeningWayId": 238140261,
+      "listeningWayTags": {
+        "highway": "footway",
+        "lit": "yes"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "208ca092b114720073e945acd9f74271737bb6331618b4b86b6f896e592f1abb",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "Восточная пешеходная сторона Манежа. Вход на выставку не требуется.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 2,
+      "id": "osm:relation:16492515",
+      "name": "Могила Неизвестного Солдата",
+      "triggerLocation": {
+        "lat": 55.7548408,
+        "lon": 37.6157636
+      },
+      "triggerGapFromRouteM": 0.04,
+      "triggerDistanceFromPlaceM": 29.02,
+      "listeningWayId": 438015033,
+      "listeningWayTags": {
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "0ffd209c2aebb76fa70894e0f728bd350d8afe6f869b302d94474b952233eb5f",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "Публичная дорожка Александровского сада перед мемориалом; на площадку караула не заходить.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 3,
+      "id": "osm:relation:1932724",
+      "name": "Воскресенские ворота",
+      "triggerLocation": {
+        "lat": 55.7558137,
+        "lon": 37.6178584
+      },
+      "triggerGapFromRouteM": 0.0,
+      "triggerDistanceFromPlaceM": 27.29,
+      "listeningWayId": 680960897,
+      "listeningWayTags": {
+        "highway": "pedestrian",
+        "lit": "yes",
+        "name": "проезд Воскресенские Ворота",
+        "name:ru": "проезд Воскресенские Ворота",
+        "surface": "sett",
+        "wikidata": "Q4379983",
+        "wikipedia": "ru:Воскресенские Ворота (проезд)"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "2577d50347b3c7589c3d95d758e7643b9dd60f6aed76a2bc7710d9e1b0689578",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "Перед Воскресенскими воротами со стороны Манежной площади. Далее через общественный проезд на Красную площадь.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 4,
+      "id": "osm:relation:5963922",
+      "name": "Исторический музей",
+      "triggerLocation": {
+        "lat": 55.7551377,
+        "lon": 37.6186613
+      },
+      "triggerGapFromRouteM": 1.3,
+      "triggerDistanceFromPlaceM": 17.81,
+      "listeningWayId": 637763418,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "sett"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "64ba7fdf9fc86e5fe9a036cde589b99fdd84c15294c37f206c0388869f027978",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "Перед зданием Исторического музея со стороны Красной площади; посещение музея не требуется.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 5,
+      "id": "osm:relation:3330565",
+      "name": "Государственный универсальный магазин (ГУМ)",
+      "triggerLocation": {
+        "lat": 55.7537223,
+        "lon": 37.6225347
+      },
+      "triggerGapFromRouteM": 0.04,
+      "triggerDistanceFromPlaceM": 21.59,
+      "listeningWayId": 109896779,
+      "listeningWayTags": {
+        "bicycle": "no",
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "1e47cf2763e8247b256a8c7ab70d9dcb4132df7a609cd10519e44b86bb49fb84",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "Пешеходная сторона Красной площади перед юго-западным фасадом ГУМа; вход в магазин не требуется.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 6,
+      "id": "osm:relation:1360656",
+      "name": "Спасская башня",
+      "triggerLocation": {
+        "lat": 55.7527771,
+        "lon": 37.6223836
+      },
+      "triggerGapFromRouteM": 0.0,
+      "triggerDistanceFromPlaceM": 54.82,
+      "listeningWayId": 109896781,
+      "listeningWayTags": {
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "sett"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "4e8efe5816ec0af8cf2055589f38d8912093d2c445c546ab05134ced576edcdb",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "Со стороны Красной площади, восточнее Спасской башни. К воротам и служебному проходу не подходить.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 7,
+      "id": "osm:relation:3030568",
+      "name": "Собор Василия Блаженного",
+      "triggerLocation": {
+        "lat": 55.7527419,
+        "lon": 37.6232123
+      },
+      "triggerGapFromRouteM": 0.02,
+      "triggerDistanceFromPlaceM": 38.97,
+      "listeningWayId": 93548776,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "asphalt",
+        "width": "2.8"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "797b736744dbe786e5c487b9a26ae62564ad4e9ff5e344a693a628ff80da258f",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На публичной дорожке севернее собора; вход на территорию музея и в храм не требуется.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 8,
+      "id": "osm:relation:1360651",
+      "name": "Беклемишевская башня",
+      "triggerLocation": {
+        "lat": 55.7497424,
+        "lon": 37.6232953
+      },
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromPlaceM": 1.02,
+      "listeningWayId": 109443651,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "729506bebc2b794cab56d20096b526e06d631f612a37795fd043a806d94a7499",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На тротуаре Кремлёвской набережной снаружи стены, у восточного угла Кремля.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 9,
+      "id": "osm:relation:3229147",
+      "name": "Тайницкая башня",
+      "triggerLocation": {
+        "lat": 55.7490647,
+        "lon": 37.618156
+      },
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromPlaceM": 34.08,
+      "listeningWayId": 109443651,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "293c0ec90e748293faa936d158dc5118b399b431d59de4707405deb86a2961a1",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На тротуаре Кремлёвской набережной снаружи стены напротив Тайницкой башни; проход внутрь Кремля не требуется.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 10,
+      "id": "osm:relation:1360630",
+      "name": "Боровицкая башня",
+      "triggerLocation": {
+        "lat": 55.7489105,
+        "lon": 37.6123438
+      },
+      "triggerGapFromRouteM": 0.06,
+      "triggerDistanceFromPlaceM": 20.23,
+      "listeningWayId": 1213525439,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "418ceebcff71f72bbc051c5f701babb050fe04476abd830d35664161fae64b79",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На публичном тротуаре Боровицкой площади, западнее башни и служебных ворот. За ограждения не заходить.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 11,
+      "id": "osm:node:1666070895",
+      "name": "Грот «Руины»",
+      "triggerLocation": {
+        "lat": 55.7538006,
+        "lon": 37.6151848
+      },
+      "triggerGapFromRouteM": 1.94,
+      "triggerDistanceFromPlaceM": 12.31,
+      "listeningWayId": 438013437,
+      "listeningWayTags": {
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Point",
+      "triggerInsidePhysicalFootprint": null,
+      "physicalGeometrySha256": "0cf518c09483fad262b2455ffe31e83571884d21294af48d9113a47a18fac83c",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "Публичная дорожка Александровского сада перед гротом, вне мемориальной площадки и без подъёма на холм.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 12,
+      "id": "osm:relation:3061015",
+      "name": "Кутафья башня",
+      "triggerLocation": {
+        "lat": 55.7525732,
+        "lon": 37.6125071
+      },
+      "triggerGapFromRouteM": 0.0,
+      "triggerDistanceFromPlaceM": 28.22,
+      "listeningWayId": 142774519,
+      "listeningWayTags": {
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "3c81809f1e60f644551d3cb9db62406814b5103cb470800b850301da230aa594",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На пешеходном подходе западнее Кутафьей башни; досмотр и проход на Троицкий мост не требуются.",
+      "accessCaveat": "Текущий доступ, перекрытия и видимость объекта на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    }
+  ],
+  "kremlinCorePolygon": [
+    [
+      37.61295,
+      55.74918
+    ],
+    [
+      37.61442,
+      55.75235
+    ],
+    [
+      37.61679,
+      55.75525
+    ],
+    [
+      37.62096,
+      55.75259
+    ],
+    [
+      37.62303,
+      55.75004
+    ],
+    [
+      37.61295,
+      55.74918
+    ]
+  ],
+  "kremlinCoreIntrusionSamples": 0,
+  "kremlinBoundaryVerification": "Проверка каждого отрезка с шагом не более 10 м относительно внешнего OSM-полигона Кремля из БД генератора. Визуальная проверка карты выполнена.",
+  "kremlinBoundaryPlaceId": "osm:relation:1360641",
+  "kremlinBoundaryGeometrySha256": "92efd76d16b8692322be92a5699ae3731d3495e9cbc6b05c7042aa885110b46e",
+  "kremlinBoundaryIntrusionSamples": 0,
+  "kremlinBoundaryInteriorSegmentIntersections": 0,
+  "kremlinBoundarySegmentsChecked": 348,
+  "tunnels": [
+    [
+      74,
+      75
+    ],
+    [
+      281,
+      282
+    ],
+    [
+      336,
+      346
+    ]
+  ],
+  "fieldChecked": false,
+  "router": "https://valhalla1.openstreetmap.de/route",
+  "mapSource": "BBBike Moscow.osm.pbf, local 2026-09-22",
+  "geometrySha256": "3dc5ee790327c2f0dcb0ba9461b618d79421fc4cb8cc1ddf61b5d460cf438b68",
+  "currentOsmReadFailures": [
+    "overpass-api.de: HTTP error",
+    "overpass.kumi.systems: timeout",
+    "api.openstreetmap.org map: HTTP error"
+  ],
+  "notes": [
+    "Схема проходит снаружи Кремля; Кутафья башня слушается западнее зоны досмотра, Троицкий мост не используется для входа в Кремль.",
+    "Триггеры мемориала и грота не расположены на площадке караула; путь не проходит по отмеченным private дорожкам мемориала.",
+    "После Боровицкой башни путь идёт до грота, затем возвращается к Кутафьей башне по иной стороне сада. Остановка Кутафья остаётся последней.",
+    "Актуальные перекрытия Красной площади, Александровского сада, набережной и выходов метро не проверены; безбарьерная доступность не подтверждена."
+  ]
+}
