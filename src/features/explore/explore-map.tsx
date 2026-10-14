@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import type * as Leaflet from "leaflet";
-import { readCurrentCity } from "../city/current-city";
+import { readCurrentCity, viewSuitsCity } from "../city/current-city";
 import { foodMarkerSvg } from "../food/food-marker";
 import type { FoodKind } from "../food/types";
 import type { Coordinates } from "../tour/types";
@@ -273,9 +273,10 @@ export function ExploreMap({
           : null;
         if (disposed || !container.current) return;
         const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const saved = viewState?.current;
-        // A map without a saved view opens on the listener's city.
+        // A map opens on the listener's city: without a saved view, or when the city was switched since
+        // (the trends switch, another tab) and the saved view shows another city.
         const home = readCurrentCity();
+        const saved = viewState?.current && viewSuitsCity(viewState.current.center, home) ? viewState.current : null;
         appliedFocus.current = saved?.focus ?? null;
         // Leaflet 1.9 leaves its zoom transition timer alive after remove().
         // Zoom immediately so switching tabs mid-zoom cannot touch a removed map.

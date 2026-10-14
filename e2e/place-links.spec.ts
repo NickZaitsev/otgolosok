@@ -216,3 +216,22 @@ test("казанская история не предлагает констру
   await expect(title(page, kazan.title)).toBeVisible();
   await expect(page.getByRole("link", { name: "Создать прогулку отсюда" })).toHaveCount(0);
 });
+
+test("город, выбранный в «Трендах», открывает карту на нём и без перезагрузки", async ({ page }) => {
+  const kazan: CatalogFixture = { id: "osm:way:3004", title: "Казанский кремль", address: "Казань, Кремль", lat: 55.7987, lon: 49.1056, paragraphs: [text] };
+  await openMap(page, [first, kazan]);
+  // A marker far off screen may be left out of the DOM entirely.
+  const onScreen = (name: string) => page.evaluate(name => {
+    const box = document.querySelector(`[title="${name}"]`)?.getBoundingClientRect();
+    return Boolean(box && box.width > 0 && box.right > 0 && box.bottom > 0 && box.left < innerWidth && box.top < innerHeight);
+  }, name);
+  await expect.poll(() => onScreen(first.title)).toBe(true);
+  // Leaving the map remounts it; only the document must stay, with the view kept in memory.
+  await page.evaluate(() => { (window as unknown as { sameDocument: boolean }).sameDocument = true; });
+  await page.getByRole("link", { name: "Тренды" }).click();
+  await page.getByRole("group", { name: "Город" }).getByRole("button", { name: "Казань" }).click();
+  await page.getByRole("link", { name: "Рядом" }).click();
+  await expect.poll(() => onScreen(kazan.title)).toBe(true);
+  expect(await onScreen(first.title)).toBe(false);
+  expect(await page.evaluate(() => (window as unknown as { sameDocument?: boolean }).sameDocument)).toBe(true);
+});

@@ -14,6 +14,9 @@ export const cityById = (id: unknown): City | null => CITIES.find(city => city.i
 /** The city whose walk area holds the point, or null outside every city. */
 export const cityAtPoint = (point: Coordinates): City | null => cityAt(point.lat, point.lon);
 
+/** Whether a view centred on the point still suits the city: views of another city give way to it, views outside every city stay. */
+export const viewSuitsCity = (center: Coordinates, city: City) => (cityAtPoint(center) ?? city).id === city.id;
+
 // Without storage the choice still holds until the page is reloaded.
 let memory: CityId | null = null;
 

@@ -3,7 +3,7 @@
 import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cityAtPoint, CURRENT_CITY_KEY, readCurrentCity, rememberCity, useCurrentCity, CITIES } from "./current-city";
+import { cityAtPoint, CURRENT_CITY_KEY, readCurrentCity, rememberCity, useCurrentCity, viewSuitsCity, CITIES } from "./current-city";
 
 const [moscow, kazan] = CITIES;
 
@@ -16,6 +16,15 @@ describe("cityAtPoint", () => {
     ["между городами", { lat: 55.8, lon: 43 }, null],
     ["Петербург", { lat: 59.94, lon: 30.31 }, null],
   ])("%s", (_name, point, expected) => expect(cityAtPoint(point)?.id ?? null).toBe(expected));
+});
+
+describe("viewSuitsCity", () => {
+  it.each([
+    ["московский вид при выбранной Москве", { lat: 55.752, lon: 37.6175 }, moscow, true],
+    ["московский вид после выбора Казани", { lat: 55.752, lon: 37.6175 }, kazan, false],
+    ["казанский вид после выбора Москвы", { lat: 55.7987, lon: 49.1056 }, moscow, false],
+    ["вид вне городов остаётся", { lat: 59.94, lon: 30.31 }, kazan, true],
+  ])("%s", (_name, center, city, expected) => expect(viewSuitsCity(center, city)).toBe(expected));
 });
 
 describe("текущий город", () => {
