@@ -194,9 +194,9 @@ test("each city lists its own walks with its own metro; no city means Moscow", a
   const page = (await call("/api/top-walks?city=kazan")).data;
   assert.deepEqual(titles(page), ["Кремль"]);
   assert.equal(page.walks[0].rank, 1, "the rank counts within the city");
-  assert.deepEqual([page.walks[0].startMetro.name, page.walks[0].endMetro.name], ["Кремлевская", "Площадь Тукая"]);
+  assert.deepEqual([page.walks[0].startMetro.name, page.walks[0].endMetro.name], ["Кремлёвская", "Площадь Тукая"]);
   assert.deepEqual(page.filters.stations.map((/** @type {any} */ station) => station.insideCircle), [false, false], "Kazan has no Circle line");
-  assert.equal((await call(`/api/top-walks?city=kazan&start=${encodeURIComponent("Кремлевская")}`)).data.total, 1);
+  assert.equal((await call(`/api/top-walks?city=kazan&start=${encodeURIComponent("Кремлёвская")}`)).data.total, 1);
   assert.equal((await call("/api/top-walks?city=kazan&start=%40circle")).data.total, 0);
 });
 

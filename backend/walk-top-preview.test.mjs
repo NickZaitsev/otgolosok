@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import metroData from "./metro-stations.json" with { type: "json" };
+import kazanMetro from "./metro-stations-kazan.json" with { type: "json" };
 import { insideCircleStations, nearestMetro, routeMapPreview, routePreview } from "./walk-top-preview.mjs";
 
 test("маршрут целиком помещается в превью, сохраняя поворот и концы", () => {
@@ -69,4 +70,16 @@ test("внутри Кольцевой: станции кольца, центра
     .map(station => Math.min(...ring.map(platform => Math.hypot((platform.lat - station.lat) * 111, (platform.lon - station.lon) * 63)))));
   assert.ok(farthest < 3, `${farthest} km`);
   assert.equal(insideCircleStations(metroData.stations.filter(station => station.line.id !== "5")).size, 0, "без кольца зоны нет");
+});
+
+test("метро Казани: ближайшая станция у выходов, проверенных по независимым источникам", async t => {
+  for (const [name, point, expected] of [
+    // Выход станции по постановлению г. Казани (pravo.tatarstan.ru, 2024, стр. 7); у hh.ru станция стояла почти у «Яшьлек».
+    ["у Авиастроительной", { lat: 55.854895, lon: 49.084231 }, "Авиастроительная"],
+    ["у Яшьлек", { lat: 55.8279, lon: 49.0829 }, "Яшьлек (Юность)"],
+    ["у Спасской башни кремля", { lat: 55.7957, lon: 49.1059 }, "Кремлёвская"],
+    ["на площади Тукая", { lat: 55.7871, lon: 49.1219 }, "Площадь Тукая"],
+  ]) await t.test(name, () => assert.equal(nearestMetro(point, kazanMetro.stations)?.name, expected));
+  assert.equal(kazanMetro.stations.length, 11);
+  assert.ok(kazanMetro.stations.every(station => station.line.id === "49"), "одна Центральная линия");
 });

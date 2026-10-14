@@ -281,7 +281,7 @@ describe("список топа", () => {
   });
 
   it("переключатель города сбрасывает метро, сохраняет длительность и запоминает выбор", async () => {
-    const kazanWalk = { ...shared, title: "Кремль", startMetro: { name: "Кремлевская", distanceM: 80, lines: [{ id: "49", name: "Центральная", color: "#cd0505" }] }, endMetro: null };
+    const kazanWalk = { ...shared, title: "Кремль", startMetro: { name: "Кремлёвская", distanceM: 80, lines: [{ id: "49", name: "Центральная", color: "#cd0505" }] }, endMetro: null };
     fetcher.mockImplementation((url: string) => Promise.resolve(ok(new URL(url, "http://local.test").searchParams.get("city") === "kazan" ? page([kazanWalk]) : page([catalog, shared]))));
     try {
       await render(true);
@@ -298,7 +298,7 @@ describe("список топа", () => {
       expect(fetcher.mock.calls.at(-1)?.[0]).toBe("/api/top-walks?city=kazan&duration=61-to-90");
       expect(cities()[1].getAttribute("aria-pressed")).toBe("true");
       expect(localStorage.getItem("otgolosok:city:v1")).toBe("kazan");
-      expect(container.querySelector("ol > li")?.textContent).toContain("Старт: м. Кремлевская");
+      expect(container.querySelector("ol > li")?.textContent).toContain("Старт: м. Кремлёвская");
     } finally { localStorage.clear(); }
   });
 
