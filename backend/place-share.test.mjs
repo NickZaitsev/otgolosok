@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { PLACE_METRIKA_SCRIPT } from "./place-metrika.mjs";
 import { INDEXABLE_WORDS, SHARE_PAGE_CSP, isIndexablePlace, placeSharePath, renderPlaceSharePage, shareDescription, shareLocale, sharePathToPlaceId, shareUnavailableHtml, storyWordCount } from "./place-share.mjs";
 
 const origin = "https://otgolosok.test";
@@ -67,16 +68,22 @@ test("English and Chinese shared links keep their UI language while story metada
   assert.match(shareUnavailableHtml("osm:node:8", "zh"), /href="\/zh\?place=osm:node:8"/);
 });
 
-test("the page runs no scripts: its only inline style is allowed by hash and JSON-LD is inert data", () => {
+test("the one inline script is the consent-gated counter and the page policy allows it and its style by hash", () => {
   const { html } = renderPlaceSharePage({ id: "osm:node:1", place: published(), origin });
-  assert.doesNotMatch(html, /<script>/);
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
+  assert.deepEqual(scripts, [PLACE_METRIKA_SCRIPT]);
   assert.doesNotMatch(html, /location\.replace|http-equiv="refresh"/);
-  assert.match(SHARE_PAGE_CSP, /default-src 'none'/);
-  assert.doesNotMatch(SHARE_PAGE_CSP, /script-src/);
+  const hash = value => createHash("sha256").update(value).digest("base64").replace(/[+/]/g, "\\$&");
+  assert.match(SHARE_PAGE_CSP, /^default-src 'none'/);
+  assert.match(SHARE_PAGE_CSP, new RegExp(`script-src 'sha256-${hash(scripts[0])}' https://mc\\.yandex\\.ru;`));
+  assert.match(SHARE_PAGE_CSP, /frame-ancestors 'none'/);
+  assert.doesNotMatch(SHARE_PAGE_CSP, /unsafe-inline|unsafe-eval|\*/);
   const styles = [...html.matchAll(/<style>([^<]*)<\/style>/g)].map(match => match[1]);
   assert.equal(styles.length, 1);
-  assert.match(SHARE_PAGE_CSP, new RegExp(`style-src 'sha256-${createHash("sha256").update(styles[0]).digest("base64").replace(/[+/]/g, "\\$&")}'`));
+  assert.match(SHARE_PAGE_CSP, new RegExp(`style-src 'sha256-${hash(styles[0])}'`));
   assert.equal([...html.matchAll(/<script type="application\/ld\+json">/g)].length, 1);
+  // A page for a missing place counts nothing.
+  assert.doesNotMatch(renderPlaceSharePage({ id: "osm:node:1", place: null, origin }).html, /<script>/);
 });
 
 for (const [name, photo, image, card] of [
@@ -97,8 +104,7 @@ test("text from the catalog is escaped everywhere it lands", () => {
   assert.equal(tag(html, "og:title"), "Дом &quot;Пашкова&quot; &lt;script&gt;alert(1)&lt;/script&gt; &amp; &#39;сад&#39;");
   assert.match(html, /<h1>Дом &quot;Пашкова&quot; &lt;script&gt;/);
   assert.match(html, /<p>&lt;img src=x onerror=alert\(1\)&gt;<\/p>/);
-  assert.doesNotMatch(html, /<script>/);
-  assert.doesNotMatch(html, /<\/script><script/);
+  assert.deepEqual([...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]), [PLACE_METRIKA_SCRIPT]);
 });
 
 test("a place without a story title or text falls back to its name and address", () => {

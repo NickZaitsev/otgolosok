@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { PLACE_METRIKA_CSP, PLACE_METRIKA_SCRIPT } from "./place-metrika.mjs";
 
 /**
  * The page of a catalog place, `/place/<type>/<number>` (src/features/explore/place-link.ts keeps the same mapping).
@@ -39,8 +40,15 @@ figcaption{color:var(--muted);font-size:14px;margin-top:8px}
 article p{margin:0 0 1em}ol,ul{padding-left:1.2em}li{margin:0 0 8px;font-size:16px}
 .publisher{color:var(--muted)}footer{margin-top:48px;color:var(--muted);font-size:14px}`;
 const STYLE_HASH = createHash("sha256").update(STYLE).digest("base64");
-// No scripts at all: the JSON-LD block is data, which a browser never runs, so script-src stays closed.
-export const SHARE_PAGE_CSP = `default-src 'none'; style-src 'sha256-${STYLE_HASH}'; img-src 'self'; media-src 'self'; base-uri 'none'; form-action 'none'`;
+// The one script is the consent-gated Metrica counter (backend/place-metrika.mjs), allowed by hash; the JSON-LD block
+// is data, which a browser never runs. Without the counter script-src stays closed.
+const metrika = PLACE_METRIKA_CSP;
+export const SHARE_PAGE_CSP = [
+  "default-src 'none'", `style-src 'sha256-${STYLE_HASH}'`, ...(metrika ? [`script-src ${metrika.script}`] : []),
+  `img-src 'self'${metrika ? ` ${metrika.collectors}` : ""}`, "media-src 'self'",
+  ...(metrika ? [`connect-src ${metrika.collectors} ${metrika.sockets}`, `frame-src ${metrika.collectors}`, `child-src ${metrika.collectors}`] : []),
+  "frame-ancestors 'none'", "base-uri 'none'", "form-action 'none'",
+].join("; ");
 
 /** @param {string} pathname @returns {string | null} `osm:<type>:<number>` */
 export function sharePathToPlaceId(pathname) {
@@ -231,7 +239,7 @@ ${place && (subject || address) ? `<p class="place">${escape([subject, address].
 ${sources.length ? `<h2>Источники</h2>\n<ol>${sources.map(source => `<li><a href="${escape(source.url)}" rel="noopener">${escape(source.title)}</a>${source.publisher ? ` <span class="publisher">— ${escape(source.publisher)}</span>` : ""}</li>`).join("")}</ol>\n` : ""}</article>
 ${neighbours.length ? `<nav aria-label="Истории рядом"><h2>Рядом</h2>\n<ul>${neighbours.map(item => `<li><a href="${escape(item.href)}">${escape(item.label)}</a>${item.distance ? ` <span class="publisher">· ${item.distance} м</span>` : ""}</li>`).join("")}</ul></nav>\n` : ""}<footer>«Отголосок» — аудиоистории, которые звучат рядом с местом событий. <a href="/">Карта историй</a></footer>
 </main>
-</body>
+${place && metrika ? `<script>${PLACE_METRIKA_SCRIPT}</script>\n` : ""}</body>
 </html>
 `;
   return { status: place ? 200 : 404, html };
