@@ -206,3 +206,13 @@ test("конструктор прогулки от места возвращае
   await expect(title(page, first.title)).toBeVisible();
   expect(here(page)).toBe("/?place=osm:node:1001");
 });
+
+test("казанская история не предлагает конструктор: он готовит прогулки только в Москве", async ({ page }) => {
+  const kazan: CatalogFixture = { id: "osm:way:3003", title: "Казанский кремль", address: "Казань, Кремль", lat: 55.7987, lon: 49.1056, paragraphs: [text] };
+  await page.addInitScript(() => localStorage.setItem("otgolosok:city:v1", "kazan"));
+  await openMap(page, [kazan]);
+  await openPin(page, kazan.title);
+  await expand(page);
+  await expect(title(page, kazan.title)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Создать прогулку отсюда" })).toHaveCount(0);
+});

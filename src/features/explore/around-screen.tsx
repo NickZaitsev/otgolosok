@@ -353,7 +353,8 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   }
   // A point without a house number still starts a walk: the builder needs a readable label, so it gets a neutral one.
   const walkStart=place?{address:place.address??t("Точка на карте"),location:place.location}:active;
-  const walkHref=walkStart?.address?`/?${new URLSearchParams({walk:"create",address:walkStart.address,lat:String(walkStart.location.lat),lon:String(walkStart.location.lon)})}`:"/?walk=create";
+  // The builder prepares walks in Moscow only, so a story of another city offers no walk from it.
+  const walkHref=walkStart&&!isMoscowPoint(walkStart.location)?null:walkStart?.address?`/?${new URLSearchParams({walk:"create",address:walkStart.address,lat:String(walkStart.location.lat),lon:String(walkStart.location.lon)})}`:"/?walk=create";
   function closePlace(){lookup.current?.abort();prepareRequest.current?.abort();setPlace(null);setPlaceBusy(false);setPlaceError("");setPreparing(false);setPrepareError("");setNearbyCenter(null);}
 
   // The story sheet is shown when nothing outranks it below (the location prompt only shows without a story).
