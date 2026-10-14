@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, type MouseEvent, type ReactNode, type Ref } from "react";
+import type { MouseEvent, ReactNode, Ref } from "react";
 import { CITIES, type City } from "../city/current-city";
 import { Sheet } from "../shell/sheet";
 import { SheetHandle } from "../shell/sheet-handle";
@@ -235,7 +235,11 @@ export function GeoNotice({ message, outside, denied, onCity, onRetry, onClose }
   const { t } = useI18n();
   return <div className={a.notice}>
     <div>
-      <p role="status">{message}{outside ? <> {t("Истории есть в городах:")} {CITIES.map((city, index) => <Fragment key={city.id}>{index ? ", " : null}<button type="button" className={styles.inlineButton} onClick={() => onCity(city)}>{t(city.name)}</button></Fragment>)}.</> : null}</p>
+      <p role="status">{message}{outside ? <> {t("Истории есть в городах:")}</> : null}</p>
+      {/* Full touch targets: a city is the next step here, not a link inside a sentence. */}
+      {outside ? <div className={styles.cities} role="group" aria-label={t("Город")}>
+        {CITIES.map(city => <button key={city.id} type="button" onClick={() => onCity(city)}>{t(city.name)}</button>)}
+      </div> : null}
       {denied ? <GeoHelp onRetry={onRetry} /> : null}
     </div>
     <button className={`${a.iconButton} ${styles.top}`} type="button" aria-label={t("Скрыть сообщение")} onClick={onClose}><ExploreIcon name="close" /></button>

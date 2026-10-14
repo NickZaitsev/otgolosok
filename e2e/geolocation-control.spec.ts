@@ -109,7 +109,10 @@ test.describe("город", () => {
     await expect(page.getByText("Загружаем карту…")).toHaveCount(0);
     await page.getByRole("button", { name: "Моё местоположение", exact: true }).click();
     await expect(page.getByText(/Вы сейчас за пределами нашего каталога\. Истории есть в городах:/)).toBeVisible();
-    await expect(page.getByRole("button", { name: "Москва", exact: true })).toBeVisible();
+    for (const name of ["Москва", "Казань"]) {
+      const box = (await page.getByRole("button", { name, exact: true }).boundingBox())!;
+      expect(Math.min(box.width, box.height), `${name}: цель касания`).toBeGreaterThanOrEqual(44);
+    }
     await page.getByRole("button", { name: "Казань", exact: true }).click();
     expect(await page.evaluate(() => localStorage.getItem("otgolosok:city:v1"))).toBe("kazan");
     const top = page.waitForRequest(request => request.url().includes("/api/top-walks"));
