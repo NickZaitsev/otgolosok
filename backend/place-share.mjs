@@ -114,8 +114,6 @@ const positive = value => typeof value === "number" && Number.isFinite(value) &&
 const coordinate = value => typeof value === "number" && Number.isFinite(value) ? value : undefined;
 /** @param {unknown} value */
 const size = value => typeof value === "number" && Number.isSafeInteger(value) && value > 0 ? value : undefined;
-/** Valid ISO timestamps only. @param {unknown} value */
-const timestamp = value => typeof value === "string" && !Number.isNaN(Date.parse(value)) ? new Date(value).toISOString() : undefined;
 
 /**
  * @typedef {{name?: unknown, address?: unknown, location?: {lat?: unknown, lon?: unknown} | null,
@@ -168,7 +166,6 @@ export function renderPlaceSharePage({ id, place, origin, locale = "ru", nearby 
   const audioPath = typeof audio?.url === "string" && AUDIO_PATH.test(audio.url) ? audio.url : null;
   const duration = positive(audio?.durationSec);
   const sources = place ? storySources(story?.sources) : [];
-  const published = timestamp(place?.text?.createdAt);
   const lat = coordinate(place?.location?.lat), lon = coordinate(place?.location?.lon);
   const neighbours = place ? nearby.flatMap(item => {
     const href = placeSharePath(item?.id), label = text(item?.title);
@@ -182,8 +179,9 @@ export function renderPlaceSharePage({ id, place, origin, locale = "ru", nearby 
     "@graph": [
       {
         "@type": "Article", headline, description, inLanguage: "ru", url: canonical, mainEntityOfPage: canonical,
-        ...(published ? { datePublished: published, dateModified: published } : {}),
-        image: [preview.url], author: organization, publisher: organization,
+        // No datePublished/dateModified: the store keeps when a text was generated, not when it was approved or last
+        // changed, and a wrong date is worse than none. The site logo is no article image either.
+        ...(image ? { image: [image.url] } : {}), author: organization, publisher: organization,
         about: {
           "@type": "TouristAttraction", name: name ?? title, ...(address ? { address } : {}),
           ...(lat !== undefined && lon !== undefined ? { geo: { "@type": "GeoCoordinates", latitude: lat, longitude: lon } } : {}),

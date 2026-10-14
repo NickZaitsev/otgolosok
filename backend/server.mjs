@@ -54,6 +54,8 @@ import { sendCacheable, sendCacheableJson, sendUncachedJson } from "./http-cache
 import { renderSitemap } from "./sitemap.mjs";
 import { SHARE_NOT_FOUND_HTML, SHARE_PAGE_CSP, renderPlaceSharePage, shareLocale, shareUnavailableHtml, sharePathToPlaceId } from "./place-share.mjs";
 
+// A place published or taken down reaches the sitemap within this time.
+const SITEMAP_TTL_MS=10*60_000;
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 // Digests keep the comparison constant-time regardless of the candidate length.
 function sameSecret(expected,candidate) {
@@ -168,6 +170,8 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
   const promoEnabled=typeof promoWalksToken==="string"&&promoWalksToken.length>0;
   if(promoEnabled&&promoWalksToken.length<32)throw new Error("PROMO_WALKS_TOKEN must contain at least 32 characters");
   const authorizePromo=adminAuth(promoEnabled?promoWalksToken:"");
+  /** @type {{xml: string, at: number} | null} */
+  let sitemapCache=null;
   const promoWalks=promoEnabled&&accountStore?createPromoWalkService({accountStore,planWalk:walkPlanner,store,origin}):null;
   const reviews=createWalkReviewRoutes({store,accountStore,origin,authSecret,limiter:reviewLimiter,json,body});
   const placeFeedback=createPlaceFeedbackRoutes({store,accountStore,origin,authSecret,limiter:improvementLimiter,json,body});
@@ -694,7 +698,11 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
       // The search engines' list of pages: the static ones and every indexable place (backend/sitemap.mjs).
       if(readMethod&&url.pathname==="/sitemap.xml") {
         let xml;
-        try {xml=renderSitemap({origin,places:store.listPublishedPlaceIndex()});}
+        try {
+          // Building it reads every published story (~0.1 s for 2000 places): crawlers' repeat and conditional requests reuse it.
+          if(!sitemapCache||Date.now()-sitemapCache.at>=SITEMAP_TTL_MS)sitemapCache={xml:renderSitemap({origin,places:store.listPublishedPlaceIndex()}),at:Date.now()};
+          xml=sitemapCache.xml;
+        }
         catch(error) {logs?.captureException(error,{operation:"sitemap"});res.writeHead(503,{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"no-store","Retry-After":"300","X-Content-Type-Options":"nosniff"});res.end(req.method==="HEAD"?undefined:"Sitemap is temporarily unavailable.");return;}
         sendCacheable(req,res,xml,"application/xml; charset=utf-8");return;
       }

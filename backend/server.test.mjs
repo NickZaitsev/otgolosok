@@ -713,15 +713,23 @@ test("a place page links its published neighbours and survives their lookup fail
   assert.doesNotMatch(degraded.body.toString(),/Истории рядом/);
 });
 
-test("the sitemap lists the static pages and indexable places, revalidated by ETag, and fails closed",async t=>{
+test("the sitemap lists the static pages and indexable places, revalidated by ETag and built once for a while",async t=>{
   const f=await mapFixture(t);
   f.store.approvePlaceText("osm:node:9",{title:"Парк",paragraphs:[{text:Array.from({length:60},(_,index)=>`слово${index}`).join(" "),factIds:[]}],facts:[],sources:[]});
   const response=await raw(f.base,"/sitemap.xml");
   assert.equal(response.status,200);assert.equal(response.headers["content-type"],"application/xml; charset=utf-8");assert.equal(response.headers["cache-control"],"no-cache");
   const xml=response.body.toString();
   // Node 8 has a two-word story: it stays out; node 9 has a full one.
-  assert.deepEqual([...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(match=>match[1]),["https://otgolosok.test/","https://otgolosok.test/trends","https://otgolosok.test/place/node/9"]);
+  assert.deepEqual([...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(match=>match[1]),["https://otgolosok.test/","https://otgolosok.test/place/node/9"]);
+  // Repeat and conditional requests reuse the built sitemap instead of reading every story again.
+  const index=t.mock.method(f.store,"listPublishedPlaceIndex");
   assert.equal((await raw(f.base,"/sitemap.xml",{"If-None-Match":response.headers.etag})).status,304);
+  assert.equal((await raw(f.base,"/sitemap.xml")).body.toString(),xml);
+  assert.equal(index.mock.callCount(),0);
+});
+
+test("the sitemap fails closed when the store cannot list places",async t=>{
+  const f=await mapFixture(t);
   t.mock.method(f.store,"listPublishedPlaceIndex",()=>{throw new Error("SQLITE_BUSY: database is locked");});
   const failed=await raw(f.base,"/sitemap.xml");
   assert.equal(failed.status,503);assert.equal(failed.headers["cache-control"],"no-store");assert.equal(failed.headers["retry-after"],"300");

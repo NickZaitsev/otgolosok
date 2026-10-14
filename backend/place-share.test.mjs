@@ -171,11 +171,21 @@ test("structured data describes the article, the place, its recording and the br
   assert.equal(article["@type"], "Article");
   assert.equal(article.headline, "Дворец напротив Кремля. Дом Пашкова");
   assert.equal(article.url, `${origin}/place/way/5`);
-  assert.equal(article.datePublished, "2026-10-05T09:30:00.000Z");
+  // The store knows when a text was generated, not when it was approved: no dates rather than wrong ones.
+  assert.equal(article.datePublished, undefined);
+  assert.equal(article.dateModified, undefined);
+  assert.deepEqual(article.image, [`${origin}/api/place-images/${"a".repeat(64)}.jpg`]);
   assert.deepEqual(article.about, { "@type": "TouristAttraction", name: "Дом Пашкова", address: "ул. Воздвиженка, 3/5", geo: { "@type": "GeoCoordinates", latitude: 55.7494, longitude: 37.6093 } });
   assert.deepEqual(article.audio, { "@type": "AudioObject", contentUrl: `${origin}/api/story-audio/${"e".repeat(64)}.mp3`, encodingFormat: "audio/mpeg", inLanguage: "ru", duration: "PT1M36S" });
   assert.deepEqual(article.citation, ["https://example.org/pashkov"]);
   assert.deepEqual(breadcrumbs.itemListElement.map(item => item.item), [`${origin}/`, `${origin}/place/way/5`]);
+});
+
+test("without a photo of the place the article has no image: the site logo stays only in the messenger preview", () => {
+  const { html } = renderPlaceSharePage({ id: "osm:way:5", place: story({ photo: null }), origin });
+  assert.equal(jsonLdOf(html)["@graph"][0].image, undefined);
+  assert.equal(tag(html, "og:image"), "https://otgolosok.test/icons/icon-512.png");
+  assert.doesNotMatch(html, /<figure>/);
 });
 
 test("a title that already names the place is not repeated", () => {
