@@ -79,4 +79,3 @@ it("восстанавливает только прогресс той же р�
   data.set(drivingProgressKey("walk"), JSON.stringify({ version: 1, revision: 4, state: { phase: "visiting", visitIndex: 0, storyIndex: 99 } }));
   expect(loadDrivingProgress(storage, "walk", 4, route, options)).toEqual({ phase: "overview" });
 });
-

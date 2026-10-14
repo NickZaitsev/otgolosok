@@ -72,4 +72,3 @@ export const drivingTranslations: Translations = {
   "Я у машины / К финишу": ["I am at the car / Go to finish", "我已回到车旁 / 前往终点"],
   "Я у машины / Следующая парковка": ["I am at the car / Next parking", "我已回到车旁 / 下一个停车点"],
 };
-

@@ -20,4 +20,3 @@ export function yandexNavigationUrl(target: unknown, mode: NavigationMode): stri
   url.searchParams.set("rtt", mode === "driving" ? "auto" : "pd");
   return url.toString();
 }
-

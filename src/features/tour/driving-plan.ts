@@ -168,4 +168,3 @@ export function loadDrivingProgress(
     return initialDrivingPlanState();
   }
 }
-

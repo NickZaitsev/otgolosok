@@ -25,4 +25,3 @@ describe("ссылки во внешний навигатор", () => {
     expect(yandexNavigationUrl(target, "driving")).toBeNull();
   });
 });
-
