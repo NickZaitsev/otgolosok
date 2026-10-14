@@ -30,9 +30,16 @@ test("shared walk admin endpoint enforces editor access and validates query para
   const page = /** @type {any} */ (await response.json());
   assert.equal(page.total, 1); assert.equal(page.walks[0].shareToken, shared.shareToken);
   assert.equal(page.walks[0].author.name, "Анна");
-  for (const query of ["limit=0", "limit=51", "offset=-1", "offset=1.5", "offset=9007199254740992", "q=a&q=b", "author=a&author=b", "mode=bad", "unknown=x", "q=" + "x".repeat(121)]) {
+  for (const query of ["limit=0", "limit=51", "offset=-1", "offset=1.5", "offset=9007199254740992", "q=a&q=b", "author=a&author=b", "city=a&city=b", "city=" + "x".repeat(121), "mode=bad", "unknown=x", "q=" + "x".repeat(121)]) {
     assert.equal((await fetch(`${base}${path}?${query}`)).status, 400, query);
   }
+  assert.equal(page.walks[0].city, "Москва");
+  const matching = await fetch(`${base}${path}?city=${encodeURIComponent("МОСКВА")}`);
+  assert.equal(matching.status, 200);
+  assert.equal(/** @type {any} */ (await matching.json()).total, 1);
+  const empty = await fetch(`${base}${path}?city=${encodeURIComponent("Казань")}`);
+  assert.equal(empty.status, 200);
+  assert.equal(/** @type {any} */ (await empty.json()).total, 0);
   role = null;
   const publicResponse = await fetch(`${base}/api/story-walks/shared/${shared.shareToken}`);
   assert.equal(publicResponse.status, 200);

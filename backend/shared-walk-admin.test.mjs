@@ -156,3 +156,22 @@ test("moderation refuses stale revisions, non-public walks and bad input", t => 
   for (const input of [{ action: "publish", revision: 0 }, { action: "approve", revision: -1 }, { action: "hide" }])
     assert.throws(() => store.moderateWalkListing(walk.id, /** @type {any} */ (input)), { code: "BAD_REQUEST" });
 });
+
+
+test("city filters combine before pagination and safely handle missing or corrupt snapshots", t => {
+  const { store, create, db } = fixture(t);
+  const moscow = create("Москва"), kazan = create("Казань"), broken = create("Повреждена");
+  const snapshot = store.getWalk("one", kazan.id).snapshot;
+  store.updateWalk("one", kazan.id, { title: kazan.title, revision: kazan.revision, snapshot: { ...snapshot, city: "Казань" } });
+  db.prepare("UPDATE user_walks SET snapshot_json = ? WHERE id = ?").run("broken", broken.id);
+  assert.equal(store.listSharedWalksAdmin().walks.find(w => w.id === moscow.id).city, "Москва");
+  assert.equal(store.listSharedWalksAdmin().walks.find(w => w.id === broken.id).city, null);
+  const page = store.listSharedWalksAdmin({ city: "  КАЗАНЬ  ", author: "АННА", limit: 1, offset: 25 });
+  assert.equal(page.total, 1);
+  assert.equal(page.offset, 0);
+  assert.equal(page.hasMore, false);
+  assert.deepEqual(page.walks.map(w => [w.id, w.city]), [[kazan.id, "Казань"]]);
+  for (const city of ["%", "' OR 1=1 --", "Несуществующий"]) assert.equal(store.listSharedWalksAdmin({ city }).total, 0);
+  assert.equal(store.listSharedWalksAdmin({ city: "   " }).total, 3);
+  for (const city of [null, 42, "x".repeat(121)]) assert.throws(() => store.listSharedWalksAdmin(/** @type {any} */ ({ city })), { code: "BAD_REQUEST" });
+});

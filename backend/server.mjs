@@ -417,9 +417,9 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,parkin
         if(await placeFeedback.admin(req,res,url))return;
         if(req.method==="GET"&&url.pathname==="/api/story-admin/walks/shared") {
           const entries=[...url.searchParams];
-          if(entries.some(([key,value])=>!["limit","offset","q","author","mode","access","listing","promo"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
+          if(entries.some(([key,value])=>!["limit","offset","q","author","city","mode","access","listing","promo"].includes(key)||(["limit","offset"].includes(key)&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure("BAD_REQUEST");
           if(!accountStore){json(res,503,{error:{code:"UNAVAILABLE",message:"Хранилище прогулок недоступно."}});return;}
-          json(res,200,accountStore.listSharedWalksAdmin({limit:Number(url.searchParams.get("limit")??25),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",author:url.searchParams.get("author")??"",mode:url.searchParams.get("mode")??"all",access:url.searchParams.get("access")??"all",listing:url.searchParams.get("listing")??"all",promo:url.searchParams.get("promo")??"all"}));return;
+          json(res,200,accountStore.listSharedWalksAdmin({limit:Number(url.searchParams.get("limit")??25),offset:Number(url.searchParams.get("offset")??0),q:url.searchParams.get("q")??"",author:url.searchParams.get("author")??"",city:url.searchParams.get("city")??"",mode:url.searchParams.get("mode")??"all",access:url.searchParams.get("access")??"all",listing:url.searchParams.get("listing")??"all",promo:url.searchParams.get("promo")??"all"}));return;
         }
         const promoAdmin=new RegExp(`^/api/story-admin/promo-queue(?:/(${UUID})/(remove|up|requeue))?$`).exec(url.pathname);
         if(promoAdmin) {

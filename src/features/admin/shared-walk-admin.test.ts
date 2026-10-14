@@ -6,7 +6,7 @@ import { SharedWalkAdmin, WalkAdminSection } from "./shared-walk-admin";
 import type { AdminApi, AdminRun } from "./model";
 
 const walk = { id: "walk", title: "Арбат", shareToken: "public-token", revision: 2, visibility: "shared", listingStatus: null, author: { id: "anna", name: "Анна", email: "anna@example.test" },
-  mode: "loop", stopCount: 4, walkingMinutes: 20, distanceM: 1200, snapshotError: null, launches: 1234,
+  city: "Москва", mode: "loop", stopCount: 4, walkingMinutes: 20, distanceM: 1200, snapshotError: null, launches: 1234,
   createdAt: "2026-09-30T10:00:00Z", updatedAt: "2026-09-30T11:00:00Z" };
 let root: Root, container: HTMLDivElement;
 const request = vi.fn();
@@ -95,7 +95,8 @@ it("shows access in words and offers only the actions that change the top state"
   await mount();
   const rows = [...container.querySelectorAll("tbody tr")];
   const actions = (row: Element) => [...row.querySelectorAll("button")].map(item => item.textContent);
-  expect(rows.map(row => row.children[4].textContent)).toEqual(["По ссылке", "Всем · на проверке", "Всем · в топе", "Всем · скрыта из топа"]);
+  const accessColumn = [...container.querySelectorAll("thead th")].findIndex(cell => cell.textContent === "Доступ");
+  expect(rows.map(row => row.children[accessColumn].textContent)).toEqual(["По ссылке", "Всем · на проверке", "Всем · в топе", "Всем · скрыта из топа"]);
   expect(rows.map(actions)).toEqual([
     ["Скопировать ссылку", "В очередь промо"],
     ["Скопировать ссылку", "Одобрить для топа", "Скрыть из топа", "В очередь промо"],
@@ -153,4 +154,35 @@ it("shows the pending counter in the tab title", async () => {
   await act(async () => root.render(createElement(WalkAdminSection, props)));
   await act(async () => {});
   expect(container.querySelector("nav button")?.textContent).toBe("Пользовательские · 3");
+});
+
+
+it("shows the city column and uses a trimmed city filter for search, pagination and reset", async () => {
+  await mount();
+  const column = [...container.querySelectorAll("thead th")].findIndex(cell => cell.textContent === "Город");
+  expect(container.querySelector("tbody tr")!.children[column].textContent).toBe("Москва");
+  const input = [...container.querySelectorAll("label")].find(label => label.textContent === "Город")!.querySelector("input")!;
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "  Казань  ");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await click("Найти");
+  let query = new URLSearchParams(request.mock.lastCall![0].split("?")[1]);
+  expect(query.get("city")).toBe("Казань");
+  expect(query.get("offset")).toBe("0");
+  await click("Далее");
+  query = new URLSearchParams(request.mock.lastCall![0].split("?")[1]);
+  expect(query.get("city")).toBe("Казань");
+  expect(query.get("offset")).toBe("25");
+  await click("Сбросить");
+  query = new URLSearchParams(request.mock.lastCall![0].split("?")[1]);
+  expect(query.get("city")).toBe("");
+  expect(input.value).toBe("");
+});
+
+it("shows no city data for a damaged snapshot", async () => {
+  request.mockResolvedValue({ walks: [{ ...walk, city: null, snapshotError: "INVALID" }], total: 1, offset: 0, hasMore: false, pending: 0 });
+  await mount();
+  const column = [...container.querySelectorAll("thead th")].findIndex(cell => cell.textContent === "Город");
+  expect(container.querySelector("tbody tr")!.children[column].textContent).toBe("Нет данных");
 });

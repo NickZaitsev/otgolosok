@@ -26,6 +26,7 @@ export function createSharedWalkAdminStore(db, { viewWalk, documentOf, launchCou
       visibility: row.visibility, listingStatus: row.visibility === "public" ? row.listing_status ?? null : null,
       createdAt: row.created_at, updatedAt: row.updated_at,
       author: row.author_id ? { id: row.author_id, name: row.author_name, email: row.author_email } : null,
+      city: document?.city ?? null,
       mode: document?.mode ?? null, stopCount: document?.stops.length ?? null,
       walkingMinutes: document?.route?.walkingMinutes ?? null,
       distanceM: document?.route?.distanceM ?? null,
@@ -36,11 +37,12 @@ export function createSharedWalkAdminStore(db, { viewWalk, documentOf, launchCou
   };
 
   return {
-    listSharedWalksAdmin({ limit = 25, offset = 0, q = "", author = "", mode = "all", access = "all", listing = "all", promo = "all" } = {}) {
+    listSharedWalksAdmin({ limit = 25, offset = 0, q = "", author = "", city = "", mode = "all", access = "all", listing = "all", promo = "all" } = {}) {
       if (!Number.isSafeInteger(limit) || limit < 1 || limit > 50
         || !Number.isSafeInteger(offset) || offset < 0
         || typeof q !== "string" || q.length > 120
         || typeof author !== "string" || author.length > 120
+        || typeof city !== "string" || city.length > 120
         || !["all", "open", "loop"].includes(mode)
         || !["all", "shared", "public"].includes(access)
         || !["all", "pending", "approved", "hidden"].includes(listing)
@@ -69,6 +71,10 @@ export function createSharedWalkAdminStore(db, { viewWalk, documentOf, launchCou
       if (author.trim()) {
         where.push("(instr(walk_search(u.name), walk_search(?)) > 0 OR instr(walk_search(u.email), walk_search(?)) > 0)");
         params.push(author.trim(), author.trim());
+      }
+      if (city.trim()) {
+        where.push("instr(walk_search(json_extract(CASE WHEN json_valid(w.snapshot_json) THEN w.snapshot_json ELSE '{}' END, '$.city')), walk_search(?)) > 0");
+        params.push(city.trim());
       }
       if (mode !== "all") {
         where.push("json_extract(CASE WHEN json_valid(w.snapshot_json) THEN w.snapshot_json ELSE '{}' END, '$.mode') = ?");

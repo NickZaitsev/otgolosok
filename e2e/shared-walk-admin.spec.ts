@@ -49,12 +49,15 @@ test("редактор находит пользовательские прог�
     await expect(page.getByText("anna@example.test", { exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Далее", exact: true }).click();
     await expect(page.getByText("Страница 2 из 2")).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Город", exact: true })).toBeVisible();
+    await page.getByLabel("Город", { exact: true }).fill("МОСКВА");
     await page.getByLabel("Название прогулки").fill("АРБАТ");
     await page.getByLabel("Автор", { exact: true }).fill("АННА");
     await page.getByLabel("Тип маршрута").selectOption("open");
     await page.getByRole("button", { name: "Найти", exact: true }).click();
     await expect(page.getByText("Показано 1–1 из 1 прогулок.")).toBeVisible();
     await expect(page.getByText("Страница 1 из 1")).toBeVisible();
+    await expect(page.getByRole("row", { name: /Арбат для Анны/ }).getByRole("cell", { name: "Москва", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Скопировать ссылку: Арбат для Анны", exact: true }).click();
     await expect(page.getByText("Ссылка на «Арбат для Анны» скопирована.")).toBeVisible();
     const copied = await page.evaluate(() => navigator.clipboard.readText());
