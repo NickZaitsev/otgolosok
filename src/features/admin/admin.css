@@ -46,7 +46,7 @@
 .admin-login h2 { margin: .4rem 0 1.5rem; }
 .admin-login p:not(.admin-context) { margin: .75rem 0 1.25rem; color: var(--muted); font-size: var(--text-secondary); }
 .admin-workspace { border-top: 1px solid var(--ink); }
-.admin-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
+.admin-tabs { display: flex; gap: 0; min-width: 0; overflow-x: auto; overscroll-behavior-inline: contain; border-bottom: 1px solid var(--line); }
 .admin-desk .admin-tabs button { min-width: 9rem; border: 0; border-radius: 0; color: var(--muted); }
 .admin-desk .admin-tabs button[aria-current=page] { box-shadow: inset 0 -3px var(--admin-orange); color: var(--admin-green); background: transparent; }
 .admin-addresses { padding-top: 1.75rem; }

@@ -106,3 +106,54 @@ it("lists the queue with Moscow slots, moves an item up and reloads on a stale r
   await act(async () => button("Вернуть в очередь")!.click());
   expect(request).toHaveBeenCalledWith(`/promo-queue/${encodeURIComponent("id-Таганка")}/requeue`, { revision: 3 });
 });
+
+it("keeps actions inside table cells, including empty published cells", async () => {
+  request.mockResolvedValue({ items: [item("Очередь", "queued")], history: [item("Ошибка", "failed", { error: "PHOTO_MISSING" }), item("Готово", "published")] });
+  await mount(PromoQueueAdmin);
+  const cells = [...container.querySelectorAll("tbody tr")].map(row => row.lastElementChild!);
+  expect(cells.every(cell => cell.tagName === "TD" && !cell.className)).toBe(true);
+  expect(cells[0].querySelector("div")?.querySelector("button")).not.toBeNull();
+  expect(cells[2].textContent).toContain("—");
+});
+
+it.each([
+  ["SUBTITLE_TRANSLATION", "Перевод субтитров не прошёл проверку"],
+  ["SCRIPT_INVALID", "Сценарий не прошёл проверку"],
+  ["PHOTO_MISSING", "Не хватает фотографий"],
+  ["FUTURE_ERROR", "Не удалось подготовить или опубликовать выпуск"],
+])("explains %s while preserving its diagnostic code", async (code, explanation) => {
+  request.mockResolvedValue({ items: [], history: [item("Сбой", "failed", { error: code })] });
+  await mount(PromoQueueAdmin);
+  expect(container.textContent).toContain(explanation);
+  expect(container.textContent).toContain(code);
+});
+
+it("offers retry after initial loading fails and restores the queue", async () => {
+  request.mockRejectedValueOnce(new Error("offline"));
+  await mount(PromoQueueAdmin);
+  expect(container.querySelector('[role="alert"]')?.textContent).toContain("Не удалось загрузить очередь");
+  request.mockResolvedValueOnce({ items: [item("Арбат", "queued")], history: [] });
+  await act(async () => button("Повторить")!.click());
+  expect(container.querySelector('[role="alert"]')).toBeNull();
+  expect(container.textContent).toContain("Арбат");
+});
+
+it("blocks stale actions when a reload fails and offers refresh", async () => {
+  request.mockResolvedValueOnce({ items: [], history: [item("Таганка", "failed")] });
+  await mount(PromoQueueAdmin);
+  request.mockRejectedValueOnce(Object.assign(new Error("gone"), { status: 404 }))
+    .mockRejectedValueOnce(new Error("offline"));
+  await act(async () => button("Вернуть в очередь")!.click());
+  expect(button("Вернуть в очередь")?.disabled).toBe(true);
+  expect(button("Повторить")?.disabled).toBe(false);
+});
+
+it("explains a mutation failure and does not claim success", async () => {
+  request.mockResolvedValueOnce({ items: [item("Арбат", "queued")], history: [] });
+  await mount(PromoQueueAdmin);
+  request.mockRejectedValueOnce(new Error("offline"));
+  await act(async () => button("Убрать")!.click());
+  expect(container.querySelector('[role="alert"]')?.textContent).toContain("Результат действия не подтверждён");
+  expect(container.textContent).not.toContain("убрана из очереди");
+  expect(button("Убрать")?.disabled).toBe(true);
+});

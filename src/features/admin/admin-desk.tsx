@@ -123,7 +123,7 @@ export function AdminDesk() {
 
   const api: AdminApi = async <T,>(path: string, signal: AbortSignal, body?: unknown): Promise<T> => {
     const endpoint = path.startsWith("/walks") || path.startsWith("/content/") || path.startsWith("/reviews") || path.startsWith("/improvements") || path === "/promo-queue" || path.startsWith("/promo-queue/") ? `/api/story-admin${path}` : `/api/story-admin/jobs${path}`;
-    const response = await ((path.startsWith("/walks/shared?") || path.startsWith("/reviews?") || path.startsWith("/improvements?")) && body === undefined ? readFetch : fetch)(endpoint, {
+    const response = await ((path === "/promo-queue" || path.startsWith("/walks/shared?") || path.startsWith("/reviews?") || path.startsWith("/improvements?")) && body === undefined ? readFetch : fetch)(endpoint, {
       method: body === undefined ? "GET" : "POST", cache: "no-store", credentials: "same-origin",
       redirect: "error", signal,
       headers: { ...(body === undefined ? {} : { "Content-Type": "application/json", ...csrfHeaders() }) },

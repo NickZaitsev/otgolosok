@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { AdminApi, AdminRun } from "./model";
-import { promoStatusLabels, slotLabel, type PromoItem, type PromoQueue } from "./promo-queue-model";
+import { promoErrorText, promoStatusLabels, slotLabel, type PromoItem, type PromoQueue } from "./promo-queue-model";
 import { skeletonRows } from "./table-skeleton";
 import styles from "./shared-walk-admin.module.css";
 
@@ -28,10 +28,11 @@ export function PromoQueueAdmin({ api, run, busy }: { api: AdminApi; run: AdminR
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [notice, setNotice] = useState("");
+  const [actionFailed, setActionFailed] = useState(false);
 
   async function load(signal: AbortSignal) {
     setLoading(true); setFailed(false);
-    try { setQueue(await api<PromoQueue>("/promo-queue", signal)); }
+    try { setQueue(await api<PromoQueue>("/promo-queue", signal)); setActionFailed(false); }
     catch (error) { setFailed(true); throw error; }
     finally { setLoading(false); }
   }
@@ -50,7 +51,10 @@ export function PromoQueueAdmin({ api, run, busy }: { api: AdminApi; run: AdminR
       try {
         await api(`/promo-queue/${encodeURIComponent(item.id)}/${action}`, signal, { revision: item.revision });
       } catch (error) {
-        if ((error as { status?: number }).status !== 409 && (error as { status?: number }).status !== 404) throw error;
+        if ((error as { status?: number }).status !== 409 && (error as { status?: number }).status !== 404) {
+          setActionFailed(true);
+          throw error;
+        }
         await load(signal);
         setNotice(STALE);
         return;
@@ -61,43 +65,45 @@ export function PromoQueueAdmin({ api, run, busy }: { api: AdminApi; run: AdminR
   }
 
   const disabled = Boolean(busy) || loading;
+  const actionsDisabled = disabled || failed || actionFailed;
   const firstQueued = queue?.items.find(item => item.status === "queued")?.id;
   return <section className="walk-admin" aria-busy={loading} aria-labelledby="promo-queue-title">
     <div className="walk-admin__head">
       <div><h2 id="promo-queue-title">Очередь промо</h2><p>Один выпуск в день: пн–чт в 20:30, пт–вс в 21:30 по Москве. Ролик и пост собираются ночью, утром бот присылает превью с кнопками «Отменить» и «Перенести». Без ответа выпуск выходит по расписанию.</p></div>
       <button type="button" disabled={disabled} onClick={() => void run("Обновление очереди…", load)}>Обновить</button>
     </div>
+    {actionFailed && <p className="walk-admin__message walk-admin__message--error" role="alert">Результат действия не подтверждён. Обновите очередь перед повторной отправкой.</p>}
     {notice && <p className="walk-admin__message" role="status">{notice}</p>}
     {failed && <p className="walk-admin__message walk-admin__message--error" role="alert">Не удалось загрузить очередь. <button type="button" disabled={disabled} onClick={() => void run("Повторная загрузка…", load)}>Повторить</button></p>}
     <div className="walk-admin__table-wrap" role="region" aria-label="Очередь промо" tabIndex={0}>
-      <table className={`walk-admin__table ${styles.table}`}>
+      <table className={`walk-admin__table ${styles.table} ${styles.promoTable}`}>
         <caption className="admin-sr-only">Выпуски в очереди промо и даты выхода</caption>
         <thead><tr><th scope="col">Выход</th><th scope="col">Прогулка</th><th scope="col">Статус</th><th scope="col">Действия</th></tr></thead>
         <tbody>{loading ? skeletonRows(4, queue?.items.length ?? 0) : queue?.items.map(item => <tr key={item.id}>
           <td>{slotLabel(item.slotAt)}</td>
           <th scope="row">{item.shareToken ? <a href={`/walk?share=${encodeURIComponent(item.shareToken)}`} target="_blank" rel="noopener noreferrer">{item.title}</a> : item.title}{item.visibility === "shared" && <span className={styles.meta}>По ссылке</span>}</th>
           <td>{promoStatusLabels[item.status]}</td>
-          <td className={styles.actions}>{item.status === "queued" ? <>
-            {item.id !== firstQueued && <button type="button" disabled={disabled} onClick={() => act(item, "up")} aria-label={`Выше: ${item.title}`}>Выше</button>}
-            <button type="button" disabled={disabled} onClick={() => act(item, "remove")} aria-label={`Убрать из очереди: ${item.title}`}>Убрать</button>
-          </> : <span className={styles.meta}>Отменить или перенести — кнопками в боте</span>}</td>
+          <td><div className={styles.actions}>{item.status === "queued" ? <>
+            {item.id !== firstQueued && <button type="button" disabled={actionsDisabled} onClick={() => act(item, "up")} aria-label={`Выше: ${item.title}`}>Выше</button>}
+            <button type="button" disabled={actionsDisabled} onClick={() => act(item, "remove")} aria-label={`Убрать из очереди: ${item.title}`}>Убрать</button>
+          </> : <span className={styles.meta}>Отменить или перенести — кнопками в боте</span>}</div></td>
         </tr>)}</tbody>
       </table>
       {queue && !queue.items.length && !loading && <p className="walk-admin__empty">Очередь пуста. Поставьте прогулку в промо во вкладке «Пользовательские».</p>}
     </div>
     {queue && queue.history.length > 0 && <>
-      <h3>Прошедшие выпуски</h3>
+      <h3 className={styles.historyTitle}>Прошедшие выпуски</h3>
       <div className="walk-admin__table-wrap" role="region" aria-label="Прошедшие выпуски" tabIndex={0}>
-        <table className={`walk-admin__table ${styles.table}`}>
+        <table className={`walk-admin__table ${styles.table} ${styles.promoTable}`}>
           <caption className="admin-sr-only">Опубликованные, отменённые и неудачные выпуски</caption>
           <thead><tr><th scope="col">Прогулка</th><th scope="col">Итог</th><th scope="col">Действия</th></tr></thead>
           <tbody>{queue.history.map(item => <tr key={item.id}>
             <th scope="row">{item.title}</th>
-            <td>{promoStatusLabels[item.status]}{item.slotAt && item.status === "published" ? ` · ${slotLabel(item.slotAt)}` : ""}{item.error && <span className={styles.warning}>{item.error}</span>}<Links item={item} /></td>
-            <td className={styles.actions}>{item.status !== "published" && <>
-              <button type="button" disabled={disabled} onClick={() => act(item, "requeue")} aria-label={`Вернуть в очередь: ${item.title}`}>Вернуть в очередь</button>
-              <button type="button" disabled={disabled} onClick={() => act(item, "remove")} aria-label={`Удалить из истории: ${item.title}`}>Убрать</button>
-            </>}</td>
+            <td>{promoStatusLabels[item.status]}{item.slotAt && item.status === "published" ? ` · ${slotLabel(item.slotAt)}` : ""}{item.error && <span className={styles.promoError}>{promoErrorText(item.error)}<span className={styles.meta}>Код: {item.error}</span></span>}<Links item={item} /></td>
+            <td><div className={styles.actions}>{item.status !== "published" ? <>
+              <button type="button" disabled={actionsDisabled} onClick={() => act(item, "requeue")} aria-label={`Вернуть в очередь: ${item.title}`}>Вернуть в очередь</button>
+              <button type="button" disabled={actionsDisabled} onClick={() => act(item, "remove")} aria-label={`Удалить из истории: ${item.title}`}>Убрать</button>
+            </> : <span className={styles.meta}>—</span>}</div></td>
           </tr>)}</tbody>
         </table>
       </div>

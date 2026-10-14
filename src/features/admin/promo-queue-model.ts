@@ -36,3 +36,21 @@ export const canEnqueue = (promo: PromoState | null) => !promo || promo.status =
 /** Link-only walks become public through YouTube and Telegram: the editor confirms it. */
 export const PROMO_LINK_ONLY_WARNING =
   "Прогулка доступна только по ссылке. В промо ссылка станет публичной в YouTube и Telegram. Поставить в очередь?";
+
+/** Describe the failed stage without exposing provider payloads or hiding its diagnostic code. */
+export function promoErrorText(code: string) {
+  const explanations: Record<string, string> = {
+    SUBTITLE_TRANSLATION: "Перевод субтитров не прошёл проверку. Нужно исправить перевод и повторить сборку.",
+    SCRIPT_INVALID: "Сценарий не прошёл проверку. Нужно проверить факты и заново подготовить сценарий.",
+    PHOTO_MISSING: "Не хватает фотографий для ролика. Добавьте фото к историям прогулки перед повторной сборкой.",
+    WALK_NOT_SHARED: "Прогулка больше не доступна по ссылке. Откройте доступ перед возвратом в очередь.",
+    WALK_START: "Начало маршрута не прошло проверку. Проверьте первую остановку прогулки перед повторной сборкой.",
+    PROMO_SLOT_MISSED: "Время публикации пропущено. Верните выпуск в очередь для нового слота.",
+    PROMO_POST_NO_STORY: "Нет отдельной истории для поста. Добавьте историю, которая не используется в ролике.",
+    PROMO_POST_INVALID: "Пост не прошёл проверку. Нужно исправить текст и повторить сборку.",
+    IMAGE_CONTRACT: "Иллюстрация не прошла проверку. Нужно заново подготовить изображение.",
+    YOUTUBE_REJECTED: "YouTube отклонил ролик. Проверьте причину отказа в журнале генератора перед повтором.",
+    INTERNAL: "Внутренняя ошибка генератора. Проверьте журнал прогона перед повторной сборкой.",
+  };
+  return explanations[code] ?? "Не удалось подготовить или опубликовать выпуск. Проверьте журнал прогона по коду ошибки перед возвратом в очередь.";
+}

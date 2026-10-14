@@ -41,6 +41,11 @@
   margin-bottom: 1rem;
 }
 
+.promoTable th,
+.promoTable td {
+  overflow-wrap: anywhere;
+}
+
 .table th:first-child {
   min-width: 12rem;
   overflow-wrap: anywhere;
@@ -55,4 +60,37 @@
   flex-direction: column;
   gap: 0.5rem;
   align-items: flex-start;
+}
+
+.promoTable {
+  table-layout: fixed;
+}
+
+.promoTable th:last-child,
+.promoTable td:last-child {
+  width: 14rem;
+}
+
+.promoTable td:first-child {
+  width: 15rem;
+}
+
+.promoTable .actions button {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+
+.promoError {
+  display: block;
+  max-width: 65ch;
+  margin-top: 0.5rem;
+  color: var(--alert-ink);
+  font-size: var(--text-secondary);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.historyTitle {
+  margin-block: 2rem 0.75rem;
 }
