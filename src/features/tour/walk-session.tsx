@@ -28,7 +28,7 @@ import { HistoricalPhotos } from "./historical-photos-viewer";
 import "./walk-session.css";
 import foodStyles from "./walk-food.module.css";
 import type { WalkDirection } from "./walk-direction";
-import type { AddFood } from "./tour-experience";
+import type { AddFood, CarConversion } from "./tour-experience";
 import { toUserMessage } from "@/lib/errors/user-message";
 import { ContentLanguageNote } from "@/lib/i18n/content-language-note";
 import { useI18n } from "@/lib/i18n/provider";
@@ -52,9 +52,10 @@ export function approachHint(advance: AdvanceMode, hasAudio: boolean, locale: Lo
   return hasAudio && advance === "place" ? translate(locale, "Начнётся, когда подойдёте") : "";
 }
 
-export function WalkSession({ notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1, openingIndex = 0,
+export function WalkSession({ carAction = null, notice = "", route, chapters, index, stage = "stop", advance = "manual", active, completed, finishLeg = false, user, positionFailed, resume, resumeIndex = -1, openingIndex = 0,
   titleRef, startRef, onStart, onSelect, onStop, player, miniPlayer = null, story, settings, offline = null, audioError, ratingLabel = "", hasReview = false, ratingCount = null, reviews = null, onRate = noop, onImprove = null, own = null,
   positionDenied = false, onRetryPosition = noop, direction = "forward", foodMode: documentFoodMode, onDirectionChange, onAddFood = null, contentLocale = "ru", audioAvailable = false }: {
+  carAction?: CarConversion | null;
   direction?: WalkDirection;
   foodMode?: "open" | "loop";
   onDirectionChange?: (direction: WalkDirection) => void;
@@ -269,6 +270,11 @@ export function WalkSession({ notice = "", route, chapters, index, stage = "stop
         </div> : null}
       </header>
       {!active && !completed && !foodVisible ? own?.notes.map(note => <p key={note} className="walk-session-muted">{note}</p>) : null}
+      {!active && !completed && !foodVisible && carAction ? <div>
+        <button type="button" className="walk-session-rate" disabled={carAction.busy} onClick={carAction.onConvert}>{t(carAction.busy ? "Подбираем парковки и переезды…" : "Пройти на машине")}</button>
+        <p className="walk-session-muted">{t("Создадим копию на устройстве с теми же историями, парковками и пешими участками. Максимум три часа, без учёта пробок.")}</p>
+        {carAction.error ? <p className="walk-session-notice" role="alert">{carAction.error}</p> : null}
+      </div> : null}
       {active && !drawer && !compact ? player : null}
       {active && audioError ? <p className="walk-session-notice" role="status">{audioError}</p> : null}
       {active && chapter && !chapter.audio && !hasText && !compact ? <p className="walk-session-muted">{t("Без истории")}</p> : null}

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TourExperience } from "../tour/tour-experience";
 import { DrivingExperience } from "../tour/driving-experience";
+import { createCarCopy } from "./car-copy";
 import { creationLocation } from "../walk-builder/creation-location";
 import { getLastUserId, getSession } from "../auth/client";
 import { getLocalWalk, migrateLocalWalks } from "./local-store";
@@ -33,6 +34,10 @@ export function WalkScreen() {
   const queryKey = search.toString();
   const loadKey = `${locale}:${queryKey}`;
   const [loaded, setLoaded] = useState<Loaded>({ keys: [], mount: "", view: null, error: "", offlineNotice: "", offlineRef: null });
+  const [carBusy, setCarBusy] = useState(false);
+  const [carError, setCarError] = useState("");
+  const carAction = useRef<AbortController | null>(null);
+  useEffect(() => () => { carAction.current?.abort(); }, [loadKey]);
   const loadedRef = useRef(loaded);
   useEffect(() => { loadedRef.current = loaded; });
   const query = Object.fromEntries(keys.flatMap(key => { const value = search.get(key); return value ? [[key, value]] : []; }));
@@ -112,6 +117,21 @@ export function WalkScreen() {
     return t(kind === "id" ? "Копия прогулки сохранена в «Моих прогулках»." : "Копия прогулки сохранена на этом устройстве.");
   }, [selectedKind, sourceId, fromStop, locale, path, t]);
 
+  async function goByCar() {
+    const view = loadedRef.current.view;
+    if (!view || carAction.current) return;
+    const controller = new AbortController(); carAction.current = controller;
+    setCarBusy(true); setCarError("");
+    try {
+      const id = await createCarCopy(view, controller.signal);
+      if (!controller.signal.aborted) router.push(path(`/walk?local=${encodeURIComponent(id)}`));
+    } catch (error) {
+      if (!controller.signal.aborted) setCarError(toUserMessage(error, "Не удалось построить автомобильную прогулку.", locale));
+    } finally {
+      if (carAction.current === controller) { carAction.current = null; setCarBusy(false); }
+    }
+  }
+
   if (queryConflict) return <WalkError message={t("Ссылка содержит конфликтующие параметры.")} />;
   if (edit && (selected.length !== 1 || !["local", "id"].includes(selected[0]))) return <WalkError message={t("Редактировать можно только свою прогулку.")} />;
   if (selected.length === 1 && edit) return <p role="status">{t("Открываем карту…")}</p>;
@@ -130,7 +150,7 @@ export function WalkScreen() {
   const own: OwnWalk | null = selectedKind === "local" ? { editHref: path(ownWalkEditHref("local", localId)), notes: ownWalkNotes(current.view, locale) }
     : selectedKind === "id" ? { editHref: path(ownWalkEditHref("id", accountId)), notes: ownWalkNotes(current.view, locale) } : null;
   if (current.view.document.travelMode === "driving") return <DrivingExperience key={current.mount} view={current.view} offline={current.offlineRef} offlineNotice={current.offlineNotice} reviewTarget={reviewTarget} launchTarget={launchesPath(reviewTarget) ? reviewTarget : null} own={own} />;
-  return <TourExperience key={current.mount} walk={current.view} fromStop={fromStop} onAddFood={addFood} offline={current.offlineRef} offlineNotice={current.offlineNotice} reviewTarget={reviewTarget} launchTarget={launchesPath(reviewTarget) ? reviewTarget : null} own={own} />;
+  return <TourExperience key={current.mount} carAction={current.view.document.route && current.view.document.stops.length ? { busy:carBusy, error:carError, onConvert:goByCar } : null} walk={current.view} fromStop={fromStop} onAddFood={addFood} offline={current.offlineRef} offlineNotice={current.offlineNotice} reviewTarget={reviewTarget} launchTarget={launchesPath(reviewTarget) ? reviewTarget : null} own={own} />;
 }
 
 function WalkError({ message }: { message: string }) {

@@ -26,3 +26,25 @@ for (const width of [390, 1280]) {
     expect(await page.evaluate(() => window.document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 }
+
+test("готовая прогулка создаёт автомобильную копию с теми же историями", async ({ page }) => {
+  const car = carWalkDocument() as WalkView["document"];
+  const source: WalkView = { document:{...car,id:"source-walk",travelMode:"walking",route:{...car.route!,distanceM:300,car:undefined}},revision:1,contentVersion:"source",chapters:[{id:"car-stop-1",status:"unavailable",story:null,audio:null}] };
+  source.document.stops[0].storyRef={kind:"catalog",id:"source-walk--story"};
+  await page.route("**/api/story-walks/source-walk/view*", route=>route.fulfill({json:source}));
+  await page.route("**/api/walk-plan", async route=>{
+    expect(route.request().postDataJSON().stops[0].stopId).toBe("car-stop-1");
+    await route.fulfill({json:{...car.route,stops:car.stops.map(stop=>({...stop.place,stopId:stop.id}))}});
+  });
+  await page.route("**/api/story-walks/resolve*", async route=>{
+    const document=route.request().postDataJSON().document;
+    await route.fulfill({json:{...source,document,revision:0}});
+  });
+  await page.goto("/walk?catalog=source-walk");
+  await page.getByRole("button", {name:"Пройти на машине",exact:true}).click();
+  await expect(page.getByRole("button",{name:"Начать поездку",exact:true})).toBeVisible();
+  const copy=await page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem("otgolosok:walks:v2")!).items)[0] as {document:WalkView["document"]});
+  expect(copy.document.travelMode).toBe("driving");
+  expect(copy.document.stops[0].storyRef).toEqual(source.document.stops[0].storyRef);
+  expect(copy.document.id).not.toBe(source.document.id);
+});

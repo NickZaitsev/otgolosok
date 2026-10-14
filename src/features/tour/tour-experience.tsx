@@ -43,11 +43,13 @@ import type { FoodPlace } from "../food/types";
 import { useI18n } from "@/lib/i18n/provider";
 import { DrivingExperience } from "./driving-experience";
 
+export type CarConversion = {busy:boolean;error:string;onConvert:()=>void};
+
 export type AddFood = (place: FoodPlace, signal: AbortSignal) => Promise<string>;
 
 type SessionPhase = "reading" | "walking";
 
-export function TourExperience({ route, walk, offline = null, offlineNotice = "", reviewTarget = null, launchTarget = null, own = null, onAddFood = null, fromStop = null }: { route?: Route; walk?: WalkView; offline?: OfflineWalkRef | null;
+export function TourExperience({ carAction = null, route, walk, offline = null, offlineNotice = "", reviewTarget = null, launchTarget = null, own = null, onAddFood = null, fromStop = null }: { carAction?: CarConversion | null; route?: Route; walk?: WalkView; offline?: OfflineWalkRef | null;
   /** Why the walk opened from its offline copy; shown among the map notices. */
   offlineNotice?: string; reviewTarget?: ReviewTarget | null; launchTarget?: ReviewTarget | null; own?: OwnWalk | null;
   /** Adds a venue as a stop and saves the walk; resolves to a notice for the walker. */
@@ -66,10 +68,10 @@ export function TourExperience({ route, walk, offline = null, offlineNotice = ""
     if (fromStop !== null) return <main className="walk-screen"><p role="alert">{t("Автомобильную прогулку нужно начинать с первой парковки. Откройте маршрут целиком.")}</p><Link href={path("/")}>{t("На карту")}</Link></main>;
     return <DrivingExperience view={walk} offline={offline} offlineNotice={offlineNotice} reviewTarget={reviewTarget} launchTarget={launchTarget} own={own} />;
   }
-  return <AvailableTour key={locale} fromStop={fromStop} route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} offlineNotice={walk ? offlineNotice : ""} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} onAddFood={walk ? onAddFood : null} />;
+  return <AvailableTour carAction={carAction} key={locale} fromStop={fromStop} route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} offlineNotice={walk ? offlineNotice : ""} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} onAddFood={walk ? onAddFood : null} />;
 }
 
-function AvailableTour({ route: initialRoute, universal = false, view, offlineRef, offlineNotice = "", reviewTarget, launchTarget, own, onAddFood, fromStop }: { fromStop: string | null; route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; offlineNotice?: string; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null; onAddFood: AddFood | null }) {
+function AvailableTour({ carAction, route: initialRoute, universal = false, view, offlineRef, offlineNotice = "", reviewTarget, launchTarget, own, onAddFood, fromStop }: { carAction: CarConversion | null; fromStop: string | null; route: Route; universal?: boolean; view?: WalkView; offlineRef: OfflineWalkRef | null; offlineNotice?: string; reviewTarget: ReviewTarget | null; launchTarget: ReviewTarget | null; own: OwnWalk | null; onAddFood: AddFood | null }) {
   const { languageTag, locale, path, t } = useI18n();
   const [loadedRoute, setRoute] = useState(initialRoute);
   const publishedRoute = universal ? initialRoute : loadedRoute;
@@ -424,7 +426,7 @@ function AvailableTour({ route: initialRoute, universal = false, view, offlineRe
         }}
         user={position.diagnostics.lastFix} positionFailed={positionFailed(position.diagnostics)}
         positionDenied={position.diagnostics.sourceStatus === "permission-denied"} onRetryPosition={position.retry} resume={fromStop === null && Boolean(savedCheckpoint)} resumeIndex={fromStop === null ? savedChapterIndex : -1} titleRef={walkTitleRef} startRef={startButtonRef}
-        onStart={index => startTour(true, index)} onSelect={selectChapter} onStop={stopTour} own={own} onAddFood={onAddFood}
+        onStart={index => startTour(true, index)} onSelect={selectChapter} onStop={stopTour} own={own} onAddFood={onAddFood} carAction={carAction}
         ratingLabel={formatRatingSummary(reviews.summary, locale)}
         hasReview={Boolean(reviews.mine)} ratingCount={reviews.summary?.count ?? null} reviews={reviewTarget ? <WalkReviews reviews={reviews} onRate={() => setRateOpen(true)} /> : null} onRate={() => setRateOpen(true)}
         onImprove={reviewTarget ? () => setImproveOpen(true) : null}

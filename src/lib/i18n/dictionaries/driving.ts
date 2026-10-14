@@ -1,6 +1,10 @@
 import type { Translations } from "../locale";
 
 export const drivingTranslations: Translations = {
+  "Пройти на машине": ["Explore by car", "驾车游览"],
+  "Подбираем парковки и переезды…": ["Finding parking and driving routes…", "正在查找停车点和驾车路线…"],
+  "Не удалось построить автомобильную прогулку.": ["Could not build a driving tour.", "无法规划驾车游览。"],
+  "Создадим копию на устройстве с теми же историями, парковками и пешими участками. Максимум три часа, без учёта пробок.": ["We will save a copy on this device with the same stories, parking and walking sections. Up to three hours, excluding traffic.", "将在此设备保存包含相同故事、停车点和步行路段的副本。最长三小时，不计拥堵。"],
   "Парковки пока недоступны. Попробуйте позже.": ["Parking is temporarily unavailable. Try again later.", "停车信息暂时不可用。请稍后再试。"],
   "На машине · {minutes} мин · {distance} км · {stories}": ["Driving · {minutes} min · {distance} km · {stories}", "驾车 · {minutes} 分钟 · {distance} 公里 · {stories}"],
   "Приблизьте карту, чтобы увидеть парковки": ["Zoom in to see parking", "放大地图以查看停车点"],
