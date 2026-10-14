@@ -302,6 +302,29 @@ describe("список топа", () => {
     } finally { localStorage.clear(); }
   });
 
+  it("смена города в другой вкладке сбрасывает метро и не показывает старый список", async () => {
+    const kazanWalk = { ...shared, id: "33333333-3333-4333-8333-333333333333", title: "Кремль", startMetro: null, endMetro: null };
+    let release: (value: Response) => void = () => {};
+    fetcher.mockImplementation((url: string) => new URL(url, "http://local.test").searchParams.get("city") === "kazan"
+      ? new Promise<Response>(resolve => { release = resolve; }) : Promise.resolve(ok(page([catalog, shared], 20, 40))));
+    try {
+      await render(true);
+      const start = picker("Ближайшее метро к старту");
+      await act(async () => { start.trigger.click(); });
+      await type(start.search()!, "Арбат");
+      await key(start.search()!, "Enter");
+      await act(async () => {
+        localStorage.setItem("otgolosok:city:v1", "kazan");
+        window.dispatchEvent(new StorageEvent("storage", { key: "otgolosok:city:v1", newValue: "kazan" }));
+      });
+      expect(fetcher.mock.calls.at(-1)?.[0]).toBe("/api/top-walks?city=kazan");
+      expect(container.querySelectorAll("ol > li")).toHaveLength(0);
+      expect(container.textContent).not.toContain("Кожевники");
+      await act(async () => { release(ok(page([kazanWalk]))); });
+      expect([...container.querySelectorAll("ol > li strong")].map(item => item.textContent)).toEqual(["Кремль"]);
+    } finally { localStorage.clear(); }
+  });
+
   it("без станций внутри Кольцевой пункта зоны нет", async () => {
     const outside = page([catalog]);
     fetcher.mockResolvedValue(ok({ ...outside, filters: { ...outside.filters, stations: outside.filters.stations.map(station => ({ ...station, insideCircle: false })) } }));

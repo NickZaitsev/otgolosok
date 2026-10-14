@@ -22,8 +22,10 @@ export function rememberCity(city: City) {
   window.dispatchEvent(new Event(CHANGE));
 }
 
+// A choice storage refused outranks whatever an earlier visit saved there.
 const snapshot = (): CityId => {
-  try { return cityById(localStorage.getItem(CURRENT_CITY_KEY))?.id ?? memory ?? MOSCOW.id; } catch { return memory ?? MOSCOW.id; }
+  if (memory) return memory;
+  try { return cityById(localStorage.getItem(CURRENT_CITY_KEY))?.id ?? MOSCOW.id; } catch { return MOSCOW.id; }
 };
 /** The saved city; Moscow when nothing is saved or the value is unknown. */
 export const readCurrentCity = (): City => cityById(snapshot()) ?? MOSCOW;

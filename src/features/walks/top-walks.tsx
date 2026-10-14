@@ -63,6 +63,13 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
   const [filters, setFilters] = useState<TopFilters>(emptyFilters);
   const [facets, setFacets] = useState<TopWalkPage["filters"]>({ starts: [], ends: [], stations: [] });
   const [state, setState] = useState<State>({ status: "loading" });
+  // Stations differ between cities: whatever changed the city (this switch, another tab, hydration),
+  // the metro filters and the shown page of the previous city go, the duration stays.
+  const [shownCity, setShownCity] = useState(city.id);
+  if (shownCity !== city.id) {
+    setShownCity(city.id); setState({ status: "loading" }); setFacets({ starts: [], ends: [], stations: [] });
+    setFilters(current => current.start || current.end ? { ...current, start: "", end: "" } : current);
+  }
   const [attempt, setAttempt] = useState(0);
   const sentinel = useRef<HTMLDivElement>(null);
   const moreController = useRef<AbortController | null>(null);
@@ -115,12 +122,7 @@ export function TopWalks({ filterable = false }: { filterable?: boolean }) {
     setState({ status: "loading" }); setFilters(next);
   };
   const reset = () => changeFilters(emptyFilters);
-  // Stations differ between cities, so a switch drops the metro filters and keeps the duration.
-  const switchCity = (next: City) => {
-    if (next.id === city.id) return;
-    setState({ status: "loading" }); setFacets({ starts: [], ends: [], stations: [] });
-    setFilters(current => ({ ...current, start: "", end: "" })); chooseCity(next);
-  };
+  const switchCity = (next: City) => { if (next.id !== city.id) chooseCity(next); };
   const known = new Map(facets.stations.map(station => [station.name, station]));
   // «Inside the Circle line» leads the list when one of its stations has walks, and stays while it is the chosen filter.
   const metroOptions = (names: string[], value: string): MetroOption[] => {

@@ -41,6 +41,15 @@ describe("текущий город", () => {
     vi.unstubAllGlobals();
   });
 
+  it("если запись не удалась, выбор в памяти важнее прежнего сохранённого города", () => {
+    localStorage.setItem(CURRENT_CITY_KEY, "moscow");
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new DOMException("quota", "QuotaExceededError"); });
+    rememberCity(kazan);
+    expect(readCurrentCity().id).toBe("kazan");
+    vi.restoreAllMocks();
+    rememberCity(moscow);
+  });
+
   it("без доступа к хранилищу выбор держится до перезагрузки", () => {
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new DOMException("quota", "QuotaExceededError"); });
     vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new DOMException("denied", "SecurityError"); });
