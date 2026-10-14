@@ -98,7 +98,7 @@ function place(p) {
 }
 
 // Valhalla's default shape is a latitude/longitude polyline with six decimals.
-function decode(shape) {
+export function decode(shape) {
   if (typeof shape !== 'string' || !shape.length || shape.length > 200000) throw fail('WALK_UNAVAILABLE');
   const points=[]; let i=0,lat=0,lon=0;
   function delta() {
@@ -122,7 +122,7 @@ function decode(shape) {
 
 const MAX_RESPONSE_BYTES=1024*1024;
 // Reads a JSON body up to MAX_RESPONSE_BYTES; aborting the signal cancels the stream.
-async function readJson(response,signal) {
+export async function readJson(response,signal) {
   const reader=response.body.getReader(),chunks=[];let size=0;
   const cancel=()=>{void reader.cancel().catch(()=>{});};
   signal.addEventListener('abort',cancel,{once:true});

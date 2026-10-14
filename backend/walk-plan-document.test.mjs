@@ -1,3 +1,4 @@
+import { carWalkDocument } from "./test-fixtures/car-walk.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { planToWalkDocument } from "./walk-plan-document.mjs";
@@ -44,4 +45,16 @@ test("the document takes the city of its start", () => {
     geometry: [kazanStart.location, { lat: 55.7963, lon: 49.1088 }], distanceM: 400, walkingMinutes: 6, attribution: "© OpenStreetMap contributors" };
   assert.equal(planToWalkDocument(kazanPlan, { ...options("open"), start: kazanStart }).city, "Казань");
   assert.equal(planToWalkDocument(plan([{ address: "Сретенский бульвар", location: { lat: 55.766, lon: 37.637 } }]), options("loop")).city, "Москва");
+});
+
+
+test("автомобильный план сохраняет визиты и заменяет ссылки на ID документа", () => {
+  const original=carWalkDocument();
+  const plan={...original.route,stops:original.stops.map(stop=>({...stop.place,stopId:stop.id}))};
+  const saved=planToWalkDocument(plan,{...options("open"),minutes:60,start:original.start});
+  assert.equal(saved.travelMode,"driving");
+  assert.deepEqual(saved.route.car.visits[0].stopIds,saved.stops.map(stop=>stop.id));
+  assert.equal(saved.route.car.totalMinutes,33);
+  saved.route.car.visits[0].parking.name="Другая";
+  assert.equal(original.route.car.visits[0].parking.name,"Городская парковка");
 });

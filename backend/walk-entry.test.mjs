@@ -102,3 +102,9 @@ test("finished walks and invalid inputs have no entry", async t => {
     assert.equal(computeWalkEntry(candidate, origin, radiusM), null);
   });
 });
+
+test("автомобильную поездку нельзя начинать как пешеходную с середины", () => {
+  const document = walk([at(0,0), at(0,2000)], [stop("next", at(0,1500))]);
+  assert.equal(computeWalkEntry({...document, travelMode:"driving"}, at(0,1000)), null);
+  assert.equal(computeWalkEntry({...document, route:{...document.route,car:{}}}, at(0,1000)), null);
+});

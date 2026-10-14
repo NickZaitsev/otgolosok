@@ -1,3 +1,4 @@
+import { carWalkDocument } from "./test-fixtures/car-walk.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { validateWalkDocument, migrateLegacyDraft, validateWalkView, validTunnels } from "./walk-document.mjs";
@@ -190,4 +191,15 @@ test("a walk lies wholly in the city it names", () => {
     ["город не строкой", () => ({ ...walk(), city: null })],
   ];
   for (const [name, make] of cases) assert.throws(() => validateWalkDocument(make()), { code: "BAD_REQUEST" }, name);
+});
+
+
+test("миграция автомобильного черновика сохраняет режим, длительность и визиты", () => {
+  const car=carWalkDocument();
+  const draft={...car,version:1,jobs:[],stops:car.stops.map(stop=>({...stop.place,stopId:stop.id})),route:car.route};
+  const saved=migrateLegacyDraft(draft,"11111111-1111-4111-8111-111111111111");
+  assert.equal(saved.travelMode,"driving");
+  assert.deepEqual(saved.route.car.visits[0].stopIds,saved.stops.map(stop=>stop.id));
+  const empty=migrateLegacyDraft({...draft,minutes:180,start:null,stops:[],route:null},"11111111-1111-4111-8111-111111111111");
+  assert.equal(empty.minutes,180);assert.equal(empty.travelMode,"driving");
 });

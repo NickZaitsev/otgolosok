@@ -1,3 +1,5 @@
+import { carWalkDocument } from "../../../backend/test-fixtures/car-walk.mjs";
+import { validateWalkDocument, type WalkDocument } from "./model";
 import { describe, expect, it } from "vitest";
 import routeData from "../../../public/data/routes/paveletskaya.json";
 import { getWalkChapters } from "../tour/walk-plan";
@@ -158,5 +160,26 @@ describe("universal walk adapters", () => {
     const plain = draftToWalkDocument(built(), id);
     expect(JSON.stringify(plain)).not.toContain("tunnels");
     expect(walkViewToRoute({ ...view, document: plain }).walk?.path).not.toHaveProperty("tunnels");
+  });
+});
+
+
+describe("автомобильные адаптеры", () => {
+  it("сохраняет парковки, ссылки и общее время после редактирования", () => {
+    const original = validateWalkDocument(carWalkDocument()) as WalkDocument;
+    const restored = walkDocumentToDraft(original);
+    expect(parseDraft(JSON.stringify(restored)).route?.car?.visits[0].stopIds).toEqual(["car-stop-1"]);
+    const saved = draftToWalkDocument(restored, "saved-car", original);
+    expect(saved.route?.car).toEqual(original.route?.car);
+    const view = { document:saved, revision:1, contentVersion:"car", chapters:saved.stops.map(stop=>({id:stop.id,status:"unavailable" as const,story:null,audio:null})) };
+    const route = walkViewToRoute(view);
+    expect(route.duration_min).toBe(33);
+    expect(route.walk?.path.costing).toBe("auto");
+    expect(route.walk?.car).toEqual(saved.route?.car);
+    expect(routeToWalkView(route).document.route?.car).toEqual(saved.route?.car);
+    expect(routeToWalkView(route).document.travelMode).toBe("driving");
+    restored.route!.car!.visits[0].parking.entrance.lat = 55.8;
+    expect(saved.route?.car?.visits[0].parking.entrance.lat).toBe(55.76);
+    expect(original.route?.car?.visits[0].parking.entrance.lat).toBe(55.76);
   });
 });

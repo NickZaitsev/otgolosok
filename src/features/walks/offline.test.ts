@@ -1,3 +1,4 @@
+import { carWalkDocument } from "../../../backend/test-fixtures/car-walk.mjs";
 import { FOOD_MANIFEST_URL, foodCellStore } from "../food/food-cells";
 import { RequestError } from "../walk-builder/request";
 import { webcrypto } from "node:crypto";
@@ -280,4 +281,16 @@ it("повреждение ячейки не мешает открыть сох�
   foodCellStore.seedOffline({ manifest: { ...foodManifest, cells: [] }, cells: [] });
   expect((await loadOfflineWalk(catalogRef, cache))?.view).toEqual(foodView);
   expect(foodCellStore.snapshot().places).toEqual([]);
+});
+
+
+it("офлайн сохраняет автомобильные сегменты, парковки и ссылки историй", async () => {
+  const document = carWalkDocument() as WalkView["document"];
+  const carView: WalkView = { document, revision:1, contentVersion:"car-offline", chapters:document.stops.map(stop=>({id:stop.id,status:"unavailable",story:null,audio:null})) };
+  const ref: OfflineWalkRef = {scope:"local",walkId:document.id};
+  const cache = new MemoryCache();
+  await saveWalkOffline(carView, ref, {cache, foodFetcher:async()=>new Response("", {status:503})});
+  const restored = await loadOfflineWalk(ref, cache);
+  expect(restored?.view.document.travelMode).toBe("driving");
+  expect(restored?.view.document.route?.car).toEqual(document.route?.car);
 });

@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TourExperience } from "../tour/tour-experience";
+import { DrivingExperience } from "../tour/driving-experience";
 import { creationLocation } from "../walk-builder/creation-location";
 import { getLastUserId, getSession } from "../auth/client";
 import { getLocalWalk, migrateLocalWalks } from "./local-store";
@@ -123,10 +124,12 @@ export function WalkScreen() {
     : selectedKind === "id" ? { kind: "account", id: accountId } : null;
   if (current?.error) return <WalkError message={current.error} />;
   if (!current?.view) return <main className="walk-screen"><p role="status">{t("Открываем прогулку…")}</p></main>;
+  if (fromStop !== null && current.view.document.travelMode === "driving") return <WalkError message={t("Автомобильную прогулку нужно начинать с первой парковки. Откройте маршрут целиком.")} />;
   if (fromStop !== null && !current.view.document.stops.some(stop => stop.id === fromStop)) return <WalkError message={t("Точка начала больше не входит в эту прогулку. Откройте подборку заново.")} />;
   // Only walks saved on this device or in the viewer's account lead back to the builder.
   const own: OwnWalk | null = selectedKind === "local" ? { editHref: path(ownWalkEditHref("local", localId)), notes: ownWalkNotes(current.view, locale) }
     : selectedKind === "id" ? { editHref: path(ownWalkEditHref("id", accountId)), notes: ownWalkNotes(current.view, locale) } : null;
+  if (current.view.document.travelMode === "driving") return <DrivingExperience key={current.mount} view={current.view} offline={current.offlineRef} offlineNotice={current.offlineNotice} reviewTarget={reviewTarget} launchTarget={launchesPath(reviewTarget) ? reviewTarget : null} own={own} />;
   return <TourExperience key={current.mount} walk={current.view} fromStop={fromStop} onAddFood={addFood} offline={current.offlineRef} offlineNotice={current.offlineNotice} reviewTarget={reviewTarget} launchTarget={launchesPath(reviewTarget) ? reviewTarget : null} own={own} />;
 }
 

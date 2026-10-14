@@ -3,6 +3,7 @@ import { foodPlace } from "../food/test-fixtures";
 import { FoodStopError, foodLegRequest, foodStopLeg, foodStopTitle, hasFoodStop, insertFoodStop, viewWithDocument } from "./food-stop";
 import type { WalkDocument, WalkView } from "./model";
 import type { Plan } from "../walk-builder/model";
+import { carWalkDocument } from "../../../backend/test-fixtures/car-walk.mjs";
 
 // A straight walk north along one meridian: vertex i lies i × ~111 m from the start.
 const LON = 37.6;
@@ -26,6 +27,22 @@ function way(from: number, to: number, place = venue(4)): Plan {
 }
 
 describe("место заведения в прогулке", () => {
+  it("отклоняет автомобильный документ до расчёта пешеходного участка", () => {
+    const document = carWalkDocument() as WalkDocument;
+    const original = structuredClone(document);
+    expect(() => foodStopLeg(document, venue(4))).toThrow("Добавление заведения пока доступно только для пешеходных прогулок.");
+    const leg = { position: 0, range: [0, 1] as [number, number], from: at(0), to: at(1) };
+    expect(() => insertFoodStop(document, venue(4), leg, null, "cafe")).toThrow(FoodStopError);
+    expect(document).toEqual(original);
+  });
+  it.each([
+    ["режим без готового маршрута", { ...walk(), travelMode: "driving" as const, route: null }],
+    ["метаданные парковок без режима", { ...walk(), route: { ...walk().route!, car: carWalkDocument().route.car } }],
+  ])("отклоняет неполный автомобильный документ: %s", (_, document) => {
+    const place = venue(4), leg = { position: 0, range: [0, 1] as [number, number], from: at(0), to: at(1) };
+    expect(() => foodStopLeg(document, place)).toThrow(FoodStopError);
+    expect(() => insertFoodStop(document, place, leg, way(0, 1, place), "cafe")).toThrow(FoodStopError);
+  });
   it.each([
     ["до первой остановки", 1, 0, [0, 3]],
     ["между остановками", 4, 1, [3, 6]],

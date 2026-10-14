@@ -75,6 +75,7 @@ export function ResearchPanel({ draft, current, persist, offered, disabled, choo
     const controller = new AbortController(); actionRef.current = controller;
     setBusy(t(retry ? "Продолжаем исследование…" : "Отправляем исследование…")); setError("");
     try {
+      if (latest.minutes !== 30 && latest.minutes !== 60 && latest.minutes !== 90) return;
       const snapshot = { start: latest.start!, ...(latest.destination ? {destination:latest.destination} : {}), mode: latest.mode, minutes: latest.minutes };
       const expected: ResearchRef = retry ? latest.research! : { request: snapshot, stops: latest.stops, id: null, recoveryToken: latest.research && researchKey(latest.research.request) === researchKey(snapshot) ? latest.research.recoveryToken : crypto.randomUUID() };
       // The synchronous storage comparison also rejects stale tabs before any POST.

@@ -49,7 +49,7 @@ export function WalkLibrary({ mode = "all" }: { mode?: "all" | "mine" }) {
     void (async () => {
       try {
         migrateLocalWalks(localStorage);
-        setLocal(listLocalWalks(localStorage).map(item => ({ id: item.document.id, title: item.document.title, subtitle: item.document.description, revision: item.revision, kind: "local", updatedAt: item.updatedAt, draft: !item.document.route, distanceM: item.document.route?.distanceM, walkingMinutes: item.document.route?.walkingMinutes })));
+        setLocal(listLocalWalks(localStorage).map(item => ({ id: item.document.id, title: item.document.title, subtitle: item.document.description, revision: item.revision, kind: "local", updatedAt: item.updatedAt, draft: !item.document.route, distanceM: item.document.route?.distanceM, travelMode: item.document.travelMode ?? "walking", totalMinutes: item.document.route?.car?.totalMinutes ?? item.document.route?.walkingMinutes, walkingMinutes: item.document.route?.walkingMinutes })));
       } catch (caught) { fail("local", caught); }
       await (async () => {
         const user = await getSession(); if (!active) return; setGuest(!user);
@@ -115,7 +115,7 @@ export function WalkLibrary({ mode = "all" }: { mode?: "all" | "mine" }) {
           <Link className="history-card-title" href={path(`/walk?${card.kind === "local" ? "local" : "id"}=${encodeURIComponent(card.id)}`)}><h2>{card.title}</h2></Link>
           {card.subtitle && <p>{card.subtitle}</p>}
           <p className="ui-muted">{[
-            card.walkingMinutes ? t("{minutes} мин пешком", { minutes: card.walkingMinutes }) : null,
+            card.travelMode === "driving" ? t("На машине · {minutes} мин", { minutes: card.totalMinutes ?? 0 }) : card.walkingMinutes ? t("{minutes} мин пешком", { minutes: card.walkingMinutes }) : null,
             card.distanceM ? t("{distance} км", { distance: (card.distanceM / 1000).toLocaleString(languageTag, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) }) : null,
             card.updatedAt ? new Date(card.updatedAt).toLocaleDateString(languageTag) : null,
           ].filter(Boolean).join(" · ")}</p>

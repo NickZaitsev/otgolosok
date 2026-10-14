@@ -1,0 +1,230 @@
+.sheet {
+  --drive-blue: var(--focus);
+  --drive-blue-dark: var(--map-green);
+
+  max-height: 100%;
+}
+
+.header {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.header p,
+.header h1,
+.body p {
+  margin: 0;
+}
+
+.header p {
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.header h1 {
+  color: var(--map-green);
+  font-weight: 700;
+  font-size: var(--text-section);
+  line-height: 1.12;
+  font-family: var(--font-display), serif;
+}
+
+.header h1:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 0.2rem;
+}
+
+.body {
+  display: grid;
+  gap: 1rem;
+  color: var(--map-green);
+  font-size: var(--text-control);
+  line-height: 1.55;
+}
+
+.summary {
+  color: var(--text-secondary);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.metrics span {
+  display: grid;
+  min-height: 5.4rem;
+  padding: 0.75rem;
+  color: var(--surface-island);
+  background: var(--drive-blue-dark);
+  border-radius: 1rem;
+}
+
+.metrics b {
+  align-self: end;
+  font-size: var(--text-page);
+  line-height: 1;
+}
+
+.visits {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.visits li {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.visits li > span:last-child {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.visits small,
+.parkingMeta,
+.address,
+.note,
+.audioPaused {
+  color: var(--text-secondary);
+  font-size: var(--text-secondary);
+}
+
+.visitNumber {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  color: var(--surface-island);
+  font-weight: 800;
+  background: var(--drive-blue);
+  border-radius: 0.65rem;
+}
+
+.settings {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-island);
+}
+
+.settings summary {
+  min-height: 2.75rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.settings button {
+  min-height: 2.75rem;
+  margin: 0.25rem 0.5rem 0.25rem 0;
+  padding: 0 0.75rem;
+  color: var(--map-green);
+  background: transparent;
+  border: 1px solid var(--border-island);
+  border-radius: 0.75rem;
+}
+
+.navigation {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 3rem;
+  padding: 0 0.9rem;
+  color: var(--surface-island);
+  font-weight: 700;
+  text-decoration: none;
+  background: var(--drive-blue);
+  border-radius: 0.85rem;
+}
+
+.audioPaused {
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--drive-blue);
+}
+
+.actions {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.actions > [aria-label="Плеер истории"] {
+  flex: 1 0 100%;
+}
+
+.primary,
+.secondary,
+.iconAction {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.5rem;
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 1rem;
+}
+
+.primary {
+  flex: 1 1 15rem;
+  color: var(--surface-island);
+  text-decoration: none;
+  background: var(--map-green);
+  border: 1px solid var(--map-green);
+}
+
+.secondary,
+.iconAction {
+  color: var(--map-green);
+  background: transparent;
+  border: 1px solid var(--border-island);
+}
+
+.iconAction {
+  flex: 0 0 3.5rem;
+  padding: 0;
+}
+
+.primary:focus-visible,
+.secondary:focus-visible,
+.iconAction:focus-visible,
+.navigation:focus-visible,
+.settings summary:focus-visible,
+.settings button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 0.15rem;
+}
+
+.error {
+  color: var(--accent);
+}
+
+.missing {
+  display: grid;
+  place-content: center;
+  min-height: 100%;
+  padding: 2rem;
+  color: var(--map-green);
+  background: var(--surface-map);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary,
+  .secondary,
+  .navigation {
+    transition: none;
+  }
+}

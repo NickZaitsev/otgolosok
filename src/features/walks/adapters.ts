@@ -1,3 +1,4 @@
+import { copyCarRoute } from "../../../backend/car-route.mjs";
 import { validateWalkDocument, validateWalkView, type ContentLocale, type WalkAudio, type WalkDocument, type WalkStory, type WalkView } from "./model";
 import type { Draft, Place as DraftPlace, StoryRef as DraftStoryRef } from "../walk-builder/model";
 import type { Coordinates, HistoricalContent, Poi, Route, WalkStep } from "../tour/types";
@@ -33,7 +34,7 @@ function storyFor(place: DraftPlace, jobs: DraftStoryRef[]) {
 }
 
 function storyStopPlaces(draft: Draft) {
-  const startStory = draft.start && jobFor(draft.start, draft.jobs) ? [draft.start] : [];
+  const startStory = draft.travelMode !== "driving" && draft.start && jobFor(draft.start, draft.jobs) ? [draft.start] : [];
   return [...startStory, ...draft.stops];
 }
 
@@ -42,7 +43,7 @@ export function draftToWalkDocument(draft: Draft, id: string, previous?: WalkDoc
   const stops = storyStopPlaces(draft).map((place, index) => {
     const old = oldByPlace.get(placeKey(place));
     return {
-      id: old?.id ?? stopId(id, index),
+      id: old?.id ?? (draft.travelMode === "driving" ? place.stopId : undefined) ?? stopId(id, index),
       place: { address: place.address, location: { ...place.location } },
       storyRef: storyFor(place, draft.jobs),
       ...(place.placeId ? { placeId: place.placeId } : {}),
@@ -54,6 +55,7 @@ export function draftToWalkDocument(draft: Draft, id: string, previous?: WalkDoc
 
   return validateWalkDocument({
     version: 2,
+    travelMode: draft.travelMode ?? "walking",
     id,
     title: draft.title || "Моя прогулка",
     description: "",
@@ -69,6 +71,7 @@ export function draftToWalkDocument(draft: Draft, id: string, previous?: WalkDoc
       walkingMinutes: draft.route.walkingMinutes,
       attribution: draft.route.attribution,
       ...copyTunnels(draft.route.tunnels),
+      ...(draft.route.car ? { car: copyCarRoute(draft.route.car, new Map(draft.stops.map((place, index) => [place.stopId!, stops[index].id]))) } : {}),
     } : null,
     fieldChecked: false,
   });
@@ -87,24 +90,26 @@ function jobDrafts(document: WalkDocument, previousJobs: DraftStoryRef[]) {
 }
 
 export function walkDocumentToDraft(document: WalkDocument, previousJobs: DraftStoryRef[] = []): Draft {
-  const firstIsStartStory = Boolean(document.start && document.stops[0] && samePlace(document.start, document.stops[0].place)
+  const firstIsStartStory = Boolean(document.travelMode !== "driving" && document.start && document.stops[0] && samePlace(document.start, document.stops[0].place)
     && document.stops[0].storyRef?.kind === "job");
   const routeStops = document.stops.filter((_, index) => !(firstIsStartStory && index === 0));
   return {
     version: 1,
+    travelMode: document.travelMode ?? "walking",
     title: document.title,
     start: document.start ? { ...document.start, location: { ...document.start.location } } : null,
     ...(document.destination ? { destination: document.destination } : {}),
     mode: document.mode,
-    minutes: document.minutes === 15 ? 30 : document.minutes as 30 | 60 | 90,
-    stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location }, ...(stop.storyRef?.kind === "osm" ? { contentId: stop.storyRef.id } : {}), ...(stop.placeId ? { placeId: stop.placeId } : {}) })),
+    minutes: document.minutes === 15 ? 30 : document.minutes as 30 | 60 | 90 | 120 | 180,
+    stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location }, ...(stop.storyRef?.kind === "osm" ? { contentId: stop.storyRef.id } : {}), ...(stop.placeId ? { placeId: stop.placeId } : {}), ...(document.travelMode === "driving" ? { stopId: stop.id, parkingId: document.route?.car?.visits.find(visit => visit.stopIds.includes(stop.id))?.parking.id } : {}) })),
     route: document.route ? {
-      stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location } })),
+      stops: routeStops.map(stop => ({ ...stop.place, location: { ...stop.place.location }, ...(stop.storyRef?.kind === "osm" ? { contentId: stop.storyRef.id } : {}), ...(stop.placeId ? { placeId: stop.placeId } : {}), ...(document.travelMode === "driving" ? { stopId: stop.id, parkingId: document.route?.car?.visits.find(visit => visit.stopIds.includes(stop.id))?.parking.id } : {}) })),
       geometry: document.route.geometry.map(point => ({ ...point })),
       distanceM: document.route.distanceM,
       walkingMinutes: document.route.walkingMinutes,
       attribution: document.route.attribution,
       ...copyTunnels(document.route.tunnels),
+      ...(document.route.car ? { car: copyCarRoute(document.route.car) } : {}),
     } : null,
     jobs: jobDrafts(document, previousJobs),
     submitting: null,
@@ -246,7 +251,7 @@ export function walkViewToRoute(input: WalkView): Route {
     title: view.document.title,
     subtitle: view.document.description,
     city: view.document.city,
-    duration_min: route?.walkingMinutes ?? view.document.minutes,
+    duration_min: route?.car?.totalMinutes ?? route?.walkingMinutes ?? view.document.minutes,
     distance_km: route ? route.distanceM / 1000 : 0,
     poi_count: chapters.length,
     status: route ? "published" : "draft",
@@ -256,12 +261,13 @@ export function walkViewToRoute(input: WalkView): Route {
     pois: poi,
     notes: [],
     walk: {
+      ...(route?.car ? { car: copyCarRoute(route.car) } : {}),
       start: { address: anchor.address, location: anchor.location, osm_id: "" },
       finish: { address: finish.address, location: finish.location, osm_id: "" },
       distance_m: route?.distanceM ?? 0,
       walking_min: route?.walkingMinutes ?? view.document.minutes,
       field_checked: view.document.fieldChecked,
-      path: { coordinates: route?.geometry.map(point => [point.lon, point.lat]) ?? [], provider: route?.attribution ?? "", source_url: "", checked_at: "", costing: "pedestrian", ...copyTunnels(route?.tunnels) },
+      path: { coordinates: route?.geometry.map(point => [point.lon, point.lat]) ?? [], provider: route?.attribution ?? "", source_url: "", checked_at: "", costing: route?.car ? "auto" : "pedestrian", ...copyTunnels(route?.tunnels) },
       steps: chapters.map(item => item.step),
     },
   };
@@ -311,15 +317,16 @@ export function routeToWalkView(route: Route): WalkView {
   return validateWalkView({
     document: {
       version: 2,
+      ...(route.walk?.car ? { travelMode: "driving" as const } : {}),
       id: route.id,
       title: route.title,
       description: route.subtitle,
-      city: "Москва",
+      city: route.city,
       mode: "open",
-      minutes: [15, 30, 60, 90].includes(route.duration_min) ? route.duration_min : 30,
+      minutes: route.walk?.car ? (route.duration_min <= 60 ? 60 : route.duration_min <= 120 ? 120 : 180) : [15, 30, 60, 90].includes(route.duration_min) ? route.duration_min : 30,
       start,
       stops,
-      route: geometry.length >= 2 && route.walk ? { geometry, distanceM: route.walk.distance_m, walkingMinutes: route.walk.walking_min, attribution: route.walk.path.provider, ...copyTunnels(route.walk.path.tunnels) } : null,
+      route: geometry.length >= 2 && route.walk ? { geometry, distanceM: route.walk.distance_m, walkingMinutes: route.walk.walking_min, attribution: route.walk.path.provider, ...copyTunnels(route.walk.path.tunnels), ...(route.walk.car ? { car: copyCarRoute(route.walk.car) } : {}) } : null,
       fieldChecked: route.walk?.field_checked ?? false,
     },
     revision: 0,

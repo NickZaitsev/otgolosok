@@ -1,3 +1,4 @@
+import type { CarRoute } from "../../../backend/car-route.mjs";
 export type Coordinates = {
   lat: number;
   lon: number;
@@ -106,6 +107,7 @@ export type WalkStep = {
 };
 
 export type WalkPlan = {
+  car?: CarRoute;
   start: { address: string; location: Coordinates; osm_id: string };
   finish: { address: string; location: Coordinates; osm_id: string };
   distance_m: number;
@@ -116,7 +118,7 @@ export type WalkPlan = {
     provider: string;
     source_url: string;
     checked_at: string;
-    costing: "pedestrian";
+    costing: "pedestrian" | "auto";
     // Covered stretches as [a, b] index ranges of coordinates; absent for routes built before tunnel data.
     tunnels?: Array<[number, number]>;
   };

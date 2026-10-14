@@ -22,6 +22,12 @@ const page = (walks: unknown[], nextOffset: number | null = null, total = walks.
   ] } });
 
 describe("модель топа", () => {
+  it("фильтрует автомобильную поездку по общему времени и показывает её режим", () => {
+    const walks = validateTopWalks({ walks: [{ ...catalog, travelMode: "driving", totalMinutes: 75, walkingMinutes: 15 }] });
+    expect(filterTopWalks(walks, "", "", "up-to-30")).toEqual([]);
+    expect(filterTopWalks(walks, "", "", "61-to-90")).toEqual(walks);
+    expect(formatTopWalkMeta(walks[0])).toBe("На машине · 75 мин · 3,2 км · 6 историй");
+  });
   it("принимает карту, линии метро и метаданные страницы", () => {
     expect(validateTopWalkPage(page([catalog, shared]))).toEqual(page([catalog, shared]));
     expect(validateTopWalks({ walks: [{ ...catalog, preview: undefined, mapPreview: undefined, startMetro: undefined, endMetro: undefined }] })[0])

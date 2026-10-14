@@ -94,6 +94,8 @@ export type MapItem = {
   number?: number;
   /** Food stays separate from story clusters. */
   foodKind?: FoodKind;
+  /** A parking marker is a square P and never joins story clusters. */
+  parking?: boolean;
   pending?: boolean;
   /** A background catalog point in a mode where stories are secondary (walk creation): a small plain dot. */
   compact?: boolean;
@@ -118,6 +120,8 @@ export type ExploreMapProps = {
   onSelect: (id: string) => void;
   onPoint: (point: Coordinates) => void;
   geometry?: Coordinates[];
+  /** Mixed car routes keep their driving and walking legs visually distinct. */
+  routeSegments?: ReadonlyArray<{ mode: "driving" | "walking"; geometry: Coordinates[] }>;
   /** False keeps the view on the focus: the route line is drawn without fitting the map to it. */
   fitGeometry?: boolean;
   /** Covered stretches of the route as [a, b] vertex ranges of geometry: drawn dashed. */
@@ -147,6 +151,7 @@ const MARKER_CLASS: Record<MarkerKind, string> = {
   endpoint: styles.endpoint,
   background: styles.background,
   food: styles.food,
+  parking: styles.parking,
 };
 
 const CHEVRON_SIZE = 12;
@@ -193,6 +198,7 @@ export function ExploreMap({
   onSelect,
   onPoint,
   geometry,
+  routeSegments,
   fitGeometry = true,
   tunnels,
   activeLeg = null,
@@ -212,7 +218,7 @@ export function ExploreMap({
     L: typeof Leaflet;
     map: Leaflet.Map;
     view: MapView;
-    colors: { route: string; casing: string; user: string; walks: string[] };
+    colors: { route: string; walking: string; casing: string; user: string; walks: string[] };
     markers: Leaflet.LayerGroup;
     clusters: MapClusters;
     markerById: Map<
@@ -382,7 +388,7 @@ export function ExploreMap({
           L,
           map,
           view,
-          colors: { route: routeColor, casing: token("--surface-island"), user: token("--user-position"),
+          colors: { route: routeColor, walking: token("--map-orange") || routeColor, casing: token("--surface-island"), user: token("--user-position"),
             walks: Array.from({ length: WALK_OVERVIEW_COLORS }, (_, index) => token(`--walk-overview-${index + 1}`)) },
           markers: L.layerGroup().addTo(map),
           clusters: createMapClusters(L, {
@@ -460,9 +466,9 @@ export function ExploreMap({
     const additions: Leaflet.Marker[] = [];
     for (const item of items) {
       const active = item.id === selectedId;
-      const clustered = item.clusterable === true && !item.foodKind && !active;
+      const clustered = item.clusterable === true && !item.foodKind && !item.parking && !active;
       const variant = markerLook(item, active);
-      const look = JSON.stringify([item.title, variant.kind, variant.label, item.foodKind, active]);
+      const look = JSON.stringify([item.title, variant.kind, variant.label, item.foodKind, item.parking, active]);
       const position: [number, number] = [item.location.lat, item.location.lon];
       const existing = rt.markerById.get(item.id);
       if (existing) {
@@ -557,6 +563,30 @@ export function ExploreMap({
     rt.route.clearLayers();
     const active = activeFrom >= 0 && activeTo > activeFrom ? [activeFrom, activeTo] as const : null;
     rt.routePane.classList.toggle(styles.routeDim, active !== null);
+    if (routeSegments?.length) {
+      rt.routePane.classList.remove(styles.routeDim);
+      rt.activePath = null;
+      drawChevrons(rt);
+      const stroke = { lineCap: "round", lineJoin: "round", interactive: false, pane: "route", renderer: rt.renderers.route } as const;
+      const all: [number, number][] = [];
+      for (const segment of routeSegments) {
+        if (segment.geometry.length < 2) continue;
+        const points = segment.geometry.map(point => [point.lat, point.lon] as [number, number]);
+        all.push(...points);
+        rt.L.polyline(points, { ...stroke, color: rt.colors.casing, weight: segment.mode === "driving" ? 10 : 8, opacity: 1 }).addTo(rt.route);
+        const line = rt.L.polyline(points, {
+          ...stroke,
+          color: segment.mode === "driving" ? rt.colors.route : rt.colors.walking,
+          weight: segment.mode === "driving" ? 6 : 4,
+          opacity: 1,
+          ...(segment.mode === "walking" ? { dashArray: "3 6" } : {}),
+        }).addTo(rt.route);
+        line.getElement()?.setAttribute("data-route-mode", segment.mode);
+      }
+      if (fitGeometry && all.length) { rt.view.fit(rt.L.latLngBounds(all)); routeFitted.current = true; }
+      else if (routeFitted.current) { rt.view.clearFit(); routeFitted.current = false; }
+      return;
+    }
     const runs = geometry ? routeRuns(geometry.length, tunnels, active) : [];
     const points = (geometry ?? []).map((p) => [p.lat, p.lon] as [number, number]);
     rt.activePath = active ? points.slice(active[0], active[1] + 1) : null;
@@ -594,7 +624,7 @@ export function ExploreMap({
       rt.view.clearFit();
       routeFitted.current = false;
     }
-  }, [geometry, tunnels, activeFrom, activeTo, fitGeometry, ready]);
+  }, [geometry, routeSegments, tunnels, activeFrom, activeTo, fitGeometry, ready]);
 
   useEffect(() => {
     const rt = runtime.current;

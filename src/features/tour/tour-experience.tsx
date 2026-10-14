@@ -41,6 +41,7 @@ import { orientWalk, type WalkDirection } from "./walk-direction";
 import { useWalkDirection } from "./use-walk-direction";
 import type { FoodPlace } from "../food/types";
 import { useI18n } from "@/lib/i18n/provider";
+import { DrivingExperience } from "./driving-experience";
 
 export type AddFood = (place: FoodPlace, signal: AbortSignal) => Promise<string>;
 
@@ -58,6 +59,13 @@ export function TourExperience({ route, walk, offline = null, offlineNotice = ""
   const resolvedRoute = useMemo(() => walk ? walkViewToRoute(walk) : route, [walk, route]);
   if (!resolvedRoute) return <main className="shell"><section className="hero-copy"><h1>{t("Прогулка не найдена")}</h1><p className="dek">{t("Откройте ссылку ещё раз или вернитесь к списку прогулок.")}</p></section></main>;
   if (fromStop !== null && !resolvedRoute.walk?.steps.some(stop => stop.id === fromStop)) return <main className="walk-screen"><p role="alert">{t("Точка начала больше не входит в эту прогулку. Откройте подборку заново.")}</p><Link href={path("/")}>{t("На карту")}</Link></main>;
+  // Автомобильный документ использует отдельный сценарий с парковками и
+  // внешней навигацией. Проверяем документ до создания пешеходного плеера,
+  // чтобы его аудио и переворот направления не активировались для поездки.
+  if (walk?.document.travelMode === "driving") {
+    if (fromStop !== null) return <main className="walk-screen"><p role="alert">{t("Автомобильную прогулку нужно начинать с первой парковки. Откройте маршрут целиком.")}</p><Link href={path("/")}>{t("На карту")}</Link></main>;
+    return <DrivingExperience view={walk} offline={offline} offlineNotice={offlineNotice} reviewTarget={reviewTarget} launchTarget={launchTarget} own={own} />;
+  }
   return <AvailableTour key={locale} fromStop={fromStop} route={resolvedRoute} universal={Boolean(walk)} view={walk} offlineRef={walk ? offline : null} offlineNotice={walk ? offlineNotice : ""} reviewTarget={walk ? reviewTarget : null} launchTarget={walk ? launchTarget : null} own={walk ? own : null} onAddFood={walk ? onAddFood : null} />;
 }
 

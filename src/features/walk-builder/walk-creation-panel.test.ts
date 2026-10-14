@@ -110,3 +110,33 @@ it("с построенным маршрутом показывает форму
     expect(button("Построить прогулку")).toBeTruthy();
   } finally { history.replaceState(null, "", "/"); }
 });
+
+it("выбирает общественную парковку по умолчанию, а неизвестный доступ предупреждает перед подтверждением", async () => {
+  const start = { address: "Москва, Арбат, 1", location: { lat: 55.75, lon: 37.6 } };
+  const location = { lat: 55.752, lon: 37.6 };
+  const unknown = { id: "osm:node:1", name: "Без проверки", location, entrance: location, exit: location, pedestrianAccess: location, access: "unknown", fee: null, openingHours: null };
+  const publicPlace = { ...unknown, id: "osm:node:2", name: "Общественная", access: "public" };
+  localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...emptyDraft("driving"), start }));
+  history.replaceState(null, "", "/?walk=create&resume=1");
+  fetchMock.mockImplementation(async (url: string) => new Response(JSON.stringify(String(url).includes("/api/parking/near")
+    ? { sourceEditedAt: "2026-10-14T00:00:00Z", attribution: "© участники OpenStreetMap", places: [unknown, publicPlace] }
+    : { address: "Москва, Арбат, 20", location }), { status: 200 }));
+  try {
+    const onMap = () => {};
+    await act(async () => { root.render(createElement(WalkCreationPanel, { onClose: () => {}, onMap, picked: null })); });
+    await act(async () => { button("На машине")?.click(); });
+    await act(async () => { button("Добавить остановку")?.click(); });
+    await act(async () => { button("Выбрать на карте")?.click(); });
+    await act(async () => { root.render(createElement(WalkCreationPanel, { onClose: () => {}, onMap, picked: location })); });
+    const select = container.querySelector("select")!;
+    expect(select.value).toBe(publicPlace.id);
+    expect(container.textContent).not.toContain("Перед поездкой убедитесь, что она открыта для всех.");
+    await act(async () => { select.value = unknown.id; select.dispatchEvent(new Event("change", { bubbles: true })); });
+    expect(container.textContent).toContain("Доступ на парковку не проверен. Перед поездкой убедитесь, что она открыта для всех.");
+    await act(async () => { button("Выбрать эту точку")?.click(); });
+    expect(JSON.parse(localStorage.getItem(DRAFT_KEY)!).stops[0].parkingId).toBe(unknown.id);
+  } finally {
+    await act(async () => { root.unmount(); });
+    history.replaceState(null, "", "/");
+  }
+});

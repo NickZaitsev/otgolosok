@@ -5,8 +5,8 @@ const STOP_PROGRESS_TOLERANCE_M = 1;
 
 /** @typedef {{lat:number, lon:number}} Coordinates */
 /** @typedef {{id:string, place?:{location?:Coordinates}, triggerLocation?:Coordinates}} WalkEntryStop */
-/** @typedef {{geometry:Coordinates[], distanceM:number, walkingMinutes:number}} WalkEntryRoute */
-/** @typedef {{route?:WalkEntryRoute|null, stops?:WalkEntryStop[]}} WalkEntryDocument */
+/** @typedef {{geometry:Coordinates[], distanceM:number, walkingMinutes:number,car?:object}} WalkEntryRoute */
+/** @typedef {{travelMode?:string,route?:WalkEntryRoute|null, stops?:WalkEntryStop[]}} WalkEntryDocument */
 /**
  * @typedef {object} WalkEntry
  * @property {number} distanceM Remaining declared route distance.
@@ -91,7 +91,7 @@ function projectToRoute(point, geometry, cumulativeM, minimumOffsetM = 0) {
 export function computeWalkEntry(document, origin, radiusM = 500) {
   const route = document?.route;
   const geometry = route?.geometry;
-  if (!validPoint(origin) || !Number.isFinite(radiusM) || radiusM < 0
+  if (document?.travelMode === "driving" || route?.car || !validPoint(origin) || !Number.isFinite(radiusM) || radiusM < 0
     || !route || !Array.isArray(geometry) || geometry.length < 2 || !geometry.every(validPoint)
     || !Number.isFinite(route.distanceM) || route.distanceM <= 0
     || !Number.isFinite(route.walkingMinutes) || route.walkingMinutes <= 0

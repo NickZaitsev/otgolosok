@@ -138,6 +138,45 @@
   margin-top: 0;
 }
 
+.parkingChoice {
+  display: grid;
+  gap: var(--space-xs);
+  margin: 0 0 var(--space-md);
+}
+
+.parkingChoice label {
+  display: grid;
+  gap: var(--space-xs);
+  font-weight: var(--weight-medium);
+}
+
+.parkingChoice select {
+  min-height: var(--control-min);
+  padding: 0 var(--space-sm);
+  color: inherit;
+  background: var(--raised);
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+}
+
+.parkingChoice small {
+  color: var(--map-muted);
+  line-height: 1.45;
+}
+
+.addStop {
+  min-height: var(--control-min);
+  padding: 0;
+  color: var(--map-green);
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-weight: var(--weight-medium);
+  text-align: left;
+  cursor: pointer;
+}
+
 .time {
   margin: 0 0 var(--space-md);
   padding: 0;

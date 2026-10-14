@@ -16,6 +16,8 @@ import { normalizeAddress, addressKey, publicJob, failure } from "./domain.mjs";
 import { errorMessages, safeError, startWorker } from "./pipeline.mjs";
 import { createPlaceResolver } from "./places.mjs";
 import { createWalkPlanner } from "./walks.mjs";
+import { createCarWalkPlanner } from "./car-walks.mjs";
+import { MAX_CAR_DOCUMENT_BYTES } from "./car-route.mjs";
 import { walkPlanErrorResponse } from "./walk-plan-errors.mjs";
 import { createPromoWalkService, ensurePromoWalksUser } from "./promo-walks.mjs";
 import { adminAuth, adminDetail, adminSummary } from "./admin.mjs";
@@ -26,6 +28,7 @@ import { createWikimapiaClient } from "./wikimapia-pilot.mjs";
 import { startContentWorker } from "./content-pipeline.mjs";
 import { createPlaceImageService, createWikimediaClient, placeImageUserAgent, startPlaceImageWorker } from "./place-images.mjs";
 import { openOsmGeocoder } from "./osm-geocoder.mjs";
+import { openParkingIndex, isCellLat as isParkingCellLat, isCellLon as isParkingCellLon } from "./parking-places.mjs";
 import { openFoodIndex, isCellLat as isFoodCellLat, isCellLon as isFoodCellLon } from "./food-places.mjs";
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword, publicAccountUser, freshTelegramSession } from "./auth.mjs";
 import { favoriteSummary } from "./favorite-summary.mjs";
@@ -118,6 +121,7 @@ export function parseUserDailyLimit(value) {
  * @property {ReturnType<typeof createProvider> | null} [provider]
  * @property {ReturnType<typeof openOsmGeocoder> | null} [osmGeocoder]
  * @property {ReturnType<typeof openFoodIndex> | null} [foodIndex]
+ * @property {ReturnType<typeof openParkingIndex> | null} [parkingIndex]
  * @property {ReturnType<typeof createYandexTts> | null} [yandexTts]
  * @property {ReturnType<typeof createElevenLabsTts> | null} [elevenLabsTts]
  * @property {string} origin
@@ -131,6 +135,7 @@ export function parseUserDailyLimit(value) {
  * @property {ReturnType<typeof createTtsApiClient> | null} [ttsApiClient]
  * @property {ReturnType<typeof createPlaceResolver>} [resolvePlace]
  * @property {ReturnType<typeof createWalkPlanner> | null} [planWalk]
+ * @property {ReturnType<typeof createCarWalkPlanner> | null} [planCarWalk]
  * @property {Function} [discoverResearch]
  * @property {Function} [planResearchWalk]
  * @property {string} [adminToken]
@@ -152,8 +157,9 @@ export function parseUserDailyLimit(value) {
  */
 
 /** @param {CreateAppOptions} options */
-export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,wikimapia=createWikimapiaClient({apiKey:process.env.WIKIMAPIA_API_KEY||"example"}),staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),improvementLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000})}) {
+export function createApp({store,provider,osmGeocoder=null,foodIndex=null,parkingIndex=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,wikimapia=createWikimapiaClient({apiKey:process.env.WIKIMAPIA_API_KEY||"example"}),staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,planCarWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),improvementLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000})}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
+  const carWalkPlanner=planCarWalk??createCarWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[],parkingIndex});
   const speechProviders={openai:provider,yandex:yandexTts,elevenlabs:elevenLabsTts};
   const ttsProviders=[{id:"openai",label:"OpenAI",available:Boolean(provider),...ttsVoiceOptions("openai",provider?.voice)},
     {id:"yandex",label:"Яндекс SpeechKit",available:Boolean(yandexTts),...ttsVoiceOptions("yandex",yandexTts?.voice)},
@@ -208,7 +214,7 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
         }
         const accountQuery=()=>{const entries=[...url.searchParams];if(entries.some(([key,value])=>!['limit','cursor'].includes(key)||(key==='limit'&&!/^\d+$/.test(value)))||new Set(entries.map(([key])=>key)).size!==entries.length)throw failure('BAD_REQUEST');return {limit:Number(url.searchParams.get('limit')??20),after:url.searchParams.get('cursor')};};
         if(url.pathname==="/api/me/walks"&&req.method==="GET"){json(res,200,accountStore.listWalks(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery()))));return;}
-        if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,100000);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
+        if(url.pathname==="/api/me/walks"&&req.method==="POST"){const input=await body(req,MAX_CAR_DOCUMENT_BYTES+4096);json(res,201,{walk:accountStore.createWalk(session.user.id,input)});return;}
         const ownWalk=new RegExp(`^/api/me/walks/(${UUID})$`).exec(url.pathname);
         const ownWalkView=new RegExp(`^/api/me/walks/(${UUID})/view$`).exec(url.pathname);
         if(ownWalkView&&req.method==="GET"){
@@ -228,11 +234,11 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
           json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Прогулка не найдена."}});return;
         }
         if(ownWalk&&req.method==="GET"){const walk=accountStore.getWalk(session.user.id,ownWalk[1]);json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
-        if(ownWalk&&req.method==="PATCH"){const walk=accountStore.updateWalk(session.user.id,ownWalk[1],await body(req,100000));json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
+        if(ownWalk&&req.method==="PATCH"){const walk=accountStore.updateWalk(session.user.id,ownWalk[1],await body(req,MAX_CAR_DOCUMENT_BYTES+4096));json(res,walk?200:404,walk?{walk}:{error:{code:"NOT_FOUND",message:"Walk not found."}});return;}
         if(ownWalk&&req.method==="DELETE"){json(res,accountStore.deleteWalk(session.user.id,ownWalk[1])?200:404,{success:true});return;}
         if(url.pathname==="/api/me/requests"&&req.method==="GET"){json(res,200,accountStore.listRequests(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery()))));return;}
         if(url.pathname==="/api/me/favorites"&&req.method==="GET"){const data=accountStore.listFavorites(session.user.id,.../** @type {[number, string | null]} */ (Object.values(accountQuery())));json(res,200,{...data,favorites:data.favorites.map(item=>favoriteSummary(item,{userId:session.user.id,accountStore,store,routes:builtinRoutes}))});return;}
-        if(url.pathname==="/api/me/import"&&req.method==="POST"){json(res,200,{result:accountStore.importLocal(session.user.id,await body(req,110000))});return;}
+        if(url.pathname==="/api/me/import"&&req.method==="POST"){json(res,200,{result:accountStore.importLocal(session.user.id,await body(req,MAX_CAR_DOCUMENT_BYTES+20000))});return;}
         const favorite=/^\/api\/me\/favorites\/(story|walk)\/([a-zA-Z0-9-]{1,128})$/.exec(url.pathname);
         if(favorite&&req.method==="PUT"){accountStore.setFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}
         if(favorite&&req.method==="DELETE"){accountStore.deleteFavorite(session.user.id,favorite[1],favorite[2]);json(res,200,{success:true});return;}
@@ -723,6 +729,22 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
         if(!foodIndex) { json(res,503,{error:"FOOD_INDEX_UNAVAILABLE"});return; }
         sendCacheableJson(req,res,foodCell?foodIndex.cell(Number(foodCell[1]),Number(foodCell[2])):foodIndex.manifest());return;
       }
+      if(url.pathname==="/api/parking/cells"||url.pathname.startsWith("/api/parking/cells/")||url.pathname==="/api/parking/near") {
+        if(!readMethod){res.setHeader("Allow","GET, HEAD");json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Метод не поддерживается."}});return;}
+        if(url.pathname==="/api/parking/near") {
+          const entries=[...url.searchParams],decimal=/^-?(?:0|[1-9]\d{0,2})(?:\.\d{1,12})?$/;
+          if(entries.length!==3||new Set(entries.map(([key])=>key)).size!==3||entries.some(([key,value])=>!["lat","lon","radius"].includes(key)||(key==="radius"?!/^[1-9]\d{0,4}$/.test(value):!decimal.test(value))))throw failure("BAD_REQUEST");
+          const lat=Number(url.searchParams.get("lat")),lon=Number(url.searchParams.get("lon")),radius=Number(url.searchParams.get("radius"));
+          if(Math.abs(lat)>90||Math.abs(lon)>180||radius>25000)throw failure("BAD_REQUEST");
+          if(!parkingIndex){json(res,503,{error:"PARKING_INDEX_UNAVAILABLE"});return;}
+          const {sourceEditedAt,attribution}=parkingIndex.status();
+          json(res,200,{places:parkingIndex.nearby({lat,lon,radius}),sourceEditedAt,attribution});return;
+        }
+        const parkingCell=/^\/api\/parking\/cells\/(-?(?:0|[1-9]\d{0,3}))\/(-?(?:0|[1-9]\d{0,3}))$/.exec(url.pathname);
+        if(req.url.includes("?")||(url.pathname!=="/api/parking/cells"&&(!parkingCell||parkingCell[1]==="-0"||parkingCell[2]==="-0"||!isParkingCellLat(Number(parkingCell[1]))||!isParkingCellLon(Number(parkingCell[2])))))throw failure("BAD_REQUEST");
+        if(!parkingIndex){json(res,503,{error:"PARKING_INDEX_UNAVAILABLE"});return;}
+        sendCacheableJson(req,res,parkingCell?parkingIndex.cell(Number(parkingCell[1]),Number(parkingCell[2])):parkingIndex.manifest());return;
+      }
       if(await reviews.public(req,res,url,session))return;
       if(await improvements.public(req,res,url,session))return;
       if(await placeFeedback.public(req,res,url,session))return;
@@ -794,9 +816,16 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
         if(req.headers.origin!==origin||![undefined,"same-origin","none"].includes(req.headers["sec-fetch-site"])) {json(res,403,{error:{message:"Откройте подготовку истории на сайте."}});return;}
         if(url.pathname==="/api/walk-plan") {
           // X-Real-IP is overwritten by nginx, as for Better Auth rate limiting.
-          try {json(res,200,await walkPlanner(await body(req,8192),{client:String(req.headers["x-real-ip"]??req.socket.remoteAddress??"")}));}
+          let driving=false;
+          try {
+            const input=await body(req,8192);driving=input.travelMode==="driving";
+            if(input.travelMode!==undefined&&input.travelMode!=="walking"&&input.travelMode!=="driving")throw failure("WALK_INVALID");
+            const planner=input.travelMode==="driving"?carWalkPlanner:walkPlanner;
+            const request={...input};if(request.travelMode==="walking")delete request.travelMode;
+            json(res,200,await planner(request,{client:String(req.headers["x-real-ip"]??req.socket.remoteAddress??"")}));
+          }
           catch(error) {
-            const planError=walkPlanErrorResponse(error);
+            const planError=walkPlanErrorResponse(error,{driving});
             for(const [name,value] of Object.entries(planError.headers))res.setHeader(name,value);
             json(res,planError.status,planError.body);
           }
@@ -805,7 +834,7 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
         // A guest walk lives only in the browser; resolving it reads published
         // content synchronously and never queues research or narration.
         if(url.pathname==="/api/story-walks/resolve") {
-          const input=await body(req,100000);
+          const input=await body(req,MAX_CAR_DOCUMENT_BYTES+4096);
           if(Object.keys(input).some(key=>!["document","revision"].includes(key))||!Number.isSafeInteger(input.revision)||input.revision<0)throw failure("BAD_REQUEST");
           json(res,200,resolveWalkView(input.document,input.revision,store,{requestedLocale:readContentLocale(url.searchParams)}));return;
         }
@@ -874,7 +903,7 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
     await Promise.race([drained,new Promise(done=>{timer=setTimeout(done,shutdownGraceMs);timer.unref?.();})]);
     clearTimeout(timer);server.closeAllConnections();await drained;
     await Promise.all([worker?.stop(),contentWorker?.stop(),ttsApiWorker?.stop(),elevenLabsWorker?.stop(),placeImageWorker?.stop()]);
-    osmGeocoder?.close();foodIndex?.close();await closeAuth();
+    osmGeocoder?.close();foodIndex?.close();parkingIndex?.close();await closeAuth();
   };
   return {server,close};
 }
@@ -947,11 +976,12 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).hr
   if(process.env.PROMO_WALKS_TOKEN)ensurePromoWalksUser(authRuntime.accountDatabase);
   const osmGeocoder=openOsmGeocoder(join(directory,"osm-addresses.sqlite"));
   const foodIndex=openFoodIndex(join(directory,"osm-food.sqlite"));
+  const parkingIndex=openParkingIndex(join(directory,"osm-parking.sqlite"));
   const imageDirectory=join(directory,"place-images");
   const placeImages=await setupPlaceImages({env:process.env,store,directory:imageDirectory,origin:appOrigin,logs});
   try {const swept=await sweepAudioTemporaries(join(directory,"audio"));if(swept)console.log(`Removed ${swept} abandoned temporary audio files`);}
   catch(error) {logs?.captureException(error,{operation:"sweepAudioTemporaries"});}
-  const app=createApp({store,provider,osmGeocoder,foodIndex,yandexTts,elevenLabsTts,origin:appOrigin,audioDirectory:join(directory,"audio"),imageDirectory,placeImages,staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close,userDailyLimit});
+  const app=createApp({store,provider,osmGeocoder,foodIndex,parkingIndex,yandexTts,elevenLabsTts,origin:appOrigin,audioDirectory:join(directory,"audio"),imageDirectory,placeImages,staticDirectory:process.env.STATIC_DIR,localTts,ttsApiClient,logs,auth:authRuntime.auth,authSecret:process.env.BETTER_AUTH_SECRET??"development-only-better-auth-secret-32",accountStore,closeAuth:authRuntime.close,userDailyLimit});
   app.server.listen(port,process.env.HOST??"127.0.0.1",()=>console.log(`Story service listening on ${port}; provider ${provider?"configured":"unavailable"}`));
   let stopping=false;
   for(const signal of ["SIGINT","SIGTERM"])process.on(signal,async()=>{

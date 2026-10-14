@@ -40,6 +40,7 @@ export function hasFoodStop(document: WalkDocument, place: Pick<FoodPlace, "lat"
 
 /** The leg of the walk the venue lies by: the stops around it and the stretch of path between them. */
 export function foodStopLeg(document: WalkDocument, place: Pick<FoodPlace, "lat" | "lon">): FoodStopLeg {
+  assertWalking(document);
   const geometry = document.route?.geometry;
   if (!geometry || geometry.length < 2) throw new FoodStopError("У прогулки ещё нет маршрута.");
   if (hasFoodStop(document, place)) throw new FoodStopError("Заведение уже есть в прогулке.");
@@ -98,6 +99,7 @@ function spliceTunnels(old: Array<[number, number]> | undefined, leg: Array<[num
  * venue loses its hint about the way on, which led past the venue to the next stop.
  */
 export function insertFoodStop(document: WalkDocument, place: FoodPlace, leg: FoodStopLeg, plan: Plan | null, stopId: string): WalkDocument {
+  assertWalking(document);
   const route = document.route;
   if (!route) throw new FoodStopError("У прогулки ещё нет маршрута.");
   let next = route;
@@ -125,6 +127,12 @@ export function insertFoodStop(document: WalkDocument, place: FoodPlace, leg: Fo
   // A longer walk moves to the next duration the builder offers, so rebuilding it there still fits.
   const minutes = next.walkingMinutes > document.minutes ? [30, 60, 90].find(value => value >= next.walkingMinutes) ?? 90 : document.minutes;
   return validateWalkDocument({ ...document, minutes, stops, route: next });
+}
+
+function assertWalking(document: WalkDocument) {
+  if (document.travelMode === "driving" || document.route?.car) {
+    throw new FoodStopError("Добавление заведения пока доступно только для пешеходных прогулок.");
+  }
 }
 
 /** The view of the changed document: every stop keeps its story and recording, a new one has none yet. */

@@ -10,6 +10,9 @@ import { stageLabels, terminalStages, type GenerationJob } from "../generator/ty
 import type { MapFocus, MapViewState } from "./explore-map";
 import type { MapViewport } from "./catalog-bounds";
 import { useAroundFood } from "../food/use-around-food";
+import { useAroundParking } from "../parking/use-around-parking";
+import { ParkingSheet } from "../parking/parking-sheet";
+import type { ParkingPlace } from "../parking/types";
 import type { FoodPlace } from "../food/types";
 import { ExploreIcon } from "./icons";
 import { AppNavigation } from "../navigation/app-navigation";
@@ -70,6 +73,8 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const food = useAroundFood(creating);
   const [selectedFood, setSelectedFood] = useState<FoodPlace | null>(null);
   const [creationMap, setCreationMap] = useState<CreationMap>({items:[], focus:null, picking:false});
+  const parking = useAroundParking(creating, creationMap.travelMode === "driving");
+  const [selectedParking, setSelectedParking] = useState<ParkingPlace | null>(null);
   const [picked, setPicked] = useState<Coordinates | null>(null);
   const opener = useRef<HTMLElement | null>(null);
   const rememberOpener = () => { opener.current = document.activeElement as HTMLElement; };
@@ -97,13 +102,14 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const prepareRequest=useRef<AbortController|null>(null);
   const {places:catalog,status:catalogStatus,nearbyStatus,maintenance:catalogMaintenance,retry:retryCatalog,onViewport}=useMapCatalog(nearbyCenter,nearbyRadius);
   const onFoodViewport = food.onViewport;
+  const onParkingViewport = parking.onViewport;
   const walkOverview = useWalkOverview(creating);
   const onWalkViewport = walkOverview.onViewport;
   // Keys of the overview walks under the last tap on their lines, nearest first, and the one highlighted.
   const [walkHits,setWalkHits]=useState<string[]>([]),[selectedWalk,setSelectedWalk]=useState<string|null>(null);
   // The chosen walk is fitted into the free map above its card: a tapped line is otherwise mostly under the sheet.
   const [walkFit,setWalkFit]=useState<MapFitTarget|null>(null);
-  const handleViewport = useCallback((area: MapViewport) => { onViewport(area); onFoodViewport(area); onWalkViewport(area); }, [onViewport, onFoodViewport, onWalkViewport]);
+  const handleViewport = useCallback((area: MapViewport) => { onViewport(area); onFoodViewport(area); onParkingViewport(area); onWalkViewport(area); }, [onViewport, onFoodViewport, onParkingViewport, onWalkViewport]);
   const lookup=useRef<AbortController|null>(null),locating=useRef<(()=>void)|null>(null);
 
   // Отменённый поиск позиции не должен оставить кнопку в «Определяем положение…»: в StrictMode очистка срабатывает и без размонтирования.
@@ -238,8 +244,10 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   const active=storyPins.find(pin=>pin.id===selected);
   const explorePanel=selectExplorePanel({nearbyCenter:Boolean(nearbyCenter),place:Boolean(place),placeBusy,placeError:Boolean(placeError)});
   const foodItems=useMemo(()=>food.places.map(value=>({id:`food:${value.id}`,title:value.name,location:{lat:value.lat,lon:value.lon},foodKind:value.kind})),[food.places]);
-  const mapItems=useMemo(()=>[...visible,...foodItems,...(place?[{id:"picked-place",title:place.address??t("Выбранное место"),location:place.location,pending:true}]:[])],[visible,foodItems,place,t]);
+  const parkingItems=useMemo(()=>parking.places.map(value=>({id:`parking:${value.id}`,title:value.name,location:value.location,parking:true})),[parking.places]);
+  const mapItems=useMemo(()=>[...visible,...foodItems,...parkingItems,...(place?[{id:"picked-place",title:place.address??t("Выбранное место"),location:place.location,pending:true}]:[])],[visible,foodItems,parkingItems,place,t]);
   const foodPlace = food.visible ? selectedFood : null;
+  const parkingPlace = parking.visible ? selectedParking : null;
   const walkLines=useMemo<WalkLine[]>(()=>walkOverview.walks.map(walk=>({key:walk.key,colorIndex:walkColorIndex(walk.key),line:walk.line})),[walkOverview.walks]);
   // Tapped walks that are still loaded; switching the layer off or a reload that drops a walk closes its card.
   const tappedWalks=useMemo(()=>walkOverview.visible?walkHits.flatMap(key=>walkOverview.walks.find(walk=>walk.key===key)??[]):[],[walkOverview.visible,walkOverview.walks,walkHits]);
@@ -251,16 +259,19 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     if(walk)setWalkFit({points:walk.line.map(([lat,lon])=>({lat,lon})),keepUserView:false});
   }
   function selectWalks(keys:string[],{choose=true}:{choose?:boolean}={}){
+    setSelectedParking(null);
     lookup.current?.abort();prepareRequest.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setPreparing(false);setPrepareError("");setNearbyCenter(null);
     setSelected(undefined);setSelectedFood(null);setRetryError("");setLinkNotice("");setPrompt(false);leavePlace();
     setWalkHits(keys);setSelectedWalk(null);setWalkFit(null);
     if(keys[0]&&(choose||keys.length===1))chooseWalk(keys[0]);
   }
   function selectFood(value: FoodPlace){
+    setSelectedParking(null);
     lookup.current?.abort();prepareRequest.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setPreparing(false);setPrepareError("");setNearbyCenter(null);setSelected(undefined);setRetryError("");setLinkNotice("");setPrompt(false);leavePlace();closeWalks();setSelectedFood(value);setFocus({lat:value.lat,lon:value.lon});
   }
 
   function select(pin:StoryPin){
+    setSelectedParking(null);
     lookup.current?.abort();setPlaceBusy(false);setPlaceError("");setPlace(null);setRetryError("");setLinkNotice("");setSelectedFood(null);closeWalks();setSelected(pin.id);setFocus({...pin.location});setPrompt(false);
     // Every opened place is a history step; any other story takes the place out of the URL.
     if(isLinkablePlace(pin))openPlace(pin.id);else leavePlace();
@@ -271,6 +282,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   }
   function dismissGeoPrompt(){try{rememberGeoPromptDismissal(localStorage);}catch{/* Storage is optional. */}setPrompt(false);}
   async function findPlace(value:Coordinates){
+    setSelectedParking(null);
     lookup.current?.abort();const controller=new AbortController();lookup.current=controller;
     prepareRequest.current?.abort();setPreparing(false);setPrepareError("");
     leavePlace();
@@ -364,6 +376,7 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
   useHideNavigation(reading.expanded);
   const sheet = creating
     ? <WalkCreationPanel key={params.get("id") ?? params.get("local") ?? "create"} onClose={closeCreation} onMap={setCreationMap} picked={picked} />
+    : parkingPlace ? <ParkingSheet place={parkingPlace} attribution={parking.manifest?.attribution} onClose={()=>setSelectedParking(null)} />
     : foodPlace&&food.manifest ? <FoodSheet place={foodPlace} manifest={food.manifest} hours={food.hours} distanceM={user?distance(user,foodPlace):undefined} onClose={()=>setSelectedFood(null)} />
     : tappedWalks.length ? <WalkOverviewSheet walks={tappedWalks} selected={shownWalk} onSelect={chooseWalk} onOpen={rememberOpener} onClose={closeWalks} />
     : prompt&&!active&&!linkedId&&!place&&!placeBusy&&!placeError ? <LocationPromptSheet geo={geo} onLocate={locate} onDismiss={dismissGeoPrompt} />
@@ -386,6 +399,10 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
     : null;
   // An empty slot must stay null: the shell gives the dock room only when there is something to show.
   const noticeList = [
+    parking.visible&&parking.unavailable?<p key="parking-unavailable" className={a.notice} role="status">{t("Парковки пока недоступны. Попробуйте позже.")}</p>:null,
+    parking.zoomHint?<p key="parking-zoom" className={a.notice} role="status">{t("Приблизьте карту, чтобы увидеть парковки")}</p>:null,
+    parking.visible&&parking.error?<div key="parking-error" className={styles.catalogStatus} role="status"><span>{t("Не удалось загрузить парковки")}</span><button type="button" onClick={()=>void parking.retry()}>{t("Повторить загрузку парковок")}</button></div>:null,
+    parking.loading?<p key="parking-loading" className={a.notice} role="status">{t("Загружаем парковки…")}</p>:null,
     !creating&&food.zoomHint?<p key="food-zoom" className={a.notice} role="status">{t("Приблизьте карту, чтобы увидеть заведения")}</p>:null,
     !creating&&food.error?<div key="food-error" className={styles.catalogStatus} role="status"><span>{t("Не удалось загрузить заведения")}</span><button type="button" onClick={()=>void food.retry()}>{t("Повторить загрузку заведений")}</button></div>:null,
     !creating&&food.loading?<p key="food-loading" className={a.notice} role="status">{t("Загружаем заведения…")}</p>:null,
@@ -411,10 +428,10 @@ export function AroundScreen({route,onStart,updateAvailable,openChapter,startRef
 
   return <>
     <MapShell
-      map={{onViewport:handleViewport,viewState:nearbyMapView,walkLines:creating?undefined:walkLines,fitTarget:creating?null:walkFit,selectedWalk:creating?null:shownWalk,onWalks:creating?undefined:selectWalks,items:creating?creationItems:mapItems,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:foodPlace?`food:${foodPlace.id}`:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
-        onSelect:id=>{const value=food.places.find(value=>`food:${value.id}`===id);if(!creating&&value){selectFood(value);return;}const pin=storyPins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
+      map={{onViewport:handleViewport,viewState:nearbyMapView,walkLines:creating?undefined:walkLines,fitTarget:creating?null:walkFit,selectedWalk:creating?null:shownWalk,onWalks:creating?undefined:selectWalks,items:creating?[...creationItems,...parkingItems.filter(item=>!creationItems.some(existing=>existing.id===item.id))]:mapItems,routeSegments:creating?creationMap.routeSegments:undefined,geometry:creating?creationMap.geometry:undefined,tunnels:creating?creationMap.tunnels:undefined,selectedId:parkingPlace?`parking:${parkingPlace.id}`:foodPlace?`food:${foodPlace.id}`:selected??(place?"picked-place":undefined),focus:creating?creationMap.focus:focus,user,
+        onSelect:id=>{const parkingValue=parking.places.find(value=>`parking:${value.id}`===id);if(parkingValue){if(creating)setPicked(parkingValue.pedestrianAccess);else{lookup.current?.abort();prepareRequest.current?.abort();setPlaceBusy(false);setPlace(null);setPlaceError("");setPreparing(false);setSelected(undefined);setSelectedFood(null);setPrompt(false);setNearbyCenter(null);leavePlace();closeWalks();setSelectedParking(parkingValue);setFocus(parkingValue.location);}return;}const value=food.places.find(value=>`food:${value.id}`===id);if(!creating&&value){selectFood(value);return;}const pin=storyPins.find(value=>value.id===id);if(pin){if(creating)setPicked(pin.location);else select(pin);}},
         onPoint:point=>creating?setPicked(point):void findPlace(point)}}
-      controls={creating?null:<>{walkOverview.unavailable?null:<MapControlButton aria-label={t("Прогулки на карте")} aria-pressed={walkOverview.enabled} className={styles.layerToggle} onClick={()=>{if(walkOverview.enabled)closeWalks();walkOverview.toggle();}}><ExploreIcon name="routes"/></MapControlButton>}{walkOverview.visible&&walkOverview.inView.length?<button type="button" className={styles.walkListLink} onClick={()=>selectWalks(walkOverview.inView.map(walk=>walk.key),{choose:false})}>{t("Список прогулок на карте: {count}",{count:walkOverview.inView.length})}</button>:null}{!food.unavailable&&food.manifest?<MapControlButton aria-label={t("Еда")} aria-pressed={food.enabled} className={styles.layerToggle} onClick={()=>{setSelectedFood(null);food.toggle();}}><ExploreIcon name="cup"/></MapControlButton>:null}<MapControlButton aria-label={t("Моё местоположение")} aria-describedby={geoStatusId} aria-busy={geo==="loading"} title={geoDescription} data-location-state={geoControlState} className={styles.geoControl} onClick={locate} disabled={geo==="loading"}><ExploreIcon name={geoIcon}/><span id={geoStatusId} className={styles.geoStatus} role="status">{geoDescription}</span></MapControlButton></>}
+      controls={creating?null:<><MapControlButton aria-label={t("Парковки")} aria-pressed={parking.enabled} className={styles.layerToggle} onClick={()=>{setSelectedParking(null);parking.toggle();}}><span aria-hidden="true">P</span></MapControlButton>{walkOverview.unavailable?null:<MapControlButton aria-label={t("Прогулки на карте")} aria-pressed={walkOverview.enabled} className={styles.layerToggle} onClick={()=>{if(walkOverview.enabled)closeWalks();walkOverview.toggle();}}><ExploreIcon name="routes"/></MapControlButton>}{walkOverview.visible&&walkOverview.inView.length?<button type="button" className={styles.walkListLink} onClick={()=>selectWalks(walkOverview.inView.map(walk=>walk.key),{choose:false})}>{t("Список прогулок на карте: {count}",{count:walkOverview.inView.length})}</button>:null}{!food.unavailable&&food.manifest?<MapControlButton aria-label={t("Еда")} aria-pressed={food.enabled} className={styles.layerToggle} onClick={()=>{setSelectedFood(null);food.toggle();}}><ExploreIcon name="cup"/></MapControlButton>:null}<MapControlButton aria-label={t("Моё местоположение")} aria-describedby={geoStatusId} aria-busy={geo==="loading"} title={geoDescription} data-location-state={geoControlState} className={styles.geoControl} onClick={locate} disabled={geo==="loading"}><ExploreIcon name={geoIcon}/><span id={geoStatusId} className={styles.geoStatus} role="status">{geoDescription}</span></MapControlButton></>}
       notices={notices}
       sheet={sheet} sheetExpanded={reading.expanded&&storyShown} onCollapseSheet={reading.collapse} />
     {unlocalizedPath(pathname) === "/" && <AppNavigation onWalk={rememberOpener} embedded active={creating ? "walk" : "nearby"} onNearby={()=>{if(creating)closeCreation();}} />}

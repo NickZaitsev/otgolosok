@@ -4,6 +4,7 @@ import type { Route } from "./types";
 import { orientWalk } from "./walk-direction";
 import { arrivalTarget, getWalkChapters, hasFinishLeg } from "./walk-plan";
 import { legRange, routeLegCuts } from "./route-legs";
+import { carWalkDocument } from "../../../backend/test-fixtures/car-walk.mjs";
 
 const route = routeData as Route;
 
@@ -60,4 +61,16 @@ it("обычное направление и маршрут без плана о
   expect(orientWalk(route, "forward")).toBe(route);
   const noPlan = { ...route, walk: undefined };
   expect(orientWalk(noPlan, "reverse")).toBe(noPlan);
+});
+
+it("сохраняет автомобильные переезды и порядок посещения при запросе разворота", () => {
+  const driving = { ...route, walk: { ...route.walk!, car: carWalkDocument().route.car } };
+  expect(orientWalk(driving, "reverse")).toBe(driving);
+  expect(orientWalk(driving, "reverse").walk!.steps).toBe(driving.walk.steps);
+});
+
+it("не переворачивает автомобильную геометрию без метаданных парковок", () => {
+  const driving: Route = { ...route, walk: { ...route.walk!, path: { ...route.walk!.path, costing: "auto" } } };
+  expect(orientWalk(driving, "reverse")).toBe(driving);
+  expect(driving.walk!.path.coordinates).toBe(route.walk!.path.coordinates);
 });

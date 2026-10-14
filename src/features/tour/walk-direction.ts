@@ -4,7 +4,7 @@ export type WalkDirection = "forward" | "reverse";
 
 /** Reuse the checked pedestrian path and recordings without changing the published walk. */
 export function orientWalk(route: Route, direction: WalkDirection): Route {
-  if (direction === "forward" || !route.walk) return route;
+  if (direction === "forward" || !route.walk || route.walk.car || route.walk.path.costing === "auto") return route;
   const walk = route.walk;
   const last = walk.path.coordinates.length - 1;
   return {

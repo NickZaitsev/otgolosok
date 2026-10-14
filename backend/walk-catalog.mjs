@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { validateWalkView } from "./walk-document.mjs";
+import { copyCarRoute } from "./car-route.mjs";
 
 const SHARE_TOKEN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
@@ -38,10 +39,12 @@ export function catalogWalkView(route, { requestedLocale = "ru" } = {}) {
   return validateWalkView({
     document: {
       version: 2, id: route.id, title: route.title, description: route.subtitle, city: route.city,
-      mode: "open", minutes: route.duration_min,
+      ...(route.walk.car ? { travelMode: "driving" } : {}),
+      mode: "open", minutes: route.walk.car ? (route.duration_min <= 60 ? 60 : route.duration_min <= 120 ? 120 : 180) : route.duration_min,
       start: { address: route.walk.start.address, location: route.walk.start.location },
       stops, route: { geometry: route.walk.path.coordinates.map(([lon,lat])=>({lat,lon})),
         distanceM: route.walk.distance_m, walkingMinutes: route.walk.walking_min, attribution: route.walk.path.provider,
+        ...(route.walk.car ? { car: copyCarRoute(route.walk.car) } : {}),
         ...(route.walk.path.tunnels ? { tunnels: route.walk.path.tunnels } : {}) },
       fieldChecked: route.walk.field_checked,
     }, revision: 0, chapters,

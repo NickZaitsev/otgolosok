@@ -163,7 +163,7 @@ export function createAccountStore(db, now = Date.now) {
     const view = viewWalk(row);
     const snapshot = view.snapshotError ? null : view.snapshot;
     return {id:row.id,title:row.title,revision:Number(row.revision),updatedAt:row.updated_at,visibility:view.visibility,shareToken:view.shareToken,listingStatus:view.listingStatus,
-      ...(snapshot ? {draft:!snapshot.route,walkingMinutes:snapshot.route?.walkingMinutes??null,distanceM:snapshot.route?.distanceM??null} : {})};
+      ...(snapshot ? {draft:!snapshot.route,travelMode:snapshot.travelMode??"walking",totalMinutes:snapshot.route?.car?.totalMinutes??snapshot.route?.walkingMinutes??null,walkingMinutes:snapshot.route?.walkingMinutes??null,distanceM:snapshot.route?.distanceM??null} : {})};
   };
   const launches = createWalkLaunchStore(db, { now, transaction });
   const publishPromoWalk = walkId => {

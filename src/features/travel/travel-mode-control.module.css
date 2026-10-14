@@ -1,0 +1,55 @@
+.control {
+  margin: 0 0 var(--space-sm);
+  padding: 0;
+  border: 0;
+}
+
+.control legend {
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-secondary);
+  color: var(--map-muted);
+}
+
+.control > div {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.control button {
+  flex: 1;
+  min-height: var(--control-min);
+  padding: var(--space-xs) var(--space-md);
+  color: var(--map-green);
+  background: transparent;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-size: var(--text-secondary);
+  cursor: pointer;
+}
+
+.control button[aria-pressed="true"] {
+  background: var(--control-selected);
+  border-color: var(--map-green);
+}
+
+.control button:hover {
+  background: var(--control-soft);
+}
+
+.control button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.control button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.hint {
+  margin: 0 0 var(--space-md);
+  font-size: var(--text-meta);
+  line-height: 1.5;
+  color: var(--map-muted);
+}

@@ -28,6 +28,29 @@
   border-radius: 50%;
 }
 
+.parking {
+  display: grid;
+  place-items: center;
+  color: var(--surface-island);
+  font-weight: 800;
+  font-size: var(--text-map-pin);
+  font-family: var(--font-body), sans-serif;
+  background: transparent;
+  border: 0;
+}
+
+.parking > span {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  background: var(--map-green);
+  border: 2px solid var(--surface-island);
+  border-radius: 7px;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--map-green) 32%, transparent);
+}
+
 .place > span,
 .pending > span,
 .stop > span,
@@ -194,6 +217,16 @@
 .stop:focus-visible,
 .endpoint:focus-visible,
 .background:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 0;
+}
+
+.parking.selected > span {
+  width: 34px;
+  height: 34px;
+}
+
+.parking:focus-visible {
   outline: var(--focus-ring);
   outline-offset: 0;
 }

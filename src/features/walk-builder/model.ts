@@ -1,14 +1,16 @@
 import { cityInAddress, MOSCOW } from "../../../backend/cities.mjs";
 import { MAX_WALK_STOPS, validTunnels } from "../../../backend/walk-document.mjs";
+import { validCarRoute, type CarRoute } from "../../../backend/car-route.mjs";
 import type { Coordinates } from "../tour/types";
+import type { TravelMode } from "../travel/settings";
 import { isMoscowPoint } from "../explore/map-jobs";
 import { stageLabels, type GenerationStage } from "../generator/types";
 
 export const DRAFT_KEY = "otgolosok:walk:v1";
 export { MAX_WALK_STOPS };
 /** contentId: the catalog place whose published story the stop tells; placeId: the catalog place at the stop, story or not. */
-export type Place = { address: string; location: Coordinates; contentId?: string; placeId?: string };
-export type Plan = { stops: Place[]; geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string; tunnels?: Array<[number, number]> };
+export type Place = { address: string; location: Coordinates; contentId?: string; placeId?: string; stopId?: string; parkingId?: string };
+export type Plan = { stops: Place[]; geometry: Coordinates[]; distanceM: number; walkingMinutes: number; attribution: string; tunnels?: Array<[number, number]>; car?: CarRoute };
 // Mirrors MIN_BUDGET_SHARE in backend/walks.mjs: automatic walks aim for at least this share of the chosen time.
 export const MIN_BUDGET_SHARE = 0.75;
 /** Walking minutes of an automatic walk that fell short of the chosen time, otherwise null. */
@@ -25,18 +27,18 @@ export type ResearchJob = {
 };
 export type Draft = {
   version: 1; title: string; start: Place | null; destination?: Place | null; mode: "loop" | "open";
-  minutes: 30 | 60 | 90; stops: Place[]; route: Plan | null;
+  travelMode?: TravelMode; minutes: 30 | 60 | 90 | 120 | 180; stops: Place[]; route: Plan | null;
   jobs: StoryRef[]; submitting: Place | null;
   research?: ResearchRef; researchApplied?: boolean;
 };
-export const emptyDraft = (): Draft => ({ version: 1, title: "Моя прогулка", start: null, mode: "loop", minutes: 30, stops: [], route: null, jobs: [], submitting: null });
+export const emptyDraft = (travelMode: TravelMode = "walking"): Draft => ({ version: 1, title: "Моя прогулка", start: null, mode: "loop", travelMode, minutes: travelMode === "driving" ? 60 : 30, stops: [], route: null, jobs: [], submitting: null });
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 type Area = (point: Coordinates) => boolean;
 /** A stop of the builder, which prepares new walks in Moscow only. */
 export const isPlace = (v: unknown): v is Place => isPlaceIn(v, isMoscowPoint);
 /** A stop inside `inArea`: a walk of another city is checked against its own city. */
 export function isPlaceIn(v: unknown, inArea: Area): v is Place {
-  return record(v) && typeof v.address === "string" && v.address.trim().length >= 6 && v.address.length <= 180 && !/[\p{Cc}\p{Cf}<>]/u.test(v.address) && record(v.location) && typeof v.location.lat === "number" && typeof v.location.lon === "number" && inArea(v.location as Coordinates) && [v.contentId, v.placeId].every(id => id === undefined || typeof id === "string" && /^osm:(node|way|relation):\d+$/.test(id));
+  return record(v) && typeof v.address === "string" && v.address.trim().length >= 6 && v.address.length <= 180 && !/[\p{Cc}\p{Cf}<>]/u.test(v.address) && record(v.location) && typeof v.location.lat === "number" && typeof v.location.lon === "number" && inArea(v.location as Coordinates) && [v.contentId, v.placeId, v.parkingId].every(id => id === undefined || typeof id === "string" && /^osm:(node|way|relation):\d+$/.test(id)) && (v.stopId === undefined || typeof v.stopId === "string" && /^[a-z0-9][a-z0-9-]{0,127}$/.test(v.stopId));
 }
 export const placeKey = (p: Place) => `${p.address.trim().toLocaleLowerCase("ru")}|${p.location.lat}|${p.location.lon}`;
 // Match normalizeAddress + the unhashed addressKey input in backend/domain.mjs.
@@ -66,11 +68,14 @@ export function validStops(start: Place | null, stops: Place[], destination?: Pl
 }
 export const isPlan = (v: unknown): v is Plan => isPlanIn(v, isMoscowPoint);
 export function isPlanIn(v: unknown, inArea: Area): v is Plan {
-  return record(v) && Array.isArray(v.stops) && v.stops.length >= 0 && v.stops.length <= MAX_WALK_STOPS && v.stops.every(stop => isPlaceIn(stop, inArea)) &&
-    Array.isArray(v.geometry) && v.geometry.length >= 2 && v.geometry.length <= 12000 && v.geometry.every(p => record(p) && typeof p.lat === "number" && typeof p.lon === "number" && inArea(p as Coordinates)) &&
-    typeof v.distanceM === "number" && Number.isFinite(v.distanceM) && v.distanceM > 0 && v.distanceM <= 8100 &&
-    typeof v.walkingMinutes === "number" && Number.isFinite(v.walkingMinutes) && v.walkingMinutes > 0 && v.walkingMinutes <= 90 && typeof v.attribution === "string" && v.attribution.length > 0 && v.attribution.length <= 2000 &&
-    validTunnels(v.tunnels, v.geometry.length);
+  if (!record(v) || !Array.isArray(v.stops) || v.stops.length > MAX_WALK_STOPS || !v.stops.every(stop => isPlaceIn(stop, inArea))
+    || !Array.isArray(v.geometry) || v.geometry.length < 2 || v.geometry.length > (v.car ? 30000 : 12000) || !v.geometry.every(p => record(p) && typeof p.lat === "number" && typeof p.lon === "number" && inArea(p as Coordinates))
+    || typeof v.distanceM !== "number" || !Number.isFinite(v.distanceM) || v.distanceM <= 0 || v.distanceM > (v.car ? 250000 : 8100)
+    || typeof v.walkingMinutes !== "number" || !Number.isFinite(v.walkingMinutes) || v.walkingMinutes < (v.car ? 0 : 1) || v.walkingMinutes > (v.car ? 180 : 90)
+    || typeof v.attribution !== "string" || !v.attribution.length || v.attribution.length > 2000 || !validTunnels(v.tunnels, v.geometry.length)) return false;
+  if (v.car === undefined) return true;
+  const stopIds = (v.stops as Place[]).map(stop => stop.stopId).filter((id): id is string => typeof id === "string");
+  return stopIds.length === v.stops.length && validCarRoute(v.car, stopIds, inArea);
 }
 export const isJobId = (id: unknown): id is string => typeof id === "string" && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(id);
 export const isStage = (stage: unknown): stage is GenerationStage => typeof stage === "string" && Object.hasOwn(stageLabels, stage);
@@ -91,7 +96,7 @@ export function readResearchJob(v: unknown, expected?: ResearchRef): ResearchJob
   return job;
 }
 export function researchMatches(draft: Draft, ref: ResearchRef) {
-  return !!draft.start && researchKey({ start: draft.start, destination: draft.destination, mode: draft.mode, minutes: draft.minutes }) === researchKey(ref.request) && JSON.stringify(draft.stops) === JSON.stringify(ref.stops);
+  return !!draft.start && (draft.minutes === 30 || draft.minutes === 60 || draft.minutes === 90) && researchKey({ start: draft.start, destination: draft.destination, mode: draft.mode, minutes: draft.minutes }) === researchKey(ref.request) && JSON.stringify(draft.stops) === JSON.stringify(ref.stops);
 }
 export function applyResearch(draft: Draft, job: ResearchJob): Draft {
   if (!draft.research || draft.research.id !== job.id || !researchMatches(draft, draft.research) || researchKey(job.request) !== researchKey(draft.research.request) || job.stage !== "ready" || job.phase !== "complete" || !job.route || !job.route.stops.every(p => job.stories.some(s => placeKey(s.place) === placeKey(p) && s.stage === "ready"))) throw new Error("Исследование не соответствует текущей прогулке или ещё не завершено.");
@@ -100,14 +105,16 @@ export function applyResearch(draft: Draft, job: ResearchJob): Draft {
 export function parseDraft(raw: string | null): Draft {
   if (raw === null) return emptyDraft();
   const v: unknown = JSON.parse(raw);
-  if (!record(v) || v.version !== 1 || typeof v.title !== "string" || v.title.length > 120 || (v.start !== null && !isPlace(v.start)) || !["loop","open"].includes(String(v.mode)) || ![30,60,90].includes(Number(v.minutes)) || typeof v.minutes !== "number" || !Array.isArray(v.stops) || v.stops.length > MAX_WALK_STOPS || !v.stops.every(isPlace) || !Array.isArray(v.jobs) || v.jobs.length > 100 || !v.jobs.every(j => record(j) && isPlace(j.place) && isJobId(j.id) && isStage(j.stage)) || (v.submitting !== null && !isPlace(v.submitting))) throw new Error("Черновик не удалось прочитать. Исходная копия не изменена.");
+  const travelMode = v && typeof v === "object" && "travelMode" in v && v.travelMode === "driving" ? "driving" : "walking";
+  const validMinutes = travelMode === "driving" ? [60,120,180] : [30,60,90];
+  if (!record(v) || v.version !== 1 || (v.travelMode !== undefined && !["walking","driving"].includes(String(v.travelMode))) || typeof v.title !== "string" || v.title.length > 120 || (v.start !== null && !isPlace(v.start)) || !["loop","open"].includes(String(v.mode)) || !validMinutes.includes(Number(v.minutes)) || typeof v.minutes !== "number" || !Array.isArray(v.stops) || v.stops.length > MAX_WALK_STOPS || !v.stops.every(isPlace) || !Array.isArray(v.jobs) || v.jobs.length > 100 || !v.jobs.every(j => record(j) && isPlace(j.place) && isJobId(j.id) && isStage(j.stage)) || (v.submitting !== null && !isPlace(v.submitting))) throw new Error("Черновик не удалось прочитать. Исходная копия не изменена.");
   if (v.destination != null && (v.mode !== "open" || !isPlace(v.destination))) throw new Error("Некорректный финиш прогулки.");
-  if (v.route !== null && (!isPlan(v.route) || !validStops(v.start as Place | null, v.stops, v.destination as Place | null) || JSON.stringify(v.route.stops) !== JSON.stringify(v.stops) || v.route.walkingMinutes > v.minutes)) throw new Error("Сохранённый маршрут повреждён. Исходная копия не изменена.");
-  if ((v.research !== undefined && (!record(v.research) || !isJobId(v.research.recoveryToken) || !isResearchRequest(v.research.request) || (v.research.id !== null && !isJobId(v.research.id)) || !Array.isArray(v.research.stops) || v.research.stops.length > MAX_WALK_STOPS || !v.research.stops.every(isPlace))) || (v.researchApplied !== undefined && typeof v.researchApplied !== "boolean")) throw new Error("Сохранённое исследование повреждено. Исходная копия не изменена.");
+  if (v.route !== null && (!isPlan(v.route) || Boolean(v.route.car) !== (travelMode === "driving") || !validStops(v.start as Place | null, v.stops, v.destination as Place | null) || JSON.stringify(v.route.stops) !== JSON.stringify(v.stops) || (v.route.car ? v.route.car.totalMinutes : v.route.walkingMinutes) > Number(v.minutes))) throw new Error("Сохранённый маршрут повреждён. Исходная копия не изменена.");
+  if ((v.research !== undefined && (travelMode !== "walking" || !record(v.research) || !isJobId(v.research.recoveryToken) || !isResearchRequest(v.research.request) || (v.research.id !== null && !isJobId(v.research.id)) || !Array.isArray(v.research.stops) || v.research.stops.length > MAX_WALK_STOPS || !v.research.stops.every(isPlace))) || (v.researchApplied !== undefined && typeof v.researchApplied !== "boolean")) throw new Error("Сохранённое исследование повреждено. Исходная копия не изменена.");
   // Older drafts could contain the same backend job for multiple map points.
-  return { ...v, jobs: (v.jobs as StoryRef[]).reduce(rememberStory, []) } as Draft;
+  return { ...v, travelMode, jobs: (v.jobs as StoryRef[]).reduce(rememberStory, []) } as Draft;
 }
-export function editDraft(draft: Draft, change: Partial<Pick<Draft,"start"|"destination"|"mode"|"minutes"|"stops">>): Draft {
+export function editDraft(draft: Draft, change: Partial<Pick<Draft,"start"|"destination"|"mode"|"minutes"|"stops"|"travelMode">>): Draft {
   return { ...draft, ...change, route: null, ...(draft.researchApplied ? { researchApplied: false } : {}) };
 }
 export function saveDraft(storage: Pick<Storage,"getItem"|"setItem">, draft: Draft, previous: string | null) {

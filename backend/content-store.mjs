@@ -327,10 +327,10 @@ export function createContentStore({db,now,transaction}) {
     /**
      * `published` keeps only places with an approved story or audio, filtered before the limit,
      * so a dense centre with hundreds of plain places does not crowd out distant stories.
-     * @param {{lat?: number, lon?: number, radius?: number, limit?: number, published?: boolean}} [options]
+     * @param {{lat?: number, lon?: number, radius?: number, limit?: number, published?: boolean, travelMode?: "walking"|"driving"}} [options]
      */
-    listWalkCandidates({lat,lon,radius,limit=500,published=false}={}) {
-      if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||regionCityAt(lat,lon)===null||radius<50||radius>5000||!Number.isSafeInteger(limit)||limit<1||limit>500||typeof published!=="boolean")throw fail("BAD_REQUEST");
+    listWalkCandidates({lat,lon,radius,limit=500,published=false,travelMode="walking"}={}) {
+      if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||regionCityAt(lat,lon)===null||radius<50||radius>(travelMode==="driving"?25000:5000)||!["walking","driving"].includes(travelMode)||!Number.isSafeInteger(limit)||limit<1||limit>500||typeof published!=="boolean")throw fail("BAD_REQUEST");
       const latDelta=radius/111320,lonDelta=radius/(111320*Math.cos(lat*Math.PI/180));
       const distanceSql=`6371000*2*asin(min(1,sqrt(pow(sin(radians(p.lat-?)/2),2)+cos(radians(?))*cos(radians(p.lat))*pow(sin(radians(p.lon-?)/2),2))))`;
       const rows=db.prepare(`SELECT * FROM (SELECT p.id,p.name,p.address,p.lat,p.lon,

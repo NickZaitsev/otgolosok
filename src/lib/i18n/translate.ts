@@ -2,6 +2,7 @@ import { coreTranslations } from "./dictionaries/core";
 import { exploreTranslations } from "./dictionaries/explore";
 import { walksTranslations } from "./dictionaries/walks";
 import { accountTranslations } from "./dictionaries/account";
+import { drivingTranslations } from "./dictionaries/driving";
 import type { Locale, TranslationValues, Translations } from "./locale";
 export function mergeTranslations(...dictionaries: Translations[]): Translations {
   const merged: Translations = {};
@@ -12,7 +13,7 @@ export function mergeTranslations(...dictionaries: Translations[]): Translations
   }
   return merged;
 }
-export const translations = mergeTranslations(coreTranslations, exploreTranslations, walksTranslations, accountTranslations);
+export const translations = mergeTranslations(coreTranslations, exploreTranslations, walksTranslations, accountTranslations, drivingTranslations);
 /** Russian source strings are stable keys; placeholders keep sentence order local to each language. */
 export function translate(locale: Locale, source: string, values: TranslationValues = {}): string {
   const entry = Object.hasOwn(translations, source) ? translations[source] : undefined;

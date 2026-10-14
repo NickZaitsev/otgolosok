@@ -12,7 +12,7 @@ const messages = {
 const statuses = { WALK_INVALID: 400, WALK_BUSY: 429, WALK_RATE_LIMITED: 429, WALK_NOT_FOUND: 404, WALK_START_UNREACHABLE: 404, WALK_DESTINATION_UNREACHABLE: 404, WALK_STOPS_NOT_FOUND: 404, WALK_DISCOVERY_UNAVAILABLE: 503, WALK_UNAVAILABLE: 503 };
 
 /** Shared mapping of planner failures for /api/walk-plan and the promo-walks service. */
-export function walkPlanErrorResponse(error) {
+export function walkPlanErrorResponse(error, {driving=false}={}) {
   const code = error?.code === "BAD_REQUEST" ? "WALK_INVALID" : Object.hasOwn(messages, error?.code) ? error.code : "WALK_UNAVAILABLE";
-  return { status: statuses[code], headers: statuses[code] === 429 ? { "Retry-After": "2" } : {}, body: { error: { code, message: messages[code] } } };
+  return { status: statuses[code], headers: statuses[code] === 429 ? { "Retry-After": "2" } : {}, body: { error: { code, message: driving && code === "WALK_NOT_FOUND" ? "Не получилось построить поездку с доступной парковкой и пешим возвращением к машине. Выберите другие остановки или длительность." : driving && code === "WALK_UNAVAILABLE" ? "Автомобильный маршрутизатор или индекс парковок временно недоступен. Попробуйте позже." : messages[code] } } };
 }

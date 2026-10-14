@@ -14,6 +14,7 @@ import { getLocalWalk, migrateLocalWalks, saveLocalWalk } from "../walks/local-s
 import { creationInputError } from "./creation-location";
 import { toUserMessage } from "@/lib/errors/user-message";
 import { useI18n } from "@/lib/i18n/provider";
+import { readPreferredTravelMode } from "../travel/settings";
 
 function readJob(value: unknown): GenerationJob {
   if (!value || typeof value !== "object" || !("id" in value) || !("stage" in value) || !isJobId(value.id) || !isStage(value.stage)) throw new Error("Не удалось прочитать состояние истории.");
@@ -79,7 +80,7 @@ export function useWalkDraft() {
             saveLocalWalk(localStorage, draftToWalkDocument(restored, previousId), null);
           }
           if (previousId && stored.current) localStorage.setItem(`otgolosok:walk:pending:${previousId}`, stored.current);
-          restored = emptyDraft();
+          restored = emptyDraft(readPreferredTravelMode());
         }
         if (selectedLocalId) {
           const pending = localStorage.getItem(`otgolosok:walk:pending:${selectedLocalId}`);
@@ -112,7 +113,7 @@ export function useWalkDraft() {
           localStorage.setItem("otgolosok:walk:active-account",data.walk.id);
           localStorage.setItem("otgolosok:walk:active-revision",String(data.walk.revision));
         }
-        if (!hasSaved && !walkId && !params.get("local") && isPlace(incoming)) restored = { ...emptyDraft(), start: incoming, title: `Прогулка от ${incoming.address}` };
+        if (!hasSaved && !walkId && !params.get("local") && isPlace(incoming)) restored = { ...emptyDraft(readPreferredTravelMode()), start: incoming, title: `Прогулка от ${incoming.address}` };
         setInitialMode(restored.destination ? "destination" : hasSaved || selectedLocalId || walkId ? "time" : "destination");
         current.current = restored; setDraft(restored); writable.current = true;
         setSelection(restored.stops.length ? "manual" : "auto");
@@ -156,7 +157,7 @@ export function useWalkDraft() {
   function edit(change: Parameters<typeof editDraft>[1]) {
     setReviewed(false); setError(""); setMessage(""); setResearchOffered(false);
     if (change.stops) setSelection("manual");
-    else if (["start", "destination", "mode", "minutes"].some(key => Object.hasOwn(change, key))) setSelection("auto");
+    else if (["start", "destination", "mode", "minutes", "travelMode"].some(key => Object.hasOwn(change, key))) setSelection("auto");
     persist(editDraft(current.current, change));
   }
 
@@ -243,12 +244,12 @@ export function useWalkDraft() {
   async function plan(): Promise<boolean> {
     if (!draft.start || action.current || candidate) return false;
     const snapshot = current.current;
-    const controller = new AbortController(); action.current = controller; setBusy(t("Строим пешеходный маршрут…"));
+    const controller = new AbortController(); action.current = controller; setBusy(t(snapshot.travelMode === "driving" ? "Строим автомобильный маршрут…" : "Строим пешеходный маршрут…"));
     setReviewed(false); setError(""); setResearchOffered(false); persist({ ...snapshot, route: null, researchApplied: false });
     try {
-      const result = await request("/api/walk-plan", controller.signal, { start: snapshot.start, mode: snapshot.mode, minutes: snapshot.minutes, ...(snapshot.destination ? {destination:snapshot.destination} : {}), ...(selection === "manual" ? { stops: snapshot.stops } : {}) });
+      const result = await request("/api/walk-plan", controller.signal, { start: snapshot.start, mode: snapshot.mode, minutes: snapshot.minutes, travelMode: snapshot.travelMode, ...(snapshot.destination ? {destination:snapshot.destination} : {}), ...(selection === "manual" ? { stops: snapshot.stops } : {}) });
       if (controller.signal.aborted) return false;
-      if (!isPlan(result) || !validStops(snapshot.start, result.stops, snapshot.destination, snapshot.jobs) || result.walkingMinutes > snapshot.minutes || (selection === "manual" && JSON.stringify(result.stops) !== JSON.stringify(snapshot.stops))) throw new Error("Сервис вернул некорректный маршрут. Попробуйте построить заново.");
+      if (!isPlan(result) || Boolean(result.car) !== (snapshot.travelMode === "driving") || !validStops(snapshot.start, result.stops, snapshot.destination, snapshot.jobs) || (result.car?.totalMinutes ?? result.walkingMinutes) > snapshot.minutes || (selection === "manual" && !result.stops.every((stop, index) => stop.address === snapshot.stops[index]?.address && stop.location.lat === snapshot.stops[index]?.location.lat && stop.location.lon === snapshot.stops[index]?.location.lon))) throw new Error("Сервис вернул некорректный маршрут. Попробуйте построить заново.");
       persist({ ...current.current, stops: result.stops, route: result }); setSelection("manual");
       setMessage("");
       return true;

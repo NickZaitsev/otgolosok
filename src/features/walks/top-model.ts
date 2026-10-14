@@ -33,6 +33,8 @@ export type TopWalk = {
   kind: "catalog" | "shared";
   id: string;
   title: string;
+  travelMode?: "driving";
+  totalMinutes?: number;
   walkingMinutes: number;
   distanceM: number;
   stopCount: number;
@@ -62,14 +64,17 @@ export const CATALOG_WALK_ID = /^[a-z0-9][a-z0-9-]{0,127}$/;
 export const WALK_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 
 /** Fields every walk card shares; the caller validates kind and id. */
-export function validateWalkCard(item: Record<string, unknown>): Pick<TopWalk, "title" | "walkingMinutes" | "distanceM" | "stopCount" | "rating"> {
+export function validateWalkCard(item: Record<string, unknown>): Pick<TopWalk, "title" | "walkingMinutes" | "distanceM" | "stopCount" | "rating" | "travelMode" | "totalMinutes"> {
   if (typeof item.title !== "string" || !item.title.trim()) throw new TypeError("Нет названия прогулки.");
   if (!Number.isSafeInteger(item.stopCount) || (item.stopCount as number) < 0) throw new TypeError("Неверное число историй.");
+  if (item.travelMode !== undefined && item.travelMode !== "driving") throw new TypeError("Неверный режим поездки.");
+  if (item.travelMode === "driving") positive(item.totalMinutes);
   const rating = record(item.rating);
   if (!Number.isSafeInteger(rating.count) || (rating.count as number) < 0) throw new TypeError("Неверное число оценок.");
   const count = rating.count as number;
   if (count === 0 ? rating.average !== null : typeof rating.average !== "number" || rating.average < 1 || rating.average > 5) throw new TypeError("Неверная средняя оценка.");
   return {
+    ...(item.travelMode === "driving" ? {travelMode: "driving" as const, totalMinutes: positive(item.totalMinutes)} : {}),
     title: item.title,
     walkingMinutes: positive(item.walkingMinutes), distanceM: positive(item.distanceM), stopCount: item.stopCount as number,
     rating: { average: rating.average as number | null, count },
@@ -185,9 +190,9 @@ export function topWalksUrl(offset: number, filters: TopFilters, city = "moscow"
 
 export function filterTopWalks(walks: TopWalk[], start: string, end: string, duration: TopDuration = ""): TopWalk[] {
   return walks.filter(walk => (!start || walk.startMetro?.name === start) && (!end || walk.endMetro?.name === end)
-    && (!duration || duration === "up-to-30" && walk.walkingMinutes <= 30
-      || duration === "31-to-60" && walk.walkingMinutes > 30 && walk.walkingMinutes <= 60
-      || duration === "61-to-90" && walk.walkingMinutes > 60 && walk.walkingMinutes <= 90));
+    && (!duration || duration === "up-to-30" && (walk.totalMinutes ?? walk.walkingMinutes) <= 30
+      || duration === "31-to-60" && (walk.totalMinutes ?? walk.walkingMinutes) > 30 && (walk.totalMinutes ?? walk.walkingMinutes) <= 60
+      || duration === "61-to-90" && (walk.totalMinutes ?? walk.walkingMinutes) > 60 && (walk.totalMinutes ?? walk.walkingMinutes) <= 90));
 }
 
 const storyWords: Record<string, string> = { one: "история", few: "истории", many: "историй", other: "истории" };
@@ -200,10 +205,10 @@ export function storyCountLabel(count: number, locale: Locale = "ru") {
 }
 
 /** «45 мин · 3,2 км · 6 историй». */
-export function formatTopWalkMeta(walk: Pick<TopWalk, "walkingMinutes" | "distanceM" | "stopCount">, locale: Locale = "ru") {
+export function formatTopWalkMeta(walk: Pick<TopWalk, "walkingMinutes" | "distanceM" | "stopCount" | "travelMode" | "totalMinutes">, locale: Locale = "ru") {
   const km = (walk.distanceM / 1000).toLocaleString(localeTag[locale], { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  return translate(locale, "{minutes} мин · {distance} км · {stories}", {
-    minutes: Math.round(walk.walkingMinutes), distance: km, stories: storyCountLabel(walk.stopCount, locale),
+  return translate(locale, walk.travelMode === "driving" ? "На машине · {minutes} мин · {distance} км · {stories}" : "{minutes} мин · {distance} км · {stories}", {
+    minutes: Math.round(walk.totalMinutes ?? walk.walkingMinutes), distance: km, stories: storyCountLabel(walk.stopCount, locale),
   });
 }
 

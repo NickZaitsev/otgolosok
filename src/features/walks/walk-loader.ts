@@ -11,6 +11,8 @@ export type WalkCard = {
   shareToken?: string | null;
   /** Top-listing state of a public walk; null for other access levels. */
   listingStatus?: "pending" | "approved" | "hidden" | null;
+  travelMode?: "walking" | "driving";
+  totalMinutes?: number | null;
   kind: "local" | "account" | "catalog";
 };
 

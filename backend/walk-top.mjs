@@ -55,7 +55,7 @@ export function rankTopWalks(candidates, { priorMean, priorWeight = TOP_PRIOR_WE
 
 /** Card details of a walk document, or null for a draft without a route. */
 export const walkDetails = document => document?.route
-  ? { walkingMinutes: document.route.walkingMinutes, distanceM: document.route.distanceM, stopCount: document.stops.length }
+  ? { ...(document.travelMode === "driving" ? {travelMode:"driving",totalMinutes:document.route.car.totalMinutes} : {}), walkingMinutes: document.route.walkingMinutes, distanceM: document.route.distanceM, stopCount: document.stops.length }
   : null;
 
 /** The walk document of a catalog route, or null when its editorial data does not form a valid walk. */
@@ -129,7 +129,7 @@ export function createTopWalks({ accountStore, store, builtinRoutes, limit = TOP
         .map(([name, known]) => ({ name, lines: [...known.values()].sort((a, b) => Number(a.id) - Number(b.id)), insideCircle: isInsideCircle(city, name) }));
       const filtered = valid.map((walk, rank) => ({ ...walk, rank: rank + 1 }))
         .filter(walk => matchesMetro(city, walk.startMetro, startMetro) && matchesMetro(city, walk.endMetro, endMetro)
-          && matchesTopDuration(walk.meta.walkingMinutes, duration));
+          && matchesTopDuration(walk.meta.totalMinutes ?? walk.meta.walkingMinutes, duration));
       const page = filtered.slice(offset, offset + limit);
       return { walks: page.map(({ item, geometry, meta, rank, startMetro: start, endMetro: end }) => ({
         kind: item.kind, id: item.id, title: item.title, ...meta, rating: ratingSummary(item), rank,

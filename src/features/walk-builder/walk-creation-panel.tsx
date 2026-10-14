@@ -16,8 +16,11 @@ import { describeLocateError, locateOnce } from "@/lib/position/locate";
 import { Sheet } from "../shell/sheet";
 import styles from "./walk-creation-panel.module.css";
 import { useI18n } from "@/lib/i18n/provider";
+import { TravelModeControl } from "../travel/travel-mode-control";
+import { loadNearbyParking } from "../parking/parking-client";
+import type { ParkingPlace } from "../parking/types";
 
-export type CreationMap = { items: MapItem[]; geometry?: Coordinates[]; tunnels?: Array<[number, number]>; focus: Coordinates | null; picking: boolean };
+export type CreationMap = { items: MapItem[]; geometry?: Coordinates[]; routeSegments?: Array<{ mode: "driving" | "walking"; geometry: Coordinates[] }>; tunnels?: Array<[number, number]>; focus: Coordinates | null; picking: boolean; travelMode?: "walking" | "driving" };
 export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => void; onMap: (value: CreationMap) => void; picked: Coordinates | null }) {
   const { path, t } = useI18n();
   const w = useWalkDraft();
@@ -26,6 +29,10 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
   const mode = chosenMode ?? w.initialMode;
   const [picker, setPicker] = useState<"choices" | "address" | "time" | null>(null);
   const [geoBusy, setGeoBusy] = useState(false);
+  const [parkingBusy, setParkingBusy] = useState(false);
+  const [parkingError, setParkingError] = useState("");
+  const [parkingOptions, setParkingOptions] = useState<ParkingPlace[]>([]);
+  const [parkingId, setParkingId] = useState("");
   const locating = useRef<(() => void) | null>(null);
   // В StrictMode очистка срабатывает и без размонтирования: отменённый поиск не должен оставить панель занятой.
   useEffect(() => () => { if (locating.current) { locating.current(); locating.current = null; setGeoBusy(false); } }, []);
@@ -38,7 +45,9 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     if (!place) return;
     w.setTarget(target);
     if (target === "destination") setMode("destination");
-    selectAddress(place, target);
+    if (w.draft.travelMode === "driving" && target === "stop") {
+      w.setCandidate(place); setPicker("address");
+    } else selectAddress(place, target);
     dispatch({ type: "return" });
   });
   const close = useEffectEvent(() => { if (picker) { setPicker(null); panel.current?.querySelector<HTMLButtonElement>(`[data-endpoint="${w.target}"]`)?.focus(); } else if (state.picking) dispatch({ type: "return" }); else onClose(); });
@@ -46,16 +55,30 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
   // Apply a point selected by the external Leaflet map to the active endpoint.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (picked) void resolvePoint(picked); }, [picked]);
+  // Synchronize the external parking lookup with the candidate; resetting clears a cancelled request.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (w.draft.travelMode !== "driving" || w.target !== "stop" || !w.candidate) { setParkingOptions([]); setParkingId(""); setParkingError(""); setParkingBusy(false); return; }
+    const controller = new AbortController();
+    setParkingBusy(true); setParkingError("");
+    void loadNearbyParking(w.candidate.location, 1000, controller.signal)
+      .then(result => { if (!controller.signal.aborted) { setParkingOptions(result.places); setParkingId(result.places.find(place => place.access === "public")?.id ?? ""); } })
+      .catch(() => { if (!controller.signal.aborted) { setParkingOptions([]); setParkingError(t("Не удалось загрузить парковки рядом.")); } })
+      .finally(() => { if (!controller.signal.aborted) setParkingBusy(false); });
+    return () => controller.abort();
+  }, [w.candidate, w.draft.travelMode, w.target, t]);
   useEffect(() => {
     // As in the walk session: the start and the finish are rings, stops are numbered like the stop list.
     const start = w.draft.start, stops = w.draft.stops, destination = w.draft.destination;
+    const selectedParking = w.draft.route?.car?.visits.map(visit => visit.parking) ?? [];
     const items: MapItem[] = [
       ...(start ? [{ id: "creation-start", title: t("Старт: {address}", { address: start.address }), location: start.location, endpoint: true }] : []),
       ...stops.map((p, i) => ({ id: `creation-stop-${i}`, title: t("Остановка {number}: {address}", { number: i + 1, address: p.address }), location: p.location, number: i + 1 })),
       ...(destination ? [{ id: "creation-finish", title: t("Финиш: {address}", { address: destination.address }), location: destination.location, endpoint: true }] : []),
+      ...selectedParking.map(parking => ({ id: `parking:${parking.id}`, title: parking.name, location: parking.location, parking: true })),
     ];
-    onMap({ items, geometry: w.draft.route?.geometry, tunnels: w.draft.route?.tunnels, focus: w.focus, picking: state.picking });
-  }, [w.draft.start, w.draft.stops, w.draft.destination, w.draft.route, w.focus, state.picking, onMap, t]);
+    onMap({ items, geometry: w.draft.route?.car ? undefined : w.draft.route?.geometry, routeSegments: w.draft.route?.car?.segments.map(segment => ({ mode: segment.mode, geometry: segment.geometry })), tunnels: w.draft.route?.tunnels, focus: w.focus, picking: state.picking, travelMode: w.draft.travelMode });
+  }, [w.draft.start, w.draft.stops, w.draft.destination, w.draft.route, w.focus, state.picking, w.draft.travelMode, onMap, t]);
 
   // Адрес ищем один раз — по итоговой, самой точной точке.
   function locate() {
@@ -72,11 +95,15 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     setMode(next); w.edit({ destination: null, mode: next === "time" ? "loop" : "open" });
     w.setTarget("destination");
   }
+  function changeTravelMode(next: "walking" | "driving") {
+    if (next === w.draft.travelMode) return;
+    w.edit({ travelMode: next, minutes: next === "driving" ? 60 : 30 });
+  }
   // A built route opens on the walk page; the builder keeps only the form.
   async function build() { setPicker(null); await w.build(); }
   const built = Boolean(w.draft.route) && !state.picking;
   // Without a chosen start, walks near the user are suggested — only if geolocation is already allowed.
-  const suggest = w.loaded && !w.draft.route && !state.picking;
+  const suggest = w.loaded && w.draft.travelMode !== "driving" && !w.draft.route && !state.picking;
   const device = useGrantedPosition(suggest && !w.draft.start);
   const nearbyOrigin = w.draft.start ? "start" : "you";
   const nearby = useNearbyWalks(w.draft.start?.location ?? device, w.editing, suggest);
@@ -91,13 +118,17 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
     }
     w.setCandidate(null); setPicker(null);
   }
+  function confirmCandidate() {
+    if (!w.candidate) return;
+    selectAddress(parkingId ? { ...w.candidate, parkingId } : w.candidate);
+  }
   function cancelAddress() {
     if (w.target === "start") w.edit({ start: null });
     else if (w.target === "destination") { setMode("destination"); w.edit({ destination: null, mode: "open" }); }
     w.setCandidate(null); w.setQuery(""); w.setError(""); setPicker(null);
     requestAnimationFrame(() => panel.current?.querySelector<HTMLButtonElement>(`[data-endpoint="${w.target}"]`)?.focus());
   }
-  const inlineAddress = <AddressInput onCancel={cancelAddress} disabled={busy} key={w.target} label={t(w.target === "start" ? "Откуда" : w.target === "destination" ? "Куда" : "Остановка")} initialValue={w.target === "start" ? w.draft.start?.address : w.target === "destination" ? w.draft.destination?.address : ""} onResolve={async query => { const place = await w.resolve(query); if (place) selectAddress(place); }} />;
+  const inlineAddress = <AddressInput onCancel={cancelAddress} disabled={busy} key={w.target} label={t(w.target === "start" ? "Откуда" : w.target === "destination" ? "Куда" : "Остановка")} initialValue={w.target === "start" ? w.draft.start?.address : w.target === "destination" ? w.draft.destination?.address : ""} onResolve={async query => { const place = await w.resolve(query); if (place && !(w.draft.travelMode === "driving" && w.target === "stop")) selectAddress(place); }} />;
   const addressPicker = picker && (picker !== "address" || w.candidate) && <div id="creation-picker" className={styles.picker}>
             {picker === "choices" && <div className={styles.options}>
               <button onClick={() => { if (w.target === "destination") changeMode("destination"); setPicker("address"); }}>{t("Ввести адрес")}</button>
@@ -105,8 +136,8 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
               {w.target === "destination" ? <button onClick={() => { if (mode !== "time") changeMode("time"); setPicker("time"); }}>{t("По времени")}</button> : <button onClick={() => { setPicker("address"); locate(); }}>{t("Моё местоположение")}</button>}
             </div>}
 
-            {w.candidate && <div className={styles.candidate}><p>{w.candidate.address}</p><button className="ui-button" onClick={() => { w.confirmPlace(); setPicker(null); }}>{t("Выбрать эту точку")}</button></div>}
-            {picker === "time" && <><fieldset className={styles.time} disabled={busy}><legend>{t("Время пешком")}</legend><div>{([30, 60, 90] as const).map(minutes => <button type="button" key={minutes} aria-pressed={w.draft.minutes === minutes} onClick={() => w.edit({ minutes })}>{t("{minutes} мин", { minutes })}</button>)}</div></fieldset><label className={styles.switch}><span>{t("Вернуться к началу")}</span><input type="checkbox" checked={w.draft.mode === "loop"} onChange={e => w.edit({ mode: e.target.checked ? "loop" : "open" })} /></label></>}
+            {w.candidate && <div className={styles.candidate}><p>{w.candidate.address}</p>{w.draft.travelMode === "driving" && w.target === "stop" ? <div className={styles.parkingChoice}><label>{t("Парковка рядом")}<select value={parkingId} disabled={parkingBusy} onChange={event => setParkingId(event.target.value)}><option value="">{t("Выбрать позже")}</option>{parkingOptions.map(parking => <option value={parking.id} key={parking.id}>{parking.name}{parking.access === "unknown" ? t(" · доступ не проверен") : ""}</option>)}</select></label>{parkingBusy ? <small>{t("Ищем парковки…")}</small> : parkingError ? <small role="alert">{parkingError}</small> : !parkingId ? <small>{t("Парковка не выбрана. Маршрут попробует подобрать её автоматически.")}</small> : null}{parkingOptions.find(parking => parking.id === parkingId)?.access === "unknown" ? <small role="alert">{t("Доступ на парковку не проверен. Перед поездкой убедитесь, что она открыта для всех.")}</small> : null}</div> : null}<button className="ui-button" disabled={parkingBusy} onClick={confirmCandidate}>{t("Выбрать эту точку")}</button></div>}
+            {picker === "time" && <><fieldset className={styles.time} disabled={busy}><legend>{t(w.draft.travelMode === "driving" ? "Время поездки" : "Время пешком")}</legend><div>{(w.draft.travelMode === "driving" ? [60, 120, 180] as const : [30, 60, 90] as const).map(minutes => <button type="button" key={minutes} aria-pressed={w.draft.minutes === minutes} onClick={() => w.edit({ minutes })}>{t("{minutes} мин", { minutes })}</button>)}</div></fieldset><label className={styles.switch}><span>{t("Вернуться к началу")}</span><input type="checkbox" checked={w.draft.mode === "loop"} onChange={e => w.edit({ mode: e.target.checked ? "loop" : "open" })} /></label></>}
           </div>;
   const step = state.picking ? "picking" : "form";
   const footer = w.loaded && built && w.openHref ? <button className={`ui-button ${styles.footerAction}`} disabled={busy || !!w.storageError} onClick={() => void w.openWalk()}>{t("Открыть прогулку")}</button>
@@ -115,13 +146,17 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
       : null;
 
   return <Sheet name="creation" state={step} labelledBy="creation-title" sheetRef={panel} className={styles.panel}
-    header={<div className={styles.heading}><h1 id="creation-title" className={styles.title} ref={title} tabIndex={-1}>{t(state.picking ? "Куда идём?" : "Прогулка")}</h1><button type="button" className={styles.close} onClick={onClose} aria-label={t("Закрыть создание прогулки")}><ExploreIcon name="close" /></button></div>}
+    header={<div className={styles.heading}><h1 id="creation-title" className={styles.title} ref={title} tabIndex={-1}>{t(state.picking ? w.draft.travelMode === "driving" ? "Куда едем?" : "Куда идём?" : "Прогулка")}</h1><button type="button" className={styles.close} onClick={onClose} aria-label={t("Закрыть создание прогулки")}><ExploreIcon name="close" /></button></div>}
     footer={footer}>
       {!w.loaded ? <p role="status">{t("Открываем черновик…")}</p> : <>
         {!state.picking && <>
+          <TravelModeControl value={w.draft.travelMode ?? "walking"} onChange={changeTravelMode} disabled={busy} />
           <div className={styles.endpoints} data-creation="endpoints">
-            {(["start", "destination"] as const).map(target => <div className={styles.endpoint} key={target}>{w.target === target && picker === "address" ? inlineAddress : <button data-endpoint={target} aria-label={t(target === "start" ? "Откуда" : "Куда")} aria-expanded={w.target === target && picker !== null} aria-controls="creation-picker" disabled={busy} onClick={() => { w.setTarget(target); w.setCandidate(null); w.setQuery(""); setPicker(w.target === target && picker ? null : "choices"); }}><span><small>{t(target === "start" ? "Откуда" : "Куда")}</small><strong>{target === "start" ? w.draft.start?.address ?? t("Выберите начало") : mode === "time" ? t(w.draft.mode === "loop" ? "{minutes} мин пешком · с возвращением" : "{minutes} мин пешком", { minutes: w.draft.minutes }) : w.draft.destination?.address ?? t("Выберите место или время")}</strong></span><svg className={styles.chevron} aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg></button>}{w.target === target && addressPicker}</div>)}
+            {(["start", "destination"] as const).map(target => <div className={styles.endpoint} key={target}>{w.target === target && picker === "address" ? inlineAddress : <button data-endpoint={target} aria-label={t(target === "start" ? "Откуда" : "Куда")} aria-expanded={w.target === target && picker !== null} aria-controls="creation-picker" disabled={busy} onClick={() => { w.setTarget(target); w.setCandidate(null); w.setQuery(""); setPicker(w.target === target && picker ? null : "choices"); }}><span><small>{t(target === "start" ? "Откуда" : "Куда")}</small><strong>{target === "start" ? w.draft.start?.address ?? t("Выберите начало") : mode === "time" ? t(w.draft.travelMode === "driving" ? w.draft.mode === "loop" ? "{minutes} мин поездки · с возвращением" : "{minutes} мин поездки" : w.draft.mode === "loop" ? "{minutes} мин пешком · с возвращением" : "{minutes} мин пешком", { minutes: w.draft.minutes }) : w.draft.destination?.address ?? t("Выберите место или время")}</strong></span><svg className={styles.chevron} aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg></button>}{w.target === target && addressPicker}</div>)}
           </div>
+          {w.target === "stop" && addressPicker}
+          {w.target === "stop" && picker === "address" && !w.candidate && inlineAddress}
+          {w.draft.start && !picker && <button type="button" className={styles.addStop} disabled={busy} onClick={() => { w.setTarget("stop"); w.setCandidate(null); setPicker("choices"); }}>{t("Добавить остановку")}</button>}
         </>}
         {state.picking && <div className={styles.mapPick}><p>{t("Нажмите на карту в нужном месте.")}</p><button className="ui-button quiet" onClick={() => dispatch({ type: "return" })}>{t("Отменить")}</button></div>}
         {built && w.draft.stops.length > 0 && <details className={styles.details}><summary>{t("Остановки · {count}", { count: w.draft.stops.length })}</summary><ol className={styles.stops} data-creation="stops">{w.draft.stops.map((stop, i) => <li key={`${stop.address}-${i}`}>{stop.address}</li>)}</ol>
@@ -129,7 +164,7 @@ export function WalkCreationPanel({ onClose, onMap, picked }: { onClose: () => v
           {w.nextPlace && <button className="ui-button secondary" disabled={busy || !w.reviewed || !!w.activeJob || !!w.draft.submitting || !!w.storageError} onClick={() => void w.prepareNext()}>{t("Подготовить историю")}</button>}
           {w.draft.jobs.length > 0 && <div className={styles.jobs}>{w.draft.jobs.map(job => <Link key={job.id} href={path(`/?job=${job.id}`)}>{t("История: {address} →", { address: job.place.address })}</Link>)}</div>}
         </details>}
-        <ResearchPanel draft={w.draft} current={w.current} persist={w.persist} offered={w.researchOffered} disabled={busy || !!w.storageError} chooseStartDisabled={busy} action={w.action} setBusy={w.setBusy} onApply={() => void w.openWalk()} onChooseStart={() => { w.setTarget("start"); w.edit({}); }} />
+        {w.draft.travelMode === "walking" && <ResearchPanel draft={w.draft} current={w.current} persist={w.persist} offered={w.researchOffered} disabled={busy || !!w.storageError} chooseStartDisabled={busy} action={w.action} setBusy={w.setBusy} onApply={() => void w.openWalk()} onChooseStart={() => { w.setTarget("start"); w.edit({}); }} />}
         {w.draft.submitting && <div className="ui-notice"><p>{t("Результат отправки неизвестен. Введите ID истории из раздела запросов профиля.")}</p><label className="ui-field">{t("ID истории")}<input value={w.recoveryId} onChange={e => w.setRecoveryId(e.target.value)} /></label><button className="ui-button secondary" onClick={() => void w.recoverJob()}>{t("Восстановить")}</button></div>}
         {!state.picking && !picker && nearby.length > 0 && <NearbyWalks walks={nearby} origin={nearbyOrigin} />}
       </>}

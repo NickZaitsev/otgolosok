@@ -1,5 +1,6 @@
 // Shared, dependency-free wire contract for walk documents and public views.
 import { cityAt, cityByName } from "./cities.mjs";
+import { CAR_MINUTES, MAX_CAR_DISTANCE_M, MAX_CAR_VERTICES, MAX_CAR_DOCUMENT_BYTES, validCarRoute, carRouteGeometry, copyCarRoute } from "./car-route.mjs";
 export const MAX_WALK_STOPS = 40;
 const invalid = () => Object.assign(new Error("Некорректные данные прогулки."), { code: "BAD_REQUEST" });
 const object = value => value !== null && typeof value === "object" && !Array.isArray(value);
@@ -13,7 +14,6 @@ const place = value => fields(value, ["address", "location"]) && string(value.ad
 const reference = value => value === null || (fields(value, ["kind", "id"]) && ((value.kind === "job" && uuid(value.id)) || (value.kind === "osm" && /^osm:(node|way|relation):\d+$/.test(value.id)) || (value.kind === "catalog" && /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id))));
 // placeId: the map catalog place at the stop, independent of its story; the walk shows that place's photo.
 const stop = value => fields(value, ["id", "place", "storyRef", "placeId", "transition", "nextHint", "triggerLocation"]) && (uuid(value.id) || /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id)) && place(value.place) && reference(value.storyRef) && (value.placeId === undefined || (typeof value.placeId === "string" && /^osm:(node|way|relation):\d+$/.test(value.placeId))) && string(value.transition, 1200, true) && string(value.nextHint, 1200, true) && (value.triggerLocation === undefined || point(value.triggerLocation));
-const geometry = value => Array.isArray(value) && value.length >= 2 && value.length <= 12000 && value.every(point);
 export const MAX_ROUTE_TUNNELS = 500;
 /**
  * Covered stretches of a route: every segment between vertices a..b of its geometry runs through a tunnel.
@@ -33,7 +33,20 @@ export function validTunnels(value, geometryLength) {
   }
   return true;
 }
-const route = value => value === null || (fields(value, ["geometry", "distanceM", "walkingMinutes", "attribution", "tunnels"]) && geometry(value.geometry) && validTunnels(value.tunnels, value.geometry.length) && Number.isFinite(value.distanceM) && value.distanceM > 0 && value.distanceM <= 8100 && Number.isFinite(value.walkingMinutes) && value.walkingMinutes > 0 && value.walkingMinutes <= 90 && string(value.attribution, 2000));
+const route = (value, document) => {
+  if (value === null) return true;
+  const driving = document.travelMode === "driving";
+  if (!fields(value, ["geometry", "distanceM", "walkingMinutes", "attribution", "tunnels", ...(driving ? ["car"] : [])])
+    || !Array.isArray(value.geometry) || value.geometry.length < 2 || value.geometry.length > (driving ? MAX_CAR_VERTICES : 12000) || !value.geometry.every(point)
+    || !validTunnels(value.tunnels,value.geometry.length) || !Number.isFinite(value.distanceM) || value.distanceM <= 0 || value.distanceM > (driving ? MAX_CAR_DISTANCE_M : 8100)
+    || !Number.isFinite(value.walkingMinutes) || value.walkingMinutes < (driving ? 0 : 1) || value.walkingMinutes > (driving ? 180 : 90) || !string(value.attribution,2000)) return false;
+  if (!driving) return true;
+  const city = cityByName(document.city), car = value.car;
+  if (!validCarRoute(car, document.stops.map(stop=>stop.id), p=>cityAt(p.lat,p.lon)===city) || car.totalMinutes > document.minutes) return false;
+  const meters=car.segments.reduce((sum,segment)=>sum+segment.distanceM,0), walking=car.segments.filter(segment=>segment.mode==="walking").reduce((sum,segment)=>sum+segment.minutes,0);
+  return Math.abs(value.distanceM-meters) <= car.segments.length && value.walkingMinutes === Math.ceil(walking)
+    && JSON.stringify(value.geometry) === JSON.stringify(carRouteGeometry(car));
+};
 const storyUrl = value => typeof value === "string" && value.length <= 2000 && /^https:\/\/[^\s<>]+$/i.test(value);
 const story = value => value === null || (fields(value, ["title", "address", "paragraphs", "sources", "facts", "checkedAt"]) && string(value.title, 180) && string(value.address, 180) &&
   Array.isArray(value.paragraphs) && value.paragraphs.length > 0 && value.paragraphs.length <= 100 && value.paragraphs.every(item => fields(item, ["text", "factIds"]) && string(item.text, 6000) && Array.isArray(item.factIds) && item.factIds.length <= 100 && item.factIds.every(id => string(id, 128))) &&
@@ -49,11 +62,11 @@ const localization = value => value === null || fields(value, ["requestedLocale"
 
 /** @typedef {{lat:number,lon:number}} Coordinates */
 /** @typedef {{address:string,location:Coordinates}} WalkPlace */
-/** @typedef {{version:2,id:string,title:string,description:string,city:string,mode:'open'|'loop',minutes:number,start:WalkPlace|null,stops:Array<{id:string,place:WalkPlace,storyRef:null|{kind:'job'|'osm'|'catalog',id:string},placeId?:string,transition:string,nextHint:string,triggerLocation?:Coordinates}>,route:null|{geometry:Coordinates[],distanceM:number,walkingMinutes:number,attribution:string,tunnels?:Array<[number,number]>},fieldChecked:boolean}} WalkDocument */
+/** @typedef {{version:2,id:string,title:string,description:string,city:string,mode:'open'|'loop',minutes:number,travelMode?:'walking'|'driving',start:WalkPlace|null,stops:Array<{id:string,place:WalkPlace,storyRef:null|{kind:'job'|'osm'|'catalog',id:string},placeId?:string,transition:string,nextHint:string,triggerLocation?:Coordinates}>,route:null|{geometry:Coordinates[],distanceM:number,walkingMinutes:number,attribution:string,tunnels?:Array<[number,number]>,car?:import("./car-route.mjs").CarRoute},fieldChecked:boolean}} WalkDocument */
 /** @typedef {{document:WalkDocument,sourceDocument?:WalkDocument,documentLocalization?:null|{requestedLocale:'ru'|'en'|'zh',contentLocale:'ru'|'en'|'zh',fallbackReason:null|'missing'|'draft'|'stale'},revision:number,contentVersion:string,requestedLocale?:'ru'|'en'|'zh',chapters:Array<{id:string,status:string,story:object|null,audio:object|null,localization?:null|{requestedLocale:'ru'|'en'|'zh',contentLocale:'ru'|'en'|'zh',fallbackReason:null|'missing'|'draft'|'stale'}}>}} WalkView */
 
 export function validateWalkDocument(value) {
-  if (!fields(value, ["version", "id", "title", "description", "city", "mode", "minutes", "start", "destination", "stops", "route", "fieldChecked"]) || value.version !== 2 || !(uuid(value.id) || /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id)) || !string(value.title, 120) || !string(value.description, 1000, true) || cityByName(value.city) === null || !["open", "loop"].includes(value.mode) || ![15, 30, 60, 90].includes(value.minutes) || !(value.start === null || place(value.start)) || (value.destination != null && (value.mode !== "open" || !place(value.destination))) || !Array.isArray(value.stops) || value.stops.length > MAX_WALK_STOPS || !value.stops.every(stop) || (value.start === null && value.stops.length !== 0) || new Set(value.stops.map(item => item.id)).size !== value.stops.length || !route(value.route) || (value.route !== null && (value.start === null || (value.stops.length === 0 && !value.destination))) || typeof value.fieldChecked !== "boolean" || JSON.stringify(value).length > 100000 || !inOneCity(value)) throw invalid();
+  if (!fields(value, ["version", "id", "title", "description", "city", "mode", "minutes", "start", "destination", "stops", "route", "fieldChecked", "travelMode"]) || value.version !== 2 || !(uuid(value.id) || /^[a-z0-9][a-z0-9-]{0,127}$/.test(value.id)) || !string(value.title, 120) || !string(value.description, 1000, true) || cityByName(value.city) === null || !["open", "loop"].includes(value.mode) || (value.travelMode !== undefined && !["walking", "driving"].includes(value.travelMode)) || !(value.travelMode === "driving" ? CAR_MINUTES : [15, 30, 60, 90]).includes(value.minutes) || !(value.start === null || place(value.start)) || (value.destination != null && (value.mode !== "open" || !place(value.destination))) || !Array.isArray(value.stops) || value.stops.length > MAX_WALK_STOPS || !value.stops.every(stop) || (value.start === null && value.stops.length !== 0) || new Set(value.stops.map(item => item.id)).size !== value.stops.length || !route(value.route,value) || (value.route !== null && (value.start === null || (value.stops.length === 0 && !value.destination))) || typeof value.fieldChecked !== "boolean" || JSON.stringify(value).length > (value.travelMode === "driving" ? MAX_CAR_DOCUMENT_BYTES : 100000) || !inOneCity(value)) throw invalid();
   return value;
 }
 
@@ -67,7 +80,9 @@ function inOneCity(value) {
 // The stable UUID is assigned by the owner of the local/account record. Neither
 // legacy job IDs nor the address label alone identify a route stop.
 export function migrateLegacyDraft(value, walkId) {
-  if (!object(value) || value.version !== 1 || !uuid(walkId) || !(value.start === null || place(value.start)) || !Array.isArray(value.stops) || value.stops.length > MAX_WALK_STOPS || !value.stops.every(place) || (value.start === null && value.stops.length !== 0) || !["open", "loop"].includes(value.mode) || ![30, 60, 90].includes(value.minutes) || !Array.isArray(value.jobs) || value.jobs.length > 100) throw invalid();
+  const driving = value?.travelMode === "driving";
+  const draftPlace = item => object(item) && place({address:item.address,location:item.location});
+  if (!object(value) || value.version !== 1 || !uuid(walkId) || !(value.start === null || place(value.start)) || !Array.isArray(value.stops) || value.stops.length > MAX_WALK_STOPS || !value.stops.every(driving ? draftPlace : place) || (value.start === null && value.stops.length !== 0) || !["open", "loop"].includes(value.mode) || !(driving ? CAR_MINUTES : [30,60,90]).includes(value.minutes) || !Array.isArray(value.jobs) || value.jobs.length > 100) throw invalid();
   const hash = (index) => {
     // A UUIDv5-shaped deterministic ID; migration is stable across retries.
     // The input is already bounded by validateWalkDocument below.
@@ -81,11 +96,11 @@ export function migrateLegacyDraft(value, walkId) {
     return job ? { kind: "job", id: job.id } : null;
   };
   const locations = value.start ? [value.start, ...value.stops] : [];
-  const includeStart = Boolean(value.start && link(value.start));
-  const stops = (includeStart ? locations : value.stops).map((item, index) => ({ id: hash(index), place: item, storyRef: link(item), transition: "", nextHint: "" }));
+  const includeStart = Boolean(!driving && value.start && link(value.start));
+  const stops = (includeStart ? locations : value.stops).map((item, index) => ({ id: hash(index), place: {address:item.address,location:{...item.location}}, storyRef: link(item) ?? (driving && item.contentId ? {kind:"osm",id:item.contentId} : null), ...(item.placeId ? {placeId:item.placeId} : {}), transition: "", nextHint: "" }));
   const savedRoute = value.route;
-  const converted = { version: 2, id: walkId, title: value.title || "Моя прогулка", description: "", city: (value.start ? cityAt(value.start.location.lat, value.start.location.lon) : null)?.name ?? "Москва", mode: value.mode, minutes: value.minutes, start: value.start, ...(value.destination ? {destination:value.destination} : {}), stops,
-    route: savedRoute ? { geometry: savedRoute.geometry, distanceM: savedRoute.distanceM, walkingMinutes: savedRoute.walkingMinutes, attribution: savedRoute.attribution, ...(savedRoute.tunnels === undefined ? {} : { tunnels: savedRoute.tunnels }) } : null,
+  const converted = { ...(driving ? {travelMode:"driving"} : {}), version: 2, id: walkId, title: value.title || "Моя прогулка", description: "", city: (value.start ? cityAt(value.start.location.lat, value.start.location.lon) : null)?.name ?? "Москва", mode: value.mode, minutes: value.minutes, start: value.start, ...(value.destination ? {destination:value.destination} : {}), stops,
+    route: savedRoute ? { geometry: savedRoute.geometry, distanceM: savedRoute.distanceM, walkingMinutes: savedRoute.walkingMinutes, attribution: savedRoute.attribution, ...(driving && savedRoute.car ? {car:copyCarRoute(savedRoute.car,new Map(value.stops.map((stop,index)=>[stop.stopId,stops[index].id])))} : {}), ...(savedRoute.tunnels === undefined ? {} : { tunnels: savedRoute.tunnels }) } : null,
     fieldChecked: false };
   return validateWalkDocument(converted);
 }
@@ -108,6 +123,6 @@ export function validateWalkView(value) {
     if (item.localization != null && (!localization(item.localization) || item.localization.requestedLocale !== requestedLocale)) return true;
     const contentLocale = item.localization?.contentLocale ?? "ru";
     return item.audio !== null && (item.audio.language ?? "ru") !== contentLocale;
-  }) || JSON.stringify(value).length > (sourceDocument ? 300000 : 200000)) throw invalid();
+  }) || JSON.stringify(value).length > (document.travelMode === "driving" ? MAX_CAR_DOCUMENT_BYTES * (sourceDocument ? 3 : 2) : sourceDocument ? 300000 : 200000)) throw invalid();
   return value;
 }
