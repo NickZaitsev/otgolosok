@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { failure } from "./domain.mjs";
 
-const NORMALIZER_VERSION = "ru-normalizr-0.3.0-tts";
+const NORMALIZER_VERSION = "ru-normalizr-0.3.0-tts-gum-v1";
 const MAX_NORMALIZED_TEXT_BYTES = 100000;
 
 export function createTextNormalizer({ command = "python3", scriptUrl = new URL("./normalize-tts.py", import.meta.url), spawnImpl = spawn } = {}) {

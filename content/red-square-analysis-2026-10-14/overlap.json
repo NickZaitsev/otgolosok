@@ -1,0 +1,468 @@
+{
+  "checkedAt": "2026-10-14T14:12:10.244Z",
+  "walksChecked": 40,
+  "aliasesChecked": 7195,
+  "candidates": [
+    {
+      "placeId": "osm:relation:7624254",
+      "name": "Казанский собор",
+      "matches": [],
+      "nearbyWithin80M": [
+        {
+          "distanceM": 73.4,
+          "placeId": "osm:relation:1932724",
+          "name": "Воскресенские ворота",
+          "walk": "Вокруг Кремля: стены, река и город"
+        },
+        {
+          "distanceM": 65.3,
+          "placeId": "osm:relation:5963922",
+          "name": "Исторический музей",
+          "walk": "Вокруг Кремля: стены, река и город"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:4137492",
+      "name": "Красный монетный двор",
+      "matches": [],
+      "nearbyWithin80M": [
+        {
+          "distanceM": 74.7,
+          "placeId": "osm:relation:1932724",
+          "name": "Воскресенские ворота",
+          "walk": "Вокруг Кремля: стены, река и город"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:1359372",
+      "name": "Никольская башня",
+      "matches": [],
+      "nearbyWithin80M": [
+        {
+          "distanceM": 79.7,
+          "placeId": "osm:relation:5963922",
+          "name": "Исторический музей",
+          "walk": "Вокруг Кремля: стены, река и город"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:node:2203001643",
+      "name": "Никольские ворота",
+      "matches": [],
+      "nearbyWithin80M": [
+        {
+          "distanceM": 78.5,
+          "placeId": "osm:relation:5963922",
+          "name": "Исторический музей",
+          "walk": "Вокруг Кремля: стены, река и город"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:3272726",
+      "name": "Мавзолей В. И. Ленина",
+      "matches": [],
+      "nearbyWithin80M": []
+    },
+    {
+      "placeId": "osm:relation:3226496",
+      "name": "Лобное место",
+      "matches": [],
+      "nearbyWithin80M": [
+        {
+          "distanceM": 68.3,
+          "placeId": "osm:relation:3330565",
+          "name": "Государственный универсальный магазин (ГУМ)",
+          "walk": "Вокруг Кремля: стены, река и город"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:node:995935368",
+      "name": "К. Минину и Д. Пожарскому",
+      "matches": [],
+      "nearbyWithin80M": [
+        {
+          "distanceM": 69.9,
+          "placeId": "osm:relation:1360656",
+          "name": "Спасская башня",
+          "walk": "Вокруг Кремля: стены, река и город"
+        },
+        {
+          "distanceM": 66.1,
+          "placeId": "osm:relation:3030568",
+          "name": "Собор Василия Блаженного",
+          "walk": "Вокруг Кремля: стены, река и город"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:1577673",
+      "name": "Красная площадь",
+      "matches": [],
+      "nearbyWithin80M": [
+        {
+          "distanceM": 53.0,
+          "placeId": "osm:relation:3030568",
+          "name": "Собор Василия Блаженного",
+          "walk": "Вокруг Кремля: стены, река и город"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:8888875",
+      "name": "Политехнический музей",
+      "matches": [],
+      "nearbyWithin80M": []
+    },
+    {
+      "placeId": "osm:relation:1268321",
+      "name": "Ильинский сквер",
+      "matches": [],
+      "nearbyWithin80M": []
+    },
+    {
+      "placeId": "osm:relation:19088121",
+      "name": "Церковь Рождества Иоанна Предтечи у Варварских ворот",
+      "matches": [],
+      "nearbyWithin80M": []
+    },
+    {
+      "placeId": "osm:relation:1555621",
+      "name": "парк «Зарядье»",
+      "matches": [],
+      "nearbyWithin80M": [
+        {
+          "distanceM": 76.6,
+          "placeId": "osm:relation:19080710",
+          "name": "Собор иконы Божией Матери «Знамение»",
+          "walk": "Китай-город: торговля, печать и старая Москва"
+        }
+      ]
+    },
+    {
+      "placeId": "osm:node:2331495760",
+      "name": "Зарядье",
+      "matches": [],
+      "nearbyWithin80M": []
+    },
+    {
+      "placeId": "osm:way:35552032",
+      "name": "Китайгородская стена",
+      "matches": [],
+      "nearbyWithin80M": []
+    },
+    {
+      "placeId": "osm:relation:7151077",
+      "name": "Морозовский сад",
+      "matches": [],
+      "nearbyWithin80M": []
+    },
+    {
+      "placeId": "osm:relation:9037250",
+      "name": "Палаты Мазепы",
+      "matches": [],
+      "nearbyWithin80M": []
+    }
+  ],
+  "candidateRouteTitle": "Красная площадь и Зарядье: торговля, память и город",
+  "candidateStopIds": [
+    "osm:relation:7624254",
+    "osm:relation:4137492",
+    "osm:relation:1359372",
+    "osm:relation:1577673",
+    "osm:relation:3272726",
+    "osm:relation:3226496",
+    "osm:node:995935368",
+    "osm:relation:1555621",
+    "osm:relation:19088121",
+    "osm:way:35552032"
+  ],
+  "comparisons": [
+    {
+      "walk": "По бульварному кольцу от Тверской до Трубной",
+      "id": "0055eb13-d26d-4eab-b1f6-b25900bd7095",
+      "uniqueReferencedStops": 17,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Вокруг Кремля: стены, река и город",
+      "id": "0f8a9c9a-5f34-5ffa-ac3c-e9e663ee7ffb",
+      "uniqueReferencedStops": 12,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Остоженка: искусство и частная жизнь",
+      "id": "11783317-2e09-53f1-a725-79c445316b15",
+      "uniqueReferencedStops": 12,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Купцы и благотворители Ордынки",
+      "id": "1c62fb70-aedc-4770-9514-ee454a4fb0e4",
+      "uniqueReferencedStops": 11,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на полчаса от метро «Красносельская»",
+      "id": "20fc0681-04bf-4126-98f0-d71787ae52d1",
+      "uniqueReferencedStops": 3,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на полтора часа от метро «Селигерская»",
+      "id": "23b4e0f8-6974-4183-901d-258f64f0cd6e",
+      "uniqueReferencedStops": 3,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на час от метро «ЦСКА»",
+      "id": "25558394-ac93-487d-85e4-a6c9b296c1b7",
+      "uniqueReferencedStops": 8,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Тверская: переезды домов и культурная жизнь",
+      "id": "259d5970-d002-5dc4-b15f-b2a784c2dbb3",
+      "uniqueReferencedStops": 14,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на час от метро «Менделеевская»",
+      "id": "277b22fb-21cc-404d-8bfa-280eb024c4f0",
+      "uniqueReferencedStops": 5,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на час от метро «Чкаловская»",
+      "id": "369753a4-78d0-4ace-9f23-539814add8de",
+      "uniqueReferencedStops": 4,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "От «Спартака» до «Тушинской»",
+      "id": "3ed13c3d-dc96-4527-8cdc-8f7213962a59",
+      "uniqueReferencedStops": 16,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Ордынка: храмы и городские судьбы",
+      "id": "41623cdd-8af1-4da4-bd32-5d4b63d29c8f",
+      "uniqueReferencedStops": 13,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Остров: палаты, набережные и город XX века",
+      "id": "4434d407-1969-5bb7-af9e-e1ee1b1a29ab",
+      "uniqueReferencedStops": 15,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на час от метро «Марксистская»",
+      "id": "4a546b25-81af-493b-805a-174c64ff4c0e",
+      "uniqueReferencedStops": 5,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Швивая горка и устье Яузы",
+      "id": "4f36f2b4-fdd7-5249-a74b-56bf29f45660",
+      "uniqueReferencedStops": 14,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "По бульварному кольцу от Кропоткинской до Тверской",
+      "id": "5295c72b-5d9f-4142-9d26-fb4f367b8865",
+      "uniqueReferencedStops": 28,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка от метро «Боровицкая» · 60 минут",
+      "id": "54a95a49-bc09-4622-b52b-446e87dd1395",
+      "uniqueReferencedStops": 4,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Китай-город: торговля, печать и старая Москва",
+      "id": "55ef0a33-1dec-5641-a63d-410afc4f584c",
+      "uniqueReferencedStops": 16,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на час от метро «Сретенский бульвар»",
+      "id": "68bf6161-ee73-4ba2-b4fa-a7ec46c13122",
+      "uniqueReferencedStops": 5,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Поварская: литература, музыка и особняки",
+      "id": "6ba0c14c-67f9-50e7-9d2f-19eb38fe760e",
+      "uniqueReferencedStops": 14,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "От Трубной через Чистые пруды до Покровских ворот",
+      "id": "6da93da2-7bc4-4d7c-b54d-fb37c6db7d39",
+      "uniqueReferencedStops": 28,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на час от метро «Охотный ряд»",
+      "id": "76f7ee56-1d28-454e-bc05-4a731ebf0147",
+      "uniqueReferencedStops": 4,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на час от метро «Тургеневская»",
+      "id": "7e58ab4a-70be-465c-aa36-45b4676133ab",
+      "uniqueReferencedStops": 6,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Знаменка и Волхонка: от усадеб к музеям",
+      "id": "83294f8e-3775-5aa8-b841-8b97dcd23229",
+      "uniqueReferencedStops": 12,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на полчаса от метро «Красные Ворота»",
+      "id": "8b587832-ea15-46a3-a41f-92db74146af0",
+      "uniqueReferencedStops": 3,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Сады и площади: от Ленинского сада до «Эрмитажа»",
+      "id": "95c7d785-fe1c-5fe1-b446-26efa717ab8b",
+      "uniqueReferencedStops": 14,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Пятницкая: деньги, книги и городская жизнь",
+      "id": "9de97294-f98e-4891-98b1-026808ae83b7",
+      "uniqueReferencedStops": 11,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на полчаса от метро «Сретенский бульвар»",
+      "id": "9fa03ac3-54ed-471c-ae09-e1a3bd24a644",
+      "uniqueReferencedStops": 4,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на час от метро «Динамо»",
+      "id": "a048ab97-4d20-48e5-ad72-2a30b6c7c12a",
+      "uniqueReferencedStops": 5,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на час от метро «Чистые пруды»",
+      "id": "a31d3178-92fd-44f5-8cd3-077b039e6966",
+      "uniqueReferencedStops": 6,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Вокруг Третьяковки: искусство в жилом квартале",
+      "id": "b7e15c0d-3840-49ba-9f5e-44acb654e6fc",
+      "uniqueReferencedStops": 13,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Старо-Татарская слобода и Кабан",
+      "id": "c3fab600-dfba-5e35-ba98-7857a9fde9ee",
+      "uniqueReferencedStops": 14,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Прогулка на полчаса от метро «Китай-город»",
+      "id": "ce997095-1706-4d81-bfeb-b230d6717bda",
+      "uniqueReferencedStops": 4,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "От Кожевников к Цинделю",
+      "id": "d199d091-852c-447e-9af3-bc3ffae21d2a",
+      "uniqueReferencedStops": 4,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Воздвиженка и Кисловские переулки",
+      "id": "d5133c16-9e0b-5834-aff3-28d8f237339b",
+      "uniqueReferencedStops": 13,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "От заводского клуба к крепостному театру",
+      "id": "e12eec4b-95f7-4da5-8bbb-f14b63c48c6b",
+      "uniqueReferencedStops": 12,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Пречистенка: коллекционеры и особняки",
+      "id": "e74ace55-527c-5172-a0a8-be431696ae15",
+      "uniqueReferencedStops": 14,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "Кремль и университет",
+      "id": "ea7e6b98-999f-55ff-ba85-f59329693d1f",
+      "uniqueReferencedStops": 14,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "От Кремля до Кольца",
+      "id": "f5b24d6d-2cab-5dc1-92ed-72d0539f231c",
+      "uniqueReferencedStops": 14,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    },
+    {
+      "walk": "От Чистых прудов до Китай-города",
+      "id": "fe2b9285-7052-4a31-9061-41397f1e08ca",
+      "uniqueReferencedStops": 29,
+      "commonPlaceIds": [],
+      "overlapPercent": 0.0
+    }
+  ],
+  "method": "Сопоставление storyRef через place_osm_aliases, затем проверка близких остановок в радиусе 80 м. Близость сама по себе не означает один объект. Никольские ворота не включены отдельно от Никольской башни, точка Зарядье не включена отдельно от парка.",
+  "status": "Анализ, без создания прогулки. Пешеходная линия и места прослушивания ещё не рассчитаны."
+}
