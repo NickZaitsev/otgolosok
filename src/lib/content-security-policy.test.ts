@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { createTestToneDataUri } from "@/lib/audio/audio-element";
-import { contentSecurityPolicy, inlineScriptHashes, withContentSecurityPolicy } from "../../scripts/content-security-policy.mjs";
+import { contentSecurityPolicy, inlineScriptHashes, isVerificationFile, withContentSecurityPolicy } from "../../scripts/content-security-policy.mjs";
 
 const hash = (body: string) => `'sha256-${createHash("sha256").update(body, "utf8").digest("base64")}'`;
 const policyOf = (html: string) => /http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html)?.[1] ?? "";
@@ -86,5 +86,18 @@ describe("content security policy", () => {
 
   it("отказывает, если скрипт стоит раньше мест для политики", () => {
     expect(() => withContentSecurityPolicy(`<html><script>a()</script><head><meta charset="utf-8"></head></html>`)).toThrow(/before the first script/);
+  });
+
+  it.each([
+    ["googlec7e66ec25aa44d3a.html", true], ["yandex_0123abcd.html", true], ["sub/googleabc.html", true],
+    ["index.html", false], ["google.html", false], ["googlec7e66ec25aa44d3a.html.bak", false], ["mygoogleabc.html", false], ["yandex_.html", false],
+  ])("файл подтверждения поисковика %s не получает политику: %s", (path, expected) => {
+    expect(isVerificationFile(path)).toBe(expected);
+  });
+
+  it("файл подтверждения Google в public отдаётся как есть и признан таким файлом", () => {
+    const file = "googlec7e66ec25aa44d3a.html";
+    expect(isVerificationFile(file)).toBe(true);
+    expect(readFileSync(new URL(`../../public/${file}`, import.meta.url), "utf8")).toBe(`google-site-verification: ${file}`);
   });
 });

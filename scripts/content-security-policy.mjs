@@ -49,6 +49,13 @@ export function contentSecurityPolicy(scriptHashes) {
     .join("; ");
 }
 
+// Search-engine ownership files are plain text with an .html name: Google's google<hex>.html and Yandex's
+// yandex_<hex>.html. They must be served byte for byte, so they get no policy.
+const verificationFile = /(?:^|[\\/])(?:google[0-9a-f]+|yandex_[0-9a-f]+)\.html$/;
+
+/** Whether an exported .html file is a search-engine ownership file rather than a page. @param {string} path */
+export const isVerificationFile = path => verificationFile.test(path);
+
 /** Return the page with a policy meta tag that precedes every script. */
 export function withContentSecurityPolicy(html) {
   const page = html.replace(existingPolicy, "");
