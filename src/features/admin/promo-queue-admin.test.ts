@@ -9,7 +9,7 @@ import type { AdminApi, AdminRun } from "./model";
 
 const item = (title: string, status: string, extra: Record<string, unknown> = {}) => ({
   id: `id-${title}`, walkId: `walk-${title}`, title, shareToken: `token-${title}`, visibility: "public", position: 1, status,
-  slotAt: "2026-10-09T18:00:00.000Z", runId: null, youtubeUrl: null, telegramUrl: null, error: null, revision: 3,
+  slotAt: "2026-10-09T18:30:00.000Z", runId: null, youtubeUrl: null, telegramUrl: null, error: null, revision: 3,
   createdAt: "2026-10-05T10:00:00Z", updatedAt: "2026-10-05T10:00:00Z", ...extra,
 });
 const walk = (visibility: string, promo: unknown = null) => ({ id: "walk", title: "Арбат", shareToken: "t", revision: 2, visibility, listingStatus: visibility === "public" ? "approved" : null,
@@ -38,15 +38,15 @@ beforeEach(() => {
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 it.each([
-  ["2026-10-09T18:00:00.000Z", "пт, 9 октября в 21:00 МСК"],
-  ["2026-10-12T16:00:00.000Z", "пн, 12 октября в 19:00 МСК"],
+  ["2026-10-09T18:30:00.000Z", "пт, 9 октября в 21:30 МСК"],
+  ["2026-10-12T17:30:00.000Z", "пн, 12 октября в 20:30 МСК"],
 ])("shows slot %s in Moscow time", (slot, expected) => {
   expect(slotLabel(slot).replace(/\s+/g, " ")).toBe(expected);
 });
 
 it.each([
   [null, "Без промо", true],
-  [{ status: "queued", slotAt: "2026-10-12T16:00:00.000Z", youtubeUrl: null }, "в очереди · пн, 12 октября в 19:00 МСК", false],
+  [{ status: "queued", slotAt: "2026-10-12T17:30:00.000Z", youtubeUrl: null }, "в очереди · пн, 12 октября в 20:30 МСК", false],
   [{ status: "published", slotAt: null, youtubeUrl: "https://www.youtube.com/shorts/x" }, "Опубликован", true],
 ] as const)("promo state %o reads as «%s»", (promo, text, enqueue) => {
   expect(promoText(promo).replace(/\s+/g, " ")).toBe(text);
@@ -73,7 +73,7 @@ it("queues a public walk without asking and hides the button for an active item"
   const confirm = vi.spyOn(window, "confirm");
   await mount(SharedWalkAdmin);
   request.mockResolvedValueOnce({ item: item("Арбат", "queued") })
-    .mockResolvedValueOnce({ walks: [walk("public", { status: "queued", slotAt: "2026-10-12T16:00:00.000Z", youtubeUrl: null })], total: 1, offset: 0, hasMore: false, pending: 0 });
+    .mockResolvedValueOnce({ walks: [walk("public", { status: "queued", slotAt: "2026-10-12T17:30:00.000Z", youtubeUrl: null })], total: 1, offset: 0, hasMore: false, pending: 0 });
   await act(async () => button("В очередь промо")!.click());
   expect(confirm).not.toHaveBeenCalled();
   expect(button("В очередь промо")).toBeUndefined();
@@ -92,6 +92,7 @@ it("passes the promo filter to the list request", async () => {
 it("lists the queue with Moscow slots, moves an item up and reloads on a stale revision", async () => {
   request.mockResolvedValue({ items: [item("Арбат", "ready"), item("Бульвары", "queued"), item("Чистые пруды", "queued")], history: [item("Таганка", "failed", { error: "WALK_START" })] });
   await mount(PromoQueueAdmin);
+  expect(container.textContent).toContain("пн–чт в 20:30, пт–вс в 21:30 по Москве");
   expect(container.textContent).toContain("готов к выходу");
   expect(container.textContent).toContain("Отменить или перенести — кнопками в боте");
   expect(container.textContent).toContain("WALK_START");

@@ -32,21 +32,33 @@ function fixture(t, nowIso = "2026-10-05T09:00:00Z") {
 }
 const code = fn => { try { fn(); return "ok"; } catch (error) { return error.code; } };
 
-test("slots: Mon–Thu 19:30 and Fri–Sun 21:00 Moscow time, at least 30 minutes ahead", () => {
+test("slots: Mon–Thu 20:30 and Fri–Sun 21:30 Moscow time, at least 30 minutes ahead", () => {
   /** @type {[string, string[]][]} */
   const cases = [
-    // Monday 2026-10-05 15:59 UTC (18:59 MSK): today's 19:30 is exactly 31 minutes ahead.
-    ["2026-10-05T15:59:00Z", ["2026-10-05T16:30:00.000Z", "2026-10-06T16:30:00.000Z"]],
-    // 19:00 MSK: today's slot is 30 minutes ahead — not strictly after the lead, so tomorrow.
-    ["2026-10-05T16:00:00Z", ["2026-10-06T16:30:00.000Z", "2026-10-07T16:30:00.000Z"]],
-    // Thursday evening → Friday 21:00 MSK.
-    ["2026-10-08T17:00:00Z", ["2026-10-09T18:00:00.000Z", "2026-10-10T18:00:00.000Z"]],
-    // Sunday after the slot → Monday 19:30.
-    ["2026-10-11T19:00:00Z", ["2026-10-12T16:30:00.000Z", "2026-10-13T16:30:00.000Z"]],
+    // Monday 2026-10-05 16:59 UTC (19:59 MSK): today's 20:30 is exactly 31 minutes ahead.
+    ["2026-10-05T16:59:00Z", ["2026-10-05T17:30:00.000Z", "2026-10-06T17:30:00.000Z"]],
+    // 20:00 MSK: today's slot is 30 minutes ahead — not strictly after the lead, so tomorrow.
+    ["2026-10-05T17:00:00Z", ["2026-10-06T17:30:00.000Z", "2026-10-07T17:30:00.000Z"]],
+    // Thursday evening → Friday 21:30 MSK.
+    ["2026-10-08T18:00:00Z", ["2026-10-09T18:30:00.000Z", "2026-10-10T18:30:00.000Z"]],
+    // Sunday after the slot → Monday 20:30.
+    ["2026-10-11T19:00:00Z", ["2026-10-12T17:30:00.000Z", "2026-10-13T17:30:00.000Z"]],
     // 23:30 UTC on Sunday is already Monday 02:30 in Moscow.
-    ["2026-10-11T23:30:00Z", ["2026-10-12T16:30:00.000Z", "2026-10-13T16:30:00.000Z"]],
+    ["2026-10-11T23:30:00Z", ["2026-10-12T17:30:00.000Z", "2026-10-13T17:30:00.000Z"]],
+    // Friday's lead boundary uses the later 21:30 MSK slot.
+    ["2026-10-09T17:59:00Z", ["2026-10-09T18:30:00.000Z", "2026-10-10T18:30:00.000Z"]],
+    ["2026-10-09T18:00:00Z", ["2026-10-10T18:30:00.000Z", "2026-10-11T18:30:00.000Z"]],
   ];
   for (const [now, expected] of cases) assert.deepEqual(nextSlots(new Date(now), 2), expected, now);
+});
+
+test("slots cover every Moscow weekday with one release per day", () => {
+  assert.deepEqual(nextSlots(new Date("2026-10-05T00:00:00Z"), 7), [
+    "2026-10-05T17:30:00.000Z", "2026-10-06T17:30:00.000Z", "2026-10-07T17:30:00.000Z",
+    "2026-10-08T17:30:00.000Z", "2026-10-09T18:30:00.000Z", "2026-10-10T18:30:00.000Z",
+    "2026-10-11T18:30:00.000Z",
+  ]);
+  assert.deepEqual(nextSlots(new Date("2026-10-05T00:00:00Z"), 0), []);
 });
 
 test("enqueue keeps order, plans slots and refuses duplicates and unshared walks", t => {
@@ -55,8 +67,8 @@ test("enqueue keeps order, plans slots and refuses duplicates and unshared walks
   store.enqueuePromo(a.id); store.enqueuePromo(b.id);
   const { items } = store.listPromoQueue();
   assert.deepEqual(items.map(item => [item.title, item.status, item.slotAt]), [
-    ["Арбат", "queued", "2026-10-05T16:30:00.000Z"],
-    ["Бульвары", "queued", "2026-10-06T16:30:00.000Z"],
+    ["Арбат", "queued", "2026-10-05T17:30:00.000Z"],
+    ["Бульвары", "queued", "2026-10-06T17:30:00.000Z"],
   ]);
   assert.equal(items[0].shareToken, a.shareToken);
   assert.equal(code(() => store.enqueuePromo(a.id)), "CONFLICT");
@@ -146,10 +158,10 @@ test("a ready item keeps its slot, postpone goes to the head, cancel needs no UR
   const { store, walk } = fixture(t);
   [walk("А"), walk("Б"), walk("В")].forEach(w => store.enqueuePromo(w.id));
   const [a] = store.claimPromo(1);
-  // А got the 19:00 slot before slots moved to 19:30: its day stays taken.
+  // А got the 19:00 slot before slots moved to 20:30: its day stays taken.
   const ready = store.reportPromo(a.id, { status: "ready", revision: a.revision, slotAt: "2026-10-06T16:00:00.000Z" });
   assert.deepEqual(store.listPromoQueue().items.map(item => [item.title, item.slotAt]), [
-    ["А", "2026-10-06T16:00:00.000Z"], ["Б", "2026-10-05T16:30:00.000Z"], ["В", "2026-10-07T16:30:00.000Z"],
+    ["А", "2026-10-06T16:00:00.000Z"], ["Б", "2026-10-05T17:30:00.000Z"], ["В", "2026-10-07T17:30:00.000Z"],
   ]);
   const postponed = store.reportPromo(ready.id, { status: "queued", revision: ready.revision });
   assert.deepEqual([postponed.status, postponed.slotAt === null || typeof postponed.slotAt === "string"], ["queued", true]);

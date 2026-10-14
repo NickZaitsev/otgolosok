@@ -21,7 +21,7 @@ function Links({ item }: { item: PromoItem }) {
   </>;
 }
 
-/** The promo queue: planned slots (Mon–Thu 19:30, Fri–Sun 21:00 MSK), order and finished issues. */
+/** The promo queue: planned slots (Mon–Thu 20:30, Fri–Sun 21:30 MSK), order and finished issues. */
 export function PromoQueueAdmin({ api, run, busy }: { api: AdminApi; run: AdminRun; busy: string }) {
   const loaded = useRef(false);
   const [queue, setQueue] = useState<PromoQueue | null>(null);
@@ -64,7 +64,7 @@ export function PromoQueueAdmin({ api, run, busy }: { api: AdminApi; run: AdminR
   const firstQueued = queue?.items.find(item => item.status === "queued")?.id;
   return <section className="walk-admin" aria-busy={loading} aria-labelledby="promo-queue-title">
     <div className="walk-admin__head">
-      <div><h2 id="promo-queue-title">Очередь промо</h2><p>Один выпуск в день: пн–чт в 19:30, пт–вс в 21:00 по Москве. Ролик и пост собираются ночью, утром бот присылает превью с кнопками «Отменить» и «Перенести». Без ответа выпуск выходит по расписанию.</p></div>
+      <div><h2 id="promo-queue-title">Очередь промо</h2><p>Один выпуск в день: пн–чт в 20:30, пт–вс в 21:30 по Москве. Ролик и пост собираются ночью, утром бот присылает превью с кнопками «Отменить» и «Перенести». Без ответа выпуск выходит по расписанию.</p></div>
       <button type="button" disabled={disabled} onClick={() => void run("Обновление очереди…", load)}>Обновить</button>
     </div>
     {notice && <p className="walk-admin__message" role="status">{notice}</p>}
