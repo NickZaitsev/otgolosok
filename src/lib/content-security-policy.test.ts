@@ -96,7 +96,7 @@ describe("content security policy", () => {
   });
 
   it("файл подтверждения Google в public отдаётся как есть и признан таким файлом", () => {
-    const file = "googlec7e66ec25aa44d3a.html";
+    const file = "google2b262378fb391034.html";
     expect(isVerificationFile(file)).toBe(true);
     expect(readFileSync(new URL(`../../public/${file}`, import.meta.url), "utf8")).toBe(`google-site-verification: ${file}`);
   });
