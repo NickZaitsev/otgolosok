@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { regionCityAt } from "./cities.mjs";
 import { PLACE_METRIKA_CSP, PLACE_METRIKA_SCRIPT } from "./place-metrika.mjs";
 
 /**
@@ -23,7 +24,7 @@ const OSM_ID = /^osm:(node|way|relation):([1-9]\d{0,18})$/;
 
 // Light «Читальня» palette of DESIGN.md. Self-hosted Manrope and Cormorant carry hashed build names, so the page
 // stays on system fonts instead of pointing at a file that the next build renames.
-const STYLE = `:root{color-scheme:light;--paper:#f5f1e8;--raised:#fbf8f2;--ink:#1a1714;--muted:#57504a;--accent:#a8301b;--button:#203e38;--line:#dce2da}
+export const PAGE_STYLE = `:root{color-scheme:light;--paper:#f5f1e8;--raised:#fbf8f2;--ink:#1a1714;--muted:#57504a;--accent:#a8301b;--button:#203e38;--line:#dce2da}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:18px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:720px;margin:0 auto;padding:16px 16px 48px}a{color:var(--accent)}a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .brand{display:inline-block;font:600 28px/1.2 Georgia,"Times New Roman",serif;color:var(--ink);text-decoration:none;margin:8px 0 24px}
@@ -39,7 +40,7 @@ figcaption{color:var(--muted);font-size:14px;margin-top:8px}
 .open:focus-visible{outline-color:var(--button)}
 article p{margin:0 0 1em}ol,ul{padding-left:1.2em}li{margin:0 0 8px;font-size:16px}
 .publisher{color:var(--muted)}footer{margin-top:48px;color:var(--muted);font-size:14px}`;
-const STYLE_HASH = createHash("sha256").update(STYLE).digest("base64");
+const STYLE_HASH = createHash("sha256").update(PAGE_STYLE).digest("base64");
 // The one script is the consent-gated Metrica counter (backend/place-metrika.mjs), allowed by hash; the JSON-LD block
 // is data, which a browser never runs. Without the counter script-src stays closed.
 const metrika = PLACE_METRIKA_CSP;
@@ -74,10 +75,13 @@ const placeMapUrl = (id, locale) => {
 };
 
 /** @param {unknown} value */
-const text = value => typeof value === "string" && value.trim() ? value.replace(/\s+/g, " ").trim() : undefined;
+export const normalizedText = value => typeof value === "string" && value.trim() ? value.replace(/\s+/g, " ").trim() : undefined;
+
+const text = normalizedText;
 
 /** @param {string} value */
-const escape = value => value.replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] ?? char);
+export const escapeHtml = value => value.replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char] ?? char);
+const escape = escapeHtml;
 
 /** @param {{paragraphs?: unknown} | null | undefined} story @returns {string[]} */
 const storyParagraphs = story => (Array.isArray(story?.paragraphs) ? story.paragraphs : [])
@@ -175,6 +179,7 @@ export function renderPlaceSharePage({ id, place, origin, locale = "ru", nearby 
   const duration = positive(audio?.durationSec);
   const sources = place ? storySources(story?.sources) : [];
   const lat = coordinate(place?.location?.lat), lon = coordinate(place?.location?.lon);
+  const city = lat !== undefined && lon !== undefined ? regionCityAt(lat, lon) : null;
   const neighbours = place ? nearby.flatMap(item => {
     const href = placeSharePath(item?.id), label = text(item?.title);
     return href && label && item.id !== id ? [{ href, label, distance: positive(item.distanceM) }] : [];
@@ -227,7 +232,7 @@ ${meta("og:image:width", preview.width)}
 ${meta("og:image:height", preview.height)}
 ${meta("og:image:alt", preview.alt)}
 ${meta("twitter:card", image ? "summary_large_image" : "summary")}
-<style>${STYLE}</style>
+<style>${PAGE_STYLE}</style>
 ${structured ? `<script type="application/ld+json">${structured}</script>\n` : ""}</head>
 <body>
 <main>
@@ -237,7 +242,7 @@ ${structured ? `<script type="application/ld+json">${structured}</script>\n` : "
 ${place && (subject || address) ? `<p class="place">${escape([subject, address].filter(Boolean).join(" · "))}</p>\n` : ""}${image ? `<figure><img src="${escape(image.path)}" width="${image.width}" height="${image.height}" alt="${escape(image.alt)}" fetchpriority="high">${photoCaption(photo)}</figure>\n` : ""}${audioPath ? `<section class="listen" aria-label="Аудиоистория"><p>Послушать историю${duration ? ` · ${spokenDuration(duration)}` : ""}</p><audio controls preload="none" src="${escape(audioPath)}"></audio></section>\n` : ""}${(paragraphs.length ? paragraphs : [description]).map(paragraph => `<p>${escape(paragraph)}</p>`).join("\n")}
 <p><a id="open" class="open" href="${escape(mapUrl)}">${place ? "Слушать на карте" : "Открыть историю на карте"}</a></p>
 ${sources.length ? `<h2>Источники</h2>\n<ol>${sources.map(source => `<li><a href="${escape(source.url)}" rel="noopener">${escape(source.title)}</a>${source.publisher ? ` <span class="publisher">— ${escape(source.publisher)}</span>` : ""}</li>`).join("")}</ol>\n` : ""}</article>
-${neighbours.length ? `<nav aria-label="Истории рядом"><h2>Рядом</h2>\n<ul>${neighbours.map(item => `<li><a href="${escape(item.href)}">${escape(item.label)}</a>${item.distance ? ` <span class="publisher">· ${item.distance} м</span>` : ""}</li>`).join("")}</ul></nav>\n` : ""}<footer>«Отголосок» — аудиоистории, которые звучат рядом с местом событий. <a href="/">Карта историй</a></footer>
+${neighbours.length ? `<nav aria-label="Истории рядом"><h2>Рядом</h2>\n<ul>${neighbours.map(item => `<li><a href="${escape(item.href)}">${escape(item.label)}</a>${item.distance ? ` <span class="publisher">· ${item.distance} м</span>` : ""}</li>`).join("")}</ul></nav>\n` : ""}<footer>«Отголосок» — аудиоистории, которые звучат рядом с местом событий. ${place && city ? `<a href="/places/${city.id}">Все истории: ${escape(city.name)}</a> · ` : ""}<a href="/">Карта историй</a></footer>
 </main>
 ${place && metrika ? `<script>${PLACE_METRIKA_SCRIPT}</script>\n` : ""}</body>
 </html>

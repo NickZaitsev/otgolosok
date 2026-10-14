@@ -55,9 +55,10 @@ import { startTtsApiWorker } from "./tts-api-worker.mjs";
 import { serializeCell } from "./map-cells.mjs";
 import { sendCacheable, sendCacheableJson, sendUncachedJson } from "./http-cache.mjs";
 import { renderSitemap } from "./sitemap.mjs";
+import { CATALOG_PAGE_CSP, buildCatalog, pageCount, parseCatalogPath, renderCatalogIndex, renderCityCatalogPage } from "./places-catalog.mjs";
 import { SHARE_NOT_FOUND_HTML, SHARE_PAGE_CSP, renderPlaceSharePage, shareLocale, shareUnavailableHtml, sharePathToPlaceId } from "./place-share.mjs";
 
-// A place published or taken down reaches the sitemap within this time.
+// A place published or taken down reaches the sitemap and the HTML catalog within this time.
 const SITEMAP_TTL_MS=10*60_000;
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
 // Digests keep the comparison constant-time regardless of the candidate length.
@@ -176,8 +177,16 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,parkin
   const promoEnabled=typeof promoWalksToken==="string"&&promoWalksToken.length>0;
   if(promoEnabled&&promoWalksToken.length<32)throw new Error("PROMO_WALKS_TOKEN must contain at least 32 characters");
   const authorizePromo=adminAuth(promoEnabled?promoWalksToken:"");
-  /** @type {{xml: string, at: number} | null} */
-  let sitemapCache=null;
+  /** @type {{catalog: ReturnType<typeof buildCatalog>, sitemap: string, at: number} | null} */
+  let indexCache=null;
+  // Both the sitemap and the HTML catalog read every published story (~0.1 s for 2000 places): crawlers' repeat and conditional requests reuse one build.
+  const publishedIndex=()=>{
+    if(!indexCache||Date.now()-indexCache.at>=SITEMAP_TTL_MS){
+      const places=store.listPublishedPlaceIndex();
+      indexCache={catalog:buildCatalog(places),sitemap:renderSitemap({origin,places}),at:Date.now()};
+    }
+    return indexCache;
+  };
   const promoWalks=promoEnabled&&accountStore?createPromoWalkService({accountStore,planWalk:walkPlanner,store,origin}):null;
   const reviews=createWalkReviewRoutes({store,accountStore,origin,authSecret,limiter:reviewLimiter,json,body});
   const placeFeedback=createPlaceFeedbackRoutes({store,accountStore,origin,authSecret,limiter:improvementLimiter,json,body});
@@ -701,13 +710,24 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,parkin
         res.writeHead(page.status,{"Content-Type":"text/html; charset=utf-8","Cache-Control":page.status===503?"no-store":"no-cache","X-Content-Type-Options":"nosniff","Content-Security-Policy":SHARE_PAGE_CSP});
         res.end(req.method==="HEAD"?undefined:page.html);return;
       }
+      // The HTML catalog (backend/places-catalog.mjs): pages of plain links, the way into every story without the map.
+      if(readMethod&&(url.pathname==="/places"||url.pathname.startsWith("/places/"))) {
+        const route=parseCatalogPath(url.pathname);
+        const headers={"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff","Content-Security-Policy":CATALOG_PAGE_CSP};
+        let catalog;
+        try {catalog=publishedIndex().catalog;}
+        catch(error) {logs?.captureException(error,{operation:"places catalog"});res.writeHead(503,{...headers,"Cache-Control":"no-store","Retry-After":"300"});res.end(req.method==="HEAD"?undefined:"<!doctype html><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex\"><title>Каталог недоступен</title><p>Каталог временно недоступен. Попробуйте позже.</p>");return;}
+        const entry=route?.kind==="city"?catalog.find(item=>item.city.id===route.cityId):null;
+        if(route?.kind==="index")sendCacheable(req,res,renderCatalogIndex({origin,catalog}),headers["Content-Type"],{"Content-Security-Policy":CATALOG_PAGE_CSP});
+        else if(route?.kind==="city"&&entry&&route.page<=pageCount(entry.entries.length))sendCacheable(req,res,renderCityCatalogPage({origin,city:entry.city,entries:entry.entries,page:route.page}),headers["Content-Type"],{"Content-Security-Policy":CATALOG_PAGE_CSP});
+        else {res.writeHead(404,{...headers,"Cache-Control":"no-cache"});res.end(req.method==="HEAD"?undefined:"<!doctype html><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex\"><title>Страница не найдена</title><h1>Страница не найдена</h1><p><a href=\"/places\">Каталог историй</a></p>");}
+        return;
+      }
       // The search engines' list of pages: the static ones and every indexable place (backend/sitemap.mjs).
       if(readMethod&&url.pathname==="/sitemap.xml") {
         let xml;
         try {
-          // Building it reads every published story (~0.1 s for 2000 places): crawlers' repeat and conditional requests reuse it.
-          if(!sitemapCache||Date.now()-sitemapCache.at>=SITEMAP_TTL_MS)sitemapCache={xml:renderSitemap({origin,places:store.listPublishedPlaceIndex()}),at:Date.now()};
-          xml=sitemapCache.xml;
+          xml=publishedIndex().sitemap;
         }
         catch(error) {logs?.captureException(error,{operation:"sitemap"});res.writeHead(503,{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"no-store","Retry-After":"300","X-Content-Type-Options":"nosniff"});res.end(req.method==="HEAD"?undefined:"Sitemap is temporarily unavailable.");return;}
         sendCacheable(req,res,xml,"application/xml; charset=utf-8");return;

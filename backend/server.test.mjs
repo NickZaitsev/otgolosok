@@ -720,12 +720,42 @@ test("the sitemap lists the static pages and indexable places, revalidated by ET
   assert.equal(response.status,200);assert.equal(response.headers["content-type"],"application/xml; charset=utf-8");assert.equal(response.headers["cache-control"],"no-cache");
   const xml=response.body.toString();
   // Node 8 has a two-word story: it stays out; node 9 has a full one.
-  assert.deepEqual([...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(match=>match[1]),["https://otgolosok.test/","https://otgolosok.test/place/node/9"]);
+  assert.deepEqual([...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(match=>match[1]),["https://otgolosok.test/","https://otgolosok.test/places","https://otgolosok.test/place/node/9"]);
   // Repeat and conditional requests reuse the built sitemap instead of reading every story again.
   const index=t.mock.method(f.store,"listPublishedPlaceIndex");
   assert.equal((await raw(f.base,"/sitemap.xml",{"If-None-Match":response.headers.etag})).status,304);
   assert.equal((await raw(f.base,"/sitemap.xml")).body.toString(),xml);
   assert.equal(index.mock.callCount(),0);
+});
+
+test("the HTML catalog serves the city list and pages, 404s for the rest and lists its pages in the sitemap",async t=>{
+  const f=await mapFixture(t);
+  f.store.importPlaces({source:"fixture",sourceSha256:"c".repeat(64),places:[{placeId:"osm:node:20",osmType:"node",osmId:20,name:"Арка",location:{lat:55.75,lon:37.62},tags:{historic:"memorial"}}]});
+  f.store.createBatch({requestKey:"catalog-http",placeIds:["osm:node:20"],limit:1});
+  for(let job=f.store.claimContentJob();job;job=f.store.claimContentJob())
+    f.store.completeContentJob(job.id,{story:{title:"История арки",paragraphs:[{text:Array.from({length:60},(_,index)=>`слово${index}`).join(" "),factIds:[]}],facts:[],sources:[]},evidence:{},autoApprove:true});
+  const index=await raw(f.base,"/places");
+  assert.equal(index.status,200);assert.equal(index.headers["content-type"],"text/html; charset=utf-8");
+  assert.match(index.headers["content-security-policy"],/default-src 'none'/);assert.doesNotMatch(index.headers["content-security-policy"],/script-src/);
+  assert.match(index.body.toString(),/<a href="\/places\/moscow">Москва<\/a>/);
+  const city=await raw(f.base,"/places/moscow");
+  assert.equal(city.status,200);assert.match(city.body.toString(),/<a href="\/place\/node\/20">История арки<\/a>/);
+  assert.equal((await raw(f.base,"/places/moscow",{"If-None-Match":city.headers.etag})).status,304);
+  const head=await raw(f.base,"/places/moscow",{},"HEAD");assert.equal(head.status,200);assert.equal(head.body.length,0);
+  for(const path of ["/places/moscow/2","/places/moscow/1","/places/kazan","/places/nowhere","/places/","/places/moscow/x"]){
+    const missing=await raw(f.base,path);assert.equal(missing.status,404,path);assert.match(missing.body.toString(),/noindex/);
+  }
+  const sitemap=(await raw(f.base,"/sitemap.xml")).body.toString();
+  assert.match(sitemap,/<loc>https:\/\/otgolosok\.test\/places\/moscow<\/loc>/);
+  assert.match((await raw(f.base,"/place/node/20")).body.toString(),/<a href="\/places\/moscow">Все истории: Москва<\/a>/);
+});
+
+test("the HTML catalog fails closed when the store cannot list places",async t=>{
+  const f=await mapFixture(t);
+  t.mock.method(f.store,"listPublishedPlaceIndex",()=>{throw new Error("SQLITE_BUSY: database is locked");});
+  const failed=await raw(f.base,"/places/moscow");
+  assert.equal(failed.status,503);assert.equal(failed.headers["cache-control"],"no-store");
+  assert.doesNotMatch(failed.body.toString(),/SQLITE|locked/);
 });
 
 test("the sitemap fails closed when the store cannot list places",async t=>{

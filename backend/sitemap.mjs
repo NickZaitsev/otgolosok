@@ -1,4 +1,5 @@
 import { isIndexablePlace, placeSharePath } from "./place-share.mjs";
+import { buildCatalog, catalogPaths } from "./places-catalog.mjs";
 
 /**
  * Pages of the static site worth a search result; the rest need a session, an id or are service pages. /trends is
@@ -12,12 +13,12 @@ const URL_LIMIT = 50_000;
 const escape = value => value.replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[char] ?? char);
 
 /**
- * `/sitemap.xml`: the static pages and every published place whose story may go to search (see isIndexablePlace).
+ * `/sitemap.xml`: the static pages, the HTML catalog (backend/places-catalog.mjs) and every published place whose story may go to search (see isIndexablePlace).
  * No lastmod: the store knows when a text was generated, not when it was approved or its photo and recording changed.
- * @param {{origin: string, places: {id: string, verification?: unknown, story?: {paragraphs?: unknown} | null}[]}} input
+ * @param {{origin: string, places: {id: string, name?: unknown, address?: unknown, lat?: unknown, lon?: unknown, verification?: unknown, story?: {paragraphs?: unknown} | null}[]}} input
  */
 export function renderSitemap({ origin, places }) {
-  const entries = STATIC_PATHS.map(path => origin + path);
+  const entries = [...STATIC_PATHS, ...catalogPaths(buildCatalog(places))].map(path => origin + path);
   for (const place of places) {
     const path = placeSharePath(place.id);
     if (!path || !isIndexablePlace(place)) continue;

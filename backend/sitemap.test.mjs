@@ -7,22 +7,22 @@ const origin = "https://otgolosok.test";
 const long = { paragraphs: [{ text: Array.from({ length: INDEXABLE_WORDS }, (_, index) => `слово${index}`).join(" ") }] };
 const locs = xml => [...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(match => match[1]);
 
-test("the sitemap lists the static pages and only the places whose story may go to search", () => {
+test("the sitemap lists the static pages, the catalog and only the places whose story may go to search", () => {
   const xml = renderSitemap({ origin, places: [
-    { id: "osm:node:1", verification: "editorial", story: long },
+    { id: "osm:node:1", name: "Дом", lat: 55.75, lon: 37.62, verification: "editorial", story: long },
     { id: "osm:way:2", verification: "automatic", story: long },
     { id: "osm:node:3", verification: "automatic", story: { paragraphs: [{ text: "Коротко." }] } },
     { id: "osm:node:4", verification: "test_placeholder", story: long },
     { id: "osm:area:5", verification: "editorial", story: long },
   ] });
   assert.match(xml, /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
-  assert.deepEqual(locs(xml), [`${origin}/`, `${origin}/place/node/1`, `${origin}/place/way/2`]);
+  assert.deepEqual(locs(xml), [`${origin}/`, `${origin}/places`, `${origin}/places/moscow`, `${origin}/place/node/1`, `${origin}/place/way/2`]);
   // No lastmod: a generation date is not the date the page last changed.
   assert.doesNotMatch(xml, /lastmod/);
 });
 
-test("an empty catalog still lists the static pages", () => {
-  assert.deepEqual(locs(renderSitemap({ origin, places: [] })), [`${origin}/`]);
+test("an empty catalog still lists the static pages and the catalog index", () => {
+  assert.deepEqual(locs(renderSitemap({ origin, places: [] })), [`${origin}/`, `${origin}/places`]);
 });
 
 test("more URLs than one sitemap file may hold is an error, not a silently cut list", () => {

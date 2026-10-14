@@ -377,10 +377,10 @@ export function createContentStore({db,now,transaction}) {
     },
     /** Every published place with its latest approved story and verification: the sitemap reads it. */
     listPublishedPlaceIndex() {
-      return db.prepare(`SELECT p.id,t.verification,t.approved_story_json FROM places p
+      return db.prepare(`SELECT p.id,p.name,p.address,p.lat,p.lon,t.verification,t.approved_story_json FROM places p
         JOIN place_texts t ON t.rowid=(SELECT t2.rowid FROM place_texts t2 WHERE t2.place_id=p.id AND t2.approved_story_json IS NOT NULL ORDER BY t2.created_at DESC,t2.rowid DESC LIMIT 1)
         WHERE p.archived=0 ORDER BY p.id`).all()
-        .map(row=>({id:row.id,verification:row.verification,story:decode(row.approved_story_json)}));
+        .map(row=>({id:row.id,name:row.name,address:row.address,lat:row.lat,lon:row.lon,verification:row.verification,story:decode(row.approved_story_json)}));
     },
     /** Published places nearest to a point within `radius` metres, the point's own place excluded; map-point shape plus distance. */
     listNearbyPublishedPlaces({lat,lon,excludeId=null,radius=700,limit=6}) {
