@@ -31,8 +31,12 @@ export type Draft = {
 };
 export const emptyDraft = (): Draft => ({ version: 1, title: "Моя прогулка", start: null, mode: "loop", minutes: 30, stops: [], route: null, jobs: [], submitting: null });
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
-export function isPlace(v: unknown): v is Place {
-  return record(v) && typeof v.address === "string" && v.address.trim().length >= 6 && v.address.length <= 180 && !/[\p{Cc}\p{Cf}<>]/u.test(v.address) && record(v.location) && typeof v.location.lat === "number" && typeof v.location.lon === "number" && isMoscowPoint(v.location as Coordinates) && [v.contentId, v.placeId].every(id => id === undefined || typeof id === "string" && /^osm:(node|way|relation):\d+$/.test(id));
+type Area = (point: Coordinates) => boolean;
+/** A stop of the builder, which prepares new walks in Moscow only. */
+export const isPlace = (v: unknown): v is Place => isPlaceIn(v, isMoscowPoint);
+/** A stop inside `inArea`: a walk of another city is checked against its own city. */
+export function isPlaceIn(v: unknown, inArea: Area): v is Place {
+  return record(v) && typeof v.address === "string" && v.address.trim().length >= 6 && v.address.length <= 180 && !/[\p{Cc}\p{Cf}<>]/u.test(v.address) && record(v.location) && typeof v.location.lat === "number" && typeof v.location.lon === "number" && inArea(v.location as Coordinates) && [v.contentId, v.placeId].every(id => id === undefined || typeof id === "string" && /^osm:(node|way|relation):\d+$/.test(id));
 }
 export const placeKey = (p: Place) => `${p.address.trim().toLocaleLowerCase("ru")}|${p.location.lat}|${p.location.lon}`;
 // Match normalizeAddress + the unhashed addressKey input in backend/domain.mjs.
@@ -60,9 +64,10 @@ export function validStops(start: Place | null, stops: Place[], destination?: Pl
     return 12742000 * Math.asin(Math.sqrt(Math.min(1,h))) >= 5;
   }));
 }
-export function isPlan(v: unknown): v is Plan {
-  return record(v) && Array.isArray(v.stops) && v.stops.length >= 0 && v.stops.length <= MAX_WALK_STOPS && v.stops.every(isPlace) &&
-    Array.isArray(v.geometry) && v.geometry.length >= 2 && v.geometry.length <= 12000 && v.geometry.every(p => record(p) && typeof p.lat === "number" && typeof p.lon === "number" && isMoscowPoint(p as Coordinates)) &&
+export const isPlan = (v: unknown): v is Plan => isPlanIn(v, isMoscowPoint);
+export function isPlanIn(v: unknown, inArea: Area): v is Plan {
+  return record(v) && Array.isArray(v.stops) && v.stops.length >= 0 && v.stops.length <= MAX_WALK_STOPS && v.stops.every(stop => isPlaceIn(stop, inArea)) &&
+    Array.isArray(v.geometry) && v.geometry.length >= 2 && v.geometry.length <= 12000 && v.geometry.every(p => record(p) && typeof p.lat === "number" && typeof p.lon === "number" && inArea(p as Coordinates)) &&
     typeof v.distanceM === "number" && Number.isFinite(v.distanceM) && v.distanceM > 0 && v.distanceM <= 8100 &&
     typeof v.walkingMinutes === "number" && Number.isFinite(v.walkingMinutes) && v.walkingMinutes > 0 && v.walkingMinutes <= 90 && typeof v.attribution === "string" && v.attribution.length > 0 && v.attribution.length <= 2000 &&
     validTunnels(v.tunnels, v.geometry.length);

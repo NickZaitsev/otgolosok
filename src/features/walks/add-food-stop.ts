@@ -1,6 +1,7 @@
 import type { FoodPlace } from "../food/types";
 import { accountApi, getSession } from "../auth/client";
-import { isPlan } from "../walk-builder/model";
+import { cityAtPoint } from "../city/current-city";
+import { isPlanIn } from "../walk-builder/model";
 import { playbackStorageKey } from "@/lib/audio/playback-progress";
 import { FoodStopError, foodLegRequest, foodStopLeg, insertFoodStop, viewWithDocument } from "./food-stop";
 import { saveLocalWalk } from "./local-store";
@@ -64,7 +65,8 @@ export async function addFoodStop(view: WalkView, source: FoodStopSource, place:
       if (error instanceof WalkLoadError && [400, 404].includes(error.status)) throw new FoodStopError("Не получилось проложить пешеходный путь к этому заведению.");
       throw error;
     });
-    if (!isPlan(value) || value.stops.length !== 1) throw new Error("Сервис вернул некорректный маршрут. Попробуйте ещё раз.");
+    // The way to the venue stays in the walk's own city, whichever city that is.
+    if (!isPlanIn(value, point => cityAtPoint(point)?.name === sourceDocument.city) || value.stops.length !== 1) throw new Error("Сервис вернул некорректный маршрут. Попробуйте ещё раз.");
     plan = value;
   }
   signal.throwIfAborted();

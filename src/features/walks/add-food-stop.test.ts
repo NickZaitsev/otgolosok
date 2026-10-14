@@ -128,6 +128,31 @@ describe("добавление заведения в прогулку", () => {
     await expect(run({ kind: "local", id: ID }, d)).rejects.toThrow("Сервис вернул некорректный маршрут. Попробуйте ещё раз.");
   });
 
+  describe("в казанской прогулке", () => {
+    // The same walk moved to the Kazan Kremlin: every point keeps its offset.
+    const kazan = <T,>(value: T): T => JSON.parse(JSON.stringify(value), (key, item) =>
+      key === "lat" ? item + 0.045 : key === "lon" ? item + 11.505 : key === "city" ? "Казань" : item);
+    const kazanPlace = kazan(place), kazanPlan = kazan(plan);
+    const kazanView = (): WalkView => ({ ...view(), document: kazan(document()) });
+    const runKazan = (d: ReturnType<typeof deps>) => addFoodStop(kazanView(), { kind: "local", id: ID }, kazanPlace, new AbortController().signal, d);
+
+    it("принимает путь к заведению внутри Казани", async () => {
+      const d = deps();
+      d.plan.mockResolvedValue(kazanPlan);
+      saveLocalWalk(d.storage, kazan(document()), null);
+      const result = await runKazan(d);
+      expect(stopIds(result.view.document)).toEqual(["a", COPY, "b"]);
+      expect(result.view.document.city).toBe("Казань");
+    });
+
+    it("отклоняет путь, уходящий в другой город", async () => {
+      const d = deps();
+      d.plan.mockResolvedValue({ ...kazanPlan, geometry: [...kazanPlan.geometry, at(5)] });
+      saveLocalWalk(d.storage, kazan(document()), null);
+      await expect(runKazan(d)).rejects.toThrow("Сервис вернул некорректный маршрут. Попробуйте ещё раз.");
+    });
+  });
+
   it("ошибка кабинета не подменяется успехом", async () => {
     const d = deps();
     d.account.mockRejectedValue(new Error("Прогулка изменена в другой вкладке."));
