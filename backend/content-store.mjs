@@ -7,6 +7,7 @@ import { IDENTITY_RULES_VERSION, IDENTITY_TIERS } from "./identity-triage.mjs";
 import { cellKey, cellOf, etagOf, isCellLat, isCellLon, serializeCell, toMapPoint } from "./map-cells.mjs";
 import { EDITORIAL_NEXT_CHECK, editorialPlaceImages, PLACE_IMAGE_FILE, PLACE_IMAGE_URL_PREFIX, placeImageInputHash } from "./place-images.mjs";
 import { contentSourceHash } from "./content-localization.mjs";
+import { distanceMeters } from "./open-data.mjs";
 import { createPlaceTranslationStore, validateEditorialSourceStory } from "./place-translations.mjs";
 
 const encode = JSON.stringify;
@@ -373,6 +374,21 @@ export function createContentStore({db,now,transaction}) {
       const audio=latestApprovedAudio(id),story=decode(text.approved_story_json);
       return this.localizePublishedPlace({...place,text:{id:text.id,profile:text.profile,story,verification:text.verification,audio:decode(audio),createdAt:text.created_at},
         photo:publicPhoto(this.getPlaceImageRow(id),story,place.name)},requestedLocale);
+    },
+    /** Every published place with its latest approved story, verification and the date of that text: the sitemap reads it. */
+    listPublishedPlaceIndex() {
+      return db.prepare(`SELECT p.id,t.created_at,t.verification,t.approved_story_json FROM places p
+        JOIN place_texts t ON t.rowid=(SELECT t2.rowid FROM place_texts t2 WHERE t2.place_id=p.id AND t2.approved_story_json IS NOT NULL ORDER BY t2.created_at DESC,t2.rowid DESC LIMIT 1)
+        WHERE p.archived=0 ORDER BY p.id`).all()
+        .map(row=>({id:row.id,updatedAt:row.created_at,verification:row.verification,story:decode(row.approved_story_json)}));
+    },
+    /** Published places nearest to a point within `radius` metres, the point's own place excluded; map-point shape plus distance. */
+    listNearbyPublishedPlaces({lat,lon,excludeId=null,radius=700,limit=6}) {
+      if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(radius)||radius<=0||radius>5000||!Number.isSafeInteger(limit)||limit<1||limit>50)throw fail("BAD_REQUEST");
+      const latDelta=radius/111320,lonDelta=radius/(111320*Math.cos(lat*Math.PI/180));
+      const rows=db.prepare(MAP_POINT_SELECT.replace("/*BOUNDS*/","AND p.lat BETWEEN ? AND ? AND p.lon BETWEEN ? AND ?")).all(lat-latDelta,lat+latDelta,lon-lonDelta,lon+lonDelta);
+      return rows.filter(row=>row.id!==excludeId).map(row=>({...mapPoint(row),distanceM:Math.round(distanceMeters({lat,lon},{lat:row.lat,lon:row.lon}))}))
+        .filter(point=>point.distanceM<=radius).sort((a,b)=>a.distanceM-b.distanceM||a.id.localeCompare(b.id)).slice(0,limit);
     },
     /** Mirrors the editorial catalog: upserts its entries and drops editorial rows that left it, so the sync takes them over. */
     syncEditorialPlaceImages(catalog) {

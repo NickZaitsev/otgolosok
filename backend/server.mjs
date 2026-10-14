@@ -51,6 +51,7 @@ import { createTtsApiClient } from "./tts-api-client.mjs";
 import { startTtsApiWorker } from "./tts-api-worker.mjs";
 import { serializeCell } from "./map-cells.mjs";
 import { sendCacheable, sendCacheableJson, sendUncachedJson } from "./http-cache.mjs";
+import { renderSitemap } from "./sitemap.mjs";
 import { SHARE_NOT_FOUND_HTML, SHARE_PAGE_CSP, renderPlaceSharePage, shareLocale, shareUnavailableHtml, sharePathToPlaceId } from "./place-share.mjs";
 
 const UUID = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
@@ -671,17 +672,31 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,yandex
       }
       const publicPlace=/^\/api\/content\/places\/(osm:(?:node|way|relation):\d+)$/.exec(url.pathname);
       if(readMethod&&publicPlace){const place=store.getPublishedPlace(publicPlace[1],{requestedLocale:readContentLocale(url.searchParams)});if(place)sendCacheableJson(req,res,JSON.stringify({place}));else json(res,404,{error:{code:"NOT_FOUND",message:"Place text not found."}});return;}
-      // The shared link of a place: its preview tags for messengers, then the map (backend/place-share.mjs).
+      // The page of a place: its story, sources, nearby places and preview tags for messengers (backend/place-share.mjs).
       if(readMethod&&url.pathname.startsWith("/place/")) {
         const placeId=sharePathToPlaceId(url.pathname);
         const locale=shareLocale(url.searchParams.get("lang"));
         let page;
         // A person following the link gets a page, not the JSON error: the map retries on its own.
-        try {page=placeId?renderPlaceSharePage({id:placeId,place:store.getPublishedPlace(placeId),origin,locale}):{status:404,html:SHARE_NOT_FOUND_HTML};}
+        try {
+          const place=placeId?store.getPublishedPlace(placeId):null;
+          // Nearby links are a bonus: without them the story is still worth serving.
+          let nearby=[];
+          if(place)try {nearby=store.listNearbyPublishedPlaces({lat:place.location.lat,lon:place.location.lon,excludeId:placeId});}
+          catch(error) {logs?.captureException(error,{operation:"place page nearby",context:{placeId}});}
+          page=placeId?renderPlaceSharePage({id:placeId,place,origin,locale,nearby}):{status:404,html:SHARE_NOT_FOUND_HTML};
+        }
         catch(error) {logs?.captureException(error,{operation:"place share page",context:{placeId}});page={status:503,html:shareUnavailableHtml(/** @type {string} */ (placeId),locale)};}
         if(page.status===200){sendCacheable(req,res,page.html,"text/html; charset=utf-8",{"Content-Security-Policy":SHARE_PAGE_CSP});return;}
         res.writeHead(page.status,{"Content-Type":"text/html; charset=utf-8","Cache-Control":page.status===503?"no-store":"no-cache","X-Content-Type-Options":"nosniff","Content-Security-Policy":SHARE_PAGE_CSP});
         res.end(req.method==="HEAD"?undefined:page.html);return;
+      }
+      // The search engines' list of pages: the static ones and every indexable place (backend/sitemap.mjs).
+      if(readMethod&&url.pathname==="/sitemap.xml") {
+        let xml;
+        try {xml=renderSitemap({origin,places:store.listPublishedPlaceIndex()});}
+        catch(error) {logs?.captureException(error,{operation:"sitemap"});res.writeHead(503,{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"no-store","Retry-After":"300","X-Content-Type-Options":"nosniff"});res.end(req.method==="HEAD"?undefined:"Sitemap is temporarily unavailable.");return;}
+        sendCacheable(req,res,xml,"application/xml; charset=utf-8");return;
       }
       // One URL per cell (no query, no "-0", no leading zeros), so every cell has exactly one cache key.
       if(readMethod&&url.pathname==="/api/content/map-cells") {

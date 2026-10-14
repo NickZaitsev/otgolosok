@@ -645,20 +645,22 @@ test("a shared place link serves its preview page, revalidated by ETag, ahead of
   const response=await raw(f.base,"/place/node/8?utm_source=telegram",{"Accept-Encoding":"br"});
   assert.equal(response.status,200);assert.equal(response.headers["content-type"],"text/html; charset=utf-8");
   assert.equal(response.headers["cache-control"],"no-cache");assert.equal(response.headers["content-encoding"],"br");
-  assert.match(response.headers["content-security-policy"],/^default-src 'none'; script-src 'sha256-[A-Za-z0-9+/]+=*'/);
+  assert.match(response.headers["content-security-policy"],/^default-src 'none'; style-src 'sha256-[A-Za-z0-9+/]+=*'/);
   const html=brotliDecompressSync(response.body).toString();
   assert.match(html,/<meta property="og:title" content="История: Сад">/);
   assert.match(html,/<meta property="og:url" content="https:\/\/otgolosok\.test\/place\/node\/8">/);
-  assert.match(html,/<a id="open" href="\/\?place=osm:node:8">/);
+  assert.match(html,/<a id="open" class="open" href="\/\?place=osm:node:8">/);
+  // The fixture story is two words: served, but kept out of search.
+  assert.match(html,/<meta name="robots" content="noindex, follow">/);
   for(const [lang,target] of [["en","/en?place=osm:node:8"],["zh","/zh?place=osm:node:8"]]) {
     const localized=await raw(f.base,`/place/node/8?lang=${lang}`);
     assert.equal(localized.status,200);
     assert.match(localized.body.toString(),new RegExp(`<meta property="og:url" content="https://otgolosok\\.test/place/node/8\\?lang=${lang}">`));
-    assert.match(localized.body.toString(),new RegExp(`<a id="open" href="${target.replace(/[?]/g,"\\?")}">`));
+    assert.match(localized.body.toString(),new RegExp(`<a id="open" class="open" href="${target.replace(/[?]/g,"\\?")}">`));
   }
   const unknownLanguage=await raw(f.base,"/place/node/8?lang=de");
   assert.match(unknownLanguage.body.toString(),/<meta property="og:url" content="https:\/\/otgolosok\.test\/place\/node\/8">/);
-  assert.match(unknownLanguage.body.toString(),/<a id="open" href="\/\?place=osm:node:8">/);
+  assert.match(unknownLanguage.body.toString(),/<a id="open" class="open" href="\/\?place=osm:node:8">/);
   const again=await raw(f.base,"/place/node/8",{"If-None-Match":response.headers.etag});
   assert.equal(again.status,304);assert.equal(again.body.length,0);
   const head=await raw(f.base,"/place/node/8",{},"HEAD");
@@ -687,12 +689,43 @@ test("a shared link answers an uncached HTML 503 that still leads to the map whe
   const failed=await raw(f.base,"/place/node/8");
   assert.equal(failed.status,503);assert.equal(failed.headers["content-type"],"text/html; charset=utf-8");
   assert.equal(failed.headers["cache-control"],"no-store");assert.equal(failed.headers.etag,undefined);
-  assert.match(failed.headers["content-security-policy"],/script-src 'sha256-/);
+  assert.match(failed.headers["content-security-policy"],/^default-src 'none'/);
   const body=failed.body.toString();
   assert.match(body,/Не удалось загрузить историю\./);assert.match(body,/href="\/\?place=osm:node:8"/);
   assert.doesNotMatch(body,/SQLITE|locked/);
   const head=await raw(f.base,"/place/node/8",{},"HEAD");
   assert.equal(head.status,503);assert.equal(head.body.length,0);
+});
+
+test("a place page links its published neighbours and survives their lookup failing",async t=>{
+  const f=await mapFixture(t);
+  f.store.importPlaces({source:"fixture",sourceSha256:"b".repeat(64),places:[{placeId:"osm:node:10",osmType:"node",osmId:10,name:"Беседка",location:{lat:55.751,lon:37.61},tags:{leisure:"garden"}}]});
+  f.store.createBatch({requestKey:"map-http-neighbour",placeIds:["osm:node:10"],limit:1});
+  for(let job=f.store.claimContentJob();job;job=f.store.claimContentJob())
+    f.store.completeContentJob(job.id,{story:{title:"История: Беседка",paragraphs:[{text:"Текст",factIds:["f1"]}],facts:[{id:"f1"}],sources:[]},evidence:{},autoApprove:true});
+  const page=(await raw(f.base,"/place/node/8")).body.toString();
+  assert.match(page,/<a href="\/place\/node\/10">История: Беседка<\/a> <span class="publisher">· 111 м<\/span>/);
+  assert.doesNotMatch(page,/place\/node\/9"/);
+  t.mock.method(f.store,"listNearbyPublishedPlaces",()=>{throw new Error("SQLITE_BUSY: database is locked");});
+  const degraded=await raw(f.base,"/place/node/8");
+  assert.equal(degraded.status,200);
+  assert.match(degraded.body.toString(),/<h1>История: Сад<\/h1>/);
+  assert.doesNotMatch(degraded.body.toString(),/Истории рядом/);
+});
+
+test("the sitemap lists the static pages and indexable places, revalidated by ETag, and fails closed",async t=>{
+  const f=await mapFixture(t);
+  f.store.approvePlaceText("osm:node:9",{title:"Парк",paragraphs:[{text:Array.from({length:60},(_,index)=>`слово${index}`).join(" "),factIds:[]}],facts:[],sources:[]});
+  const response=await raw(f.base,"/sitemap.xml");
+  assert.equal(response.status,200);assert.equal(response.headers["content-type"],"application/xml; charset=utf-8");assert.equal(response.headers["cache-control"],"no-cache");
+  const xml=response.body.toString();
+  // Node 8 has a two-word story: it stays out; node 9 has a full one.
+  assert.deepEqual([...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map(match=>match[1]),["https://otgolosok.test/","https://otgolosok.test/trends","https://otgolosok.test/place/node/9"]);
+  assert.equal((await raw(f.base,"/sitemap.xml",{"If-None-Match":response.headers.etag})).status,304);
+  t.mock.method(f.store,"listPublishedPlaceIndex",()=>{throw new Error("SQLITE_BUSY: database is locked");});
+  const failed=await raw(f.base,"/sitemap.xml");
+  assert.equal(failed.status,503);assert.equal(failed.headers["cache-control"],"no-store");assert.equal(failed.headers["retry-after"],"300");
+  assert.doesNotMatch(failed.body.toString(),/SQLITE|locked/);
 });
 
 test("place photos are served immutable by content-addressed name only",async t=>{

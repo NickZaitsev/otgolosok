@@ -813,3 +813,35 @@ test("a complete import archives absent places only in its own city",t=>{
     assert.throws(()=>store.importPlaces({...catalog,sourceSha256:"f".repeat(64),places},{complete:true}),{code:"BAD_REQUEST"});
   assert.deepEqual(store.listPlaces().places.map(item=>item.id).sort(),["osm:node:1","osm:way:3"]);
 });
+
+test("place pages read the published index and nearest published neighbours", t => {
+  const store = createStore(":memory:", { maxActive: 100 });
+  t.after(() => store.close());
+  const places = [
+    { placeId: "osm:node:1", osmType: "node", osmId: 1, name: "Центр", location: { lat: 55.75, lon: 37.61 }, tags: {} },
+    { placeId: "osm:node:2", osmType: "node", osmId: 2, name: "Сосед", location: { lat: 55.7509, lon: 37.61 }, tags: {} },
+    { placeId: "osm:node:3", osmType: "node", osmId: 3, name: "Дальний сосед", location: { lat: 55.7545, lon: 37.61 }, tags: {} },
+    { placeId: "osm:node:4", osmType: "node", osmId: 4, name: "Черновик", location: { lat: 55.7501, lon: 37.61 }, tags: {} },
+    { placeId: "osm:node:5", osmType: "node", osmId: 5, name: "За радиусом", location: { lat: 55.76, lon: 37.61 }, tags: {} },
+  ];
+  store.importPlaces({ ...catalog, places });
+  store.createBatch({ requestKey: "place-page-1", placeIds: places.map(place => place.placeId), limit: 5 });
+  for (let job = store.claimContentJob(); job; job = store.claimContentJob()) {
+    store.completeContentJob(job.id, { story: { title: `История: ${job.place.name}`, paragraphs: [{ text: "Текст", factIds: [] }], facts: [], sources: [] }, evidence: {}, autoApprove: job.place.id !== "osm:node:4" });
+  }
+
+  const index = store.listPublishedPlaceIndex();
+  assert.deepEqual(index.map(place => place.id), ["osm:node:1", "osm:node:2", "osm:node:3", "osm:node:5"]);
+  assert.equal(index[0].story.title, "История: Центр");
+  assert.ok(!Number.isNaN(Date.parse(index[0].updatedAt)));
+  // An editor's newer approved text is the one the index reads.
+  store.approvePlaceText("osm:node:1", { title: "Новая история", paragraphs: [{ text: "Новый текст", factIds: [] }], facts: [], sources: [] });
+  assert.equal(store.listPublishedPlaceIndex()[0].story.title, "Новая история");
+
+  // Nearest first, the place itself, drafts and places beyond the radius left out.
+  const nearby = store.listNearbyPublishedPlaces({ lat: 55.75, lon: 37.61, excludeId: "osm:node:1" });
+  assert.deepEqual(nearby.map(place => [place.id, place.title, place.distanceM]), [["osm:node:2", "История: Сосед", 100], ["osm:node:3", "История: Дальний сосед", 500]]);
+  assert.deepEqual(store.listNearbyPublishedPlaces({ lat: 55.75, lon: 37.61, excludeId: "osm:node:1", limit: 1 }).map(place => place.id), ["osm:node:2"]);
+  for (const invalid of [{ lat: NaN, lon: 37.61 }, { lat: 55.75, lon: 37.61, radius: 0 }, { lat: 55.75, lon: 37.61, radius: 5001 }, { lat: 55.75, lon: 37.61, limit: 0 }, { lat: 55.75, lon: 37.61, limit: 1.5 }])
+    assert.throws(() => store.listNearbyPublishedPlaces(invalid), { code: "BAD_REQUEST" });
+});
