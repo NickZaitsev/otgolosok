@@ -3,10 +3,14 @@ tls:
     otgolosok:
       minVersion: VersionTLS12
       maxVersion: VersionTLS13
+      # h2 first: browsers keep HTTP/2. HTTP/1.1 stays for crawlers and site verifiers (Google, Yandex)
+      # that do not speak HTTP/2; without it they got 505 and could not read the site.
       alpnProtocols:
         - h2
+        - http/1.1
 http:
   middlewares:
+    # Not attached to any router since 2026-10-14; kept so a stale router label cannot point at a missing middleware.
     otgolosok-h2-only:
       plugin:
         h2only: {}

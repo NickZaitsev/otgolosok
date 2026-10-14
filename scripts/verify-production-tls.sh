@@ -35,9 +35,10 @@ docker compose -f /srv/traefik/docker-compose.yml config -q
 docker compose -f /srv/sites/otgolosok.softmg.tech/docker-compose.yml config -q
 docker compose -p otgolosok-generator -f /srv/sites/otgolosok.softmg.tech/generator-compose.yml config -q
 [ "$(docker inspect otgolosok-generator-generator-1 --format '{{index .Config.Labels "traefik.http.routers.otgolosok-generator.tls.options"}}')" = 'otgolosok@file' ]
-[ "$(docker inspect otgolosok-generator-generator-1 --format '{{index .Config.Labels "traefik.http.routers.otgolosok-generator.middlewares"}}')" = 'otgolosok-h2-only@file' ]
+# HTTP/1.1 is served again (crawlers and site verifiers need it): no route may carry the old HTTP/2-only middleware.
+[ "$(docker inspect otgolosok-generator-generator-1 --format '{{index .Config.Labels "traefik.http.routers.otgolosok-generator.middlewares"}}')" = '' ]
 [ "$(docker inspect otgolosoksoftmgtech-otgolosok-softmg-tech-1 --format '{{index .Config.Labels "traefik.http.routers.otgolosok-softmg-tech.tls.options"}}')" = 'otgolosok@file' ]
-[ "$(docker inspect otgolosoksoftmgtech-otgolosok-softmg-tech-1 --format '{{index .Config.Labels "traefik.http.routers.otgolosok-softmg-tech.middlewares"}}')" = 'otgolosok-softmg-tech-security,otgolosok-h2-only@file' ]
+[ "$(docker inspect otgolosoksoftmgtech-otgolosok-softmg-tech-1 --format '{{index .Config.Labels "traefik.http.routers.otgolosok-softmg-tech.middlewares"}}')" = 'otgolosok-softmg-tech-security' ]
 [ "$(docker inspect otgolosok-generator-generator-1 --format '{{.State.Health.Status}}')" = healthy ]
 REMOTE
 then
@@ -45,18 +46,19 @@ then
   exit 1
 fi
 
+# Expected "<status> <HTTP version>": a browser offering both gets HTTP/2, a client knowing only HTTP/1.1 is served too.
 probe() {
   local expected="$1" protocol="$2" path="$3" actual
   if ! actual="$(curl --silent --show-error --connect-timeout 5 --max-time 10 \
     --resolve "otgolosok.online:443:${SITE_IP}" "${protocol}" \
-    --output /dev/null --write-out '%{http_code}' "https://otgolosok.online${path}")"; then
+    --output /dev/null --write-out '%{http_code} %{http_version}' "https://otgolosok.online${path}")"; then
     echo "Не удалось проверить ${path} по ${protocol}" >&2
     return 1
   fi
   [ "${actual}" = "${expected}" ] || { echo "${path} ${protocol}: ожидался ${expected}, получен ${actual}" >&2; return 1; }
 }
-probe 200 --http2 /
-probe 505 --http1.1 /
-probe 200 --http2 /api/story-service
-probe 505 --http1.1 /api/story-service
-echo 'TLS и HTTP/2 на production проверены'
+for path in / /api/story-service /sitemap.xml; do
+  probe "200 2" --http2 "${path}"
+  probe "200 1.1" --http1.1 "${path}"
+done
+echo 'TLS, HTTP/2 и HTTP/1.1 на production проверены'
