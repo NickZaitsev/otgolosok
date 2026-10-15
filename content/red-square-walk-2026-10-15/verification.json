@@ -1,0 +1,585 @@
+{
+  "checkedAt": "2026-10-15T08:07:06Z",
+  "checked": 10,
+  "errors": [],
+  "entries": [
+    {
+      "placeId": "osm:node:995935368",
+      "title": "Памятник Минину и Пожарскому",
+      "textId": "44d96d05-7c51-4394-bc90-6f2716c5cfe6",
+      "wordCount": 340,
+      "sourceTextSha256": "e0474447e72c20083d347275c03b65d5e02f8ca758526a6cc09a637e4fd4d536",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/751b2ae59e8e43c5e325437a59a65262c8d3782f9de5dc2fafe4c677eb779600.mp3",
+        "sha256": "751b2ae59e8e43c5e325437a59a65262c8d3782f9de5dc2fafe4c677eb779600",
+        "bytes": 1463661,
+        "durationSec": 182.928,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "751b2ae59e8e43c5e325437a59a65262c8d3782f9de5dc2fafe4c677eb779600",
+          "bytes": 1463661,
+          "durationSec": 182.858208,
+          "decoded": true
+        },
+        {
+          "sha256": "f53051ec3009b61119af6eedd0bbd0f43b4741726c2625cbef52b6092c040a74",
+          "bytes": 555501,
+          "durationSec": 69.349333,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/c409386608cbc86ad4e9eed29446504423a5988f252624c434d2a61110c07160.jpg",
+        "src": "/api/place-images/4835e69ee410c31a2f277099caf636f815dca5f927011d1801bc863ac632a582.jpg",
+        "width": 500,
+        "height": 755,
+        "alt": "Памятник Минину и Пожарскому",
+        "author": "Uwe Brodrecht",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:0340_-_Moskau_2015_(26399133935).jpg",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/4835e69ee410c31a2f277099caf636f815dca5f927011d1801bc863ac632a582.jpg",
+          "width": 500,
+          "height": 755,
+          "bytes": 142971
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/c409386608cbc86ad4e9eed29446504423a5988f252624c434d2a61110c07160.jpg",
+          "width": 250,
+          "height": 377,
+          "bytes": 39085
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:1359372",
+      "title": "Никольская башня",
+      "textId": "de16f7ec-4697-4516-8dbe-8fdcf9362692",
+      "wordCount": 341,
+      "sourceTextSha256": "a829c03b3491db8f30832ab0989565cd9426aafff1cbd84c4a41782f1ef73d80",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/3ba628f24981925e8ecd4e4bc2e546b44b731491f88ae08bdb2b9514ee1bd07b.mp3",
+        "sha256": "3ba628f24981925e8ecd4e4bc2e546b44b731491f88ae08bdb2b9514ee1bd07b",
+        "bytes": 1414317,
+        "durationSec": 176.76,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "3ba628f24981925e8ecd4e4bc2e546b44b731491f88ae08bdb2b9514ee1bd07b",
+          "bytes": 1414317,
+          "durationSec": 176.693333,
+          "decoded": true
+        },
+        {
+          "sha256": "0a166c4b7a5e40455760d2b2badf187cc70f96f4ca617f200b2a70851c2cc596",
+          "bytes": 566253,
+          "durationSec": 70.690667,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/d2d7207b365ed4ba47f556d24e523883e7df46f9898904d423fe62517f7cef66.jpg",
+        "src": "/api/place-images/e451ee9f6e8f994966bb5c543a1fed85bb4a7cec7709e52dc99b6126cf8b054e.jpg",
+        "width": 500,
+        "height": 712,
+        "alt": "Никольская башня",
+        "author": "Sergius1989",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nikolskaya2010.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/e451ee9f6e8f994966bb5c543a1fed85bb4a7cec7709e52dc99b6126cf8b054e.jpg",
+          "width": 500,
+          "height": 712,
+          "bytes": 74781
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/d2d7207b365ed4ba47f556d24e523883e7df46f9898904d423fe62517f7cef66.jpg",
+          "width": 250,
+          "height": 356,
+          "bytes": 21603
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:1555621",
+      "title": "парк «Зарядье»",
+      "textId": "d03eb8e0-aa2e-4f61-ae5c-eb1b81fa2355",
+      "wordCount": 338,
+      "sourceTextSha256": "feeede6cc02e45156b40df9225121241de9a9f3cd1dac851dbe8d0813da81843",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/6fa63c14dd08bd04171e031fe17103ac98f8b684538ecc4379efeeb52bdc2832.mp3",
+        "sha256": "6fa63c14dd08bd04171e031fe17103ac98f8b684538ecc4379efeeb52bdc2832",
+        "bytes": 1404909,
+        "durationSec": 175.584,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "6fa63c14dd08bd04171e031fe17103ac98f8b684538ecc4379efeeb52bdc2832",
+          "bytes": 1404909,
+          "durationSec": 175.52,
+          "decoded": true
+        },
+        {
+          "sha256": "e5561d6a915e139cdb945897e04ef19fb6d113cfcbce4064ff46b73d5b617812",
+          "bytes": 570285,
+          "durationSec": 71.192,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/8d30fe2db381545751d622c33684020a40a91fa4d75911c890f755abc882e4d2.jpg",
+        "src": "/api/place-images/4041b2b7bd7aed141236639325bbc2c54fab39ef72108b13ab0e7337d99e4b39.jpg",
+        "width": 960,
+        "height": 636,
+        "alt": "парк «Зарядье»",
+        "author": "Alina Vozna",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B0%D1%80%D0%BA_%D0%97%D0%B0%D1%80%D1%8F%D0%B4%D1%8C%D0%B5_%D0%B2_%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B5._%D0%A4%D0%BE%D1%82%D0%BE_18.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/4041b2b7bd7aed141236639325bbc2c54fab39ef72108b13ab0e7337d99e4b39.jpg",
+          "width": 960,
+          "height": 636,
+          "bytes": 227380
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/8d30fe2db381545751d622c33684020a40a91fa4d75911c890f755abc882e4d2.jpg",
+          "width": 250,
+          "height": 166,
+          "bytes": 19334
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:1577673",
+      "title": "Красная площадь",
+      "textId": "bcf58195-cf34-4132-ba03-c23769305ea7",
+      "wordCount": 354,
+      "sourceTextSha256": "444e1acbdda0707e315c46699dd977b67f0974a1f6cf28b9fe384f67821bd14c",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/961e791ef1f818a39d2c503330bb41d44f2a73bbfa36fbc0403238d67f8d7822.mp3",
+        "sha256": "961e791ef1f818a39d2c503330bb41d44f2a73bbfa36fbc0403238d67f8d7822",
+        "bytes": 1462317,
+        "durationSec": 182.76,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "961e791ef1f818a39d2c503330bb41d44f2a73bbfa36fbc0403238d67f8d7822",
+          "bytes": 1462317,
+          "durationSec": 182.7015,
+          "decoded": true
+        },
+        {
+          "sha256": "df2b4c22add7bca879a96a36c5f92f9066b6de036f1f7caab4e8d508be04d3a8",
+          "bytes": 500973,
+          "durationSec": 62.522667,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/85846094c6b71b10740662e901dd2e112a4d564b918af03eec2d530cc561327d.jpg",
+        "src": "/api/place-images/d0390415008b590b6b64e195e4e06b7b84da4785391b2a6fa285518485bc976d.jpg",
+        "width": 960,
+        "height": 638,
+        "alt": "Красная площадь",
+        "author": "mos.ru",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kremlin_and_Red_Square.1.jpg",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/d0390415008b590b6b64e195e4e06b7b84da4785391b2a6fa285518485bc976d.jpg",
+          "width": 960,
+          "height": 638,
+          "bytes": 211249
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/85846094c6b71b10740662e901dd2e112a4d564b918af03eec2d530cc561327d.jpg",
+          "width": 250,
+          "height": 166,
+          "bytes": 18074
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:19088121",
+      "title": "Церковь Рождества Иоанна Предтечи у Варварских ворот",
+      "textId": "5a6efbac-e085-5973-921e-3d09e4010d93",
+      "wordCount": 334,
+      "sourceTextSha256": "a94329e42ac19e715e78341825db0ed0c5fcaee394e75081bbb6fd2e239346eb",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/62e84b7f80bee01d818593096ec06319975ebdd00ad499e5b13839a98d4e34c3.mp3",
+        "sha256": "62e84b7f80bee01d818593096ec06319975ebdd00ad499e5b13839a98d4e34c3",
+        "bytes": 1413741,
+        "durationSec": 176.688,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "62e84b7f80bee01d818593096ec06319975ebdd00ad499e5b13839a98d4e34c3",
+          "bytes": 1413741,
+          "durationSec": 176.64,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/06d9b0f090b3a102a58c65e387ba61417db271cdae6b704916f44bd17e5e0ac0.jpg",
+        "src": "/api/place-images/435275982bd7390ff7188fb9d95616f1dfe096f2892484204ceef0a8f9d644b6.jpg",
+        "width": 500,
+        "height": 609,
+        "alt": "Церковь Рождества Иоанна Предтечи у Варварских ворот",
+        "author": "Unknown authorUnknown author",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Church_of_Nativity_of_John_the_Baptist_in_Varvarka.JPG",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/File:Church_of_Nativity_of_John_the_Baptist_in_Varvarka.JPG"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/435275982bd7390ff7188fb9d95616f1dfe096f2892484204ceef0a8f9d644b6.jpg",
+          "width": 500,
+          "height": 609,
+          "bytes": 76865
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/06d9b0f090b3a102a58c65e387ba61417db271cdae6b704916f44bd17e5e0ac0.jpg",
+          "width": 250,
+          "height": 305,
+          "bytes": 21477
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:3226496",
+      "title": "Лобное место",
+      "textId": "809f73d3-552c-446e-bf65-7a8166d7efcf",
+      "wordCount": 344,
+      "sourceTextSha256": "a769b5d5a57f9a2a2f6a74068464787856762648f0ba4bb119dd134950bbc201",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/8b4ef5b8db7c89dc101d9b944c0af22c3997d0c63140ef041230e1c91d500b33.mp3",
+        "sha256": "8b4ef5b8db7c89dc101d9b944c0af22c3997d0c63140ef041230e1c91d500b33",
+        "bytes": 1417005,
+        "durationSec": 177.096,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "8b4ef5b8db7c89dc101d9b944c0af22c3997d0c63140ef041230e1c91d500b33",
+          "bytes": 1417005,
+          "durationSec": 177.04,
+          "decoded": true
+        },
+        {
+          "sha256": "f4af809167d16ea47765635dac8e007feebeb9738b02ca49f40877232fdcddb4",
+          "bytes": 641517,
+          "durationSec": 80.098667,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/985442aeeff42ca792e13517741c8b1c39607f24c7155a816b80c6767c2dec01.jpg",
+        "src": "/api/place-images/0dd30be92ccc9335183fa7a5191bf72cb32c074fc832caf55c62872bc8f86e55.jpg",
+        "width": 960,
+        "height": 585,
+        "alt": "Лобное место",
+        "author": "Kopchiowski O.P.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lobnoe_place_Moscow.jpg",
+        "license": "CC BY 2.5",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.5"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/0dd30be92ccc9335183fa7a5191bf72cb32c074fc832caf55c62872bc8f86e55.jpg",
+          "width": 960,
+          "height": 585,
+          "bytes": 213175
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/985442aeeff42ca792e13517741c8b1c39607f24c7155a816b80c6767c2dec01.jpg",
+          "width": 250,
+          "height": 152,
+          "bytes": 18638
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:3272726",
+      "title": "Мавзолей В. И. Ленина",
+      "textId": "6434603d-af04-4a45-bd32-e0057479c506",
+      "wordCount": 344,
+      "sourceTextSha256": "1fa80f747928669c273c830f05ee03c623753753ed75d77172bd619affa3ce0b",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/d292a6d659b6a7c255b524c6902ebcbc4e1c599d8cbce187a37d997deb859f88.mp3",
+        "sha256": "d292a6d659b6a7c255b524c6902ebcbc4e1c599d8cbce187a37d997deb859f88",
+        "bytes": 1411053,
+        "durationSec": 176.352,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "d292a6d659b6a7c255b524c6902ebcbc4e1c599d8cbce187a37d997deb859f88",
+          "bytes": 1411053,
+          "durationSec": 176.3015,
+          "decoded": true
+        },
+        {
+          "sha256": "ac537d3d059300789242ec1c0d705844c8f4970e614248617bc63aff5596709c",
+          "bytes": 522093,
+          "durationSec": 65.165333,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/68ea00b11e1b202da89dafb8b6102dcffb7ae239aed960233ea9c6a70e62ce45.jpg",
+        "src": "/api/place-images/ac41578783c62d6958aa96d14d8429ea0b8497366847d18b084014c690bb1651.jpg",
+        "width": 960,
+        "height": 640,
+        "alt": "Мавзолей В. И. Ленина",
+        "author": "W. Bulach",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:0_234_Roter_Platz_(Lenin-Mausoleum.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/ac41578783c62d6958aa96d14d8429ea0b8497366847d18b084014c690bb1651.jpg",
+          "width": 960,
+          "height": 640,
+          "bytes": 137990
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/68ea00b11e1b202da89dafb8b6102dcffb7ae239aed960233ea9c6a70e62ce45.jpg",
+          "width": 250,
+          "height": 167,
+          "bytes": 11356
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:4137492",
+      "title": "Палаты Старого Монетного двора (Красный монетный двор)",
+      "textId": "5947a374-d69c-4e24-be44-05a7c144f172",
+      "wordCount": 343,
+      "sourceTextSha256": "a2f61a80248ff816db089d990e411feca4ec9a490f60bb89c2f9f5b653b174a3",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/1eb0b29f7ea530e0d88f46e2d0f4021f5856e5ad8ced004fdcd75d6c79164b3d.mp3",
+        "sha256": "1eb0b29f7ea530e0d88f46e2d0f4021f5856e5ad8ced004fdcd75d6c79164b3d",
+        "bytes": 1437165,
+        "durationSec": 179.616,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "1eb0b29f7ea530e0d88f46e2d0f4021f5856e5ad8ced004fdcd75d6c79164b3d",
+          "bytes": 1437165,
+          "durationSec": 179.566792,
+          "decoded": true
+        },
+        {
+          "sha256": "3e6c062f5c1f3a9ef33d5fde4b7deb7427014f1eae9aceb1370886a07f612837",
+          "bytes": 503661,
+          "durationSec": 62.88,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/464b6daca8631d8a9a1c6fe14eb5ee27f577f8063cb89fbb2785a51614f5f9a3.jpg",
+        "src": "/api/place-images/f9dd7f4b83da1097939f36f8fe2afa2e02b52142dc550b55b2f1ccd391d21409.jpg",
+        "width": 960,
+        "height": 568,
+        "alt": "Палаты Старого Монетного двора (Красный монетный двор)",
+        "author": "WM wm WM",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9F%D0%B0%D0%BB%D0%B0%D1%82%D1%8B_%D1%81%D1%82%D0%B0%D1%80%D0%BE%D0%B3%D0%BE_%D0%BC%D0%BE%D0%BD%D0%B5%D1%82%D0%BD%D0%BE%D0%B3%D0%BE_%D0%B4%D0%B2%D0%BE%D1%80%D0%B0.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/f9dd7f4b83da1097939f36f8fe2afa2e02b52142dc550b55b2f1ccd391d21409.jpg",
+          "width": 960,
+          "height": 568,
+          "bytes": 234885
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/464b6daca8631d8a9a1c6fe14eb5ee27f577f8063cb89fbb2785a51614f5f9a3.jpg",
+          "width": 250,
+          "height": 148,
+          "bytes": 17712
+        }
+      ]
+    },
+    {
+      "placeId": "osm:relation:7624254",
+      "title": "Казанский собор на Красной площади",
+      "textId": "a713ba82-7667-40aa-9924-eb149ae90ef9",
+      "wordCount": 304,
+      "sourceTextSha256": "fb0abcd950c052485a7c4c3cc89ab2d0a2802a0e7f3ec4c96a731b4a7e128eb8",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/a81a987713e73cb2a13857f7d256f3d93ae368e4eafc386f6a1271f815aa0759.mp3",
+        "sha256": "a81a987713e73cb2a13857f7d256f3d93ae368e4eafc386f6a1271f815aa0759",
+        "bytes": 1283949,
+        "durationSec": 160.464,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "a81a987713e73cb2a13857f7d256f3d93ae368e4eafc386f6a1271f815aa0759",
+          "bytes": 1283949,
+          "durationSec": 160.4,
+          "decoded": true
+        },
+        {
+          "sha256": "40b83be1fac70d5c1ef8ffb5dd7dd332a3911efd02555c1fb4e64e0e6fc8acff",
+          "bytes": 553581,
+          "durationSec": 69.12,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/0daa410c9d3db2bd6442ec363798579a750adcf49b13470087b4b2bec5c52373.jpg",
+        "src": "/api/place-images/a4bb8d9154af3b1d857f0699192c7ecc194bb6b7feebee76b4e374c3f472908c.jpg",
+        "width": 960,
+        "height": 640,
+        "alt": "Казанский собор на Красной площади",
+        "author": "Konstantin Papushin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kazan_Cathedral_in_Red_Square.jpg",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/a4bb8d9154af3b1d857f0699192c7ecc194bb6b7feebee76b4e374c3f472908c.jpg",
+          "width": 960,
+          "height": 640,
+          "bytes": 171368
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/0daa410c9d3db2bd6442ec363798579a750adcf49b13470087b4b2bec5c52373.jpg",
+          "width": 250,
+          "height": 167,
+          "bytes": 16736
+        }
+      ]
+    },
+    {
+      "placeId": "osm:way:35552032",
+      "title": "Китайгородская стена",
+      "textId": "71d739cc-dd82-5c59-82a7-c7dbe950e959",
+      "wordCount": 338,
+      "sourceTextSha256": "ca2ae2897045dd57af41b0be454c8105b9a04394a750b96d34bd564eb81bea22",
+      "changed": true,
+      "audio": {
+        "url": "/api/story-audio/cb00b23628341b91853d06644168b046995f10c4d3610581f37a0877dfe35a0b.mp3",
+        "sha256": "cb00b23628341b91853d06644168b046995f10c4d3610581f37a0877dfe35a0b",
+        "bytes": 1413741,
+        "durationSec": 176.688,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "files": [
+        {
+          "sha256": "cb00b23628341b91853d06644168b046995f10c4d3610581f37a0877dfe35a0b",
+          "bytes": 1413741,
+          "durationSec": 176.64,
+          "decoded": true
+        }
+      ],
+      "photo": {
+        "thumbnail": "/api/place-images/aab939898849ff1223c9359dfbf0c880627429d10a327bfa7e756ad96c94cbbb.jpg",
+        "src": "/api/place-images/63ec21e4aaa20333c67c89353a70f9f11c3b368c4f995109679505dfedd6347a.jpg",
+        "width": 960,
+        "height": 640,
+        "alt": "Китайгородская стена",
+        "author": "Olga-lisenkova",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%9A%D0%B8%D1%82%D0%B0%D0%B9%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D1%81%D0%BA%D0%B8%D0%B9_%D0%BF%D1%80%D0%BE%D0%B5%D0%B7%D0%B4_2,_%D1%81%D0%BE%D0%BE%D1%80%D1%83%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5_1.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "src",
+          "url": "/api/place-images/63ec21e4aaa20333c67c89353a70f9f11c3b368c4f995109679505dfedd6347a.jpg",
+          "width": 960,
+          "height": 640,
+          "bytes": 243152
+        },
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/aab939898849ff1223c9359dfbf0c880627429d10a327bfa7e756ad96c94cbbb.jpg",
+          "width": 250,
+          "height": 167,
+          "bytes": 18894
+        }
+      ]
+    }
+  ]
+}

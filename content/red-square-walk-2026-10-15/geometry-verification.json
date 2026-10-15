@@ -1,0 +1,305 @@
+{
+  "checkedAt": "2026-10-15T08:00:44.858238+00:00",
+  "routeDistanceM": 2193,
+  "walkingMinutes": 28,
+  "stops": [
+    {
+      "number": 1,
+      "id": "osm:relation:7624254",
+      "name": "Казанский собор на Красной площади",
+      "triggerLocation": {
+        "lat": 55.7554176,
+        "lon": 37.6195781
+      },
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromPlaceM": 17.36,
+      "listeningWayId": 22744522,
+      "listeningWayTags": {
+        "highway": "pedestrian",
+        "lit": "yes",
+        "name": "Никольская улица",
+        "name:be": "Нікольская вуліца",
+        "name:de": "Nikolausstraße",
+        "name:en": "Nikolskaya Street",
+        "name:ru": "Никольская улица",
+        "old_name": "улица 25 Октября",
+        "omkum:old_name": "улица 25-го Октября (1930 г.) Никольская улица (до 1917 г.)",
+        "postal_code": "109012",
+        "smoothness": "good",
+        "surface": "paving_stones",
+        "width": "10",
+        "wikidata": "Q4320845",
+        "wikipedia": "ru:Никольская улица (Москва)"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "3bdc3bb085e9d9c1b74a4ffd28247fe76c94569d22e043d04e147fb24fe26345",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На Никольской улице перед собором.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 2,
+      "id": "osm:relation:4137492",
+      "name": "Палаты Старого Монетного двора (Красный монетный двор)",
+      "triggerLocation": {
+        "lat": 55.7555436,
+        "lon": 37.6198021
+      },
+      "triggerGapFromRouteM": 0.05,
+      "triggerDistanceFromPlaceM": 28.69,
+      "listeningWayId": 22744522,
+      "listeningWayTags": {
+        "highway": "pedestrian",
+        "lit": "yes",
+        "name": "Никольская улица",
+        "name:be": "Нікольская вуліца",
+        "name:de": "Nikolausstraße",
+        "name:en": "Nikolskaya Street",
+        "name:ru": "Никольская улица",
+        "old_name": "улица 25 Октября",
+        "omkum:old_name": "улица 25-го Октября (1930 г.) Никольская улица (до 1917 г.)",
+        "postal_code": "109012",
+        "smoothness": "good",
+        "surface": "paving_stones",
+        "width": "10",
+        "wikidata": "Q4320845",
+        "wikipedia": "ru:Никольская улица (Москва)"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "10dc981518f565a9efa1ff1a72098581844eacace720b33f92ad75545e76cbb8",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На Никольской улице у монетного двора; осмотр снаружи, вход во двор не требуется.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 3,
+      "id": "osm:relation:1359372",
+      "name": "Никольская башня",
+      "triggerLocation": {
+        "lat": 55.7547846,
+        "lon": 37.6182481
+      },
+      "triggerGapFromRouteM": 0.04,
+      "triggerDistanceFromPlaceM": 27.09,
+      "listeningWayId": 637763419,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "sett"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "8ee1190ab788ac776353738496a547978009b22d5cc26e5301dedad6e2c6d515",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На публичной дорожке северо-восточнее башни, вне ворот Кремля.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 4,
+      "id": "osm:relation:1577673",
+      "name": "Красная площадь",
+      "triggerLocation": {
+        "lat": 55.7545055,
+        "lon": 37.6206088
+      },
+      "triggerGapFromRouteM": 0.05,
+      "triggerDistanceFromPlaceM": 244.94,
+      "listeningWayId": 109896779,
+      "listeningWayTags": {
+        "bicycle": "no",
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "0639551a1126d5b1d5bb5aa03a16089f31747c9d3a897f78fb4e1ee70d0e2450",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На восточной пешеходной стороне Красной площади.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 5,
+      "id": "osm:relation:3272726",
+      "name": "Мавзолей В. И. Ленина",
+      "triggerLocation": {
+        "lat": 55.7540263,
+        "lon": 37.6215102
+      },
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromPlaceM": 94.12,
+      "listeningWayId": 109896779,
+      "listeningWayTags": {
+        "bicycle": "no",
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "b58b3743e3d9738b7d0b0f60ea7b58014ba6d3188b8f10e1a582bedf3fd60ff5",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "Со стороны площади напротив Мавзолея; вход и очередь не требуются.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 6,
+      "id": "osm:relation:3226496",
+      "name": "Лобное место",
+      "triggerLocation": {
+        "lat": 55.7533893,
+        "lon": 37.6228945
+      },
+      "triggerGapFromRouteM": 0.05,
+      "triggerDistanceFromPlaceM": 23.93,
+      "listeningWayId": 112366637,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "smoothness": "excellent",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "577290e2b809037be2d2c7d5ad57f78754903a880019f8ee83c3d87907366775",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На дорожке северо-восточнее Лобного места.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 7,
+      "id": "osm:node:995935368",
+      "name": "Памятник Минину и Пожарскому",
+      "triggerLocation": {
+        "lat": 55.7529217,
+        "lon": 37.6226185
+      },
+      "triggerGapFromRouteM": 0.02,
+      "triggerDistanceFromPlaceM": 13.38,
+      "listeningWayId": 210205971,
+      "listeningWayTags": {
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "sett"
+      },
+      "physicalGeometryType": "Point",
+      "triggerInsidePhysicalFootprint": null,
+      "physicalGeometrySha256": "d3d4750f918081877cac994a5377cb9165ff2b84292a0a9e15b4a22dda19f164",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На публичном подходе севернее памятника; вход в музей не требуется.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 8,
+      "id": "osm:relation:1555621",
+      "name": "парк «Зарядье»",
+      "triggerLocation": {
+        "lat": 55.7522443,
+        "lon": 37.6303119
+      },
+      "triggerGapFromRouteM": 0.03,
+      "triggerDistanceFromPlaceM": 2.81,
+      "listeningWayId": 549158821,
+      "listeningWayTags": {
+        "bicycle": "no",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones"
+      },
+      "physicalGeometryType": "MultiPolygon",
+      "triggerInsidePhysicalFootprint": null,
+      "physicalGeometrySha256": "0db39addaa53b94959ec61b80afe4dd93072d2c324f293cfe23602863c741f51",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На основной дорожке парка; выход на Парящий мост не требуется.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 9,
+      "id": "osm:relation:19088121",
+      "name": "Церковь Рождества Иоанна Предтечи у Варварских ворот",
+      "triggerLocation": {
+        "lat": 55.7531612,
+        "lon": 37.6326045
+      },
+      "triggerGapFromRouteM": 0.01,
+      "triggerDistanceFromPlaceM": 11.62,
+      "listeningWayId": 124912856,
+      "listeningWayTags": {
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "surface": "paving_stones",
+        "width": "3.5"
+      },
+      "physicalGeometryType": "Polygon",
+      "triggerInsidePhysicalFootprint": false,
+      "physicalGeometrySha256": "8b9ca36296eec4905eb00ccf4516f88e0a4c1a6580435f7ec1e6a06824ac4600",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На тротуаре у храма; вход внутрь не требуется.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    },
+    {
+      "number": 10,
+      "id": "osm:way:35552032",
+      "name": "Китайгородская стена",
+      "triggerLocation": {
+        "lat": 55.7521193,
+        "lon": 37.6329461
+      },
+      "triggerGapFromRouteM": 0.0,
+      "triggerDistanceFromPlaceM": 7.8,
+      "listeningWayId": 235236490,
+      "listeningWayTags": {
+        "bicycle": "designated",
+        "footway": "sidewalk",
+        "highway": "footway",
+        "lit": "yes",
+        "segregated": "no",
+        "surface": "paving_stones",
+        "width": "3"
+      },
+      "physicalGeometryType": "LineString",
+      "triggerInsidePhysicalFootprint": null,
+      "physicalGeometrySha256": "a750d56c29115b80721fe3bb21acc03f445a41ae99fcfee7ba05f071311f0f03",
+      "centerInsideGardenRing": true,
+      "triggerInsideGardenRing": true,
+      "approach": "На тротуаре Китайгородского проезда у стены.",
+      "accessCaveat": "Текущие перекрытия и доступ на месте не проверены.",
+      "triggerInsideKremlinBoundary": false
+    }
+  ],
+  "routeInsideGardenRing": true,
+  "routeOutsideKremlin": true,
+  "kremlinBoundarySegmentsChecked": 187,
+  "fieldChecked": false,
+  "router": "https://valhalla1.openstreetmap.de/route",
+  "notes": [
+    "Триггер Красной площади расположен на восточной пешеходной дорожке у границы площади; центр каталожной геометрии находится южнее.",
+    "Триггер парка расположен внутри парка. Остальные триггеры находятся вне зданий и памятников.",
+    "Актуальные перекрытия на месте не проверены."
+  ]
+}

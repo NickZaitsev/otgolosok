@@ -1,0 +1,339 @@
+{
+  "checkedAt": "2026-10-15T08:07:26.613202+00:00",
+  "shareUrl": "https://otgolosok.online/walk?share=ddffff3c-6f03-409f-b762-db5a11aabf7c",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "touchDevice": true,
+  "stops": [
+    {
+      "stop": 1,
+      "placeId": "osm:relation:7624254",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "a81a987713e73cb2a13857f7d256f3d93ae368e4eafc386f6a1271f815aa0759",
+        "playing": [
+          {
+            "timeSec": 1.015998,
+            "durationSec": 160.4,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 2,
+      "placeId": "osm:relation:4137492",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "1eb0b29f7ea530e0d88f46e2d0f4021f5856e5ad8ced004fdcd75d6c79164b3d",
+        "playing": [
+          {
+            "timeSec": 1.0142,
+            "durationSec": 179.566792,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 3,
+      "placeId": "osm:relation:1359372",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "3ba628f24981925e8ecd4e4bc2e546b44b731491f88ae08bdb2b9514ee1bd07b",
+        "playing": [
+          {
+            "timeSec": 1.011741,
+            "durationSec": 176.693333,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 4,
+      "placeId": "osm:relation:1577673",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "961e791ef1f818a39d2c503330bb41d44f2a73bbfa36fbc0403238d67f8d7822",
+        "playing": [
+          {
+            "timeSec": 1.003159,
+            "durationSec": 182.7015,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 5,
+      "placeId": "osm:relation:3272726",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "d292a6d659b6a7c255b524c6902ebcbc4e1c599d8cbce187a37d997deb859f88",
+        "playing": [
+          {
+            "timeSec": 1.003337,
+            "durationSec": 176.3015,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 6,
+      "placeId": "osm:relation:3226496",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "8b4ef5b8db7c89dc101d9b944c0af22c3997d0c63140ef041230e1c91d500b33",
+        "playing": [
+          {
+            "timeSec": 1.002639,
+            "durationSec": 177.04,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 7,
+      "placeId": "osm:node:995935368",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "751b2ae59e8e43c5e325437a59a65262c8d3782f9de5dc2fafe4c677eb779600",
+        "playing": [
+          {
+            "timeSec": 1.015225,
+            "durationSec": 182.858208,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 8,
+      "placeId": "osm:relation:1555621",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "6fa63c14dd08bd04171e031fe17103ac98f8b684538ecc4379efeeb52bdc2832",
+        "playing": [
+          {
+            "timeSec": 1.013658,
+            "durationSec": 175.52,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 9,
+      "placeId": "osm:relation:19088121",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "62e84b7f80bee01d818593096ec06319975ebdd00ad499e5b13839a98d4e34c3",
+        "playing": [
+          {
+            "timeSec": 1.006761,
+            "durationSec": 176.64,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    },
+    {
+      "stop": 10,
+      "placeId": "osm:way:35552032",
+      "textChecked": true,
+      "photoBannerChecked": true,
+      "photoViewerChecked": true,
+      "audio": {
+        "sha256": "cb00b23628341b91853d06644168b046995f10c4d3610581f37a0877dfe35a0b",
+        "playing": [
+          {
+            "timeSec": 1.017495,
+            "durationSec": 176.64,
+            "playbackRate": 1,
+            "paused": false,
+            "error": null
+          }
+        ],
+        "pauseChecked": true
+      }
+    }
+  ],
+  "finishChecked": true,
+  "destinationCheckedBeforeStart": true,
+  "javascriptErrors": [],
+  "audioHttp": [
+    {
+      "url": "https://otgolosok.online/api/story-audio/a81a987713e73cb2a13857f7d256f3d93ae368e4eafc386f6a1271f815aa0759.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/1eb0b29f7ea530e0d88f46e2d0f4021f5856e5ad8ced004fdcd75d6c79164b3d.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/3ba628f24981925e8ecd4e4bc2e546b44b731491f88ae08bdb2b9514ee1bd07b.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/961e791ef1f818a39d2c503330bb41d44f2a73bbfa36fbc0403238d67f8d7822.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/d292a6d659b6a7c255b524c6902ebcbc4e1c599d8cbce187a37d997deb859f88.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/8b4ef5b8db7c89dc101d9b944c0af22c3997d0c63140ef041230e1c91d500b33.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/751b2ae59e8e43c5e325437a59a65262c8d3782f9de5dc2fafe4c677eb779600.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/6fa63c14dd08bd04171e031fe17103ac98f8b684538ecc4379efeeb52bdc2832.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/62e84b7f80bee01d818593096ec06319975ebdd00ad499e5b13839a98d4e34c3.mp3",
+      "status": 206
+    },
+    {
+      "url": "https://otgolosok.online/api/story-audio/cb00b23628341b91853d06644168b046995f10c4d3610581f37a0877dfe35a0b.mp3",
+      "status": 206
+    }
+  ],
+  "photoHttp": [
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:7624254",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/a4bb8d9154af3b1d857f0699192c7ecc194bb6b7feebee76b4e374c3f472908c.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:4137492",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/f9dd7f4b83da1097939f36f8fe2afa2e02b52142dc550b55b2f1ccd391d21409.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:1359372",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/e451ee9f6e8f994966bb5c543a1fed85bb4a7cec7709e52dc99b6126cf8b054e.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:1577673",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/d0390415008b590b6b64e195e4e06b7b84da4785391b2a6fa285518485bc976d.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:3272726",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/ac41578783c62d6958aa96d14d8429ea0b8497366847d18b084014c690bb1651.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:3226496",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/0dd30be92ccc9335183fa7a5191bf72cb32c074fc832caf55c62872bc8f86e55.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:node:995935368",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/4835e69ee410c31a2f277099caf636f815dca5f927011d1801bc863ac632a582.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:1555621",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/4041b2b7bd7aed141236639325bbc2c54fab39ef72108b13ab0e7337d99e4b39.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:relation:19088121",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/435275982bd7390ff7188fb9d95616f1dfe096f2892484204ceef0a8f9d644b6.jpg",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/content/places/osm:way:35552032",
+      "status": 200
+    },
+    {
+      "url": "https://otgolosok.online/api/place-images/63ec21e4aaa20333c67c89353a70f9f11c3b368c4f995109679505dfedd6347a.jpg",
+      "status": 200
+    }
+  ],
+  "fieldChecked": false
+}

@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-15",
+  "command": "NODE=node pnpm check",
+  "exitCode": 0,
+  "includes": [
+    "ESLint",
+    "Stylelint",
+    "Prettier CSS",
+    "TypeScript",
+    "Vitest",
+    "backend node:test",
+    "Ruff",
+    "Pyright",
+    "Pytest",
+    "static production build"
+  ],
+  "log": "artifacts/red-square-walk-2026-10-15/project-check.log"
+}

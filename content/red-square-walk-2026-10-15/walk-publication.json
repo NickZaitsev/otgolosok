@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-15T08:07:07.687Z",
+  "existingWalksUnchanged": true,
+  "existingWalksChecked": 40,
+  "walks": [
+    {
+      "routeId": "red-square",
+      "id": "956c756d-452f-59c9-a3a5-d935a3e90764",
+      "title": "Красная площадь и Зарядье",
+      "revision": 1,
+      "visibility": "shared",
+      "shareUrl": "https://otgolosok.online/walk?share=ddffff3c-6f03-409f-b762-db5a11aabf7c",
+      "physicalStops": 10,
+      "distanceM": 2193,
+      "walkingMinutes": 28,
+      "measuredAudioSec": 1764.361333,
+      "fieldChecked": false,
+      "catalogPublished": false
+    }
+  ]
+}

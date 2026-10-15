@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-15T07:52:03.440Z",
+  "dryRunWritesNothing": true,
+  "finalEntryConflictRollsBackAll": true,
+  "originalPlacesPreserved": 10,
+  "originalTextRowsAndAudioPreserved": 20,
+  "newTextRows": 10,
+  "newAudioIntents": 10,
+  "applyAfterQueuePreservesReceipt": true,
+  "queueReplayAddsNoJobs": true,
+  "obsoleteUnleasedF5CancelledOnApproval": true,
+  "leasedF5BlocksPublication": true,
+  "synthesisPerformed": false
+}
