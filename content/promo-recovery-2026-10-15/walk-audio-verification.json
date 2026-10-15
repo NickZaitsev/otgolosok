@@ -1,0 +1,389 @@
+[
+  {
+    "shareToken": "27a548e6-1ed3-4456-bde2-f79a5e27e1fe",
+    "title": "Воздвиженка и Кисловские переулки",
+    "chapters": [
+      {
+        "id": "r05-stop-1",
+        "sha256": "df0db8ac9611c4759ec2f8f413e15887b461df6e5848fd5998bcc21e699c5c35",
+        "bytes": 522285,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 65.256
+      },
+      {
+        "id": "r05-stop-2",
+        "sha256": "a8d65d107e76fa87490c4d0f8890050dbe37ec6029d7e3da7121a231d36eccb5",
+        "bytes": 459501,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 57.408
+      },
+      {
+        "id": "r05-stop-3",
+        "sha256": "55dcada5d648b7ca51680441a8b28888bbb02c859ca6c10563af243338928ede",
+        "bytes": 996525,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 124.536
+      },
+      {
+        "id": "r05-stop-4",
+        "sha256": "7aa57769ae9f29d4392021daa435179edbedbab04b846d11dc68c54bbde06c4d",
+        "bytes": 954861,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 119.328
+      },
+      {
+        "id": "r05-stop-5",
+        "sha256": "78cc9f89a1ff260012830dc8b63727b3ac4a8010dc4e258e2e0de023c70bf0ba",
+        "bytes": 1029165,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 128.616
+      },
+      {
+        "id": "r05-stop-6",
+        "sha256": "05d6929723c3f81de69572b17593816eb07970f42f7fd08aea90a1dbdce4ba35",
+        "bytes": 512109,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 63.984
+      },
+      {
+        "id": "r05-stop-7",
+        "sha256": "f7cff2858f51286518219fe8704ee39d2a3dba132f130ff02496339320ce0008",
+        "bytes": 435885,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 54.456
+      },
+      {
+        "id": "r05-stop-8",
+        "sha256": "47699aa9de8a6277b642413e48a67b882c07ba165f9d7c3dc12a24e1dc8731ec",
+        "bytes": 883821,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 110.448
+      },
+      {
+        "id": "r05-stop-9",
+        "sha256": "769c6b0c378ae9ab7abc36d70df456c6526c6d679ebfb4acd0af04f5d5bc556e",
+        "bytes": 531885,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 66.456
+      },
+      {
+        "id": "r05-stop-10",
+        "sha256": "e31bd8cb54976830c592ed88caa2c205c1434acbef51abef68e8f6463c26d1bd",
+        "bytes": 482541,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 60.288
+      },
+      {
+        "id": "r05-stop-11",
+        "sha256": "516c470f35aad9c2061f1d7f6f25f81ba971703c1920fe3b1a71ca3116f38b6b",
+        "bytes": 919725,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 114.936
+      },
+      {
+        "id": "r05-stop-12",
+        "sha256": "3b6e15cac49e23c5c8566265f00489f775c7841d5375118817e0978f961e41ce",
+        "bytes": 441645,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 55.176
+      },
+      {
+        "id": "r05-stop-13",
+        "sha256": "43dfa52b6630bf88bef900594fe608d4c1b2199e854be256a47c3c3cc84f1502",
+        "bytes": 499245,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 62.376
+      }
+    ]
+  },
+  {
+    "shareToken": "a0884d1f-7068-4ecd-af63-63da698c1bee",
+    "title": "Швивая горка и устье Яузы",
+    "chapters": [
+      {
+        "id": "shvivaya-stop-1",
+        "sha256": "efea1d6b95bb622056391734fd47475112b8cda532616857f8929b4565ab6f9e",
+        "bytes": 982509,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 122.784
+      },
+      {
+        "id": "shvivaya-stop-2",
+        "sha256": "48f9956b6141c26f146ba9c1d7eb2db010fdf8ae0f7b5d7ce6464c38215c0900",
+        "bytes": 780909,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 97.584
+      },
+      {
+        "id": "shvivaya-stop-3",
+        "sha256": "93038868f721606615c35f6f6773f1dedc8c1f675c2b6c6ece5352d2fba48aea",
+        "bytes": 350829,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 43.824
+      },
+      {
+        "id": "shvivaya-stop-4",
+        "sha256": "4ab030e5e0e0aa47d8d2f19d721224be6f9c47165439895f181c8847ecb857c7",
+        "bytes": 574701,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 71.808
+      },
+      {
+        "id": "shvivaya-stop-5",
+        "sha256": "91908063ba24dab954ed312ad48c37c5457cb357a75e47c4398060aec075de22",
+        "bytes": 422445,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 52.776
+      },
+      {
+        "id": "shvivaya-stop-6",
+        "sha256": "2c7b9eb84da1bb62bd4bd23bf9ae17738c03743bbc15d6c1e8708b42142dffda",
+        "bytes": 393069,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 49.104
+      },
+      {
+        "id": "shvivaya-stop-7",
+        "sha256": "4dfbdd3e67dd68ae067d57d5b7b412d1a67665a10016fe3af71621ebe67123de",
+        "bytes": 377709,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 47.184
+      },
+      {
+        "id": "shvivaya-stop-8",
+        "sha256": "f7bc5a55f247e824b5e0862b4af5f97bf30a188d26604f43fc65c310bc74fae0",
+        "bytes": 492909,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 61.584
+      },
+      {
+        "id": "shvivaya-stop-9",
+        "sha256": "aea1eebab9a47d1279428ad764a8d19b0832c59fda6bb8cc3fddf097a14d3bb0",
+        "bytes": 406509,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 50.784
+      },
+      {
+        "id": "shvivaya-stop-10",
+        "sha256": "7a450cb1b36804bc0c1166b4e530ceae4811f83c6ca6349ed2e91faff794946c",
+        "bytes": 416109,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 51.984
+      },
+      {
+        "id": "shvivaya-stop-11",
+        "sha256": "ce55ac1ea9baa9e4dd474bb9c87369153cd2dc2645bb06fb21d421be429364ce",
+        "bytes": 556845,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 69.576
+      },
+      {
+        "id": "shvivaya-stop-12",
+        "sha256": "8a34cf96f37182af09dabf623455070a130443357fc60f0dbf53b19d2293b3e0",
+        "bytes": 477549,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 59.664
+      },
+      {
+        "id": "shvivaya-stop-13",
+        "sha256": "e159c1147d0b1e4e92ad96c236acd1ff4137e3be63b85bbeefcda47be74683ca",
+        "bytes": 970221,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 121.248
+      },
+      {
+        "id": "shvivaya-stop-14",
+        "sha256": "582791d81907123ddc566ab0e50736edfb1044768cdf42d21ca21c450638d17a",
+        "bytes": 872301,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 109.008
+      }
+    ]
+  },
+  {
+    "shareToken": "2978ed49-2842-4501-9690-a5e7b1201bd5",
+    "title": "Тверская: переезды домов и культурная жизнь",
+    "chapters": [
+      {
+        "id": "tverskaya-stop-1",
+        "sha256": "346d7d1a022c4d72b09e8f10e0e389fd724646e3ed39894d36569c048cca9c0a",
+        "bytes": 728301,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 91.008
+      },
+      {
+        "id": "tverskaya-stop-2",
+        "sha256": "6835a9b768e9d3f26c07839f20f529310c286a1a7b83fb89e4da86fe9185f61a",
+        "bytes": 345069,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 43.104
+      },
+      {
+        "id": "tverskaya-stop-3",
+        "sha256": "5a4dd834952765e08893fa7dd73b566e99d64bb9570eeeefc6a36efcec38b52f",
+        "bytes": 850605,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 106.296
+      },
+      {
+        "id": "tverskaya-stop-4",
+        "sha256": "ab08fa870d3e784d51f4b65e9b35d69145043428310d7487419492d46e391bdf",
+        "bytes": 703341,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 87.888
+      },
+      {
+        "id": "tverskaya-stop-5",
+        "sha256": "80496210ff4cf4255e8bbe15d07d5937c532b153673b2a32ff39ecc1475c9ba6",
+        "bytes": 330285,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 41.256
+      },
+      {
+        "id": "tverskaya-stop-6",
+        "sha256": "0ef989a53071117bf1214ee80e56edd6a2d5dbf5545c06f96cffa80c15f90dca",
+        "bytes": 549165,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 68.616
+      },
+      {
+        "id": "tverskaya-stop-7",
+        "sha256": "1ca72d10b73bcabc45161c2432501a5b426a3bab19372fbc6687e4bfd9ec33b6",
+        "bytes": 451245,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 56.376
+      },
+      {
+        "id": "tverskaya-stop-8",
+        "sha256": "e27df1ec8d1f88c61ad7361fde25a128e551b2c0527112643e7280ae09a3cd1b",
+        "bytes": 430701,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 53.808
+      },
+      {
+        "id": "tverskaya-stop-9",
+        "sha256": "8ac798a25d247283bd32d65d71a292c5faadeee1e839fe6c57dde642494c8e8a",
+        "bytes": 841005,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 105.096
+      },
+      {
+        "id": "tverskaya-stop-10",
+        "sha256": "4ce1fe28b5283e0c4218fa4310aaf6701c2d20023cc730a7cc4009ded811d8f8",
+        "bytes": 1090029,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 136.224
+      },
+      {
+        "id": "tverskaya-stop-11",
+        "sha256": "a4274a910e4934b84551d4799d1a179b9df215eff95ca93a8adaa0fa87797838",
+        "bytes": 515181,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 64.368
+      },
+      {
+        "id": "tverskaya-stop-12",
+        "sha256": "d287406bc47ea9826a7cfffd280a1c53e8ce0d04dae53629e25434d0e0649cc0",
+        "bytes": 957549,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 119.664
+      },
+      {
+        "id": "tverskaya-stop-13",
+        "sha256": "8ce9f44ffd6c6e2feb68594daf4f45debf790f3a5ca765fe7b20b21cb3be588b",
+        "bytes": 460845,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 57.576
+      },
+      {
+        "id": "tverskaya-stop-14",
+        "sha256": "e6972623ae36a5801518137b8c4072c2c34b9b62977add48feb4ad6fa718bac5",
+        "bytes": 1173741,
+        "provider": "elevenlabs",
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "durationSec": 146.688
+      }
+    ]
+  }
+]

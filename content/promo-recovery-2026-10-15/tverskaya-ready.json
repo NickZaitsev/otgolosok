@@ -1,0 +1,21 @@
+{
+  "queueId": "9584028a-2b38-4fc4-a180-6983ff434ec6",
+  "runId": "20261014-0000-b0073d4d",
+  "localStatus": "ready",
+  "remoteStatus": "ready",
+  "revision": 8,
+  "slotAt": null,
+  "runStatus": "failed",
+  "runErrorCode": "NOT_UPLOADED",
+  "runStatusExplanation": "Это штатный статус собранного ролика до загрузки на YouTube.",
+  "video": {
+    "file": "promo-video.mp4",
+    "sizeBytes": 24461255,
+    "sha256": "400ba46f0cdae54c39d28bed4fbb48433c2bbcc58887cad707310c2b4fafa7bd",
+    "durationSeconds": 45.8,
+    "width": 1080,
+    "height": 1920,
+    "videoCodec": "h264",
+    "audioCodec": "aac"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "local": {
+    "queueId": "f512bb58-73f7-46d2-98ad-e2fd9ec5d6cc",
+    "title": "Швивая горка и устье Яузы",
+    "shareToken": "a0884d1f-7068-4ecd-af63-63da698c1bee",
+    "revision": 9,
+    "runId": "20261013-0144-e98bd062",
+    "status": "scheduled",
+    "slotAt": "2026-10-16T18:30:00.000Z",
+    "previewMessageIds": [
+      70,
+      71,
+      72
+    ],
+    "error": null,
+    "attempts": 0,
+    "claimedAt": "2026-10-13T01:44:03.853Z",
+    "updatedAt": "2026-10-15T08:08:08.455Z"
+  },
+  "remote": {
+    "id": "f512bb58-73f7-46d2-98ad-e2fd9ec5d6cc",
+    "walkId": "4f36f2b4-fdd7-5249-a74b-56bf29f45660",
+    "title": "Швивая горка и устье Яузы",
+    "shareToken": "a0884d1f-7068-4ecd-af63-63da698c1bee",
+    "status": "ready",
+    "slotAt": "2026-10-16T18:30:00.000Z",
+    "runId": "20261013-0144-e98bd062",
+    "revision": 9,
+    "visibility": "shared",
+    "position": 22,
+    "youtubeUrl": null,
+    "telegramUrl": null,
+    "error": null,
+    "createdAt": "2026-10-12T08:44:19.475Z",
+    "updatedAt": "2026-10-15T08:08:08.450Z"
+  },
+  "youtube": {
+    "uploadStatus": "processed",
+    "privacyStatus": "private",
+    "publishAt": "2026-10-16T18:30:00Z",
+    "license": "youtube",
+    "embeddable": true,
+    "publicStatsViewable": true,
+    "madeForKids": false,
+    "selfDeclaredMadeForKids": false
+  }
+}

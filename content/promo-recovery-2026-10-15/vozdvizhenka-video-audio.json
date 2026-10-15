@@ -1,0 +1,36 @@
+{
+  "runId": "20261015-0000-0c3f2fd9",
+  "checkedAt": "2026-10-15T08:12:56.301Z",
+  "clips": [
+    {
+      "id": "hook",
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voiceId": "9ivxhQ6xIsHd6R3Xc635",
+      "voiceName": "Отголосок2",
+      "key": "9499042b83782120cd51f73766470380afd72055b579a8ec528a252dd6790bf2",
+      "sha256": "c0c4839afe50c76e3f206874e825cf6a5e114e968b3cb0bcf37b6780c7063cc7",
+      "bytes": 44765
+    },
+    {
+      "id": "stop-r05-stop-5",
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voiceId": "9ivxhQ6xIsHd6R3Xc635",
+      "voiceName": "Отголосок2",
+      "key": "242ea355a926deb729b53351cd6f149a7c8a5dc29dbac065963a10bceb8ebdf9",
+      "sha256": "17f1fa4079450cc56060efbd492e923c893dc65949f5a2d9b6adab203112fd95",
+      "bytes": 295541
+    },
+    {
+      "id": "cta",
+      "provider": "elevenlabs",
+      "model": "eleven_v4",
+      "voiceId": "9ivxhQ6xIsHd6R3Xc635",
+      "voiceName": "Отголосок2",
+      "key": "fbee3e8d5c062f0254313c348475474439bc7338f6461bc8eeea8fe857297b54",
+      "sha256": "b1169a2d86b96b919d74e6c6f7145cf21d32bf28d014ec12aced212e8eee83f5",
+      "bytes": 287599
+    }
+  ]
+}

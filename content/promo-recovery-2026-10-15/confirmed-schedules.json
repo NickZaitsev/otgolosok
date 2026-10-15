@@ -1,0 +1,44 @@
+[
+  {
+    "queueId": "3bce6403-b425-4d18-8349-95ec36a18969",
+    "title": "Воздвиженка и Кисловские переулки",
+    "runId": "20261015-0000-0c3f2fd9",
+    "videoId": "tFKAi19R06I",
+    "localStatus": "scheduled",
+    "remoteStatus": "ready",
+    "revision": 6,
+    "slotAt": "2026-10-15T17:30:00.000Z",
+    "youtube": {
+      "uploadStatus": "processed",
+      "privacyStatus": "private",
+      "publishAt": "2026-10-15T17:30:00Z",
+      "license": "youtube",
+      "embeddable": true,
+      "publicStatsViewable": true,
+      "madeForKids": false,
+      "selfDeclaredMadeForKids": false
+    },
+    "checkedAt": "2026-10-15T14:02:20.668Z"
+  },
+  {
+    "queueId": "f512bb58-73f7-46d2-98ad-e2fd9ec5d6cc",
+    "title": "Швивая горка и устье Яузы",
+    "runId": "20261013-0144-e98bd062",
+    "videoId": "p_8s2tkGRow",
+    "localStatus": "scheduled",
+    "remoteStatus": "ready",
+    "revision": 9,
+    "slotAt": "2026-10-16T18:30:00.000Z",
+    "youtube": {
+      "uploadStatus": "processed",
+      "privacyStatus": "private",
+      "publishAt": "2026-10-16T18:30:00Z",
+      "license": "youtube",
+      "embeddable": true,
+      "publicStatsViewable": true,
+      "madeForKids": false,
+      "selfDeclaredMadeForKids": false
+    },
+    "checkedAt": "2026-10-15T14:02:20.861Z"
+  }
+]
