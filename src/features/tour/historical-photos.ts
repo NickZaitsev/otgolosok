@@ -1,6 +1,6 @@
-export type HistoricalWalkPhoto = { cid: number; year: number; title: string; src: string };
+export type HistoricalWalkPhoto = { cid: number; year: number | string; title: string; src: string };
 
-const pastvu = (cid: number, year: number, title: string, file: string): HistoricalWalkPhoto => ({ cid, year, title, src: `https://img.pastvu.com/d/${file}` });
+const pastvu = (cid: number, year: number | string, title: string, file: string): HistoricalWalkPhoto => ({ cid, year, title, src: `https://img.pastvu.com/d/${file}` });
 
 const PUSHKIN_SQUARE = [
   pastvu(1344568, 1901, "Контора Международного общества спальных вагонов на Страстном бульваре", "f/y/1/fy14mal6i5hhuvqjx2.jpg"),
@@ -38,12 +38,19 @@ const LENKOM = [
   pastvu(2605780, 1948, "Возле Театра имени Ленинского комсомола", "q/y/k/qykogqzoxpeyq3vmhk.jpg"),
 ];
 
+const RED_SQUARE = [
+  pastvu(77852, 1852, "Старые Верхние торговые ряды за памятником Минину и Пожарскому", "2/e/e/2eeb7f006ba9021132c6868cab261419.jpg"),
+  pastvu(47826, "1866–1870", "Памятник Минину и Пожарскому перед прежними Верхними торговыми рядами", "e/4/a/e4a5a311bee1ae8cb1129995eba69c78.jpg"),
+  pastvu(70775, "1890–1905", "Торговые палатки на Красной площади", "8/9/a/89a3ca71f36194ebf06216863b7be151.jpg"),
+];
+
 /**
  * Подборки для опубликованных прогулок по ключу «id прогулки:id остановки».
  * Только id остановки не годится: они повторяются между прогулками (`tverskaya-stop-1` — и Пушкинская площадь,
  * и «Националь»), и снимки попадали к чужой точке.
  */
 export const HISTORICAL_WALK_PHOTOS: Record<string, HistoricalWalkPhoto[]> = {
+  "956c756d-452f-59c9-a3a5-d935a3e90764:red-square-stop-4": RED_SQUARE,
   // «По бульварному кольцу от Кропоткинской до Тверской»: площадь Пречистенские Ворота.
   "5295c72b-5d9f-4142-9d26-fb4f367b8865:boulevard-stop-1": PRECHISTENSKIE_GATES,
   // «По бульварному кольцу от Тверской до Трубной»: Пушкинская площадь.

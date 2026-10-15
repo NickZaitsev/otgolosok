@@ -82,3 +82,14 @@ it.each([
 ])("подбирает снимки по прогулке и остановке: %s %s", (walkId, stopId, cid) => {
   expect(historicalWalkPhotos(walkId, stopId).map(photo => photo.cid)).toContain(cid);
 });
+
+it("показывает торговые ряды у Красной площади и сохраняет диапазон дат снимка палаток", async () => {
+  const walk = "956c756d-452f-59c9-a3a5-d935a3e90764";
+  const dialog = await open(walk, "red-square-stop-4");
+  expect(dialog.querySelector("h3")?.textContent).toContain("1852 · Старые Верхние торговые ряды");
+  await act(async () => button("Следующее фото")!.click());
+  await act(async () => button("Следующее фото")!.click());
+  expect(dialog.querySelector("h3")?.textContent).toBe("1890–1905 · Торговые палатки на Красной площади");
+  expect(dialog.querySelector("a")?.getAttribute("href")).toBe("https://pastvu.com/p/70775");
+  expect(historicalWalkPhotos(walk, "red-square-stop-3")).toEqual([]);
+});
