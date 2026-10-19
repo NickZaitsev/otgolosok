@@ -17,6 +17,18 @@ PROMPT="ops/morning-check.md"
 }
 mkdir -p "$LOGS" || exit 1
 
+# Under an Orca automation the outer agent runs commands with Codex's "core" environment, without the
+# key the coding profile authenticates with; it is exported in the owner's interactive zsh.
+if [ -z "${OPENAI_API_KEY:-}" ]; then
+  OPENAI_API_KEY="$(zsh -ic 'printf "\n__morning_check_key__%s\n" "${OPENAI_API_KEY:-}"' 2>/dev/null |
+    sed -n 's/^__morning_check_key__//p' | tail -n 1)"
+  export OPENAI_API_KEY
+fi
+[ -n "$OPENAI_API_KEY" ] || {
+  echo "OPENAI_API_KEY не задан ни в окружении, ни в интерактивном zsh: Codex не сможет авторизоваться" >&2
+  exit 1
+}
+
 attempt=1
 while :; do
   stamp="$(date +%Y-%m-%dT%H%M%S)"
