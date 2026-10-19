@@ -70,7 +70,7 @@ export function createPromoQueueStore(db, { now = Date.now, transaction, publish
   }
 
   return {
-    /** Puts a shared walk at the end of the queue. Null when the walk does not exist. */
+    /** Puts a shared walk at the end of the queue; a walk gets one published promo. Null when the walk does not exist. */
     enqueuePromo(walkId) {
       if (typeof walkId !== "string" || !walkId) throw badRequest("Invalid walkId");
       return transaction(() => {
@@ -80,6 +80,8 @@ export function createPromoQueueStore(db, { now = Date.now, transaction, publish
           throw conflict("Прогулка не открыта по ссылке — её нельзя поставить в промо.");
         if (db.prepare("SELECT 1 FROM promo_queue WHERE walk_id = ? AND status IN ('queued','building','ready')").get(walkId))
           throw conflict("Прогулка уже в очереди промо.");
+        if (db.prepare("SELECT 1 FROM promo_queue WHERE walk_id = ? AND status = 'published'").get(walkId))
+          throw conflict("Промо этой прогулки уже опубликовано.");
         const id = randomUUID(), time = timestamp();
         db.prepare("INSERT INTO promo_queue (id, walk_id, position, status, created_at, updated_at) VALUES (?, ?, ?, 'queued', ?, ?)")
           .run(id, walkId, maxPosition() + 1, time, time);
@@ -129,6 +131,8 @@ export function createPromoQueueStore(db, { now = Date.now, transaction, publish
         if (!["failed", "cancelled"].includes(row.status)) throw conflict("Вернуть можно только неудачный или отменённый выпуск.");
         if (db.prepare("SELECT 1 FROM promo_queue WHERE walk_id = ? AND status IN ('queued','building','ready')").get(row.walk_id))
           throw conflict("Прогулка уже в очереди промо.");
+        if (db.prepare("SELECT 1 FROM promo_queue WHERE walk_id = ? AND status = 'published'").get(row.walk_id))
+          throw conflict("Промо этой прогулки уже опубликовано.");
         db.prepare(`UPDATE promo_queue SET status = 'queued', position = ?, slot_at = NULL, run_id = NULL, error = NULL,
           revision = revision + 1, updated_at = ? WHERE id = ?`).run(maxPosition() + 1, timestamp(), id);
         return active().find(entry => entry.id === id);

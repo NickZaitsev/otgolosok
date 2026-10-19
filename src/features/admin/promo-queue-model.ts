@@ -30,8 +30,8 @@ export function promoText(promo: PromoState | null) {
   return `${promoStatusLabels[promo.status]} · ${slotLabel(promo.slotAt)}`;
 }
 
-/** A walk can be queued when nothing for it is waiting; a published walk may be promoted again. */
-export const canEnqueue = (promo: PromoState | null) => !promo || promo.status === "published";
+/** A walk can be queued only without an active or published promo: one walk gets one issue. */
+export const canEnqueue = (promo: PromoState | null) => !promo;
 
 /** Link-only walks become public through YouTube and Telegram: the editor confirms it. */
 export const PROMO_LINK_ONLY_WARNING =

@@ -47,7 +47,7 @@ it.each([
 it.each([
   [null, "Без промо", true],
   [{ status: "queued", slotAt: "2026-10-12T17:30:00.000Z", youtubeUrl: null }, "в очереди · пн, 12 октября в 20:30 МСК", false],
-  [{ status: "published", slotAt: null, youtubeUrl: "https://www.youtube.com/shorts/x" }, "Опубликован", true],
+  [{ status: "published", slotAt: null, youtubeUrl: "https://www.youtube.com/shorts/x" }, "Опубликован", false],
 ] as const)("promo state %o reads as «%s»", (promo, text, enqueue) => {
   expect(promoText(promo).replace(/\s+/g, " ")).toBe(text);
   expect(canEnqueue(promo)).toBe(enqueue);
@@ -105,6 +105,21 @@ it("lists the queue with Moscow slots, moves an item up and reloads on a stale r
   expect(container.textContent).toContain("Очередь изменилась — список обновлён.");
   await act(async () => button("Вернуть в очередь")!.click());
   expect(request).toHaveBeenCalledWith(`/promo-queue/${encodeURIComponent("id-Таганка")}/requeue`, { revision: 3 });
+});
+
+it("offers no queueing for a walk whose promo is already published", async () => {
+  request.mockResolvedValue({ walks: [walk("public", { status: "published", slotAt: "2026-10-12T17:30:00.000Z", youtubeUrl: "https://www.youtube.com/shorts/x" })], total: 1, offset: 0, hasMore: false, pending: 0 });
+  await mount(SharedWalkAdmin);
+  expect(container.textContent).toContain("Опубликован");
+  expect(button("В очередь промо")).toBeUndefined();
+});
+
+it("does not offer to requeue a past issue whose walk is already queued again", async () => {
+  request.mockResolvedValue({ items: [item("Арбат", "queued")], history: [item("Арбат-прошлый", "cancelled", { walkId: "walk-Арбат" }), item("Таганка", "failed")] });
+  await mount(PromoQueueAdmin);
+  const requeue = [...container.querySelectorAll("button")].filter(entry => entry.textContent === "Вернуть в очередь").map(entry => entry.getAttribute("aria-label"));
+  expect(requeue).toEqual(["Вернуть в очередь: Таганка"]);
+  expect(container.textContent).toContain("Прогулка уже снова в очереди");
 });
 
 it("keeps actions inside table cells, including empty published cells", async () => {

@@ -145,6 +145,7 @@ test("publishing a promo makes its shared walk public and approved in the same t
   const publicWalk = store.getWalk("one", shared.id);
   assert.deepEqual([publicWalk.visibility, publicWalk.listingStatus, publicWalk.shareToken], ["public", "approved", shared.shareToken]);
   assert.equal(store.listTopCandidates().walks.some(walk => walk.id === shared.id), true);
+  assert.equal(code(() => store.enqueuePromo(shared.id)), "CONFLICT");
 });
 
 test("publication rolls back if its walk can no longer be made public", t => {

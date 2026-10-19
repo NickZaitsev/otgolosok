@@ -67,6 +67,7 @@ export function PromoQueueAdmin({ api, run, busy }: { api: AdminApi; run: AdminR
   const disabled = Boolean(busy) || loading;
   const actionsDisabled = disabled || failed || actionFailed;
   const firstQueued = queue?.items.find(item => item.status === "queued")?.id;
+  const activeWalks = new Set(queue?.items.map(item => item.walkId));
   return <section className="walk-admin" aria-busy={loading} aria-labelledby="promo-queue-title">
     <div className="walk-admin__head">
       <div><h2 id="promo-queue-title">Очередь промо</h2><p>Один выпуск в день: пн–чт в 20:30, пт–вс в 21:30 по Москве. Понедельник отдан креативным выпускам — очередь его пропускает. Ролик и пост собираются ночью, утром бот присылает превью с кнопками «Отменить» и «Перенести». Без ответа выпуск выходит по расписанию.</p></div>
@@ -101,7 +102,8 @@ export function PromoQueueAdmin({ api, run, busy }: { api: AdminApi; run: AdminR
             <th scope="row">{item.title}</th>
             <td>{promoStatusLabels[item.status]}{item.slotAt && item.status === "published" ? ` · ${slotLabel(item.slotAt)}` : ""}{item.error && <span className={styles.promoError}>{promoErrorText(item.error)}<span className={styles.meta}>Код: {item.error}</span></span>}<Links item={item} /></td>
             <td><div className={styles.actions}>{item.status !== "published" ? <>
-              <button type="button" disabled={actionsDisabled} onClick={() => act(item, "requeue")} aria-label={`Вернуть в очередь: ${item.title}`}>Вернуть в очередь</button>
+              {activeWalks.has(item.walkId) ? <span className={styles.meta}>Прогулка уже снова в очереди</span>
+                : <button type="button" disabled={actionsDisabled} onClick={() => act(item, "requeue")} aria-label={`Вернуть в очередь: ${item.title}`}>Вернуть в очередь</button>}
               <button type="button" disabled={actionsDisabled} onClick={() => act(item, "remove")} aria-label={`Удалить из истории: ${item.title}`}>Убрать</button>
             </> : <span className={styles.meta}>—</span>}</div></td>
           </tr>)}</tbody>

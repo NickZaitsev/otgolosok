@@ -98,7 +98,7 @@ export function SharedWalkAdmin({ api, run, busy, onPending }: { api: AdminApi; 
       } catch (error) {
         if ((error as { status?: number }).status !== 409) throw error;
         await load(applied, page?.offset ?? 0, signal);
-        setNotice("Прогулка уже в очереди промо или больше не открыта по ссылке — список обновлён.");
+        setNotice("Прогулка уже в очереди промо, её промо опубликовано или она больше не открыта по ссылке — список обновлён.");
         return;
       }
       await load(applied, page?.offset ?? 0, signal);
