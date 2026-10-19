@@ -5,7 +5,10 @@ import { DatabaseSync } from "node:sqlite";
 import { createAccountStore } from "./account-store.mjs";
 import { createStore } from "./store.mjs";
 import { createApp } from "./server.mjs";
-import { nextSlots } from "./promo-slots.mjs";
+import { creativeWeekdays, nextSlots } from "./promo-slots.mjs";
+
+// The fixtures start on Monday 2026-10-05 and expect the plain schedule; creative Mondays are tested apart.
+process.env.PROMO_CREATIVE_WEEKDAYS = "";
 
 const routed = title => ({
   version: 2, id: randomUUID(), title, description: "Маршрут", city: "Москва", mode: "open", minutes: 30,
@@ -50,6 +53,22 @@ test("slots: Mon–Thu 20:30 and Fri–Sun 21:30 Moscow time, at least 30 minute
     ["2026-10-09T18:00:00Z", ["2026-10-10T18:30:00.000Z", "2026-10-11T18:30:00.000Z"]],
   ];
   for (const [now, expected] of cases) assert.deepEqual(nextSlots(new Date(now), 2), expected, now);
+});
+
+test("creative Mondays are skipped (same cases as otgolosok-shorts)", () => {
+  /** @type {[string, string[]][]} */
+  const cases = [
+    ["2026-10-04T19:00:00Z", ["2026-10-06T17:30:00.000Z", "2026-10-07T17:30:00.000Z"]],
+    ["2026-10-11T19:00:00Z", ["2026-10-13T17:30:00.000Z", "2026-10-14T17:30:00.000Z"]],
+    ["2026-10-05T16:59:00Z", ["2026-10-06T17:30:00.000Z", "2026-10-07T17:30:00.000Z"]],
+    ["2026-10-10T19:00:00Z", ["2026-10-11T18:30:00.000Z", "2026-10-13T17:30:00.000Z"]],
+  ];
+  for (const [now, expected] of cases) assert.deepEqual(nextSlots(new Date(now), 2, new Set([1])), expected, now);
+  assert.deepEqual(nextSlots(new Date("2026-10-05T00:00:00Z"), 2, new Set([0, 1, 2, 3, 4, 5, 6])), []);
+  assert.deepEqual([...creativeWeekdays("1")], [1]);
+  assert.deepEqual([...creativeWeekdays(" 1, 4 ")], [1, 4]);
+  assert.equal(creativeWeekdays("").size, 0);
+  assert.throws(() => creativeWeekdays("7"), /PROMO_CREATIVE_WEEKDAYS/);
 });
 
 test("slots cover every Moscow weekday with one release per day", () => {

@@ -69,7 +69,7 @@ export function PromoQueueAdmin({ api, run, busy }: { api: AdminApi; run: AdminR
   const firstQueued = queue?.items.find(item => item.status === "queued")?.id;
   return <section className="walk-admin" aria-busy={loading} aria-labelledby="promo-queue-title">
     <div className="walk-admin__head">
-      <div><h2 id="promo-queue-title">Очередь промо</h2><p>Один выпуск в день: пн–чт в 20:30, пт–вс в 21:30 по Москве. Ролик и пост собираются ночью, утром бот присылает превью с кнопками «Отменить» и «Перенести». Без ответа выпуск выходит по расписанию.</p></div>
+      <div><h2 id="promo-queue-title">Очередь промо</h2><p>Один выпуск в день: пн–чт в 20:30, пт–вс в 21:30 по Москве. Понедельник отдан креативным выпускам — очередь его пропускает. Ролик и пост собираются ночью, утром бот присылает превью с кнопками «Отменить» и «Перенести». Без ответа выпуск выходит по расписанию.</p></div>
       <button type="button" disabled={disabled} onClick={() => void run("Обновление очереди…", load)}>Обновить</button>
     </div>
     {actionFailed && <p className="walk-admin__message walk-admin__message--error" role="alert">Результат действия не подтверждён. Обновите очередь перед повторной отправкой.</p>}
