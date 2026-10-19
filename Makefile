@@ -10,6 +10,9 @@ NODE ?= node
 -include .env.ops
 export VPS
 GENERATOR_CONTAINER ?= otgolosok-generator-generator-1
+CODEX ?= codex
+CODEX_PROFILE ?= coding
+MORNING_CHECK_LOGS ?= .logs/morning-check
 
 # Quote arguments for the local shell and, for SSH, again for the remote shell.
 shell_quote = '$(subst ','"'"',$(1))'
@@ -19,6 +22,7 @@ shell_quote = '$(subst ','"'"',$(1))'
 .PHONY: db-dump db-pack db-import db-restore db-info db-prune-audio osm-import osm-load osm-food
 .PHONY: place-images place-images-prune
 .PHONY: admin-create admin-create-prod
+.PHONY: morning-check
 
 help: ## Показать доступные команды
 	@awk 'BEGIN {FS = ":.*## "; printf "Отголосок\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -113,3 +117,9 @@ osm-food: ## Собрать индекс заведений; PBF=path/to/Moscow.
 
 osm-load: ## Загрузить собранный каталог в SQLite
 	$(call shell_quote,$(NODE)) scripts/load-osm-catalog.mjs backend/data/osm-attractions.json
+
+# Unattended: Codex needs SSH and the sibling otgolosok-shorts checkout, so the sandbox is off; the
+# prompt itself forbids paid retries, data removal and deploys over a diverged production.
+morning-check: ## Утренняя проверка ночных заданий через Codex; отчёт в .logs/morning-check/ [CODEX_PROFILE=coding]
+	@CODEX=$(call shell_quote,$(CODEX)) CODEX_PROFILE=$(call shell_quote,$(CODEX_PROFILE)) \
+		MORNING_CHECK_LOGS=$(call shell_quote,$(MORNING_CHECK_LOGS)) scripts/morning-check.sh

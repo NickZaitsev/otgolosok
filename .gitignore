@@ -84,3 +84,6 @@ compose.override.yaml
 
 # Артефакты проверки статического экспорта
 /test-results-static/
+
+# Отчёты утренней проверки (make morning-check)
+.logs/
