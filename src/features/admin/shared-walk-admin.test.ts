@@ -105,6 +105,23 @@ it("shows access in words and offers only the actions that change the top state"
   ]);
 });
 
+it("keeps the action buttons inside a real table cell", async () => {
+  await mount();
+  const cell = container.querySelector("tbody tr")!.lastElementChild!;
+  expect(cell.tagName).toBe("TD");
+  expect(cell.className).toBe("");
+  expect(cell.firstElementChild?.tagName).toBe("DIV");
+  expect(cell.firstElementChild?.querySelector("button")?.textContent).toBe("Скопировать ссылку");
+});
+
+it("shows dates to the minute", async () => {
+  await mount();
+  const column = [...container.querySelectorAll("thead th")].findIndex(cell => cell.textContent === "Даты");
+  const updated = container.querySelector("tbody tr")!.children[column].querySelector("time")!.textContent!;
+  expect(updated).toBe(new Date(walk.updatedAt).toLocaleString("ru-RU", { dateStyle: "short", timeStyle: "short" }));
+  expect(updated).not.toMatch(/\d{2}:\d{2}:\d{2}/);
+});
+
 it("opens the moderation queue first while public walks await review", async () => {
   request.mockResolvedValueOnce({ walks: [walk], total: 3, offset: 0, hasMore: false, pending: 2 })
     .mockResolvedValueOnce({ walks: [publicWalk("pending")], total: 2, offset: 0, hasMore: false, pending: 2 });

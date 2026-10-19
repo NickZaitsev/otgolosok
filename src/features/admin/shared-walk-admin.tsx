@@ -28,7 +28,7 @@ const listingLabels: Record<ListingStatus, string> = { pending: "на прове
 /** Access and top state in words, so the table never relies on colour. */
 export const accessText = (walk: Pick<SharedWalk, "visibility" | "listingStatus">) =>
   walk.visibility === "public" ? `Всем · ${listingLabels[walk.listingStatus ?? "pending"]}` : "По ссылке";
-const dateLabel = (value: string) => new Date(value).toLocaleString("ru-RU");
+const dateLabel = (value: string) => new Date(value).toLocaleString("ru-RU", { dateStyle: "short", timeStyle: "short" });
 
 export function SharedWalkAdmin({ api, run, busy, onPending }: { api: AdminApi; run: AdminRun; busy: string; onPending?: (count: number) => void }) {
   const loaded = useRef(false);
@@ -124,11 +124,11 @@ export function SharedWalkAdmin({ api, run, busy, onPending }: { api: AdminApi; 
       <label>Доступ<select value={filters.access} onChange={event => setFilters({ ...filters, access: event.target.value })}><option value="all">Все</option><option value="shared">По ссылке</option><option value="public">Всем</option></select></label>
       <label>Топ<select value={filters.listing} onChange={event => setFilters({ ...filters, listing: event.target.value })}><option value="all">Все</option><option value="pending">На проверке</option><option value="approved">В топе</option><option value="hidden">Скрытые</option></select></label>
       <label>Промо<select value={filters.promo} onChange={event => setFilters({ ...filters, promo: event.target.value })}><option value="all">Все</option><option value="none">Без промо</option><option value="active">В очереди</option><option value="published">Опубликованы</option></select></label>
-      <button type="submit" className="admin-primary" disabled={disabled}>Найти</button>
+      <div className={styles.filterActions}><button type="submit" className="admin-primary" disabled={disabled}>Найти</button>
       <button type="button" disabled={disabled || (!hasFilters && !filters.q && !filters.author && !filters.city && filters.mode === "all" && filters.access === "all" && filters.listing === "all" && filters.promo === "all")} onClick={() => {
         setFilters(EMPTY_FILTERS);
         void run("Сброс фильтров…", signal => load(EMPTY_FILTERS, 0, signal));
-      }}>Сбросить</button>
+      }}>Сбросить</button></div>
     </form>
     {notice && <p className="walk-admin__message" role="status">{notice}</p>}
     {manualLink && <label className={styles.manual}>Ссылка для копирования<input readOnly value={manualLink} onFocus={event => event.target.select()} /></label>}
@@ -147,10 +147,10 @@ export function SharedWalkAdmin({ api, run, busy, onPending }: { api: AdminApi; 
           <td>{accessText(walk)}</td>
           <td>{walk.launches.toLocaleString("ru-RU")}</td>
           <td>{promoText(walk.promo)}{walk.promo?.youtubeUrl && <a className={styles.meta} href={walk.promo.youtubeUrl} target="_blank" rel="noopener noreferrer">Ролик на YouTube</a>}</td>
-          <td className={styles.actions}><button type="button" disabled={disabled || copying} onClick={() => void copyLink(walk)} aria-label={`Скопировать ссылку: ${walk.title}`}>Скопировать ссылку</button>
+          <td><div className={`${styles.actions} ${styles.rowActions}`}><button type="button" disabled={disabled || copying} onClick={() => void copyLink(walk)} aria-label={`Скопировать ссылку: ${walk.title}`}>Скопировать ссылку</button>
             {walk.visibility === "public" && walk.listingStatus !== "approved" && <button type="button" disabled={disabled} onClick={() => moderate(walk, "approve")} aria-label={`Одобрить для топа: ${walk.title}`}>Одобрить для топа</button>}
             {walk.visibility === "public" && walk.listingStatus !== "hidden" && <button type="button" disabled={disabled} onClick={() => moderate(walk, "hide")} aria-label={`Скрыть из топа: ${walk.title}`}>Скрыть из топа</button>}
-            {canEnqueue(walk.promo) && !walk.snapshotError && <button type="button" disabled={disabled} onClick={() => enqueue(walk)} aria-label={`В очередь промо: ${walk.title}`}>В очередь промо</button>}</td>
+            {canEnqueue(walk.promo) && !walk.snapshotError && <button type="button" disabled={disabled} onClick={() => enqueue(walk)} aria-label={`В очередь промо: ${walk.title}`}>В очередь промо</button>}</div></td>
         </tr>)}</tbody>
       </table>
       {page && !page.total && !loading && !failed && <p className="walk-admin__empty">{hasFilters ? "По этим фильтрам прогулок нет. Измените условия или сбросьте фильтры." : "Пока никто не открыл доступ к прогулке."}</p>}
