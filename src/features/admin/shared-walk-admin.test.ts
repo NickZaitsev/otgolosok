@@ -4,6 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { SharedWalkAdmin, WalkAdminSection } from "./shared-walk-admin";
 import type { AdminApi, AdminRun } from "./model";
+import { CITIES } from "../../../backend/cities.mjs";
 
 const walk = { id: "walk", title: "Арбат", shareToken: "public-token", revision: 2, visibility: "shared", listingStatus: null, author: { id: "anna", name: "Анна", email: "anna@example.test" },
   city: "Москва", mode: "loop", stopCount: 4, walkingMinutes: 20, distanceM: 1200, snapshotError: null, launches: 1234,
@@ -133,7 +134,8 @@ it("opens the moderation queue first while public walks await review", async () 
 
 it("filters by access and top state", async () => {
   await mount();
-  const [, access, listing] = [...container.querySelectorAll("select")];
+  const select = (name: string) => [...container.querySelectorAll("label")].find(label => label.firstChild?.textContent === name)!.querySelector("select")!;
+  const [access, listing] = [select("Доступ"), select("Топ")];
   await act(async () => {
     access.value = "public"; access.dispatchEvent(new Event("change", { bubbles: true }));
     listing.value = "hidden"; listing.dispatchEvent(new Event("change", { bubbles: true }));
@@ -174,15 +176,13 @@ it("shows the pending counter in the tab title", async () => {
 });
 
 
-it("shows the city column and uses a trimmed city filter for search, pagination and reset", async () => {
+it("shows the city column and filters by a city chosen from the registry for search, pagination and reset", async () => {
   await mount();
   const column = [...container.querySelectorAll("thead th")].findIndex(cell => cell.textContent === "Город");
   expect(container.querySelector("tbody tr")!.children[column].textContent).toBe("Москва");
-  const input = [...container.querySelectorAll("label")].find(label => label.textContent === "Город")!.querySelector("input")!;
-  await act(async () => {
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "  Казань  ");
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-  });
+  const input = [...container.querySelectorAll("label")].find(label => label.textContent?.startsWith("Город"))!.querySelector("select")!;
+  expect([...input.options].map(option => [option.value, option.textContent])).toEqual([["", "Все города"], ...CITIES.map(city => [city.name, city.name])]);
+  await act(async () => { input.value = "Казань"; input.dispatchEvent(new Event("change", { bubbles: true })); });
   await click("Найти");
   let query = new URLSearchParams(request.mock.lastCall![0].split("?")[1]);
   expect(query.get("city")).toBe("Казань");

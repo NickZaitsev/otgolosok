@@ -7,6 +7,7 @@ import { skeletonRows } from "./table-skeleton";
 import { canEnqueue, PROMO_LINK_ONLY_WARNING, promoText, type PromoState } from "./promo-queue-model";
 import { PromoQueueAdmin } from "./promo-queue-admin";
 import styles from "./shared-walk-admin.module.css";
+import { CITIES } from "../../../backend/cities.mjs";
 
 type Visibility = "shared" | "public";
 type ListingStatus = "pending" | "approved" | "hidden";
@@ -115,10 +116,10 @@ export function SharedWalkAdmin({ api, run, busy, onPending }: { api: AdminApi; 
     </div>
     <form className={styles.filters} onSubmit={event => {
       event.preventDefault();
-      void run("Поиск прогулок…", signal => load({ ...filters, q: filters.q.trim(), author: filters.author.trim(), city: filters.city.trim() }, 0, signal));
+      void run("Поиск прогулок…", signal => load({ ...filters, q: filters.q.trim(), author: filters.author.trim() }, 0, signal));
     }}>
       <label>Название прогулки<input type="search" maxLength={120} value={filters.q} onChange={event => setFilters({ ...filters, q: event.target.value })} /></label>
-      <label>Город<input type="search" maxLength={120} value={filters.city} onChange={event => setFilters({ ...filters, city: event.target.value })} /></label>
+      <label>Город<select value={filters.city} onChange={event => setFilters({ ...filters, city: event.target.value })}><option value="">Все города</option>{CITIES.map(city => <option key={city.id} value={city.name}>{city.name}</option>)}</select></label>
       <label>Автор<input type="search" maxLength={120} placeholder="Имя или почта" value={filters.author} onChange={event => setFilters({ ...filters, author: event.target.value })} /></label>
       <label>Тип маршрута<select value={filters.mode} onChange={event => setFilters({ ...filters, mode: event.target.value })}><option value="all">Все типы</option><option value="open">В одну сторону</option><option value="loop">Кольцевой</option></select></label>
       <label>Доступ<select value={filters.access} onChange={event => setFilters({ ...filters, access: event.target.value })}><option value="all">Все</option><option value="shared">По ссылке</option><option value="public">Всем</option></select></label>
