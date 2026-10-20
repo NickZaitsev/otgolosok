@@ -15,7 +15,10 @@ if (payload.stop_hook_active || !existsSync(".git")) process.exit(0);
 
 let status;
 try {
-  status = execFileSync("git", ["status", "--porcelain"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+  status = execFileSync("git", ["status", "--porcelain"], {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  });
 } catch {
   process.exit(0);
 }
