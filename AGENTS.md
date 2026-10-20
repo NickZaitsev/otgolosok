@@ -31,6 +31,7 @@ Whenever you identify a workaround, defect, or reliability risk, please highligh
 - Commit messages and MR titles follow Git Atomic Conventional Commits: keep the type and scope in English (`feat(auth):`, `fix(db):`), write the description after the colon in Russian — e.g. `feat(consent): интегрировать Яндекс.Метрику`.
 - Maintain .gitignore yourself: add generated, local, temporary, cache, build, and environment files as they appear.
 - In the Bash tool, pass multi-line commit messages via `-m` with a regular double-quoted string (or heredoc), NOT PowerShell `@'...'@` syntax — the `@` leaks into the message text.
+- A task is not finished until every commit is pushed: before reporting completion, push the current branch and make sure `git status -sb` shows no `ahead` against its upstream.
 - Do not create new branches without explicit user confirmation. Work in the current branch; сreate a branch only on explicit request.
 
 ## Tests and completion
@@ -39,7 +40,7 @@ Whenever you identify a workaround, defect, or reliability risk, please highligh
 - Run the relevant test scope when a change could affect behavior; run the full suite for broad, cross-cutting, risky, or release-level changes. Trivial non-behavioral edits (docs, comments, formatting, isolated constants) may skip tests.
 - A bug fix starts with a test that reproduces the bug.
 - No filler tests: no test without a meaningful assertion, no test whose only assertion is "the mock was called", no test that restates the implementation. Deleting a worthless test is an improvement.
-- A task is "Done" only when tests pass and the change is verified end-to-end and committed.
+- A task is "Done" only when tests pass and the change is verified end-to-end, committed and pushed.
 
 ## Error handling
 
