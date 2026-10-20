@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .claude/hooks/stop-commit-check.ps1"
+            "command": "node .claude/hooks/stop-commit-check.mjs"
           }
         ]
       }
