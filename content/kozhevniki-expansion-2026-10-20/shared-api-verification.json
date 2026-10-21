@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-21T08:22:05.302205+00:00",
+  "shareUrl": "https://otgolosok.online/walk?share=901d1133-44a2-4724-a856-2fe8d6c86a44",
+  "readyChapters": 10,
+  "currentTextAndAudioMatch": true,
+  "documentMatches": true,
+  "revision": 2,
+  "pointsChecked": [
+    "osm:relation:7253185",
+    "osm:node:273356351",
+    "osm:node:4220359698",
+    "osm:way:533065240",
+    "osm:way:130640430",
+    "osm:node:2330688388",
+    "osm:way:53045161",
+    "osm:way:192584381",
+    "osm:way:56460859",
+    "osm:way:48346310"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-10-21T08:21:34.310866+00:00",
+  "preserved": 6,
+  "entries": [
+    {
+      "placeId": "osm:relation:7253185",
+      "url": "/api/story-audio/0490bb670356b50ee5a6df7881a0901c0772951f8abf032bbc520329d122fa0f.mp3",
+      "sha256": "0490bb670356b50ee5a6df7881a0901c0772951f8abf032bbc520329d122fa0f",
+      "bytes": 567405,
+      "status": 200
+    },
+    {
+      "placeId": "osm:node:273356351",
+      "url": "/api/story-audio/b15cc36b0922a9477ccd8ee270876f3de6ed64eb89c308255a565095edd9f9c8.mp3",
+      "sha256": "b15cc36b0922a9477ccd8ee270876f3de6ed64eb89c308255a565095edd9f9c8",
+      "bytes": 520941,
+      "status": 200
+    },
+    {
+      "placeId": "osm:node:4220359698",
+      "url": "/api/story-audio/54161f31379b887cb0d317b66a41f35c24118c2881b958594254b054d8f051a6.mp3",
+      "sha256": "54161f31379b887cb0d317b66a41f35c24118c2881b958594254b054d8f051a6",
+      "bytes": 500973,
+      "status": 200
+    },
+    {
+      "placeId": "osm:node:2330688388",
+      "url": "/api/story-audio/64da31e479a09a96668ca592b09b87c64915d77e022b08e6f9eeb8bfa25cb999.mp3",
+      "sha256": "64da31e479a09a96668ca592b09b87c64915d77e022b08e6f9eeb8bfa25cb999",
+      "bytes": 876909,
+      "status": 200
+    },
+    {
+      "placeId": "osm:way:192584381",
+      "url": "/api/story-audio/03ec959fdc7a364d827a436f7812133bea21802330f8575d4982f664597af07f.mp3",
+      "sha256": "03ec959fdc7a364d827a436f7812133bea21802330f8575d4982f664597af07f",
+      "bytes": 357741,
+      "status": 200
+    },
+    {
+      "placeId": "osm:way:56460859",
+      "url": "/api/story-audio/b4cd1b7ac800ac1115f00b6b5695d688a99811e4eea11afc38ce6a7a41138a56.mp3",
+      "sha256": "b4cd1b7ac800ac1115f00b6b5695d688a99811e4eea11afc38ce6a7a41138a56",
+      "bytes": 405741,
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "checkedAt": "2026-10-20",
+  "routeProvider": "Valhalla/OpenStreetMap",
+  "distanceM": 3252,
+  "walkingMinutes": 43,
+  "points": 177,
+  "stops": [
+    {
+      "placeId": "osm:relation:7253185",
+      "triggerGapFromRouteM": 0.02,
+      "triggerGapFromPlaceM": 147.27
+    },
+    {
+      "placeId": "osm:node:273356351",
+      "triggerGapFromRouteM": 0.03,
+      "triggerGapFromPlaceM": 24.86
+    },
+    {
+      "placeId": "osm:node:4220359698",
+      "triggerGapFromRouteM": 0.06,
+      "triggerGapFromPlaceM": 21.67
+    },
+    {
+      "placeId": "osm:way:533065240",
+      "triggerGapFromRouteM": 0.02,
+      "triggerGapFromPlaceM": 131.13
+    },
+    {
+      "placeId": "osm:way:130640430",
+      "triggerGapFromRouteM": 0.04,
+      "triggerGapFromPlaceM": 23.92
+    },
+    {
+      "placeId": "osm:node:2330688388",
+      "triggerGapFromRouteM": 0.0,
+      "triggerGapFromPlaceM": 25.47
+    },
+    {
+      "placeId": "osm:way:53045161",
+      "triggerGapFromRouteM": 4.42,
+      "triggerGapFromPlaceM": 35.72
+    },
+    {
+      "placeId": "osm:way:192584381",
+      "triggerGapFromRouteM": 0.0,
+      "triggerGapFromPlaceM": 0.0
+    },
+    {
+      "placeId": "osm:way:56460859",
+      "triggerGapFromRouteM": 0.04,
+      "triggerGapFromPlaceM": 43.41
+    },
+    {
+      "placeId": "osm:way:48346310",
+      "triggerGapFromRouteM": 0.0,
+      "triggerGapFromPlaceM": 14.28
+    }
+  ],
+  "tunnels": [
+    [
+      174,
+      176
+    ]
+  ],
+  "tunnelWayIds": [
+    434753016
+  ],
+  "fieldChecked": false,
+  "accessCaveats": [
+    "Проход к палатам и внутри бывшей фабрики на местности не проверен.",
+    "Текущие ограждения, строительные работы и режим доступа во дворы не подтверждены."
+  ]
+}

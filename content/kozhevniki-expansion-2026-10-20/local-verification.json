@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-20T13:54:37.591Z",
+  "dryRunRollsBack": true,
+  "conflictRollsBack": true,
+  "idempotentReplay": true,
+  "oldTextsAndAudioPreserved": true,
+  "newPlaces": 3,
+  "newStories": 9,
+  "reusedStories": 1
+}

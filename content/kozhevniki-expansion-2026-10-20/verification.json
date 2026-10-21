@@ -1,0 +1,548 @@
+{
+  "checkedAt": "2026-10-21T08:21:34.310866+00:00",
+  "checked": 10,
+  "errors": [],
+  "measuredAudioSec": 1039.2,
+  "entries": [
+    {
+      "placeId": "osm:relation:7253185",
+      "sourceTextSha256": "ea2e52c42d6fdb4bcfd5b8d448670f583291ba0d83ad9699b5980479e5246ff1",
+      "audio": {
+        "url": "/api/story-audio/cf48d9e3c411f7de7e9e0ebcd1e025fa3afcf43ad341e76a6e7ba8610e0f1592.mp3",
+        "sha256": "cf48d9e3c411f7de7e9e0ebcd1e025fa3afcf43ad341e76a6e7ba8610e0f1592",
+        "bytes": 942189,
+        "durationSec": 117.744,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 117.68,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "f047eec1-e6bb-4f7e-81cf-c06a329cd7a8",
+      "photo": {
+        "thumbnail": "/api/place-images/23f32b5be78248a92cf46962172c2e7b7107566e2a3cce956e7da41cdd62c96b.jpg",
+        "src": "/api/place-images/bb7f95277646b0f059e533f501108bb06c5d7c5b71c9fd22a621e922c7ad7607.jpg",
+        "width": 960,
+        "height": 600,
+        "alt": "Павелецкий вокзал",
+        "author": "A.Savin",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow_05-2017_img22_Paveletsky_Terminus.jpg",
+        "license": "FAL",
+        "licenseUrl": "http://artlibre.org/licence/lal/en"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/23f32b5be78248a92cf46962172c2e7b7107566e2a3cce956e7da41cdd62c96b.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 19097,
+          "sha256": "23f32b5be78248a92cf46962172c2e7b7107566e2a3cce956e7da41cdd62c96b",
+          "width": 250,
+          "height": 156
+        },
+        {
+          "kind": "src",
+          "url": "/api/place-images/bb7f95277646b0f059e533f501108bb06c5d7c5b71c9fd22a621e922c7ad7607.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 219653,
+          "sha256": "bb7f95277646b0f059e533f501108bb06c5d7c5b71c9fd22a621e922c7ad7607",
+          "width": 960,
+          "height": 600
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 237
+    },
+    {
+      "placeId": "osm:node:273356351",
+      "sourceTextSha256": "55694e598a5f5485b7378540de074afb81a4c2cf26a8da9045db32f82563f101",
+      "audio": {
+        "url": "/api/story-audio/9587e883708af1858bc75fd7c12ed891d2c4eff90491cad0c79be57a2852696e.mp3",
+        "sha256": "9587e883708af1858bc75fd7c12ed891d2c4eff90491cad0c79be57a2852696e",
+        "bytes": 991341,
+        "durationSec": 123.888,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 123.84,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "ce44ed4d-c2fc-4779-a71f-ee2ca49756b4",
+      "photo": {
+        "thumbnail": "/images/places/node-273356351-b73f818ed2f1.jpg",
+        "src": "/images/places/node-273356351-c35569f80d4c.jpg",
+        "width": 960,
+        "height": 663,
+        "alt": "Особняк Алексея Бахрушина, главное здание театрального музея",
+        "author": "Shakko",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bakhrushin_Museum_of_Theatre_(2013)_by_shakko_01.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/node-273356351-b73f818ed2f1.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 20594,
+          "sha256": "b73f818ed2f16bcb27fa4d0abaca83c386bc74872e0f022507171a737c72112c",
+          "width": 250,
+          "height": 173
+        },
+        {
+          "kind": "src",
+          "url": "/images/places/node-273356351-c35569f80d4c.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 231735,
+          "sha256": "c35569f80d4cdc0dd27248b77b2a824ea9b05f2041744683c9a588475f7fbc97",
+          "width": 960,
+          "height": 663
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 240
+    },
+    {
+      "placeId": "osm:node:4220359698",
+      "sourceTextSha256": "a608e5db5c56e6383d5d591e164a28660c4ea6eb206dbf7a5f248d2ccb6bcec4",
+      "audio": {
+        "url": "/api/story-audio/5cabd6e6fab0163b0094014058238a55e9305a93a62f7fc8631350861426d47c.mp3",
+        "sha256": "5cabd6e6fab0163b0094014058238a55e9305a93a62f7fc8631350861426d47c",
+        "bytes": 927405,
+        "durationSec": 115.896,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 115.84,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "cc9b3504-d1f3-4666-b0a0-8373bbe8a6ca",
+      "photo": {
+        "thumbnail": "/api/place-images/ab07e7b60753a97f8713b561628e5000317e721de387f1067d2ae87335ccd2b6.jpg",
+        "src": "/api/place-images/bd02327d3f64f7892c40bccc7213a1df632425e3f744c184d7771812f868cd61.jpg",
+        "width": 500,
+        "height": 333,
+        "alt": "Палаты Кожевенной слободы",
+        "author": "Stolbovsky",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kozhevnicheskaya_Palaty_3.jpg",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/api/place-images/ab07e7b60753a97f8713b561628e5000317e721de387f1067d2ae87335ccd2b6.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 20829,
+          "sha256": "ab07e7b60753a97f8713b561628e5000317e721de387f1067d2ae87335ccd2b6",
+          "width": 250,
+          "height": 167
+        },
+        {
+          "kind": "src",
+          "url": "/api/place-images/bd02327d3f64f7892c40bccc7213a1df632425e3f744c184d7771812f868cd61.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 75783,
+          "sha256": "bd02327d3f64f7892c40bccc7213a1df632425e3f744c184d7771812f868cd61",
+          "width": 500,
+          "height": 333
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 240
+    },
+    {
+      "placeId": "osm:way:533065240",
+      "sourceTextSha256": "a9581120055dbf4a366c4d0a89d2011c999c4057787e5c6639da407e2650e33b",
+      "audio": {
+        "url": "/api/story-audio/9987c25c204feb97b726db356de4e286388277f1c6a3feb5000a74e94370f1ed.mp3",
+        "sha256": "9987c25c204feb97b726db356de4e286388277f1c6a3feb5000a74e94370f1ed",
+        "bytes": 900525,
+        "durationSec": 112.536,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 112.48,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "ba8650b8-9bd5-4d81-9903-ffd5d3662775",
+      "photo": {
+        "thumbnail": "/images/places/way-533065240-159893c2d998.jpg",
+        "src": "/images/places/way-533065240-9a8977f7589c.jpg",
+        "width": 960,
+        "height": 640,
+        "alt": "Новоспасский мост через Москву-реку",
+        "author": "Retired electrician",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Novospassky_Bridge_August_2012_01.jpg",
+        "license": "CC0",
+        "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/way-533065240-159893c2d998.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 13112,
+          "sha256": "159893c2d99804092c3793d3ca5dde7b8b2c10febf9e9ea6b59222235319ccef",
+          "width": 250,
+          "height": 167
+        },
+        {
+          "kind": "src",
+          "url": "/images/places/way-533065240-9a8977f7589c.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 140188,
+          "sha256": "9a8977f7589c88c4897a66bc92d98dc6483a92216605fcae46aab33c9f851913",
+          "width": 960,
+          "height": 640
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 229
+    },
+    {
+      "placeId": "osm:way:130640430",
+      "sourceTextSha256": "901751bdd0445784a53f6b67ae5eab67e7f3c8c928f9cd601c6401d400951cb8",
+      "audio": {
+        "url": "/api/story-audio/8880f05bf01e2ebc698c994c209243f5e5b82a764fbb6f2067b4acdfddac85d6.mp3",
+        "sha256": "8880f05bf01e2ebc698c994c209243f5e5b82a764fbb6f2067b4acdfddac85d6",
+        "bytes": 1022061,
+        "durationSec": 127.728,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 127.68,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "b2501658-cbd4-4642-b026-c68ba57ba939",
+      "photo": {
+        "thumbnail": "/images/places/way-130640430-78f6d3ca3728.jpg",
+        "src": "/images/places/way-130640430-123c66560acf.jpg",
+        "width": 500,
+        "height": 667,
+        "alt": "Храм Троицы в Кожевниках",
+        "author": "Mvad",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Church_of_Trinity_in_Kozhevniki_(Moscow)_1.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/way-130640430-78f6d3ca3728.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 29999,
+          "sha256": "78f6d3ca37281b590f637025fec5c088955c155f429d3f10d30462cc0fec8748",
+          "width": 250,
+          "height": 333
+        },
+        {
+          "kind": "src",
+          "url": "/images/places/way-130640430-123c66560acf.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 115641,
+          "sha256": "123c66560acfdbc4b34ac4c38577101f9d83b8f5d11b296cb3cc469381979911",
+          "width": 500,
+          "height": 667
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 245
+    },
+    {
+      "placeId": "osm:node:2330688388",
+      "sourceTextSha256": "f3cc483e76844c4e3719b69ec53286b422b5d3f4d9b5a0bb8ddf515b8a4f3a07",
+      "audio": {
+        "url": "/api/story-audio/711bdf8c3f00e243aaa35e07996fa914ca01593d65fc462c5405fab058750db9.mp3",
+        "sha256": "711bdf8c3f00e243aaa35e07996fa914ca01593d65fc462c5405fab058750db9",
+        "bytes": 734829,
+        "durationSec": 91.824,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 91.76,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "0facff0f-72a4-4dc7-85ca-12ce449f1efc",
+      "photo": {
+        "thumbnail": "/images/places/node-2330688388-6c229e8411d7.jpg",
+        "src": "/images/places/node-2330688388-deaa85c0d4c7.jpg",
+        "width": 960,
+        "height": 720,
+        "alt": "Историческая застройка 2-го Кожевнического переулка",
+        "author": "NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:2nd_Kozhevhichesky_7C3_02.jpg",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/node-2330688388-6c229e8411d7.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 18766,
+          "sha256": "6c229e8411d75eaec3aeb1c40669ef6358ed84b4da5cb2328f73d6a08b450321",
+          "width": 250,
+          "height": 187
+        },
+        {
+          "kind": "src",
+          "url": "/images/places/node-2330688388-deaa85c0d4c7.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 233695,
+          "sha256": "deaa85c0d4c7da2b794655669eed1060c8def2d2b43dba756e36416d05b1793c",
+          "width": 960,
+          "height": 720
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 181
+    },
+    {
+      "placeId": "osm:way:53045161",
+      "sourceTextSha256": "4fd04f58999d6862b2c1ddb1888b288ab75c3969190a9b2d96d07ff2a4f70901",
+      "audio": {
+        "url": "/api/story-audio/c232e0c32d73867eec173cf0ae87257970d2be052bd290c0a4de7e8177488317.mp3",
+        "sha256": "c232e0c32d73867eec173cf0ae87257970d2be052bd290c0a4de7e8177488317",
+        "bytes": 915309,
+        "durationSec": 114.384,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 114.32,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "792704ef-0e6d-4961-becf-c65abd166248",
+      "photo": {
+        "thumbnail": "/images/places/way-53045161-1f01180f2926.jpg",
+        "src": "/images/places/way-53045161-0be0f0e36b45.jpg",
+        "width": 960,
+        "height": 690,
+        "alt": "Жилые дома мануфактуры «Эмиль Циндель», историческая иллюстрация 1908 года",
+        "author": "Товарищество Эмиль Циндель",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%A2%D0%BE%D0%B2%D0%B0%D1%80%D0%B8%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_%D0%AD%D0%BC%D0%B8%D0%BB%D1%8C_%D0%A6%D0%B8%D0%BD%D0%B4%D0%B5%D0%BB%D1%8C_(1908)_11_%D0%96%D0%B8%D0%BB%D1%8B%D0%B5_%D0%B4%D0%BE%D0%BC%D0%B0.jpg",
+        "license": "Public domain",
+        "licenseUrl": "https://commons.wikimedia.org/wiki/File:%D0%A2%D0%BE%D0%B2%D0%B0%D1%80%D0%B8%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE_%D0%AD%D0%BC%D0%B8%D0%BB%D1%8C_%D0%A6%D0%B8%D0%BD%D0%B4%D0%B5%D0%BB%D1%8C_(1908)_11_%D0%96%D0%B8%D0%BB%D1%8B%D0%B5_%D0%B4%D0%BE%D0%BC%D0%B0.jpg"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/way-53045161-1f01180f2926.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 16718,
+          "sha256": "1f01180f29264b04f34832b2fa7180e437bc0d9cd69aeb0a4901a55a30086068",
+          "width": 250,
+          "height": 180
+        },
+        {
+          "kind": "src",
+          "url": "/images/places/way-53045161-0be0f0e36b45.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 231470,
+          "sha256": "0be0f0e36b45f380a2cdca11019159f03b96ec80e82b963fb7ca7755d1587578",
+          "width": 960,
+          "height": 690
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 236
+    },
+    {
+      "placeId": "osm:way:192584381",
+      "sourceTextSha256": "642c6083b6581675ee816c265baa537ac69e88299cf758fcd25681327c383577",
+      "audio": {
+        "url": "/api/story-audio/6bd18833ade86504f6e031ba415edd1332d2b0c07a3c96bbb449e639b6046ec0.mp3",
+        "sha256": "6bd18833ade86504f6e031ba415edd1332d2b0c07a3c96bbb449e639b6046ec0",
+        "bytes": 498669,
+        "durationSec": 62.304,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 62.24,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "126cea8f-3556-4647-9698-4f913859b607",
+      "photo": {
+        "thumbnail": "/images/places/way-192584381-e39a1fb36e85.jpg",
+        "src": "/images/places/way-192584381-567e58ff9890.jpg",
+        "width": 500,
+        "height": 553,
+        "alt": "Застройка Дербеневской улицы у фабрики Цинделя",
+        "author": "user:NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Derbenevskaya_7_Oct_2010_03.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/way-192584381-e39a1fb36e85.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 27700,
+          "sha256": "e39a1fb36e85f7c7dee17adb71abdafa94c798e71fec7d8c8019a811bb05c8c6",
+          "width": 250,
+          "height": 277
+        },
+        {
+          "kind": "src",
+          "url": "/images/places/way-192584381-567e58ff9890.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 100580,
+          "sha256": "567e58ff9890a8c1131a072fb251288f4a0fd5c3e481766f9942e5d877b52a4f",
+          "width": 500,
+          "height": 553
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 124
+    },
+    {
+      "placeId": "osm:way:56460859",
+      "sourceTextSha256": "3e81c7b3d86e5524b3a024becab52d075d86fa393b58c2b46bac676070327569",
+      "audio": {
+        "url": "/api/story-audio/759d52cb259516671fc23ec34200084313e535f87fc2d96e9751e5ae9e707521.mp3",
+        "sha256": "759d52cb259516671fc23ec34200084313e535f87fc2d96e9751e5ae9e707521",
+        "bytes": 620205,
+        "durationSec": 77.496,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 77.44,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "780e1ced-dd93-4fdc-a937-8649456095b0",
+      "photo": {
+        "thumbnail": "/images/places/way-56460859-200f3e5e699e.jpg",
+        "src": "/images/places/way-56460859-1e588bc5897d.jpg",
+        "width": 500,
+        "height": 562,
+        "alt": "Рабочая казарма фабрики Цинделя, Дербеневская улица, 14к2",
+        "author": "user:NVO",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Derbenevskaya_14C2_Sep_2008_05.JPG",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/way-56460859-200f3e5e699e.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 26373,
+          "sha256": "200f3e5e699e46c2c3de87d61d9ec55c6e70d6a0201e59744bb1100287638154",
+          "width": 250,
+          "height": 281
+        },
+        {
+          "kind": "src",
+          "url": "/images/places/way-56460859-1e588bc5897d.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 95797,
+          "sha256": "1e588bc5897deac94ac4e7c8ed4e03db6b0a91426ba165730300154784ed3767",
+          "width": 500,
+          "height": 562
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 160
+    },
+    {
+      "placeId": "osm:way:48346310",
+      "sourceTextSha256": "10e7505733b40b0381db0a73de0e07c20b5c9903fc44effe36cbbf227ef509ec",
+      "audio": {
+        "url": "/api/story-audio/e3d23fde6dd62fd5b85274599edfb84495c82d05ec6d97f900ab29ce1916f3aa.mp3",
+        "sha256": "e3d23fde6dd62fd5b85274599edfb84495c82d05ec6d97f900ab29ce1916f3aa",
+        "bytes": 768045,
+        "durationSec": 95.976,
+        "model": "eleven_v4",
+        "voice": "9ivxhQ6xIsHd6R3Xc635",
+        "provider": "elevenlabs",
+        "synthetic": true
+      },
+      "measuredDurationSec": 95.92,
+      "decoded": true,
+      "bytesVerified": true,
+      "sha256Verified": true,
+      "textId": "a62c4f0e-3caa-4763-811b-4d58b4492065",
+      "photo": {
+        "thumbnail": "/images/places/way-48346310-2420ce7c2042.jpg",
+        "src": "/images/places/way-48346310-2ca38e2187c2.jpg",
+        "width": 960,
+        "height": 641,
+        "alt": "Бывшие корпуса мануфактуры Цинделя",
+        "author": "Gennady Grachev from Moscow, Russia",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Moscow,_Novospassky_offices,_former_Emil_Zindel_factory_(31164917920).jpg",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+      },
+      "images": [
+        {
+          "kind": "thumbnail",
+          "url": "/images/places/way-48346310-2420ce7c2042.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 13617,
+          "sha256": "2420ce7c20429f16722dc0a503b3f153447a140adcded50ec664a908b0fc89f0",
+          "width": 250,
+          "height": 167
+        },
+        {
+          "kind": "src",
+          "url": "/images/places/way-48346310-2ca38e2187c2.jpg",
+          "status": 200,
+          "decoded": true,
+          "bytes": 166966,
+          "sha256": "2ca38e2187c28eb27dee638e56ef91b57fbd51bfb4a78aeec42e8c5d39f5580f",
+          "width": 960,
+          "height": 641
+        }
+      ],
+      "exactStoryMatch": true,
+      "wordCount": 183
+    }
+  ]
+}
