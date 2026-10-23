@@ -14,6 +14,7 @@ import '../../walk_engine/js_json.dart';
 import '../../walk_engine/walk_view.dart';
 import '../feedback/improvement_sheet.dart';
 import '../offline/offline_copy.dart';
+import '../player/walk_player_panel.dart' show AddFood;
 import '../reviews/review_model.dart';
 import '../reviews/review_sheet.dart';
 import '../reviews/walk_reviews_controller.dart';
@@ -46,6 +47,8 @@ class WalkReadyView extends ConsumerWidget {
     required this.localAudio,
     required this.reviews,
     required this.offline,
+    this.mount,
+    this.onAddFood,
   });
 
   final WalkLink link;
@@ -53,6 +56,12 @@ class WalkReadyView extends ConsumerWidget {
   final Map<String, Uri> localAudio;
   final WalkReviewsController? reviews;
   final OfflineCopyController? offline;
+
+  /// The load the walk came from; the player keeps running while it stays the same.
+  final String? mount;
+
+  /// Adds a food place to the walk; null where places cannot join it.
+  final AddFood? onAddFood;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -95,6 +104,8 @@ class WalkReadyView extends ConsumerWidget {
               view: view,
               link: link,
               localAudio: localAudio,
+              mount: mount,
+              onAddFood: onAddFood,
               intro: active ? null : WalkIntro(link: link, walk: walk, reviews: reviews, offline: offline),
             ),
           ),

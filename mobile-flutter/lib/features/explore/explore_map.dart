@@ -27,6 +27,20 @@ const _styleIcons = [
   'poi-foodCoffee', 'poi-foodMeal', 'poi-foodSnack', 'poi-foodBar',
 ];
 
+/// Registers the POI and food icons the style and the overlays draw. The icons are added at their 1x size: the
+/// plugin's `addImage` takes no pixel ratio, so a 2x/3x bitmap would be drawn two or three times too large. A
+/// missing icon leaves its symbols out; the map still works.
+Future<void> addMapIcons(MapLibreMapController controller) async {
+  for (final name in _styleIcons) {
+    try {
+      final data = await rootBundle.load('assets/map/icons/$name.png');
+      await controller.addImage(name, data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    } on Object catch (error) {
+      debugPrint('Map icon $name failed to load: $error');
+    }
+  }
+}
+
 /// Leaflet z19 of the site is MapLibre z18.
 const double mapMaxZoom = 18;
 
@@ -133,7 +147,7 @@ class ExploreMapState extends State<ExploreMap> {
     final controller = _controller;
     if (controller == null) return;
     try {
-      await _addIcons(controller);
+      await addMapIcons(controller);
       await controller.addGeoJsonSource(walksSourceId, _data(walksSourceId));
       await controller.addGeoJsonSource(markersSourceId, _data(markersSourceId));
       await controller.addGeoJsonSource(userSourceId, _data(userSourceId));
@@ -151,18 +165,6 @@ class ExploreMapState extends State<ExploreMap> {
     _reportViewport();
   }
 
-  /// The icons are added at their 1x size: the plugin's `addImage` takes no pixel ratio, so a 2x/3x
-  /// bitmap would be drawn two or three times too large.
-  Future<void> _addIcons(MapLibreMapController controller) async {
-    for (final name in _styleIcons) {
-      try {
-        final data = await rootBundle.load('assets/map/icons/$name.png');
-        await controller.addImage(name, data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
-      } on Object catch (error) {
-        debugPrint('Map icon $name failed to load: $error');
-      }
-    }
-  }
 
   Future<void> _addLayers(MapLibreMapController controller) async {
     final island = _hex(TokenColors.surfaceIsland);

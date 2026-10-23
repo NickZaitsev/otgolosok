@@ -13,11 +13,15 @@ import '../../core/i18n/i18n.dart';
 import '../../core/i18n/translations.dart';
 import '../../core/i18n/user_message.dart';
 import '../../walk_engine/walk_view.dart';
+import '../food/food_model.dart';
 import '../offline/offline_copy.dart';
+import '../offline/offline_packs.dart' show OfflineWalkRef;
 import '../offline/offline_providers.dart';
 import '../reviews/review_model.dart';
 import '../reviews/reviews_api.dart';
 import '../reviews/walk_reviews_controller.dart';
+import 'add_food_stop.dart';
+import 'food_stop.dart' show FoodStopError;
 import 'local_walks.dart';
 import 'walk_intro.dart';
 import 'walk_link.dart';
@@ -80,7 +84,7 @@ class _Failed extends _State {
 }
 
 class _Ready extends _State {
-  const _Ready(this.link, this.walk, this.localAudio, this.reviews, this.offline);
+  const _Ready(this.link, this.walk, this.localAudio, this.reviews, this.offline, this.mount);
 
   /// The link the walk was opened with; it keeps its start stop when the walk card reopens it.
   final WalkLink link;
@@ -88,6 +92,9 @@ class _Ready extends _State {
   final Map<String, Uri> localAudio;
   final WalkReviewsController? reviews;
   final OfflineCopyController? offline;
+
+  /// The load this walk came from: a food place saved as a copy keeps it, so the running walk goes on.
+  final String mount;
 }
 
 class _WalkScreenState extends ConsumerState<WalkScreen> {
@@ -152,6 +159,7 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
   Future<void> _load() async {
     _cancel?.cancel();
     final cancel = _cancel = CancelToken();
+    final mount = _key!;
     final link = widget.link;
     final locale = contentLocaleOf(context.appLocale);
     try {
@@ -160,15 +168,7 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
       final packs = ref.read(offlinePacksProvider);
       final localAudio = await packs.localRecordings(walk.view);
       if (!mounted || cancel.isCancelled) return;
-      final target = reviewTargetOf(link);
-      final api = ref.read(apiProvider);
-      final reviews = target == null
-          ? null
-          : WalkReviewsController(target: target, api: ReviewsApi(api), drafts: ReviewDrafts(ref.read(settingsProvider)));
-      final offlineRef = walk.offlineRef;
-      final offline = offlineRef == null ? null : OfflineCopyController(packs: packs, ref: offlineRef);
-      offline?.addListener(() => unawaited(_offlineChanged(offline)));
-      _setState(_Ready(link, walk, localAudio, reviews, offline));
+      _setState(_Ready(link, walk, localAudio, _reviewsFor(link), _offlineFor(walk.offlineRef), mount));
     } on ApiError catch (error) {
       if (!mounted || cancel.isCancelled || error.isCancelled) return;
       final moved = error.movedToShare;
@@ -184,6 +184,58 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
     }
   }
 
+  WalkReviewsController? _reviewsFor(WalkLink link) {
+    final target = reviewTargetOf(link);
+    return target == null
+        ? null
+        : WalkReviewsController(target: target, api: ReviewsApi(ref.read(apiProvider)), drafts: ReviewDrafts(ref.read(settingsProvider)));
+  }
+
+  OfflineCopyController? _offlineFor(OfflineWalkRef? offlineRef) {
+    if (offlineRef == null) return null;
+    final offline = OfflineCopyController(packs: ref.read(offlinePacksProvider), ref: offlineRef);
+    offline.addListener(() => unawaited(_offlineChanged(offline)));
+    return offline;
+  }
+
+  /// Adds a food place to the walk (site `addFood` in `walk-screen.tsx`): the walker's own walk changes in
+  /// place; someone else's is saved as a copy, which the screen then shows under its own link without
+  /// interrupting the walk. Returns where the copy went, or an empty notice.
+  Future<String> _addFood(FoodPlace place) async {
+    final state = _state;
+    if (state is! _Ready) throw const FoodStopError('Прогулка ещё не открыта.');
+    final result = await addFoodStop(state.walk.data, state.link, place, ref.read(foodStopDepsProvider));
+    final current = _state;
+    // A reload (another language, another walk) replaced this walk meanwhile: the change is saved, not shown.
+    if (!mounted || current is! _Ready || current.mount != state.mount) return '';
+    final moved = result.moved;
+    if (moved == null) {
+      setState(() => _state = _Ready(current.link, LoadedWalk(data: result.data, offlineRef: current.walk.offlineRef), current.localAudio,
+          current.reviews, current.offline, current.mount));
+      return '';
+    }
+    // Keep the start stop even if the change removed it: the screen then explains the problem.
+    final link = switch (moved) {
+      AccountWalkLink(:final id) => AccountWalkLink(id, fromStop: current.link.fromStop),
+      LocalWalkLink(:final id) => LocalWalkLink(id, fromStop: current.link.fromStop),
+      CatalogWalkLink() || SharedWalkLink() => moved,
+    };
+    final locale = contentLocaleOf(context.appLocale);
+    final userId = offlineOwnerId(ref.read(sessionStoreProvider), ref.read(settingsProvider));
+    final walk = LoadedWalk(data: result.data, offlineRef: WalkLoader.offlineRefOf(link, locale, userId));
+    // The copy has no offline recordings of its own yet.
+    final localAudio = await ref.read(offlinePacksProvider).localRecordings(walk.view);
+    final latest = _state;
+    if (!mounted || latest is! _Ready || latest.mount != state.mount) return '';
+    // The new link must not reload the walk: the keys follow it before the route changes.
+    _key = '${context.appLocale.name}:${link.location}';
+    _walkKey = '${context.appLocale.name}:${Uri(path: '/walk', queryParameters: link.query)}';
+    _setState(_Ready(link, walk, localAudio, _reviewsFor(link), _offlineFor(walk.offlineRef), latest.mount));
+    final notice = context.t(link is AccountWalkLink ? 'Копия прогулки сохранена в «Моих прогулках».' : 'Копия прогулки сохранена на этом устройстве.');
+    context.replace(link.location);
+    return notice;
+  }
+
   /// A saved or removed copy changes which recordings the player takes from the device.
   Future<void> _offlineChanged(OfflineCopyController offline) async {
     if (offline.busy) return;
@@ -193,7 +245,7 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
     final current = _state;
     if (!mounted || current is! _Ready || !identical(current.offline, offline) || mapEquals(current.localAudio, localAudio)) return;
     // The same controllers stay: only the recordings change.
-    setState(() => _state = _Ready(current.link, current.walk, localAudio, current.reviews, offline));
+    setState(() => _state = _Ready(current.link, current.walk, localAudio, current.reviews, offline, current.mount));
   }
 
   void _retry() => setState(() {
@@ -229,7 +281,15 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
   Widget _ready(_Ready state) {
     final problem = fromStopProblem(context, state.walk.view, state.link.fromStop);
     if (problem != null) return WalkErrorView(message: problem);
-    return WalkReadyView(link: state.link, walk: state.walk, localAudio: state.localAudio, reviews: state.reviews, offline: state.offline);
+    return WalkReadyView(
+      link: state.link,
+      walk: state.walk,
+      localAudio: state.localAudio,
+      reviews: state.reviews,
+      offline: state.offline,
+      mount: state.mount,
+      onAddFood: _addFood,
+    );
   }
 }
 

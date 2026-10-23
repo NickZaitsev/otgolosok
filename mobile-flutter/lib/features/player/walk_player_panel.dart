@@ -11,10 +11,18 @@ import '../../app/providers.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../core/i18n/i18n.dart';
 import '../../core/i18n/translations.dart';
+import '../../core/i18n/user_message.dart';
 import '../../walk_engine/walk_plan.dart' show StopStage;
 import '../../walk_engine/walk_session.dart';
 import '../../walk_engine/walk_settings.dart';
 import '../../walk_engine/walk_view.dart';
+import '../explore/map_layers.dart' show MapMarker, MapMarkerKind;
+import '../food/food_kinds.dart';
+import '../food/food_list.dart';
+import '../food/food_model.dart';
+import '../food/food_store.dart';
+import '../food/route_proximity.dart';
+import '../food/walk_food.dart';
 import '../walks/launches.dart';
 import '../walks/route_map.dart';
 import '../walks/walk_link.dart';
@@ -33,7 +41,7 @@ import 'walk_player_controller.dart';
 /// The listening panel of a loaded walk: binds the walk engine to the native walk service.
 /// A car walk gets its own panel (parkings, stories only after parking).
 class WalkPlayerPanel extends StatelessWidget {
-  const WalkPlayerPanel({required this.view, required this.link, this.localAudio = const {}, this.intro, super.key});
+  const WalkPlayerPanel({required this.view, required this.link, this.localAudio = const {}, this.intro, this.mount, this.onAddFood, super.key});
 
   final WalkView view;
   final WalkLink link;
@@ -44,19 +52,31 @@ class WalkPlayerPanel extends StatelessWidget {
   /// Saved recordings by chapter id or site-relative URL (`file://`); preferred over streaming.
   final Map<String, Uri> localAudio;
 
+  /// The load the walk came from: while it stays the same, a new link (a copy saved with a food place) keeps
+  /// the running walk.
+  final String? mount;
+
+  /// Adds a food place to the walk and returns a notice about where the walk was saved (empty when it changed in
+  /// place); null where places cannot join the walk.
+  final AddFood? onAddFood;
+
   @override
   Widget build(BuildContext context) => view.document.driving
       ? CarWalkPanel(view: view, link: link, localAudio: localAudio, intro: intro)
-      : _WalkPanel(view: view, link: link, localAudio: localAudio, intro: intro);
+      : _WalkPanel(view: view, link: link, localAudio: localAudio, intro: intro, mount: mount, onAddFood: onAddFood);
 }
 
+typedef AddFood = Future<String> Function(FoodPlace place);
+
 class _WalkPanel extends ConsumerStatefulWidget {
-  const _WalkPanel({required this.view, required this.link, required this.localAudio, required this.intro});
+  const _WalkPanel({required this.view, required this.link, required this.localAudio, required this.intro, required this.mount, required this.onAddFood});
 
   final WalkView view;
   final WalkLink link;
   final Map<String, Uri> localAudio;
   final Widget? intro;
+  final String? mount;
+  final AddFood? onAddFood;
 
   @override
   ConsumerState<_WalkPanel> createState() => _WalkPanelState();
@@ -68,6 +88,16 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
   late ProviderContainer _container;
   late AppLocale _locale;
   late WalkMapFraming _framing;
+  late final WalkFood _food = WalkFood(store: ref.read(foodStoreProvider), cells: ref.read(foodCellsProvider));
+
+  // «Поесть рядом»: the list replaces the panel body while open.
+  bool _foodOpen = false;
+  String? _foodSelected;
+  String? _foodPending;
+  String _foodStatus = '';
+  MapFit? _foodFit;
+  List<RouteFoodPlace>? _foodMarkersFor;
+  List<MapMarker> _foodMarkers = const [];
 
   @override
   void initState() {
@@ -92,11 +122,25 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
       reportLaunch: _reporter.call,
       onActiveChanged: publishWalkActive(_container),
     );
+    _controller.addListener(_syncFood);
+    _syncFood();
+  }
+
+  /// The food list follows the route: a changed walk or the other direction moves its places and stops.
+  void _syncFood() {
+    final controller = _controller;
+    _food.setRoute(
+      controller.route.walk?.path.coordinates ?? const [],
+      [for (final chapter in controller.chapters) chapter.arrivalPoint],
+      widget.view.document.mode,
+    );
+    if (controller.state.completed && _foodOpen) _closeFood();
   }
 
   void _recreate() {
     final old = _controller;
     final reporter = _reporter;
+    old.removeListener(_syncFood);
     _create();
     old.dispose();
     reporter.dispose();
@@ -117,11 +161,12 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
   @override
   void didUpdateWidget(_WalkPanel old) {
     super.didUpdateWidget(old);
-    final sameWalk = old.view.document.id == widget.view.document.id &&
-        old.link.location == widget.link.location &&
-        old.view.locale == widget.view.locale;
+    final mount = widget.mount;
+    final sameWalk = old.view.locale == widget.view.locale &&
+        (mount != null && mount == old.mount ||
+            old.view.document.id == widget.view.document.id && old.link.location == widget.link.location);
     if (sameWalk) {
-      _controller.updateView(widget.view, widget.localAudio);
+      _controller.updateView(widget.view, widget.localAudio, link: widget.link);
     } else {
       _recreate();
     }
@@ -129,9 +174,117 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
 
   @override
   void dispose() {
+    _controller.removeListener(_syncFood);
     _controller.dispose();
     _reporter.dispose();
+    _food.dispose();
     super.dispose();
+  }
+
+  // ---- «Поесть рядом» -------------------------------------------------------------------------------
+
+  void _toggleFood() {
+    if (_foodOpen) {
+      _closeFood();
+      return;
+    }
+    setState(() {
+      _foodOpen = true;
+      _foodSelected = null;
+      _foodStatus = '';
+      _foodFit = null;
+    });
+    _food.setVisible(true);
+  }
+
+  void _closeFood() {
+    setState(() {
+      _foodOpen = false;
+      _foodSelected = null;
+      _foodFit = null;
+    });
+    _food.setVisible(false);
+  }
+
+  void _openFood(RouteFoodPlace place) {
+    final nearest = _food.routePoint(place);
+    setState(() {
+      _foodOpen = true;
+      _foodSelected = place.id;
+      _foodFit = MapFit('food:${place.id}', [place.place.location, ?nearest]);
+    });
+    _food.setVisible(true);
+  }
+
+  void _foodOnMap(String id) {
+    final place = _food.places.where((place) => place.id == id).firstOrNull;
+    if (place != null) _openFood(place);
+  }
+
+  /// A place that joined the walk is one of its stops, matched by its exact coordinates.
+  bool _foodAdded(FoodPlace place) => _controller.chapters.any((chapter) => chapter.location == place.location);
+
+  Future<void> _addFood(RouteFoodPlace place) async {
+    final add = widget.onAddFood;
+    if (add == null || _foodPending != null) return;
+    setState(() {
+      _foodPending = place.id;
+      _foodStatus = '';
+    });
+    String status;
+    try {
+      final notice = await add(place.place);
+      if (!mounted) return;
+      status = [context.t('«{name}» добавлено в прогулку.', {'name': place.place.name}), if (notice.isNotEmpty) notice].join(' ');
+    } on Object catch (error) {
+      if (!mounted) return;
+      if (error is! Exception) debugPrint('Adding a food place failed: $error');
+      status = userMessage(context, error, 'Не удалось добавить заведение в прогулку.');
+    }
+    setState(() {
+      _foodPending = null;
+      _foodStatus = status;
+    });
+  }
+
+  List<MapMarker> get _foodMapMarkers {
+    if (!_foodOpen) return const [];
+    final places = _food.places;
+    if (!identical(places, _foodMarkersFor)) {
+      _foodMarkersFor = places;
+      _foodMarkers = [
+        for (final place in places)
+          MapMarker(id: place.id, kind: MapMarkerKind.food, location: place.place.location, icon: foodGroup(place.place.kind).mapImage),
+      ];
+    }
+    return _foodMarkers;
+  }
+
+  Widget _foodList(WalkUiState state) {
+    final manifest = _food.manifest!;
+    final places = _food.places;
+    final add = widget.onAddFood;
+    return WalkFoodList(
+      places: places,
+      stops: _food.stopsAlongM,
+      active: state.active,
+      fromM: _food.fromM(state.leg),
+      selected: places.where((place) => place.id == _foodSelected).firstOrNull,
+      onSelect: _openFood,
+      onBack: () => setState(() {
+        _foodSelected = null;
+        _foodFit = null;
+      }),
+      onClose: _closeFood,
+      manifest: manifest,
+      hours: _food.hours,
+      error: _food.error,
+      loading: _food.loading,
+      onRetry: () => unawaited(_food.retry()),
+      adding: add == null
+          ? null
+          : FoodAdding(isAdded: _foodAdded, onAdd: (place) => unawaited(_addFood(place)), pending: _foodPending, status: _foodStatus),
+    );
   }
 
   Future<void> _start({int? index, bool resume = true}) async {
@@ -185,11 +338,55 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
       state: controller.state,
       openingIndex: fromStop == null ? 0 : math.max(0, controller.chapters.indexWhere((chapter) => chapter.id == fromStop)),
       t: (source, values) => context.t(source, values),
+      food: _foodMapMarkers,
+      selectedFood: _foodOpen ? _foodSelected : null,
+      foodFit: _foodOpen && _foodSelected != null ? _foodFit : null,
     );
-    return ref.watch(walkRouteMapProvider)(
+    final map = ref.watch(walkRouteMapProvider)(
       context,
-      WalkMapProps(view: view, onSelect: _selectOnMap, label: context.t('Карта прогулки: пешеходный маршрут и остановки')),
+      WalkMapProps(view: view, onSelect: _selectOnMap, onFood: _foodOnMap, label: context.t('Карта прогулки: пешеходный маршрут и остановки')),
     );
+    final completed = controller.state.completed;
+    final showButton = _food.available && _food.manifest != null && !completed;
+    final failed = !showButton && _food.manifestError && !completed;
+    if (!showButton && !failed) return map;
+    return Stack(children: [
+      Positioned.fill(child: map),
+      Positioned(
+        top: TokenSizes.spaceXs,
+        right: TokenSizes.spaceXs,
+        left: failed ? TokenSizes.spaceXs : null,
+        child: showButton
+            ? Semantics(
+                expanded: _foodOpen,
+                child: Material(
+                  color: _foodOpen ? TokenColors.mapGreen : TokenColors.surfaceIsland,
+                  shape: const CircleBorder(),
+                  elevation: 3,
+                  child: IconButton(
+                    tooltip: context.t('Поесть рядом'),
+                    onPressed: _toggleFood,
+                    icon: Icon(Icons.local_cafe, color: _foodOpen ? TokenColors.onDark : TokenColors.mapGreen),
+                  ),
+                ),
+              )
+            : Material(
+                color: TokenColors.surfaceIsland,
+                borderRadius: BorderRadius.circular(TokenSizes.radiusIsland),
+                elevation: 3,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: TokenSizes.spaceSm),
+                  child: Semantics(
+                    liveRegion: true,
+                    child: Row(children: [
+                      Expanded(child: Text(context.t('Не удалось загрузить заведения'))),
+                      TextButton(onPressed: () => unawaited(_food.retry()), child: Text(context.t('Повторить'))),
+                    ]),
+                  ),
+                ),
+              ),
+      ),
+    ]);
   }
 
   @override
@@ -198,7 +395,7 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
     ref.watch(walkReversedProvider(widget.view.document.id));
     final controller = _controller;
     return ListenableBuilder(
-      listenable: controller,
+      listenable: Listenable.merge([controller, _food]),
       builder: (context, _) {
         final state = controller.state;
         return PopScope(
@@ -211,7 +408,9 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
             builder: (context, constraints) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               SizedBox(height: (constraints.maxHeight * 0.42).clamp(160.0, 420.0), child: _map(context)),
               Expanded(
-                child: state.active
+                child: _foodOpen && !state.completed && _food.manifest != null
+                    ? _foodList(state)
+                    : state.active
                     ? _ActiveWalk(controller: controller, onStop: _confirmStop)
                     : state.completed
                         ? const _Completed()

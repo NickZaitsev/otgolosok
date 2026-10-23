@@ -12,7 +12,8 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../walk_engine/distance.dart';
 import '../explore/catalog_bounds.dart';
-import '../explore/explore_map.dart' show mapMaxZoom;
+import '../explore/explore_map.dart' show addMapIcons, mapMaxZoom;
+import '../explore/map_layers.dart' show MapMarker;
 import '../walk_builder/builder_map.dart' show BuilderMarker, BuilderSegment;
 
 /// A stretch of a walking line between two vertices (site `RouteRun`).
@@ -98,6 +99,8 @@ class WalkMapView {
     this.selectedId,
     this.user,
     this.fit,
+    this.food = const [],
+    this.selectedFoodId,
   });
 
   final List<BuilderMarker> markers;
@@ -112,15 +115,22 @@ class WalkMapView {
   final String? selectedId;
   final GeoPoint? user;
   final MapFit? fit;
+
+  /// Food places along the route while «Поесть рядом» is open.
+  final List<MapMarker> food;
+  final String? selectedFoodId;
 }
 
 class WalkMapProps {
-  const WalkMapProps({required this.view, required this.onSelect, required this.label});
+  const WalkMapProps({required this.view, required this.onSelect, required this.label, this.onFood});
 
   final WalkMapView view;
 
   /// A tap on a stop, an end or a parking, by marker id.
   final void Function(String id) onSelect;
+
+  /// A tap on a food place, by its id.
+  final void Function(String id)? onFood;
 
   /// The map's accessible name.
   final String label;
@@ -144,6 +154,18 @@ Map<String, Object?> _points(WalkMapView view) => {
       ],
     };
 
+Map<String, Object?> _food(WalkMapView view) => {
+      'type': 'FeatureCollection',
+      'features': [
+        for (final marker in view.food)
+          _feature('food:${marker.id}', {'type': 'Point', 'coordinates': [marker.location.lon, marker.location.lat]}, {
+            'food': marker.id,
+            'icon': marker.icon,
+            'selected': marker.id == view.selectedFoodId,
+          }),
+      ],
+    };
+
 Map<String, Object?> _user(WalkMapView view) => {
       'type': 'FeatureCollection',
       'features': [
@@ -154,7 +176,9 @@ Map<String, Object?> _user(WalkMapView view) => {
 const _routeSource = 'walk-route';
 const _pointsSource = 'walk-points';
 const _userSource = 'walk-user';
+const _foodSource = 'walk-food';
 const _pointsLayer = 'walk-points-circle';
+const _foodLayer = 'walk-food-icons';
 
 /// The walking line and its covered stretches, by feature kind. A layer update replaces every property, unset ones
 /// with the defaults (a black 1 px line), so updates send the same full set the layers start with.
@@ -198,6 +222,7 @@ class _WalkRouteMapState extends State<WalkRouteMap> {
     final dimmed = view.activeLeg != null;
     await controller.addGeoJsonSource(_routeSource, routeLineFeatures(geometry: view.geometry, tunnels: view.tunnels, activeLeg: view.activeLeg, segments: view.segments));
     await controller.addGeoJsonSource(_pointsSource, _points(view));
+    await controller.addGeoJsonSource(_foodSource, _food(view));
     await controller.addGeoJsonSource(_userSource, _user(view));
     // A light casing under every line, as the site's: legible over any basemap.
     await controller.addLineLayer(
@@ -224,6 +249,13 @@ class _WalkRouteMapState extends State<WalkRouteMap> {
       enableInteraction: false,
     );
     final selected = ['==', ['get', 'selected'], true];
+    // Food under the stops: a stop stays tappable where a place stands next to it (22 px, 36 px selected).
+    await controller.addSymbolLayer(
+      _foodSource,
+      _foodLayer,
+      SymbolLayerProperties(iconImage: ['get', 'icon'], iconSize: ['case', selected, 1.5, 0.92], iconAllowOverlap: true, iconIgnorePlacement: true),
+      enableInteraction: false,
+    );
     await controller.addCircleLayer(
       _pointsSource,
       _pointsLayer,
@@ -264,6 +296,7 @@ class _WalkRouteMapState extends State<WalkRouteMap> {
     try {
       await controller.setGeoJsonSource(_routeSource, routeLineFeatures(geometry: view.geometry, tunnels: view.tunnels, activeLeg: view.activeLeg, segments: view.segments));
       await controller.setGeoJsonSource(_pointsSource, _points(view));
+      await controller.setGeoJsonSource(_foodSource, _food(view));
       await controller.setGeoJsonSource(_userSource, _user(view));
       // The dimming depends on whether a leg is highlighted at all.
       final dimmed = view.activeLeg != null;
@@ -306,6 +339,7 @@ class _WalkRouteMapState extends State<WalkRouteMap> {
     final controller = _controller;
     if (controller == null) return;
     try {
+      await addMapIcons(controller);
       await _addLayers(controller);
     } on PlatformException catch (error) {
       // Without the overlay the base map still works; the next style load tries again.
@@ -323,15 +357,22 @@ class _WalkRouteMapState extends State<WalkRouteMap> {
     final controller = _controller;
     if (controller == null || !_styled) return;
     try {
-      final hits = await controller.queryRenderedFeatures(point, [_pointsLayer], null);
+      final hits = await controller.queryRenderedFeatures(point, [_pointsLayer, _foodLayer], null);
+      String? food;
       for (final hit in hits) {
         final properties = hit is Map ? hit['properties'] : null;
-        final id = properties is Map ? properties['id'] : null;
-        if (id is String) {
+        if (properties is! Map) continue;
+        final id = properties['id'], place = properties['food'];
+        // A stop wins over a place drawn under it.
+        if (place is String) {
+          food ??= place;
+        } else if (id is String) {
           widget.props.onSelect(id);
           return;
         }
       }
+      final onFood = widget.props.onFood;
+      if (food != null && onFood != null) onFood(food);
     } on PlatformException catch (error) {
       debugPrint('walk map: tap lookup failed: $error');
     }

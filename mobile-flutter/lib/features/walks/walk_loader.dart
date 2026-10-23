@@ -75,17 +75,25 @@ class WalkLoader {
   final OfflinePackManager _packs;
   final LocalWalkStore Function() _localStore;
 
+  /// Where the offline copy of the walk of [link] lives; null when none can be kept.
+  static OfflineWalkRef? offlineRefOf(WalkLink link, ContentLocale locale, String? userId) => switch (link) {
+        CatalogWalkLink(:final slug) => offlineWalkRef(OfflineWalkKind.catalog, slug, null, locale),
+        SharedWalkLink(:final token) => offlineWalkRef(OfflineWalkKind.share, token, null, locale),
+        AccountWalkLink(:final id) => offlineWalkRef(OfflineWalkKind.id, id, userId, locale),
+        LocalWalkLink(:final id) => offlineWalkRef(OfflineWalkKind.local, id, null, locale),
+      };
+
   /// [locale] must be the language the API client sends as `?lang=`; [userId] owns account copies.
   Future<LoadedWalk> load(WalkLink link, {required ContentLocale locale, required String? userId, CancelToken? cancel}) {
     Future<WalkViewData> fetch(String path) =>
         _api.get(path, (json) => requestedView(json, locale), localized: true, cancel: cancel);
     return switch (link) {
-      CatalogWalkLink(:final slug) => _withOffline(
-          () => fetch('/api/story-walks/${Uri.encodeComponent(slug)}/view'), offlineWalkRef(OfflineWalkKind.catalog, slug, null, locale)),
-      SharedWalkLink(:final token) => _withOffline(
-          () => fetch('/api/story-walks/shared/${Uri.encodeComponent(token)}'), offlineWalkRef(OfflineWalkKind.share, token, null, locale)),
-      AccountWalkLink(:final id) => _withOffline(
-          () => fetch('/api/me/walks/${Uri.encodeComponent(id)}/view'), offlineWalkRef(OfflineWalkKind.id, id, userId, locale)),
+      CatalogWalkLink(:final slug) =>
+        _withOffline(() => fetch('/api/story-walks/${Uri.encodeComponent(slug)}/view'), offlineRefOf(link, locale, userId)),
+      SharedWalkLink(:final token) =>
+        _withOffline(() => fetch('/api/story-walks/shared/${Uri.encodeComponent(token)}'), offlineRefOf(link, locale, userId)),
+      AccountWalkLink(:final id) =>
+        _withOffline(() => fetch('/api/me/walks/${Uri.encodeComponent(id)}/view'), offlineRefOf(link, locale, userId)),
       LocalWalkLink(:final id) => _local(id, locale, cancel),
     };
   }
@@ -107,7 +115,7 @@ class WalkLoader {
   Future<LoadedWalk> _local(String id, ContentLocale locale, CancelToken? cancel) async {
     final item = await _localStore().get(id);
     if (item == null) throw const ApiError(message: 'Локальная прогулка не найдена.', status: 404, code: 'NOT_FOUND');
-    final ref = offlineWalkRef(OfflineWalkKind.local, id, null, locale);
+    final ref = offlineRefOf(LocalWalkLink(id), locale, null);
     final document = item.document.toJson();
     try {
       // A copy of an older revision would hide the local edits; the walk then opens without stories.

@@ -28,7 +28,7 @@ import 'walk_service_hub.dart';
 class WalkPlayerController extends ChangeNotifier implements SessionOwner {
   WalkPlayerController({
     required WalkView view,
-    required this.link,
+    required this._link,
     required this.hub,
     required this.settings,
     required this.origin,
@@ -56,7 +56,8 @@ class WalkPlayerController extends ChangeNotifier implements SessionOwner {
     _replay = ReplayPositionSource(onFix: _onReplayFix, onComplete: () => session.onPositionStatus(PositionStatus.complete));
   }
 
-  final WalkLink link;
+  WalkLink _link;
+  WalkLink get link => _link;
   final WalkServiceHub hub;
   final prefs.SettingsStore settings;
   final Uri origin;
@@ -272,9 +273,14 @@ class WalkPlayerController extends ChangeNotifier implements SessionOwner {
     if (next != locale && state.active) stop();
   }
 
-  /// A walk view of the same walk changed (a stop joined it): the walker keeps their stop.
-  void updateView(WalkView view, Map<String, Uri> localAudio) {
+  /// A walk view of the same walk changed (a stop joined it): the walker keeps their stop. A new [link]
+  /// (the walk saved as a copy) also moves the notification, which reopens the walk by it.
+  void updateView(WalkView view, Map<String, Uri> localAudio, {WalkLink? link}) {
     _localAudio = localAudio;
+    if (link != null && link.location != _link.location) {
+      _link = link;
+      unawaited(_restartTracking());
+    }
     if (identical(view, _view)) return;
     _view = view;
     session.updateRoute(walkViewToRoute(view));

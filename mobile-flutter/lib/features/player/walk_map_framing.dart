@@ -6,6 +6,7 @@ import '../../walk_engine/route_legs.dart';
 import '../../walk_engine/walk_plan.dart';
 import '../../walk_engine/walk_session.dart';
 import '../../walk_engine/walk_view.dart' show TunnelRange, WalkStop;
+import '../explore/map_layers.dart' show MapMarker;
 import '../walk_builder/builder_map.dart' show BuilderMarker;
 import '../walks/route_map.dart';
 
@@ -40,6 +41,9 @@ class WalkMapFraming {
     required WalkUiState state,
     required int openingIndex,
     required MapText t,
+    List<MapMarker> food = const [],
+    String? selectedFood,
+    MapFit? foodFit,
   }) {
     // The session hands out a fresh copy of its chapter list on every read.
     if (!identical(route, _route) || !_sameChapters(chapters)) {
@@ -74,9 +78,9 @@ class WalkMapFraming {
       if (fit.withUser && !_refined) _legFit = MapFit('leg:$legKey:user', fit.points);
       _refined = true;
     }
-    final fit = _walked || state.completed ? _legFit : _opening(route, openingIndex);
+    final fit = foodFit ?? (_walked || state.completed ? _legFit : _opening(route, openingIndex));
     final selectedId = active && state.chapterIndex >= 0 && state.chapterIndex < chapters.length ? chapters[state.chapterIndex].id : null;
-    final inputs = (route, _chapters, legPath, selectedId, user, fit?.key);
+    final inputs = (route, _chapters, legPath, selectedId, user, fit?.key, food, selectedFood);
     if (_view != null && inputs == _inputs) return _view!;
     _inputs = inputs;
     final walk = route.walk;
@@ -98,6 +102,12 @@ class WalkMapFraming {
       selectedId: selectedId,
       user: user,
       fit: fit,
+      // A place that joined the walk is drawn once, as its stop.
+      food: [
+        for (final marker in food)
+          if (!chapters.any((chapter) => chapter.step.location == marker.location)) marker,
+      ],
+      selectedFoodId: selectedFood,
     );
   }
 
