@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'app/app.dart';
+import 'app/app_container.dart';
 import 'app/providers.dart';
 import 'core/api/api_client.dart';
 import 'core/api/app_cookie_manager.dart';
@@ -19,11 +20,8 @@ import 'core/settings/settings_store.dart';
 import 'core/storage/pending_sign_out.dart';
 import 'core/storage/review_key.dart';
 import 'core/storage/secure_cookie_storage.dart';
-import 'features/walk_builder/builder_storage.dart';
 import 'features/offline/offline_providers.dart';
-import 'features/places/story_audio.dart';
 import 'features/player/providers.dart';
-import 'features/walks/local_walks.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,27 +30,16 @@ Future<void> main() async {
   final translations = await Translations.load(rootBundle);
   final cookies = PersistCookieJar(storage: SecureCookieStorage(secure));
   final session = SessionStore(cookies: cookies, reviewKeys: ReviewKeyStore(secure), pendingSignOut: PendingSignOutStore(secure));
-  final container = ProviderContainer(overrides: [
-    settingsProvider.overrideWithValue(settings),
-    translationsProvider.overrideWithValue(translations),
-    secureStorageProvider.overrideWithValue(secure),
-    sessionStoreProvider.overrideWithValue(session),
-  ]);
   final dio = Dio()..interceptors.add(AppCookieManager(cookies));
+  late final ProviderContainer app;
   final api = ApiClient(
     config: AppConfig.current,
     session: session,
-    locale: () => container.read(localeProvider).name,
+    locale: () => app.read(localeProvider).name,
     dio: dio,
   );
   session.attach(api);
-  final app = ProviderContainer(parent: container, overrides: [
-    apiProvider.overrideWithValue(api),
-    // Guest walks: the builder writes them, the library and the walk screen read them.
-    localWalkStoreProvider.overrideWith((ref) => ref.watch(deviceLocalWalkStoreProvider)),
-    // Place stories play through the walk service, one recording at a time app-wide.
-    storyAudioControllerProvider.overrideWith((ref) => ref.watch(storyListenControllerProvider)),
-  ]);
+  app = createAppContainer(settings: settings, translations: translations, secure: secure, session: session, api: api);
   app.read(localeProvider.notifier).adoptDevice(AppLocale.fromDevice(PlatformDispatcher.instance.locales));
   // Remembers the account owning offline copies and deletes its private copies on sign-out.
   wireOfflinePacks(session, app.read(offlinePacksProvider), settings);
