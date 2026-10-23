@@ -1,0 +1,10 @@
+{
+  "Отзыв будет опубликован от имени «Гость». Изменить его можно только на этом устройстве.": ["The review will be published as “Guest”. It can only be changed on this device.", "评价将以“访客”身份发布，只能在此设备上修改。"],
+  "Топ прогулок": ["Top walks", "热门漫步"],
+  "Начать с этой остановки": ["Start from this stop", "从这一站开始"],
+  "Начать с первой остановки": ["Start from the first stop", "从第一站开始"],
+  "Офлайн-копия": ["Offline copy", "离线副本"],
+  "Не удалось сохранить все остановки автомобильной прогулки. Выберите другой маршрут.": ["Could not keep all stops of the car walk. Choose another route.", "无法保留自驾漫步的所有站点。请选择其他路线。"],
+  "Для этой прогулки нельзя построить автомобильный маршрут.": ["A car route cannot be built for this walk.", "无法为此漫步规划驾车路线。"],
+  "Язык офлайн-копии не совпадает с открытой прогулкой.": ["The offline copy language does not match the open walk.", "离线副本的语言与当前打开的漫步不一致。"]
+}
