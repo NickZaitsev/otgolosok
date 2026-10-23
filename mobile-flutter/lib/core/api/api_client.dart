@@ -66,6 +66,9 @@ class ApiClient {
     if (kDebugMode) _dio.interceptors.add(RedactingLogInterceptor());
   }
 
+  /// `RequestOptions.extra` flag honoured by [AppCookieManager].
+  static const bypassCookieJar = 'otgolosok.bypassCookieJar';
+
   final AppConfig config;
   final ApiSession session;
   final LocaleCode locale;
@@ -90,6 +93,14 @@ class ApiClient {
     assert(method != 'GET', 'use get()');
     return _send(_Request(method, path, query, body, localized, guestKey), validate, retried: idempotent, cancel: cancel);
   }
+
+  /// Revokes a session the app no longer holds (an offline sign-out) by presenting its cookie.
+  /// The cookie jar is bypassed so the current session, if any, is neither sent nor cleared.
+  Future<void> revokeSession(String cookieHeader) => _send<void>(
+        _Request('POST', '/api/auth/sign-out', null, const <String, Object?>{}, false, false, cookie: cookieHeader),
+        (_) {},
+        retried: true,
+      );
 
   /// `GET` with `If-None-Match`; a 304 returns [Conditional.notModified].
   Future<Conditional<T>> getConditional<T>(String path, Validator<T> validate, {String? etag, CancelToken? cancel}) async {
@@ -154,7 +165,11 @@ class ApiClient {
           data: request.body == null ? null : jsonEncode(request.body),
           queryParameters: _query(request),
           cancelToken: cancel,
-          options: Options(method: request.method, headers: await _headers(request)),
+          options: Options(
+            method: request.method,
+            headers: await _headers(request),
+            extra: request.cookie == null ? null : const {ApiClient.bypassCookieJar: true},
+          ),
         );
         final status = response.statusCode ?? 0;
         final json = _decode(response.data);
@@ -178,7 +193,7 @@ class ApiClient {
           onResponse?.call(response, json);
           return validate(json);
         } catch (_) {
-          throw ApiError(message: 'Сервис вернул повреждённые данные.', status: status, code: 'CORRUPT');
+          throw ApiError(message: const ApiError.corrupt().message, status: status, code: 'CORRUPT');
         }
       } on DioException catch (error) {
         final mapped = _transportError(error);
@@ -206,9 +221,10 @@ class ApiClient {
       'Origin': config.originHeader,
       'Accept': 'application/json',
       if (request.body != null) 'Content-Type': 'application/json',
-      if (request.method != 'GET' && csrf != null) 'X-CSRF-Token': csrf,
+      if (request.method != 'GET' && csrf != null && request.cookie == null) 'X-CSRF-Token': csrf,
       if (request.guestKey && csrf == null) 'X-Review-Key': await session.guestReviewKey(),
       if (request.etag != null) 'If-None-Match': request.etag!,
+      if (request.cookie != null) 'Cookie': request.cookie!,
     };
   }
 
@@ -254,7 +270,7 @@ class ApiClient {
 }
 
 class _Request {
-  const _Request(this.method, this.path, this.query, this.body, this.localized, this.guestKey, {this.etag});
+  const _Request(this.method, this.path, this.query, this.body, this.localized, this.guestKey, {this.etag, this.cookie});
 
   final String method;
   final String path;
@@ -263,6 +279,9 @@ class _Request {
   final bool localized;
   final bool guestKey;
   final String? etag;
+
+  /// An explicit `Cookie` header; the request then bypasses the cookie jar both ways.
+  final String? cookie;
 }
 
 class _Malformed {

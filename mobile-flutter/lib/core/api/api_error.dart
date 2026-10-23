@@ -10,19 +10,19 @@ class ApiError implements Exception {
   });
 
   /// The server answered with something the validator rejected.
-  const ApiError.corrupt([String message = 'Сервис вернул повреждённые данные.'])
+  const ApiError.corrupt([String message = 'Сервер вернул неожиданный ответ. Повторите попытку позже.'])
       : this(message: message, code: 'CORRUPT');
 
   /// No answer at all: offline, DNS, TLS or a timeout.
   const ApiError.network({bool timedOut = false})
       : this(
-          message: timedOut ? 'Сервер не ответил вовремя.' : 'Нет соединения с сервером.',
+          message: timedOut ? 'Сервер долго не отвечает. Повторите попытку.' : 'Нет связи с сервером. Проверьте интернет и повторите попытку.',
           code: timedOut ? 'TIMEOUT' : 'NETWORK',
           retryable: true,
         );
 
   /// The request was cancelled by the app; never shown to the user.
-  const ApiError.cancelled() : this(message: 'Запрос отменён.', code: 'CANCELLED');
+  const ApiError.cancelled() : this(message: 'Запрос прерван. Повторите попытку.', code: 'CANCELLED');
 
   /// Russian source text; the UI translates it like every other dictionary string.
   final String message;

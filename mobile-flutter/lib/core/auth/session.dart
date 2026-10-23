@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '../api/api_client.dart';
 import '../api/api_error.dart';
+import '../storage/pending_sign_out.dart';
 import '../storage/review_key.dart';
 
 /// The signed-in user as `/api/auth/session` returns it (backend/auth.mjs `publicAccountUser`).
@@ -50,10 +51,12 @@ class AuthUser {
 /// A 401 from `/api/me*` clears the state once (no refresh loop); sign-out clears the jar and
 /// runs [onSignedOut] callbacks (offline copies of account walks are deleted there).
 class SessionStore extends ChangeNotifier implements ApiSession {
-  SessionStore({required this._cookies, required this._reviewKeys});
+  SessionStore({required this._cookies, required this._reviewKeys, required this._pendingSignOut});
 
   final CookieJar _cookies;
   final ReviewKeyStore _reviewKeys;
+  final PendingSignOutStore _pendingSignOut;
+  Future<void>? _revoking;
   late final ApiClient _api;
   final _signedOut = <Future<void> Function(String userId)>[];
 
@@ -78,6 +81,7 @@ class SessionStore extends ChangeNotifier implements ApiSession {
   /// Reads the session from the server; on failure the app starts as a guest and the next
   /// account request retries (offline start must never block the walk screens).
   Future<void> load() async {
+    unawaited(revokePending());
     try {
       await refreshCsrf();
     } on ApiError catch (error) {
@@ -118,14 +122,50 @@ class SessionStore extends ChangeNotifier implements ApiSession {
     unawaited(_clear(_user?.id));
   }
 
-  /// Best-effort server sign-out; the local session is always cleared.
-  Future<void> signOut() async {
+  /// Server sign-out; the local session is always cleared. When the server cannot be reached the
+  /// session cookie is kept aside and revoked on a later start, as the site does. Returns false
+  /// when the server has not confirmed the sign-out yet.
+  Future<bool> signOut() async {
+    var confirmed = true;
     try {
       await _api.send('POST', '/api/auth/sign-out', (_) {}, body: const <String, Object?>{});
     } on ApiError catch (error) {
       debugPrint('sign-out: ${error.code ?? error.status}');
+      if (error.allowsOfflineFallback) confirmed = !await _keepForRevocation();
     }
     await _clear(_user?.id);
+    return confirmed;
+  }
+
+  /// Retries the revocation of sessions signed out without network; safe to call any time.
+  Future<void> revokePending() => _revoking ??= _revokeAll().whenComplete(() => _revoking = null);
+
+  Future<bool> _keepForRevocation() async {
+    try {
+      final cookies = await _cookies.loadForRequest(_api.config.origin);
+      if (cookies.isEmpty) return false;
+      await _pendingSignOut.add(cookies.map((cookie) => '${cookie.name}=${cookie.value}').join('; '));
+      return true;
+    } catch (error) {
+      debugPrint('sign-out: cannot keep the session for revocation: ${error.runtimeType}');
+      return false;
+    }
+  }
+
+  Future<void> _revokeAll() async {
+    try {
+      for (final cookie in await _pendingSignOut.read()) {
+        try {
+          await _api.revokeSession(cookie);
+        } on ApiError catch (error) {
+          // Still offline: keep it for the next start. Any other answer means the session is gone.
+          if (error.allowsOfflineFallback) return;
+        }
+        await _pendingSignOut.remove(cookie);
+      }
+    } catch (error) {
+      debugPrint('pending sign-out: ${error.runtimeType}');
+    }
   }
 
   /// The account no longer exists (`DELETE /api/me` succeeded).

@@ -42,6 +42,17 @@ void main() {
     expect(missing, isEmpty);
   });
 
+  test('every error text the API layer creates has a translation', () {
+    final literal = RegExp(r"""'([^'\n]*[А-Яа-яЁё][^'\n]*)'""");
+    final missing = <String>{};
+    for (final file in Directory('lib/core/api').listSync().whereType<File>().where((f) => f.path.endsWith('.dart'))) {
+      for (final match in literal.allMatches(file.readAsStringSync())) {
+        if (!all.has(match[1]!)) missing.add('${file.path}: ${match[1]}');
+      }
+    }
+    expect(missing, isEmpty);
+  });
+
   test('app strings keep the placeholders of their Russian source', () {
     final placeholder = RegExp(r'\{[a-zA-Z][a-zA-Z0-9_]*\}');
     Set<String> names(String text) => placeholder.allMatches(text).map((m) => m[0]!).toSet();

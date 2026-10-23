@@ -1,0 +1,5 @@
+{
+  "Не удалось скачать файл.": ["Could not download the file.", "无法下载文件。"],
+  "Файл больше допустимого размера.": ["The file is larger than allowed.", "文件超出允许的大小。"],
+  "Не удалось проверить сертификат сервера.": ["Could not verify the server certificate.", "无法验证服务器证书。"]
+}
