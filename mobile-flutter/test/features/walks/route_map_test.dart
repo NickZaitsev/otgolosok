@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:otgolosok/features/walks/route_map.dart';
 import 'package:otgolosok/walk_engine/distance.dart';
@@ -76,5 +78,21 @@ void main() {
     test('one layer per drawn kind of walking line', () {
       expect(routeLineLayers(dimmed: false).keys, ['walk', 'tunnel']);
     });
+  });
+
+  testWidgets('the direction chevron is a 12 px arrow drawn three times larger, transparent around the stroke', (tester) async {
+    final pixels = await tester.runAsync(() async {
+      final codec = await ui.instantiateImageCodec(await routeChevronPng());
+      final image = (await codec.getNextFrame()).image;
+      final bytes = (await image.toByteData())!;
+      final size = (image.width, image.height);
+      image.dispose();
+      int alpha(int x, int y) => bytes.getUint8((y * size.$1 + x) * 4 + 3);
+      // The tip of the arrow (1.5, 0) and a corner far from it.
+      return (size: size, tip: alpha(18 + 4, 18), corner: alpha(1, 1));
+    });
+    expect(pixels!.size, (36, 36));
+    expect(pixels.tip, greaterThan(200));
+    expect(pixels.corner, 0);
   });
 }

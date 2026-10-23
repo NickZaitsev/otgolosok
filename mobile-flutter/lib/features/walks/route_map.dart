@@ -3,6 +3,7 @@
 // The MapLibre widget sits behind [walkRouteMapProvider] so widget tests draw a plain stand-in.
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -76,6 +77,41 @@ Map<String, Object?> routeLineFeatures({
   }
   return {'type': 'FeatureCollection', 'features': features};
 }
+
+/// The site's direction chevron (`drawChevrons` in `explore-map.tsx`): a 12 px open arrow pointing along the
+/// line, in the casing colour. Drawn at [routeChevronScale] times its size, as the plugin's `addImage` takes no
+/// pixel ratio; the layer scales it back, so it stays sharp on dense screens.
+Future<Uint8List> routeChevronPng() async {
+  const size = 12 * routeChevronScale;
+  final recorder = ui.PictureRecorder();
+  final canvas = Canvas(recorder)
+    ..translate(size / 2, size / 2)
+    ..scale(routeChevronScale.toDouble());
+  final path = Path()
+    ..moveTo(-2, -3.5)
+    ..lineTo(1.5, 0)
+    ..lineTo(-2, 3.5);
+  canvas.drawPath(
+    path,
+    Paint()
+      ..color = TokenColors.surfaceIsland
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.8
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round,
+  );
+  final image = await recorder.endRecording().toImage(size, size);
+  try {
+    final data = await image.toByteData(format: ui.ImageByteFormat.png);
+    if (data == null) throw StateError('the chevron could not be encoded');
+    return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  } finally {
+    image.dispose();
+  }
+}
+
+const routeChevronScale = 3;
+const _chevronImage = 'route-chevron';
 
 /// Where the camera goes: the points framed whole, or one point centred. A new [key] moves the
 /// camera again; the same key keeps the view the walker may have moved since.
@@ -248,6 +284,26 @@ class _WalkRouteMapState extends State<WalkRouteMap> {
       filter: ['==', ['get', 'kind'], 'foot'],
       enableInteraction: false,
     );
+    // Direction chevrons along the leg to walk now, every 70 screen pixels as on the site.
+    await controller.addSymbolLayer(
+      _routeSource,
+      'walk-route-chevrons',
+      const SymbolLayerProperties(
+        symbolPlacement: 'line',
+        symbolSpacing: 70,
+        iconImage: _chevronImage,
+        iconSize: 1 / routeChevronScale,
+        iconRotationAlignment: 'map',
+        iconAllowOverlap: true,
+        iconIgnorePlacement: true,
+      ),
+      filter: [
+        'all',
+        ['==', ['get', 'active'], true],
+        ['match', ['get', 'kind'], ['walk', 'tunnel'], true, false],
+      ],
+      enableInteraction: false,
+    );
     final selected = ['==', ['get', 'selected'], true];
     // Food under the stops: a stop stays tappable where a place stands next to it (22 px, 36 px selected).
     await controller.addSymbolLayer(
@@ -335,11 +391,21 @@ class _WalkRouteMapState extends State<WalkRouteMap> {
     }
   }
 
+  /// Without the chevron image the line still shows; only its direction marks are missing.
+  Future<void> _addChevron(MapLibreMapController controller) async {
+    try {
+      await controller.addImage(_chevronImage, await routeChevronPng());
+    } on Object catch (error) {
+      debugPrint('walk map: chevron failed: $error');
+    }
+  }
+
   Future<void> _onStyleLoaded() async {
     final controller = _controller;
     if (controller == null) return;
     try {
       await addMapIcons(controller);
+      await _addChevron(controller);
       await _addLayers(controller);
     } on PlatformException catch (error) {
       // Without the overlay the base map still works; the next style load tries again.
