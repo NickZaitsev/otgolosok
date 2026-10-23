@@ -105,6 +105,18 @@ class WalkReviewsController extends ChangeNotifier {
     }
   }
 
+  /// Deletes the viewer's review and any unsent draft of it.
+  Future<ReviewActionResult> remove() async {
+    try {
+      final result = await _api.delete(target);
+      await _drafts.clear(target);
+      _apply(result);
+      return const ReviewActionDone(null);
+    } on Exception catch (error) {
+      return ReviewActionFailed(error);
+    }
+  }
+
   void _apply(ReviewWrite result) {
     _summary = result.summary;
     _mine = result.mine;

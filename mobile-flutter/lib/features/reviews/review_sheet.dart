@@ -108,7 +108,7 @@ class CodePointLimit extends TextInputFormatter {
   }
 }
 
-/// Stars and an optional text (site `review-form.tsx`, send-only mode).
+/// Stars and an optional text (site `review-form.tsx`); an existing review can also be deleted.
 class ReviewForm extends ConsumerStatefulWidget {
   const ReviewForm({super.key, required this.reviews, required this.onSent});
   final WalkReviewsController reviews;
@@ -125,6 +125,7 @@ class _ReviewFormState extends ConsumerState<ReviewForm> {
   late int _rating = _initial.rating;
   late final TextEditingController _text = TextEditingController(text: _initial.text)..addListener(_changed);
   bool _busy = false;
+  bool _confirming = false;
   String _error = '';
 
   void _changed() => setState(() {});
@@ -154,6 +155,26 @@ class _ReviewFormState extends ConsumerState<ReviewForm> {
         });
       case ReviewActionFailed(:final error):
         setState(() => _error = userMessage(context, error, 'Не удалось отправить отзыв. Повторите попытку.'));
+    }
+  }
+
+  Future<void> _delete() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _error = '';
+    });
+    final result = await widget.reviews.remove();
+    if (!mounted) return;
+    setState(() {
+      _busy = false;
+      _confirming = false;
+    });
+    switch (result) {
+      case ReviewActionDone():
+        widget.onSent(context.t('Отзыв удалён.'));
+      case ReviewActionFailed(:final error):
+        setState(() => _error = userMessage(context, error, 'Не удалось удалить отзыв. Повторите попытку.'));
     }
   }
 
@@ -221,6 +242,23 @@ class _ReviewFormState extends ConsumerState<ReviewForm> {
                 ? context.t('Повторить')
                 : context.t('Отправить отзыв')),
       ),
+      if (mine != null)
+        if (_confirming)
+          Semantics(
+            container: true,
+            label: context.t('Подтверждение удаления'),
+            child: Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
+              Text(context.t('Удалить отзыв?')),
+              FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: TokenColors.dangerInk),
+                onPressed: _busy ? null : _delete,
+                child: Text(context.t('Удалить')),
+              ),
+              TextButton(onPressed: _busy ? null : () => setState(() => _confirming = false), child: Text(context.t('Отмена'))),
+            ]),
+          )
+        else
+          TextButton(onPressed: _busy ? null : () => setState(() => _confirming = true), child: Text(context.t('Удалить отзыв'))),
     ]);
   }
 }

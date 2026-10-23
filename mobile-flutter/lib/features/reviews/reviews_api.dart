@@ -16,6 +16,10 @@ class ReviewsApi {
   /// PUT is an upsert, so a retry after a lost answer is safe.
   Future<ReviewWrite> save(ReviewTarget target, ReviewInput input) => _api.send('PUT', '${target.reviewsPath}/mine', validateReviewWrite,
       body: {'rating': input.rating, 'text': input.text}, idempotent: true, guestKey: true);
+
+  /// Deleting an absent review succeeds too, so a retry is safe.
+  Future<ReviewWrite> delete(ReviewTarget target) =>
+      _api.send('DELETE', '${target.reviewsPath}/mine', validateReviewWrite, idempotent: true, guestKey: true);
 }
 
 /// What the author sends: 1–5 stars and an optional text.
