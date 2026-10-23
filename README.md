@@ -374,6 +374,25 @@ pnpm mobile:android
 Устройство приложения, подпись релиза и проверки на телефоне описаны в
 [docs/agents/mobile-app.md](docs/agents/mobile-app.md).
 
+### Мобильное приложение (Flutter)
+
+Новое нативное Android-приложение лежит в `mobile-flutter/`. Прогулка с
+выключенным экраном работает через собственную службу на Kotlin: она получает
+координаты и играет рассказы, а логика прогулки написана на Dart. Нужны Flutter
+3.47, JDK 21 и Android SDK; сайт проверяется и деплоится без Flutter.
+
+```bash
+pnpm mobile-flutter:check
+```
+
+```bash
+pnpm mobile-flutter:run
+```
+
+Отладочная сборка ставится рядом с Capacitor-приложением под id
+`online.otgolosok.app.dev`. Сборка, генерируемые из сайта файлы, подпись и
+проверки описаны в [docs/agents/mobile-flutter.md](docs/agents/mobile-flutter.md).
+
 ## Деплой
 
 Production: https://otgolosok.online. Статическая сборка публикуется через

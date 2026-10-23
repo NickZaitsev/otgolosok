@@ -1,3 +1,4 @@
-# otgolosok
+# Отголосок для Android (Flutter)
 
-A new Flutter project.
+Сборка, устройство и проверки описаны в
+[docs/agents/mobile-flutter.md](../docs/agents/mobile-flutter.md).
