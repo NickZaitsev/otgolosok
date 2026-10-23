@@ -1,5 +1,11 @@
 // Parking for car walks: the places near a chosen stop (site parking-client.ts) and the parking
 // layer of the map, loaded by cells (site parking-cells.ts).
+import 'dart:io';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+
+import '../../app/providers.dart';
 import '../../core/api/api_error.dart';
 import '../../walk_engine/car_route.dart';
 import '../../walk_engine/cities.dart' show cityAt;
@@ -8,8 +14,8 @@ import '../explore/cell_store.dart';
 
 const parkingManifestPath = '/api/parking/cells';
 
-/// The parking layer is drawn from this zoom (MapLibre, 512 px tiles) on.
-const parkingMinZoom = 14.0;
+/// The parking layer is drawn from this MapLibre zoom (512 px tiles) on: the site's Leaflet z14.
+const parkingMinZoom = 13.0;
 
 const _invalid = FormatException('Некорректные данные парковок.');
 final _parkingId = RegExp(r'^osm:(node|way|relation):\d+$');
@@ -133,6 +139,25 @@ class ParkingCells {
         isUnavailable: (error) => error is ApiError && error.status == 503,
       );
 }
+
+/// Cached parking cells; only an accelerator, every failure counts as an empty cache.
+final parkingStorageProvider = Provider<CellStorage>(
+  (ref) => FileCellStorage(() async => Directory('${(await getApplicationSupportDirectory()).path}${Platform.pathSeparator}parking-cells-v1')),
+);
+
+/// The manifest holder of [parkingStoreProvider]: the parking card shows its attribution.
+final parkingCellsProvider = Provider<ParkingCells>((ref) => ParkingCells());
+
+/// The parking cells of the builder and the explore map, one store app-wide. A 503 means the server has no
+/// parking index: it fails at once and hides the layer.
+final parkingStoreProvider = Provider<CellStore<ParkingPlace>>((ref) {
+  final store = ref.watch(parkingCellsProvider).store(
+        fetch: apiCellFetch(ref.watch(apiProvider), noRetryStatuses: const {503}),
+        storage: ref.watch(parkingStorageProvider),
+      );
+  ref.onDispose(store.dispose);
+  return store;
+});
 
 /// Whether a parking place may be shown on the builder map (within the walk area).
 bool inWalkArea(ParkingPlace place) => cityAt(place.location.lat, place.location.lon) != null;

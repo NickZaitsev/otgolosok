@@ -1,11 +1,9 @@
 // «Прогулка»: the walk builder screen (site walk-creation-panel.tsx over the explore map).
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../app/providers.dart';
@@ -27,11 +25,6 @@ import 'model.dart';
 import 'parking.dart';
 import 'research_panel.dart';
 import 'widgets.dart';
-
-/// Cached parking cells; only an accelerator, every failure counts as an empty cache.
-final builderParkingStorageProvider = Provider<CellStorage>(
-  (ref) => FileCellStorage(() async => Directory('${(await getApplicationSupportDirectory()).path}${Platform.pathSeparator}parking-cells-v1')),
-);
 
 enum _Picker { choices, address, time }
 
@@ -57,7 +50,6 @@ class _Builder extends ConsumerStatefulWidget {
 
 class _BuilderScreenState extends ConsumerState<_Builder> with WidgetsBindingObserver {
   late final _parsed = BuilderArgs.parse(widget.query);
-  final _parkingCells = ParkingCells();
   BuilderController? _controller;
   CellStore<ParkingPlace>? _parking;
   MapViewport? _viewport;
@@ -108,9 +100,8 @@ class _BuilderScreenState extends ConsumerState<_Builder> with WidgetsBindingObs
     _controller
       ?..removeListener(_onChange)
       ..dispose();
-    _parking
-      ?..removeListener(_onChange)
-      ..dispose();
+    // The parking store is app-wide: the explore map keeps using it.
+    _parking?.removeListener(_onChange);
     super.dispose();
   }
 
@@ -247,10 +238,11 @@ class _BuilderScreenState extends ConsumerState<_Builder> with WidgetsBindingObs
   Future<void> _loadParking() async {
     final viewport = _viewport;
     if (_controller?.draft.driving != true || viewport == null || viewport.zoom < parkingMinZoom) return;
-    final store = _parking ??= _parkingCells.store(
-      fetch: apiCellFetch(ref.read(apiProvider)),
-      storage: ref.read(builderParkingStorageProvider),
-    )..addListener(_onChange);
+    final CellStore<ParkingPlace> store = _parking ?? ref.read(parkingStoreProvider);
+    if (_parking == null) {
+      _parking = store;
+      store.addListener(_onChange);
+    }
     try {
       await store.ensureArea([viewport.required]);
     } catch (error) {

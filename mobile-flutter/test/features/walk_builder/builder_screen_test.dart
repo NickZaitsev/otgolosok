@@ -12,6 +12,7 @@ import 'package:otgolosok/features/explore/explore_providers.dart';
 import 'package:otgolosok/features/walk_builder/builder_map.dart';
 import 'package:otgolosok/features/walk_builder/builder_screen.dart';
 import 'package:otgolosok/features/walk_builder/builder_storage.dart';
+import 'package:otgolosok/features/walk_builder/parking.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../auth/harness.dart';
@@ -92,7 +93,7 @@ class _App {
         translationsProvider.overrideWithValue(translations),
         configProvider.overrideWithValue(harness.config),
         builderStorageProvider.overrideWithValue(storage),
-        builderParkingStorageProvider.overrideWithValue(MemoryCellStorage()),
+        parkingStorageProvider.overrideWithValue(MemoryCellStorage()),
         locationPermissionsProvider.overrideWithValue(_GrantedPermissions()),
         locationServicesProvider.overrideWithValue(services),
         locationFixSourceProvider.overrideWithValue(source),
