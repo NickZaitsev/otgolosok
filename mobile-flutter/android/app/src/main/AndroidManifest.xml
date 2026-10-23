@@ -37,7 +37,7 @@
                 <data android:pathPrefix="/place/" />
             </intent-filter>
             <!-- go_router reads the link itself (lib/core/links). -->
-            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
         </activity>
 
         <!-- Telegram sign-in returns here from the Custom Tab: otgolosok-auth://telegram?code=… -->
