@@ -1,0 +1,11 @@
+{
+  "Введите email.": ["Enter your email.", "请输入邮箱。"],
+  "Проверьте адрес email.": ["Check the email address.", "请检查邮箱地址。"],
+  "Введите пароль.": ["Enter your password.", "请输入密码。"],
+  "Пароль должен содержать от 10 до 128 символов.": ["The password must be 10 to 128 characters long.", "密码长度须为 10 至 128 个字符。"],
+  "Введите имя.": ["Enter your name.", "请输入姓名。"],
+  "Имя должно быть не длиннее 80 символов.": ["The name must be at most 80 characters long.", "姓名不得超过 80 个字符。"],
+  "Слишком много попыток. Подождите минуту и повторите.": ["Too many attempts. Wait a minute and try again.", "尝试次数过多。请稍等一分钟后重试。"],
+  "Не удалось открыть страницу.": ["Could not open the page.", "无法打开页面。"],
+  "Не удалось сохранить настройку.": ["Could not save the setting.", "无法保存设置。"]
+}
