@@ -214,6 +214,8 @@ class _TopWalksViewState extends ConsumerState<TopWalksView> {
           DropdownButtonFormField<TopDuration>(
             initialValue: _filters.duration,
             isExpanded: true,
+            // The same text as the metro fields above it.
+            style: Theme.of(context).textTheme.bodyMedium,
             decoration: InputDecoration(labelText: context.t('Продолжительность')),
             items: [
               DropdownMenuItem(value: TopDuration.any, child: Text(context.t('Любая продолжительность'))),

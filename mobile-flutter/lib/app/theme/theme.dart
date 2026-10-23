@@ -7,6 +7,9 @@ import 'tokens.g.dart';
 abstract final class AppTheme {
   static const serif = 'serif';
 
+  /// Named explicitly where a style is merged over a serif one: a null family keeps the serif.
+  static const sans = 'Roboto';
+
   static ThemeData light() {
     final scheme = ColorScheme.fromSeed(
       seedColor: TokenColors.mapGreen,
@@ -75,7 +78,11 @@ abstract final class AppTheme {
         style: TextButton.styleFrom(minimumSize: minControl, foregroundColor: TokenColors.mapGreen, textStyle: label),
       ),
       iconButtonTheme: IconButtonThemeData(style: IconButton.styleFrom(minimumSize: minControl)),
+      // Material takes field labels from bodyLarge, the serif of story text; fields stay sans, as on the site.
       inputDecorationTheme: InputDecorationTheme(
+        labelStyle: const TextStyle(fontFamily: sans, fontSize: TokenSizes.textControl, color: TokenColors.muted),
+        floatingLabelStyle: const TextStyle(fontFamily: sans, fontSize: TokenSizes.textControl, color: TokenColors.muted),
+        hintStyle: const TextStyle(fontFamily: sans, fontSize: TokenSizes.textControl, color: TokenColors.muted),
         filled: true,
         fillColor: TokenColors.fieldSurface,
         constraints: const BoxConstraints(minHeight: TokenSizes.fieldMin),
