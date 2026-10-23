@@ -1,0 +1,2440 @@
+{
+  "cases": [
+    {
+      "chapterIds": [
+        "a-stop",
+        "b-stop",
+        "c-stop"
+      ],
+      "direction": "forward",
+      "finish": {
+        "lat": 55.7541,
+        "lon": 37.5971
+      },
+      "finishLeg": false,
+      "name": "near finish, forward",
+      "path": [
+        [
+          37.5925,
+          55.7515
+        ],
+        [
+          37.593,
+          55.752
+        ],
+        [
+          37.595,
+          55.753
+        ],
+        [
+          37.597,
+          55.754
+        ],
+        [
+          37.5971,
+          55.7541
+        ]
+      ],
+      "readyChapterIds": [
+        "a-stop",
+        "b-stop",
+        "c-stop"
+      ],
+      "start": {
+        "lat": 55.7515,
+        "lon": 37.5925
+      },
+      "steps": [
+        {
+          "audio": {
+            "duration_sec": 60,
+            "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+          },
+          "duration_sec": 60,
+          "id": "a-stop",
+          "location": {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          "next_hint": "",
+          "place": "Москва, a-stop",
+          "status": "ready",
+          "title": "Дом 1",
+          "transition": "",
+          "trigger_location": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        },
+        {
+          "audio": {
+            "duration_sec": 61,
+            "url": "/api/story-audio/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.mp3"
+          },
+          "duration_sec": 61,
+          "id": "b-stop",
+          "location": {
+            "lat": 55.753,
+            "lon": 37.595
+          },
+          "next_hint": "",
+          "place": "Москва, b-stop",
+          "status": "ready",
+          "title": "Дом 2",
+          "transition": "",
+          "trigger_location": null
+        },
+        {
+          "audio": {
+            "duration_sec": 62,
+            "url": "/api/story-audio/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.mp3"
+          },
+          "duration_sec": 62,
+          "id": "c-stop",
+          "location": {
+            "lat": 55.754,
+            "lon": 37.597
+          },
+          "next_hint": "",
+          "place": "Москва, c-stop",
+          "status": "ready",
+          "title": "Дом 3",
+          "transition": "",
+          "trigger_location": null
+        }
+      ],
+      "targets": [
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 0,
+          "leg": 0,
+          "stage": "approach",
+          "target": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 0,
+          "leg": 1,
+          "stage": "stop",
+          "target": {
+            "lat": 55.753,
+            "lon": 37.595
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 1,
+          "leg": 1,
+          "stage": "approach",
+          "target": {
+            "lat": 55.753,
+            "lon": 37.595
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 1,
+          "leg": 2,
+          "stage": "stop",
+          "target": {
+            "lat": 55.754,
+            "lon": 37.597
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 2,
+          "leg": 2,
+          "stage": "approach",
+          "target": {
+            "lat": 55.754,
+            "lon": 37.597
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 2,
+          "leg": 3,
+          "stage": "stop",
+          "target": {
+            "lat": 55.7541,
+            "lon": 37.5971
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 3,
+          "leg": 3,
+          "stage": "approach",
+          "target": {
+            "lat": 55.7541,
+            "lon": 37.5971
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 3,
+          "leg": 3,
+          "stage": "stop",
+          "target": {
+            "lat": 55.7541,
+            "lon": 37.5971
+          }
+        }
+      ],
+      "view": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 60,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "a-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, a-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 1"
+            }
+          },
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "url": "/api/story-audio/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.mp3"
+            },
+            "id": "b-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, b-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 2"
+            }
+          },
+          {
+            "audio": {
+              "durationSec": 62,
+              "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "url": "/api/story-audio/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.mp3"
+            },
+            "id": "c-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, c-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 3"
+            }
+          }
+        ],
+        "contentVersion": "v3",
+        "document": {
+          "city": "Москва",
+          "description": "",
+          "destination": {
+            "address": "Москва, Арбат, 40",
+            "location": {
+              "lat": 55.7541,
+              "lon": 37.5971
+            }
+          },
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "open",
+          "route": {
+            "attribution": "OSM",
+            "distanceM": 900,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.754,
+                "lon": 37.597
+              },
+              {
+                "lat": 55.7541,
+                "lon": 37.5971
+              }
+            ],
+            "walkingMinutes": 15
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "a-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, a-stop",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": "",
+              "triggerLocation": {
+                "lat": 55.75205,
+                "lon": 37.59305
+              }
+            },
+            {
+              "id": "b-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, b-stop",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "c-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, c-stop",
+                "location": {
+                  "lat": 55.754,
+                  "lon": 37.597
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 3
+      }
+    },
+    {
+      "chapterIds": [
+        "c-stop",
+        "b-stop",
+        "a-stop"
+      ],
+      "direction": "reverse",
+      "finish": {
+        "lat": 55.7515,
+        "lon": 37.5925
+      },
+      "finishLeg": true,
+      "name": "near finish, reverse",
+      "path": [
+        [
+          37.5971,
+          55.7541
+        ],
+        [
+          37.597,
+          55.754
+        ],
+        [
+          37.595,
+          55.753
+        ],
+        [
+          37.593,
+          55.752
+        ],
+        [
+          37.5925,
+          55.7515
+        ]
+      ],
+      "readyChapterIds": [
+        "c-stop",
+        "b-stop",
+        "a-stop"
+      ],
+      "start": {
+        "lat": 55.7541,
+        "lon": 37.5971
+      },
+      "steps": [
+        {
+          "audio": {
+            "duration_sec": 62,
+            "url": "/api/story-audio/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.mp3"
+          },
+          "duration_sec": 62,
+          "id": "c-stop",
+          "location": {
+            "lat": 55.754,
+            "lon": 37.597
+          },
+          "next_hint": "",
+          "place": "Москва, c-stop",
+          "status": "ready",
+          "title": "Дом 3",
+          "transition": "",
+          "trigger_location": null
+        },
+        {
+          "audio": {
+            "duration_sec": 61,
+            "url": "/api/story-audio/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.mp3"
+          },
+          "duration_sec": 61,
+          "id": "b-stop",
+          "location": {
+            "lat": 55.753,
+            "lon": 37.595
+          },
+          "next_hint": "",
+          "place": "Москва, b-stop",
+          "status": "ready",
+          "title": "Дом 2",
+          "transition": "",
+          "trigger_location": null
+        },
+        {
+          "audio": {
+            "duration_sec": 60,
+            "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+          },
+          "duration_sec": 60,
+          "id": "a-stop",
+          "location": {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          "next_hint": "",
+          "place": "Москва, a-stop",
+          "status": "ready",
+          "title": "Дом 1",
+          "transition": "",
+          "trigger_location": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        }
+      ],
+      "targets": [
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 0,
+          "leg": 0,
+          "stage": "approach",
+          "target": {
+            "lat": 55.754,
+            "lon": 37.597
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 0,
+          "leg": 1,
+          "stage": "stop",
+          "target": {
+            "lat": 55.753,
+            "lon": 37.595
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 1,
+          "leg": 1,
+          "stage": "approach",
+          "target": {
+            "lat": 55.753,
+            "lon": 37.595
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 1,
+          "leg": 2,
+          "stage": "stop",
+          "target": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 2,
+          "leg": 2,
+          "stage": "approach",
+          "target": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 2,
+          "leg": 3,
+          "stage": "stop",
+          "target": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 3,
+          "leg": 3,
+          "stage": "approach",
+          "target": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 3,
+          "leg": 3,
+          "stage": "stop",
+          "target": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        }
+      ],
+      "view": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 60,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "a-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, a-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 1"
+            }
+          },
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "url": "/api/story-audio/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.mp3"
+            },
+            "id": "b-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, b-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 2"
+            }
+          },
+          {
+            "audio": {
+              "durationSec": 62,
+              "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "url": "/api/story-audio/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.mp3"
+            },
+            "id": "c-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, c-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 3"
+            }
+          }
+        ],
+        "contentVersion": "v3",
+        "document": {
+          "city": "Москва",
+          "description": "",
+          "destination": {
+            "address": "Москва, Арбат, 40",
+            "location": {
+              "lat": 55.7541,
+              "lon": 37.5971
+            }
+          },
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "open",
+          "route": {
+            "attribution": "OSM",
+            "distanceM": 900,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.754,
+                "lon": 37.597
+              },
+              {
+                "lat": 55.7541,
+                "lon": 37.5971
+              }
+            ],
+            "walkingMinutes": 15
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "a-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, a-stop",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": "",
+              "triggerLocation": {
+                "lat": 55.75205,
+                "lon": 37.59305
+              }
+            },
+            {
+              "id": "b-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, b-stop",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "c-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, c-stop",
+                "location": {
+                  "lat": 55.754,
+                  "lon": 37.597
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 3
+      }
+    },
+    {
+      "chapterIds": [
+        "a-stop",
+        "b-stop",
+        "c-stop"
+      ],
+      "direction": "forward",
+      "finish": {
+        "lat": 55.756,
+        "lon": 37.6
+      },
+      "finishLeg": true,
+      "name": "far finish, forward",
+      "path": [
+        [
+          37.5925,
+          55.7515
+        ],
+        [
+          37.593,
+          55.752
+        ],
+        [
+          37.595,
+          55.753
+        ],
+        [
+          37.597,
+          55.754
+        ],
+        [
+          37.6,
+          55.756
+        ]
+      ],
+      "readyChapterIds": [
+        "a-stop",
+        "c-stop"
+      ],
+      "start": {
+        "lat": 55.7515,
+        "lon": 37.5925
+      },
+      "steps": [
+        {
+          "audio": {
+            "duration_sec": 60,
+            "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+          },
+          "duration_sec": 60,
+          "id": "a-stop",
+          "location": {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          "next_hint": "",
+          "place": "Москва, a-stop",
+          "status": "ready",
+          "title": "Дом 1",
+          "transition": "",
+          "trigger_location": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        },
+        {
+          "audio": null,
+          "duration_sec": 0,
+          "id": "b-stop",
+          "location": {
+            "lat": 55.753,
+            "lon": 37.595
+          },
+          "next_hint": "",
+          "place": "Москва, b-stop",
+          "status": "preparing",
+          "title": "Москва, b-stop",
+          "transition": "",
+          "trigger_location": null
+        },
+        {
+          "audio": {
+            "duration_sec": 62,
+            "url": "/api/story-audio/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.mp3"
+          },
+          "duration_sec": 62,
+          "id": "c-stop",
+          "location": {
+            "lat": 55.754,
+            "lon": 37.597
+          },
+          "next_hint": "",
+          "place": "Москва, c-stop",
+          "status": "ready",
+          "title": "Дом 3",
+          "transition": "",
+          "trigger_location": null
+        }
+      ],
+      "targets": [
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 0,
+          "leg": 0,
+          "stage": "approach",
+          "target": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 0,
+          "leg": 1,
+          "stage": "stop",
+          "target": {
+            "lat": 55.753,
+            "lon": 37.595
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 1,
+          "leg": 1,
+          "stage": "approach",
+          "target": {
+            "lat": 55.753,
+            "lon": 37.595
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 1,
+          "leg": 2,
+          "stage": "stop",
+          "target": {
+            "lat": 55.754,
+            "lon": 37.597
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 2,
+          "leg": 2,
+          "stage": "approach",
+          "target": {
+            "lat": 55.754,
+            "lon": 37.597
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 2,
+          "leg": 3,
+          "stage": "stop",
+          "target": {
+            "lat": 55.756,
+            "lon": 37.6
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 3,
+          "leg": 3,
+          "stage": "approach",
+          "target": {
+            "lat": 55.756,
+            "lon": 37.6
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 3,
+          "leg": 3,
+          "stage": "stop",
+          "target": {
+            "lat": 55.756,
+            "lon": 37.6
+          }
+        }
+      ],
+      "view": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 60,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "a-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, a-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 1"
+            }
+          },
+          {
+            "audio": null,
+            "id": "b-stop",
+            "status": "preparing",
+            "story": null
+          },
+          {
+            "audio": {
+              "durationSec": 62,
+              "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "url": "/api/story-audio/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.mp3"
+            },
+            "id": "c-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, c-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 3"
+            }
+          }
+        ],
+        "contentVersion": "v3",
+        "document": {
+          "city": "Москва",
+          "description": "",
+          "destination": {
+            "address": "Москва, Арбат, 50",
+            "location": {
+              "lat": 55.756,
+              "lon": 37.6
+            }
+          },
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "open",
+          "route": {
+            "attribution": "OSM",
+            "distanceM": 900,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.754,
+                "lon": 37.597
+              },
+              {
+                "lat": 55.756,
+                "lon": 37.6
+              }
+            ],
+            "walkingMinutes": 15
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "a-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, a-stop",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": "",
+              "triggerLocation": {
+                "lat": 55.75205,
+                "lon": 37.59305
+              }
+            },
+            {
+              "id": "b-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, b-stop",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "c-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, c-stop",
+                "location": {
+                  "lat": 55.754,
+                  "lon": 37.597
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 3
+      }
+    },
+    {
+      "chapterIds": [
+        "c-stop",
+        "b-stop",
+        "a-stop"
+      ],
+      "direction": "reverse",
+      "finish": {
+        "lat": 55.7515,
+        "lon": 37.5925
+      },
+      "finishLeg": true,
+      "name": "far finish, reverse",
+      "path": [
+        [
+          37.6,
+          55.756
+        ],
+        [
+          37.597,
+          55.754
+        ],
+        [
+          37.595,
+          55.753
+        ],
+        [
+          37.593,
+          55.752
+        ],
+        [
+          37.5925,
+          55.7515
+        ]
+      ],
+      "readyChapterIds": [
+        "c-stop",
+        "a-stop"
+      ],
+      "start": {
+        "lat": 55.756,
+        "lon": 37.6
+      },
+      "steps": [
+        {
+          "audio": {
+            "duration_sec": 62,
+            "url": "/api/story-audio/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.mp3"
+          },
+          "duration_sec": 62,
+          "id": "c-stop",
+          "location": {
+            "lat": 55.754,
+            "lon": 37.597
+          },
+          "next_hint": "",
+          "place": "Москва, c-stop",
+          "status": "ready",
+          "title": "Дом 3",
+          "transition": "",
+          "trigger_location": null
+        },
+        {
+          "audio": null,
+          "duration_sec": 0,
+          "id": "b-stop",
+          "location": {
+            "lat": 55.753,
+            "lon": 37.595
+          },
+          "next_hint": "",
+          "place": "Москва, b-stop",
+          "status": "preparing",
+          "title": "Москва, b-stop",
+          "transition": "",
+          "trigger_location": null
+        },
+        {
+          "audio": {
+            "duration_sec": 60,
+            "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+          },
+          "duration_sec": 60,
+          "id": "a-stop",
+          "location": {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          "next_hint": "",
+          "place": "Москва, a-stop",
+          "status": "ready",
+          "title": "Дом 1",
+          "transition": "",
+          "trigger_location": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        }
+      ],
+      "targets": [
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 0,
+          "leg": 0,
+          "stage": "approach",
+          "target": {
+            "lat": 55.754,
+            "lon": 37.597
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 0,
+          "leg": 1,
+          "stage": "stop",
+          "target": {
+            "lat": 55.753,
+            "lon": 37.595
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 1,
+          "leg": 1,
+          "stage": "approach",
+          "target": {
+            "lat": 55.753,
+            "lon": 37.595
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 1,
+          "leg": 2,
+          "stage": "stop",
+          "target": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 2,
+          "leg": 2,
+          "stage": "approach",
+          "target": {
+            "lat": 55.75205,
+            "lon": 37.59305
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 2,
+          "leg": 3,
+          "stage": "stop",
+          "target": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 3,
+          "leg": 3,
+          "stage": "approach",
+          "target": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        {
+          "config": {
+            "enterM": 35,
+            "exitM": 60,
+            "maxAccuracyM": 50,
+            "minFixes": 3,
+            "windowSize": 5
+          },
+          "index": 3,
+          "leg": 3,
+          "stage": "stop",
+          "target": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        }
+      ],
+      "view": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 60,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "a-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, a-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 1"
+            }
+          },
+          {
+            "audio": null,
+            "id": "b-stop",
+            "status": "preparing",
+            "story": null
+          },
+          {
+            "audio": {
+              "durationSec": 62,
+              "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "url": "/api/story-audio/cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.mp3"
+            },
+            "id": "c-stop",
+            "status": "ready",
+            "story": {
+              "address": "Москва, c-stop",
+              "facts": [],
+              "paragraphs": [
+                {
+                  "factIds": [],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [],
+              "title": "Дом 3"
+            }
+          }
+        ],
+        "contentVersion": "v3",
+        "document": {
+          "city": "Москва",
+          "description": "",
+          "destination": {
+            "address": "Москва, Арбат, 50",
+            "location": {
+              "lat": 55.756,
+              "lon": 37.6
+            }
+          },
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "open",
+          "route": {
+            "attribution": "OSM",
+            "distanceM": 900,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.754,
+                "lon": 37.597
+              },
+              {
+                "lat": 55.756,
+                "lon": 37.6
+              }
+            ],
+            "walkingMinutes": 15
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "a-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, a-stop",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": "",
+              "triggerLocation": {
+                "lat": 55.75205,
+                "lon": 37.59305
+              }
+            },
+            {
+              "id": "b-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, b-stop",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "c-stop",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, c-stop",
+                "location": {
+                  "lat": 55.754,
+                  "lon": 37.597
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 3
+      }
+    }
+  ],
+  "follow": [
+    {
+      "after": [
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 2,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 2,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 3,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 3,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "x",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "x",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "x",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "x",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 2,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "x",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 3,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "x",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 3,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "x",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 4,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "x",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 4,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "x",
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "x",
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "x",
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 2,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "x",
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 2,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "x",
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 3,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "x",
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 3,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "x",
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 4,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "x",
+        "a",
+        "b",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 4,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c",
+        "x"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c",
+        "x"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c",
+        "x"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c",
+        "x"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c",
+        "x"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 2,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c",
+        "x"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 2,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c",
+        "x"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 3,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "b",
+        "c",
+        "x"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 4,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 1,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 2,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "a",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 2,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "a",
+        "c"
+      ],
+      "before": [
+        "a",
+        "b",
+        "c"
+      ],
+      "index": 3,
+      "result": 2,
+      "stage": "stop"
+    },
+    {
+      "after": [],
+      "before": [
+        "a",
+        "b"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "after": [],
+      "before": [
+        "a",
+        "b"
+      ],
+      "index": 0,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "after": [],
+      "before": [
+        "a",
+        "b"
+      ],
+      "index": 1,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "after": [],
+      "before": [
+        "a",
+        "b"
+      ],
+      "index": 1,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "after": [],
+      "before": [
+        "a",
+        "b"
+      ],
+      "index": 2,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "after": [],
+      "before": [
+        "a",
+        "b"
+      ],
+      "index": 2,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "after": [
+        "x"
+      ],
+      "before": [],
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "after": [
+        "x"
+      ],
+      "before": [],
+      "index": 0,
+      "result": 1,
+      "stage": "stop"
+    }
+  ],
+  "legs": [
+    {
+      "count": 0,
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "count": 0,
+      "index": 0,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "count": 0,
+      "index": 1,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "count": 0,
+      "index": 1,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "count": 0,
+      "index": 2,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "count": 0,
+      "index": 2,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "count": 0,
+      "index": 3,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "count": 0,
+      "index": 3,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "count": 0,
+      "index": 4,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "count": 0,
+      "index": 4,
+      "result": 0,
+      "stage": "stop"
+    },
+    {
+      "count": 1,
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "count": 1,
+      "index": 0,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "count": 1,
+      "index": 1,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "count": 1,
+      "index": 1,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "count": 1,
+      "index": 2,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "count": 1,
+      "index": 2,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "count": 1,
+      "index": 3,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "count": 1,
+      "index": 3,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "count": 1,
+      "index": 4,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "count": 1,
+      "index": 4,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "count": 3,
+      "index": 0,
+      "result": 0,
+      "stage": "approach"
+    },
+    {
+      "count": 3,
+      "index": 0,
+      "result": 1,
+      "stage": "stop"
+    },
+    {
+      "count": 3,
+      "index": 1,
+      "result": 1,
+      "stage": "approach"
+    },
+    {
+      "count": 3,
+      "index": 1,
+      "result": 2,
+      "stage": "stop"
+    },
+    {
+      "count": 3,
+      "index": 2,
+      "result": 2,
+      "stage": "approach"
+    },
+    {
+      "count": 3,
+      "index": 2,
+      "result": 3,
+      "stage": "stop"
+    },
+    {
+      "count": 3,
+      "index": 3,
+      "result": 3,
+      "stage": "approach"
+    },
+    {
+      "count": 3,
+      "index": 3,
+      "result": 3,
+      "stage": "stop"
+    },
+    {
+      "count": 3,
+      "index": 4,
+      "result": 3,
+      "stage": "approach"
+    },
+    {
+      "count": 3,
+      "index": 4,
+      "result": 3,
+      "stage": "stop"
+    }
+  ]
+}

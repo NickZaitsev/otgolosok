@@ -1,0 +1,1739 @@
+{
+  "glyphs": "https://tiles.versatiles.org/assets/glyphs/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "paint": {
+        "background-color": "#f4f3f0"
+      },
+      "type": "background"
+    },
+    {
+      "filter": [
+        "in",
+        [
+          "get",
+          "kind"
+        ],
+        [
+          "literal",
+          [
+            "park",
+            "garden",
+            "grass",
+            "village_green",
+            "recreation_ground",
+            "meadow",
+            "playground",
+            "allotments",
+            "cemetery"
+          ]
+        ]
+      ],
+      "id": "lawn",
+      "minzoom": 0,
+      "paint": {
+        "fill-color": "#d3efb3"
+      },
+      "source": "osm",
+      "source-layer": "land",
+      "type": "fill"
+    },
+    {
+      "filter": [
+        "in",
+        [
+          "get",
+          "kind"
+        ],
+        [
+          "literal",
+          [
+            "forest",
+            "wood",
+            "orchard"
+          ]
+        ]
+      ],
+      "id": "woods",
+      "minzoom": 7,
+      "paint": {
+        "fill-color": "#bfe39a"
+      },
+      "source": "osm",
+      "source-layer": "land",
+      "type": "fill"
+    },
+    {
+      "filter": [
+        "in",
+        [
+          "get",
+          "kind"
+        ],
+        [
+          "literal",
+          [
+            "scrub"
+          ]
+        ]
+      ],
+      "id": "scrub",
+      "minzoom": 11,
+      "paint": {
+        "fill-color": "#bfe39a"
+      },
+      "source": "osm",
+      "source-layer": "land",
+      "type": "fill"
+    },
+    {
+      "filter": [
+        "==",
+        [
+          "get",
+          "kind"
+        ],
+        "hospital"
+      ],
+      "id": "hospital",
+      "minzoom": 14,
+      "paint": {
+        "fill-color": "#f9dfe7"
+      },
+      "source": "osm",
+      "source-layer": "sites",
+      "type": "fill"
+    },
+    {
+      "filter": [
+        "in",
+        [
+          "get",
+          "kind"
+        ],
+        [
+          "literal",
+          [
+            "school",
+            "college",
+            "university"
+          ]
+        ]
+      ],
+      "id": "campus",
+      "minzoom": 14,
+      "paint": {
+        "fill-color": "#e6e4f5"
+      },
+      "source": "osm",
+      "source-layer": "sites",
+      "type": "fill"
+    },
+    {
+      "id": "water",
+      "paint": {
+        "fill-color": "#8fd3f7"
+      },
+      "source": "osm",
+      "source-layer": "water_polygons",
+      "type": "fill"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "in",
+          [
+            "get",
+            "kind"
+          ],
+          [
+            "literal",
+            [
+              "river",
+              "canal"
+            ]
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "river",
+      "paint": {
+        "line-color": "#8fd3f7",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          1,
+          18,
+          4
+        ]
+      },
+      "source": "osm",
+      "source-layer": "water_lines",
+      "type": "line"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "!",
+          [
+            "in",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "literal",
+              [
+                "river",
+                "canal"
+              ]
+            ]
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "stream",
+      "minzoom": 14,
+      "paint": {
+        "line-color": "#8fd3f7",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          1,
+          18,
+          2.5
+        ]
+      },
+      "source": "osm",
+      "source-layer": "water_lines",
+      "type": "line"
+    },
+    {
+      "filter": [
+        "!=",
+        [
+          "get",
+          "tunnel"
+        ],
+        true
+      ],
+      "id": "street-area",
+      "minzoom": 15,
+      "paint": {
+        "fill-color": "#f9f9f9"
+      },
+      "source": "osm",
+      "source-layer": "street_polygons",
+      "type": "fill"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "kind"
+          ],
+          "rail"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "rail",
+      "paint": {
+        "line-color": "#c4c4c4",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          2
+        ]
+      },
+      "source": "osm",
+      "source-layer": "streets",
+      "type": "line"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "in",
+          [
+            "get",
+            "kind"
+          ],
+          [
+            "literal",
+            [
+              "footway",
+              "path",
+              "steps",
+              "cycleway",
+              "track"
+            ]
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "footway",
+      "layout": {
+        "line-cap": "round"
+      },
+      "minzoom": 15,
+      "paint": {
+        "line-color": "#ffffff",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          15,
+          1,
+          19,
+          3
+        ]
+      },
+      "source": "osm",
+      "source-layer": "streets",
+      "type": "line"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "in",
+          [
+            "get",
+            "kind"
+          ],
+          [
+            "literal",
+            [
+              "unclassified",
+              "residential",
+              "living_street",
+              "pedestrian",
+              "service"
+            ]
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "side-street-casing",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "minzoom": 13,
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "kind"
+          ],
+          "motorway",
+          "#e5896e",
+          [
+            "trunk",
+            "primary",
+            "secondary",
+            "tertiary"
+          ],
+          "#aab4c0",
+          "#dadce0"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.6
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            1.7249999999999999,
+            0.69
+          ],
+          12,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            2.875,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            1.38,
+            0.575
+          ],
+          18,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            34.5,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            25.299999999999997,
+            [
+              "pedestrian",
+              "service",
+              "living_street"
+            ],
+            10.35,
+            17.25
+          ]
+        ]
+      },
+      "source": "osm",
+      "source-layer": "streets",
+      "type": "line"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "in",
+          [
+            "get",
+            "kind"
+          ],
+          [
+            "literal",
+            [
+              "unclassified",
+              "residential",
+              "living_street",
+              "pedestrian",
+              "service"
+            ]
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "side-street",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "minzoom": 13,
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "kind"
+          ],
+          "motorway",
+          "#f6ab94",
+          [
+            "trunk",
+            "primary",
+            "secondary",
+            "tertiary"
+          ],
+          "#c8cfd8",
+          "#ffffff"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.6
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            1.5,
+            0.6
+          ],
+          12,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            2.5,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            1.2,
+            0.5
+          ],
+          18,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            30,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            22,
+            [
+              "pedestrian",
+              "service",
+              "living_street"
+            ],
+            9,
+            15
+          ]
+        ]
+      },
+      "source": "osm",
+      "source-layer": "streets",
+      "type": "line"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "in",
+          [
+            "get",
+            "kind"
+          ],
+          [
+            "literal",
+            [
+              "tertiary"
+            ]
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "tertiary-street-casing",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "minzoom": 12,
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "kind"
+          ],
+          "motorway",
+          "#e5896e",
+          [
+            "trunk",
+            "primary",
+            "secondary",
+            "tertiary"
+          ],
+          "#aab4c0",
+          "#dadce0"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.6
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            1.7249999999999999,
+            0.69
+          ],
+          12,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            2.875,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            1.38,
+            0.575
+          ],
+          18,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            34.5,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            25.299999999999997,
+            [
+              "pedestrian",
+              "service",
+              "living_street"
+            ],
+            10.35,
+            17.25
+          ]
+        ]
+      },
+      "source": "osm",
+      "source-layer": "streets",
+      "type": "line"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "in",
+          [
+            "get",
+            "kind"
+          ],
+          [
+            "literal",
+            [
+              "tertiary"
+            ]
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "tertiary-street",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "minzoom": 12,
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "kind"
+          ],
+          "motorway",
+          "#f6ab94",
+          [
+            "trunk",
+            "primary",
+            "secondary",
+            "tertiary"
+          ],
+          "#c8cfd8",
+          "#ffffff"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.6
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            1.5,
+            0.6
+          ],
+          12,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            2.5,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            1.2,
+            0.5
+          ],
+          18,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            30,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            22,
+            [
+              "pedestrian",
+              "service",
+              "living_street"
+            ],
+            9,
+            15
+          ]
+        ]
+      },
+      "source": "osm",
+      "source-layer": "streets",
+      "type": "line"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "in",
+          [
+            "get",
+            "kind"
+          ],
+          [
+            "literal",
+            [
+              "motorway",
+              "trunk",
+              "primary",
+              "secondary"
+            ]
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "arterial-street-casing",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "minzoom": 0,
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "kind"
+          ],
+          "motorway",
+          "#e5896e",
+          [
+            "trunk",
+            "primary",
+            "secondary",
+            "tertiary"
+          ],
+          "#aab4c0",
+          "#dadce0"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.6
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            1.7249999999999999,
+            0.69
+          ],
+          12,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            2.875,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            1.38,
+            0.575
+          ],
+          18,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            34.5,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            25.299999999999997,
+            [
+              "pedestrian",
+              "service",
+              "living_street"
+            ],
+            10.35,
+            17.25
+          ]
+        ]
+      },
+      "source": "osm",
+      "source-layer": "streets",
+      "type": "line"
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "in",
+          [
+            "get",
+            "kind"
+          ],
+          [
+            "literal",
+            [
+              "motorway",
+              "trunk",
+              "primary",
+              "secondary"
+            ]
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          true
+        ]
+      ],
+      "id": "arterial-street",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "minzoom": 0,
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "kind"
+          ],
+          "motorway",
+          "#f6ab94",
+          [
+            "trunk",
+            "primary",
+            "secondary",
+            "tertiary"
+          ],
+          "#c8cfd8",
+          "#ffffff"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.6
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            1.5,
+            0.6
+          ],
+          12,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            2.5,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            1.2,
+            0.5
+          ],
+          18,
+          [
+            "match",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "motorway",
+              "trunk",
+              "primary"
+            ],
+            30,
+            [
+              "secondary",
+              "tertiary"
+            ],
+            22,
+            [
+              "pedestrian",
+              "service",
+              "living_street"
+            ],
+            9,
+            15
+          ]
+        ]
+      },
+      "source": "osm",
+      "source-layer": "streets",
+      "type": "line"
+    },
+    {
+      "id": "building",
+      "minzoom": 14,
+      "paint": {
+        "fill-color": "#e2ded8",
+        "fill-outline-color": "#d0cac1"
+      },
+      "source": "osm",
+      "source-layer": "buildings",
+      "type": "fill"
+    },
+    {
+      "id": "housenumber",
+      "layout": {
+        "text-field": [
+          "get",
+          "housenumber"
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-size": 11
+      },
+      "minzoom": 17.5,
+      "paint": {
+        "text-color": "#8e8e8e",
+        "text-halo-color": "#f4f3f0",
+        "text-halo-width": 1
+      },
+      "source": "osm",
+      "source-layer": "addresses",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        "in",
+        [
+          "get",
+          "kind"
+        ],
+        [
+          "literal",
+          [
+            "river",
+            "canal"
+          ]
+        ]
+      ],
+      "id": "river-name",
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": 400,
+        "text-field": [
+          "match",
+          [
+            "get",
+            "kind"
+          ],
+          "river",
+          [
+            "concat",
+            "р. ",
+            [
+              "get",
+              "name"
+            ]
+          ],
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-letter-spacing": 0.05,
+        "text-size": 12
+      },
+      "paint": {
+        "text-color": "#2f78b0",
+        "text-halo-color": "#8fd3f7",
+        "text-halo-width": 1
+      },
+      "source": "osm",
+      "source-layer": "water_lines_labels",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        ">",
+        [
+          "get",
+          "way_area"
+        ],
+        3000000
+      ],
+      "id": "lake-name",
+      "layout": {
+        "text-field": [
+          "get",
+          "name"
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-max-width": 8,
+        "text-size": 12
+      },
+      "maxzoom": 15,
+      "paint": {
+        "text-color": "#2f78b0",
+        "text-halo-color": "#8fd3f7",
+        "text-halo-width": 1
+      },
+      "source": "osm",
+      "source-layer": "water_polygons_labels",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        ">",
+        [
+          "get",
+          "way_area"
+        ],
+        50000
+      ],
+      "id": "pond-name",
+      "layout": {
+        "text-field": [
+          "get",
+          "name"
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-max-width": 8,
+        "text-size": 13
+      },
+      "minzoom": 15,
+      "paint": {
+        "text-color": "#2f78b0",
+        "text-halo-color": "#8fd3f7",
+        "text-halo-width": 1
+      },
+      "source": "osm",
+      "source-layer": "water_polygons_labels",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        "in",
+        [
+          "get",
+          "kind"
+        ],
+        [
+          "literal",
+          [
+            "motorway",
+            "trunk",
+            "primary",
+            "secondary",
+            "tertiary"
+          ]
+        ]
+      ],
+      "id": "main-street-name",
+      "layout": {
+        "symbol-placement": "line",
+        "text-field": [
+          "get",
+          "name"
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-max-angle": 30,
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          11,
+          18,
+          16
+        ]
+      },
+      "minzoom": 12,
+      "paint": {
+        "text-color": "#333333",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 2.5
+      },
+      "source": "osm",
+      "source-layer": "street_labels",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        "in",
+        [
+          "get",
+          "kind"
+        ],
+        [
+          "literal",
+          [
+            "unclassified",
+            "residential",
+            "living_street",
+            "pedestrian",
+            "service"
+          ]
+        ]
+      ],
+      "id": "side-street-name",
+      "layout": {
+        "symbol-placement": "line",
+        "text-field": [
+          "get",
+          "name"
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-max-angle": 30,
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          11,
+          18,
+          16
+        ]
+      },
+      "minzoom": 14,
+      "paint": {
+        "text-color": "#333333",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 2.5
+      },
+      "source": "osm",
+      "source-layer": "street_labels",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        "in",
+        [
+          "get",
+          "amenity"
+        ],
+        [
+          "literal",
+          [
+            "toilets",
+            "drinking_water"
+          ]
+        ]
+      ],
+      "id": "poi-amenity",
+      "layout": {
+        "icon-image": [
+          "match",
+          [
+            "get",
+            "amenity"
+          ],
+          "toilets",
+          "poi-toilets",
+          "poi-water"
+        ],
+        "text-anchor": "top",
+        "text-field": [
+          "step",
+          [
+            "zoom"
+          ],
+          "",
+          17,
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-max-width": 8,
+        "text-offset": [
+          0,
+          1.1
+        ],
+        "text-optional": true,
+        "text-size": 11
+      },
+      "minzoom": 15.5,
+      "paint": {
+        "text-color": "#4d4d4d",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 1.5
+      },
+      "source": "osm",
+      "source-layer": "pois",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        "any",
+        [
+          "in",
+          [
+            "get",
+            "historic"
+          ],
+          [
+            "literal",
+            [
+              "memorial",
+              "monument"
+            ]
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tourism"
+          ],
+          "artwork"
+        ]
+      ],
+      "id": "poi-memorial",
+      "layout": {
+        "icon-image": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "historic"
+            ],
+            "memorial"
+          ],
+          "poi-memorial",
+          "poi-monument"
+        ],
+        "text-anchor": "top",
+        "text-field": [
+          "step",
+          [
+            "zoom"
+          ],
+          "",
+          17,
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-max-width": 8,
+        "text-offset": [
+          0,
+          1.1
+        ],
+        "text-optional": true,
+        "text-size": 11
+      },
+      "minzoom": 16.5,
+      "paint": {
+        "text-color": "#4d4d4d",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 1.5
+      },
+      "source": "osm",
+      "source-layer": "pois",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        "any",
+        [
+          "all",
+          [
+            "==",
+            [
+              "get",
+              "amenity"
+            ],
+            "place_of_worship"
+          ],
+          [
+            "in",
+            [
+              "get",
+              "religion"
+            ],
+            [
+              "literal",
+              [
+                "christian",
+                "jewish",
+                "muslim"
+              ]
+            ]
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "amenity"
+          ],
+          "theatre"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tourism"
+          ],
+          "viewpoint"
+        ]
+      ],
+      "id": "poi-sight",
+      "layout": {
+        "icon-image": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "amenity"
+            ],
+            "theatre"
+          ],
+          "poi-theatre",
+          [
+            "==",
+            [
+              "get",
+              "tourism"
+            ],
+            "viewpoint"
+          ],
+          "poi-viewpoint",
+          [
+            "==",
+            [
+              "get",
+              "religion"
+            ],
+            "jewish"
+          ],
+          "poi-synagogue",
+          [
+            "==",
+            [
+              "get",
+              "religion"
+            ],
+            "muslim"
+          ],
+          "poi-mosque",
+          [
+            "in",
+            [
+              "get",
+              "denomination"
+            ],
+            [
+              "literal",
+              [
+                "russian_orthodox",
+                "orthodox",
+                "old_believers"
+              ]
+            ]
+          ],
+          "poi-orthodox",
+          "poi-church"
+        ],
+        "text-anchor": "top",
+        "text-field": [
+          "step",
+          [
+            "zoom"
+          ],
+          "",
+          16,
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-max-width": 8,
+        "text-offset": [
+          0,
+          1.1
+        ],
+        "text-optional": true,
+        "text-size": 11
+      },
+      "minzoom": 14.5,
+      "paint": {
+        "text-color": "#4d4d4d",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 1.5
+      },
+      "source": "osm",
+      "source-layer": "pois",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        "==",
+        [
+          "get",
+          "kind"
+        ],
+        "station"
+      ],
+      "id": "station",
+      "layout": {
+        "icon-image": "poi-station",
+        "text-anchor": "top",
+        "text-field": [
+          "step",
+          [
+            "zoom"
+          ],
+          "",
+          14,
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-max-width": 8,
+        "text-offset": [
+          0,
+          1.1
+        ],
+        "text-optional": true,
+        "text-size": 11
+      },
+      "minzoom": 13,
+      "paint": {
+        "text-color": "#4d4d4d",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 1.5
+      },
+      "source": "osm",
+      "source-layer": "public_transport",
+      "type": "symbol"
+    },
+    {
+      "filter": [
+        "==",
+        [
+          "get",
+          "kind"
+        ],
+        "suburb"
+      ],
+      "id": "district-name",
+      "layout": {
+        "text-field": [
+          "get",
+          "name"
+        ],
+        "text-font": [
+          "noto_sans_regular"
+        ],
+        "text-letter-spacing": 0.08,
+        "text-max-width": 8,
+        "text-size": 11,
+        "text-transform": "uppercase"
+      },
+      "maxzoom": 14,
+      "minzoom": 10,
+      "paint": {
+        "text-color": "#8e8e8e",
+        "text-halo-color": "#f4f3f0",
+        "text-halo-width": 1.5
+      },
+      "source": "osm",
+      "source-layer": "place_labels",
+      "type": "symbol"
+    }
+  ],
+  "name": "Отголосок",
+  "sources": {
+    "osm": {
+      "maxzoom": 14,
+      "minzoom": 0,
+      "tiles": [
+        "https://tiles.versatiles.org/tiles/osm/{z}/{x}/{y}"
+      ],
+      "type": "vector"
+    }
+  },
+  "version": 8
+}

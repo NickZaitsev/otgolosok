@@ -1,0 +1,158 @@
+{
+  "chapters": [
+    {
+      "audioUrl": "/api/story-audio/a.mp3",
+      "durationSec": 120,
+      "id": "a"
+    },
+    {
+      "audioUrl": "/api/story-audio/b.mp3",
+      "durationSec": 0,
+      "id": "b"
+    }
+  ],
+  "checkpoints": [
+    {
+      "raw": null,
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "{",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "{\"version\":1,\"routeId\":\"walk\",\"chapterId\":\"a\",\"audioUrl\":\"/api/story-audio/a.mp3\",\"positionSec\":30}",
+      "result": {
+        "audioUrl": "/api/story-audio/a.mp3",
+        "chapterId": "a",
+        "positionSec": 30,
+        "routeId": "walk",
+        "version": 1
+      },
+      "routeId": "walk"
+    },
+    {
+      "raw": "{\"version\":1,\"routeId\":\"walk\",\"chapterId\":\"a\",\"audioUrl\":\"/api/story-audio/a.mp3\",\"positionSec\":500}",
+      "result": {
+        "audioUrl": "/api/story-audio/a.mp3",
+        "chapterId": "a",
+        "positionSec": 120,
+        "routeId": "walk",
+        "version": 1
+      },
+      "routeId": "walk"
+    },
+    {
+      "raw": "{\"version\":1,\"routeId\":\"walk\",\"chapterId\":\"a\",\"audioUrl\":\"/api/story-audio/a.mp3\",\"positionSec\":-1}",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "{\"version\":1,\"routeId\":\"walk\",\"chapterId\":\"a\",\"audioUrl\":\"/api/story-audio/a.mp3\",\"positionSec\":\"30\"}",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "{\"version\":2,\"routeId\":\"walk\",\"chapterId\":\"a\",\"audioUrl\":\"/api/story-audio/a.mp3\",\"positionSec\":30}",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "{\"version\":1,\"routeId\":\"other\",\"chapterId\":\"a\",\"audioUrl\":\"/api/story-audio/a.mp3\",\"positionSec\":30}",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "{\"version\":1,\"routeId\":\"walk\",\"chapterId\":\"missing\",\"audioUrl\":\"/api/story-audio/a.mp3\",\"positionSec\":30}",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "{\"version\":1,\"routeId\":\"walk\",\"chapterId\":\"a\",\"audioUrl\":\"/api/story-audio/changed.mp3\",\"positionSec\":30}",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "{\"version\":1,\"routeId\":\"walk\",\"chapterId\":\"b\",\"audioUrl\":\"/api/story-audio/b.mp3\",\"positionSec\":30}",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "null",
+      "result": null,
+      "routeId": "walk"
+    },
+    {
+      "raw": "[]",
+      "result": null,
+      "routeId": "walk"
+    }
+  ],
+  "keys": [
+    {
+      "key": "otgolosok:playback:walk-1",
+      "locale": "ru",
+      "routeId": "walk-1"
+    },
+    {
+      "key": "otgolosok:playback:walk-1:en",
+      "locale": "en",
+      "routeId": "walk-1"
+    },
+    {
+      "key": "otgolosok:playback:walk-1:zh",
+      "locale": "zh",
+      "routeId": "walk-1"
+    }
+  ],
+  "times": [
+    {
+      "seconds": 0,
+      "text": "0:00"
+    },
+    {
+      "seconds": 0.9,
+      "text": "0:00"
+    },
+    {
+      "seconds": 59,
+      "text": "0:59"
+    },
+    {
+      "seconds": 60,
+      "text": "1:00"
+    },
+    {
+      "seconds": 61.5,
+      "text": "1:01"
+    },
+    {
+      "seconds": 3599,
+      "text": "59:59"
+    },
+    {
+      "seconds": 3600,
+      "text": "60:00"
+    },
+    {
+      "seconds": -5,
+      "text": "0:00"
+    },
+    {
+      "seconds": "NaN",
+      "text": "0:00"
+    }
+  ]
+}

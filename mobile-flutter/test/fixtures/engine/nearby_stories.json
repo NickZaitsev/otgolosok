@@ -1,0 +1,560 @@
+{
+  "catalog": [
+    {
+      "address": "Адрес a",
+      "durationSec": 60,
+      "factCount": 2,
+      "id": "a",
+      "location": {
+        "lat": 55.75045000045,
+        "lon": 37.62
+      },
+      "sourceCount": 3,
+      "title": "a"
+    },
+    {
+      "address": "Адрес b",
+      "durationSec": 60,
+      "factCount": 5,
+      "id": "b",
+      "location": {
+        "lat": 55.75081000081,
+        "lon": 37.62
+      },
+      "sourceCount": 1,
+      "title": "b"
+    },
+    {
+      "address": "Адрес c",
+      "durationSec": 60,
+      "factCount": 5,
+      "id": "c",
+      "location": {
+        "lat": 55.75135000135,
+        "lon": 37.62
+      },
+      "sourceCount": 1,
+      "title": "c"
+    },
+    {
+      "address": "Адрес d",
+      "durationSec": 60,
+      "factCount": 1,
+      "id": "d",
+      "location": {
+        "lat": 55.75225000225,
+        "lon": 37.62
+      },
+      "sourceCount": 1,
+      "title": "d"
+    },
+    {
+      "address": "Адрес e",
+      "durationSec": 60,
+      "factCount": 2,
+      "id": "e",
+      "location": {
+        "lat": 55.75072000072,
+        "lon": 37.62
+      },
+      "sourceCount": 3,
+      "title": "e"
+    },
+    {
+      "address": "Адрес f",
+      "durationSec": 60,
+      "factCount": 2,
+      "id": "f",
+      "location": {
+        "lat": 55.75072000072,
+        "lon": 37.62
+      },
+      "sourceCount": 3,
+      "title": "Ёлка"
+    },
+    {
+      "address": "Адрес g",
+      "durationSec": 60,
+      "factCount": 2,
+      "id": "g",
+      "location": {
+        "lat": 55.75072000072,
+        "lon": 37.62
+      },
+      "sourceCount": 3,
+      "title": "Арбат"
+    }
+  ],
+  "center": {
+    "lat": 55.75,
+    "lon": 37.62
+  },
+  "radii": [
+    {
+      "accuracyM": 0,
+      "radius": 100
+    },
+    {
+      "accuracyM": 50,
+      "radius": 100
+    },
+    {
+      "accuracyM": 100,
+      "radius": 100
+    },
+    {
+      "accuracyM": 100.5,
+      "radius": 200
+    },
+    {
+      "accuracyM": 200,
+      "radius": 200
+    },
+    {
+      "accuracyM": 300,
+      "radius": 300
+    },
+    {
+      "accuracyM": 300.1,
+      "radius": null
+    },
+    {
+      "accuracyM": 1000,
+      "radius": null
+    }
+  ],
+  "recommendations": [
+    {
+      "locale": "ru",
+      "radius": 100,
+      "result": [
+        {
+          "address": "Адрес b",
+          "distanceM": 90.06798064983995,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "b",
+          "location": {
+            "lat": 55.75081000081,
+            "lon": 37.62
+          },
+          "reason": "Лучший подтверждённый рассказ: 5 фактов и 1 источников.",
+          "sourceCount": 1,
+          "title": "b"
+        },
+        {
+          "address": "Адрес a",
+          "distanceM": 50.03776702795223,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "a",
+          "location": {
+            "lat": 55.75045000045,
+            "lon": 37.62
+          },
+          "reason": "50 м по прямой · готовая история.",
+          "sourceCount": 3,
+          "title": "a"
+        },
+        {
+          "address": "Адрес g",
+          "distanceM": 80.06042724456555,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "g",
+          "location": {
+            "lat": 55.75072000072,
+            "lon": 37.62
+          },
+          "reason": "80 м по прямой · готовая история.",
+          "sourceCount": 3,
+          "title": "Арбат"
+        }
+      ]
+    },
+    {
+      "locale": "ru",
+      "radius": 200,
+      "result": [
+        {
+          "address": "Адрес b",
+          "distanceM": 90.06798064983995,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "b",
+          "location": {
+            "lat": 55.75081000081,
+            "lon": 37.62
+          },
+          "reason": "Лучший подтверждённый рассказ: 5 фактов и 1 источников.",
+          "sourceCount": 1,
+          "title": "b"
+        },
+        {
+          "address": "Адрес c",
+          "distanceM": 150.1133010830666,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "c",
+          "location": {
+            "lat": 55.75135000135,
+            "lon": 37.62
+          },
+          "reason": "150 м по прямой · готовая история.",
+          "sourceCount": 1,
+          "title": "c"
+        },
+        {
+          "address": "Адрес a",
+          "distanceM": 50.03776702795223,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "a",
+          "location": {
+            "lat": 55.75045000045,
+            "lon": 37.62
+          },
+          "reason": "50 м по прямой · готовая история.",
+          "sourceCount": 3,
+          "title": "a"
+        }
+      ]
+    },
+    {
+      "locale": "ru",
+      "radius": 300,
+      "result": [
+        {
+          "address": "Адрес b",
+          "distanceM": 90.06798064983995,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "b",
+          "location": {
+            "lat": 55.75081000081,
+            "lon": 37.62
+          },
+          "reason": "Лучший подтверждённый рассказ: 5 фактов и 1 источников.",
+          "sourceCount": 1,
+          "title": "b"
+        },
+        {
+          "address": "Адрес c",
+          "distanceM": 150.1133010830666,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "c",
+          "location": {
+            "lat": 55.75135000135,
+            "lon": 37.62
+          },
+          "reason": "150 м по прямой · готовая история.",
+          "sourceCount": 1,
+          "title": "c"
+        },
+        {
+          "address": "Адрес a",
+          "distanceM": 50.03776702795223,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "a",
+          "location": {
+            "lat": 55.75045000045,
+            "lon": 37.62
+          },
+          "reason": "50 м по прямой · готовая история.",
+          "sourceCount": 3,
+          "title": "a"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "radius": 100,
+      "result": [
+        {
+          "address": "Адрес b",
+          "distanceM": 90.06798064983995,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "b",
+          "location": {
+            "lat": 55.75081000081,
+            "lon": 37.62
+          },
+          "reason": "Best verified story: 5 facts supported by 1 sources.",
+          "sourceCount": 1,
+          "title": "b"
+        },
+        {
+          "address": "Адрес a",
+          "distanceM": 50.03776702795223,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "a",
+          "location": {
+            "lat": 55.75045000045,
+            "lon": 37.62
+          },
+          "reason": "50 m away in a straight line · story ready.",
+          "sourceCount": 3,
+          "title": "a"
+        },
+        {
+          "address": "Адрес g",
+          "distanceM": 80.06042724456555,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "g",
+          "location": {
+            "lat": 55.75072000072,
+            "lon": 37.62
+          },
+          "reason": "80 m away in a straight line · story ready.",
+          "sourceCount": 3,
+          "title": "Арбат"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "radius": 200,
+      "result": [
+        {
+          "address": "Адрес b",
+          "distanceM": 90.06798064983995,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "b",
+          "location": {
+            "lat": 55.75081000081,
+            "lon": 37.62
+          },
+          "reason": "Best verified story: 5 facts supported by 1 sources.",
+          "sourceCount": 1,
+          "title": "b"
+        },
+        {
+          "address": "Адрес c",
+          "distanceM": 150.1133010830666,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "c",
+          "location": {
+            "lat": 55.75135000135,
+            "lon": 37.62
+          },
+          "reason": "150 m away in a straight line · story ready.",
+          "sourceCount": 1,
+          "title": "c"
+        },
+        {
+          "address": "Адрес a",
+          "distanceM": 50.03776702795223,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "a",
+          "location": {
+            "lat": 55.75045000045,
+            "lon": 37.62
+          },
+          "reason": "50 m away in a straight line · story ready.",
+          "sourceCount": 3,
+          "title": "a"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "radius": 300,
+      "result": [
+        {
+          "address": "Адрес b",
+          "distanceM": 90.06798064983995,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "b",
+          "location": {
+            "lat": 55.75081000081,
+            "lon": 37.62
+          },
+          "reason": "Best verified story: 5 facts supported by 1 sources.",
+          "sourceCount": 1,
+          "title": "b"
+        },
+        {
+          "address": "Адрес c",
+          "distanceM": 150.1133010830666,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "c",
+          "location": {
+            "lat": 55.75135000135,
+            "lon": 37.62
+          },
+          "reason": "150 m away in a straight line · story ready.",
+          "sourceCount": 1,
+          "title": "c"
+        },
+        {
+          "address": "Адрес a",
+          "distanceM": 50.03776702795223,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "a",
+          "location": {
+            "lat": 55.75045000045,
+            "lon": 37.62
+          },
+          "reason": "50 m away in a straight line · story ready.",
+          "sourceCount": 3,
+          "title": "a"
+        }
+      ]
+    },
+    {
+      "locale": "zh",
+      "radius": 100,
+      "result": [
+        {
+          "address": "Адрес b",
+          "distanceM": 90.06798064983995,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "b",
+          "location": {
+            "lat": 55.75081000081,
+            "lon": 37.62
+          },
+          "reason": "最佳已核实故事：5 条事实，1 个资料来源。",
+          "sourceCount": 1,
+          "title": "b"
+        },
+        {
+          "address": "Адрес a",
+          "distanceM": 50.03776702795223,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "a",
+          "location": {
+            "lat": 55.75045000045,
+            "lon": 37.62
+          },
+          "reason": "直线距离 50 米 · 故事已完成。",
+          "sourceCount": 3,
+          "title": "a"
+        },
+        {
+          "address": "Адрес g",
+          "distanceM": 80.06042724456555,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "g",
+          "location": {
+            "lat": 55.75072000072,
+            "lon": 37.62
+          },
+          "reason": "直线距离 80 米 · 故事已完成。",
+          "sourceCount": 3,
+          "title": "Арбат"
+        }
+      ]
+    },
+    {
+      "locale": "zh",
+      "radius": 200,
+      "result": [
+        {
+          "address": "Адрес b",
+          "distanceM": 90.06798064983995,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "b",
+          "location": {
+            "lat": 55.75081000081,
+            "lon": 37.62
+          },
+          "reason": "最佳已核实故事：5 条事实，1 个资料来源。",
+          "sourceCount": 1,
+          "title": "b"
+        },
+        {
+          "address": "Адрес c",
+          "distanceM": 150.1133010830666,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "c",
+          "location": {
+            "lat": 55.75135000135,
+            "lon": 37.62
+          },
+          "reason": "直线距离 150 米 · 故事已完成。",
+          "sourceCount": 1,
+          "title": "c"
+        },
+        {
+          "address": "Адрес a",
+          "distanceM": 50.03776702795223,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "a",
+          "location": {
+            "lat": 55.75045000045,
+            "lon": 37.62
+          },
+          "reason": "直线距离 50 米 · 故事已完成。",
+          "sourceCount": 3,
+          "title": "a"
+        }
+      ]
+    },
+    {
+      "locale": "zh",
+      "radius": 300,
+      "result": [
+        {
+          "address": "Адрес b",
+          "distanceM": 90.06798064983995,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "b",
+          "location": {
+            "lat": 55.75081000081,
+            "lon": 37.62
+          },
+          "reason": "最佳已核实故事：5 条事实，1 个资料来源。",
+          "sourceCount": 1,
+          "title": "b"
+        },
+        {
+          "address": "Адрес c",
+          "distanceM": 150.1133010830666,
+          "durationSec": 60,
+          "factCount": 5,
+          "id": "c",
+          "location": {
+            "lat": 55.75135000135,
+            "lon": 37.62
+          },
+          "reason": "直线距离 150 米 · 故事已完成。",
+          "sourceCount": 1,
+          "title": "c"
+        },
+        {
+          "address": "Адрес a",
+          "distanceM": 50.03776702795223,
+          "durationSec": 60,
+          "factCount": 2,
+          "id": "a",
+          "location": {
+            "lat": 55.75045000045,
+            "lon": 37.62
+          },
+          "reason": "直线距离 50 米 · 故事已完成。",
+          "sourceCount": 3,
+          "title": "a"
+        }
+      ]
+    }
+  ]
+}

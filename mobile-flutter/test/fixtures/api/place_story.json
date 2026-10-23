@@ -1,0 +1,1397 @@
+{
+  "photos": [
+    {
+      "input": {
+        "alt": "Дом с башней",
+        "author": "Иван Петров",
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "width": 1024
+      },
+      "name": "valid flickr",
+      "result": {
+        "alt": "Дом с башней",
+        "author": "Иван Петров",
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "width": 1024
+      }
+    },
+    {
+      "input": {
+        "alt": "Дом с башней",
+        "author": null,
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "/api/place-images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg",
+        "thumbnail": "/images/places/arbat-10.jpg",
+        "width": 1024
+      },
+      "name": "valid local",
+      "result": {
+        "alt": "Дом с башней",
+        "author": null,
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "/api/place-images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg",
+        "thumbnail": "/images/places/arbat-10.jpg",
+        "width": 1024
+      }
+    },
+    {
+      "input": {
+        "alt": "Дом с башней",
+        "author": " ",
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "width": 1024
+      },
+      "name": "blank author becomes null",
+      "result": {
+        "alt": "Дом с башней",
+        "author": null,
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "width": 1024
+      }
+    },
+    {
+      "input": {
+        "alt": "Дом с башней",
+        "author": "Иван Петров",
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "width": 1024
+      },
+      "name": "flickr sizes swapped",
+      "result": null
+    },
+    {
+      "input": {
+        "alt": "Дом с башней",
+        "author": "Иван Петров",
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/99999/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "width": 1024
+      },
+      "name": "flickr page of another photo",
+      "result": null
+    },
+    {
+      "input": {
+        "alt": "Дом с башней",
+        "author": "Иван Петров",
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://example.org/a.jpg",
+        "thumbnail": "https://example.org/b.jpg",
+        "width": 1024
+      },
+      "name": "foreign host",
+      "result": null
+    },
+    {
+      "input": {
+        "alt": "Дом с башней",
+        "author": "Иван Петров",
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "width": 0
+      },
+      "name": "zero width",
+      "result": null
+    },
+    {
+      "input": {
+        "alt": "",
+        "author": "Иван Петров",
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "width": 1024
+      },
+      "name": "empty alt",
+      "result": null
+    },
+    {
+      "input": {
+        "alt": "Дом с башней",
+        "author": 5,
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "width": 1024
+      },
+      "name": "author not a string",
+      "result": null
+    },
+    {
+      "input": {
+        "alt": "Дом с башней",
+        "author": "Иван Петров",
+        "height": 768,
+        "license": "CC BY 2.0",
+        "licenseUrl": "ftp://example.org",
+        "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+        "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+        "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+        "width": 1024
+      },
+      "name": "license url not http",
+      "result": null
+    }
+  ],
+  "stories": [
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "valid russian",
+      "result": {
+        "actualLocale": "ru",
+        "attribution": {
+          "label": "Портал открытых данных Правительства Москвы",
+          "url": "https://data.mos.ru/opendata/1"
+        },
+        "audioUrl": "/api/story-audio/a.mp3",
+        "durationSec": 61,
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "photo": {
+          "alt": "Дом с башней",
+          "author": "Иван Петров",
+          "height": 768,
+          "license": "CC BY 2.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+          "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+          "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+          "width": 1024
+        },
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "title": "История дома"
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "language": "en",
+              "url": "/api/story-audio/a.mp3"
+            },
+            "localization": {
+              "contentLocale": "en",
+              "fallbackReason": null,
+              "requestedLocale": "en"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "en",
+      "name": "valid english",
+      "result": {
+        "actualLocale": "en",
+        "attribution": {
+          "label": "Портал открытых данных Правительства Москвы",
+          "url": "https://data.mos.ru/opendata/1"
+        },
+        "audioUrl": "/api/story-audio/a.mp3",
+        "durationSec": 61,
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "photo": {
+          "alt": "Дом с башней",
+          "author": "Иван Петров",
+          "height": 768,
+          "license": "CC BY 2.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+          "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+          "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+          "width": 1024
+        },
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "title": "История дома"
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "en",
+      "name": "english falls back to russian",
+      "result": {
+        "actualLocale": "ru",
+        "attribution": {
+          "label": "Портал открытых данных Правительства Москвы",
+          "url": "https://data.mos.ru/opendata/1"
+        },
+        "audioUrl": "/api/story-audio/a.mp3",
+        "durationSec": 61,
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "photo": {
+          "alt": "Дом с башней",
+          "author": "Иван Петров",
+          "height": 768,
+          "license": "CC BY 2.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+          "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+          "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+          "width": 1024
+        },
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "title": "История дома"
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "en",
+      "name": "legacy response for english",
+      "result": {
+        "actualLocale": "ru",
+        "attribution": {
+          "label": "Портал открытых данных Правительства Москвы",
+          "url": "https://data.mos.ru/opendata/1"
+        },
+        "audioUrl": "/api/story-audio/a.mp3",
+        "durationSec": 61,
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "photo": {
+          "alt": "Дом с башней",
+          "author": "Иван Петров",
+          "height": 768,
+          "license": "CC BY 2.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+          "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+          "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+          "width": 1024
+        },
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "title": "История дома"
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": null,
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "no audio",
+      "result": {
+        "actualLocale": "ru",
+        "attribution": {
+          "label": "Портал открытых данных Правительства Москвы",
+          "url": "https://data.mos.ru/opendata/1"
+        },
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "photo": {
+          "alt": "Дом с башней",
+          "author": "Иван Петров",
+          "height": 768,
+          "license": "CC BY 2.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+          "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+          "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+          "width": 1024
+        },
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "title": "История дома"
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 0,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "zero duration is dropped",
+      "result": {
+        "actualLocale": "ru",
+        "attribution": {
+          "label": "Портал открытых данных Правительства Москвы",
+          "url": "https://data.mos.ru/opendata/1"
+        },
+        "audioUrl": "/api/story-audio/a.mp3",
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "photo": {
+          "alt": "Дом с башней",
+          "author": "Иван Петров",
+          "height": 768,
+          "license": "CC BY 2.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+          "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+          "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+          "width": 1024
+        },
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "title": "История дома"
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "Архив",
+                  "url": "https://example.org"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "no open data source",
+      "result": {
+        "actualLocale": "ru",
+        "audioUrl": "/api/story-audio/a.mp3",
+        "durationSec": 61,
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "photo": {
+          "alt": "Дом с башней",
+          "author": "Иван Петров",
+          "height": 768,
+          "license": "CC BY 2.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+          "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+          "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+          "width": 1024
+        },
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "title": "История дома"
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": -1
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "broken photo is dropped",
+      "result": {
+        "actualLocale": "ru",
+        "attribution": {
+          "label": "Портал открытых данных Правительства Москвы",
+          "url": "https://data.mos.ru/opendata/1"
+        },
+        "audioUrl": "/api/story-audio/a.mp3",
+        "durationSec": 61,
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "title": "История дома"
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "no header without a name",
+      "result": {
+        "actualLocale": "ru",
+        "attribution": {
+          "label": "Портал открытых данных Правительства Москвы",
+          "url": "https://data.mos.ru/opendata/1"
+        },
+        "audioUrl": "/api/story-audio/a.mp3",
+        "durationSec": 61,
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "photo": {
+          "alt": "Дом с башней",
+          "author": "Иван Петров",
+          "height": 768,
+          "license": "CC BY 2.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+          "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+          "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+          "width": 1024
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "header falls back to the name",
+      "result": {
+        "actualLocale": "ru",
+        "attribution": {
+          "label": "Портал открытых данных Правительства Москвы",
+          "url": "https://data.mos.ru/opendata/1"
+        },
+        "audioUrl": "/api/story-audio/a.mp3",
+        "durationSec": 61,
+        "paragraphs": [
+          "Первый абзац.",
+          "Второй абзац."
+        ],
+        "photo": {
+          "alt": "Дом с башней",
+          "author": "Иван Петров",
+          "height": 768,
+          "license": "CC BY 2.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+          "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+          "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+          "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+          "width": 1024
+        },
+        "place": {
+          "address": "Дом с башней",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "title": "Дом с башней"
+        }
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": null
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "no story",
+      "valid": false
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": "text",
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "paragraphs not a list",
+      "valid": false
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "localization": {
+              "contentLocale": "zh",
+              "fallbackReason": null,
+              "requestedLocale": "zh"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "en",
+      "name": "localization for another locale",
+      "valid": false
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "localization": {
+              "contentLocale": "en",
+              "fallbackReason": "stale",
+              "requestedLocale": "en"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "en",
+      "name": "same locale with a fallback reason",
+      "valid": false
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "url": "/api/story-audio/a.mp3"
+            },
+            "localization": {
+              "contentLocale": "en",
+              "fallbackReason": "missing",
+              "requestedLocale": "zh"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "zh",
+      "name": "fallback to english",
+      "valid": false
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "language": "en",
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "audio in another language",
+      "valid": false
+    },
+    {
+      "input": {
+        "place": {
+          "address": "Москва, Арбат, 10",
+          "id": "osm:way:1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.59
+          },
+          "name": "Дом с башней",
+          "photo": {
+            "alt": "Дом с башней",
+            "author": "Иван Петров",
+            "height": 768,
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "sourceUrl": "https://www.flickr.com/photos/ivan/53123/",
+            "src": "https://live.staticflickr.com/65535/53123_abcdef_b.jpg",
+            "thumbnail": "https://live.staticflickr.com/65535/53123_abcdef_q.jpg",
+            "width": 1024
+          },
+          "text": {
+            "audio": {
+              "durationSec": 61,
+              "language": "de",
+              "url": "/api/story-audio/a.mp3"
+            },
+            "story": {
+              "paragraphs": [
+                {
+                  "text": "Первый абзац."
+                },
+                {
+                  "text": " "
+                },
+                null,
+                {
+                  "text": "Второй абзац."
+                }
+              ],
+              "sources": [
+                {
+                  "publisher": "data.mos.ru",
+                  "url": "https://data.mos.ru/opendata/1"
+                }
+              ],
+              "title": "История дома"
+            }
+          }
+        }
+      },
+      "locale": "ru",
+      "name": "unknown audio language",
+      "valid": false
+    },
+    {
+      "input": {
+        "place": null
+      },
+      "locale": "ru",
+      "name": "null body",
+      "valid": false
+    }
+  ]
+}

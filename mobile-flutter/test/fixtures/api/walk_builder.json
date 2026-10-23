@@ -1,0 +1,1670 @@
+{
+  "drafts": [
+    {
+      "input": null,
+      "name": "missing draft",
+      "result": {
+        "jobs": [],
+        "minutes": 30,
+        "mode": "loop",
+        "route": null,
+        "start": null,
+        "stops": [],
+        "submitting": null,
+        "title": "Моя прогулка",
+        "travelMode": "walking",
+        "version": 1
+      },
+      "valid": true
+    },
+    {
+      "input": "{",
+      "name": "not json",
+      "valid": false
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"walking\",\"minutes\":30,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":{\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"geometry\":[{\"lat\":55.7515,\"lon\":37.5925},{\"lat\":55.752,\"lon\":37.593},{\"lat\":55.7515,\"lon\":37.5925}],\"distanceM\":400,\"walkingMinutes\":6,\"attribution\":\"© OpenStreetMap contributors\"},\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null}",
+      "name": "valid with duplicate jobs collapsed",
+      "result": {
+        "jobs": [
+          {
+            "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "voicing"
+          }
+        ],
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 400,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "stops": [
+            {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            }
+          ],
+          "walkingMinutes": 6
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "submitting": null,
+        "title": "Моя прогулка",
+        "travelMode": "walking",
+        "version": 1
+      },
+      "valid": true
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":null,\"mode\":\"loop\",\"travelMode\":\"walking\",\"minutes\":30,\"stops\":[],\"route\":null,\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null}",
+      "name": "empty start",
+      "result": {
+        "jobs": [
+          {
+            "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "voicing"
+          }
+        ],
+        "minutes": 30,
+        "mode": "loop",
+        "route": null,
+        "start": null,
+        "stops": [],
+        "submitting": null,
+        "title": "Моя прогулка",
+        "travelMode": "walking",
+        "version": 1
+      },
+      "valid": true
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"open\",\"travelMode\":\"walking\",\"minutes\":30,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":null,\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null,\"destination\":{\"address\":\"Москва, Тверская, 1\",\"location\":{\"lat\":55.757,\"lon\":37.613}}}",
+      "name": "open walk with destination",
+      "result": {
+        "destination": {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.757,
+            "lon": 37.613
+          }
+        },
+        "jobs": [
+          {
+            "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "voicing"
+          }
+        ],
+        "minutes": 30,
+        "mode": "open",
+        "route": null,
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "submitting": null,
+        "title": "Моя прогулка",
+        "travelMode": "walking",
+        "version": 1
+      },
+      "valid": true
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"driving\",\"minutes\":120,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":null,\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null}",
+      "name": "driving minutes",
+      "result": {
+        "jobs": [
+          {
+            "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "voicing"
+          }
+        ],
+        "minutes": 120,
+        "mode": "loop",
+        "route": null,
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "submitting": null,
+        "title": "Моя прогулка",
+        "travelMode": "driving",
+        "version": 1
+      },
+      "valid": true
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"walking\",\"minutes\":120,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":{\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"geometry\":[{\"lat\":55.7515,\"lon\":37.5925},{\"lat\":55.752,\"lon\":37.593},{\"lat\":55.7515,\"lon\":37.5925}],\"distanceM\":400,\"walkingMinutes\":6,\"attribution\":\"© OpenStreetMap contributors\"},\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null}",
+      "name": "walking draft with 120 minutes",
+      "valid": false
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"walking\",\"minutes\":30,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":{\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"geometry\":[{\"lat\":55.7515,\"lon\":37.5925},{\"lat\":55.752,\"lon\":37.593},{\"lat\":55.7515,\"lon\":37.5925}],\"distanceM\":400,\"walkingMinutes\":6,\"attribution\":\"© OpenStreetMap contributors\"},\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null,\"destination\":{\"address\":\"Москва, Тверская, 1\",\"location\":{\"lat\":55.757,\"lon\":37.613}}}",
+      "name": "destination on a loop",
+      "valid": false
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"walking\",\"minutes\":30,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":{\"stops\":[{\"address\":\"Москва, Арбат, 11\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"geometry\":[{\"lat\":55.7515,\"lon\":37.5925},{\"lat\":55.752,\"lon\":37.593},{\"lat\":55.7515,\"lon\":37.5925}],\"distanceM\":400,\"walkingMinutes\":6,\"attribution\":\"© OpenStreetMap contributors\"},\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null}",
+      "name": "route stops differ",
+      "valid": false
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"walking\",\"minutes\":30,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":{\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"geometry\":[{\"lat\":55.7515,\"lon\":37.5925},{\"lat\":55.752,\"lon\":37.593},{\"lat\":55.7515,\"lon\":37.5925}],\"distanceM\":400,\"walkingMinutes\":31,\"attribution\":\"© OpenStreetMap contributors\"},\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null}",
+      "name": "route longer than the budget",
+      "valid": false
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"walking\",\"minutes\":30,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":{\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"geometry\":[{\"lat\":55.7515,\"lon\":37.5925},{\"lat\":55.752,\"lon\":37.593},{\"lat\":55.7515,\"lon\":37.5925}],\"distanceM\":400,\"walkingMinutes\":6,\"attribution\":\"© OpenStreetMap contributors\"},\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"done\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null}",
+      "name": "unknown job stage",
+      "valid": false
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"driving\",\"minutes\":60,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":null,\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null,\"research\":{\"request\":{\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"destination\":null,\"mode\":\"loop\",\"minutes\":30},\"id\":null,\"stops\":[],\"recoveryToken\":\"dddddddd-dddd-4ddd-8ddd-dddddddddddd\"}}",
+      "name": "research on a driving draft",
+      "valid": false
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"Моя прогулка\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"walking\",\"minutes\":30,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":{\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"geometry\":[{\"lat\":55.7515,\"lon\":37.5925},{\"lat\":55.752,\"lon\":37.593},{\"lat\":55.7515,\"lon\":37.5925}],\"distanceM\":400,\"walkingMinutes\":6,\"attribution\":\"© OpenStreetMap contributors\"},\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null,\"research\":{\"request\":{\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"destination\":null,\"mode\":\"loop\",\"minutes\":30},\"id\":\"bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb\",\"stops\":[],\"recoveryToken\":\"dddddddd-dddd-4ddd-8ddd-dddddddddddd\"},\"researchApplied\":false}",
+      "name": "valid research",
+      "result": {
+        "jobs": [
+          {
+            "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "voicing"
+          }
+        ],
+        "minutes": 30,
+        "mode": "loop",
+        "research": {
+          "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          "recoveryToken": "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+          "request": {
+            "destination": null,
+            "minutes": 30,
+            "mode": "loop",
+            "start": {
+              "address": "Москва, Арбат, 1",
+              "location": {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            }
+          },
+          "stops": []
+        },
+        "researchApplied": false,
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 400,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "stops": [
+            {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            }
+          ],
+          "walkingMinutes": 6
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "submitting": null,
+        "title": "Моя прогулка",
+        "travelMode": "walking",
+        "version": 1
+      },
+      "valid": true
+    },
+    {
+      "input": "{\"version\":1,\"title\":\"ттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттттт\",\"start\":{\"address\":\"Москва, Арбат, 1\",\"location\":{\"lat\":55.7515,\"lon\":37.5925}},\"mode\":\"loop\",\"travelMode\":\"walking\",\"minutes\":30,\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"route\":{\"stops\":[{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"}],\"geometry\":[{\"lat\":55.7515,\"lon\":37.5925},{\"lat\":55.752,\"lon\":37.593},{\"lat\":55.7515,\"lon\":37.5925}],\"distanceM\":400,\"walkingMinutes\":6,\"attribution\":\"© OpenStreetMap contributors\"},\"jobs\":[{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"ready\"},{\"place\":{\"address\":\"Москва, Арбат, 10\",\"location\":{\"lat\":55.752,\"lon\":37.593},\"contentId\":\"osm:way:1\"},\"id\":\"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\",\"stage\":\"voicing\"}],\"submitting\":null}",
+      "name": "title longer than 120",
+      "valid": false
+    }
+  ],
+  "jobs": [
+    {
+      "input": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "research",
+        "progress": {
+          "accepted": 1,
+          "checked": 2,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": null,
+        "stage": "researching",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "name": "valid",
+      "result": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "research",
+        "progress": {
+          "accepted": 1,
+          "checked": 2,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": null,
+        "stage": "researching",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "complete",
+        "progress": {
+          "accepted": 1,
+          "checked": 3,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 400,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "stops": [
+            {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            }
+          ],
+          "walkingMinutes": 6
+        },
+        "stage": "ready",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "name": "complete with a route",
+      "result": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "complete",
+        "progress": {
+          "accepted": 1,
+          "checked": 3,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 400,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "stops": [
+            {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            }
+          ],
+          "walkingMinutes": 6
+        },
+        "stage": "ready",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "research",
+        "progress": {
+          "accepted": 1,
+          "checked": 2,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 400,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "stops": [
+            {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            }
+          ],
+          "walkingMinutes": 31
+        },
+        "stage": "researching",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "name": "route over the requested minutes",
+      "valid": false
+    },
+    {
+      "input": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "research",
+        "progress": {
+          "accepted": 1,
+          "checked": 2,
+          "total": 4
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": null,
+        "stage": "researching",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "name": "progress over 3",
+      "valid": false
+    },
+    {
+      "input": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "research",
+        "progress": {
+          "accepted": 3,
+          "checked": 2,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": null,
+        "stage": "researching",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "name": "accepted above checked",
+      "valid": false
+    },
+    {
+      "input": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "research",
+        "progress": {
+          "accepted": 1,
+          "checked": 2,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": null,
+        "stage": "researching",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          },
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          },
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          },
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "name": "four stories",
+      "valid": false
+    },
+    {
+      "input": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "waiting",
+        "progress": {
+          "accepted": 1,
+          "checked": 2,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": null,
+        "stage": "researching",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "name": "unknown phase",
+      "valid": false
+    },
+    {
+      "input": {
+        "canRetry": false,
+        "error": {
+          "code": "FAILED"
+        },
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "research",
+        "progress": {
+          "accepted": 1,
+          "checked": 2,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 30,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": null,
+        "stage": "researching",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "name": "error without message",
+      "valid": false
+    },
+    {
+      "input": {
+        "canRetry": false,
+        "error": null,
+        "id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "phase": "research",
+        "progress": {
+          "accepted": 1,
+          "checked": 2,
+          "total": 3
+        },
+        "request": {
+          "destination": null,
+          "minutes": 120,
+          "mode": "loop",
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          }
+        },
+        "revision": 3,
+        "route": null,
+        "stage": "researching",
+        "stories": [
+          {
+            "id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "contentId": "osm:way:1",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "stage": "ready"
+          }
+        ]
+      },
+      "name": "request with 120 minutes",
+      "valid": false
+    }
+  ],
+  "plans": [
+    {
+      "input": {
+        "attribution": "© OpenStreetMap contributors",
+        "distanceM": 400,
+        "geometry": [
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          },
+          {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        ],
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "walkingMinutes": 6
+      },
+      "name": "valid",
+      "valid": true
+    },
+    {
+      "input": {
+        "attribution": "© OpenStreetMap contributors",
+        "distanceM": 400,
+        "geometry": [
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          },
+          {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        ],
+        "stops": [
+          {
+            "address": "Арбат",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "walkingMinutes": 6
+      },
+      "name": "address of five letters",
+      "valid": false
+    },
+    {
+      "input": {
+        "attribution": "© OpenStreetMap contributors",
+        "distanceM": 400,
+        "geometry": [
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          },
+          {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        ],
+        "stops": [
+          {
+            "address": "Москва,\u0007 Арбат",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "walkingMinutes": 6
+      },
+      "name": "address with a control character",
+      "valid": false
+    },
+    {
+      "input": {
+        "attribution": "© OpenStreetMap contributors",
+        "distanceM": 400,
+        "geometry": [
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          },
+          {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        ],
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.79,
+              "lon": 49.1
+            }
+          }
+        ],
+        "walkingMinutes": 6
+      },
+      "name": "stop outside Moscow",
+      "valid": false
+    },
+    {
+      "input": {
+        "attribution": "© OpenStreetMap contributors",
+        "distanceM": 400,
+        "geometry": [
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          },
+          {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        ],
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "walkingMinutes": 6
+      },
+      "name": "bad content id",
+      "valid": false
+    },
+    {
+      "input": {
+        "attribution": "© OpenStreetMap contributors",
+        "distanceM": 8101,
+        "geometry": [
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          },
+          {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        ],
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "walkingMinutes": 6
+      },
+      "name": "walking distance over 8100",
+      "valid": false
+    },
+    {
+      "input": {
+        "attribution": "© OpenStreetMap contributors",
+        "distanceM": 400,
+        "geometry": [
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          },
+          {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        ],
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "walkingMinutes": 91
+      },
+      "name": "walking minutes over 90",
+      "valid": false
+    },
+    {
+      "input": {
+        "attribution": "",
+        "distanceM": 400,
+        "geometry": [
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          },
+          {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        ],
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "walkingMinutes": 6
+      },
+      "name": "empty attribution",
+      "valid": false
+    },
+    {
+      "input": {
+        "attribution": "© OpenStreetMap contributors",
+        "distanceM": 400,
+        "geometry": [
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          },
+          {
+            "lat": 55.752,
+            "lon": 37.593
+          },
+          {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        ],
+        "stops": [
+          {
+            "address": "Москва, Арбат, 10",
+            "contentId": "osm:way:1",
+            "location": {
+              "lat": 55.752,
+              "lon": 37.593
+            }
+          }
+        ],
+        "tunnels": [
+          [
+            0,
+            3
+          ]
+        ],
+        "walkingMinutes": 6
+      },
+      "name": "invalid tunnels",
+      "valid": false
+    }
+  ],
+  "stops": [
+    {
+      "destination": null,
+      "name": "one stop",
+      "start": {
+        "address": "Москва, Арбат, 1",
+        "location": {
+          "lat": 55.7515,
+          "lon": 37.5925
+        }
+      },
+      "stops": [
+        {
+          "address": "Москва, Арбат, 10",
+          "contentId": "osm:way:1",
+          "location": {
+            "lat": 55.752,
+            "lon": 37.593
+          }
+        }
+      ],
+      "valid": true
+    },
+    {
+      "destination": null,
+      "name": "no stops without destination",
+      "start": {
+        "address": "Москва, Арбат, 1",
+        "location": {
+          "lat": 55.7515,
+          "lon": 37.5925
+        }
+      },
+      "stops": [],
+      "valid": false
+    },
+    {
+      "destination": {
+        "address": "Москва, Тверская, 1",
+        "location": {
+          "lat": 55.757,
+          "lon": 37.613
+        }
+      },
+      "name": "destination only",
+      "start": {
+        "address": "Москва, Арбат, 1",
+        "location": {
+          "lat": 55.7515,
+          "lon": 37.5925
+        }
+      },
+      "stops": [],
+      "valid": true
+    },
+    {
+      "destination": null,
+      "name": "first stop at the start",
+      "start": {
+        "address": "Москва, Арбат, 1",
+        "location": {
+          "lat": 55.7515,
+          "lon": 37.5925
+        }
+      },
+      "stops": [
+        {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.757,
+            "lon": 37.613
+          }
+        }
+      ],
+      "valid": true
+    },
+    {
+      "destination": null,
+      "name": "two stops 3 m apart",
+      "start": {
+        "address": "Москва, Арбат, 1",
+        "location": {
+          "lat": 55.7515,
+          "lon": 37.5925
+        }
+      },
+      "stops": [
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.757,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.75703,
+            "lon": 37.613
+          }
+        }
+      ],
+      "valid": false
+    },
+    {
+      "destination": null,
+      "name": "41 stops",
+      "start": {
+        "address": "Москва, Арбат, 1",
+        "location": {
+          "lat": 55.7515,
+          "lon": 37.5925
+        }
+      },
+      "stops": [
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.757,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7571,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7572,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7573,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7574,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7575,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7576,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7577,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.757799999999996,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7579,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.757999999999996,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7581,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.758199999999995,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7583,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.758399999999995,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7585,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7586,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7587,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7588,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7589,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.759,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7591,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7592,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.759299999999996,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7594,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.759499999999996,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7596,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.759699999999995,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7598,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.759899999999995,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.76,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7601,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7602,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7603,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7604,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7605,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7606,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7607,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.760799999999996,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.7609,
+            "lon": 37.613
+          }
+        },
+        {
+          "address": "Москва, Тверская, 1",
+          "location": {
+            "lat": 55.760999999999996,
+            "lon": 37.613
+          }
+        }
+      ],
+      "valid": false
+    }
+  ]
+}

@@ -1,0 +1,4010 @@
+{
+  " · доступ не проверен": [
+    " · access unverified",
+    " · 通行情况未经核实"
+  ],
+  "(необязательно)": [
+    "(optional)",
+    "（选填）"
+  ],
+  "1 звезда из 5": [
+    "1 star out of 5",
+    "1 星（满分 5 星）"
+  ],
+  "15 с": [
+    "15 sec",
+    "15 秒"
+  ],
+  "2 звезды из 5": [
+    "2 stars out of 5",
+    "2 星（满分 5 星）"
+  ],
+  "3 звезды из 5": [
+    "3 stars out of 5",
+    "3 星（满分 5 星）"
+  ],
+  "31–60 минут": [
+    "31–60 minutes",
+    "31–60 分钟"
+  ],
+  "4 звезды из 5": [
+    "4 stars out of 5",
+    "4 星（满分 5 星）"
+  ],
+  "5 звёзд из 5": [
+    "5 stars out of 5",
+    "5 星（满分 5 星）"
+  ],
+  "61–90 минут": [
+    "61–90 minutes",
+    "61–90 分钟"
+  ],
+  "Cookie и приватность": [
+    "Cookies and privacy",
+    "Cookie 与隐私"
+  ],
+  "ID исследования: {id}": [
+    "Research ID: {id}",
+    "调研 ID：{id}"
+  ],
+  "ID истории": [
+    "Story ID",
+    "故事 ID"
+  ],
+  "Telegram": [
+    "Telegram",
+    "Telegram"
+  ],
+  "{count} историй": [
+    "{count} stories",
+    "{count} 个故事"
+  ],
+  "{count} история": [
+    "{count} story",
+    "{count} 个故事"
+  ],
+  "{count} точек": [
+    "{count} stops",
+    "{count} 个停靠点"
+  ],
+  "{current} из {duration}": [
+    "{current} of {duration}",
+    "{current} / {duration}"
+  ],
+  "{current} из {total}": [
+    "{current} of {total}",
+    "{current} / {total}"
+  ],
+  "{distance} км": [
+    "{distance} km",
+    "{distance} 公里"
+  ],
+  "{distance} м": [
+    "{distance} m",
+    "{distance} 米"
+  ],
+  "{distance} м по прямой": [
+    "{distance} m away in a straight line",
+    "直线距离 {distance} 米"
+  ],
+  "{distance} м по прямой · готовая история.": [
+    "{distance} m away in a straight line · story ready.",
+    "直线距离 {distance} 米 · 故事已完成。"
+  ],
+  "{distance} по прямой": [
+    "{distance} in a straight line",
+    "直线距离 {distance}"
+  ],
+  "{error} Новая история не отправлена. Обновите статусы и повторите действие.": [
+    "{error} The new story was not submitted. Refresh the statuses and try again.",
+    "{error} 新故事未提交。请更新状态后重试。"
+  ],
+  "{error} Продолжим проверять статус; работа на сервере не отменена.": [
+    "{error} We will keep checking the status; the server task has not been cancelled.",
+    "{error} 我们会继续检查状态；服务器上的任务尚未取消。"
+  ],
+  "{error} Результат отправки неизвестен. Нажмите «Проверить статус» или вернитесь позже: новой отправки не будет.": [
+    "{error} The submission result is unknown. Select “Check status” or return later; it will not be submitted again.",
+    "{error} 提交结果未知。请点击“检查状态”或稍后返回；系统不会再次提交。"
+  ],
+  "{error} Результат отправки неизвестен. Не повторяем её автоматически.": [
+    "{error} The submission result is unknown. It will not be retried automatically.",
+    "{error} 提交结果未知。系统不会自动重试。"
+  ],
+  "{minutes} мин": [
+    "{minutes} min",
+    "{minutes} 分钟"
+  ],
+  "{minutes} мин · {distance} км": [
+    "{minutes} min · {distance} km",
+    "{minutes} 分钟 · {distance} 公里"
+  ],
+  "{minutes} мин · {distance} км · {stories}": [
+    "{minutes} min · {distance} km · {stories}",
+    "{minutes} 分钟 · {distance} 公里 · {stories}"
+  ],
+  "{minutes} мин готовой озвучки": [
+    "{minutes} min of narration ready",
+    "已有 {minutes} 分钟配音"
+  ],
+  "{minutes} мин озвучки": [
+    "{minutes} min of narration",
+    "{minutes} 分钟配音"
+  ],
+  "{minutes} мин пешком": [
+    "{minutes} min on foot",
+    "步行 {minutes} 分钟"
+  ],
+  "{minutes} мин пешком · с возвращением": [
+    "{minutes} min walk · returns to start",
+    "步行 {minutes} 分钟 · 返回起点"
+  ],
+  "{minutes} мин пешком, {returnMode}.": [
+    "{minutes} min walk, {returnMode}.",
+    "步行 {minutes} 分钟，{returnMode}。"
+  ],
+  "{minutes} мин поездки": [
+    "{minutes}-min trip",
+    "{minutes} 分钟行程"
+  ],
+  "{minutes} мин поездки · с возвращением": [
+    "{minutes}-min trip · return included",
+    "{minutes} 分钟行程 · 含返程"
+  ],
+  "{seconds} сек · Озвучка доступна. «Дальше» включает следующую часть.": [
+    "{seconds} sec · Narration is available. Next starts the following part.",
+    "{seconds} 秒 · 可收听配音。“下一步”将播放下一部分。"
+  ],
+  "{status}. Можно закрыть карточку: подготовка продолжится, а история останется на карте.": [
+    "{status}. You can close this card: preparation will continue, and the story will remain on the map.",
+    "{status}。您可以关闭此卡片：制作会继续，故事仍会保留在地图上。"
+  ],
+  "{title} — история в «Отголоске»": [
+    "{title} — a story on Otgolosok",
+    "{title} — Otgolosok 上的故事"
+  ],
+  "{title}, {year} год": [
+    "{title}, {year}",
+    "{title}，{year} 年"
+  ],
+  "«{name}» добавлено в прогулку.": [
+    "“{name}” was added to the walk.",
+    "已将“{name}”加入漫步路线。"
+  ],
+  "Автомобильная прогулка": [
+    "Driving tour",
+    "驾车游览"
+  ],
+  "Автомобильную прогулку нужно начинать с первой парковки. Откройте маршрут целиком.": [
+    "A driving tour must start from its first parking stop. Open the full route.",
+    "驾车游览必须从第一个停车点开始。请打开完整路线。"
+  ],
+  "Адрес определялся слишком долго. Нажмите на дом ещё раз.": [
+    "Finding the address took too long. Tap the building again.",
+    "获取地址超时。请再次点击建筑。"
+  ],
+  "Адреса уйдут сервисам поиска и озвучки.": [
+    "Addresses will be sent to search and narration services.",
+    "地址将发送给搜索和配音服务。"
+  ],
+  "Азиатская кухня": [
+    "Asian cuisine",
+    "亚洲菜"
+  ],
+  "Альтернатива": [
+    "Alternative",
+    "其他选择"
+  ],
+  "Американская кухня": [
+    "American cuisine",
+    "美国菜"
+  ],
+  "Аналитика выключена на этом устройстве. Не удалось подтвердить отзыв на сервере. Повторите выбор.": [
+    "Analytics is disabled on this device. We could not confirm the withdrawal on the server. Try choosing again.",
+    "此设备上的分析功能已关闭。无法在服务器上确认撤回。请重新选择。"
+  ],
+  "Аудио": [
+    "Audio",
+    "音频"
+  ],
+  "Аудио ещё не готово": [
+    "Audio is not ready yet",
+    "音频尚未完成"
+  ],
+  "Аудиогид": [
+    "Audio guide",
+    "语音导览"
+  ],
+  "Аудиоистория готовится. У точки прозвучит тестовый сигнал на 5 секунд.": [
+    "The audio story is being prepared. A five-second test tone will play at the stop.",
+    "音频故事正在制作中。到达地点时会播放 5 秒测试音。"
+  ],
+  "Бар или паб": [
+    "Bar or pub",
+    "酒吧或酒馆"
+  ],
+  "Без истории": [
+    "No story",
+    "暂无故事"
+  ],
+  "Бесплатная парковка": [
+    "Free parking",
+    "免费停车"
+  ],
+  "Ближайшее метро к старту": [
+    "Nearest metro to the start",
+    "起点附近的地铁站"
+  ],
+  "Ближайшее метро к финишу": [
+    "Nearest metro to the finish",
+    "终点附近的地铁站"
+  ],
+  "Близко к вам": [
+    "Near you",
+    "您附近"
+  ],
+  "Блины": [
+    "Crêpes",
+    "薄饼"
+  ],
+  "Браузер не даёт сохранить ключ отзыва. Войдите, чтобы оставить отзыв.": [
+    "Your browser cannot save the review key. Sign in to leave a review.",
+    "浏览器无法保存评价密钥。请登录后撰写评价。"
+  ],
+  "Бургеры": [
+    "Burgers",
+    "汉堡"
+  ],
+  "Быстрое питание": [
+    "Fast food",
+    "快餐"
+  ],
+  "В 150 м от маршрута заведений нет по данным OpenStreetMap": [
+    "OpenStreetMap lists no places to eat within 150 m of the route",
+    "根据 OpenStreetMap 数据，路线 150 米范围内没有餐饮场所"
+  ],
+  "В Safari нажмите значок меню страницы слева от адреса, затем «Ещё» (…) → «Настройки сайта» → «Геопозиция» → «Разрешить».": [
+    "In Safari, select the page menu icon to the left of the address, then More (…) → Website Settings → Location → Allow.",
+    "在 Safari 中，点击地址栏左侧的页面菜单图标，然后选择“更多”(…) →“网站设置”→“位置”→“允许”。"
+  ],
+  "В аккаунте": [
+    "In your account",
+    "账号中"
+  ],
+  "В браузере": [
+    "In your browser",
+    "在浏览器中"
+  ],
+  "В дороге звук остановлен": [
+    "Audio is paused while driving",
+    "驾车途中音频已暂停"
+  ],
+  "В другом браузере откройте настройки разрешений этого сайта и разрешите доступ к местоположению. Также проверьте геолокацию на устройстве.": [
+    "In another browser, open this site's permission settings and allow location access. Also check that location is enabled on your device.",
+    "如果使用其他浏览器，请打开该网站的权限设置并允许访问位置，同时确认设备已开启定位。"
+  ],
+  "В праздники часы работы могут отличаться": [
+    "Hours may differ on public holidays",
+    "节假日营业时间可能有所不同"
+  ],
+  "В прогулке": [
+    "In walk",
+    "已加入漫步路线"
+  ],
+  "В прогулке может быть не больше {count} остановок с учётом истории начальной точки.": [
+    "The walk can have no more than {count} stops, including the story at the starting point.",
+    "包括起点故事在内，漫步路线最多可有 {count} 个停靠点。"
+  ],
+  "В радиусе {radius} м": [
+    "Within {radius} m",
+    "{radius} 米范围内"
+  ],
+  "В ссылке нет корректной точки начала. Выберите адрес в Москве.": [
+    "The link does not contain a valid starting point. Select an address in Moscow.",
+    "链接中没有有效起点。请选择莫斯科的地址。"
+  ],
+  "В топе пока пусто. Откройте свою прогулку всем — после проверки она появится здесь.": [
+    "There are no walks in the ranking yet. Make your walk public and it will appear here after review.",
+    "热门漫步暂时为空。将您的漫步设为公开，审核后会显示在这里。"
+  ],
+  "В этой прогулке ещё нет маршрута. Постройте его в редакторе из истории.": [
+    "This walk does not have a route yet. Build it in the editor from your walk history.",
+    "这条漫步路线尚未规划路径。请从漫步记录进入编辑器进行规划。"
+  ],
+  "В этом радиусе пока нет готовой проверенной истории.": [
+    "There are no completed, verified stories within this radius yet.",
+    "此范围内暂时没有已完成并核实的故事。"
+  ],
+  "Ваш запрос уже у редакции. Измените отметки или снимите все, чтобы отозвать его.": [
+    "The editors have your request. Change the selections, or clear them all to withdraw it.",
+    "编辑已收到您的请求。您可以更改选项，或清除所有选项以撤回请求。"
+  ],
+  "Ваш комментарий": [
+    "Your comment",
+    "您的留言"
+  ],
+  "Ваш маршрут": [
+    "Your route",
+    "您的路线"
+  ],
+  "Ваш отзыв": [
+    "Your review",
+    "您的评价"
+  ],
+  "Ваш суточный лимит новых историй исчерпан. Готовые записи доступны, новые можно заказать завтра.": [
+    "You've reached your daily limit for new stories. Existing recordings are still available. You can request new stories tomorrow.",
+    "您已达到今日新故事制作上限。已有录音仍可收听，明天可再请求制作。"
+  ],
+  "Ваша": [
+    "Yours",
+    "您的"
+  ],
+  "Ваше имя": [
+    "Your name",
+    "您的姓名"
+  ],
+  "Ваши маршруты": [
+    "Your routes",
+    "您的路线"
+  ],
+  "Ваши прогулки — с вами": [
+    "Take your walks with you",
+    "随时随地查看您的漫步"
+  ],
+  "Ввести адрес": [
+    "Enter address",
+    "输入地址"
+  ],
+  "Вернитесь на сайт и повторите попытку.": [
+    "Return to the site and try again.",
+    "返回网站后重试。"
+  ],
+  "Вернуться в приложение": [
+    "Return to the app",
+    "返回应用"
+  ],
+  "Вернуться к машине": [
+    "Return to the car",
+    "返回车辆"
+  ],
+  "Вернуться к началу": [
+    "Return to the start",
+    "返回起点"
+  ],
+  "Вернуться к прогулкам": [
+    "Back to walks",
+    "返回漫步列表"
+  ],
+  "Весь маршрут": [
+    "Full route",
+    "完整路线"
+  ],
+  "Видео: {title}": [
+    "Video: {title}",
+    "视频：{title}"
+  ],
+  "Включить геолокацию": [
+    "Enable location",
+    "开启定位"
+  ],
+  "Включить звук": [
+    "Enable sound",
+    "开启声音"
+  ],
+  "Внутри Кольцевой": [
+    "Inside the Circle line",
+    "环线以内"
+  ],
+  "Возвращаемся в приложение…": [
+    "Returning to the app…",
+    "正在返回应用…"
+  ],
+  "Войдите в аккаунт.": [
+    "Sign in to your account.",
+    "请登录您的账号。"
+  ],
+  "Войдите, чтобы открывать их на других устройствах и делиться ссылками.": [
+    "Sign in to open them on other devices and share links.",
+    "登录后即可在其他设备上打开路线并分享链接。"
+  ],
+  "Войдите, чтобы открыть свои прогулки и сохранённые истории.": [
+    "Sign in to access your walks and saved stories.",
+    "登录后即可查看您的漫步路线和已保存的故事。"
+  ],
+  "Войти": [
+    "Sign in",
+    "登录"
+  ],
+  "Восстановить": [
+    "Restore",
+    "恢复"
+  ],
+  "Впереди": [
+    "Ahead",
+    "前方"
+  ],
+  "Вперёд на 15 секунд": [
+    "Forward 15 seconds",
+    "快进 15 秒"
+  ],
+  "Время ожидания истекло. Проверьте соединение.": [
+    "The request timed out. Check your connection.",
+    "请求超时。请检查网络连接。"
+  ],
+  "Время пешком": [
+    "Walking time",
+    "步行时间"
+  ],
+  "Время поездки": [
+    "Trip duration",
+    "行程时间"
+  ],
+  "Все прогулки": [
+    "All walks",
+    "全部漫步"
+  ],
+  "Всем · в топе": [
+    "Public · in the ranking",
+    "所有人可见 · 已上榜"
+  ],
+  "Всем · на проверке": [
+    "Public · awaiting review",
+    "所有人可见 · 审核中"
+  ],
+  "Всем · скрыта редакцией из топа": [
+    "Public · hidden from the ranking by editors",
+    "所有人可见 · 已被编辑移出热门"
+  ],
+  "Вход": [
+    "Sign in",
+    "登录"
+  ],
+  "Вход отменён.": [
+    "Sign-in cancelled.",
+    "登录已取消。"
+  ],
+  "Вход через Telegram": [
+    "Sign in with Telegram",
+    "通过 Telegram 登录"
+  ],
+  "Вы ещё не заказывали истории.": [
+    "You haven't requested any stories yet.",
+    "您尚未请求制作故事。"
+  ],
+  "Вы сейчас за пределами нашего каталога.": [
+    "You are currently outside our catalog area.",
+    "您当前位于我们的内容覆盖范围之外。"
+  ],
+  "Вы у точки": [
+    "You are at the stop",
+    "您已到达地点"
+  ],
+  "Выберите «Разрешить только во время использования приложения» и включите «Точное местоположение».": [
+    "Select “Allow only while using the app” and enable “Use precise location.”",
+    "选择“仅在使用此应用时允许”，并开启“使用精确位置”。"
+  ],
+  "Выберите адрес в Москве.": [
+    "Select an address in Moscow.",
+    "请选择莫斯科的地址。"
+  ],
+  "Выберите дом на карте или задайте начало маршрута.": [
+    "Select a building on the map or set the route's starting point.",
+    "请在地图上选择建筑，或设置路线起点。"
+  ],
+  "Выберите дом на карте или повторите попытку.": [
+    "Select a building on the map or try again.",
+    "请在地图上选择建筑，或重试。"
+  ],
+  "Выберите место или время": [
+    "Select a place or duration",
+    "选择地点或时长"
+  ],
+  "Выберите начало": [
+    "Select a starting point",
+    "选择起点"
+  ],
+  "Выберите прогулку": [
+    "Choose a walk",
+    "选择漫步路线"
+  ],
+  "Выберите точку на карте или введите адрес.": [
+    "Select a point on the map or enter an address.",
+    "请在地图上选择地点或输入地址。"
+  ],
+  "Выбор применяется к новым прогулкам на этом устройстве.": [
+    "This choice applies to new tours on this device.",
+    "此选择适用于此设备上的新游览。"
+  ],
+  "Выбор слушателей": [
+    "Listeners' picks",
+    "听众之选"
+  ],
+  "Выбранное место": [
+    "Selected place",
+    "所选地点"
+  ],
+  "Выбрать другое начало": [
+    "Choose another starting point",
+    "选择其他起点"
+  ],
+  "Выбрать другую точку": [
+    "Select another point",
+    "选择其他地点"
+  ],
+  "Выбрать на карте": [
+    "Select on map",
+    "在地图上选择"
+  ],
+  "Выбрать позже": [
+    "Choose later",
+    "稍后选择"
+  ],
+  "Выбрать эту точку": [
+    "Select this point",
+    "选择此地点"
+  ],
+  "Выйти": [
+    "Sign out",
+    "退出登录"
+  ],
+  "Выйти из прогулки": [
+    "Leave the walk",
+    "退出漫步"
+  ],
+  "Выйти на всех устройствах": [
+    "Sign out on all devices",
+    "在所有设备上退出登录"
+  ],
+  "Выпечка": [
+    "Baked goods",
+    "烘焙食品"
+  ],
+  "Вьетнамская кухня": [
+    "Vietnamese cuisine",
+    "越南菜"
+  ],
+  "Где вы": [
+    "Your location",
+    "您的位置"
+  ],
+  "Генерация доступна только после входа.": [
+    "Sign in to request a new story.",
+    "请先登录，再请求制作新故事。"
+  ],
+  "Геолокация долго не отвечает.": [
+    "Location services are taking too long to respond.",
+    "定位服务响应超时。"
+  ],
+  "Геолокация недоступна в этом браузере.": [
+    "Location services are unavailable in this browser.",
+    "此浏览器不支持定位。"
+  ],
+  "Геолокация недоступна, сама часть не включится. Пользуйтесь кнопкой «Дальше».": [
+    "Location is unavailable, so the next part will not start automatically. Use the Next button.",
+    "定位不可用，下一部分无法自动播放。请使用“下一步”按钮。"
+  ],
+  "Геопозиции нет": [
+    "Location unavailable",
+    "无法定位"
+  ],
+  "Геопозиция": [
+    "Location",
+    "定位"
+  ],
+  "Город": [
+    "City",
+    "城市"
+  ],
+  "Город говорит рядом": [
+    "The city's stories, right here",
+    "聆听身边的城市故事"
+  ],
+  "Готовим для вас": [
+    "Preparing for you",
+    "正在为您制作"
+  ],
+  "Готовим рассказ": [
+    "Writing the story",
+    "正在撰写故事"
+  ],
+  "Готовим тексты и аудио": [
+    "Preparing text and audio",
+    "正在制作文字和音频"
+  ],
+  "Готово к прослушиванию": [
+    "Ready to listen",
+    "可收听"
+  ],
+  "Готовые истории рядом": [
+    "Ready stories nearby",
+    "附近已完成的故事"
+  ],
+  "Гриль": [
+    "Grill",
+    "烧烤"
+  ],
+  "Грузинская кухня": [
+    "Georgian cuisine",
+    "格鲁吉亚菜"
+  ],
+  "Дальше": [
+    "Next",
+    "下一步"
+  ],
+  "Дальше: {number}. {title}": [
+    "Next: {number}. {title}",
+    "下一站：{number}. {title}"
+  ],
+  "Дальше: {title}": [
+    "Next: {title}",
+    "下一步：{title}"
+  ],
+  "Данные OpenStreetMap на {date}. Часы работы могут отличаться.": [
+    "OpenStreetMap data as of {date}. Opening hours may differ.",
+    "OpenStreetMap 数据更新至 {date}。营业时间可能有所不同。"
+  ],
+  "Данные заведений изменились во время сохранения.": [
+    "The food data changed while it was being saved.",
+    "保存期间餐饮数据发生了变化。"
+  ],
+  "Дата проверки не указана.": [
+    "The review date is not specified.",
+    "未注明核查日期。"
+  ],
+  "Десерты": [
+    "Desserts",
+    "甜点"
+  ],
+  "Диагностика": [
+    "Diagnostics",
+    "诊断信息"
+  ],
+  "Для истории пока не хватило подтверждённых источников.": [
+    "There are not enough verified sources for this story yet.",
+    "此故事目前缺少足够的可靠来源。"
+  ],
+  "Для местоположения выберите «Разрешить».": [
+    "Set Location to Allow.",
+    "将位置权限设为“允许”。"
+  ],
+  "Для работы аккаунта обрабатываем имя, email и данные сессии.": [
+    "We process your name, email and session data to operate your account.",
+    "为提供账户功能，我们处理您的姓名、邮箱和会话信息。"
+  ],
+  "Для работы аккаунта обрабатываем имя, email или идентификатор Telegram и данные сессии.": [
+    "We process your name, email or Telegram identifier and session data to operate your account.",
+    "为提供账户功能，我们处理您的姓名、邮箱或 Telegram 标识符以及会话信息。"
+  ],
+  "Для регистрации примите актуальные условия использования в приложении.": [
+    "To sign up, accept the current terms of use in the app.",
+    "如需注册，请在应用中接受最新的使用条款。"
+  ],
+  "Для регистрации примите актуальные условия использования.": [
+    "Accept the current terms of use to register.",
+    "注册前请接受当前使用条款。"
+  ],
+  "Для старта и финиша указано ближайшее метро.": [
+    "The nearest metro stations are shown for the start and finish.",
+    "起点和终点显示最近的地铁站。"
+  ],
+  "Для этой части пока нет аудиозаписи. Текст доступен ниже.": [
+    "There is no recording for this part yet. The text is available below.",
+    "这一部分尚无录音，可在下方阅读文字。"
+  ],
+  "До 30 минут": [
+    "Up to 30 minutes",
+    "不超过 30 分钟"
+  ],
+  "До парковки · около {minutes} мин": [
+    "To parking · about {minutes} min",
+    "前往停车场 · 约 {minutes} 分钟"
+  ],
+  "До следующей части": [
+    "To the next part",
+    "距下一部分"
+  ],
+  "До точки": [
+    "To the stop",
+    "距地点"
+  ],
+  "До финиша": [
+    "To the finish",
+    "前往终点"
+  ],
+  "Добавить «{name}» в прогулку": [
+    "Add “{name}” to the walk",
+    "将“{name}”加入漫步路线"
+  ],
+  "Добавить в прогулку": [
+    "Add to walk",
+    "加入漫步路线"
+  ],
+  "Добавить остановку": [
+    "Add a stop",
+    "添加停靠点"
+  ],
+  "Добавьте от 1 до {count} разных мест, не совпадающих друг с другом.": [
+    "Add between 1 and {count} distinct places that do not overlap.",
+    "请添加 1 至 {count} 个互不重合的不同地点。"
+  ],
+  "Доехать до парковки": [
+    "Drive to parking",
+    "驾车前往停车点"
+  ],
+  "Дом этой истории находится вне Москвы.": [
+    "The building for this story is outside Moscow.",
+    "这个故事对应的建筑不在莫斯科。"
+  ],
+  "Доступ": [
+    "Access",
+    "访问权限"
+  ],
+  "Доступ закрыт: прогулку видите только вы.": [
+    "Access is private: only you can see this walk.",
+    "访问权限已关闭：仅您可以查看这条漫步。"
+  ],
+  "Доступ к геолокации запрещён. Разрешите его в настройках браузера.": [
+    "Location access is blocked. Allow it in your browser's settings.",
+    "定位权限被禁用。请在浏览器设置中允许访问位置。"
+  ],
+  "Доступ к геолокации запрещён. Разрешите его в настройках телефона.": [
+    "Location access is blocked. Allow it in your phone's settings.",
+    "定位权限被禁用。请在手机设置中允许访问位置。"
+  ],
+  "Доступ к прогулке": [
+    "Walk access",
+    "漫步访问权限"
+  ],
+  "Доступ на парковку не проверен. Перед поездкой убедитесь, что она открыта для всех.": [
+    "Parking access is unverified. Check that it is open to everyone before travelling.",
+    "停车点通行情况未经核实。出发前请确认对所有人开放。"
+  ],
+  "Доступ: {access}": [
+    "Access: {access}",
+    "访问权限：{access}"
+  ],
+  "Доступна новая версия · обновить": [
+    "A new version is available · update",
+    "新版本可用 · 更新"
+  ],
+  "Доступно без сети": [
+    "Available offline",
+    "可离线使用"
+  ],
+  "Доступно всем": [
+    "Public",
+    "所有人可见"
+  ],
+  "Другая история ещё готовится, возможно после повтора. Дождитесь завершения.": [
+    "Another story is still being prepared, possibly after a retry. Wait for it to finish.",
+    "另一个故事仍在制作中，可能是重试后的任务。请等待完成。"
+  ],
+  "Европейская кухня": [
+    "European cuisine",
+    "欧洲菜"
+  ],
+  "Еда": [
+    "Food",
+    "餐饮"
+  ],
+  "Если доступ всё ещё закрыт, откройте «Настройки» телефона → «Конфиденциальность и безопасность» → «Службы геолокации». Включите их и разрешите доступ для «Веб-сайты Safari» или вашего браузера при использовании.": [
+    "If access is still blocked, open Settings → Privacy & Security → Location Services. Turn them on and allow access for Safari Websites or your browser while it is in use.",
+    "如果仍无法访问，请打开“设置”→“隐私与安全性”→“定位服务”。开启定位服务，并允许“Safari 网站”或您使用的浏览器在使用期间访问位置。"
+  ],
+  "Если доступ всё ещё закрыт, откройте «Параметры Windows» → «Конфиденциальность и безопасность» → «Расположение» и включите службы геолокации и доступ для приложений.": [
+    "If access is still blocked, open Windows Settings → Privacy & security → Location and turn on location services and app access.",
+    "如果仍无法访问，请打开 Windows 设置 → 隐私和安全性 → 位置，并开启定位服务和应用访问权限。"
+  ],
+  "Если доступ всё ещё закрыт, откройте «Системные настройки» → «Конфиденциальность и безопасность» → «Службы геолокации» и разрешите доступ браузеру.": [
+    "If access is still blocked, open System Settings → Privacy & Security → Location Services and allow your browser access.",
+    "如果仍无法访问，请打开系统设置 → 隐私与安全性 → 定位服务，并允许浏览器访问。"
+  ],
+  "Если открыли сайт с экрана «Домой», проверьте его разрешение в «Службах геолокации». Если его нет в списке, откройте сайт в Safari.": [
+    "If you opened the site from your Home Screen, check its permission under Location Services. If it is not listed, open the site in Safari.",
+    "如果您从主屏幕打开了网站，请在“定位服务”中检查其权限。如果列表中没有该网站，请在 Safari 中打开。"
+  ],
+  "Ждём своей очереди": [
+    "Waiting in the queue",
+    "正在排队"
+  ],
+  "Заведение": [
+    "Place to eat",
+    "餐饮场所"
+  ],
+  "Заведение уже есть в прогулке.": [
+    "This place is already part of the walk.",
+    "该场所已在漫步路线中。"
+  ],
+  "Заведения вдоль маршрута": [
+    "Places to eat along the route",
+    "路线沿途的餐饮场所"
+  ],
+  "Заведения не сохранены": [
+    "Places to eat were not saved",
+    "餐饮场所未保存"
+  ],
+  "Завершаем вход…": [
+    "Finishing sign-in…",
+    "正在完成登录…"
+  ],
+  "Завершить": [
+    "Finish",
+    "结束"
+  ],
+  "Завершить поездку": [
+    "Finish the trip",
+    "结束行程"
+  ],
+  "Загружаем ваши прогулки…": [
+    "Loading your walks…",
+    "正在加载您的漫步…"
+  ],
+  "Загружаем ещё прогулки…": [
+    "Loading more walks…",
+    "正在加载更多漫步路线…"
+  ],
+  "Загружаем заведения…": [
+    "Loading places to eat…",
+    "正在加载餐饮场所…"
+  ],
+  "Загружаем запись": [
+    "Loading recording",
+    "正在加载录音"
+  ],
+  "Загружаем карту…": [
+    "Loading the map…",
+    "正在加载地图…"
+  ],
+  "Загружаем места…": [
+    "Loading places…",
+    "正在加载地点…"
+  ],
+  "Загружаем отзывы…": [
+    "Loading reviews…",
+    "正在加载评价…"
+  ],
+  "Загружаем оценку…": [
+    "Loading rating…",
+    "正在加载评分…"
+  ],
+  "Загружаем парковки…": [
+    "Loading parking…",
+    "正在加载停车点…"
+  ],
+  "Загружаем прогулки…": [
+    "Loading walks…",
+    "正在加载漫步路线…"
+  ],
+  "Загружаем рассказ…": [
+    "Loading the story…",
+    "正在加载故事…"
+  ],
+  "Загружаем состояние истории": [
+    "Loading story status",
+    "正在加载故事状态"
+  ],
+  "Загружаем топ прогулок…": [
+    "Loading top walks…",
+    "正在加载热门漫步…"
+  ],
+  "Загружаем…": [
+    "Loading…",
+    "正在加载…"
+  ],
+  "Загружено: {loaded} из {total}": [
+    "Loaded: {loaded} of {total}",
+    "已加载 {loaded} / {total} 条"
+  ],
+  "Загрузить ещё": [
+    "Load more",
+    "加载更多"
+  ],
+  "Загрузка мест на карте": [
+    "Loading places on the map",
+    "正在加载地图上的地点"
+  ],
+  "Задание уже изменилось. Обновите его состояние.": [
+    "This request has changed. Refresh its status.",
+    "此任务已更新。请刷新任务状态。"
+  ],
+  "Закончить маршрут": [
+    "Finish the route",
+    "结束路线"
+  ],
+  "Закрыто": [
+    "Closed",
+    "已打烊"
+  ],
+  "Закрыто, откроется в {day} {time}": [
+    "Closed, opens {day} at {time}",
+    "已打烊，{day} {time} 开门"
+  ],
+  "Закрыто, откроется в {time}": [
+    "Closed, opens at {time}",
+    "已打烊，{time} 开门"
+  ],
+  "Закрыто, откроется завтра в {time}": [
+    "Closed, opens tomorrow at {time}",
+    "已打烊，明天 {time} 开门"
+  ],
+  "Закрыть": [
+    "Close",
+    "关闭"
+  ],
+  "Закрыть видео": [
+    "Close video",
+    "关闭视频"
+  ],
+  "Закрыть выбранное место": [
+    "Close selected place",
+    "关闭所选地点"
+  ],
+  "Закрыть истории рядом": [
+    "Close nearby stories",
+    "关闭附近故事"
+  ],
+  "Закрыть карточку": [
+    "Close card",
+    "关闭卡片"
+  ],
+  "Закрыть парковку": [
+    "Close parking",
+    "关闭停车点"
+  ],
+  "Закрыть подсказку": [
+    "Close hint",
+    "关闭提示"
+  ],
+  "Закрыть прогулку": [
+    "Close walk",
+    "关闭漫步"
+  ],
+  "Закрыть создание прогулки": [
+    "Close walk builder",
+    "关闭漫步路线创建器"
+  ],
+  "Закрыть фото": [
+    "Close photo",
+    "关闭照片"
+  ],
+  "Запись аудио готовится.": [
+    "The audio recording is being prepared.",
+    "音频正在制作中。"
+  ],
+  "Запись загрузилась с неверной контрольной суммой.": [
+    "The downloaded recording failed its integrity check.",
+    "下载的录音未通过完整性校验。"
+  ],
+  "Запрос отозван.": [
+    "Request withdrawn.",
+    "请求已撤回。"
+  ],
+  "Запрос прервался.": [
+    "The request was interrupted.",
+    "请求已中断。"
+  ],
+  "Запрос прерван. Повторите попытку.": [
+    "The request was interrupted. Try again.",
+    "请求已中断。请重试。"
+  ],
+  "Запускаем звук…": [
+    "Starting audio…",
+    "正在启动音频…"
+  ],
+  "Запускаем…": [
+    "Starting…",
+    "正在启动…"
+  ],
+  "Звук не запустился. Нажмите кнопку, чтобы попробовать ещё раз.": [
+    "Audio did not start. Press the button to try again.",
+    "音频未能播放。请点击按钮重试。"
+  ],
+  "Звук остановится, и вы вернётесь к описанию маршрута. Начать заново можно в любой момент.": [
+    "Audio will stop and you will return to the route description. You can start again at any time.",
+    "音频将停止，并返回路线说明。您可以随时重新开始。"
+  ],
+  "Здесь пока можно слушать готовые прогулки. Истории о домах на выбор готовим только в Москве.": [
+    "Here you can listen to ready-made walks for now. Stories about any building you pick are only prepared in Moscow.",
+    "这里目前可以收听现成的漫步路线。任选建筑的故事目前仅在莫斯科提供。"
+  ],
+  "Здесь появятся любимые истории и прогулки.": [
+    "Your favorite stories and walks will appear here.",
+    "您收藏的故事和漫步路线会显示在这里。"
+  ],
+  "Знакомые места. Новые открытия. Всё, к чему хочется вернуться.": [
+    "Familiar places. New discoveries. Everything worth returning to.",
+    "熟悉的地方，新的发现，值得再次重温。"
+  ],
+  "Зона входа": [
+    "Entry radius",
+    "进入范围"
+  ],
+  "Избранное": [
+    "Favorites",
+    "收藏"
+  ],
+  "Изменить маршрут": [
+    "Edit route",
+    "编辑路线"
+  ],
+  "Изменить отзыв": [
+    "Edit review",
+    "修改评价"
+  ],
+  "Иллюстрация:": [
+    "Illustration:",
+    "插图："
+  ],
+  "Имя": [
+    "Name",
+    "姓名"
+  ],
+  "Имя сохранено.": [
+    "Name saved.",
+    "姓名已保存。"
+  ],
+  "Индийская кухня": [
+    "Indian cuisine",
+    "印度菜"
+  ],
+  "Инструкция Apple ↗": [
+    "Apple instructions ↗",
+    "Apple 说明 ↗"
+  ],
+  "Искать в большем радиусе": [
+    "Search a wider area",
+    "扩大搜索范围"
+  ],
+  "Использовать прогулку": [
+    "Use this walk",
+    "使用此漫步路线"
+  ],
+  "Исследование не соответствует текущей прогулке или ещё не завершено.": [
+    "The research does not match the current walk or is not complete yet.",
+    "调研与当前漫步路线不匹配，或尚未完成。"
+  ],
+  "Исследование остановлено": [
+    "Research stopped",
+    "调研已停止"
+  ],
+  "Исследование остановлено.": [
+    "Research stopped.",
+    "调研已停止。"
+  ],
+  "Исследование прогулки": [
+    "Walk research",
+    "漫步路线调研"
+  ],
+  "Исследование продолжается после закрытия страницы. Вернитесь к прогулке из истории в этом браузере. Если сохранить черновик не удалось, скачайте его перед уходом.": [
+    "Research continues after you close this page. Return to the walk from this browser's history. If the draft could not be saved, download it before leaving.",
+    "关闭页面后调研仍会继续。之后可从此浏览器的历史记录返回漫步路线。如果草稿无法保存，请在离开前下载。"
+  ],
+  "Исследование района": [
+    "Area research",
+    "区域调研"
+  ],
+  "Исследованная прогулка применена. Готовые истории находятся ниже; дополнительных заказов нет.": [
+    "The researched walk has been applied. Completed stories appear below; no additional requests were made.",
+    "调研生成的漫步路线已应用。已完成的故事显示在下方；没有发起额外请求。"
+  ],
+  "Истории есть в городах:": [
+    "Stories are available in:",
+    "以下城市提供故事："
+  ],
+  "Истории рядом с этой парковкой": [
+    "Stories near this parking spot",
+    "此停车点附近的故事"
+  ],
+  "Исторические снимки · {count}": [
+    "Historical photos · {count}",
+    "历史照片 · {count}"
+  ],
+  "Историю можно прочитать ниже. Запись аудио готовится; у точки пока звучит тестовый сигнал на 5 секунд.": [
+    "You can read the story below. The recording is being prepared; a five-second test tone currently plays at the stop.",
+    "您可以在下方阅读故事。录音正在制作中；到达地点时暂时会播放 5 秒测试音。"
+  ],
+  "История": [
+    "History",
+    "历史记录"
+  ],
+  "История готова": [
+    "Story ready",
+    "故事已完成"
+  ],
+  "История готова.": [
+    "Story ready.",
+    "故事已完成。"
+  ],
+  "История готовится": [
+    "Story is being prepared",
+    "故事正在准备中"
+  ],
+  "История готовится. Остановку можно пройти вручную.": [
+    "The story is being prepared. You can pass this stop manually.",
+    "故事正在制作中。您可以手动跳过此停靠点。"
+  ],
+  "История для этой остановки ещё не заказана.": [
+    "A story has not been requested for this stop yet.",
+    "尚未为此停靠点请求制作故事。"
+  ],
+  "История места": [
+    "Place story",
+    "地点故事"
+  ],
+  "История ожидает редакторской проверки.": [
+    "The story is awaiting editorial review.",
+    "故事正在等待编辑审核。"
+  ],
+  "История относится к другому адресу.": [
+    "The story belongs to a different address.",
+    "该故事对应的是其他地址。"
+  ],
+  "История прогулок": [
+    "Walk history",
+    "漫步记录"
+  ],
+  "История этого дома": [
+    "Story of this building",
+    "这栋建筑的故事"
+  ],
+  "История этой остановки пока недоступна.": [
+    "The story for this stop is not available yet.",
+    "此停靠点的故事暂不可用。"
+  ],
+  "История: {address} →": [
+    "Story: {address} →",
+    "故事：{address} →"
+  ],
+  "Источник": [
+    "Source",
+    "来源"
+  ],
+  "Источник данных карты": [
+    "Map data source",
+    "地图数据来源"
+  ],
+  "Источник:": [
+    "Source:",
+    "来源："
+  ],
+  "Источники": [
+    "Sources",
+    "资料来源"
+  ],
+  "Источники найдены, но их не удалось загрузить или прочитать. Можно повторить поиск позже.": [
+    "Sources were found but could not be loaded or read. You can retry the search later.",
+    "已找到资料，但无法加载或读取。可以稍后重新搜索。"
+  ],
+  "Источники не позволяют однозначно определить дом. Уточните адрес и строение.": [
+    "The sources do not clearly identify this building. Check the address and building number.",
+    "现有资料无法准确确认这栋建筑。请核对地址和楼号。"
+  ],
+  "Итальянская кухня": [
+    "Italian cuisine",
+    "意大利菜"
+  ],
+  "Ищем адреса поблизости": [
+    "Finding nearby addresses",
+    "正在查找附近地址"
+  ],
+  "Ищем адрес…": [
+    "Finding address…",
+    "正在查找地址…"
+  ],
+  "Ищем истории рядом…": [
+    "Finding stories nearby…",
+    "正在查找附近的故事…"
+  ],
+  "Ищем источники": [
+    "Finding sources",
+    "正在查找资料"
+  ],
+  "Ищем парковки…": [
+    "Searching for parking…",
+    "正在查找停车点…"
+  ],
+  "Ищем сигнал GPS…": [
+    "Searching for GPS…",
+    "正在搜索 GPS 信号…"
+  ],
+  "К парковке {current} из {total}": [
+    "Parking {current} of {total}",
+    "前往第 {current}/{total} 个停车点"
+  ],
+  "К финишу": [
+    "To the finish",
+    "前往终点"
+  ],
+  "К финишу поездки": [
+    "To the trip finish",
+    "前往行程终点"
+  ],
+  "Казань": [
+    "Kazan",
+    "喀山"
+  ],
+  "Как включать следующую часть": [
+    "How to start the next part",
+    "下一部分的播放方式"
+  ],
+  "Как передвигаемся": [
+    "How are you travelling?",
+    "出行方式"
+  ],
+  "Как продолжить позже": [
+    "How to continue later",
+    "如何稍后继续"
+  ],
+  "Как разрешить геолокацию": [
+    "How to allow location access",
+    "如何允许定位"
+  ],
+  "Кандидаты": [
+    "Candidates",
+    "候选次数"
+  ],
+  "Карта автомобильной прогулки: автомобильные переезды, пешие участки, парковки и истории": [
+    "Driving tour map: driving legs, walking legs, parking and stories",
+    "驾车游览地图：驾车路段、步行路段、停车点和故事"
+  ],
+  "Карта историй. Выберите отметку или нажмите на дом, чтобы подготовить историю.": [
+    "Story map. Select a marker or tap a building to prepare a story.",
+    "故事地图。请选择标记，或点击建筑来制作故事。"
+  ],
+  "Карта не загрузилась. Откройте список историй.": [
+    "The map could not load. Open the list of stories.",
+    "地图加载失败。请打开故事列表。"
+  ],
+  "Карта прогулки: линия пути, отметки частей по порядку и ваше положение. Нажмите отметку, чтобы слушать эту часть.": [
+    "Walk map: route line, parts in order, and your location. Select a marker to listen to that part.",
+    "漫步地图：路线、按顺序排列的各部分以及您的位置。点击标记即可收听该部分。"
+  ],
+  "Карта прогулки: пешеходный маршрут и остановки": [
+    "Walk map: walking route and stops",
+    "漫步地图：步行路线和停靠点"
+  ],
+  "Карта требует интернета. Сохранённые истории доступны в разделе «Сохранено».": [
+    "The map needs an internet connection. Saved stories are available under Saved.",
+    "地图需要联网。已保存的故事可在“已保存”中查看。"
+  ],
+  "Кафе": [
+    "Café",
+    "咖啡馆"
+  ],
+  "Кебаб": [
+    "Kebab",
+    "烤肉"
+  ],
+  "Китайская кухня": [
+    "Chinese cuisine",
+    "中国菜"
+  ],
+  "Количество попыток должно быть от 1 до 3.": [
+    "The number of attempts must be between 1 and 3.",
+    "尝试次数必须为 1 到 3 次。"
+  ],
+  "Координаты остаются на устройстве": [
+    "Your coordinates stay on this device",
+    "您的坐标仅保存在本设备上"
+  ],
+  "Копия прогулки сохранена в «Моих прогулках».": [
+    "A copy of the walk was saved under My walks.",
+    "漫步副本已保存到“我的漫步”。"
+  ],
+  "Копия прогулки сохранена на этом устройстве.": [
+    "A copy of the walk was saved on this device.",
+    "漫步副本已保存在此设备上。"
+  ],
+  "Корейская кухня": [
+    "Korean cuisine",
+    "韩国菜"
+  ],
+  "Короткие видео о прогулках": [
+    "Short videos about walks",
+    "漫步路线短视频"
+  ],
+  "Короткие заметки, каждая до минуты. Выберите, о чём прочитать.": [
+    "Short notes, each under a minute. Choose what to read about.",
+    "每条短文不到一分钟。请选择想阅读的内容。"
+  ],
+  "Кофе": [
+    "Coffee",
+    "咖啡"
+  ],
+  "Кофейня": [
+    "Coffee shop",
+    "咖啡店"
+  ],
+  "Кто может открыть прогулку": [
+    "Who can open this walk",
+    "谁可以打开这条漫步"
+  ],
+  "Куда": [
+    "To",
+    "到哪里"
+  ],
+  "Куда едем?": [
+    "Where are we driving?",
+    "驾车前往哪里？"
+  ],
+  "Куда идём?": [
+    "Where are we going?",
+    "我们去哪里？"
+  ],
+  "Курица": [
+    "Chicken",
+    "鸡肉"
+  ],
+  "Лапша": [
+    "Noodles",
+    "面条"
+  ],
+  "Легенда": [
+    "Legend",
+    "传说"
+  ],
+  "Личный кабинет": [
+    "Account",
+    "个人中心"
+  ],
+  "Локальная прогулка не найдена.": [
+    "The walk saved on this device was not found.",
+    "未找到保存在此设备上的漫步。"
+  ],
+  "Локальная прогулка не найдена. Исходные данные сохранены.": [
+    "The local walk was not found. The original data has been preserved.",
+    "未找到本地漫步路线。原始数据已保留。"
+  ],
+  "Локальный выход выполнен. Сервер отзовёт сессию после восстановления сети.": [
+    "You have been signed out on this device. The server session will be revoked when the connection is restored.",
+    "您已在此设备上退出登录。网络恢复后，服务器会撤销该会话。"
+  ],
+  "Лучший подтверждённый рассказ: {facts} фактов и {sources} источников.": [
+    "Best verified story: {facts} facts supported by {sources} sources.",
+    "最佳已核实故事：{facts} 条事实，{sources} 个资料来源。"
+  ],
+  "Любая продолжительность": [
+    "Any duration",
+    "不限时长"
+  ],
+  "Любая станция": [
+    "Any station",
+    "任意站点"
+  ],
+  "Мало информации: тексты слишком короткие": [
+    "Not enough information: the texts are too short",
+    "信息不足：文字太短"
+  ],
+  "Маршрут": [
+    "Route",
+    "路线"
+  ],
+  "Маршрут в навигаторе": [
+    "Route in navigator",
+    "在导航中打开路线"
+  ],
+  "Маршрут завершён. Спасибо за прогулку.": [
+    "Route complete. Thank you for walking.",
+    "路线完成。感谢您的游览。"
+  ],
+  "Маршрут к машине": [
+    "Walking route to the car",
+    "返回车辆的步行路线"
+  ],
+  "Маршрут недоступен.": [
+    "The route is unavailable.",
+    "路线不可用。"
+  ],
+  "Масштаб карты": [
+    "Map zoom",
+    "地图缩放"
+  ],
+  "Материал недоступен": [
+    "This item is unavailable",
+    "此内容不可用"
+  ],
+  "Машина ждёт на парковке": [
+    "Your car is at the parking spot",
+    "车辆停在停车点"
+  ],
+  "Международная кухня": [
+    "International cuisine",
+    "国际菜"
+  ],
+  "Мексиканская кухня": [
+    "Mexican cuisine",
+    "墨西哥菜"
+  ],
+  "Мест: {count}. Нажмите, чтобы раскрыть группу": [
+    "Places: {count}. Select to expand the group",
+    "地点：{count}。点击展开此组"
+  ],
+  "Местная кухня": [
+    "Local cuisine",
+    "本地菜"
+  ],
+  "Местоположение определено.": [
+    "Location determined.",
+    "已确定位置。"
+  ],
+  "Можем найти и проверить истории ещё нескольких зданий рядом. Это займёт время, и прогулка может не получиться.": [
+    "We can find and verify stories for a few more nearby buildings. This will take time, and a walk may not be possible.",
+    "我们可以查找并核实附近其他几栋建筑的故事。这需要一些时间，也可能无法生成漫步路线。"
+  ],
+  "Можно выбрать причину или написать своими словами. Дизлайк уже сохранён.": [
+    "Choose a reason or describe it in your own words. Your dislike has already been saved.",
+    "您可以选择原因或自行填写。点踩已保存。"
+  ],
+  "Можно разрешить его в настройках или выбрать место на карте.": [
+    "You can allow access in settings or select a place on the map.",
+    "您可以在设置中允许访问，或在地图上选择地点。"
+  ],
+  "Мои прогулки": [
+    "My walks",
+    "我的漫步"
+  ],
+  "Морепродукты": [
+    "Seafood",
+    "海鲜"
+  ],
+  "Мороженое": [
+    "Ice cream",
+    "冰淇淋"
+  ],
+  "Москва": [
+    "Moscow",
+    "莫斯科"
+  ],
+  "Моя прогулка": [
+    "My walk",
+    "我的漫步"
+  ],
+  "Моё местоположение": [
+    "My location",
+    "我的位置"
+  ],
+  "На iPhone и iPad": [
+    "On iPhone and iPad",
+    "在 iPhone 和 iPad 上"
+  ],
+  "На карте": [
+    "On the map",
+    "在地图上"
+  ],
+  "На карту": [
+    "To the map",
+    "返回地图"
+  ],
+  "На компьютере": [
+    "On a computer",
+    "在电脑上"
+  ],
+  "На машине": [
+    "By car",
+    "驾车"
+  ],
+  "На машине · {minutes} мин": [
+    "Driving · {minutes} min",
+    "驾车 · {minutes} 分钟"
+  ],
+  "На машине · {minutes} мин · {distance} км · {stories}": [
+    "Driving · {minutes} min · {distance} km · {stories}",
+    "驾车 · {minutes} 分钟 · {distance} 公里 · {stories}"
+  ],
+  "На модерации": [
+    "Awaiting moderation",
+    "审核中"
+  ],
+  "На телефоне Android": [
+    "On an Android phone",
+    "在 Android 手机上"
+  ],
+  "На устройстве": [
+    "On this device",
+    "本设备上"
+  ],
+  "На устройстве не хватает места. Освободите память и повторите попытку.": [
+    "Your device is out of storage. Free up some space and try again.",
+    "设备存储空间不足。请释放空间后重试。"
+  ],
+  "Нажмите на карту в нужном месте.": [
+    "Tap the desired point on the map.",
+    "请点击地图上的目标地点。"
+  ],
+  "Нажмите на карту — построим маршрут.": [
+    "Tap the map and we'll build a route.",
+    "点击地图，我们会为您规划路线。"
+  ],
+  "Нажмите на часть, чтобы слушать с начала.": [
+    "Select a part to listen from the beginning.",
+    "点击某一部分即可从头收听。"
+  ],
+  "Назад": [
+    "Back",
+    "返回"
+  ],
+  "Назад к списку": [
+    "Back to list",
+    "返回列表"
+  ],
+  "Назад на 15 секунд": [
+    "Back 15 seconds",
+    "后退 15 秒"
+  ],
+  "Найдено: {count}": [
+    "Found: {count}",
+    "找到 {count} 条"
+  ],
+  "Найти истории рядом": [
+    "Find nearby stories",
+    "查找附近故事"
+  ],
+  "Найти станцию или линию": [
+    "Find a station or line",
+    "搜索站点或线路"
+  ],
+  "Направление: с конца": [
+    "Direction: from the end",
+    "方向：从终点开始"
+  ],
+  "Направление: с начала": [
+    "Direction: from the start",
+    "方向：从起点开始"
+  ],
+  "Настройки": [
+    "Settings",
+    "设置"
+  ],
+  "Настройки cookie": [
+    "Cookie settings",
+    "Cookie 设置"
+  ],
+  "Настройки аккаунта": [
+    "Account settings",
+    "账户设置"
+  ],
+  "Настройки прогулки": [
+    "Walk settings",
+    "漫步设置"
+  ],
+  "Начало исследования:": [
+    "Research starting point:",
+    "调研起点："
+  ],
+  "Начало с остановки «{title}».": [
+    "Starting at “{title}”.",
+    "从“{title}”开始。"
+  ],
+  "Начать заново": [
+    "Start again",
+    "重新开始"
+  ],
+  "Начать поездку": [
+    "Start trip",
+    "开始行程"
+  ],
+  "Начать прогулку": [
+    "Start walk",
+    "开始漫步"
+  ],
+  "Начните свою историю города": [
+    "Start your own city story",
+    "开启您的城市故事"
+  ],
+  "Начнётся, когда подойдёте": [
+    "Starts when you arrive",
+    "到达后自动播放"
+  ],
+  "Не все места загрузились.": [
+    "Some places could not be loaded.",
+    "部分地点加载失败。"
+  ],
+  "Не знаем, что здесь": [
+    "We don't know what is here",
+    "暂时不知道这里是什么"
+  ],
+  "Не менее 10 символов. Восстановление пароля пока недоступно.": [
+    "At least 10 characters. Password recovery is not available yet.",
+    "至少 10 个字符。暂不支持找回密码。"
+  ],
+  "Не найден точный адрес дома в Москве. Уточните улицу и номер.": [
+    "No exact building address was found in Moscow. Check the street and house number.",
+    "未找到莫斯科的准确建筑地址。请核对街道和门牌号。"
+  ],
+  "Не нравится": [
+    "Dislike",
+    "不喜欢"
+  ],
+  "Не нравится озвучка": [
+    "I don't like the narration",
+    "不喜欢配音"
+  ],
+  "Не получилось проложить пешеходный путь к этому заведению.": [
+    "Unable to build a walking route to this place.",
+    "无法规划前往该场所的步行路线。"
+  ],
+  "Не удалось включить аудио. Нажмите «Повторить запуск звука».": [
+    "Unable to play audio. Select Try audio again.",
+    "无法播放音频。请点击“重新播放音频”。"
+  ],
+  "Не удалось включить запись. Проверьте соединение и попробуйте ещё раз.": [
+    "Unable to play the recording. Check your connection and try again.",
+    "无法播放录音。请检查网络连接后重试。"
+  ],
+  "Не удалось вовремя определить положение.": [
+    "Finding your location timed out.",
+    "获取位置超时。"
+  ],
+  "Не удалось войти через Telegram. Вернитесь в приложение и попробуйте ещё раз.": [
+    "Could not sign in with Telegram. Return to the app and try again.",
+    "无法通过 Telegram 登录。请返回应用并重试。"
+  ],
+  "Не удалось войти через Telegram. Попробуйте ещё раз.": [
+    "Could not sign in with Telegram. Please try again.",
+    "无法通过 Telegram 登录。请重试。"
+  ],
+  "Не удалось войти.": [
+    "Could not sign in.",
+    "无法登录。"
+  ],
+  "Не удалось воспроизвести аудио. Попробуйте запустить его ещё раз.": [
+    "Unable to play audio. Try starting it again.",
+    "无法播放音频。请重新尝试。"
+  ],
+  "Не удалось выполнить действие.": [
+    "Unable to complete the action.",
+    "无法完成操作。"
+  ],
+  "Не удалось выполнить запрос.": [
+    "Could not complete the request.",
+    "无法完成请求。"
+  ],
+  "Не удалось добавить заведение в прогулку.": [
+    "Unable to add the place to the walk.",
+    "无法将该场所加入漫步路线。"
+  ],
+  "Не удалось загрузить видео.": [
+    "Unable to load the video.",
+    "无法加载视频。"
+  ],
+  "Не удалось загрузить все истории рядом. Повторите загрузку мест.": [
+    "Some nearby stories could not be loaded. Reload the places.",
+    "部分附近故事加载失败。请重新加载地点。"
+  ],
+  "Не удалось загрузить ещё прогулки.": [
+    "Could not load more walks.",
+    "无法加载更多漫步路线。"
+  ],
+  "Не удалось загрузить заведения": [
+    "Unable to load places to eat",
+    "无法加载餐饮场所"
+  ],
+  "Не удалось загрузить оценку.": [
+    "Could not load the rating.",
+    "无法加载评分。"
+  ],
+  "Не удалось загрузить парковки": [
+    "Could not load parking",
+    "无法加载停车点"
+  ],
+  "Не удалось загрузить парковки рядом.": [
+    "Could not load nearby parking.",
+    "无法加载附近停车点。"
+  ],
+  "Не удалось загрузить прогулки": [
+    "Unable to load walks",
+    "无法加载漫步路线"
+  ],
+  "Не удалось загрузить раздел.": [
+    "Could not load this section.",
+    "无法加载此部分。"
+  ],
+  "Не удалось загрузить рассказ.": [
+    "Unable to load the story.",
+    "无法加载故事。"
+  ],
+  "Не удалось загрузить следующую страницу.": [
+    "Could not load the next page.",
+    "无法加载下一页。"
+  ],
+  "Не удалось загрузить топ прогулок.": [
+    "Unable to load top walks.",
+    "无法加载热门漫步。"
+  ],
+  "Не удалось загрузить форму.": [
+    "Could not load the form.",
+    "无法加载表单。"
+  ],
+  "Не удалось запустить геолокацию.": [
+    "Unable to start location services.",
+    "无法启动定位服务。"
+  ],
+  "Не удалось изменить доступ.": [
+    "Unable to change access.",
+    "无法更改访问权限。"
+  ],
+  "Не удалось найти адрес.": [
+    "Unable to find the address.",
+    "无法找到地址。"
+  ],
+  "Не удалось найти дом этой истории на карте.": [
+    "The building for this story could not be found on the map.",
+    "无法在地图上找到这个故事对应的建筑。"
+  ],
+  "Не удалось начать подготовку истории.": [
+    "Unable to start preparing the story.",
+    "无法开始制作故事。"
+  ],
+  "Не удалось обновить статусы.": [
+    "Unable to refresh statuses.",
+    "无法更新状态。"
+  ],
+  "Не удалось определить адрес.": [
+    "Unable to identify the address.",
+    "无法确定地址。"
+  ],
+  "Не удалось определить владельца офлайн-копии.": [
+    "Unable to identify the owner of the offline copy.",
+    "无法确定离线副本的所有者。"
+  ],
+  "Не удалось определить местоположение.": [
+    "Unable to find your location.",
+    "无法获取您的位置。"
+  ],
+  "Не удалось определить положение. Проверьте, включена ли геолокация на устройстве, — до тех пор остановки переключаются вручную.": [
+    "Unable to find your location. Check that location services are enabled on your device; until then, switch stops manually.",
+    "无法获取您的位置。请确认设备已开启定位；在此之前，请手动切换停靠点。"
+  ],
+  "Не удалось открыть видео.": [
+    "Unable to open the video.",
+    "无法打开视频。"
+  ],
+  "Не удалось открыть вход через Telegram. Попробуйте ещё раз.": [
+    "Could not open Telegram sign-in. Please try again.",
+    "无法打开 Telegram 登录。请重试。"
+  ],
+  "Не удалось открыть историю.": [
+    "Unable to open the story.",
+    "无法打开故事。"
+  ],
+  "Не удалось открыть прогулки.": [
+    "Unable to open walks.",
+    "无法打开漫步列表。"
+  ],
+  "Не удалось открыть прогулку.": [
+    "Unable to open the walk.",
+    "无法打开漫步路线。"
+  ],
+  "Не удалось открыть фотографию. Попробуйте ещё раз.": [
+    "Unable to open the photo. Try again.",
+    "无法打开照片。请重试。"
+  ],
+  "Не удалось открыть черновик.": [
+    "Unable to open the draft.",
+    "无法打开草稿。"
+  ],
+  "Не удалось отправить запрос. Повторите попытку.": [
+    "Could not submit the request. Please try again.",
+    "无法提交请求。请重试。"
+  ],
+  "Не удалось отправить отзыв. Повторите попытку.": [
+    "Could not submit the review. Please try again.",
+    "无法提交评价。请重试。"
+  ],
+  "Не удалось повторить.": [
+    "Unable to try again.",
+    "无法重试。"
+  ],
+  "Не удалось подготовить запись подходящей длительности. Текст доступен.": [
+    "Unable to create a recording of the required length. The text is available.",
+    "无法制作符合时长要求的录音。文字仍可查看。"
+  ],
+  "Не удалось подготовить историю.": [
+    "Unable to prepare the story.",
+    "无法制作故事。"
+  ],
+  "Не удалось подготовить историю. Можно повторить попытку.": [
+    "Unable to prepare the story. You can try again.",
+    "无法制作故事。您可以重试。"
+  ],
+  "Не удалось подтвердить аккаунт через Telegram.": [
+    "Could not confirm the account with Telegram.",
+    "无法通过 Telegram 确认账户。"
+  ],
+  "Не удалось построить автомобильную прогулку.": [
+    "Could not build a driving tour.",
+    "无法规划驾车游览。"
+  ],
+  "Не удалось применить прогулку.": [
+    "Unable to apply the walk.",
+    "无法应用漫步路线。"
+  ],
+  "Не удалось проверить вход. Локальный черновик доступен.": [
+    "Unable to check your sign-in status. The local draft is still available.",
+    "无法检查登录状态。本地草稿仍可使用。"
+  ],
+  "Не удалось проверить вход. Можно попробовать войти ниже.": [
+    "We couldn't check your session. You can still try to sign in below.",
+    "无法检查登录状态。您仍可在下方尝试登录。"
+  ],
+  "Не удалось проверить вход. Попробуйте ещё раз.": [
+    "Could not check your session. Please try again.",
+    "无法检查登录状态。请重试。"
+  ],
+  "Не удалось проверить доступность входа через Telegram.": [
+    "We couldn't check whether Telegram sign-in is available.",
+    "无法检查 Telegram 登录是否可用。"
+  ],
+  "Не удалось проверить историю.": [
+    "Unable to check the story.",
+    "无法检查故事。"
+  ],
+  "Не удалось проверить состояние сервиса.": [
+    "Unable to check the service status.",
+    "无法检查服务状态。"
+  ],
+  "Не удалось проверить сохранение прогулки. Исходные данные не удалены.": [
+    "Unable to verify that the walk was saved. The original data was kept.",
+    "无法确认漫步是否已保存。原始数据已保留。"
+  ],
+  "Не удалось прочитать состояние исследования.": [
+    "Unable to read the research status.",
+    "无法读取调研状态。"
+  ],
+  "Не удалось прочитать состояние истории.": [
+    "Could not read the story status.",
+    "无法读取故事状态。"
+  ],
+  "Не удалось связаться с сервисом подготовки. Попробуйте повторить позже.": [
+    "Unable to reach the preparation service. Try again later.",
+    "无法连接制作服务。请稍后重试。"
+  ],
+  "Не удалось скачать запись для офлайн-прогулки.": [
+    "Unable to download a recording for offline use.",
+    "无法下载用于离线漫步的录音。"
+  ],
+  "Не удалось соединить путь к заведению с маршрутом.": [
+    "Unable to connect the path to this place with the route.",
+    "无法将前往该场所的路径接入路线。"
+  ],
+  "Не удалось создать аккаунт. Возможно, этот email уже используется.": [
+    "Could not create the account. This email may already be in use.",
+    "无法创建账户。该邮箱可能已被使用。"
+  ],
+  "Не удалось сохранить выбор. Аналитика остаётся выключенной.": [
+    "Could not save your choice. Analytics remains disabled.",
+    "无法保存您的选择。分析功能仍保持关闭。"
+  ],
+  "Не удалось сохранить имя.": [
+    "Could not save the name.",
+    "无法保存姓名。"
+  ],
+  "Не удалось сохранить обновлённые статусы.": [
+    "Unable to save the refreshed statuses.",
+    "无法保存更新后的状态。"
+  ],
+  "Не удалось сохранить офлайн-копию.": [
+    "Unable to save the offline copy.",
+    "无法保存离线副本。"
+  ],
+  "Не удалось сохранить оценку. Повторите попытку.": [
+    "Could not save the rating. Please try again.",
+    "无法保存评分。请重试。"
+  ],
+  "Не удалось сохранить прогулку без сети.": [
+    "Unable to save the walk for offline use.",
+    "无法保存漫步以供离线使用。"
+  ],
+  "Не удалось сохранить прогулку.": [
+    "Unable to save the walk.",
+    "无法保存漫步路线。"
+  ],
+  "Не удалось сохранить. Не закрывайте страницу; скачайте копию.": [
+    "Unable to save. Do not close this page; download a copy.",
+    "无法保存。请勿关闭页面，并下载副本。"
+  ],
+  "Не удалось удалить отзыв. Повторите попытку.": [
+    "Could not delete the review. Please try again.",
+    "无法删除评价。请重试。"
+  ],
+  "Не удалось удалить офлайн-копию.": [
+    "Unable to delete the offline copy.",
+    "无法删除离线副本。"
+  ],
+  "Не удаётся определить точное местоположение.": [
+    "Unable to determine an accurate location.",
+    "无法确定准确位置。"
+  ],
+  "Не хватило подтверждений": [
+    "Not enough supporting evidence",
+    "佐证不足"
+  ],
+  "Не хватило подтверждённых фактов об архитектуре или истории места и его ближайших окрестностей. Попробуйте другой адрес.": [
+    "There are not enough verified facts about the architecture or history of this place and its surroundings. Try another address.",
+    "有关此地点及周边建筑或历史的可靠事实不足。请尝试其他地址。"
+  ],
+  "Неверная дата запроса.": [
+    "Invalid request date.",
+    "请求日期无效。"
+  ],
+  "Неверная длительность озвучки.": [
+    "Invalid narration duration.",
+    "配音时长无效。"
+  ],
+  "Неверная оценка.": [
+    "Invalid rating.",
+    "评分无效。"
+  ],
+  "Неверная средняя оценка.": [
+    "Invalid average rating.",
+    "平均评分无效。"
+  ],
+  "Неверная точка начала прогулки.": [
+    "Invalid walk starting point.",
+    "漫步起点无效。"
+  ],
+  "Неверное место.": [
+    "Invalid place.",
+    "地点无效。"
+  ],
+  "Неверное расстояние до старта.": [
+    "Invalid distance to the start.",
+    "距起点的距离无效。"
+  ],
+  "Неверное число историй.": [
+    "Invalid number of stories.",
+    "故事数量无效。"
+  ],
+  "Неверное число оценок.": [
+    "Invalid rating count.",
+    "评分数量无效。"
+  ],
+  "Неверный email или пароль.": [
+    "Incorrect email or password.",
+    "邮箱或密码不正确。"
+  ],
+  "Неверный адрес финиша.": [
+    "Invalid finish address.",
+    "终点地址无效。"
+  ],
+  "Неверный вид прогулки.": [
+    "Invalid walk type.",
+    "漫步类型无效。"
+  ],
+  "Неверный запрос на улучшение.": [
+    "Invalid improvement request.",
+    "改进请求无效。"
+  ],
+  "Неверный идентификатор прогулки.": [
+    "Invalid walk identifier.",
+    "漫步标识符无效。"
+  ],
+  "Неверный курсор.": [
+    "Invalid cursor.",
+    "游标无效。"
+  ],
+  "Неверный ответ оценки.": [
+    "Invalid rating response.",
+    "评分响应无效。"
+  ],
+  "Неверный ответ.": [
+    "Invalid response.",
+    "响应无效。"
+  ],
+  "Неверный пароль.": [
+    "Incorrect password.",
+    "密码错误。"
+  ],
+  "Неверный список причин.": [
+    "Invalid list of reasons.",
+    "原因列表无效。"
+  ],
+  "Неверный статус запроса.": [
+    "Invalid request status.",
+    "请求状态无效。"
+  ],
+  "Неверный статус озвучки.": [
+    "Invalid narration status.",
+    "配音状态无效。"
+  ],
+  "Неверный статус отзыва.": [
+    "Invalid review status.",
+    "评价状态无效。"
+  ],
+  "Неизвестная версия библиотеки прогулок. Исходная запись сохранена.": [
+    "Unknown walk library version. The original record was kept.",
+    "漫步库版本未知。原始记录已保留。"
+  ],
+  "Некорректная офлайн-область карты.": [
+    "The saved map area is invalid.",
+    "已保存的地图区域无效。"
+  ],
+  "Некорректный ответ области карты.": [
+    "The map area could not be read.",
+    "无法读取地图区域。"
+  ],
+  "Некорректный ответ рассказа.": [
+    "The story response is invalid.",
+    "故事响应无效。"
+  ],
+  "Некорректный ответ списка областей карты.": [
+    "The map area list could not be read.",
+    "无法读取地图区域列表。"
+  ],
+  "Некорректный финиш прогулки.": [
+    "The walk finish is invalid.",
+    "漫步路线终点无效。"
+  ],
+  "Необходимые cookie поддерживают вход. Настройки и прогулки сохраняются на устройстве. Аналитика Яндекс.Метрики включается только с вашего согласия.": [
+    "Essential cookies keep you signed in. Settings and walks are stored on your device. Yandex Metrica analytics is enabled only with your consent.",
+    "必要 Cookie 用于维持登录状态。设置和漫步路线保存在您的设备上。只有在您同意后，才会启用 Yandex Metrica 分析。"
+  ],
+  "Неполные данные об озвучке.": [
+    "Narration data is incomplete.",
+    "配音数据不完整。"
+  ],
+  "Нет аккаунта? Зарегистрироваться": [
+    "No account? Sign up",
+    "没有账户？注册"
+  ],
+  "Нет доступа к геолокации · звук доступен по кнопке": [
+    "Location access denied · audio is available from the button",
+    "无定位权限 · 可点击按钮播放音频"
+  ],
+  "Нет доступа к геолокации.": [
+    "Location access is not allowed.",
+    "未获得定位权限。"
+  ],
+  "Нет названия прогулки.": [
+    "The walk has no title.",
+    "漫步缺少标题。"
+  ],
+  "Нет незаконченных прогулок": [
+    "No unfinished walks",
+    "没有未完成的漫步"
+  ],
+  "Нет превью изображений": [
+    "No image previews",
+    "没有图片预览"
+  ],
+  "Нет связи с сервером. Проверьте интернет и повторите попытку.": [
+    "Unable to reach the server. Check your connection and try again.",
+    "无法连接服务器。请检查网络后重试。"
+  ],
+  "Нет сигнала GPS · звук доступен по кнопке": [
+    "No GPS signal · audio is available from the button",
+    "无 GPS 信号 · 可点击按钮播放音频"
+  ],
+  "Низкая точность геолокации: около {accuracy} м.": [
+    "Low location accuracy: about {accuracy} m.",
+    "定位精度较低：约 {accuracy} 米。"
+  ],
+  "Новая прогулка": [
+    "New walk",
+    "新建漫步"
+  ],
+  "Новости и истории мест": [
+    "News and stories about places",
+    "地点新闻与故事"
+  ],
+  "Нравится": [
+    "Like",
+    "喜欢"
+  ],
+  "Нужна проверка редактора": [
+    "Editorial review required",
+    "需要编辑审核"
+  ],
+  "О cookie": [
+    "About cookies",
+    "关于 Cookie"
+  ],
+  "О чём расскажет этот дом?": [
+    "What stories does this building hold?",
+    "这栋建筑有什么故事？"
+  ],
+  "Обновите страницу и повторите действие.": [
+    "Refresh the page and try again.",
+    "请刷新页面后重试。"
+  ],
+  "Обновить офлайн-копию": [
+    "Update offline copy",
+    "更新离线副本"
+  ],
+  "Общественная парковка": [
+    "Public parking",
+    "公共停车场"
+  ],
+  "Ожидалась строка.": [
+    "Expected a string.",
+    "应为字符串。"
+  ],
+  "Ожидалось положительное число.": [
+    "Expected a positive number.",
+    "应为正数。"
+  ],
+  "Ожидался объект.": [
+    "Expected an object.",
+    "应为对象。"
+  ],
+  "Ожидался список отзывов.": [
+    "Expected a list of reviews.",
+    "应为评价列表。"
+  ],
+  "Ожидался список прогулок.": [
+    "Expected a list of walks.",
+    "应为漫步列表。"
+  ],
+  "Озвучиваем": [
+    "Creating narration",
+    "正在制作配音"
+  ],
+  "Озвучка истории": [
+    "Story narration",
+    "故事配音"
+  ],
+  "Озвучка пока не готова": [
+    "Narration is not ready yet",
+    "配音尚未完成"
+  ],
+  "Озвучка этой истории на выбранном языке ещё готовится.": [
+    "Narration in your selected language is being prepared.",
+    "所选语言的音频正在制作中。"
+  ],
+  "Около {minutes} мин · {visits} парковок": [
+    "About {minutes} min · {visits} parking stops",
+    "约 {minutes} 分钟 · {visits} 个停车点"
+  ],
+  "Определяем адрес…": [
+    "Finding the address…",
+    "正在获取地址…"
+  ],
+  "Определяем местоположение…": [
+    "Finding location…",
+    "正在获取位置…"
+  ],
+  "Определяем положение…": [
+    "Finding your location…",
+    "正在获取位置…"
+  ],
+  "Основная навигация": [
+    "Main navigation",
+    "主导航"
+  ],
+  "Оставить отзыв": [
+    "Leave a review",
+    "撰写评价"
+  ],
+  "Осталось {km} км · {points} · {audio}": [
+    "{km} km remaining · {points} · {audio}",
+    "剩余 {km} 公里 · {points} · {audio}"
+  ],
+  "Остановка": [
+    "Stop",
+    "停靠点"
+  ],
+  "Остановка {current} из {total}": [
+    "Stop {current} of {total}",
+    "第 {current}/{total} 站"
+  ],
+  "Остановка {current} из {total} у этой парковки": [
+    "Story {current} of {total} at this parking stop",
+    "此停车点第 {current}/{total} 个故事"
+  ],
+  "Остановка {number}: {address}": [
+    "Stop {number}: {address}",
+    "第 {number} 个停靠点：{address}"
+  ],
+  "Остановка {number}: {title}": [
+    "Stop {number}: {title}",
+    "第 {number} 站：{title}"
+  ],
+  "Остановки · {count}": [
+    "Stops · {count}",
+    "停靠点 · {count}"
+  ],
+  "Ответ не получен.": [
+    "No response received.",
+    "未收到响应。"
+  ],
+  "Отголосок в соцсетях": [
+    "Otgolosok on social media",
+    "Otgolosok 的社交媒体"
+  ],
+  "Отголосок, на главную": [
+    "Otgolosok, home",
+    "Otgolosok，首页"
+  ],
+  "Отдалить": [
+    "Zoom out",
+    "缩小"
+  ],
+  "Отзыв (необязательно)": [
+    "Review (optional)",
+    "评价（选填）"
+  ],
+  "Отзыв будет опубликован от имени «Гость». Изменить его можно только в этом браузере.": [
+    "The review will be published as “Guest”. It can only be edited in this browser.",
+    "评价将以“访客”的名义发布，且只能在此浏览器中修改。"
+  ],
+  "Отзыв будет опубликован с именем «{name}».": [
+    "The review will be published under the name “{name}”.",
+    "评价将以“{name}”的姓名发布。"
+  ],
+  "Отзыв скрыт редакцией.": [
+    "The review has been hidden by the editors.",
+    "该评价已被编辑隐藏。"
+  ],
+  "Отзыв удалён.": [
+    "Review deleted.",
+    "评价已删除。"
+  ],
+  "Отзывы": [
+    "Reviews",
+    "评价"
+  ],
+  "Отзывы к этой прогулке недоступны.": [
+    "Reviews are unavailable for this walk.",
+    "此漫步路线暂不支持评价。"
+  ],
+  "Отзывы сейчас недоступны.": [
+    "Reviews are currently unavailable.",
+    "评价暂时不可用。"
+  ],
+  "Откройте «Настройки» телефона → «Приложения» → «Отголосок» → «Разрешения» → «Местоположение».": [
+    "Open your phone's Settings → Apps → Otgolosok → Permissions → Location.",
+    "打开手机“设置”→“应用”→“Otgolosok”→“权限”→“位置信息”。"
+  ],
+  "Откройте настройки разрешений этого сайта в браузере и разрешите доступ к местоположению.": [
+    "Open this site's permission settings in your browser and allow location access.",
+    "在浏览器中打开此网站的权限设置，并允许访问位置信息。"
+  ],
+  "Откройте настройки этого сайта через значок слева от адреса в браузере.": [
+    "Open this site's settings using the icon to the left of the address in your browser.",
+    "点击浏览器地址栏左侧的图标，打开此网站的设置。"
+  ],
+  "Откройте прогулку и сохраните готовые записи для прослушивания без интернета.": [
+    "Open a walk and save completed recordings to listen offline.",
+    "打开漫步路线并保存已完成的录音，即可离线收听。"
+  ],
+  "Откройте ссылку ещё раз или вернитесь к списку прогулок.": [
+    "Open the link again or return to the list of walks.",
+    "请重新打开链接，或返回漫步列表。"
+  ],
+  "Открываем Telegram…": [
+    "Opening Telegram…",
+    "正在打开 Telegram…"
+  ],
+  "Открываем историю…": [
+    "Opening the story…",
+    "正在打开故事…"
+  ],
+  "Открываем карту…": [
+    "Opening the map…",
+    "正在打开地图…"
+  ],
+  "Открываем прогулки…": [
+    "Opening walks…",
+    "正在打开漫步路线…"
+  ],
+  "Открываем прогулку…": [
+    "Opening the walk…",
+    "正在打开漫步…"
+  ],
+  "Открываем профиль…": [
+    "Opening your profile…",
+    "正在打开个人资料…"
+  ],
+  "Открываем черновик…": [
+    "Opening draft…",
+    "正在打开草稿…"
+  ],
+  "Открыто до {time}": [
+    "Open until {time}",
+    "营业至 {time}"
+  ],
+  "Открыто до полуночи": [
+    "Open until midnight",
+    "营业至午夜"
+  ],
+  "Открыто круглосуточно": [
+    "Open 24 hours",
+    "24 小时营业"
+  ],
+  "Открыть на PastVu": [
+    "Open on PastVu",
+    "在 PastVu 上查看"
+  ],
+  "Открыть на YouTube": [
+    "Open on YouTube",
+    "在 YouTube 上打开"
+  ],
+  "Открыть навигатор": [
+    "Open navigator",
+    "打开导航"
+  ],
+  "Открыть прогулку": [
+    "Open walk",
+    "打开漫步路线"
+  ],
+  "Открыть сможет любой, у кого есть ссылка.": [
+    "Anyone with the link can open it.",
+    "任何获得链接的人都可以打开。"
+  ],
+  "Открыть фото: {title}": [
+    "Open photo: {title}",
+    "打开照片：{title}"
+  ],
+  "Откуда": [
+    "From",
+    "从哪里"
+  ],
+  "Откуда начнём прогулку?": [
+    "Where should we start the walk?",
+    "从哪里开始漫步？"
+  ],
+  "Откуда это известно?": [
+    "How do we know this?",
+    "这些信息从何而来？"
+  ],
+  "Отмена": [
+    "Cancel",
+    "取消"
+  ],
+  "Отменить": [
+    "Cancel",
+    "取消"
+  ],
+  "Отменить ввод: {label}": [
+    "Cancel entry: {label}",
+    "取消输入：{label}"
+  ],
+  "Отменить запуск": [
+    "Cancel starting",
+    "取消启动"
+  ],
+  "Отметьте, что мешает. Можно несколько вариантов.": [
+    "Select anything that gets in the way. You can choose more than one.",
+    "请选择影响体验的问题，可多选。"
+  ],
+  "Отозвать запрос": [
+    "Withdraw request",
+    "撤回请求"
+  ],
+  "Отправить": [
+    "Send",
+    "发送"
+  ],
+  "Отправить отзыв": [
+    "Submit review",
+    "提交评价"
+  ],
+  "Отправка сохранена. Можно проверить статус сейчас или при возвращении, без новой отправки.": [
+    "The submission has been saved. You can check its status now or when you return, without submitting it again.",
+    "提交记录已保存。您可以现在或稍后返回时查看状态，无需重新提交。"
+  ],
+  "Отправляем адрес…": [
+    "Sending address…",
+    "正在发送地址…"
+  ],
+  "Отправляем исследование…": [
+    "Submitting research…",
+    "正在提交调研…"
+  ],
+  "Отправляем…": [
+    "Sending…",
+    "正在发送…"
+  ],
+  "Офлайн-комплект заведений слишком большой.": [
+    "The offline food bundle is too large.",
+    "离线餐饮数据包过大。"
+  ],
+  "Офлайн-комплект прогулки слишком большой.": [
+    "This walk is too large to save offline.",
+    "这条漫步的离线内容过大。"
+  ],
+  "Офлайн-копия ещё не сохранена": [
+    "No offline copy saved yet",
+    "尚未保存离线副本"
+  ],
+  "Офлайн-копия от {date}. Последняя редакция может быть новее.": [
+    "Offline copy from {date}. The latest version may be newer.",
+    "离线副本保存于 {date}。最新版本可能已有更新。"
+  ],
+  "Офлайн-копия сохранена · {count} записей": [
+    "Offline copy saved · {count} recordings",
+    "离线副本已保存 · {count} 个音频"
+  ],
+  "Офлайн-копия сохранена · {count} записи": [
+    "Offline copy saved · {count} recordings",
+    "离线副本已保存 · {count} 个音频"
+  ],
+  "Офлайн-копия сохранена · {count} запись": [
+    "Offline copy saved · {count} recording",
+    "离线副本已保存 · {count} 个音频"
+  ],
+  "Офлайн-сохранение недоступно в этом браузере.": [
+    "Offline saving is unavailable in this browser.",
+    "此浏览器不支持离线保存。"
+  ],
+  "Офлайн-ячейка заведений отсутствует.": [
+    "Offline place data is missing.",
+    "缺少餐饮场所的离线数据。"
+  ],
+  "Офлайн-ячейка заведений повреждена.": [
+    "Offline place data is damaged.",
+    "餐饮场所的离线数据已损坏。"
+  ],
+  "Оцените прогулку": [
+    "Rate this walk",
+    "为这条漫步路线评分"
+  ],
+  "Оценить прогулку": [
+    "Rate the walk",
+    "评价这条漫步"
+  ],
+  "Оценка": [
+    "Rating",
+    "评分"
+  ],
+  "Оценка {rating} из 5": [
+    "Rating: {rating} out of 5",
+    "评分：{rating}/5"
+  ],
+  "Оценка места": [
+    "Place rating",
+    "地点评分"
+  ],
+  "Оценка снята.": [
+    "Rating removed.",
+    "评分已取消。"
+  ],
+  "Оценок пока нет": [
+    "No ratings yet",
+    "暂无评分"
+  ],
+  "Ошибка геолокации.": [
+    "Location error.",
+    "定位错误。"
+  ],
+  "Параметры или остановки изменены. Сохранённое исследование остаётся доступно, но его маршрут нельзя применить к этой версии прогулки.": [
+    "The settings or stops have changed. The saved research is still available, but its route cannot be applied to this version of the walk.",
+    "参数或停靠点已更改。已保存的调研仍可查看，但其路线无法应用到当前版本的漫步路线。"
+  ],
+  "Парковка {current}": [
+    "Parking {current}",
+    "停车点 {current}"
+  ],
+  "Парковка бесплатная": [
+    "Free parking",
+    "免费停车"
+  ],
+  "Парковка не выбрана. Маршрут попробует подобрать её автоматически.": [
+    "No parking selected. The route will try to choose one automatically.",
+    "未选择停车点。路线将尝试自动选择。"
+  ],
+  "Парковка платная": [
+    "Paid parking",
+    "收费停车"
+  ],
+  "Парковка рядом": [
+    "Nearby parking",
+    "附近停车点"
+  ],
+  "Парковки": [
+    "Parking",
+    "停车点"
+  ],
+  "Парковки пока недоступны. Попробуйте позже.": [
+    "Parking is temporarily unavailable. Try again later.",
+    "停车信息暂时不可用。请稍后再试。"
+  ],
+  "Пароль": [
+    "Password",
+    "密码"
+  ],
+  "Пауза": [
+    "Pause",
+    "暂停"
+  ],
+  "Пекарня": [
+    "Bakery",
+    "面包店"
+  ],
+  "Перед поездкой проверьте знаки и ограничения на месте.": [
+    "Check signs and restrictions on site before travelling.",
+    "出发前请在现场确认标志和限制。"
+  ],
+  "Переключение остановок": [
+    "Switch stops",
+    "切换停靠点"
+  ],
+  "Переход": [
+    "Advance mode",
+    "切换方式"
+  ],
+  "Пешком": [
+    "On foot",
+    "步行"
+  ],
+  "Пицца": [
+    "Pizza",
+    "披萨"
+  ],
+  "Плата за парковку неизвестна": [
+    "Parking fee unknown",
+    "停车费用未知"
+  ],
+  "Платная парковка": [
+    "Paid parking",
+    "收费停车"
+  ],
+  "Плеер истории": [
+    "Story player",
+    "故事播放器"
+  ],
+  "По времени": [
+    "By duration",
+    "按时长"
+  ],
+  "По выбранным станциям прогулок нет.": [
+    "No walks match these stations.",
+    "没有符合所选站点的漫步路线。"
+  ],
+  "По выбранным фильтрам прогулок нет.": [
+    "No walks match these filters.",
+    "没有符合筛选条件的漫步路线。"
+  ],
+  "По дороге": [
+    "Along the way",
+    "沿途"
+  ],
+  "По дороге · часть {number}": [
+    "Along the way · part {number}",
+    "沿途 · 第 {number} 部分"
+  ],
+  "По кнопке": [
+    "With a button",
+    "点击按钮"
+  ],
+  "По месту": [
+    "On arrival",
+    "到达地点"
+  ],
+  "По ссылке": [
+    "Anyone with the link",
+    "通过链接"
+  ],
+  "По ссылке и в «Топе прогулок» после проверки редакцией.": [
+    "Available by link and in Top walks after editorial review.",
+    "可通过链接访问；经编辑审核后会显示在“热门漫步”中。"
+  ],
+  "Повторить": [
+    "Try again",
+    "重试"
+  ],
+  "Повторить загрузку": [
+    "Try loading again",
+    "重新加载"
+  ],
+  "Повторить загрузку видео": [
+    "Reload video",
+    "重新加载视频"
+  ],
+  "Повторить загрузку заведений": [
+    "Reload places to eat",
+    "重新加载餐饮场所"
+  ],
+  "Повторить загрузку мест": [
+    "Reload places",
+    "重新加载地点"
+  ],
+  "Повторить загрузку парковок": [
+    "Retry loading parking",
+    "重试加载停车点"
+  ],
+  "Повторить загрузку прогулок": [
+    "Reload walks",
+    "重新加载漫步路线"
+  ],
+  "Повторить запуск звука": [
+    "Try audio again",
+    "重新播放音频"
+  ],
+  "Повторить озвучку": [
+    "Retry narration",
+    "重新制作配音"
+  ],
+  "Повторить подготовку": [
+    "Retry preparation",
+    "重新制作"
+  ],
+  "Подбираем парковки и переезды…": [
+    "Finding parking and driving routes…",
+    "正在查找停车点和驾车路线…"
+  ],
+  "Подготовить историю": [
+    "Prepare story",
+    "制作故事"
+  ],
+  "Подготовить историю выбранной остановки с помощью ИИ. Факты будут проверены по источникам.": [
+    "Use AI to prepare a story for the selected stop. The facts will be checked against sources.",
+    "使用 AI 为所选停靠点制作故事。事实会根据资料来源进行核实。"
+  ],
+  "Подготовка заняла слишком долго. Сохранённые этапы можно продолжить повторным запуском.": [
+    "Preparation timed out. Retry to continue from the saved steps.",
+    "制作超时。重试可从已保存的步骤继续。"
+  ],
+  "Подготовка истории прервалась. Текст пока недоступен.": [
+    "Story preparation stopped. The text is not available yet.",
+    "故事制作已中断，文字暂不可用。"
+  ],
+  "Подготовка историй": [
+    "Story preparation",
+    "故事制作"
+  ],
+  "Подготовка прервалась": [
+    "Preparation stopped",
+    "制作已中断"
+  ],
+  "Подготовка прервалась.": [
+    "Preparation stopped.",
+    "制作已中断。"
+  ],
+  "Подготовлено автоматически: факты сопоставлены с источниками, редактор ещё не проверял рассказ.": [
+    "Prepared automatically: the facts were checked against sources, but an editor has not reviewed the story yet.",
+    "本故事由系统自动制作：事实已与资料来源核对，但尚未经过编辑审核。"
+  ],
+  "Подготовлено автоматически: факты сопоставлены с источниками, редактор ещё не проверял рассказ. Запись появится после озвучки.": [
+    "Prepared automatically: the facts were checked against sources, but an editor has not reviewed the story yet. The recording will appear when narration is complete.",
+    "本故事由系统自动制作：事实已与资料来源核对，但尚未经过编辑审核。配音完成后将显示录音。"
+  ],
+  "Подготовлено автоматически: факты сопоставлены с источниками, редактор ещё не проверял рассказ. Озвучено синтетическим голосом.": [
+    "Prepared automatically: the facts were checked against sources, but an editor has not reviewed the story yet. The narration uses a synthetic voice.",
+    "本故事由系统自动制作：事实已与资料来源核对，但尚未经过编辑审核。配音为合成语音。"
+  ],
+  "Поделиться": [
+    "Share",
+    "分享"
+  ],
+  "Подождите…": [
+    "Please wait…",
+    "请稍候…"
+  ],
+  "Подробнее о маршруте «{title}»": [
+    "Explore the route “{title}”",
+    "查看“{title}”的路线详情"
+  ],
+  "Подряд": [
+    "In sequence",
+    "连续播放"
+  ],
+  "Подтвердите выход": [
+    "Confirm sign out",
+    "确认退出登录"
+  ],
+  "Подтвердить адрес": [
+    "Confirm address",
+    "确认地址"
+  ],
+  "Подтвердить в Telegram": [
+    "Confirm with Telegram",
+    "通过 Telegram 确认"
+  ],
+  "Подтвердить выход": [
+    "Confirm sign out",
+    "确认退出"
+  ],
+  "Подтверждение удаления": [
+    "Confirm deletion",
+    "确认删除"
+  ],
+  "Подтверждения геопозиции": [
+    "Location confirmations",
+    "定位确认次数"
+  ],
+  "Поездка завершена": [
+    "Trip complete",
+    "行程已完成"
+  ],
+  "Поесть рядом": [
+    "Food nearby",
+    "附近餐饮"
+  ],
+  "Позади · {count}": [
+    "Behind · {count}",
+    "后方 · {count}"
+  ],
+  "Позвонить": [
+    "Call",
+    "致电"
+  ],
+  "Позиция воспроизведения": [
+    "Playback position",
+    "播放位置"
+  ],
+  "Поиск: {label}": [
+    "Search: {label}",
+    "搜索：{label}"
+  ],
+  "Пока без оценок": [
+    "No ratings yet",
+    "暂无评分"
+  ],
+  "Пока готовим истории только о Москве. Можно выбрать московский дом или открыть готовую прогулку.": [
+    "For now, we only prepare stories about Moscow. Select a building in Moscow or open a ready-made walk.",
+    "目前我们只制作莫斯科的故事。请选择莫斯科的建筑，或打开现成的漫步路线。"
+  ],
+  "Показать ещё": [
+    "Show more",
+    "显示更多"
+  ],
+  "Показать карту": [
+    "Show map",
+    "显示地图"
+  ],
+  "Политика обработки данных": [
+    "Privacy policy",
+    "个人信息处理政策"
+  ],
+  "Положение определено": [
+    "Location found",
+    "已找到位置"
+  ],
+  "Положение приблизительное. Выберите точку на карте, чтобы точно искать рядом.": [
+    "Your location is approximate. Select a point on the map for an exact nearby search.",
+    "当前位置为近似位置。请在地图上选择一个点，以便准确搜索附近内容。"
+  ],
+  "Положение приблизительное: точность около {accuracy} м. Выберите точку на карте, чтобы точно искать рядом.": [
+    "Your location is approximate, with an accuracy of about {accuracy} m. Select a point on the map for an exact nearby search.",
+    "当前位置为近似位置，精度约 {accuracy} 米。请在地图上选择一个点，以便准确搜索附近内容。"
+  ],
+  "Пончики": [
+    "Doughnuts",
+    "甜甜圈"
+  ],
+  "Популярные прогулки с оценками слушателей.": [
+    "Popular walks rated by listeners.",
+    "听众评分的热门漫步路线。"
+  ],
+  "Попытки подготовки закончились. Готовый текст остаётся доступным.": [
+    "No preparation attempts remain. The completed text is still available.",
+    "已用完制作重试次数。已完成的文字仍可查看。"
+  ],
+  "Построить прогулку": [
+    "Build walk",
+    "规划漫步路线"
+  ],
+  "Правовая информация": [
+    "Legal information",
+    "法律信息"
+  ],
+  "Предыдущая остановка": [
+    "Previous stop",
+    "上一站"
+  ],
+  "Предыдущее фото": [
+    "Previous photo",
+    "上一张照片"
+  ],
+  "Прервать": [
+    "End walk",
+    "结束漫步"
+  ],
+  "Прервать прогулку": [
+    "End walk",
+    "结束漫步"
+  ],
+  "Прервать прогулку и открыть ссылку?": [
+    "End the walk and open the link?",
+    "结束漫步并打开链接吗？"
+  ],
+  "Прервать прогулку?": [
+    "End the walk?",
+    "要结束漫步吗？"
+  ],
+  "Приблизить": [
+    "Zoom in",
+    "放大"
+  ],
+  "Приблизьте карту, чтобы увидеть заведения": [
+    "Zoom in to see places to eat",
+    "放大地图以查看餐饮场所"
+  ],
+  "Приблизьте карту, чтобы увидеть парковки": [
+    "Zoom in to see parking",
+    "放大地图以查看停车点"
+  ],
+  "Приватные материалы для прослушивания без сети будут удалены с этого устройства. Прогулки в аккаунте сохранятся.": [
+    "Private offline listening content will be removed from this device. Your account walks will remain.",
+    "此设备上的私人离线收听内容将被删除。账户中的漫步路线会保留。"
+  ],
+  "Приложению запрещён доступ к геопозиции. Разрешите его в настройках телефона — до тех пор остановки переключаются вручную.": [
+    "Location access is blocked for the app. Allow it in your phone settings; until then, switch stops manually.",
+    "应用的定位权限已被禁用。请在手机设置中允许；在此之前，请手动切换停靠点。"
+  ],
+  "Применение сохранит готовый маршрут и ссылки на истории. Новые исследования, тексты или аудио при этом не заказываются.": [
+    "Applying this result will save the completed route and links to its stories. It will not request new research, text, or audio.",
+    "应用此结果会保存已完成的路线和故事链接，不会请求新的调研、文字或音频。"
+  ],
+  "Проверенный текст доступен в карточке места; запись можно слушать здесь.": [
+    "The verified text is available on the place card; you can listen to the recording here.",
+    "已核实的文字可在地点卡片中查看；录音可在此处收听。"
+  ],
+  "Проверенный текст доступен в карточке места; озвучивание ещё не готово.": [
+    "The verified text is available on the place card; narration is not ready yet.",
+    "已核实的文字可在地点卡片中查看；配音尚未完成。"
+  ],
+  "Проверено адресов: {checked} из {total}. С подтверждениями: {accepted}.": [
+    "Addresses checked: {checked} of {total}. Supported by sources: {accepted}.",
+    "已核查地址：{checked}/{total}。有资料佐证：{accepted}。"
+  ],
+  "Проверено по публикациям {date}": [
+    "Checked against publications on {date}",
+    "已根据公开资料核查，日期：{date}"
+  ],
+  "Проверить звук": [
+    "Test sound",
+    "测试声音"
+  ],
+  "Проверить снова": [
+    "Check again",
+    "再次检查"
+  ],
+  "Проверить статус": [
+    "Check status",
+    "检查状态"
+  ],
+  "Проверьте, что геолокация включена в быстрых настройках телефона, и вернитесь в приложение.": [
+    "Make sure location is enabled in your phone's quick settings, then return to the app.",
+    "请确认手机快捷设置中已开启定位，然后返回应用。"
+  ],
+  "Проверьте, что геолокация включена в настройках телефона и разрешена для браузера.": [
+    "Make sure location is enabled in your phone's settings and allowed for the browser.",
+    "请确认手机设置中已开启定位，并已允许浏览器使用。"
+  ],
+  "Проверяем запуск звука. Можно включить его кнопкой.": [
+    "Checking audio playback. You can start it with the button.",
+    "正在检查音频播放。您也可以点击按钮启动。"
+  ],
+  "Проверяем историю…": [
+    "Checking story…",
+    "正在检查故事…"
+  ],
+  "Проверяем источники об адресах": [
+    "Checking sources for the addresses",
+    "正在核查地址相关资料"
+  ],
+  "Проверяем сохранённое исследование…": [
+    "Checking saved research…",
+    "正在检查已保存的调研…"
+  ],
+  "Проверяем факты": [
+    "Verifying facts",
+    "正在核实事实"
+  ],
+  "Прогулка": [
+    "Walk",
+    "漫步"
+  ],
+  "Прогулка в аккаунте изменилась. Скачайте черновик перед обновлением страницы.": [
+    "The walk in your account has changed. Download the draft before refreshing the page.",
+    "账户中的漫步路线已更改。刷新页面前请下载草稿。"
+  ],
+  "Прогулка готова": [
+    "Walk ready",
+    "漫步路线已完成"
+  ],
+  "Прогулка ещё не открыта.": [
+    "The walk has not opened yet.",
+    "漫步路线尚未打开。"
+  ],
+  "Прогулка завершена": [
+    "Walk complete",
+    "漫步已结束"
+  ],
+  "Прогулка изменена в другой вкладке. Обновите список перед сохранением.": [
+    "The walk was changed in another tab. Refresh the list before saving.",
+    "这条漫步已在另一标签页中更改。保存前请刷新列表。"
+  ],
+  "Прогулка изменилась на другом устройстве. Обновите страницу и повторите.": [
+    "The walk was changed on another device. Refresh the page and try again.",
+    "这条漫步已在另一台设备上更改。请刷新页面后重试。"
+  ],
+  "Прогулка не найдена": [
+    "Walk not found",
+    "未找到漫步路线"
+  ],
+  "Прогулка не найдена.": [
+    "Walk not found.",
+    "未找到漫步路线。"
+  ],
+  "Прогулка от {address}": [
+    "Walk from {address}",
+    "从 {address} 出发的漫步"
+  ],
+  "Прогулка сохранена в личном кабинете.": [
+    "The walk has been saved to your account.",
+    "漫步路线已保存到您的账户。"
+  ],
+  "Прогулка сохранена. В топе она появится после проверки редакцией.": [
+    "The walk has been saved. It will appear in the featured list after editorial review.",
+    "漫步路线已保存。编辑审核后会显示在精选列表中。"
+  ],
+  "Прогулки": [
+    "Walks",
+    "漫步"
+  ],
+  "Прогулки в аккаунте и избранное будут удалены без возможности восстановления. Локальные черновики останутся.": [
+    "Your account walks and favorites will be permanently deleted. Local drafts will remain.",
+    "账户中的漫步路线和收藏将被永久删除。本地草稿会保留。"
+  ],
+  "Прогулки на карте": [
+    "Walks on the map",
+    "地图上的漫步路线"
+  ],
+  "Прогулки рядом": [
+    "Nearby walks",
+    "附近的漫步路线"
+  ],
+  "Прогулку видите только вы.": [
+    "Only you can see the walk.",
+    "仅您可以查看这条漫步。"
+  ],
+  "Прогулок здесь: {count}": [
+    "Walks here: {count}",
+    "此处漫步路线：{count}"
+  ],
+  "Продолжаем исследование…": [
+    "Continuing research…",
+    "正在继续调研…"
+  ],
+  "Продолжительность": [
+    "Duration",
+    "时长"
+  ],
+  "Продолжить": [
+    "Continue",
+    "继续"
+  ],
+  "Продолжить поездку": [
+    "Continue trip",
+    "继续行程"
+  ],
+  "Продолжить поиск": [
+    "Continue searching",
+    "继续搜索"
+  ],
+  "Продолжить прогулку": [
+    "Continue walk",
+    "继续漫步"
+  ],
+  "Продолжить через Telegram": [
+    "Continue with Telegram",
+    "通过 Telegram 继续"
+  ],
+  "Пройти на машине": [
+    "Explore by car",
+    "驾车游览"
+  ],
+  "Пройти прогулку с конца": [
+    "Walk the route from the end",
+    "从终点开始漫步"
+  ],
+  "Прокладываем путь…": [
+    "Routing…",
+    "正在规划路线…"
+  ],
+  "Профиль": [
+    "Profile",
+    "个人资料"
+  ],
+  "Радиус поиска": [
+    "Search radius",
+    "搜索半径"
+  ],
+  "Развернуть карточку": [
+    "Expand card",
+    "展开卡片"
+  ],
+  "Разрешить аналитику": [
+    "Allow analytics",
+    "允许分析"
+  ],
+  "Рассказ проверен и подтверждён редактором.": [
+    "The story has been reviewed and approved by an editor.",
+    "故事已由编辑审核并确认。"
+  ],
+  "Рассказ требует редакторской проверки фактов или последовательности повествования.": [
+    "This story needs an editor to check its facts or narrative.",
+    "此故事需要编辑核查事实或叙述顺序。"
+  ],
+  "Регистрация": [
+    "Create an account",
+    "注册"
+  ],
+  "Регистрация временно недоступна.": [
+    "Registration is temporarily unavailable.",
+    "注册暂时不可用。"
+  ],
+  "Редактировать": [
+    "Edit",
+    "编辑"
+  ],
+  "Редактировать можно только свою прогулку.": [
+    "You can only edit your own walk.",
+    "只能编辑您自己的漫步路线。"
+  ],
+  "Редактировать профиль": [
+    "Edit profile",
+    "编辑个人资料"
+  ],
+  "Редакция скрыла прогулку из топа. Ссылка продолжает работать.": [
+    "Editors removed this walk from the ranking. Its link still works.",
+    "编辑已将这条漫步移出热门，链接仍然有效。"
+  ],
+  "Редакция уже поработала над вашим прошлым запросом. Если проблема осталась, отправьте его снова.": [
+    "The editors have addressed your previous request. If the issue remains, submit it again.",
+    "编辑已处理您之前的请求。如果问题仍然存在，请再次提交。"
+  ],
+  "Результат отправки неизвестен. Введите ID истории из раздела запросов профиля.": [
+    "The submission result is unknown. Enter the story ID from the requests section of your profile.",
+    "提交结果未知。请输入个人资料中请求页面里的故事 ID。"
+  ],
+  "Ресторан": [
+    "Restaurant",
+    "餐厅"
+  ],
+  "Русская кухня": [
+    "Russian cuisine",
+    "俄罗斯菜"
+  ],
+  "Рыба": [
+    "Fish",
+    "鱼类"
+  ],
+  "Рядом": [
+    "Nearby",
+    "附近"
+  ],
+  "Рядом · {count} историй · около {minutes} мин": [
+    "Nearby · {count} stories · about {minutes} min",
+    "附近 · {count} 个故事 · 约 {minutes} 分钟"
+  ],
+  "Рядом нашлось мест только на {shortfall} мин из {minutes}. Измените начало прогулки.": [
+    "Nearby places cover only {shortfall} of {minutes} minutes. Change the starting point.",
+    "附近地点只能组成 {shortfall}/{minutes} 分钟的路线。请更改起点。"
+  ],
+  "Рядом пока мало готовых историй.": [
+    "There are not enough ready stories nearby yet.",
+    "附近已完成的故事暂时不足。"
+  ],
+  "С этим заведением прогулка станет длиннее 90 минут.": [
+    "Adding this place would make the walk longer than 90 minutes.",
+    "加入该场所后，漫步将超过 90 分钟。"
+  ],
+  "Сайт": [
+    "Website",
+    "网站"
+  ],
+  "Сайту запрещён доступ к геопозиции. Разрешите его в браузере — до тех пор остановки переключаются вручную.": [
+    "Location access is blocked for this site. Allow it in your browser; until then, switch stops manually.",
+    "网站的定位权限已被禁用。请在浏览器中允许；在此之前，请手动切换停靠点。"
+  ],
+  "Сбросить фильтры": [
+    "Clear filters",
+    "清除筛选"
+  ],
+  "Свернуть историю": [
+    "Collapse story",
+    "收起故事"
+  ],
+  "Свернуть карточку": [
+    "Collapse card",
+    "收起卡片"
+  ],
+  "Связь прервалась.": [
+    "The connection was interrupted.",
+    "连接已中断。"
+  ],
+  "Связь прервалась. Обновите статус кнопкой.": [
+    "The connection was interrupted. Use the button to refresh the status.",
+    "连接已中断。请点击按钮更新状态。"
+  ],
+  "Сейчас готовятся другие истории. Попробуйте через несколько минут.": [
+    "Other stories are being prepared. Try again in a few minutes.",
+    "正在制作其他故事。请几分钟后重试。"
+  ],
+  "Сервер вернул неожиданный ответ. Повторите попытку позже.": [
+    "The server returned an unexpected response. Try again later.",
+    "服务器返回了异常响应。请稍后重试。"
+  ],
+  "Сервер долго не отвечает. Повторите попытку.": [
+    "The server is taking too long to respond. Try again.",
+    "服务器响应超时。请重试。"
+  ],
+  "Сервер не нашёл задачу для сохранённой отправки. Можно явно попробовать снова.": [
+    "The server did not find a task for the saved submission. You can explicitly try again.",
+    "服务器未找到与已保存提交对应的任务。您可以手动重试。"
+  ],
+  "Сервис вернул другое исследование.": [
+    "The service returned different research.",
+    "服务返回了其他调研任务。"
+  ],
+  "Сервис вернул другую историю.": [
+    "The service returned a different story.",
+    "服务返回了其他故事。"
+  ],
+  "Сервис вернул некорректный маршрут. Попробуйте ещё раз.": [
+    "The service returned an invalid route. Try again.",
+    "服务返回了无效路线。请重试。"
+  ],
+  "Сервис вернул некорректный маршрут. Попробуйте построить заново.": [
+    "The service returned an invalid route. Try building it again.",
+    "服务返回了无效路线。请重新规划。"
+  ],
+  "Сервис вернул некорректный ответ. Обновите страницу.": [
+    "The service returned an invalid response. Refresh the page.",
+    "服务返回了无效响应。请刷新页面。"
+  ],
+  "Сервис вернул повреждённую прогулку.": [
+    "The service returned damaged walk data.",
+    "服务返回的漫步数据已损坏。"
+  ],
+  "Сервис недоступен. Повторите действие позже.": [
+    "The service is unavailable. Try again later.",
+    "服务不可用。请稍后重试。"
+  ],
+  "Сервис обновляется. Карта загрузится автоматически.": [
+    "The service is being updated. The map will load automatically.",
+    "服务正在更新。地图会自动加载。"
+  ],
+  "Сервис подготовки временно недоступен. Попробуйте повторить позже.": [
+    "The preparation service is temporarily unavailable. Try again later.",
+    "制作服务暂时不可用。请稍后重试。"
+  ],
+  "Сервис подготовки занят. Попробуйте повторить позже.": [
+    "The preparation service is busy. Try again later.",
+    "制作服务繁忙。请稍后重试。"
+  ],
+  "Сервис подготовки отклонил ключ доступа. Нужна проверка настроек.": [
+    "The preparation service rejected its access key. Its settings need to be checked.",
+    "制作服务拒绝了访问密钥。需要检查服务设置。"
+  ],
+  "Сервис пока недоступен. Попробуйте позже.": [
+    "The service is currently unavailable. Please try again later.",
+    "服务暂时不可用。请稍后重试。"
+  ],
+  "Скачать черновик": [
+    "Download draft",
+    "下载草稿"
+  ],
+  "Скопировать ссылку": [
+    "Copy link",
+    "复制链接"
+  ],
+  "Скопируйте ссылку": [
+    "Copy the link",
+    "复制链接"
+  ],
+  "Скопируйте ссылку: {url}": [
+    "Copy this link: {url}",
+    "请复制此链接：{url}"
+  ],
+  "Скорость {rate}": [
+    "Speed {rate}",
+    "速度 {rate}"
+  ],
+  "Скорость аудио": [
+    "Audio speed",
+    "音频速度"
+  ],
+  "Скорость рассказа": [
+    "Narration speed",
+    "讲述速度"
+  ],
+  "Скорость рассказа: {rate}": [
+    "Narration speed: {rate}",
+    "讲述速度：{rate}"
+  ],
+  "Скрыт редакцией": [
+    "Hidden by editors",
+    "已被编辑隐藏"
+  ],
+  "Скрыть источники": [
+    "Hide sources",
+    "隐藏来源"
+  ],
+  "Скрыть карту": [
+    "Hide map",
+    "隐藏地图"
+  ],
+  "Скрыть сообщение": [
+    "Dismiss message",
+    "关闭消息"
+  ],
+  "Сладости": [
+    "Sweets",
+    "糖果"
+  ],
+  "Следующая история": [
+    "Next story",
+    "下一个故事"
+  ],
+  "Следующая парковка": [
+    "Next parking",
+    "下一个停车点"
+  ],
+  "Следующая часть включается кнопкой «Дальше» или с экрана блокировки.": [
+    "Start the next part with the Next button or from the lock screen.",
+    "可点击“下一步”按钮或在锁屏界面播放下一部分。"
+  ],
+  "Следующее фото": [
+    "Next photo",
+    "下一张照片"
+  ],
+  "Слушаем город · ±{distance} м": [
+    "Listening to the city · ±{distance} m",
+    "聆听城市 · ±{distance} 米"
+  ],
+  "Слушать": [
+    "Listen",
+    "收听"
+  ],
+  "Слушать ещё раз": [
+    "Listen again",
+    "再次收听"
+  ],
+  "Слушать историю": [
+    "Listen to story",
+    "收听故事"
+  ],
+  "Слушать эту часть": [
+    "Listen to this part",
+    "收听这一部分"
+  ],
+  "Смена языка прервёт прогулку. Продолжить?": [
+    "Changing the language will end this walk. Continue?",
+    "切换语言将结束本次漫步。要继续吗？"
+  ],
+  "Смотреть видео": [
+    "Watch video",
+    "观看视频"
+  ],
+  "Смотрим, какой дом находится рядом с выбранной точкой.": [
+    "Finding the building closest to the selected point.",
+    "正在查找离所选位置最近的建筑。"
+  ],
+  "Смотрите истории рядом с вами": [
+    "Discover stories near you",
+    "查看您附近的故事"
+  ],
+  "Сначала откройте маршрут в навигаторе. Рассказы включаются только после парковки.": [
+    "Open the route in your navigator first. Stories are available only after parking.",
+    "请先在导航中打开路线。停车后才能播放故事。"
+  ],
+  "Сначала постройте маршрут.": [
+    "Build the route first.",
+    "请先规划路线。"
+  ],
+  "Согласие на аналитику": [
+    "Analytics consent",
+    "分析数据处理同意书"
+  ],
+  "Соединяем подтверждённые остановки": [
+    "Connecting verified stops",
+    "正在连接已核实的停靠点"
+  ],
+  "Создадим копию на устройстве с теми же историями, парковками и пешими участками. Максимум три часа, без учёта пробок.": [
+    "We will save a copy on this device with the same stories, parking and walking sections. Up to three hours, excluding traffic.",
+    "将在此设备保存包含相同故事、停车点和步行路段的副本。最长三小时，不计拥堵。"
+  ],
+  "Создайте аккаунт, чтобы сохранять прогулки и открывать их на других устройствах.": [
+    "Create an account to save walks and access them on other devices.",
+    "创建账户，即可保存漫步路线并在其他设备上查看。"
+  ],
+  "Создать аккаунт": [
+    "Create account",
+    "创建账户"
+  ],
+  "Создать прогулку": [
+    "Create walk",
+    "创建漫步"
+  ],
+  "Создать прогулку отсюда": [
+    "Create a walk from here",
+    "从这里创建漫步路线"
+  ],
+  "Создаём одну историю…": [
+    "Preparing one story…",
+    "正在制作一个故事…"
+  ],
+  "Сохранить": [
+    "Save",
+    "保存"
+  ],
+  "Сохранить изменения": [
+    "Save changes",
+    "保存更改"
+  ],
+  "Сохранить прогулку без сети": [
+    "Save walk for offline use",
+    "保存漫步以便离线使用"
+  ],
+  "Сохраняем прогулку…": [
+    "Saving walk…",
+    "正在保存漫步路线…"
+  ],
+  "Сохраняем…": [
+    "Saving…",
+    "正在保存…"
+  ],
+  "Сохранённая задача не найдена. Её ID остаётся в черновике.": [
+    "The saved task was not found. Its ID remains in the draft.",
+    "未找到已保存的任务。任务 ID 仍保留在草稿中。"
+  ],
+  "Сохранённая история": [
+    "Saved story",
+    "已保存的故事"
+  ],
+  "Сохранённое": [
+    "Saved",
+    "已保存"
+  ],
+  "Сохранённое исследование повреждено. Исходная копия не изменена.": [
+    "The saved research is corrupted. The original copy was not changed.",
+    "已保存的调研已损坏。原始副本未被修改。"
+  ],
+  "Сохранённые маршруты и черновики": [
+    "Saved routes and drafts",
+    "已保存的路线和草稿"
+  ],
+  "Сохранённые прогулки появятся здесь.": [
+    "Saved walks will appear here.",
+    "保存的漫步会显示在这里。"
+  ],
+  "Сохранённый маршрут повреждён. Исходная копия не изменена.": [
+    "The saved route is corrupted. The original copy was not changed.",
+    "已保存的路线已损坏。原始副本未被修改。"
+  ],
+  "Сохранённый материал": [
+    "Saved item",
+    "已保存的内容"
+  ],
+  "Спасибо за оценку!": [
+    "Thank you for rating!",
+    "感谢您的评分！"
+  ],
+  "Спасибо!": [
+    "Thank you!",
+    "谢谢！"
+  ],
+  "Спасибо! Отзыв появится после проверки редакцией.": [
+    "Thank you! Your review will appear after editorial approval.",
+    "谢谢！编辑审核后，您的评价将会显示。"
+  ],
+  "Спасибо! Оценка учтена.": [
+    "Thank you! Your rating has been counted.",
+    "谢谢！您的评分已计入。"
+  ],
+  "Спасибо! Передали редакции — постараемся улучшить прогулку.": [
+    "Thank you! We've sent this to the editors and will try to improve the walk.",
+    "谢谢！我们已转交编辑，并会努力改进这条漫步路线。"
+  ],
+  "Спасибо! Передали редакции, что можно улучшить.": [
+    "Thank you! We've told the editors what could be improved.",
+    "谢谢！我们已将改进建议转交编辑。"
+  ],
+  "Список прогулок на карте: {count}": [
+    "List of walks on the map: {count}",
+    "地图上的漫步路线列表：{count}"
+  ],
+  "Срок подтверждения Telegram истёк. Подтвердите аккаунт ещё раз.": [
+    "Your Telegram confirmation has expired. Confirm your account again.",
+    "Telegram 确认已过期。请重新确认账户。"
+  ],
+  "Ссылка на историю повреждена.": [
+    "The story link is invalid.",
+    "故事链接无效。"
+  ],
+  "Ссылка на историю сохранена. Следующую можно подготовить после завершения этой.": [
+    "The story link has been saved. You can prepare the next one after this story is complete.",
+    "故事链接已保存。当前故事完成后即可制作下一个。"
+  ],
+  "Ссылка скопирована.": [
+    "Link copied.",
+    "链接已复制。"
+  ],
+  "Ссылка скопирована. Прогулка появится в топе после проверки.": [
+    "Link copied. The walk will appear in the ranking after review.",
+    "链接已复制。审核后，这条漫步会出现在热门列表中。"
+  ],
+  "Ссылка содержит конфликтующие параметры.": [
+    "The link contains conflicting parameters.",
+    "链接包含互相冲突的参数。"
+  ],
+  "Станции Кольцевой линии и центра": [
+    "Circle line and central stations",
+    "环线及市中心车站"
+  ],
+  "Станция не найдена": [
+    "No station found",
+    "未找到站点"
+  ],
+  "Старт и финиш: {address}": [
+    "Start and finish: {address}",
+    "起点和终点：{address}"
+  ],
+  "Старт: {address}": [
+    "Start: {address}",
+    "起点：{address}"
+  ],
+  "Старт: м. {station}": [
+    "Start: {station} metro",
+    "起点：{station} 地铁站"
+  ],
+  "Старт: метро не указано": [
+    "Start: no nearby metro",
+    "起点：附近无地铁站"
+  ],
+  "Старый черновик повреждён. Его исходная запись сохранена для скачивания.": [
+    "The old draft is damaged. Its original record was kept for download.",
+    "旧草稿已损坏。原始记录已保留，可供下载。"
+  ],
+  "Стейки": [
+    "Steaks",
+    "牛排"
+  ],
+  "Стоимость парковки неизвестна": [
+    "Parking fee unknown",
+    "停车费用未知"
+  ],
+  "Строим автомобильный маршрут…": [
+    "Building driving route…",
+    "正在规划驾车路线…"
+  ],
+  "Строим пешеходный маршрут…": [
+    "Building a walking route…",
+    "正在规划步行路线…"
+  ],
+  "Суши": [
+    "Sushi",
+    "寿司"
+  ],
+  "Сэндвичи": [
+    "Sandwiches",
+    "三明治"
+  ],
+  "Тайская кухня": [
+    "Thai cuisine",
+    "泰国菜"
+  ],
+  "Текст готов": [
+    "Text ready",
+    "文字已完成"
+  ],
+  "Текст готов, но озвучка не получилась. Можно повторить только запись звука.": [
+    "The text is ready, but recording failed. You can retry the audio recording.",
+    "文字已完成，但录音制作失败。可以单独重试录音。"
+  ],
+  "Текст готов; аудиозапись ещё не подготовлена.": [
+    "The text is ready; the recording is still being prepared.",
+    "文字已完成，录音尚未制作。"
+  ],
+  "Текст доступен ниже.": [
+    "The text is available below.",
+    "可在下方阅读文字。"
+  ],
+  "Текст и аудио этой истории пока доступны только на русском языке.": [
+    "This story's text and audio are currently available in Russian only.",
+    "本故事的文字和音频目前仅提供俄语版本。"
+  ],
+  "Текст истории": [
+    "Story text",
+    "故事文字"
+  ],
+  "Текст этой истории пока доступен только на русском языке. Озвучка готовится.": [
+    "This story's text is currently available in Russian only. Narration is being prepared.",
+    "本故事的文字目前仅提供俄语版本，音频正在制作中。"
+  ],
+  "Текст этой части": [
+    "Text of this part",
+    "本部分文字"
+  ],
+  "Текущая часть": [
+    "Current part",
+    "当前部分"
+  ],
+  "Текущий пароль": [
+    "Current password",
+    "当前密码"
+  ],
+  "Тестовая точка": [
+    "Test stop",
+    "测试地点"
+  ],
+  "Тестовый трек завершён": [
+    "Test track complete",
+    "测试轨迹已结束"
+  ],
+  "Только необходимые": [
+    "Essential only",
+    "仅使用必要 Cookie"
+  ],
+  "Только я": [
+    "Only me",
+    "仅自己"
+  ],
+  "Торты": [
+    "Cakes",
+    "蛋糕"
+  ],
+  "Точка на карте": [
+    "Point on the map",
+    "地图上的点"
+  ],
+  "Точка начала больше не входит в эту прогулку. Откройте подборку заново.": [
+    "The starting point is no longer part of this walk. Open the selection again.",
+    "起始地点已不在这条漫步路线中。请重新打开推荐列表。"
+  ],
+  "Точка пройдена": [
+    "Stop passed",
+    "已经过地点"
+  ],
+  "Точность": [
+    "Accuracy",
+    "精度"
+  ],
+  "Требует проверки": [
+    "Needs review",
+    "需要核查"
+  ],
+  "Тренды": [
+    "Trending",
+    "热门"
+  ],
+  "Триггер": [
+    "Trigger",
+    "触发器"
+  ],
+  "Турецкая кухня": [
+    "Turkish cuisine",
+    "土耳其菜"
+  ],
+  "У {count} остановки пока нет истории.": [
+    "{count} stop does not have a story yet.",
+    "{count} 个停靠点尚无故事。"
+  ],
+  "У {count} остановок пока нет истории.": [
+    "{count} stops do not have stories yet.",
+    "{count} 个停靠点尚无故事。"
+  ],
+  "У остановки {number}": [
+    "Near stop {number}",
+    "第 {number} 个停靠点附近"
+  ],
+  "У прогулки ещё нет маршрута.": [
+    "This walk does not have a route yet.",
+    "这条漫步尚无路线。"
+  ],
+  "Удаление отменено: после подтверждения вошёл другой аккаунт.": [
+    "Deletion was cancelled because a different account signed in during confirmation.",
+    "删除已取消，因为确认后登录的是另一个账户。"
+  ],
+  "Удалить": [
+    "Delete",
+    "删除"
+  ],
+  "Удалить аккаунт": [
+    "Delete account",
+    "删除账户"
+  ],
+  "Удалить аккаунт навсегда?": [
+    "Delete your account permanently?",
+    "永久删除账户？"
+  ],
+  "Удалить навсегда": [
+    "Delete permanently",
+    "永久删除"
+  ],
+  "Удалить отзыв": [
+    "Delete review",
+    "删除评价"
+  ],
+  "Удалить отзыв?": [
+    "Delete the review?",
+    "删除评价？"
+  ],
+  "Удалить офлайн-копию": [
+    "Delete offline copy",
+    "删除离线副本"
+  ],
+  "Уже есть аккаунт? Войти": [
+    "Already have an account? Sign in",
+    "已有账户？登录"
+  ],
+  "Узбекская кухня": [
+    "Uzbek cuisine",
+    "乌兹别克菜"
+  ],
+  "Укажите улицу и номер дома в Москве, включая строение, если оно есть.": [
+    "Enter a street and house number in Moscow, including the building number if needed.",
+    "请输入莫斯科的街道和门牌号，如有附属楼号请一并填写。"
+  ],
+  "Улица и номер дома": [
+    "Street and house number",
+    "街道和门牌号"
+  ],
+  "Улицы и соседние дома": [
+    "Streets and nearby buildings",
+    "街道和附近建筑"
+  ],
+  "Условия использования": [
+    "Terms of use",
+    "使用条款"
+  ],
+  "Устройство не смогло определить положение. Проверьте, что геолокация включена в настройках устройства.": [
+    "Your device could not find your location. Check that location services are enabled in your device settings.",
+    "设备无法获取位置。请确认设备设置中已开启定位服务。"
+  ],
+  "Уточняем позицию · ±{distance} м": [
+    "Refining location · ±{distance} m",
+    "正在提高定位精度 · ±{distance} 米"
+  ],
+  "Факты и подтверждения · {count}": [
+    "Facts and evidence · {count}",
+    "事实与佐证 · {count}"
+  ],
+  "Фильтры по метро": [
+    "Metro filters",
+    "地铁站筛选"
+  ],
+  "Фильтры прогулок": [
+    "Walk filters",
+    "漫步路线筛选"
+  ],
+  "Финиш: {address}": [
+    "Finish: {address}",
+    "终点：{address}"
+  ],
+  "Финиш: {place}": [
+    "Finish: {place}",
+    "终点：{place}"
+  ],
+  "Финиш: м. {station}": [
+    "Finish: {station} metro",
+    "终点：{station} 地铁站"
+  ],
+  "Финиш: метро не указано": [
+    "Finish: no nearby metro",
+    "终点：附近无地铁站"
+  ],
+  "Фото {current} из {total}": [
+    "Photo {current} of {total}",
+    "照片 {current}/{total}"
+  ],
+  "Фото:": [
+    "Photo:",
+    "照片："
+  ],
+  "Фотографии места": [
+    "Place photos",
+    "地点照片"
+  ],
+  "Фотография не загрузилась. Проверьте подключение и попробуйте ещё раз.": [
+    "The photo did not load. Check your connection and try again.",
+    "照片加载失败。请检查网络后重试。"
+  ],
+  "Французская кухня": [
+    "French cuisine",
+    "法国菜"
+  ],
+  "Хранилище прогулок повреждено. Исходная запись сохранена.": [
+    "Walk storage is damaged. The original record was kept.",
+    "漫步存储已损坏。原始记录已保留。"
+  ],
+  "Чай": [
+    "Tea",
+    "茶"
+  ],
+  "Части идут одна за другой без пауз. Удобно дома, на ходу можно отстать от рассказа.": [
+    "Parts play one after another without pauses. This works well at home; while walking, the story may get ahead of you.",
+    "各部分会连续播放，不会暂停。适合在家收听；步行时故事进度可能会超过您的位置。"
+  ],
+  "Части переключаются вручную. Запись аудио готовится; кнопка проверки звука включает сигнал на 5 секунд.": [
+    "Parts are switched manually. The recording is being prepared; the sound test button plays a five-second tone.",
+    "请手动切换各部分。录音正在制作中；点击测试声音按钮会播放 5 秒测试音。"
+  ],
+  "Части прогулки": [
+    "Walk parts",
+    "漫步各部分"
+  ],
+  "Часть {current} из {total}": [
+    "Part {current} of {total}",
+    "第 {current}/{total} 部分"
+  ],
+  "Часть {current} из {total} · {place}": [
+    "Part {current} of {total} · {place}",
+    "第 {current}/{total} 部分 · {place}"
+  ],
+  "Часть {number}: {title}. {place}": [
+    "Part {number}: {title}. {place}",
+    "第 {number} 部分：{title}。{place}"
+  ],
+  "Часть включится сама, когда вы дойдёте до её дома. Нужен доступ к геолокации.": [
+    "The part starts automatically when you reach its building. Location access is required.",
+    "到达对应建筑时会自动播放。需要定位权限。"
+  ],
+  "Часы не указаны": [
+    "Hours not provided",
+    "未提供营业时间"
+  ],
+  "Часы работы": [
+    "Opening hours",
+    "开放时间"
+  ],
+  "Часы работы по данным OpenStreetMap": [
+    "Opening hours from OpenStreetMap",
+    "OpenStreetMap 提供的营业时间"
+  ],
+  "Черновик": [
+    "Draft",
+    "草稿"
+  ],
+  "Черновик изменён в другой вкладке. Обновите страницу перед продолжением; эта версия не записана.": [
+    "The draft was changed in another tab. Refresh the page before continuing; this version was not saved.",
+    "草稿已在其他标签页中更改。请刷新页面后继续；当前版本尚未保存。"
+  ],
+  "Черновик не удалось прочитать. Исходная копия не изменена.": [
+    "The draft could not be read. The original copy was not changed.",
+    "无法读取草稿。原始副本未被修改。"
+  ],
+  "Черновики": [
+    "Drafts",
+    "草稿"
+  ],
+  "Читать · около {seconds} сек": [
+    "Read · about {seconds} sec",
+    "阅读 · 约 {seconds} 秒"
+  ],
+  "Читать историю": [
+    "Read story",
+    "阅读故事"
+  ],
+  "Читать историю · около {minutes} мин": [
+    "Read story · about {minutes} min",
+    "阅读故事 · 约 {minutes} 分钟"
+  ],
+  "Читать историю полностью": [
+    "Read the full story",
+    "阅读全文"
+  ],
+  "Что можно улучшить?": [
+    "What could be improved?",
+    "哪些地方可以改进？"
+  ],
+  "Что улучшить в прогулке?": [
+    "What could be improved about this walk?",
+    "这条漫步路线有哪些地方可以改进？"
+  ],
+  "Что улучшить в этом месте?": [
+    "What could be improved about this place?",
+    "这个地点有哪些地方可以改进？"
+  ],
+  "Шаурма": [
+    "Shawarma",
+    "沙威玛"
+  ],
+  "Экран": [
+    "Screen",
+    "屏幕"
+  ],
+  "Эта история больше недоступна.": [
+    "This story is no longer available.",
+    "这个故事已不可用。"
+  ],
+  "Эту остановку нельзя добавить: проверьте расстояние и число остановок.": [
+    "This stop cannot be added. Check the distance and number of stops.",
+    "无法添加此停靠点。请检查距离和停靠点数量。"
+  ],
+  "Я на финише": [
+    "I am at the finish",
+    "我已到达终点"
+  ],
+  "Я принимаю": [
+    "I accept the",
+    "我接受"
+  ],
+  "Я припарковался / Начать прогулку": [
+    "I parked / Start walking",
+    "我已停车 / 开始步行"
+  ],
+  "Я у машины": [
+    "I am back at the car",
+    "我已回到车旁"
+  ],
+  "Я у машины / К финишу": [
+    "I am at the car / Go to finish",
+    "我已回到车旁 / 前往终点"
+  ],
+  "Я у машины / Следующая парковка": [
+    "I am at the car / Next parking",
+    "我已回到车旁 / 下一个停车点"
+  ],
+  "Язык интерфейса": [
+    "Interface language",
+    "界面语言"
+  ],
+  "Японская кухня": [
+    "Japanese cuisine",
+    "日本菜"
+  ],
+  "без возвращения": [
+    "without returning",
+    "不返回起点"
+  ],
+  "в зоне точки": [
+    "inside stop area",
+    "地点范围内"
+  ],
+  "вне зоны": [
+    "outside area",
+    "区域外"
+  ],
+  "воспроизведение": [
+    "playing",
+    "正在播放"
+  ],
+  "вс": [
+    "Sun",
+    "周日"
+  ],
+  "вт": [
+    "Tue",
+    "周二"
+  ],
+  "выключен": [
+    "off",
+    "已关闭"
+  ],
+  "геолокация браузера": [
+    "browser location",
+    "浏览器定位"
+  ],
+  "готов": [
+    "ready",
+    "已就绪"
+  ],
+  "доступ не дан": [
+    "access denied",
+    "未授权"
+  ],
+  "ждёт активную вкладку": [
+    "waiting for active tab",
+    "等待标签页激活"
+  ],
+  "запись закончилась": [
+    "recording ended",
+    "录音已结束"
+  ],
+  "запрашиваем": [
+    "requesting",
+    "正在请求"
+  ],
+  "запускается": [
+    "starting",
+    "正在启动"
+  ],
+  "или по email": [
+    "or with email",
+    "或使用邮箱"
+  ],
+  "не активирован": [
+    "not activated",
+    "未激活"
+  ],
+  "не поддерживается": [
+    "unsupported",
+    "不支持"
+  ],
+  "не удалось включить": [
+    "failed to enable",
+    "无法开启"
+  ],
+  "недоступна": [
+    "unavailable",
+    "不可用"
+  ],
+  "нет данных об озвучке": [
+    "no narration details",
+    "暂无配音信息"
+  ],
+  "нужно нажатие": [
+    "tap required",
+    "需要点击"
+  ],
+  "ожидает": [
+    "idle",
+    "等待中"
+  ],
+  "остановлен": [
+    "stopped",
+    "已停止"
+  ],
+  "ошибка": [
+    "error",
+    "错误"
+  ],
+  "ошибка воспроизведения": [
+    "playback error",
+    "播放错误"
+  ],
+  "пауза": [
+    "paused",
+    "已暂停"
+  ],
+  "пн": [
+    "Mon",
+    "周一"
+  ],
+  "подготовка": [
+    "preparing",
+    "准备中"
+  ],
+  "пт": [
+    "Fri",
+    "周五"
+  ],
+  "работает": [
+    "active",
+    "运行中"
+  ],
+  "рядом с остановкой {number}": [
+    "near stop {number}",
+    "第 {number} 个停靠点附近"
+  ],
+  "с возвращением": [
+    "returning to the start",
+    "返回起点"
+  ],
+  "сб": [
+    "Sat",
+    "周六"
+  ],
+  "ср": [
+    "Wed",
+    "周三"
+  ],
+  "тестовый трек": [
+    "test track",
+    "测试轨迹"
+  ],
+  "точка пройдена": [
+    "stop passed",
+    "已经过地点"
+  ],
+  "трек завершён": [
+    "track complete",
+    "轨迹已结束"
+  ],
+  "условия использования": [
+    "terms of use",
+    "使用条款"
+  ],
+  "чт": [
+    "Thu",
+    "周四"
+  ],
+  "экран активен": [
+    "screen awake",
+    "屏幕保持唤醒"
+  ],
+  "≈ {distance} м от вас": [
+    "≈ {distance} m from you",
+    "距您约 {distance} 米"
+  ],
+  "≈ {distance} м от маршрута": [
+    "≈ {distance} m from the route",
+    "距路线约 {distance} 米"
+  ]
+}

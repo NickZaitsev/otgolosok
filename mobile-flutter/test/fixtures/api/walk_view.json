@@ -1,0 +1,5175 @@
+{
+  "documents": [
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "valid loop",
+      "result": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "destination": {
+          "address": "Москва, Арбат, 40",
+          "location": {
+            "lat": 55.754,
+            "lon": 37.597
+          }
+        },
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "open",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "valid open with destination",
+      "result": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "destination": {
+          "address": "Москва, Арбат, 40",
+          "location": {
+            "lat": 55.754,
+            "lon": 37.597
+          }
+        },
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "open",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "11111111-1111-4111-8111-111111111111",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "valid catalog uuid id",
+      "result": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "11111111-1111-4111-8111-111111111111",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": "",
+            "triggerLocation": {
+              "lat": 55.7521,
+              "lon": 37.5931
+            }
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "valid trigger location",
+      "result": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": "",
+            "triggerLocation": {
+              "lat": 55.7521,
+              "lon": 37.5931
+            }
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": null,
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "valid without route",
+      "result": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": null,
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "tunnels": [
+            [
+              0,
+              1
+            ]
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "valid tunnels",
+      "result": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "tunnels": [
+            [
+              0,
+              1
+            ]
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 1
+      },
+      "name": "version 1",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "extra": true,
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "unknown field",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "Arbat Test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "bad id",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": " ",
+        "version": 2
+      },
+      "name": "empty title",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Тверь",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "unknown city",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 45,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "minutes 45",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "destination": {
+          "address": "Москва, Арбат, 40",
+          "location": {
+            "lat": 55.754,
+            "lon": 37.597
+          }
+        },
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "destination on a loop",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "duplicate stop ids",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.79,
+                "lon": 49.1
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "stop outside the city",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "route geometry of one point",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 8101,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "route too long",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 0
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "walking minutes 0",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "tunnels": [
+            [
+              1,
+              2
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "tunnels out of order",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": "no",
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "distanceM": 600,
+          "geometry": [
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            },
+            {
+              "lat": 55.752,
+              "lon": 37.593
+            },
+            {
+              "lat": 55.753,
+              "lon": 37.595
+            },
+            {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          ],
+          "walkingMinutes": 9
+        },
+        "start": {
+          "address": "Москва, Арбат, 1",
+          "location": {
+            "lat": 55.7515,
+            "lon": 37.5925
+          }
+        },
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "fieldChecked not boolean",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "Короткая прогулка",
+        "fieldChecked": false,
+        "id": "arbat-test",
+        "minutes": 30,
+        "mode": "loop",
+        "route": null,
+        "start": null,
+        "stops": [
+          {
+            "id": "stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 10",
+              "location": {
+                "lat": 55.752,
+                "lon": 37.593
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          },
+          {
+            "id": "stop-2",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, Арбат, 11",
+              "location": {
+                "lat": 55.753,
+                "lon": 37.595
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "Арбат",
+        "version": 2
+      },
+      "name": "stops without a start",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "",
+        "fieldChecked": false,
+        "id": "car-walk",
+        "minutes": 60,
+        "mode": "open",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "car": {
+            "drivingMinutes": 20,
+            "segments": [
+              {
+                "distanceM": 10000,
+                "geometry": [
+                  {
+                    "lat": 55.75,
+                    "lon": 37.61
+                  },
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                ],
+                "minutes": 20,
+                "mode": "driving",
+                "visitId": "visit-1"
+              },
+              {
+                "distanceM": 300,
+                "geometry": [
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  {
+                    "lat": 55.7605,
+                    "lon": 37.6305
+                  },
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                ],
+                "minutes": 3,
+                "mode": "walking",
+                "visitId": "visit-1"
+              }
+            ],
+            "totalMinutes": 33,
+            "visits": [
+              {
+                "id": "visit-1",
+                "parking": {
+                  "access": "public",
+                  "entrance": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "exit": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "fee": null,
+                  "id": "osm:way:1",
+                  "location": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "name": "Городская парковка",
+                  "openingHours": null,
+                  "pedestrianAccess": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                },
+                "parkingMinutes": 5,
+                "stopIds": [
+                  "car-stop-1"
+                ],
+                "visitMinutes": 5
+              }
+            ]
+          },
+          "distanceM": 10300,
+          "geometry": [
+            {
+              "lat": 55.75,
+              "lon": 37.61
+            },
+            {
+              "lat": 55.76,
+              "lon": 37.63
+            },
+            {
+              "lat": 55.7605,
+              "lon": 37.6305
+            },
+            {
+              "lat": 55.76,
+              "lon": 37.63
+            }
+          ],
+          "walkingMinutes": 3
+        },
+        "start": {
+          "address": "Москва, начало поездки",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.61
+          }
+        },
+        "stops": [
+          {
+            "id": "car-stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, исторический дом",
+              "location": {
+                "lat": 55.7605,
+                "lon": 37.6305
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "На машине по городу",
+        "travelMode": "driving",
+        "version": 2
+      },
+      "name": "valid car walk",
+      "result": {
+        "city": "Москва",
+        "description": "",
+        "fieldChecked": false,
+        "id": "car-walk",
+        "minutes": 60,
+        "mode": "open",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "car": {
+            "drivingMinutes": 20,
+            "segments": [
+              {
+                "distanceM": 10000,
+                "geometry": [
+                  {
+                    "lat": 55.75,
+                    "lon": 37.61
+                  },
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                ],
+                "minutes": 20,
+                "mode": "driving",
+                "visitId": "visit-1"
+              },
+              {
+                "distanceM": 300,
+                "geometry": [
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  {
+                    "lat": 55.7605,
+                    "lon": 37.6305
+                  },
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                ],
+                "minutes": 3,
+                "mode": "walking",
+                "visitId": "visit-1"
+              }
+            ],
+            "totalMinutes": 33,
+            "visits": [
+              {
+                "id": "visit-1",
+                "parking": {
+                  "access": "public",
+                  "entrance": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "exit": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "fee": null,
+                  "id": "osm:way:1",
+                  "location": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "name": "Городская парковка",
+                  "openingHours": null,
+                  "pedestrianAccess": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                },
+                "parkingMinutes": 5,
+                "stopIds": [
+                  "car-stop-1"
+                ],
+                "visitMinutes": 5
+              }
+            ]
+          },
+          "distanceM": 10300,
+          "geometry": [
+            {
+              "lat": 55.75,
+              "lon": 37.61
+            },
+            {
+              "lat": 55.76,
+              "lon": 37.63
+            },
+            {
+              "lat": 55.7605,
+              "lon": 37.6305
+            },
+            {
+              "lat": 55.76,
+              "lon": 37.63
+            }
+          ],
+          "walkingMinutes": 3
+        },
+        "start": {
+          "address": "Москва, начало поездки",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.61
+          }
+        },
+        "stops": [
+          {
+            "id": "car-stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, исторический дом",
+              "location": {
+                "lat": 55.7605,
+                "lon": 37.6305
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "На машине по городу",
+        "travelMode": "driving",
+        "version": 2
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "",
+        "fieldChecked": false,
+        "id": "car-walk",
+        "minutes": 15,
+        "mode": "open",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "car": {
+            "drivingMinutes": 20,
+            "segments": [
+              {
+                "distanceM": 10000,
+                "geometry": [
+                  {
+                    "lat": 55.75,
+                    "lon": 37.61
+                  },
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                ],
+                "minutes": 20,
+                "mode": "driving",
+                "visitId": "visit-1"
+              },
+              {
+                "distanceM": 300,
+                "geometry": [
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  {
+                    "lat": 55.7605,
+                    "lon": 37.6305
+                  },
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                ],
+                "minutes": 3,
+                "mode": "walking",
+                "visitId": "visit-1"
+              }
+            ],
+            "totalMinutes": 33,
+            "visits": [
+              {
+                "id": "visit-1",
+                "parking": {
+                  "access": "public",
+                  "entrance": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "exit": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "fee": null,
+                  "id": "osm:way:1",
+                  "location": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "name": "Городская парковка",
+                  "openingHours": null,
+                  "pedestrianAccess": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                },
+                "parkingMinutes": 5,
+                "stopIds": [
+                  "car-stop-1"
+                ],
+                "visitMinutes": 5
+              }
+            ]
+          },
+          "distanceM": 10300,
+          "geometry": [
+            {
+              "lat": 55.75,
+              "lon": 37.61
+            },
+            {
+              "lat": 55.76,
+              "lon": 37.63
+            },
+            {
+              "lat": 55.7605,
+              "lon": 37.6305
+            },
+            {
+              "lat": 55.76,
+              "lon": 37.63
+            }
+          ],
+          "walkingMinutes": 3
+        },
+        "start": {
+          "address": "Москва, начало поездки",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.61
+          }
+        },
+        "stops": [
+          {
+            "id": "car-stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, исторический дом",
+              "location": {
+                "lat": 55.7605,
+                "lon": 37.6305
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "На машине по городу",
+        "travelMode": "driving",
+        "version": 2
+      },
+      "name": "car walk over its minutes",
+      "valid": false
+    },
+    {
+      "input": {
+        "city": "Москва",
+        "description": "",
+        "fieldChecked": false,
+        "id": "car-walk",
+        "minutes": 60,
+        "mode": "open",
+        "route": {
+          "attribution": "© OpenStreetMap contributors",
+          "car": {
+            "drivingMinutes": 20,
+            "segments": [
+              {
+                "distanceM": 10000,
+                "geometry": [
+                  {
+                    "lat": 55.75,
+                    "lon": 37.61
+                  },
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                ],
+                "minutes": 20,
+                "mode": "driving",
+                "visitId": "visit-1"
+              },
+              {
+                "distanceM": 300,
+                "geometry": [
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  {
+                    "lat": 55.7605,
+                    "lon": 37.6305
+                  },
+                  {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                ],
+                "minutes": 3,
+                "mode": "walking",
+                "visitId": "visit-1"
+              }
+            ],
+            "totalMinutes": 40,
+            "visits": [
+              {
+                "id": "visit-1",
+                "parking": {
+                  "access": "public",
+                  "entrance": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "exit": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "fee": null,
+                  "id": "osm:way:1",
+                  "location": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  },
+                  "name": "Городская парковка",
+                  "openingHours": null,
+                  "pedestrianAccess": {
+                    "lat": 55.76,
+                    "lon": 37.63
+                  }
+                },
+                "parkingMinutes": 5,
+                "stopIds": [
+                  "car-stop-1"
+                ],
+                "visitMinutes": 5
+              }
+            ]
+          },
+          "distanceM": 10300,
+          "geometry": [
+            {
+              "lat": 55.75,
+              "lon": 37.61
+            },
+            {
+              "lat": 55.76,
+              "lon": 37.63
+            },
+            {
+              "lat": 55.7605,
+              "lon": 37.6305
+            },
+            {
+              "lat": 55.76,
+              "lon": 37.63
+            }
+          ],
+          "walkingMinutes": 3
+        },
+        "start": {
+          "address": "Москва, начало поездки",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.61
+          }
+        },
+        "stops": [
+          {
+            "id": "car-stop-1",
+            "nextHint": "",
+            "place": {
+              "address": "Москва, исторический дом",
+              "location": {
+                "lat": 55.7605,
+                "lon": 37.6305
+              }
+            },
+            "storyRef": null,
+            "transition": ""
+          }
+        ],
+        "title": "На машине по городу",
+        "travelMode": "driving",
+        "version": 2
+      },
+      "name": "car walk with a broken total",
+      "valid": false
+    }
+  ],
+  "views": [
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "valid",
+      "result": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "extra": 1,
+        "revision": 2
+      },
+      "name": "unknown field",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": -1
+      },
+      "name": "negative revision",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "chapter count mismatch",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "other",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "chapter id mismatch",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "done",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "unknown status",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": null
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "audio without story",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "https://cdn.example.org/a.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "audio url outside the API",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 7201,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "audio over two hours",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "language": "en",
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "audio language differs from content",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "http://example.org"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "source url not https",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "empty paragraphs",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "checkedAt": "2026-1-1",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "revision": 2
+      },
+      "name": "bad checkedAt",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 1
+        },
+        "revision": 2
+      },
+      "name": "invalid document",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "documentLocalization": {
+          "contentLocale": "ru",
+          "fallbackReason": "missing",
+          "requestedLocale": "en"
+        },
+        "requestedLocale": "en",
+        "revision": 2
+      },
+      "name": "valid english fallback",
+      "result": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "documentLocalization": {
+          "contentLocale": "ru",
+          "fallbackReason": "missing",
+          "requestedLocale": "en"
+        },
+        "requestedLocale": "en",
+        "revision": 2
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "documentLocalization": {
+          "contentLocale": "ru",
+          "fallbackReason": "missing",
+          "requestedLocale": "en"
+        },
+        "requestedLocale": "en",
+        "revision": 2
+      },
+      "name": "chapter without localization",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "zh"
+            },
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "documentLocalization": {
+          "contentLocale": "ru",
+          "fallbackReason": "missing",
+          "requestedLocale": "en"
+        },
+        "requestedLocale": "en",
+        "revision": 2
+      },
+      "name": "localization for another locale",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "documentLocalization": {
+          "contentLocale": "ru",
+          "fallbackReason": null,
+          "requestedLocale": "en"
+        },
+        "requestedLocale": "en",
+        "revision": 2
+      },
+      "name": "fallback without reason",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "documentLocalization": {
+          "contentLocale": "en",
+          "fallbackReason": "missing",
+          "requestedLocale": "en"
+        },
+        "requestedLocale": "en",
+        "revision": 2
+      },
+      "name": "fallback to english",
+      "valid": false
+    },
+    {
+      "input": {
+        "chapters": [
+          {
+            "audio": {
+              "durationSec": 61,
+              "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "url": "/api/story-audio/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.mp3"
+            },
+            "id": "stop-1",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "ready",
+            "story": {
+              "address": "Москва, Арбат, 10",
+              "facts": [
+                {
+                  "claim": "Факт.",
+                  "id": "f1",
+                  "sourceIds": [
+                    "s1"
+                  ]
+                }
+              ],
+              "paragraphs": [
+                {
+                  "factIds": [
+                    "f1"
+                  ],
+                  "text": "Текст рассказа."
+                }
+              ],
+              "sources": [
+                {
+                  "id": "s1",
+                  "publisher": "",
+                  "title": "Архив",
+                  "url": "https://example.org/archive"
+                }
+              ],
+              "title": "Дом с башней"
+            }
+          },
+          {
+            "audio": null,
+            "id": "stop-2",
+            "localization": {
+              "contentLocale": "ru",
+              "fallbackReason": "missing",
+              "requestedLocale": "en"
+            },
+            "status": "preparing",
+            "story": null
+          }
+        ],
+        "contentVersion": "v2",
+        "document": {
+          "city": "Москва",
+          "description": "Короткая прогулка",
+          "fieldChecked": false,
+          "id": "arbat-test",
+          "minutes": 30,
+          "mode": "loop",
+          "route": {
+            "attribution": "© OpenStreetMap contributors",
+            "distanceM": 600,
+            "geometry": [
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              },
+              {
+                "lat": 55.752,
+                "lon": 37.593
+              },
+              {
+                "lat": 55.753,
+                "lon": 37.595
+              },
+              {
+                "lat": 55.7515,
+                "lon": 37.5925
+              }
+            ],
+            "walkingMinutes": 9
+          },
+          "start": {
+            "address": "Москва, Арбат, 1",
+            "location": {
+              "lat": 55.7515,
+              "lon": 37.5925
+            }
+          },
+          "stops": [
+            {
+              "id": "stop-1",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 10",
+                "location": {
+                  "lat": 55.752,
+                  "lon": 37.593
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            },
+            {
+              "id": "stop-2",
+              "nextHint": "",
+              "place": {
+                "address": "Москва, Арбат, 11",
+                "location": {
+                  "lat": 55.753,
+                  "lon": 37.595
+                }
+              },
+              "storyRef": null,
+              "transition": ""
+            }
+          ],
+          "title": "Арбат",
+          "version": 2
+        },
+        "documentLocalization": {
+          "contentLocale": "ru",
+          "fallbackReason": "missing",
+          "requestedLocale": "en"
+        },
+        "requestedLocale": "de",
+        "revision": 2
+      },
+      "name": "unknown locale",
+      "valid": false
+    }
+  ]
+}

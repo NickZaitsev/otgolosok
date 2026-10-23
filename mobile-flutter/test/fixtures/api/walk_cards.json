@@ -1,0 +1,4466 @@
+{
+  "nearby": [
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": "Москва, Арбат, 40",
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "valid",
+      "result": [
+        {
+          "audioComplete": false,
+          "audioMinutes": 12,
+          "distanceM": 2100,
+          "entryStopId": "stop-2",
+          "finish": "Москва, Арбат, 40",
+          "id": "arbat",
+          "kind": "catalog",
+          "rating": {
+            "average": 4.5,
+            "count": 2
+          },
+          "startDistanceM": 120,
+          "stopCount": 6,
+          "title": "Арбат",
+          "walkingMinutes": 30
+        }
+      ],
+      "valid": true
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "distanceM": 2100,
+            "finish": "Москва, Арбат, 40",
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "older server without entry and audio",
+      "result": [
+        {
+          "distanceM": 2100,
+          "finish": "Москва, Арбат, 40",
+          "id": "arbat",
+          "kind": "catalog",
+          "rating": {
+            "average": 4.5,
+            "count": 2
+          },
+          "startDistanceM": 120,
+          "stopCount": 6,
+          "title": "Арбат",
+          "walkingMinutes": 30
+        }
+      ],
+      "valid": true
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "loop walk",
+      "result": [
+        {
+          "audioComplete": false,
+          "audioMinutes": 12,
+          "distanceM": 2100,
+          "entryStopId": "stop-2",
+          "finish": null,
+          "id": "arbat",
+          "kind": "catalog",
+          "rating": {
+            "average": 4.5,
+            "count": 2
+          },
+          "startDistanceM": 120,
+          "stopCount": 6,
+          "title": "Арбат",
+          "walkingMinutes": 30
+        }
+      ],
+      "valid": true
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": "Москва, Арбат, 40",
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "own",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "own walk with an upper-case uuid",
+      "result": [
+        {
+          "audioComplete": false,
+          "audioMinutes": 12,
+          "distanceM": 2100,
+          "entryStopId": "stop-2",
+          "finish": "Москва, Арбат, 40",
+          "id": "11111111-1111-4111-8111-111111111111",
+          "kind": "own",
+          "rating": {
+            "average": 4.5,
+            "count": 2
+          },
+          "startDistanceM": 120,
+          "stopCount": 6,
+          "title": "Арбат",
+          "walkingMinutes": 30
+        }
+      ],
+      "valid": true
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": "Москва, Арбат, 40",
+            "id": "arbat",
+            "kind": "local",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "local walk from the server",
+      "valid": false
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": "Москва, Арбат, 40",
+            "id": "arbat",
+            "kind": "shared",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "shared walk with a slug",
+      "valid": false
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": "Москва, Арбат, 40",
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": -1,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "negative start distance",
+      "valid": false
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": "Москва, Арбат, 40",
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 1.5,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "fractional start distance",
+      "valid": false
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": " ",
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "empty finish",
+      "valid": false
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": "ддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд",
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "finish longer than 180",
+      "valid": false
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": false,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop 2",
+            "finish": "Москва, Арбат, 40",
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "entry stop with spaces",
+      "valid": false
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": "Москва, Арбат, 40",
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "audio minutes without completeness",
+      "valid": false
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "audioComplete": 1,
+            "audioMinutes": 12,
+            "distanceM": 2100,
+            "entryStopId": "stop-2",
+            "finish": "Москва, Арбат, 40",
+            "id": "arbat",
+            "kind": "catalog",
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startDistanceM": 120,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "audio complete not boolean",
+      "valid": false
+    },
+    {
+      "input": {
+        "walks": {}
+      },
+      "name": "walks not a list",
+      "valid": false
+    }
+  ],
+  "top": [
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "valid page",
+      "result": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "legacy page without total, offset and filters",
+      "result": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": false,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": null,
+        "total": 2,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "stations without lines from an older server",
+      "result": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": false,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "rank defaults to position",
+      "result": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "totalMinutes": 95,
+            "travelMode": "driving",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "car walk",
+      "result": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "totalMinutes": 95,
+            "travelMode": "driving",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": null,
+              "count": 0
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "no ratings yet",
+      "result": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": null,
+              "count": 0
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "#D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "21 walks",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "own",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "unknown kind",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "shared walk with a slug id",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "Arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "catalog id with capitals",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 0,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "rank 0",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4,
+              "count": 0
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "average without ratings",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 5.1,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "average above 5",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "travelMode": "driving",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "driving without total minutes",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 0
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "walking minutes 0",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                101,
+                0
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "preview point out of range",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                },
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                },
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                },
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                },
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "map preview with 5 tiles",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 32768,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "map tile outside the zoom",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 1501,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "metro station too far",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "metro line colour without hash",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 1,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "total below walk count",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 31,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "next offset past the total",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": "yes",
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": [
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "arbat",
+            "kind": "catalog",
+            "mapPreview": {
+              "points": [
+                [
+                  10,
+                  10
+                ],
+                [
+                  200,
+                  120
+                ]
+              ],
+              "tiles": [
+                {
+                  "left": -12.5,
+                  "top": 3,
+                  "x": 19805,
+                  "y": 10244
+                }
+              ],
+              "zoom": 15
+            },
+            "preview": [
+              [
+                0,
+                0
+              ],
+              [
+                50,
+                100
+              ]
+            ],
+            "rank": 1,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": {
+              "distanceM": 300,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            },
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          },
+          {
+            "distanceM": 2100,
+            "endMetro": null,
+            "id": "11111111-1111-4111-8111-111111111111",
+            "kind": "shared",
+            "mapPreview": null,
+            "preview": null,
+            "rank": 2,
+            "rating": {
+              "average": 4.5,
+              "count": 2
+            },
+            "startMetro": null,
+            "stopCount": 6,
+            "title": "Арбат",
+            "walkingMinutes": 30
+          }
+        ]
+      },
+      "name": "insideCircle not boolean",
+      "valid": false
+    },
+    {
+      "input": {
+        "filters": {
+          "ends": [],
+          "starts": [
+            "Арбатская"
+          ],
+          "stations": [
+            {
+              "insideCircle": true,
+              "lines": [
+                {
+                  "color": "D41317",
+                  "id": "1",
+                  "name": "Сокольническая"
+                }
+              ],
+              "name": "Арбатская"
+            }
+          ]
+        },
+        "nextOffset": 20,
+        "total": 30,
+        "walks": null
+      },
+      "name": "not an object",
+      "valid": false
+    }
+  ]
+}

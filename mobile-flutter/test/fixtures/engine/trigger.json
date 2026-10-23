@@ -1,0 +1,2229 @@
+{
+  "defaultConfig": {
+    "enterM": 35,
+    "exitM": 60,
+    "maxAccuracyM": 50,
+    "minFixes": 3,
+    "windowSize": 5
+  },
+  "distances": [
+    {
+      "from": {
+        "lat": 55.75,
+        "lon": 37.62
+      },
+      "meters": 0,
+      "to": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "from": {
+        "lat": 55.75,
+        "lon": 37.62
+      },
+      "meters": 41.706178671775106,
+      "to": {
+        "lat": 55.7503,
+        "lon": 37.6204
+      }
+    },
+    {
+      "from": {
+        "lat": 0,
+        "lon": 0
+      },
+      "meters": 20015086.79602057,
+      "to": {
+        "lat": 0,
+        "lon": 180
+      }
+    },
+    {
+      "from": {
+        "lat": 55.8,
+        "lon": 37.4
+      },
+      "meters": 33508.13169710145,
+      "to": {
+        "lat": 55.6,
+        "lon": 37.8
+      }
+    },
+    {
+      "from": {
+        "lat": -33.86,
+        "lon": 151.21
+      },
+      "meters": 16993166.91256328,
+      "to": {
+        "lat": 51.5,
+        "lon": -0.12
+      }
+    }
+  ],
+  "replay": {
+    "fixes": [
+      {
+        "accuracyM": 12,
+        "lat": 55.73,
+        "lon": 37.64,
+        "timestampMs": 1000
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73007194572847,
+        "lon": 37.64,
+        "timestampMs": 6714
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73014389145695,
+        "lon": 37.64,
+        "timestampMs": 12428
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73021583718542,
+        "lon": 37.64,
+        "timestampMs": 18142
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73028778291389,
+        "lon": 37.64,
+        "timestampMs": 23856
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73035972864236,
+        "lon": 37.64,
+        "timestampMs": 29570
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73043167437084,
+        "lon": 37.64,
+        "timestampMs": 35284
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73050362009931,
+        "lon": 37.64,
+        "timestampMs": 40998
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.730575565827785,
+        "lon": 37.64,
+        "timestampMs": 46712
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.730647511556256,
+        "lon": 37.64,
+        "timestampMs": 52426
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.730719457284735,
+        "lon": 37.64,
+        "timestampMs": 58140
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73079140301321,
+        "lon": 37.64,
+        "timestampMs": 63854
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73086334874168,
+        "lon": 37.64,
+        "timestampMs": 69568
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.73093529447015,
+        "lon": 37.64,
+        "timestampMs": 75282
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.64001285822872,
+        "timestampMs": 80996
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.64014063022506,
+        "timestampMs": 86710
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.6402684022214,
+        "timestampMs": 92424
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.64039617421775,
+        "timestampMs": 98138
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.64052394621409,
+        "timestampMs": 103852
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.64065171821043,
+        "timestampMs": 109566
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.640779490206775,
+        "timestampMs": 115280
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.640907262203115,
+        "timestampMs": 120994
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.641035034199454,
+        "timestampMs": 126708
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.6411628061958,
+        "timestampMs": 132422
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.64129057819214,
+        "timestampMs": 138136
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.64141835018848,
+        "timestampMs": 143850
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.64154612218483,
+        "timestampMs": 149564
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.64167389418117,
+        "timestampMs": 155278
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.641801666177514,
+        "timestampMs": 160992
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.641929438173854,
+        "timestampMs": 166706
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.642,
+        "timestampMs": 172420
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.642,
+        "timestampMs": 178134
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.642,
+        "timestampMs": 183848
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.642,
+        "timestampMs": 189562
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.642,
+        "timestampMs": 195276
+      },
+      {
+        "accuracyM": 12,
+        "lat": 55.731,
+        "lon": 37.642,
+        "timestampMs": 200990
+      }
+    ],
+    "path": [
+      {
+        "lat": 55.73,
+        "lon": 37.64
+      },
+      {
+        "lat": 55.731,
+        "lon": 37.64
+      },
+      {
+        "lat": 55.731,
+        "lon": 37.642
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "enters after a full window with three inside",
+      "results": [
+        {
+          "distanceM": 80.06042724456555,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 70.05287383929114,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 30.02266021661332,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 20.01510681133891,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": {
+            "distanceM": 10.007553405274411,
+            "timestampMs": 5000,
+            "type": "entered"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75072000072,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750630000630004,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75027000027,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75018000018,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "window not full yet",
+      "results": [
+        {
+          "distanceM": 30.02266021661332,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 20.01510681133891,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 5.0037767026372055,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75027000027,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75018000018,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750045000045,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "current fix outside blocks entry",
+      "results": [
+        {
+          "distanceM": 30.02266021661332,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 20.01510681133891,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 5.0037767026372055,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 40.03021362188773,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true,
+              true,
+              false
+            ]
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75027000027,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75018000018,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750045000045,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75036000036,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "boundary 34.9 m",
+      "results": [
+        {
+          "distanceM": 100.07553405590446,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 100.07553405590446,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 34.926361385339995,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 34.926361385339995,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 34.926361385339995,
+          "event": {
+            "distanceM": 34.926361385339995,
+            "timestampMs": 5000,
+            "type": "entered"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7509000009,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7509000009,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7503141003141,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7503141003141,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7503141003141,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "boundary 35 m",
+      "results": [
+        {
+          "distanceM": 100.07553405590446,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 100.07553405590446,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 35.02643691925052,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 35.02643691925052,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 35.02643691925052,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7509000009,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7509000009,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750315000315,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750315000315,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750315000315,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "boundary 35.1 m",
+      "results": [
+        {
+          "distanceM": 100.07553405590446,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 100.07553405590446,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 35.12651245316105,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 35.12651245316105,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 35.12651245316105,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7509000009,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7509000009,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7503159003159,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7503159003159,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7503159003159,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "accuracy 50 m is used",
+      "results": [
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": {
+            "distanceM": 10.007553405274411,
+            "timestampMs": 5000,
+            "type": "entered"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "accuracy 50.1 m is ignored",
+      "results": [
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50.1,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50.1,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50.1,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50.1,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 50.1,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "busy audio withholds the arrival",
+      "results": [
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": {
+            "distanceM": 10.007553405274411,
+            "timestampMs": 6000,
+            "type": "entered"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": true,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 6000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "inside, then exit at 60/60.5 m, then cooldown",
+      "results": [
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": {
+            "distanceM": 10.007553405274411,
+            "timestampMs": 5000,
+            "type": "entered"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 59.04456509254118,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 60.04532043322664,
+          "event": {
+            "distanceM": 60.04532043322664,
+            "timestampMs": 7000,
+            "type": "exited"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 60.545698103569364,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750531000531,
+            "lon": 37.62,
+            "timestampMs": 6000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75054000054,
+            "lon": 37.62,
+            "timestampMs": 7000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.7505445005445,
+            "lon": 37.62,
+            "timestampMs": 8000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 9000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 10000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 11000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 12000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 13000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 20,
+        "exitM": 40,
+        "maxAccuracyM": 30,
+        "minFixes": 2,
+        "windowSize": 3
+      },
+      "name": "custom config",
+      "results": [
+        {
+          "distanceM": 25.018883513976114,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 15.011330108701701,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 18.01359612996799,
+          "event": {
+            "distanceM": 18.01359612996799,
+            "timestampMs": 3000,
+            "type": "entered"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 41.03096896257319,
+          "event": {
+            "distanceM": 41.03096896257319,
+            "timestampMs": 4000,
+            "type": "exited"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750225000225,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750135000135,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750162000162,
+            "lon": 37.62,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.750369000369,
+            "lon": 37.62,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 5000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 1,
+        "windowSize": 1
+      },
+      "name": "window size 1",
+      "results": [
+        {
+          "distanceM": 40.03021362188773,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": {
+            "distanceM": 10.007553405274411,
+            "timestampMs": 2000,
+            "type": "entered"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75036000036,
+            "lon": 37.62,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.75009000009,
+            "lon": 37.62,
+            "timestampMs": 2000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "invalid coordinates and timestamps",
+      "results": [
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 5,
+            "lat": "NaN",
+            "lon": 37.62,
+            "timestampMs": 1
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 5,
+            "lat": 91,
+            "lon": 37.62,
+            "timestampMs": 1
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 5,
+            "lat": 55.75,
+            "lon": -181,
+            "timestampMs": 1
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": -1,
+            "lat": 55.75,
+            "lon": 37.62,
+            "timestampMs": 1
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 5,
+            "lat": 55.75,
+            "lon": 37.62,
+            "timestampMs": "Infinity"
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.75,
+        "lon": 37.62
+      }
+    },
+    {
+      "config": {
+        "enterM": 35,
+        "exitM": 60,
+        "maxAccuracyM": 50,
+        "minFixes": 3,
+        "windowSize": 5
+      },
+      "name": "clean replay track",
+      "results": [
+        {
+          "distanceM": null,
+          "event": null,
+          "ignored": true,
+          "state": {
+            "phase": "outside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 75.05665054192833,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 30.02266021661332,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 45.03399032531502,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              true,
+              false
+            ]
+          }
+        },
+        {
+          "distanceM": 20.01510681133891,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "outside",
+            "recentInside": [
+              false,
+              true,
+              false,
+              true
+            ]
+          }
+        },
+        {
+          "distanceM": 10.007553405274411,
+          "event": {
+            "distanceM": 10.007553405274411,
+            "timestampMs": 6000,
+            "type": "entered"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 25.018883513976114,
+          "event": null,
+          "ignored": false,
+          "state": {
+            "phase": "inside",
+            "recentInside": []
+          }
+        },
+        {
+          "distanceM": 75.05665054192833,
+          "event": {
+            "distanceM": 75.05665054192833,
+            "timestampMs": 8000,
+            "type": "exited"
+          },
+          "ignored": false,
+          "state": {
+            "phase": "cooldown",
+            "recentInside": []
+          }
+        }
+      ],
+      "state": {
+        "phase": "outside",
+        "recentInside": []
+      },
+      "steps": [
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 80,
+            "lat": 55.723422000162,
+            "lon": 37.65309,
+            "timestampMs": 1000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.723935000675006,
+            "lon": 37.65309,
+            "timestampMs": 2000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.72353000027,
+            "lon": 37.65309,
+            "timestampMs": 3000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.723665000405006,
+            "lon": 37.65309,
+            "timestampMs": 4000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.723440000180005,
+            "lon": 37.65309,
+            "timestampMs": 5000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.72335000009,
+            "lon": 37.65309,
+            "timestampMs": 6000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.723485000225004,
+            "lon": 37.65309,
+            "timestampMs": 7000
+          }
+        },
+        {
+          "busy": false,
+          "fix": {
+            "accuracyM": 8,
+            "lat": 55.723935000675006,
+            "lon": 37.65309,
+            "timestampMs": 8000
+          }
+        }
+      ],
+      "target": {
+        "lat": 55.72326,
+        "lon": 37.65309
+      }
+    }
+  ]
+}

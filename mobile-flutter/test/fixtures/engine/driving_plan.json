@@ -1,0 +1,5743 @@
+{
+  "derived": [
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "overview"
+      },
+      "stopId": null
+    },
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "stopId": null
+    },
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "stopId": null
+    },
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "stopId": null
+    },
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "stopId": null
+    },
+    {
+      "audioAllowed": true,
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "stopId": "s1"
+    },
+    {
+      "audioAllowed": true,
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "stopId": "s2"
+    },
+    {
+      "audioAllowed": true,
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "stopId": "s3"
+    },
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "stopId": null
+    },
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "stopId": null
+    },
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "stopId": null
+    },
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "finishing"
+      },
+      "stopId": null
+    },
+    {
+      "audioAllowed": false,
+      "state": {
+        "phase": "complete"
+      },
+      "stopId": null
+    }
+  ],
+  "route": {
+    "drivingMinutes": 30,
+    "segments": [],
+    "totalMinutes": 90,
+    "visits": [
+      {
+        "id": "v1",
+        "parking": {
+          "access": "public",
+          "entrance": {
+            "lat": 55.75,
+            "lon": 37.6
+          },
+          "exit": {
+            "lat": 55.75,
+            "lon": 37.6
+          },
+          "fee": null,
+          "id": "p1",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.6
+          },
+          "name": "Парковка p1",
+          "openingHours": null,
+          "pedestrianAccess": {
+            "lat": 55.75,
+            "lon": 37.6
+          }
+        },
+        "parkingMinutes": 5,
+        "stopIds": [
+          "s1",
+          "s2"
+        ],
+        "visitMinutes": 20
+      },
+      {
+        "id": "v2",
+        "parking": {
+          "access": "public",
+          "entrance": {
+            "lat": 55.75,
+            "lon": 37.6
+          },
+          "exit": {
+            "lat": 55.75,
+            "lon": 37.6
+          },
+          "fee": null,
+          "id": "p2",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.6
+          },
+          "name": "Парковка p2",
+          "openingHours": null,
+          "pedestrianAccess": {
+            "lat": 55.75,
+            "lon": 37.6
+          }
+        },
+        "parkingMinutes": 5,
+        "stopIds": [],
+        "visitMinutes": 10
+      },
+      {
+        "id": "v3",
+        "parking": {
+          "access": "public",
+          "entrance": {
+            "lat": 55.75,
+            "lon": 37.6
+          },
+          "exit": {
+            "lat": 55.75,
+            "lon": 37.6
+          },
+          "fee": null,
+          "id": "p3",
+          "location": {
+            "lat": 55.75,
+            "lon": 37.6
+          },
+          "name": "Парковка p3",
+          "openingHours": null,
+          "pedestrianAccess": {
+            "lat": 55.75,
+            "lon": 37.6
+          }
+        },
+        "parkingMinutes": 5,
+        "stopIds": [
+          "s3"
+        ],
+        "visitMinutes": 10
+      }
+    ]
+  },
+  "saved": [
+    {
+      "finishRequired": true,
+      "raw": null,
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": false,
+      "raw": null,
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": true,
+      "raw": "not json",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": false,
+      "raw": "not json",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": true,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"visiting\",\"visitIndex\":0,\"storyIndex\":1}}",
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": false,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"visiting\",\"visitIndex\":0,\"storyIndex\":1}}",
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": true,
+      "raw": "{\"version\":1,\"revision\":3,\"state\":{\"phase\":\"driving\",\"visitIndex\":1}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": false,
+      "raw": "{\"version\":1,\"revision\":3,\"state\":{\"phase\":\"driving\",\"visitIndex\":1}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": true,
+      "raw": "{\"version\":2,\"revision\":4,\"state\":{\"phase\":\"complete\"}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": false,
+      "raw": "{\"version\":2,\"revision\":4,\"state\":{\"phase\":\"complete\"}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": true,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"visiting\",\"visitIndex\":1,\"storyIndex\":0}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": false,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"visiting\",\"visitIndex\":1,\"storyIndex\":0}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": true,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"driving\",\"visitIndex\":3}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": false,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"driving\",\"visitIndex\":3}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": true,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"finishing\"}}",
+      "result": {
+        "phase": "finishing"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": false,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"finishing\"}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": true,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"returning\",\"visitIndex\":2.5}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    },
+    {
+      "finishRequired": false,
+      "raw": "{\"version\":1,\"revision\":4,\"state\":{\"phase\":\"returning\",\"visitIndex\":2.5}}",
+      "result": {
+        "phase": "overview"
+      },
+      "revision": 4
+    }
+  ],
+  "transitions": [
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "three-visits",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": true,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "overview"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "driving",
+        "visitIndex": 5
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "driving",
+        "visitIndex": 5
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 1,
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "visiting",
+        "storyIndex": 0,
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 0
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 0
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 1
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 1
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "returning",
+        "visitIndex": 2
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "returning",
+        "visitIndex": 2
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "finishing"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "finishing"
+      }
+    },
+    {
+      "action": {
+        "type": "start"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "parked"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "next-story"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "return-to-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "at-car"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "finish-reached"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "complete"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    },
+    {
+      "action": {
+        "type": "restart"
+      },
+      "finishRequired": false,
+      "result": {
+        "phase": "overview"
+      },
+      "route": "empty",
+      "state": {
+        "phase": "complete"
+      }
+    }
+  ]
+}
