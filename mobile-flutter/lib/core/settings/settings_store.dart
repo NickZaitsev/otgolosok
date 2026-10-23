@@ -20,6 +20,7 @@ class SettingsStore {
   static const _advance = 'walk.advance';
   static const _rate = 'walk.rate';
   static const _direction = 'walk.direction.';
+  static const _driving = 'travel.driving';
 
   final SharedPreferences _prefs;
 
@@ -38,6 +39,10 @@ class SettingsStore {
     if (!playbackRates.contains(rate)) throw ArgumentError.value(rate, 'rate');
     return _prefs.setDouble(_rate, rate);
   }
+
+  /// «Как передвигаемся» for new walks on this device (site `otgolosok:travel-mode`).
+  bool get prefersDriving => _prefs.getBool(_driving) ?? false;
+  Future<void> setPrefersDriving(bool driving) => _prefs.setBool(_driving, driving);
 
   /// Whether the walk [routeId] was last walked in reverse.
   bool reversed(String routeId) => _prefs.getString('$_direction$routeId') == 'reverse';

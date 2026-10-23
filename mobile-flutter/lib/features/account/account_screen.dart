@@ -16,6 +16,7 @@ import '../auth/status_widgets.dart';
 import '../auth/user_message.dart';
 import '../legal/legal_links.dart';
 import '../settings/language_switch.dart';
+import '../settings/travel_preference.dart';
 import 'account_repository.dart';
 import 'account_sections.dart';
 
@@ -64,6 +65,8 @@ class _Guest extends StatelessWidget {
       ),
       const SizedBox(height: TokenSizes.spaceXl),
       const LanguageSwitch(),
+      const SizedBox(height: TokenSizes.spaceMd),
+      const TravelPreference(),
       const SizedBox(height: TokenSizes.spaceLg),
       const LegalLinks(),
     ]);
@@ -289,6 +292,8 @@ class _ProfileState extends ConsumerState<_Profile> {
       _sectionTitle(context, 'Настройки аккаунта'),
       const SizedBox(height: TokenSizes.spaceXs),
       const LanguageSwitch(),
+      const SizedBox(height: TokenSizes.spaceMd),
+      const TravelPreference(),
       const SizedBox(height: TokenSizes.spaceMd),
       Wrap(spacing: TokenSizes.spaceXs, runSpacing: TokenSizes.spaceXs, children: [
         OutlinedButton(onPressed: _busy == null ? () => _ask(_Confirm.signOut) : null, child: Text(context.t('Выйти'))),
