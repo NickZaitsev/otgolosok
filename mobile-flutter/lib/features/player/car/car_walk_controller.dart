@@ -63,7 +63,8 @@ class CarWalkController extends ChangeNotifier implements SessionOwner {
   final Uri origin;
   final Translations translations;
   final AppLocale locale;
-  final Map<String, Uri> localAudio;
+  /// Saved recordings; a new offline copy replaces them for the next stories.
+  Map<String, Uri> localAudio;
   final void Function()? reportLaunch;
   final void Function(bool active)? onActiveChanged;
 

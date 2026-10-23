@@ -106,8 +106,10 @@ class _CarWalkPanelState extends ConsumerState<CarWalkPanel> {
   @override
   void didUpdateWidget(CarWalkPanel old) {
     super.didUpdateWidget(old);
-    if (!identical(old.view, widget.view) || old.link.location != widget.link.location || old.localAudio != widget.localAudio) {
+    if (!identical(old.view, widget.view) || old.link.location != widget.link.location) {
       _recreate();
+    } else if (old.localAudio != widget.localAudio) {
+      _controller.localAudio = widget.localAudio;
     }
   }
 

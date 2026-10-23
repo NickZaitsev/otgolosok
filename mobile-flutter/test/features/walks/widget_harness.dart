@@ -45,8 +45,13 @@ class MemoryPacks extends OfflinePackManager {
   @override
   Future<OfflineWalkManifest?> status(OfflineWalkRef ref) async => copies[ref]?.manifest;
 
+  /// Recordings of the saved copies play from the device.
   @override
-  Future<Map<String, Uri>> localRecordings(WalkView view) async => const {};
+  Future<Map<String, Uri>> localRecordings(WalkView view) async => {
+        for (final copy in copies.values)
+          for (final audio in copy.manifest.audio)
+            if (view.chapters.any((chapter) => chapter.audio?.url == audio.url)) audio.url: Uri.parse('file:///packs/${audio.sha256}.mp3'),
+      };
 
   @override
   Future<OfflineSaveResult> save(Object? viewJson, OfflineWalkRef ref) async {

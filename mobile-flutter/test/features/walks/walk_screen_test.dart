@@ -1,6 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:otgolosok/app/router.dart' show walkActiveProvider;
 import 'package:otgolosok/features/offline/offline_packs.dart';
 import 'package:otgolosok/features/walks/walk_link.dart';
+import 'package:otgolosok/features/walks/walk_player_slot.dart';
 import 'package:otgolosok/features/walks/walk_screen.dart';
 
 import '../auth/harness.dart';
@@ -106,6 +109,48 @@ void main() {
     await tester.pumpAndSettle();
     expect(h.location, '/walk?catalog=arbat-test&fromStop=stop-2');
     expect(find.textContaining('Начало с остановки'), findsOneWidget);
+  });
+
+  testWidgets('the walk card opens a walk started from a stop without restarting it', (tester) async {
+    h.server.on(_view, Reply(200, sampleView()));
+    await open(tester, '/walk?catalog=arbat-test&fromStop=stop-2');
+    ProviderScope.containerOf(tester.element(find.byType(WalkScreen))).read(walkActiveProvider.notifier).set(true);
+
+    // The card's route has no fromStop, so a reopened app does not restart the walk at the stop.
+    h.router.go('/walk?catalog=arbat-test');
+    await tester.pumpAndSettle();
+    expect(h.server.to(_view), hasLength(1));
+    expect(find.textContaining('Начало с остановки'), findsOneWidget);
+  });
+
+  testWidgets('without a running walk the same walk without its stop opens from the start', (tester) async {
+    h.server.on(_view, Reply(200, sampleView()));
+    await open(tester, '/walk?catalog=arbat-test&fromStop=stop-2');
+
+    h.router.go('/walk?catalog=arbat-test');
+    await tester.pumpAndSettle();
+    expect(h.server.to(_view), hasLength(2));
+    expect(find.textContaining('Начало с остановки'), findsNothing);
+  });
+
+  testWidgets('saving and removing the offline copy switches the player between device and network audio', (tester) async {
+    h.server.on(_view, Reply(200, sampleView()));
+    await open(tester, '/walk?catalog=arbat-test');
+    Map<String, Uri> playerAudio() => tester.widget<WalkPlayerSlot>(find.byType(WalkPlayerSlot)).localAudio;
+    expect(playerAudio(), isEmpty);
+
+    await tester.tap(find.byTooltip('Настройки прогулки'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Офлайн-копия'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Сохранить прогулку без сети'));
+    await tester.pumpAndSettle();
+    expect(h.packs.saved, hasLength(1));
+    expect(playerAudio(), isNotEmpty);
+
+    await tester.tap(find.text('Удалить офлайн-копию'));
+    await tester.pumpAndSettle();
+    expect(playerAudio(), isEmpty);
   });
 
   testWidgets('the menu offers rating, improvement requests and the offline copy', (tester) async {

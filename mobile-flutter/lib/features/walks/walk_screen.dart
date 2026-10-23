@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart' show CancelToken;
+import 'package:flutter/foundation.dart' show mapEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/providers.dart';
+import '../../app/router.dart' show walkActiveProvider;
 import '../../core/api/api_error.dart';
 import '../../core/i18n/i18n.dart';
 import '../../core/i18n/translations.dart';
@@ -78,7 +80,10 @@ class _Failed extends _State {
 }
 
 class _Ready extends _State {
-  const _Ready(this.walk, this.localAudio, this.reviews, this.offline);
+  const _Ready(this.link, this.walk, this.localAudio, this.reviews, this.offline);
+
+  /// The link the walk was opened with; it keeps its start stop when the walk card reopens it.
+  final WalkLink link;
   final LoadedWalk walk;
   final Map<String, Uri> localAudio;
   final WalkReviewsController? reviews;
@@ -88,6 +93,9 @@ class _Ready extends _State {
 class _WalkScreenState extends ConsumerState<WalkScreen> {
   _State _state = const _Loading();
   String? _key;
+
+  /// [_key] without the start stop.
+  String? _walkKey;
   CancelToken? _cancel;
 
   @override
@@ -119,9 +127,15 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
   /// Called right before a build, so the loading state needs no extra rebuild.
   void _loadIfNeeded() {
     // The language is part of the key: a switch reloads the walk in the new language.
-    final key = '${context.appLocale.name}:${widget.link.location}';
+    final link = widget.link;
+    final key = '${context.appLocale.name}:${link.location}';
     if (key == _key) return;
+    final walkKey = '${context.appLocale.name}:${Uri(path: '/walk', queryParameters: link.query)}';
+    // The walk card opens the walk without its start stop: the running walk stays as it is.
+    final reopened = link.fromStop == null && walkKey == _walkKey && _state is _Ready && ref.read(walkActiveProvider);
     _key = key;
+    _walkKey = walkKey;
+    if (reopened) return;
     _replace(const _Loading());
     unawaited(_load());
   }
@@ -153,7 +167,8 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
           : WalkReviewsController(target: target, api: ReviewsApi(api), drafts: ReviewDrafts(ref.read(settingsProvider)));
       final offlineRef = walk.offlineRef;
       final offline = offlineRef == null ? null : OfflineCopyController(packs: packs, ref: offlineRef);
-      _setState(_Ready(walk, localAudio, reviews, offline));
+      offline?.addListener(() => unawaited(_offlineChanged(offline)));
+      _setState(_Ready(link, walk, localAudio, reviews, offline));
     } on ApiError catch (error) {
       if (!mounted || cancel.isCancelled || error.isCancelled) return;
       final moved = error.movedToShare;
@@ -167,6 +182,18 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
       if (!mounted || cancel.isCancelled) return;
       _setState(_Failed(error));
     }
+  }
+
+  /// A saved or removed copy changes which recordings the player takes from the device.
+  Future<void> _offlineChanged(OfflineCopyController offline) async {
+    if (offline.busy) return;
+    final state = _state;
+    if (state is! _Ready || !identical(state.offline, offline)) return;
+    final localAudio = await ref.read(offlinePacksProvider).localRecordings(state.walk.view);
+    final current = _state;
+    if (!mounted || current is! _Ready || !identical(current.offline, offline) || mapEquals(current.localAudio, localAudio)) return;
+    // The same controllers stay: only the recordings change.
+    setState(() => _state = _Ready(current.link, current.walk, localAudio, current.reviews, offline));
   }
 
   void _retry() => setState(() {
@@ -200,9 +227,9 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
   }
 
   Widget _ready(_Ready state) {
-    final problem = fromStopProblem(context, state.walk.view, widget.link.fromStop);
+    final problem = fromStopProblem(context, state.walk.view, state.link.fromStop);
     if (problem != null) return WalkErrorView(message: problem);
-    return WalkReadyView(link: widget.link, walk: state.walk, localAudio: state.localAudio, reviews: state.reviews, offline: state.offline);
+    return WalkReadyView(link: state.link, walk: state.walk, localAudio: state.localAudio, reviews: state.reviews, offline: state.offline);
   }
 }
 
