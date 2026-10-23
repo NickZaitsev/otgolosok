@@ -7,6 +7,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../core/api/api_error.dart';
+import '../../core/i18n/user_message.dart';
 import '../../walk_engine/json_read.dart';
 import '../../walk_engine/walk_view.dart';
 import 'offline_food.dart';
@@ -52,8 +53,9 @@ OfflineWalkRef? offlineWalkRef(OfflineWalkKind kind, String key, String? userId,
 }
 
 /// A failed save with a Russian message for the walker.
-class OfflinePackError implements Exception {
+class OfflinePackError implements UserFacingError {
   const OfflinePackError(this.message);
+  @override
   final String message;
 
   static const tooLarge = OfflinePackError('Офлайн-комплект прогулки слишком большой.');

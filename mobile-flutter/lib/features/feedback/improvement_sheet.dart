@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../core/i18n/i18n.dart';
+import '../../core/i18n/user_message.dart';
 import '../reviews/review_model.dart';
-import '../walks/user_message.dart';
 import 'improvement_model.dart';
 
 /// How long the thank-you message stays before the sheet closes itself.
@@ -120,7 +120,7 @@ class _ImprovementSheetState extends ConsumerState<ImprovementSheet> {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _error = userMessage(context, error, context.t('Не удалось отправить запрос. Повторите попытку.'));
+        _error = userMessage(context, error, 'Не удалось отправить запрос. Повторите попытку.');
       });
     }
   }

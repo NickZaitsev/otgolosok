@@ -50,6 +50,10 @@ void main() {
     expect(improvementPath(const SharedReviewTarget('tok')), '/api/story-walks/shared/tok/improvements/mine');
     expect(improvementPath(const AccountReviewTarget('id-1')), '/api/me/walks/id-1/improvements/mine');
     expect(canonicalIssues({ImprovementIssue.voiceover, ImprovementIssue.shortText}), [ImprovementIssue.shortText, ImprovementIssue.voiceover]);
+    expect(
+      canonicalIssues([ImprovementIssue.voiceover, ImprovementIssue.noImages, ImprovementIssue.voiceover]),
+      [ImprovementIssue.noImages, ImprovementIssue.voiceover],
+    );
   });
 
   group('the sheet', () {

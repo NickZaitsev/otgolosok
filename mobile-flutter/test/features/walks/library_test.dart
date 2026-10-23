@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:otgolosok/core/api/paging.dart';
 import 'package:otgolosok/features/walks/library_screen.dart';
 import 'package:otgolosok/features/walks/local_walks.dart';
 import 'package:otgolosok/features/walks/top_walks_view.dart';
@@ -69,7 +70,7 @@ void main() {
   });
 
   test('further pages do not repeat walks and cards go newest first', () {
-    final merged = mergeCardPage([_card('a', '2026-10-01'), _card('b', '2026-10-02')], [_card('b', '2026-10-02'), _card('c', '2026-10-03')]);
+    final merged = mergePage([_card('a', '2026-10-01'), _card('b', '2026-10-02')], [_card('b', '2026-10-02'), _card('c', '2026-10-03')], (card) => card.id);
     expect(merged.map((card) => card.id), ['a', 'b', 'c']);
     expect(sortCards(merged).map((card) => card.id), ['c', 'b', 'a']);
   });

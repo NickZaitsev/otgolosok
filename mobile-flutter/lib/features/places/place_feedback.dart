@@ -9,31 +9,11 @@ import '../../app/theme/tokens.g.dart';
 import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../core/i18n/i18n.dart';
-import '../walks/user_message.dart';
+import '../../core/i18n/user_message.dart';
+import '../feedback/improvement_model.dart';
+import '../feedback/improvement_sheet.dart' show improvementIssueLabel;
 
 const placeFeedbackTextMax = 1000;
-
-/// Reasons a dislike can name, in the server's canonical order.
-enum ImprovementIssue {
-  shortText('short_text', 'Мало информации: тексты слишком короткие'),
-  noImages('no_images', 'Нет превью изображений'),
-  voiceover('voiceover', 'Не нравится озвучка');
-
-  const ImprovementIssue(this.wire, this.label);
-
-  final String wire;
-
-  /// Russian source text, translated by the UI.
-  final String label;
-
-  static ImprovementIssue? parse(Object? value) => values.where((issue) => issue.wire == value).firstOrNull;
-}
-
-/// The selection in canonical order, as the server stores it, so a no-op edit is easy to spot.
-List<ImprovementIssue> canonicalIssues(Iterable<ImprovementIssue> selected) {
-  final set = selected.toSet();
-  return [for (final issue in ImprovementIssue.values) if (set.contains(issue)) issue];
-}
 
 enum PlaceFeedbackStatus { open, resolved }
 
@@ -78,7 +58,7 @@ PlaceFeedback? validatePlaceFeedback(Object? value) {
   if ((rating != 1 && rating != -1) || issues is! List<Object?> || text is! String || status == null || mine['updatedAt'] is! String) {
     throw invalid;
   }
-  final parsed = [for (final issue in issues) ImprovementIssue.parse(issue)];
+  final parsed = [for (final issue in issues) ImprovementIssue.values.where((value) => value.wire == issue).firstOrNull];
   if (parsed.contains(null) || parsed.toSet().length != parsed.length || text.length > placeFeedbackTextMax) throw invalid;
   if (rating == 1 && (parsed.isNotEmpty || text.isNotEmpty)) throw invalid;
   return PlaceFeedback(
@@ -159,7 +139,6 @@ class _PlaceFeedbackPanelState extends ConsumerState<PlaceFeedbackPanel> {
   /// Saves and returns the stored vote, or null after an error (shown in [_error] or [onError]).
   Future<(bool, PlaceFeedback?)> _save({required int? rating, List<ImprovementIssue> issues = const [], String text = '', void Function(String)? onError}) async {
     if (!_loaded || _busy) return (false, null);
-    final fallback = context.t('Не удалось сохранить оценку. Повторите попытку.');
     setState(() {
       _busy = true;
       _error = '';
@@ -176,7 +155,7 @@ class _PlaceFeedbackPanelState extends ConsumerState<PlaceFeedbackPanel> {
     } on Object catch (error) {
       if (!mounted) return (false, null);
       if (error is! ApiError && error is! FormatException) debugPrint('Place feedback failed to save: $error');
-      final message = userMessage(context, error, fallback);
+      final message = userMessage(context, error, 'Не удалось сохранить оценку. Повторите попытку.');
       setState(() {
         _busy = false;
         if (onError == null) _error = message;
@@ -368,7 +347,7 @@ class _ImproveSheetState extends State<_ImproveSheet> {
                 onChanged: _busy
                     ? null
                     : (checked) => setState(() => checked == true ? _selected.add(issue) : _selected.remove(issue)),
-                title: Text(context.t(issue.label)),
+                title: Text(improvementIssueLabel(context, issue)),
               ),
             const SizedBox(height: TokenSizes.spaceSm),
             TextField(

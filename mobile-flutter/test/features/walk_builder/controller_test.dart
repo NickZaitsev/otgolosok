@@ -249,7 +249,8 @@ void main() {
       await c.prepareNext();
       expect(c.draft.submitting, isNull);
       expect(parseDraft(setup.storage.values[BuilderKeys.draft]).submitting, isNull);
-      expect(shown(c.error), 'Войдите в аккаунт.');
+      // The Russian interface shows the server's Russian reason as is (site `toUserMessage`).
+      expect(shown(c.error), 'Войдите, чтобы подготовить историю.');
     });
 
     test('a lost answer keeps the send as unknown and is never repeated by itself', () async {

@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/providers.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../core/i18n/i18n.dart';
-import '../walks/user_message.dart';
+import '../../core/i18n/user_message.dart';
 import 'review_model.dart';
 import 'reviews_api.dart';
 import 'walk_reviews_controller.dart';
@@ -153,7 +153,7 @@ class _ReviewFormState extends ConsumerState<ReviewForm> {
           null => '',
         });
       case ReviewActionFailed(:final error):
-        setState(() => _error = userMessage(context, error, context.t('Не удалось отправить отзыв. Повторите попытку.')));
+        setState(() => _error = userMessage(context, error, 'Не удалось отправить отзыв. Повторите попытку.'));
     }
   }
 

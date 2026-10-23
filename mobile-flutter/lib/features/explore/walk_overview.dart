@@ -12,7 +12,6 @@ import '../../core/i18n/translations.dart';
 import '../../walk_engine/cities.dart';
 import '../../walk_engine/json_read.dart';
 import '../reviews/review_model.dart';
-import '../walks/format.dart';
 import '../walks/top_model.dart';
 import 'catalog_bounds.dart';
 
@@ -132,14 +131,11 @@ int walkColorIndex(String key) {
 }
 
 /// «45 мин · 3,2 км · 6 историй» of a map walk (site `formatTopWalkMeta`).
-String formatMapWalkMeta(MapWalk walk, AppLocale locale, String Function(String source, Map<String, Object> values) t) {
-  final values = <String, Object>{
-    'minutes': jsRound(walk.totalMinutes ?? walk.walkingMinutes),
-    'distance': formatFixed(walk.distanceM / 1000, locale),
-    'stories': storyCountLabel(walk.stopCount, locale, t),
-  };
-  return walk.driving ? t('На машине · {minutes} мин · {distance} км · {stories}', values) : t('{minutes} мин · {distance} км · {stories}', values);
-}
+String formatMapWalkMeta(MapWalk walk, AppLocale locale, String Function(String source, Map<String, Object> values) t) => formatWalkCardMeta(
+      (driving: walk.driving, minutes: walk.totalMinutes ?? walk.walkingMinutes, distanceM: walk.distanceM, stopCount: walk.stopCount),
+      locale,
+      t,
+    );
 
 double _mercatorY(double lat) => math.log(math.tan(math.pi / 4 + lat * math.pi / 360));
 double _latitude(double y) => (2 * math.atan(math.exp(y)) - math.pi / 2) * 180 / math.pi;

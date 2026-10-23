@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../core/i18n/i18n.dart';
 import '../core/links/app_links.dart';
 import '../features/account/account_screen.dart';
-import '../features/account/my_walks_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/explore/explore_screen.dart';
 import '../features/walk_builder/builder_screen.dart';

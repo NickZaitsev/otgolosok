@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../core/api/api_error.dart';
+import '../../core/location/locate.dart';
 import '../../core/i18n/i18n.dart';
 import '../../core/i18n/translations.dart';
-import 'model.dart';
-import 'walk_document.dart';
+import '../../core/i18n/user_message.dart';
 
 /// A text the builder shows; kept as a Russian source and translated when drawn, so a language
 /// switch never leaves stale text behind.
@@ -56,58 +56,20 @@ class ErrorText extends UiText {
 
 /// Why «Моё местоположение» failed, followed by what to do instead.
 class LocateFailureText extends UiText {
-  const LocateFailureText(this.source);
+  const LocateFailureText(this.reason);
 
-  final String source;
+  final LocateError reason;
+
+  /// The Russian source of [reason].
+  String get source => describeLocateError(reason);
 
   @override
   String resolve(BuildContext context) => '${context.t(source)} ${context.t('Выберите точку на карте или введите адрес.')}';
 }
 
-/// Transport failures in the site's words (`USER_MESSAGES`).
-const _network = 'Нет связи с сервером. Проверьте интернет и повторите попытку.';
-const _timeout = 'Сервер долго не отвечает. Повторите попытку.';
-const _badResponse = 'Сервер вернул неожиданный ответ. Повторите попытку позже.';
+const _placeBusy = 'Подождите секунду и повторите поиск.';
 
-const _byCode = {
-  'UNAUTHORIZED': 'Войдите в аккаунт.',
-  'AUTH_REQUIRED': 'Войдите в аккаунт.',
-  'CSRF': 'Обновите страницу и повторите действие.',
-  'PLACE_BUSY': 'Подождите секунду и повторите поиск.',
-};
-
-final _russian = RegExp('[А-Яа-яЁё]');
-
-/// The Russian source to show for [error]: a known or (in Russian) any Russian message of the
-/// error, a message by its code, otherwise [fallback]. Raw runtime details never reach the UI.
-String errorSource(Object error, String fallback, {required AppLocale locale, required bool Function(String source) known}) {
-  final String message;
-  String? code;
-  switch (error) {
-    case ApiError():
-      switch (error.code) {
-        case 'NETWORK':
-          return _network;
-        case 'TIMEOUT':
-          return _timeout;
-        case 'CORRUPT':
-          return _badResponse;
-        case 'PLACE_BUSY':
-          return _byCode['PLACE_BUSY']!;
-      }
-      message = error.message;
-      code = error.code;
-    case ModelError(message: final text) || FormatException(message: final text) || StateError(message: final text):
-      message = text;
-    case InvalidWalkDocument():
-      message = error.message;
-    default:
-      return fallback;
-  }
-  if (known(message)) return message;
-  final byCode = _byCode[code];
-  if (byCode != null) return byCode;
-  if (locale == AppLocale.ru && _russian.hasMatch(message)) return message;
-  return fallback;
-}
-
+/// The Russian source to show for [error]: the shared [userMessageSource], plus the builder's own
+/// text for a busy address search.
+String errorSource(Object error, String fallback, {required AppLocale locale, required bool Function(String source) known}) =>
+    error is ApiError && error.code == 'PLACE_BUSY' ? _placeBusy : userMessageSource(error, fallback, locale: locale, known: known);

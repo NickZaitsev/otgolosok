@@ -8,13 +8,14 @@ import 'package:go_router/go_router.dart';
 import '../../app/providers.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../core/api/api_error.dart';
+import '../../core/api/paging.dart';
 import '../../core/auth/session.dart';
 import '../../core/i18n/i18n.dart';
+import '../../core/i18n/user_message.dart';
 import 'access_sheet.dart';
 import 'format.dart';
 import 'local_walks.dart';
 import 'top_walks_view.dart';
-import 'user_message.dart';
 import 'walk_cards.dart';
 
 enum LibraryTab { mine, top }
@@ -37,6 +38,15 @@ class LibraryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(appBar: AppBar(), body: WalkLibraryView(tab: tab));
+}
+
+/// «Мои прогулки» of the profile (`/account/walks`, site `<WalkLibrary mode="mine" />`).
+class MyWalksScreen extends StatelessWidget {
+  const MyWalksScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      Scaffold(appBar: AppBar(title: Text(context.t('Мои прогулки'))), body: const WalkLibraryView(mode: LibraryMode.mine));
 }
 
 /// The walk library of the site's `walk-library.tsx`: own walks (account and device) and, in
@@ -89,10 +99,11 @@ class _WalkLibraryViewState extends ConsumerState<WalkLibraryView> {
     super.dispose();
   }
 
-  Future<void> _load(AuthUser? user) async {
+  /// Loads own walks; a [refresh] keeps the shown cards until the answer arrives.
+  Future<void> _load(AuthUser? user, {bool refresh = false}) async {
     final generation = ++_generation;
     setState(() {
-      _loading = true;
+      if (!refresh) _loading = true;
       _errors.clear();
     });
     final errors = <String, Object>{};
@@ -132,7 +143,7 @@ class _WalkLibraryViewState extends ConsumerState<WalkLibraryView> {
       final page = await AccountWalksApi(ref.read(apiProvider)).list(cursor: cursor);
       if (!mounted) return;
       setState(() {
-        _account = mergeCardPage(_account, page.walks);
+        _account = mergePage(_account, page.walks, (card) => card.id);
         _cursor = page.nextCursor;
       });
     } on ApiError catch (error) {
@@ -164,9 +175,7 @@ class _WalkLibraryViewState extends ConsumerState<WalkLibraryView> {
       setState(() => _notice = context.t('Доступ закрыт: прогулку видите только вы.'));
       return;
     }
-    final awaitsReview = access.visibility == WalkVisibility.public &&
-        access.listingStatus == ListingStatus.pending &&
-        !(card.visibility == WalkVisibility.public && card.listingStatus == ListingStatus.pending);
+    final awaitsReview = access.awaitsReview && !card.awaitsReview;
     await _copy(token, awaitsReview ? context.t('Ссылка скопирована. Прогулка появится в топе после проверки.') : context.t('Ссылка скопирована.'));
   }
 
@@ -194,10 +203,8 @@ class _WalkLibraryViewState extends ConsumerState<WalkLibraryView> {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(mine ? context.t('Профиль') : context.t('Ваши маршруты'), style: theme.textTheme.labelSmall),
-        Semantics(
-          header: true,
-          child: Text(mine ? context.t('Мои прогулки') : context.t('История прогулок'), style: theme.textTheme.headlineLarge),
-        ),
+        // «Мои прогулки» is the title of its screen's app bar.
+        if (!mine) Semantics(header: true, child: Text(context.t('История прогулок'), style: theme.textTheme.headlineLarge)),
         Text(
           mine ? context.t('Сохранённые маршруты и черновики') : context.t('Знакомые места. Новые открытия. Всё, к чему хочется вернуться.'),
           style: theme.textTheme.bodySmall,
@@ -236,7 +243,7 @@ class _WalkLibraryViewState extends ConsumerState<WalkLibraryView> {
   Widget _mine(BuildContext context, List<WalkCard> cards, bool waiting) {
     final visible = _draftsOnly ? cards.where((card) => card.draft).toList() : cards;
     final returnTo = widget.mode == LibraryMode.mine ? '/account/walks' : '/history';
-    return ListView(padding: const EdgeInsets.fromLTRB(16, 0, 16, 32), children: [
+    final list = ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.fromLTRB(16, 0, 16, 32), children: [
       Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
         ChoiceChip(label: Text(context.t('Все прогулки')), selected: !_draftsOnly, onSelected: (_) => setState(() => _draftsOnly = false)),
         ChoiceChip(label: Text(context.t('Черновики')), selected: _draftsOnly, onSelected: (_) => setState(() => _draftsOnly = true)),
@@ -245,11 +252,7 @@ class _WalkLibraryViewState extends ConsumerState<WalkLibraryView> {
       for (final MapEntry(:key, :value) in _errors.entries)
         ErrorNotice(
           key: ValueKey(key),
-          message: userMessage(
-            context,
-            value,
-            key == 'page' ? context.t('Не удалось загрузить следующую страницу.') : context.t('Не удалось открыть прогулки.'),
-          ),
+          message: userMessage(context, value, key == 'page' ? 'Не удалось загрузить следующую страницу.' : 'Не удалось открыть прогулки.'),
           onRetry: () {
             _loadedFor = null;
             setState(() => _errors.clear());
@@ -295,6 +298,7 @@ class _WalkLibraryViewState extends ConsumerState<WalkLibraryView> {
           ),
       ],
     ]);
+    return RefreshIndicator(onRefresh: () => _session.known ? _load(ref.read(authUserProvider), refresh: true) : Future<void>.value(), child: list);
   }
 }
 
@@ -364,7 +368,7 @@ class _LibraryCard extends StatelessWidget {
           ),
           if (card.subtitle case final subtitle? when subtitle.isNotEmpty) Text(subtitle),
           if (meta.isNotEmpty) Text(meta, style: theme.textTheme.bodySmall),
-          if (card.kind == WalkCardKind.account) Text(context.t('Доступ: {access}', {'access': accessLabel(context, card)})),
+          if (card.kind == WalkCardKind.account) Text(context.t('Доступ: {access}', {'access': context.t(card.accessLabel)})),
           Wrap(spacing: 8, children: [
             TextButton(onPressed: () => context.go(card.editLocation), child: Text(context.t('Редактировать'))),
             if (card.kind == WalkCardKind.account) TextButton(onPressed: busy ? null : onAccess, child: Text(context.t('Доступ'))),

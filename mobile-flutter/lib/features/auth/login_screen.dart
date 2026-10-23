@@ -8,12 +8,12 @@ import 'package:go_router/go_router.dart';
 import '../../app/providers.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../core/i18n/i18n.dart';
+import '../../core/i18n/user_message.dart';
 import '../legal/legal_links.dart';
 import '../settings/language_switch.dart';
 import 'auth_repository.dart';
 import 'login_validation.dart';
 import 'status_widgets.dart';
-import 'user_message.dart';
 
 enum _Mode { signIn, signUp }
 

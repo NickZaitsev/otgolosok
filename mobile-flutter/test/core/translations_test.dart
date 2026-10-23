@@ -42,6 +42,29 @@ void main() {
     expect(missing, isEmpty);
   });
 
+  test('every fallback the app passes to userMessage and ErrorText has a translation', () {
+    final start = RegExp(r'\b(?:userMessage|ErrorText)\(');
+    final literal = RegExp(r"""'((?:[^'\\\n]|\\.)*[А-Яа-яЁё](?:[^'\\\n]|\\.)*)'""");
+    final missing = <String>{};
+    for (final file in Directory('lib').listSync(recursive: true).whereType<File>().where((f) => f.path.endsWith('.dart'))) {
+      final text = file.readAsStringSync();
+      for (final match in start.allMatches(text)) {
+        // The arguments up to the matching closing parenthesis.
+        var depth = 1, end = match.end;
+        while (end < text.length && depth > 0) {
+          final char = text[end++];
+          if (char == '(') depth++;
+          if (char == ')') depth--;
+        }
+        for (final source in literal.allMatches(text.substring(match.end, end))) {
+          final value = source[1]!.replaceAll(r"\'", "'");
+          if (!all.has(value)) missing.add('${file.path}: $value');
+        }
+      }
+    }
+    expect(missing, isEmpty);
+  });
+
   test('every error text the API layer creates has a translation', () {
     final literal = RegExp(r"""'([^'\n]*[А-Яа-яЁё][^'\n]*)'""");
     final missing = <String>{};

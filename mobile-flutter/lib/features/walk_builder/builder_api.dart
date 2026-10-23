@@ -7,7 +7,7 @@ import '../../core/api/api_client.dart';
 import '../../walk_engine/car_route.dart';
 import '../../walk_engine/distance.dart';
 import '../../walk_engine/js_json.dart';
-import '../account/account_repository.dart' show AccountWalk;
+import '../walks/walk_cards.dart' show WalkCard;
 import 'model.dart';
 import 'parking.dart';
 import 'throttle.dart';
@@ -31,10 +31,10 @@ class AccountWalkRecord {
     if (walk is! Map<String, Object?>) throw const FormatException('walk');
     final error = walk['snapshotError'];
     if (error != null && error is! String) throw const FormatException('snapshotError');
-    return AccountWalkRecord(walk: AccountWalk.fromJson(walk), snapshot: walk['snapshot'], snapshotError: error as String?);
+    return AccountWalkRecord(walk: WalkCard.account(walk), snapshot: walk['snapshot'], snapshotError: error as String?);
   }
 
-  final AccountWalk walk;
+  final WalkCard walk;
 
   /// A version-2 walk document, or a legacy draft; checked by the caller.
   final Object? snapshot;

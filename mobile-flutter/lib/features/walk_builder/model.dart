@@ -5,11 +5,15 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
+import '../../core/i18n/user_message.dart';
 import '../../walk_engine/car_route.dart';
 import '../../walk_engine/cities.dart';
 import '../../walk_engine/distance.dart';
 import '../../walk_engine/js_json.dart';
 import '../../walk_engine/json_read.dart';
+import '../../walk_engine/walk_view.dart' show TravelMode;
+
+export '../../walk_engine/walk_view.dart' show TravelMode;
 
 const int maxWalkStops = 40;
 
@@ -18,13 +22,6 @@ const double minBudgetShare = 0.75;
 
 /// Walking minutes of an automatic walk that fell short of the chosen time, otherwise null.
 num? routeShortfall(num walkingMinutes, num minutes) => walkingMinutes < minBudgetShare * minutes ? walkingMinutes : null;
-
-enum TravelMode {
-  walking,
-  driving;
-
-  static TravelMode parse(Object? value) => value == 'driving' ? driving : walking;
-}
 
 enum WalkMode {
   loop,
@@ -466,10 +463,11 @@ class ResearchJob {
   final bool canRetry;
 }
 
-class ModelError implements Exception {
+class ModelError implements UserFacingError {
   const ModelError(this.message);
 
   /// Russian source text.
+  @override
   final String message;
 
   @override
@@ -673,7 +671,7 @@ Draft draftFromJson(Object? value) {
   const unreadable = ModelError('Черновик не удалось прочитать. Исходная копия не изменена.');
   final v = _record(value);
   if (v == null) throw unreadable;
-  final travelMode = TravelMode.parse(v['travelMode']);
+  final travelMode = v['travelMode'] == 'driving' ? TravelMode.driving : TravelMode.walking;
   final validMinutes = minutesFor(travelMode);
   final jobs = v['jobs'], stops = v['stops'], title = v['title'], minutes = v['minutes'];
   if (v['version'] != 1 ||

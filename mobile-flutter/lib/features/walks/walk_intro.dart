@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../app/router.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../core/i18n/i18n.dart';
+import '../../core/i18n/user_message.dart';
 import '../../walk_engine/js_json.dart';
 import '../../walk_engine/walk_view.dart';
 import '../feedback/improvement_sheet.dart';
@@ -22,7 +23,6 @@ import 'car_copy.dart';
 import 'format.dart';
 import 'local_walks.dart';
 import 'own_walk.dart';
-import 'user_message.dart';
 import 'walk_link.dart';
 import 'walk_loader.dart';
 import 'walk_player_slot.dart';
@@ -153,7 +153,7 @@ class _WalkIntroState extends ConsumerState<WalkIntro> {
         _carBusy = false;
         _carError = switch (error) {
           CarCopyError(:final message) => context.t(message),
-          _ => userMessage(context, error, context.t('Не удалось построить автомобильную прогулку.')),
+          _ => userMessage(context, error, 'Не удалось построить автомобильную прогулку.'),
         };
       });
     }

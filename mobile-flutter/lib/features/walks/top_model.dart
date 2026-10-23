@@ -460,8 +460,13 @@ String storyCountLabel(int count, AppLocale locale, String Function(String sourc
   }}';
 }
 
-/// «45 мин · 3,2 км · 6 историй».
-String formatTopWalkMeta(TopWalk walk, AppLocale locale, String Function(String source, Map<String, Object> values) t) {
+/// «45 мин · 3,2 км · 6 историй» of a walk card (site `formatTopWalkMeta`); [minutes] is the whole
+/// trip of a car walk and the walking time otherwise.
+String formatWalkCardMeta(
+  ({bool driving, double minutes, double distanceM, int stopCount}) walk,
+  AppLocale locale,
+  String Function(String source, Map<String, Object> values) t,
+) {
   final values = <String, Object>{
     'minutes': jsRound(walk.minutes),
     'distance': formatFixed(walk.distanceM / 1000, locale),
@@ -469,3 +474,7 @@ String formatTopWalkMeta(TopWalk walk, AppLocale locale, String Function(String 
   };
   return walk.driving ? t('На машине · {minutes} мин · {distance} км · {stories}', values) : t('{minutes} мин · {distance} км · {stories}', values);
 }
+
+/// «45 мин · 3,2 км · 6 историй» of a top walk.
+String formatTopWalkMeta(TopWalk walk, AppLocale locale, String Function(String source, Map<String, Object> values) t) =>
+    formatWalkCardMeta((driving: walk.driving, minutes: walk.minutes, distanceM: walk.distanceM, stopCount: walk.stopCount), locale, t);

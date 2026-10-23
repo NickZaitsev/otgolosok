@@ -6,6 +6,7 @@ import '../../core/api/api_client.dart';
 import '../../core/api/api_error.dart';
 import '../../core/auth/session.dart';
 import '../../core/config.dart';
+import '../../core/i18n/user_message.dart';
 import 'pkce.dart';
 import 'telegram_callback.dart';
 import 'web_authenticator.dart';
@@ -27,9 +28,10 @@ class LegalPublication {
 }
 
 /// A sign-in failure with a Russian source message the UI translates.
-class AuthFailure implements Exception {
+class AuthFailure implements UserFacingError {
   const AuthFailure(this.message, {this.termsRequired = false, this.cancelled = false});
 
+  @override
   final String message;
 
   /// Telegram created no account because the current terms were not accepted.

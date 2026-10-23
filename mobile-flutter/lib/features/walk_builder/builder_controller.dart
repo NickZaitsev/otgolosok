@@ -11,7 +11,7 @@ import '../../core/auth/session.dart';
 import '../../core/location/locate.dart';
 import '../../walk_engine/car_route.dart';
 import '../../walk_engine/distance.dart';
-import '../account/account_repository.dart' show AccountWalk, ListingStatus, WalkVisibility;
+import '../walks/walk_cards.dart' show WalkAccess, WalkCard;
 import 'builder_api.dart';
 import 'builder_storage.dart';
 import 'messages.dart';
@@ -141,8 +141,8 @@ class BuilderController extends ChangeNotifier {
   bool loginRequired = false;
 
   AuthUser? _user;
-  AccountWalk? _serverWalk;
-  AccountWalk? get serverWalk => _serverWalk;
+  WalkCard? _serverWalk;
+  WalkCard? get serverWalk => _serverWalk;
   String? _localId;
   String? _localIdForView;
   String? _stored;
@@ -472,7 +472,7 @@ class BuilderController extends ChangeNotifier {
     _cancelLocate?.call();
     final locator = _services.locator;
     if (locator == null) {
-      error = LocateFailureText(describeLocateError(LocateError.unsupported));
+      error = const LocateFailureText(LocateError.unsupported);
       _changed();
       return;
     }
@@ -485,7 +485,7 @@ class BuilderController extends ChangeNotifier {
       if (_disposed) return;
       switch (update) {
         case LocateErrorUpdate(:final error):
-          this.error = LocateFailureText(describeLocateError(error));
+          this.error = LocateFailureText(error);
           _changed();
         case LocateFixUpdate(:final fix):
           _changed();
@@ -718,7 +718,7 @@ class BuilderController extends ChangeNotifier {
         await storage.write(BuilderKeys.activeAccount, data.walk.id);
         await storage.write(BuilderKeys.activeRevision, '${data.walk.revision}');
         // Changed texts of a public walk send it back to the editors before it returns to the top.
-        awaitsReview = data.walk.visibility == WalkVisibility.public && data.walk.listingStatus == ListingStatus.pending;
+        awaitsReview = data.walk.awaitsReview;
       } else {
         final keyName = BuilderKeys.accountOperation(id);
         final key = _operationKey ?? await storage.read(keyName) ?? 'walk-${_services.uuid()}';
@@ -746,9 +746,11 @@ class BuilderController extends ChangeNotifier {
     }
   }
 
-  /// The account walk after a change of its access in the sharing sheet.
-  void sharingChanged(AccountWalk walk) {
-    if (walk.id != _serverWalk?.id) return;
+  /// The account walk [id] after a change of its access in the sharing sheet.
+  void sharingChanged(String id, WalkAccess access) {
+    final server = _serverWalk;
+    if (server == null || server.id != id) return;
+    final walk = server.withAccess(access);
     _serverWalk = walk;
     unawaited(_services.storage.write(BuilderKeys.activeRevision, '${walk.revision}').catchError((Object caught) {
       debugPrint('walk builder: revision not stored: $caught');

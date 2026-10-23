@@ -12,13 +12,12 @@ import '../../app/providers.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../core/i18n/i18n.dart';
 import '../../core/location/locate.dart';
-import '../../core/location/walk_service_permissions.dart';
 import '../../walk_engine/car_route.dart';
 import '../../walk_engine/distance.dart';
-import '../account/access_sheet.dart' as access;
 import '../explore/catalog_bounds.dart';
 import '../explore/cell_store.dart';
-import '../explore/map_location_source.dart';
+import '../explore/explore_providers.dart' show locationFixSourceProvider, locationPermissionsProvider, locationServicesProvider;
+import '../walks/access_sheet.dart';
 import 'builder_api.dart';
 import 'builder_controller.dart';
 import 'builder_map.dart';
@@ -28,9 +27,6 @@ import 'model.dart';
 import 'parking.dart';
 import 'research_panel.dart';
 import 'widgets.dart';
-
-/// The location permission used by «Моё местоположение».
-final builderLocationPermissionsProvider = Provider<LocationPermissions>((ref) => WalkServiceLocationPermissions());
 
 /// Cached parking cells; only an accelerator, every failure counts as an empty cache.
 final builderParkingStorageProvider = Provider<CellStorage>(
@@ -51,7 +47,6 @@ class BuilderScreen extends ConsumerStatefulWidget {
 
 class _BuilderScreenState extends ConsumerState<BuilderScreen> with WidgetsBindingObserver {
   late final _parsed = BuilderArgs.parse(widget.query);
-  final _fixSource = MapFixSource();
   final _parkingCells = ParkingCells();
   BuilderController? _controller;
   CellStore<ParkingPlace>? _parking;
@@ -61,6 +56,9 @@ class _BuilderScreenState extends ConsumerState<BuilderScreen> with WidgetsBindi
   EndpointMode? _chosenMode;
   bool _picking = false;
   bool _redirected = false;
+
+  /// The location settings were opened for a switched-off device: locate again on return.
+  bool _relocateOnResume = false;
   BuilderMapView? _view;
   List<Object?> _viewKey = const [];
 
@@ -82,7 +80,11 @@ class _BuilderScreenState extends ConsumerState<BuilderScreen> with WidgetsBindi
           return store.user;
         },
         preferredTravelMode: () => settings.prefersDriving ? TravelMode.driving : TravelMode.walking,
-        locator: Locator(permissions: ref.read(builderLocationPermissionsProvider), source: _fixSource),
+        locator: Locator(
+          permissions: ref.read(locationPermissionsProvider),
+          services: ref.read(locationServicesProvider),
+          source: ref.read(locationFixSourceProvider),
+        ),
       ),
       args,
     );
@@ -99,13 +101,30 @@ class _BuilderScreenState extends ConsumerState<BuilderScreen> with WidgetsBindi
     _parking
       ?..removeListener(_onChange)
       ..dispose();
-    _fixSource.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) unawaited(_controller?.refreshOnFocus());
+    if (state != AppLifecycleState.resumed) return;
+    unawaited(_controller?.refreshOnFocus());
+    if (_relocateOnResume) {
+      _relocateOnResume = false;
+      if (_servicesDisabled(_controller)) _controller?.locate();
+    }
+  }
+
+  /// «Моё местоположение» failed because location is switched off on the device.
+  static bool _servicesDisabled(BuilderController? c) =>
+      c != null && !c.locating && c.error is LocateFailureText && (c.error! as LocateFailureText).reason == LocateError.servicesDisabled;
+
+  Future<void> _openLocationSettings() async {
+    try {
+      await ref.read(locationServicesProvider).openSettings();
+      _relocateOnResume = true;
+    } on Object catch (error) {
+      debugPrint('Location settings did not open: $error');
+    }
   }
 
   String get _here => Uri(path: '/builder', queryParameters: widget.query.isEmpty ? null : widget.query).toString();
@@ -197,8 +216,8 @@ class _BuilderScreenState extends ConsumerState<BuilderScreen> with WidgetsBindi
   Future<void> _sharing() async {
     final walk = _c.serverWalk;
     if (walk == null) return;
-    final changed = await access.showAccessSheet(context, walk);
-    if (changed != null) _c.sharingChanged(changed);
+    final changed = await showAccessSheet(context, walk);
+    if (changed != null) _c.sharingChanged(walk.id, changed);
   }
 
   Future<void> _download() async {
@@ -292,7 +311,7 @@ class _BuilderScreenState extends ConsumerState<BuilderScreen> with WidgetsBindi
         Positioned.fill(
           child: mapBuilder(
             context,
-            BuilderMapProps(view: _mapView(context), onTap: (point) => unawaited(_onMapTap(point)), onViewport: _onViewport, fixSource: _fixSource),
+            BuilderMapProps(view: _mapView(context), onTap: (point) => unawaited(_onMapTap(point)), onViewport: _onViewport),
           ),
         ),
         if (driving) Positioned(top: MediaQuery.paddingOf(context).top + 8, left: 16, right: 16, child: _parkingStatus(context)),
@@ -400,7 +419,19 @@ class _BuilderScreenState extends ConsumerState<BuilderScreen> with WidgetsBindi
             child: Text(context.t('Скачать черновик')),
           ),
         ),
-      if (c.error case final error?) Notice(key: const ValueKey('error'), text: error.resolve(context), alert: true),
+      if (c.error case final error?)
+        Notice(
+          key: const ValueKey('error'),
+          text: error.resolve(context),
+          alert: true,
+          // A switched-off device: the system settings fix it (as on the map of «Рядом»).
+          action: _servicesDisabled(c)
+              ? Wrap(spacing: 8, children: [
+                  OutlinedButton(onPressed: () => unawaited(_openLocationSettings()), child: Text(context.t('Включить геолокацию'))),
+                  TextButton(onPressed: c.locate, child: Text(context.t('Проверить снова'))),
+                ])
+              : null,
+        ),
       if (c.message case final message?) Notice(key: const ValueKey('message'), text: message.resolve(context)),
       if (_busy)
         Padding(

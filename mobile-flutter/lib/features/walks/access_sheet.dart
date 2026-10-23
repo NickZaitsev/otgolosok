@@ -5,21 +5,11 @@ import '../../app/providers.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../core/api/api_error.dart';
 import '../../core/i18n/i18n.dart';
-import 'user_message.dart';
+import '../../core/i18n/user_message.dart';
 import 'walk_cards.dart';
 
-/// Access line of an account card, in words: the state is never shown by colour alone.
-String accessLabel(BuildContext context, WalkCard card) {
-  if (card.visibility == WalkVisibility.shared) return context.t('По ссылке');
-  if (card.visibility != WalkVisibility.public) return context.t('Только я');
-  return switch (card.listingStatus) {
-    ListingStatus.approved => context.t('Всем · в топе'),
-    ListingStatus.hidden => context.t('Всем · скрыта редакцией из топа'),
-    _ => context.t('Всем · на проверке'),
-  };
-}
-
-/// «Доступ к прогулке» (site `access-dialog.tsx`): the three access levels of an account walk.
+/// «Доступ к прогулке» (site `access-dialog.tsx`): the three access levels of an account walk, for
+/// the walk library and the builder.
 /// Resolves with the server's new access, or null when the sheet was closed without a change.
 Future<WalkAccess?> showAccessSheet(BuildContext context, WalkCard card) => showModalBottomSheet<WalkAccess>(
       context: context,
@@ -48,22 +38,20 @@ class _AccessSheetState extends ConsumerState<AccessSheet> {
       Navigator.of(context).pop();
       return;
     }
-    final revision = card.revision;
-    if (revision == null) return;
     setState(() {
       _busy = true;
       _error = '';
     });
     try {
-      final access = await AccountWalksApi(ref.read(apiProvider)).setVisibility(card.id, revision, _choice);
+      final access = await AccountWalksApi(ref.read(apiProvider)).setVisibility(card.id, card.revision, _choice);
       if (mounted) Navigator.of(context).pop(access);
-    } on ApiError catch (error) {
-      if (!mounted || error.isCancelled) return;
+    } on Object catch (error) {
+      if (!mounted || (error is ApiError && error.isCancelled)) return;
       setState(() {
         _busy = false;
-        _error = error.status == 409 && error.code != 'WALK_NOT_READY'
+        _error = error is ApiError && error.status == 409 && error.code != 'WALK_NOT_READY'
             ? context.t('Прогулка изменилась на другом устройстве. Обновите страницу и повторите.')
-            : userMessage(context, error, context.t('Не удалось изменить доступ.'));
+            : userMessage(context, error, 'Не удалось изменить доступ.');
       });
     }
   }
@@ -111,7 +99,7 @@ class _AccessSheetState extends ConsumerState<AccessSheet> {
         Row(mainAxisAlignment: MainAxisAlignment.end, children: [
           TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(context.t('Отмена'))),
           const SizedBox(width: 8),
-          FilledButton(onPressed: _busy ? null : _save, child: Text(_busy ? context.t('Сохраняем…') : context.t('Сохранить'))),
+          FilledButton(key: const ValueKey('access-save'), onPressed: _busy ? null : _save, child: Text(_busy ? context.t('Сохраняем…') : context.t('Сохранить'))),
         ]),
       ]),
     );

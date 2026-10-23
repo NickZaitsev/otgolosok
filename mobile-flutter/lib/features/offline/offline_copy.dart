@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/i18n/i18n.dart';
 import '../../core/i18n/translations.dart';
+import '../../core/i18n/user_message.dart';
 import '../walks/format.dart';
-import '../walks/user_message.dart';
 import 'offline_packs.dart';
 
 /// What the last action left to say under the offline controls.
@@ -121,7 +121,7 @@ class OfflineCopyControls extends StatelessWidget {
 
   String _status(BuildContext context) => switch (copy.notice) {
         OfflineFoodSkipped() => context.t('Заведения не сохранены'),
-        OfflineSaveFailed(:final error) => userMessage(context, error, context.t('Не удалось сохранить офлайн-копию.')),
+        OfflineSaveFailed(:final error) => userMessage(context, error, 'Не удалось сохранить офлайн-копию.'),
         OfflineRemoveFailed() => context.t('Не удалось удалить офлайн-копию.'),
         null => copy.saved == null ? context.t('Офлайн-копия ещё не сохранена') : offlineCopyLabel(context, copy.saved!),
       };

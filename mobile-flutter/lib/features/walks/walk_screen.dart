@@ -9,6 +9,7 @@ import '../../app/providers.dart';
 import '../../core/api/api_error.dart';
 import '../../core/i18n/i18n.dart';
 import '../../core/i18n/translations.dart';
+import '../../core/i18n/user_message.dart';
 import '../../walk_engine/walk_view.dart';
 import '../offline/offline_copy.dart';
 import '../offline/offline_providers.dart';
@@ -16,7 +17,6 @@ import '../reviews/review_model.dart';
 import '../reviews/reviews_api.dart';
 import '../reviews/walk_reviews_controller.dart';
 import 'local_walks.dart';
-import 'user_message.dart';
 import 'walk_intro.dart';
 import 'walk_link.dart';
 import 'walk_loader.dart';
@@ -192,7 +192,7 @@ class _WalkScreenState extends ConsumerState<WalkScreen> {
           ),
         ),
       _Failed(:final error) => WalkErrorView(
-          message: userMessage(context, error, context.t('Не удалось открыть прогулку.')),
+          message: userMessage(context, error, 'Не удалось открыть прогулку.'),
           onRetry: error is ApiError && (error.retryable || error.allowsOfflineFallback) ? _retry : null,
         ),
       _Ready() => _ready(state),

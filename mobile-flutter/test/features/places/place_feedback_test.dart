@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:otgolosok/features/feedback/improvement_model.dart';
 import 'package:otgolosok/features/places/place_feedback.dart';
 
 Map<String, Object?> _mine(Map<String, Object?> overrides) => {
@@ -61,12 +62,5 @@ void main() {
       'no update time': _mine({'updatedAt': null}),
     };
     invalid.forEach((name, value) => test(name, () => expect(() => validatePlaceFeedback(value), throwsFormatException)));
-  });
-
-  test('canonicalIssues drops repeats and follows the server order', () {
-    expect(
-      canonicalIssues([ImprovementIssue.voiceover, ImprovementIssue.noImages, ImprovementIssue.voiceover]),
-      [ImprovementIssue.noImages, ImprovementIssue.voiceover],
-    );
   });
 }

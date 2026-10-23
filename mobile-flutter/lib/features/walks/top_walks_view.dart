@@ -7,13 +7,13 @@ import '../../app/providers.dart';
 import '../../app/theme/tokens.g.dart';
 import '../../core/api/api_error.dart';
 import '../../core/i18n/i18n.dart';
+import '../../core/i18n/user_message.dart';
 import '../../walk_engine/cities.dart';
 import '../reviews/review_model.dart';
 import 'current_city.dart';
 import 'metro_select.dart';
 import 'route_preview.dart';
 import 'top_model.dart';
-import 'user_message.dart';
 
 sealed class _TopState {
   const _TopState();
@@ -156,7 +156,7 @@ class _TopWalksViewState extends ConsumerState<TopWalksView> {
         _Loading() => [_Status(context.t('Загружаем топ прогулок…'))],
         _Failed(:final error) => [
             _Notice(
-              message: userMessage(context, error, context.t('Не удалось загрузить топ прогулок.')),
+              message: userMessage(context, error, 'Не удалось загрузить топ прогулок.'),
               onRetry: () {
                 setState(() => _state = const _Loading());
                 _fetch();
@@ -255,7 +255,7 @@ class _TopWalksViewState extends ConsumerState<TopWalksView> {
       if (page.nextOffset != null)
         state.more == _More.error
             ? _Notice(
-                message: userMessage(context, state.moreError!, context.t('Не удалось загрузить ещё прогулки.')),
+                message: userMessage(context, state.moreError!, 'Не удалось загрузить ещё прогулки.'),
                 onRetry: () => setState(() => _state = state.copyWith(more: _More.idle)),
               )
             : Center(

@@ -12,16 +12,16 @@ enum ListingStatus { pending, approved, hidden }
 
 enum WalkCardKind { account, local }
 
-/// A walk in «Мои прогулки» (site `WalkCard` with the account list fields of
-/// `backend/account-store.mjs` `listItem`).
+/// A walk in «Мои прогулки» (site `WalkCard`): a walk on this device, or an account walk as
+/// `backend/account-store.mjs` sends it (`listItem` in lists, `viewWalk` in single-walk answers).
 @immutable
 class WalkCard {
   const WalkCard({
     required this.kind,
     required this.id,
     required this.title,
+    required this.revision,
     this.subtitle,
-    this.revision,
     this.updatedAt,
     this.visibility,
     this.shareToken,
@@ -32,6 +32,10 @@ class WalkCard {
     this.walkingMinutes,
     this.distanceM,
   });
+
+  /// An account walk of `GET /api/me/walks` or of a single-walk answer; a walk whose snapshot the
+  /// server could not read has no route fields.
+  factory WalkCard.account(Object? json) => _accountCard(json);
 
   /// A local walk as a card (site `walk-library.tsx`).
   factory WalkCard.local(LocalWalk walk) {
@@ -55,7 +59,7 @@ class WalkCard {
   final String id;
   final String title;
   final String? subtitle;
-  final int? revision;
+  final int revision;
 
   /// ISO time; cards are sorted by it, newest first, as strings like on the site.
   final String? updatedAt;
@@ -67,6 +71,19 @@ class WalkCard {
   final double? totalMinutes;
   final double? walkingMinutes;
   final double? distanceM;
+
+  /// The Russian source of the access line (site `accessLabel`): the state is never shown by
+  /// colour alone. A public walk without a listing state is still under review.
+  String get accessLabel => switch ((visibility, listingStatus)) {
+        (WalkVisibility.shared, _) => 'По ссылке',
+        (WalkVisibility.public, ListingStatus.approved) => 'Всем · в топе',
+        (WalkVisibility.public, ListingStatus.hidden) => 'Всем · скрыта редакцией из топа',
+        (WalkVisibility.public, _) => 'Всем · на проверке',
+        _ => 'Только я',
+      };
+
+  /// Public, but not yet in the top: the editors review it first.
+  bool get awaitsReview => visibility == WalkVisibility.public && listingStatus == ListingStatus.pending;
 
   /// The walk page of this card.
   String get location => Uri(path: '/walk', queryParameters: {kind == WalkCardKind.local ? 'local' : 'id': id}).toString();
@@ -102,6 +119,8 @@ class WalkAccess {
   final String? shareToken;
   final ListingStatus? listingStatus;
   final String? updatedAt;
+
+  bool get awaitsReview => visibility == WalkVisibility.public && listingStatus == ListingStatus.pending;
 }
 
 T _enum<T extends Enum>(List<T> values, Object? value, String message) =>
@@ -188,9 +207,3 @@ Uri sharedWalkUrl(Uri origin, String token, AppLocale locale) =>
 /// Account and local cards together, newest first (site sorts by the `updatedAt` strings).
 List<WalkCard> sortCards(Iterable<WalkCard> cards) =>
     [...cards]..sort((a, b) => (b.updatedAt ?? '').compareTo(a.updatedAt ?? ''));
-
-/// Account cards after a further page (site `mergePage`): a walk already shown is not repeated.
-List<WalkCard> mergeCardPage(List<WalkCard> current, List<WalkCard> next) {
-  final seen = {for (final card in current) card.id};
-  return [...current, ...next.where((card) => seen.add(card.id))];
-}

@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:otgolosok/app/providers.dart';
 import 'package:otgolosok/core/i18n/i18n.dart';
 import 'package:otgolosok/core/i18n/translations.dart';
+import 'package:otgolosok/core/location/locate.dart';
 import 'package:otgolosok/core/settings/settings_store.dart';
 import 'package:otgolosok/features/explore/cell_store.dart';
+import 'package:otgolosok/features/explore/explore_providers.dart';
 import 'package:otgolosok/features/walk_builder/builder_map.dart';
 import 'package:otgolosok/features/walk_builder/builder_screen.dart';
 import 'package:otgolosok/features/walk_builder/builder_storage.dart';
@@ -15,12 +17,53 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../auth/harness.dart';
 import 'support.dart';
 
+class _GrantedPermissions implements LocationPermissions {
+  @override
+  Future<LocationAccess> check() async => LocationAccess.granted;
+
+  @override
+  Future<LocationAccess> request() async => LocationAccess.granted;
+
+  @override
+  Future<void> openSettings() async {}
+}
+
+/// The device location switch; [opened] counts the visits to the system settings.
+class _Services implements LocationServices {
+  var on = true;
+  var opened = 0;
+
+  @override
+  Future<bool> enabled() async => on;
+
+  @override
+  Future<void> openSettings() async => opened++;
+}
+
+class _Subscription implements FixSubscription {
+  @override
+  void cancel() {}
+}
+
+/// Records the plugin requests; fixes are never delivered.
+class _Source implements FixSource {
+  var listens = 0;
+
+  @override
+  FixSubscription listen(void Function(LocatedFix fix) onFix, void Function(LocateError error) onError) {
+    listens++;
+    return _Subscription();
+  }
+}
+
 /// The builder at [location] over the harness API, with a plain stand-in for the map.
 class _App {
   _App([Map<String, String>? stored]) : storage = MemoryBuilderStorage(stored);
 
   final harness = Harness();
   final MemoryBuilderStorage storage;
+  final services = _Services();
+  final source = _Source();
   BuilderMapProps? map;
   late GoRouter router;
   String? opened;
@@ -50,6 +93,9 @@ class _App {
         configProvider.overrideWithValue(harness.config),
         builderStorageProvider.overrideWithValue(storage),
         builderParkingStorageProvider.overrideWithValue(MemoryCellStorage()),
+        locationPermissionsProvider.overrideWithValue(_GrantedPermissions()),
+        locationServicesProvider.overrideWithValue(services),
+        locationFixSourceProvider.overrideWithValue(source),
         builderMapProvider.overrideWithValue((context, props) {
           map = props;
           return const ColoredBox(color: Colors.grey);
@@ -112,6 +158,27 @@ void main() {
     expect(find.text('Исследование района'), findsOneWidget);
     expect(find.text('Найти истории рядом'), findsOneWidget);
     expect((a.harness.server.to('POST /api/walk-plan').single.body! as Map<String, Object?>)['minutes'], 60);
+  });
+
+  testWidgets('«Моё местоположение» with location switched off offers the settings and a new check', (tester) async {
+    final a = app()..services.on = false;
+    await a.pump(tester, '/builder');
+    await tester.tap(find.byKey(const ValueKey('endpoint-start')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Моё местоположение'));
+    await tester.pumpAndSettle();
+
+    expect(a.source.listens, 0);
+    expect(find.textContaining('Проверьте, что геолокация включена в настройках устройства.'), findsOneWidget);
+    await tester.tap(find.text('Включить геолокацию'));
+    await tester.pumpAndSettle();
+    expect(a.services.opened, 1);
+
+    a.services.on = true;
+    await tester.tap(find.text('Проверить снова'));
+    await tester.pumpAndSettle();
+    expect(a.source.listens, 1);
+    expect(find.text('Включить геолокацию'), findsNothing);
   });
 
   testWidgets('a built walk opens its walk page', (tester) async {

@@ -52,6 +52,7 @@ Map<String, Object?> accountWalkJson({String id = walkId, int revision = 0, Stri
       'revision': revision,
       'visibility': visibility,
       'listingStatus': ?listingStatus,
+      'shareToken': visibility == 'private' ? null : '901d1133-44a2-4724-a856-2fe8d6c86a44',
       'snapshot': snapshot,
     };
 

@@ -1,6 +1,7 @@
 // Draft ⇄ walk document adapters of src/features/walks/adapters.ts. Documents are built as raw
 // JSON maps and checked with the shared port of backend/walk-document.mjs before they are stored
 // or sent, so the app never keeps a walk the server would reject.
+import '../../core/i18n/user_message.dart';
 import '../../walk_engine/car_route.dart';
 import '../../walk_engine/json_read.dart';
 import '../../walk_engine/walk_view.dart' show validateWalkDocumentJson;
@@ -9,10 +10,11 @@ import 'model.dart';
 /// A version-2 walk document as JSON (`WalkDocument` of the site).
 typedef WalkDocumentJson = Map<String, Object?>;
 
-class InvalidWalkDocument implements Exception {
+class InvalidWalkDocument implements UserFacingError {
   const InvalidWalkDocument();
 
   /// Russian source text, as the server's BAD_REQUEST message.
+  @override
   String get message => 'Некорректные данные прогулки.';
 
   @override

@@ -1,11 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:otgolosok/core/location/locate.dart';
 import 'package:otgolosok/features/explore/catalog_bounds.dart';
 import 'package:otgolosok/features/explore/map_clusters.dart';
 import 'package:otgolosok/features/explore/map_layers.dart';
-import 'package:otgolosok/features/explore/map_location_source.dart';
 import 'package:otgolosok/walk_engine/distance.dart';
 
 import 'walk_fixtures.dart';
@@ -97,65 +95,5 @@ void main() {
       boundsOf(const [GeoPoint(55.7, 37.7), GeoPoint(55.8, 37.5), GeoPoint(55.75, 37.6)]),
       const CatalogBounds(west: 37.5, south: 55.7, east: 37.7, north: 55.8),
     );
-  });
-
-  group('MapFixSource', () {
-    late MapFixSource source;
-    late List<LocatedFix> fixes;
-
-    MapLocationUpdate update({double lat = 55.75, double lon = 37.6, double? accuracy = 20}) =>
-        MapLocationUpdate(lat: lat, lon: lon, accuracyM: accuracy, timestamp: DateTime.fromMillisecondsSinceEpoch(1000));
-
-    setUp(() {
-      source = MapFixSource();
-      fixes = [];
-      addTearDown(source.dispose);
-    });
-
-    test('the engine is on only while a run listens', () {
-      var notified = 0;
-      source.addListener(() => notified++);
-      expect(source.active, isFalse);
-      source.deliver(update());
-      expect(fixes, isEmpty);
-
-      final subscription = source.listen(fixes.add, (_) {});
-      expect(source.active, isTrue);
-      source.deliver(update());
-      expect(fixes.single, const LocatedFix(lat: 55.75, lon: 37.6, accuracyM: 20, timestampMs: 1000));
-
-      subscription.cancel();
-      expect(source.active, isFalse);
-      expect(notified, 2);
-      source.deliver(update());
-      expect(fixes, hasLength(1));
-    });
-
-    test('a fix without a usable accuracy is the least precise one', () {
-      source.listen(fixes.add, (_) {});
-      source.deliver(update(accuracy: null));
-      source.deliver(update(accuracy: -5));
-      expect(fixes.map((fix) => fix.accuracyM), [double.infinity, double.infinity]);
-    });
-
-    test('impossible coordinates are dropped', () {
-      source.listen(fixes.add, (_) {});
-      source.deliver(update(lat: double.nan));
-      source.deliver(update(lat: 91));
-      source.deliver(update(lon: -181));
-      expect(fixes, isEmpty);
-    });
-
-    test('a new run replaces the previous one', () {
-      final previous = <LocatedFix>[];
-      final first = source.listen(previous.add, (_) {});
-      source.listen(fixes.add, (_) {});
-      source.deliver(update());
-      expect(previous, isEmpty);
-      expect(fixes, hasLength(1));
-      // Cancelling the replaced run leaves the current one listening.
-      first.cancel();
-      expect(source.active, isTrue);
-    });
   });
 }

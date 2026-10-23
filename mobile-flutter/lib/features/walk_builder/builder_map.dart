@@ -11,7 +11,6 @@ import '../../app/theme/tokens.g.dart';
 import '../../walk_engine/car_route.dart';
 import '../../walk_engine/distance.dart';
 import '../explore/catalog_bounds.dart';
-import '../explore/map_location_source.dart';
 import 'model.dart';
 
 @immutable
@@ -61,14 +60,11 @@ class BuilderMapView {
 
 /// The map's inputs and callbacks.
 class BuilderMapProps {
-  const BuilderMapProps({required this.view, required this.onTap, required this.onViewport, required this.fixSource});
+  const BuilderMapProps({required this.view, required this.onTap, required this.onViewport});
 
   final BuilderMapView view;
   final void Function(GeoPoint point) onTap;
   final void Function(MapViewport viewport) onViewport;
-
-  /// Fixes for «Моё местоположение»; the map's location engine runs only while it listens.
-  final MapFixSource fixSource;
 }
 
 typedef BuilderMapBuilder = Widget Function(BuildContext context, BuilderMapProps props);
@@ -138,32 +134,12 @@ class _BuilderMapState extends State<BuilderMap> {
   bool _styled = false;
 
   @override
-  void initState() {
-    super.initState();
-    widget.props.fixSource.addListener(_onLocating);
-  }
-
-  @override
   void didUpdateWidget(BuilderMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.props.fixSource != widget.props.fixSource) {
-      oldWidget.props.fixSource.removeListener(_onLocating);
-      widget.props.fixSource.addListener(_onLocating);
-    }
     final view = widget.props.view, old = oldWidget.props.view;
     if (!identical(view, old)) unawaited(_draw());
     final focus = view.focus;
     if (focus != null && focus != old.focus) unawaited(_controller?.animateCamera(CameraUpdate.newLatLngZoom(LatLng(focus.lat, focus.lon), 15)));
-  }
-
-  @override
-  void dispose() {
-    widget.props.fixSource.removeListener(_onLocating);
-    super.dispose();
-  }
-
-  void _onLocating() {
-    if (mounted) setState(() {});
   }
 
   Future<void> _addLayers(MapLibreMapController controller) async {
@@ -274,13 +250,6 @@ class _BuilderMapState extends State<BuilderMap> {
       trackCameraPosition: true,
       rotateGesturesEnabled: false,
       tiltGesturesEnabled: false,
-      myLocationEnabled: widget.props.fixSource.active,
-      onUserLocationUpdated: (location) => widget.props.fixSource.deliver(MapLocationUpdate(
-        lat: location.position.latitude,
-        lon: location.position.longitude,
-        accuracyM: location.horizontalAccuracy,
-        timestamp: location.timestamp,
-      )),
       onMapCreated: (controller) => _controller = controller,
       onStyleLoadedCallback: () => unawaited(_onStyleLoaded()),
       onMapClick: (point, coordinates) => widget.props.onTap(GeoPoint(coordinates.latitude, coordinates.longitude)),
