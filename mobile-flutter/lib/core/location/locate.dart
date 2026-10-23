@@ -27,14 +27,22 @@ class LocatedFix {
   String toString() => 'LocatedFix($lat, $lon ±$accuracyM)';
 }
 
-/// Why no position could be given (`LocateErrorCode` of the site).
-enum LocateError { unsupported, permissionDenied, positionUnavailable, timeout }
+/// Why no position could be given (`LocateErrorCode` of the site, plus [servicesDisabled]).
+enum LocateError {
+  unsupported,
+  permissionDenied,
+  positionUnavailable,
+
+  /// Location is switched off on the device: the system location settings can fix it.
+  servicesDisabled,
+  timeout,
+}
 
 /// The Russian source text of an error, translated by the UI like any other string.
 String describeLocateError(LocateError error) => switch (error) {
       LocateError.unsupported => 'Геолокация недоступна на этом устройстве.',
       LocateError.permissionDenied => 'Нет доступа к геолокации.',
-      LocateError.positionUnavailable =>
+      LocateError.positionUnavailable || LocateError.servicesDisabled =>
         'Устройство не смогло определить положение. Проверьте, что геолокация включена в настройках устройства.',
       LocateError.timeout => 'Не удалось вовремя определить положение.',
     };
@@ -81,13 +89,22 @@ abstract interface class LocationPermissions {
   Future<void> openSettings();
 }
 
+/// The device-wide location switch.
+abstract interface class LocationServices {
+  Future<bool> enabled();
+
+  /// Opens the system location settings.
+  Future<void> openSettings();
+}
+
 /// A running position request; [cancel] stops the platform engine.
 abstract interface class FixSubscription {
   void cancel();
 }
 
 /// Delivers fixes while subscribed: a recent last-known fix first when the platform has one, then
-/// improving fixes. [onError] is terminal for the subscription.
+/// improving fixes. [onError] is terminal for the subscription: either a failure, or, after fixes,
+/// the sign that the source has nothing more to refine with.
 abstract interface class FixSource {
   FixSubscription listen(void Function(LocatedFix fix) onFix, void Function(LocateError error) onError);
 }
@@ -113,11 +130,15 @@ class LocateConfig {
 
 /// Runs one locate request at a time per call of [locate].
 class Locator {
-  Locator({required this.permissions, required this.source, this.config = const LocateConfig(), StartTimer? startTimer})
+  Locator({required this.permissions, required this.source, this.services, this.config = const LocateConfig(), StartTimer? startTimer})
       : _startTimer = startTimer ?? Timer.new;
 
   final LocationPermissions permissions;
   final FixSource source;
+
+  /// When set, a device with location switched off fails at once with [LocateError.servicesDisabled]
+  /// instead of waiting for the deadline.
+  final LocationServices? services;
   final LocateConfig config;
   final StartTimer _startTimer;
 
@@ -166,6 +187,11 @@ class _LocateRun {
         return;
     }
     if (_done) return;
+    if (!await _servicesEnabled()) {
+      _finish(const LocateErrorUpdate(LocateError.servicesDisabled));
+      return;
+    }
+    if (_done) return;
     _deadlineTimer = locator._startTimer(locator.config.deadline, _settle);
     try {
       final subscription = locator.source.listen(_onFix, _onError);
@@ -176,6 +202,17 @@ class _LocateRun {
       }
     } catch (_) {
       _finish(const LocateErrorUpdate(LocateError.positionUnavailable));
+    }
+  }
+
+  /// A failed check is not a verdict: the source still reports a switched-off device itself.
+  Future<bool> _servicesEnabled() async {
+    final services = locator.services;
+    if (services == null) return true;
+    try {
+      return await services.enabled();
+    } catch (_) {
+      return true;
     }
   }
 

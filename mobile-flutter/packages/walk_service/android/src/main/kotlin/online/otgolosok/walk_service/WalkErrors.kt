@@ -2,6 +2,7 @@ package online.otgolosok.walk_service
 
 import android.app.ForegroundServiceStartNotAllowedException
 import android.os.Build
+import online.otgolosok.walk_service.location.LocationStatusCodes
 import java.net.URI
 import java.net.URISyntaxException
 
@@ -19,6 +20,20 @@ internal object WalkErrors {
         WalkServiceError(WalkErrorCodes.INVALID_ARGUMENT, message, null)
 
     fun noActiveSession(): WalkServiceError = invalidArgument("Нет активной прогулки: сначала вызовите startSession.")
+
+    fun permissionDenied(): WalkServiceError =
+        WalkServiceError(WalkErrorCodes.PERMISSION_DENIED, "Нет разрешения на геолокацию.", LocationStatusCodes.PERMISSION_MISSING)
+
+    /** Location is switched off on the device; `details` tells it apart from a failed request. */
+    fun locationDisabled(): WalkServiceError =
+        WalkServiceError(WalkErrorCodes.LOCATION_UNAVAILABLE, "Геолокация на устройстве выключена.", LocationStatusCodes.LOCATION_DISABLED)
+
+    fun locationRequestFailed(cause: Throwable): WalkServiceError =
+        WalkServiceError(
+            WalkErrorCodes.LOCATION_UNAVAILABLE,
+            "Не удалось запросить положение: ${cause.javaClass.simpleName}.",
+            LocationStatusCodes.REQUEST_FAILED,
+        )
 
     fun playerError(message: String, cause: Throwable? = null): WalkServiceError =
         WalkServiceError(WalkErrorCodes.PLAYER_ERROR, message, cause?.javaClass?.simpleName)

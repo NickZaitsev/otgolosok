@@ -251,6 +251,18 @@ enum class LocationStatus(val raw: Int) {
   }
 }
 
+/** A one-shot fix: `coarse` is quick (Wi-Fi, cell towers, a recent cached fix), `precise` waits for GPS. */
+enum class LocationPriority(val raw: Int) {
+  COARSE(0),
+  PRECISE(1);
+
+  companion object {
+    fun ofRaw(raw: Int): LocationPriority? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
 enum class PlaybackState(val raw: Int) {
   IDLE(0),
   BUFFERING(1),
@@ -765,50 +777,55 @@ private open class WalkServiceApiPigeonCodec : StandardMessageCodec() {
       }
       133.toByte() -> {
         return (readValue(buffer) as Long?)?.let {
-          PlaybackState.ofRaw(it.toInt())
+          LocationPriority.ofRaw(it.toInt())
         }
       }
       134.toByte() -> {
         return (readValue(buffer) as Long?)?.let {
-          MediaCommandKind.ofRaw(it.toInt())
+          PlaybackState.ofRaw(it.toInt())
         }
       }
       135.toByte() -> {
-        return (readValue(buffer) as? List<Any?>)?.let {
-          NotificationTexts.fromList(it)
+        return (readValue(buffer) as Long?)?.let {
+          MediaCommandKind.ofRaw(it.toInt())
         }
       }
       136.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          SessionConfig.fromList(it)
+          NotificationTexts.fromList(it)
         }
       }
       137.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          Track.fromList(it)
+          SessionConfig.fromList(it)
         }
       }
       138.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          CardState.fromList(it)
+          Track.fromList(it)
         }
       }
       139.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          PermissionState.fromList(it)
+          CardState.fromList(it)
         }
       }
       140.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          Fix.fromList(it)
+          PermissionState.fromList(it)
         }
       }
       141.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          PlayerState.fromList(it)
+          Fix.fromList(it)
         }
       }
       142.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          PlayerState.fromList(it)
+        }
+      }
+      143.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
           MediaCommand.fromList(it)
         }
@@ -834,44 +851,48 @@ private open class WalkServiceApiPigeonCodec : StandardMessageCodec() {
         stream.write(132)
         writeValue(stream, value.raw.toLong())
       }
-      is PlaybackState -> {
+      is LocationPriority -> {
         stream.write(133)
         writeValue(stream, value.raw.toLong())
       }
-      is MediaCommandKind -> {
+      is PlaybackState -> {
         stream.write(134)
         writeValue(stream, value.raw.toLong())
       }
-      is NotificationTexts -> {
+      is MediaCommandKind -> {
         stream.write(135)
-        writeValue(stream, value.toList())
+        writeValue(stream, value.raw.toLong())
       }
-      is SessionConfig -> {
+      is NotificationTexts -> {
         stream.write(136)
         writeValue(stream, value.toList())
       }
-      is Track -> {
+      is SessionConfig -> {
         stream.write(137)
         writeValue(stream, value.toList())
       }
-      is CardState -> {
+      is Track -> {
         stream.write(138)
         writeValue(stream, value.toList())
       }
-      is PermissionState -> {
+      is CardState -> {
         stream.write(139)
         writeValue(stream, value.toList())
       }
-      is Fix -> {
+      is PermissionState -> {
         stream.write(140)
         writeValue(stream, value.toList())
       }
-      is PlayerState -> {
+      is Fix -> {
         stream.write(141)
         writeValue(stream, value.toList())
       }
-      is MediaCommand -> {
+      is PlayerState -> {
         stream.write(142)
+        writeValue(stream, value.toList())
+      }
+      is MediaCommand -> {
+        stream.write(143)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -906,6 +927,25 @@ interface WalkServiceHostApi {
   fun permissionState(): PermissionState
   suspend fun requestPermissions(): PermissionState
   fun openAppSettings()
+  /**
+   * Fine and coarse location only, without the notification permission: a tap on «Моё
+   * местоположение» needs nothing else. Without an attached activity returns the current state.
+   */
+  suspend fun requestLocationPermission(): PermissionState
+  /** The device-wide location switch (system settings → Location). */
+  fun locationServicesEnabled(): Boolean
+  /** Opens the system location settings, or all settings when the device has no such screen. */
+  fun openLocationSettings()
+  /**
+   * One fix for a visible screen, without the walk service: the fused provider when Google Play
+   * services are usable, otherwise LocationManager. A cached fix up to [maxAgeMs] old is returned at
+   * once. Null when no fix arrived within [timeoutMs] (1…60000) or the request was cancelled.
+   * Errors: `permission_denied` without the location permission, `location_unavailable` when
+   * location is switched off on the device, `invalid_argument` for bad limits.
+   */
+  suspend fun currentLocation(priority: LocationPriority, maxAgeMs: Long, timeoutMs: Long): Fix?
+  /** Completes every pending [currentLocation] with null and stops its provider. */
+  fun cancelCurrentLocation()
 
   companion object {
     /** The codec used by WalkServiceHostApi. */
@@ -1145,6 +1185,91 @@ interface WalkServiceHostApi {
           channel.setMessageHandler { _, reply ->
             val wrapped: List<Any?> = try {
               api.openAppSettings()
+              listOf(null)
+            } catch (exception: Throwable) {
+              WalkServiceApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.walk_service.WalkServiceHostApi.requestLocationPermission$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.requestLocationPermission())
+              } catch (exception: Throwable) {
+                WalkServiceApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.walk_service.WalkServiceHostApi.locationServicesEnabled$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.locationServicesEnabled())
+            } catch (exception: Throwable) {
+              WalkServiceApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.walk_service.WalkServiceHostApi.openLocationSettings$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.openLocationSettings()
+              listOf(null)
+            } catch (exception: Throwable) {
+              WalkServiceApiPigeonUtils.wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.walk_service.WalkServiceHostApi.currentLocation$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val priorityArg = args[0] as LocationPriority
+            val maxAgeMsArg = args[1] as Long
+            val timeoutMsArg = args[2] as Long
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                listOf(api.currentLocation(priorityArg, maxAgeMsArg, timeoutMsArg))
+              } catch (exception: Throwable) {
+                WalkServiceApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.walk_service.WalkServiceHostApi.cancelCurrentLocation$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.cancelCurrentLocation()
               listOf(null)
             } catch (exception: Throwable) {
               WalkServiceApiPigeonUtils.wrapError(exception)

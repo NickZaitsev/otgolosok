@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../app/providers.dart';
 import '../../core/location/locate.dart';
+import '../../core/location/walk_service_fix_source.dart';
 import '../../core/location/walk_service_permissions.dart';
 import 'cell_store.dart';
 import 'map_cells.dart';
@@ -31,6 +32,11 @@ final walkOverviewStoreProvider = Provider<WalkOverviewStore>((ref) {
 });
 
 final locationPermissionsProvider = Provider<LocationPermissions>((ref) => WalkServiceLocationPermissions());
+
+final locationServicesProvider = Provider<LocationServices>((ref) => WalkServiceLocationServices());
+
+/// One-shot fixes of the «Моё местоположение» button: no map location engine, no walk service.
+final locationFixSourceProvider = Provider<FixSource>((ref) => WalkServiceFixSource());
 
 /// Remembered closing of the «Смотрите истории рядом с вами» card.
 const geoPromptDismissedKey = 'otgolosok:explore:geo-prompt-dismissed';

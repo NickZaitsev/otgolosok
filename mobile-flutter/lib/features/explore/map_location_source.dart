@@ -1,8 +1,8 @@
 /// Position fixes from the map's own location component (MapLibre `myLocationEnabled`), for one locate run.
 ///
-/// The app has no one-shot geolocation plugin: the map turns its location engine on while [active] and
-/// hands every update to [deliver]. The engine is off otherwise, so the device does not track the user
-/// in the background of the explore screen.
+/// The map turns its location engine on while [active] and hands every update to [deliver]; the engine is
+/// off otherwise. Only the walk builder map still uses it: the explore screen takes one-shot fixes from the
+/// walk service plugin (`WalkServiceFixSource`), which reports a switched-off device instead of a timeout.
 library;
 
 import 'package:flutter/foundation.dart';

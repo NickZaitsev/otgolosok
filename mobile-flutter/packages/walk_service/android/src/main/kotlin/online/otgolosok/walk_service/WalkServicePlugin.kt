@@ -23,12 +23,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import online.otgolosok.walk_service.location.CurrentLocation
+import online.otgolosok.walk_service.location.locationServicesEnabled
 
 /**
  * Android side of the walk service contract (`pigeons/walk_service_api.dart`).
  *
  * Works with an engine that has no activity (the engine belongs to the Application and survives
- * a swipe from Recents): only [requestPermissions] needs one, and without it returns the current
+ * a swipe from Recents): only the permission requests need one, and without it returns the current
  * state without asking. All host calls arrive and all Dart calls are made on the main thread.
  */
 class WalkServicePlugin :
@@ -43,6 +45,7 @@ class WalkServicePlugin :
     private var activityBinding: ActivityPluginBinding? = null
     private var permissionMemory: PermissionMemory? = null
     private var pendingPermission: Pair<Int, CompletableDeferred<Boolean>>? = null
+    private var currentLocation: CurrentLocation? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private val newIntentListener = PluginRegistry.NewIntentListener { intent ->
@@ -65,6 +68,8 @@ class WalkServicePlugin :
         WalkServiceHostApi.setUp(binding.binaryMessenger, null)
         if (WalkSessionManager.events === this) WalkSessionManager.events = null
         scope.coroutineContext.cancelChildren()
+        currentLocation?.cancelAll()
+        currentLocation = null
         flutterApi = null
         navigationChannel = null
         context = null
@@ -178,16 +183,7 @@ class WalkServicePlugin :
         val context = requireContext()
         val memory = requireMemory()
         if (pendingPermission != null) throw WalkErrors.invalidArgument("Запрос разрешений уже идёт.")
-        if (!Permissions.preciseLocationGranted(context)) {
-            val activity = activityBinding?.activity ?: return permissionState()
-            if (request(activity, Permissions.LOCATION, LOCATION_REQUEST_CODE)) {
-                val granted = Permissions.locationGranted(context)
-                memory.remember(
-                    PermissionMemory.LOCATION,
-                    permanent = !granted && !rationale(activity, Manifest.permission.ACCESS_FINE_LOCATION),
-                )
-            }
-        }
+        if (!askLocation(context, memory, precise = true)) return permissionState()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !Permissions.notificationsGranted(context)) {
             val activity = activityBinding?.activity ?: return permissionState()
             val permission = Manifest.permission.POST_NOTIFICATIONS
@@ -203,21 +199,41 @@ class WalkServicePlugin :
 
     override fun openAppSettings() {
         val context = requireContext()
-        val activity = activityBinding?.activity
         val details = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
-        for (intent in listOf(details, Intent(Settings.ACTION_SETTINGS))) {
-            try {
-                if (activity != null) {
-                    activity.startActivity(intent)
-                } else {
-                    context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                }
-                return
-            } catch (error: ActivityNotFoundException) {
-                Log.w(TAG, "Settings screen not found: ${intent.action}")
-            }
-        }
-        throw WalkErrors.invalidArgument("На устройстве нет экрана настроек приложения.")
+        openFirst(context, listOf(details, Intent(Settings.ACTION_SETTINGS)), "На устройстве нет экрана настроек приложения.")
+    }
+
+    /**
+     * Fine location (with coarse, as Android 12+ requires) and nothing else. Approximate location
+     * already granted is enough for the map, so the dialog is not shown again for an upgrade.
+     */
+    override suspend fun requestLocationPermission(): PermissionState {
+        val context = requireContext()
+        val memory = requireMemory()
+        if (pendingPermission != null) throw WalkErrors.invalidArgument("Запрос разрешений уже идёт.")
+        askLocation(context, memory, precise = false)
+        return permissionState()
+    }
+
+    override fun locationServicesEnabled(): Boolean = locationServicesEnabled(requireContext())
+
+    override fun openLocationSettings() {
+        val context = requireContext()
+        openFirst(
+            context,
+            listOf(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), Intent(Settings.ACTION_SETTINGS)),
+            "На устройстве нет экрана настроек геолокации.",
+        )
+    }
+
+    override suspend fun currentLocation(priority: LocationPriority, maxAgeMs: Long, timeoutMs: Long): Fix? {
+        val context = requireContext()
+        val locator = currentLocation ?: CurrentLocation.create(context).also { currentLocation = it }
+        return locator.current(priority, maxAgeMs, timeoutMs)
+    }
+
+    override fun cancelCurrentLocation() {
+        currentLocation?.cancelAll()
     }
 
     // endregion
@@ -255,6 +271,41 @@ class WalkServicePlugin :
                 Log.w(TAG, "Dart did not accept $name: ${error.code}")
             }
         }
+    }
+
+    /**
+     * Shows the location dialog unless the needed level ([precise] or any) is already granted.
+     * Returns false when there is no activity to ask from.
+     */
+    private suspend fun askLocation(context: Context, memory: PermissionMemory, precise: Boolean): Boolean {
+        val enough = if (precise) Permissions.preciseLocationGranted(context) else Permissions.locationGranted(context)
+        if (enough) return true
+        val activity = activityBinding?.activity ?: return false
+        if (request(activity, Permissions.LOCATION, LOCATION_REQUEST_CODE)) {
+            val granted = Permissions.locationGranted(context)
+            memory.remember(
+                PermissionMemory.LOCATION,
+                permanent = !granted && !rationale(activity, Manifest.permission.ACCESS_FINE_LOCATION),
+            )
+        }
+        return true
+    }
+
+    private fun openFirst(context: Context, intents: List<Intent>, missing: String) {
+        val activity = activityBinding?.activity
+        for (intent in intents) {
+            try {
+                if (activity != null) {
+                    activity.startActivity(intent)
+                } else {
+                    context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                }
+                return
+            } catch (error: ActivityNotFoundException) {
+                Log.w(TAG, "Settings screen not found: ${intent.action}")
+            }
+        }
+        throw WalkErrors.invalidArgument(missing)
     }
 
     /** Returns false when the request was interrupted (activity gone, empty results). */

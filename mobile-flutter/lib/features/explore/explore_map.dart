@@ -15,7 +15,6 @@ import '../../walk_engine/distance.dart';
 import 'catalog_bounds.dart';
 import 'map_clusters.dart';
 import 'map_layers.dart';
-import 'map_location_source.dart';
 import 'walk_overview.dart';
 
 const _styleAsset = 'assets/map/style.json';
@@ -38,7 +37,6 @@ class ExploreMap extends StatefulWidget {
     required this.initialZoom,
     required this.clusters,
     required this.walks,
-    required this.locationSource,
     required this.onViewport,
     required this.onClusterTap,
     required this.onWalksTap,
@@ -57,10 +55,9 @@ class ExploreMap extends StatefulWidget {
   final List<MapWalk> walks;
   final Set<String> selectedWalks;
 
-  /// The settled position drawn by the app; while locating, the map's own puck shows the engine's fixes.
+  /// The user's position drawn by the app (the map's own location engine stays off).
   final GeoPoint? userPosition;
   final double? userAccuracyM;
-  final MapFixSource locationSource;
 
   /// Space covered by sheets and controls, kept clear when the camera fits or focuses something.
   final EdgeInsets padding;
@@ -83,31 +80,11 @@ class ExploreMapState extends State<ExploreMap> {
   var _flushing = false;
 
   @override
-  void initState() {
-    super.initState();
-    widget.locationSource.addListener(_locationChanged);
-  }
-
-  @override
   void didUpdateWidget(ExploreMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.locationSource, widget.locationSource)) {
-      oldWidget.locationSource.removeListener(_locationChanged);
-      widget.locationSource.addListener(_locationChanged);
-    }
     if (!identical(oldWidget.clusters, widget.clusters) || oldWidget.selectedPlaceId != widget.selectedPlaceId) _mark(placesSourceId);
     if (!identical(oldWidget.walks, widget.walks) || !setEquals(oldWidget.selectedWalks, widget.selectedWalks)) _mark(walksSourceId);
     if (oldWidget.userPosition != widget.userPosition || oldWidget.userAccuracyM != widget.userAccuracyM) _mark(userSourceId);
-  }
-
-  @override
-  void dispose() {
-    widget.locationSource.removeListener(_locationChanged);
-    super.dispose();
-  }
-
-  void _locationChanged() {
-    if (mounted) setState(() {});
   }
 
   Map<String, Object?> _data(String source) => switch (source) {
@@ -340,14 +317,6 @@ class ExploreMapState extends State<ExploreMap> {
           compassEnabled: false,
           attributionButtonPosition: AttributionButtonPosition.bottomLeft,
           attributionButtonMargins: math.Point(TokenSizes.spaceXs, widget.padding.bottom + TokenSizes.spaceXs),
-          // The engine runs only during a locate run; the settled position is the app's own dot.
-          myLocationEnabled: widget.locationSource.active,
-          onUserLocationUpdated: (location) => widget.locationSource.deliver(MapLocationUpdate(
-            lat: location.position.latitude,
-            lon: location.position.longitude,
-            accuracyM: location.horizontalAccuracy,
-            timestamp: location.timestamp,
-          )),
           onMapCreated: (controller) => _controller = controller,
           onStyleLoadedCallback: () => unawaited(_onStyleLoaded()),
           onCameraIdle: _reportViewport,

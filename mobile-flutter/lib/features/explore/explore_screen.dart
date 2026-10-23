@@ -28,7 +28,6 @@ import 'explore_providers.dart';
 import 'explore_sheets.dart';
 import 'map_cells.dart';
 import 'map_clusters.dart';
-import 'map_location_source.dart';
 import 'nearby_walks.dart';
 import 'walk_overview.dart';
 
@@ -93,10 +92,13 @@ class ExploreScreen extends ConsumerStatefulWidget {
 
 class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   final _map = GlobalKey<ExploreMapState>();
-  final _fixSource = MapFixSource();
   late final MapCellStore _cells = ref.read(mapCellStoreProvider);
   late final WalkOverviewStore _overview = ref.read(walkOverviewStoreProvider);
-  late final Locator _locator = Locator(permissions: ref.read(locationPermissionsProvider), source: _fixSource);
+  late final Locator _locator = Locator(
+    permissions: ref.read(locationPermissionsProvider),
+    services: ref.read(locationServicesProvider),
+    source: ref.read(locationFixSourceProvider),
+  );
   late final AppLifecycleListener _lifecycle;
   late final GeoPoint _initialCenter;
   late final double _initialZoom;
@@ -111,6 +113,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   String _geoMessage = '';
   var _geoOutside = false;
   void Function()? _cancelLocate;
+
+  /// The location settings were opened from the «services off» notice: locate again on return.
+  var _relocateOnResume = false;
 
   var _walksEnabled = false;
 
@@ -158,7 +163,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     _cells.removeListener(_cellsChanged);
     _overview.removeListener(_overviewChanged);
     _overview.cancel();
-    _fixSource.dispose();
     super.dispose();
   }
 
@@ -192,6 +196,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   }
 
   void _resumed() {
+    if (_relocateOnResume) {
+      _relocateOnResume = false;
+      if (_geoError == LocateError.servicesDisabled) _locate();
+    }
     // Back in the app: a stale manifest is revalidated on the next look at the area.
     _ensureCells();
     if (_walksEnabled && _viewport != null) unawaited(_overview.ensure(_viewport!.required));
@@ -447,6 +455,15 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     });
   }
 
+  Future<void> _openLocationSettings() async {
+    try {
+      await ref.read(locationServicesProvider).openSettings();
+      _relocateOnResume = true;
+    } on Object catch (error) {
+      debugPrint('Location settings did not open: $error');
+    }
+  }
+
   Future<void> _openSettings() async {
     try {
       await ref.read(locationPermissionsProvider).openSettings();
@@ -462,6 +479,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     final unavailable = _geoError == LocateError.unsupported;
     if (_geo == _Geo.denied) return (icon: Icons.location_disabled, description: context.t('Нет доступа к геолокации.'));
     if (unavailable) return (icon: Icons.location_disabled, description: context.t('Геолокация недоступна на этом устройстве.'));
+    if (_geoError == LocateError.servicesDisabled) {
+      return (icon: Icons.location_disabled, description: context.t(describeLocateError(LocateError.servicesDisabled)));
+    }
     if (_geo == _Geo.locating) return (icon: Icons.location_searching, description: context.t('Определяем положение…'));
     if (_geo == _Geo.error || (_geo == _Geo.ready && user != null && user.accuracyM > _weakAccuracyM)) {
       return (
@@ -519,6 +539,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       children: [
         if (_geoOutside) CityChoices(onCity: _showCity),
         if (_geo == _Geo.denied) GeoHelp(onRetry: _locate, onOpenSettings: () => unawaited(_openSettings())),
+        if (_geo == _Geo.error && _geoError == LocateError.servicesDisabled)
+          Wrap(spacing: TokenSizes.spaceXs, children: [
+            OutlinedButton(onPressed: () => unawaited(_openLocationSettings()), child: Text(context.t('Включить геолокацию'))),
+            TextButton(onPressed: _locate, child: Text(context.t('Проверить снова'))),
+          ]),
       ],
     );
   }
@@ -647,7 +672,6 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     ].whereType<Widget>().toList();
     final sheet = _sheet(context);
     final user = _user;
-    final settled = _geo == _Geo.ready && user != null;
 
     return Scaffold(
       body: Stack(
@@ -661,10 +685,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               selectedPlaceId: selectedPlace,
               walks: _visibleWalks,
               selectedWalks: selectedWalks,
-              // While the engine runs its puck shows the fixes; the app's dot takes over once settled.
-              userPosition: settled ? GeoPoint(user.lat, user.lon) : null,
-              userAccuracyM: settled ? user.accuracyM : null,
-              locationSource: _fixSource,
+              // The coarse fix shows at once and the dot moves as it is refined.
+              userPosition: user != null ? GeoPoint(user.lat, user.lon) : null,
+              userAccuracyM: user?.accuracyM,
               onViewport: _onViewport,
               onClusterTap: _onClusterTap,
               onWalksTap: _onWalksTap,

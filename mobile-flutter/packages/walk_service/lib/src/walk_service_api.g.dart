@@ -133,6 +133,12 @@ enum LocationStatus {
   error;
 }
 
+/// A one-shot fix: `coarse` is quick (Wi-Fi, cell towers, a recent cached fix), `precise` waits for GPS.
+enum LocationPriority {
+  coarse,
+  precise;
+}
+
 enum PlaybackState {
   idle,
   buffering,
@@ -729,35 +735,38 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is LocationStatus) {
       buffer.putUint8(132);
       writeValue(buffer, value.index);
-    }    else if (value is PlaybackState) {
+    }    else if (value is LocationPriority) {
       buffer.putUint8(133);
       writeValue(buffer, value.index);
-    }    else if (value is MediaCommandKind) {
+    }    else if (value is PlaybackState) {
       buffer.putUint8(134);
       writeValue(buffer, value.index);
-    }    else if (value is NotificationTexts) {
+    }    else if (value is MediaCommandKind) {
       buffer.putUint8(135);
-      writeValue(buffer, value.encode());
-    }    else if (value is SessionConfig) {
+      writeValue(buffer, value.index);
+    }    else if (value is NotificationTexts) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    }    else if (value is Track) {
+    }    else if (value is SessionConfig) {
       buffer.putUint8(137);
       writeValue(buffer, value.encode());
-    }    else if (value is CardState) {
+    }    else if (value is Track) {
       buffer.putUint8(138);
       writeValue(buffer, value.encode());
-    }    else if (value is PermissionState) {
+    }    else if (value is CardState) {
       buffer.putUint8(139);
       writeValue(buffer, value.encode());
-    }    else if (value is Fix) {
+    }    else if (value is PermissionState) {
       buffer.putUint8(140);
       writeValue(buffer, value.encode());
-    }    else if (value is PlayerState) {
+    }    else if (value is Fix) {
       buffer.putUint8(141);
       writeValue(buffer, value.encode());
-    }    else if (value is MediaCommand) {
+    }    else if (value is PlayerState) {
       buffer.putUint8(142);
+      writeValue(buffer, value.encode());
+    }    else if (value is MediaCommand) {
+      buffer.putUint8(143);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -781,25 +790,28 @@ class _PigeonCodec extends StandardMessageCodec {
         return value == null ? null : LocationStatus.values[value];
       case 133:
         final value = readValue(buffer) as int?;
-        return value == null ? null : PlaybackState.values[value];
+        return value == null ? null : LocationPriority.values[value];
       case 134:
         final value = readValue(buffer) as int?;
-        return value == null ? null : MediaCommandKind.values[value];
+        return value == null ? null : PlaybackState.values[value];
       case 135:
-        return NotificationTexts.decode(readValue(buffer)!);
+        final value = readValue(buffer) as int?;
+        return value == null ? null : MediaCommandKind.values[value];
       case 136:
-        return SessionConfig.decode(readValue(buffer)!);
+        return NotificationTexts.decode(readValue(buffer)!);
       case 137:
-        return Track.decode(readValue(buffer)!);
+        return SessionConfig.decode(readValue(buffer)!);
       case 138:
-        return CardState.decode(readValue(buffer)!);
+        return Track.decode(readValue(buffer)!);
       case 139:
-        return PermissionState.decode(readValue(buffer)!);
+        return CardState.decode(readValue(buffer)!);
       case 140:
-        return Fix.decode(readValue(buffer)!);
+        return PermissionState.decode(readValue(buffer)!);
       case 141:
-        return PlayerState.decode(readValue(buffer)!);
+        return Fix.decode(readValue(buffer)!);
       case 142:
+        return PlayerState.decode(readValue(buffer)!);
+      case 143:
         return MediaCommand.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -1068,6 +1080,109 @@ class WalkServiceHostApi {
 
   Future<void> openAppSettings() async {
     final pigeonVar_channelName = 'dev.flutter.pigeon.walk_service.WalkServiceHostApi.openAppSettings$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    _extractReplyValueOrThrow(
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: true,
+    )
+    ;
+  }
+
+  /// Fine and coarse location only, without the notification permission: a tap on «Моё
+  /// местоположение» needs nothing else. Without an attached activity returns the current state.
+  Future<PermissionState> requestLocationPermission() async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.walk_service.WalkServiceHostApi.requestLocationPermission$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: false,
+    )
+    ;
+    return pigeonVar_replyValue! as PermissionState;
+  }
+
+  /// The device-wide location switch (system settings → Location).
+  Future<bool> locationServicesEnabled() async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.walk_service.WalkServiceHostApi.locationServicesEnabled$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: false,
+    )
+    ;
+    return pigeonVar_replyValue! as bool;
+  }
+
+  /// Opens the system location settings, or all settings when the device has no such screen.
+  Future<void> openLocationSettings() async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.walk_service.WalkServiceHostApi.openLocationSettings$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    _extractReplyValueOrThrow(
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: true,
+    )
+    ;
+  }
+
+  /// One fix for a visible screen, without the walk service: the fused provider when Google Play
+  /// services are usable, otherwise LocationManager. A cached fix up to [maxAgeMs] old is returned at
+  /// once. Null when no fix arrived within [timeoutMs] (1…60000) or the request was cancelled.
+  /// Errors: `permission_denied` without the location permission, `location_unavailable` when
+  /// location is switched off on the device, `invalid_argument` for bad limits.
+  Future<Fix?> currentLocation(LocationPriority priority, int maxAgeMs, int timeoutMs) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.walk_service.WalkServiceHostApi.currentLocation$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[priority, maxAgeMs, timeoutMs]);
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+        pigeonVar_replyList,
+        pigeonVar_channelName,
+        isNullValid: true,
+    )
+    ;
+    return pigeonVar_replyValue as Fix?;
+  }
+
+  /// Completes every pending [currentLocation] with null and stops its provider.
+  Future<void> cancelCurrentLocation() async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.walk_service.WalkServiceHostApi.cancelCurrentLocation$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,

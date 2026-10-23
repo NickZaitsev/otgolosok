@@ -31,6 +31,22 @@ class _Permissions implements LocationPermissions {
   Future<void> openSettings() async {}
 }
 
+class _Services implements LocationServices {
+  _Services(this.on);
+
+  bool on;
+  Object? error;
+
+  @override
+  Future<bool> enabled() async {
+    if (error != null) throw error!;
+    return on;
+  }
+
+  @override
+  Future<void> openSettings() async {}
+}
+
 class _Subscription implements FixSubscription {
   var cancelled = false;
 
@@ -80,6 +96,7 @@ const _config = LocateConfig(goodAccuracyM: 30, refine: Duration(seconds: 6), de
 
 void main() {
   late _Permissions permissions;
+  late _Services? services;
   late _Source source;
   late List<_Timer> timers;
   late List<LocateUpdate> updates;
@@ -89,6 +106,7 @@ void main() {
   Future<void Function()> locate() async {
     final locator = Locator(
       permissions: permissions,
+      services: services,
       source: source,
       config: _config,
       startTimer: (duration, callback) {
@@ -109,6 +127,7 @@ void main() {
 
   setUp(() {
     permissions = _Permissions(LocationAccess.granted);
+    services = _Services(true);
     source = _Source();
     timers = [];
     updates = [];
@@ -223,5 +242,39 @@ void main() {
     await pumpEventQueue();
     expect(source.subscription, isNull);
     expect(updates, isEmpty);
+  });
+
+  group('location switched off on the device', () {
+    test('fails at once, after the permission, without starting the engine', () async {
+      permissions = _Permissions(LocationAccess.denied, afterRequest: LocationAccess.granted);
+      services = _Services(false);
+      await locate();
+      expect(permissions.requests, 1);
+      expect(updates.single, isA<LocateErrorUpdate>().having((update) => update.error, 'error', LocateError.servicesDisabled));
+      expect(source.subscription, isNull);
+      expect(timers, isEmpty);
+    });
+
+    test('a refused permission is reported before the switch', () async {
+      permissions = _Permissions(LocationAccess.blocked);
+      services = _Services(false);
+      await locate();
+      expect(updates.single, isA<LocateErrorUpdate>().having((update) => update.error, 'error', LocateError.permissionDenied));
+    });
+
+    test('a failed check is no verdict: the engine starts', () async {
+      services = _Services(false)..error = StateError('no plugin');
+      await locate();
+      expect(source.subscription, isNotNull);
+      source.fix(10);
+      expect(fixes(), [(10.0, true)]);
+    });
+
+    test('without a services check the engine reports it', () async {
+      services = null;
+      await locate();
+      source.onError!(LocateError.servicesDisabled);
+      expect(updates.single, isA<LocateErrorUpdate>().having((update) => update.error, 'error', LocateError.servicesDisabled));
+    });
   });
 }

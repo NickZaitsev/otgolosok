@@ -142,6 +142,9 @@ class Fix {
 
 enum LocationStatus { active, unavailable, permissionDenied, error }
 
+/// A one-shot fix: `coarse` is quick (Wi-Fi, cell towers, a recent cached fix), `precise` waits for GPS.
+enum LocationPriority { coarse, precise }
+
 enum PlaybackState { idle, buffering, playing, paused, ended, error }
 
 class PlayerState {
@@ -194,6 +197,28 @@ abstract class WalkServiceHostApi {
   @async
   PermissionState requestPermissions();
   void openAppSettings();
+
+  /// Fine and coarse location only, without the notification permission: a tap on «Моё
+  /// местоположение» needs nothing else. Without an attached activity returns the current state.
+  @async
+  PermissionState requestLocationPermission();
+
+  /// The device-wide location switch (system settings → Location).
+  bool locationServicesEnabled();
+
+  /// Opens the system location settings, or all settings when the device has no such screen.
+  void openLocationSettings();
+
+  /// One fix for a visible screen, without the walk service: the fused provider when Google Play
+  /// services are usable, otherwise LocationManager. A cached fix up to [maxAgeMs] old is returned at
+  /// once. Null when no fix arrived within [timeoutMs] (1…60000) or the request was cancelled.
+  /// Errors: `permission_denied` without the location permission, `location_unavailable` when
+  /// location is switched off on the device, `invalid_argument` for bad limits.
+  @async
+  Fix? currentLocation(LocationPriority priority, int maxAgeMs, int timeoutMs);
+
+  /// Completes every pending [currentLocation] with null and stops its provider.
+  void cancelCurrentLocation();
 }
 
 @FlutterApi()
