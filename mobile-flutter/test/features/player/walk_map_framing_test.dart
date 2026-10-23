@@ -1,11 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:otgolosok/core/i18n/translations.dart';
 import 'package:otgolosok/core/settings/settings_store.dart';
+import 'package:otgolosok/features/player/car/car_walk_controller.dart';
 import 'package:otgolosok/features/player/walk_map_framing.dart';
 import 'package:otgolosok/features/player/walk_player_controller.dart';
 import 'package:otgolosok/features/player/walk_service_hub.dart';
 import 'package:otgolosok/features/walks/route_map.dart';
 import 'package:otgolosok/features/walks/walk_link.dart';
+import 'package:otgolosok/walk_engine/driving_plan.dart';
 import 'package:otgolosok/walk_engine/walk_session.dart' show InMemoryCheckpointStore;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:walk_service/walk_service.dart' as ws;
@@ -83,5 +85,47 @@ void main() {
     final framing = WalkMapFraming();
     final first = _view(framing, walk);
     expect(_view(framing, walk), same(first));
+  });
+
+  group('car walk', () {
+    Future<CarWalkController> car() async {
+      SharedPreferences.setMockInitialValues({});
+      final controller = CarWalkController(
+        view: carView(),
+        link: const LocalWalkLink('7d3c6c1e-6a0e-4b8e-9c55-8a1f0c7a2b11'),
+        hub: WalkServiceHub(FakeHost()),
+        settings: SettingsStore(await SharedPreferences.getInstance()),
+        origin: Uri.parse('https://otgolosok.online'),
+        translations: loadTranslations(),
+        locale: AppLocale.ru,
+        reportLaunch: () {},
+        onActiveChanged: (_) {},
+      );
+      addTearDown(controller.dispose);
+      return controller;
+    }
+
+    final stops = carView().document.stops;
+    WalkMapView carMap(CarMapFraming framing, CarWalkController trip) =>
+        framing.view(car: trip.car!, stops: stops, state: trip.state, visit: trip.visit, t: _t);
+
+    test('the overview shows the whole trip, the drive moves to the parking ahead', () async {
+      final trip = await car();
+      final framing = CarMapFraming();
+      final overview = carMap(framing, trip);
+      expect(overview.fit!.key, 'car-route');
+      expect(overview.fit!.points, isNotEmpty);
+      expect(overview.segments.where((segment) => segment.driving), isNotEmpty);
+      expect(overview.selectedId, isNull);
+
+      trip.transition(DrivingPlanAction.start);
+      final driving = carMap(framing, trip);
+      final parking = trip.visit!.parking;
+      expect(driving.fit!.key, 'car-visit:${trip.visit!.id}');
+      expect(driving.fit!.points, [parking.location]);
+      expect(driving.selectedId, parking.id);
+      expect(driving.markers.where((marker) => marker.parking).map((marker) => marker.id), contains(parking.id));
+      expect(carMap(framing, trip), same(driving));
+    });
   });
 }

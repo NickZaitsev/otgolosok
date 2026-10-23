@@ -156,6 +156,18 @@ const _pointsSource = 'walk-points';
 const _userSource = 'walk-user';
 const _pointsLayer = 'walk-points-circle';
 
+/// The walking line and its covered stretches, by feature kind. A layer update replaces every property, unset ones
+/// with the defaults (a black 1 px line), so updates send the same full set the layers start with.
+Map<String, LineLayerProperties> routeLineLayers({required bool dimmed}) {
+  final route = _hex(TokenColors.routeLine);
+  // Without a highlighted leg the whole line is the route; with one, the rest steps back.
+  final opacity = ['case', ['==', ['get', 'active'], true], 1, dimmed ? 0.4 : 1];
+  return {
+    'walk': LineLayerProperties(lineColor: route, lineWidth: 5, lineOpacity: opacity, lineJoin: 'round', lineCap: 'round'),
+    'tunnel': LineLayerProperties(lineColor: route, lineWidth: 5, lineOpacity: opacity, lineDasharray: [1.2, 1.2]),
+  };
+}
+
 class WalkRouteMap extends StatefulWidget {
   const WalkRouteMap({super.key, required this.props});
 
@@ -194,32 +206,9 @@ class _WalkRouteMapState extends State<WalkRouteMap> {
       LineLayerProperties(lineColor: casing, lineWidth: ['match', ['get', 'kind'], 'drive', 10, 9], lineJoin: 'round', lineCap: 'round'),
       enableInteraction: false,
     );
-    await controller.addLineLayer(
-      _routeSource,
-      'walk-route-line',
-      LineLayerProperties(
-        lineColor: route,
-        lineWidth: 5,
-        // Without a highlighted leg the whole line is the route; with one, the rest steps back.
-        lineOpacity: ['case', ['==', ['get', 'active'], true], 1, dimmed ? 0.4 : 1],
-        lineJoin: 'round',
-        lineCap: 'round',
-      ),
-      filter: ['==', ['get', 'kind'], 'walk'],
-      enableInteraction: false,
-    );
-    await controller.addLineLayer(
-      _routeSource,
-      'walk-route-tunnel',
-      LineLayerProperties(
-        lineColor: route,
-        lineWidth: 5,
-        lineOpacity: ['case', ['==', ['get', 'active'], true], 1, dimmed ? 0.4 : 1],
-        lineDasharray: [1.2, 1.2],
-      ),
-      filter: ['==', ['get', 'kind'], 'tunnel'],
-      enableInteraction: false,
-    );
+    for (final MapEntry(key: kind, value: properties) in routeLineLayers(dimmed: dimmed).entries) {
+      await controller.addLineLayer(_routeSource, 'walk-route-$kind', properties, filter: ['==', ['get', 'kind'], kind], enableInteraction: false);
+    }
     await controller.addLineLayer(
       _routeSource,
       'walk-route-drive',
@@ -278,11 +267,8 @@ class _WalkRouteMapState extends State<WalkRouteMap> {
       await controller.setGeoJsonSource(_userSource, _user(view));
       // The dimming depends on whether a leg is highlighted at all.
       final dimmed = view.activeLeg != null;
-      for (final layer in ['walk-route-line', 'walk-route-tunnel']) {
-        await controller.setLayerProperties(
-          layer,
-          LineLayerProperties(lineOpacity: ['case', ['==', ['get', 'active'], true], 1, dimmed ? 0.4 : 1]),
-        );
+      for (final MapEntry(key: kind, value: properties) in routeLineLayers(dimmed: dimmed).entries) {
+        await controller.setLayerProperties('walk-route-$kind', properties);
       }
     } on PlatformException catch (error) {
       // A source update racing a style reload is redrawn on the next change; the walk keeps working.

@@ -59,4 +59,22 @@ void main() {
     ])['features']! as List).cast<Map<String, Object?>>();
     expect(features.map((feature) => (feature['properties']! as Map)['kind']), ['drive', 'foot']);
   });
+
+  group('line layers', () {
+    for (final dimmed in [false, true]) {
+      test('an update ${dimmed ? 'with' : 'without'} a highlighted leg keeps the line visible', () {
+        for (final properties in routeLineLayers(dimmed: dimmed).values) {
+          // The plugin sends unset properties too, and the map resets them to a black 1 px line.
+          final json = properties.toJson(skipNulls: false);
+          expect(json['line-color'], isNotNull);
+          expect(json['line-width'], 5);
+          expect(json['line-opacity'], ['case', ['==', ['get', 'active'], true], 1, dimmed ? 0.4 : 1]);
+        }
+      });
+    }
+
+    test('one layer per drawn kind of walking line', () {
+      expect(routeLineLayers(dimmed: false).keys, ['walk', 'tunnel']);
+    });
+  });
 }
