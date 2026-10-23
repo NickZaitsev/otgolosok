@@ -1,0 +1,9 @@
+{
+  "Геолокация недоступна на этом устройстве.": ["Location is not available on this device.", "此设备无法使用定位。"],
+  "Мест: {count}": ["Places: {count}", "地点：{count}"],
+  "Выберите историю": ["Choose a story", "选择一个故事"],
+  "Открыть настройки": ["Open settings", "打开设置"],
+  "Не удалось открыть ссылку.": ["Could not open the link.", "无法打开链接。"],
+  "Загружаем запись…": ["Loading the recording…", "正在加载录音…"],
+  "Портал открытых данных Правительства Москвы": ["Moscow Government Open Data Portal", "莫斯科市政府开放数据门户"]
+}
