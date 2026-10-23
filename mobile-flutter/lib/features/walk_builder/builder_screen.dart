@@ -35,17 +35,27 @@ final builderParkingStorageProvider = Provider<CellStorage>(
 
 enum _Picker { choices, address, time }
 
-class BuilderScreen extends ConsumerStatefulWidget {
+class BuilderScreen extends StatelessWidget {
   /// [query] is the builder link's query: `local`, `id`, `resume`, or `address`+`lat`+`lon`.
   const BuilderScreen({super.key, this.query = const {}});
 
   final Map<String, String> query;
 
+  // The kept tab gets another link in place: it opens another draft, so the state starts over.
   @override
-  ConsumerState<BuilderScreen> createState() => _BuilderScreenState();
+  Widget build(BuildContext context) => _Builder(key: ValueKey(Uri(queryParameters: query).query), query: query);
 }
 
-class _BuilderScreenState extends ConsumerState<BuilderScreen> with WidgetsBindingObserver {
+class _Builder extends ConsumerStatefulWidget {
+  const _Builder({super.key, required this.query});
+
+  final Map<String, String> query;
+
+  @override
+  ConsumerState<_Builder> createState() => _BuilderScreenState();
+}
+
+class _BuilderScreenState extends ConsumerState<_Builder> with WidgetsBindingObserver {
   late final _parsed = BuilderArgs.parse(widget.query);
   final _parkingCells = ParkingCells();
   BuilderController? _controller;

@@ -207,6 +207,16 @@ void main() {
     expect(a.opened, '/login?returnTo=${Uri.encodeQueryComponent('/builder?id=$walkId')}');
   });
 
+  testWidgets('another builder link opens its own walk instead of the one on screen', (tester) async {
+    final a = app({BuilderKeys.draft: startDraft().encode()});
+    await a.pump(tester, '/builder?resume=1');
+    expect(find.text(startPlace.address), findsOneWidget);
+
+    a.router.go('/builder?id=$walkId&edit=1');
+    await tester.pumpAndSettle();
+    expect(a.opened, '/login?returnTo=${Uri.encodeQueryComponent('/builder?id=$walkId&edit=1')}');
+  });
+
   testWidgets('a broken link is explained instead of opening the builder', (tester) async {
     final a = app();
     await a.pump(tester, '/builder?local=nope');
