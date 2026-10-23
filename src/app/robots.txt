@@ -3,6 +3,7 @@ Allow: /
 Disallow: /admin
 Disallow: /account
 Disallow: /login
+Disallow: /app-auth/
 Disallow: /api/
 # Place photos and story recordings appear on place pages: image search and the audio of a story need them.
 Allow: /api/place-images/

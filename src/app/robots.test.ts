@@ -17,7 +17,7 @@ describe("robots.txt", () => {
     }
   });
 
-  it.each(["/admin", "/account", "/login", "/api/", "/en/account", "/en/login", "/zh/account", "/zh/login"])("закрывает служебный раздел %s", (path) => {
+  it.each(["/admin", "/account", "/login", "/app-auth/", "/api/", "/en/account", "/en/login", "/zh/account", "/zh/login"])("закрывает служебный раздел %s", (path) => {
     expect(disallowed).toContain(path);
   });
 

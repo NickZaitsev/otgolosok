@@ -53,10 +53,14 @@ export async function getAuthProviders(): Promise<AuthProviders> {
 }
 
 export async function getTelegramAuthorizationUrl(returnTo: string | null, locale: Locale, origin: string, termsAccepted = false): Promise<string> {
-  await flushPendingSignOut();
   const callbackURL = safeReturnTo(returnTo, origin, locale);
   const errorParameters = new URLSearchParams({ telegram_error: "1", returnTo: callbackURL });
-  const errorCallbackURL = `${localizedPath("/login", locale)}?${errorParameters.toString()}`;
+  return startTelegramAuthorization(callbackURL, `${localizedPath("/login", locale)}?${errorParameters.toString()}`, termsAccepted);
+}
+
+/** Starts Telegram OAuth with same-origin callbacks and returns the checked Telegram URL to open. */
+export async function startTelegramAuthorization(callbackURL: string, errorCallbackURL: string, termsAccepted: boolean): Promise<string> {
+  await flushPendingSignOut();
   const value = await api("/api/auth/sign-in/social", {
     method: "POST",
     body: JSON.stringify({ provider: "telegram", callbackURL, errorCallbackURL, disableRedirect: true, termsAccepted, termsVersion: TERMS_VERSION }),

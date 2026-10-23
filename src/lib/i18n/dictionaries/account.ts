@@ -185,4 +185,11 @@ export const accountTranslations: Translations = {
   "Неверная дата запроса.": ["Invalid request date.", "请求日期无效。"],
   "Неверное место.": ["Invalid place.", "地点无效。"],
   "Неверный ответ оценки.": ["Invalid rating response.", "评分响应无效。"],
+  "Вход через Telegram": ["Sign in with Telegram", "通过 Telegram 登录"],
+  "Вернуться в приложение": ["Return to the app", "返回应用"],
+  "Завершаем вход…": ["Finishing sign-in…", "正在完成登录…"],
+  "Возвращаемся в приложение…": ["Returning to the app…", "正在返回应用…"],
+  "Вход отменён.": ["Sign-in cancelled.", "登录已取消。"],
+  "Для регистрации примите актуальные условия использования в приложении.": ["To sign up, accept the current terms of use in the app.", "如需注册，请在应用中接受最新的使用条款。"],
+  "Не удалось войти через Telegram. Вернитесь в приложение и попробуйте ещё раз.": ["Could not sign in with Telegram. Return to the app and try again.", "无法通过 Telegram 登录。请返回应用并重试。"],
 };

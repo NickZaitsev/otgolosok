@@ -1,10 +1,34 @@
 import { DatabaseSync } from "node:sqlite";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { betterAuth } from "better-auth";
-import { createAuthMiddleware, APIError, addOAuthServerContext, getOAuthState } from "better-auth/api";
+import { createAuthEndpoint, createAuthMiddleware, APIError, addOAuthServerContext, getOAuthState } from "better-auth/api";
+import { setSessionCookie } from "better-auth/cookies";
 import { createTelegramAuthPlugin, telegramEmail } from "./telegram-auth.mjs";
 import { getMigrations } from "better-auth/db/migration";
 import { LEGAL_READY, TERMS_VERSION } from "../legal/publication.mjs";
+
+/** Server-only Better Auth endpoint that opens an app session after a mobile sign-in handoff (backend/mobile-auth.mjs). */
+export const MOBILE_SESSION_PATH = "/mobile-auth/session";
+export const SESSION_AUTH_PROVIDERS = ["password", "telegram"];
+
+// SERVER_ONLY keeps the endpoint out of the HTTP router: only auth.api.issueMobileSession
+// can reach it, after mobile-auth.mjs has redeemed a single-use handoff code.
+function createMobileSessionPlugin() {
+  return { id: "otgolosok-mobile-session", endpoints: {
+    issueMobileSession: createAuthEndpoint(MOBILE_SESSION_PATH, { method: "POST", metadata: { SERVER_ONLY: true } }, async ctx => {
+      const input = /** @type {{userId?: unknown, authProvider?: unknown} | undefined} */ (ctx.body);
+      if (typeof input?.userId !== "string" || !SESSION_AUTH_PROVIDERS.includes(/** @type {string} */ (input.authProvider))) throw new APIError("BAD_REQUEST");
+      const user = await ctx.context.internalAdapter.findUserById(input.userId);
+      if (!user) throw new APIError("BAD_REQUEST");
+      // overrideAll: the provider must survive the default session fields; the session
+      // create hook below accepts it only on this server-only path.
+      const session = await ctx.context.internalAdapter.createSession(user.id, false, { authProvider: input.authProvider }, true);
+      if (!session) throw new APIError("INTERNAL_SERVER_ERROR");
+      await setSessionCookie(ctx, { session, user });
+      return ctx.json({ session, user });
+    }),
+  } };
+}
 
 function openAuthDatabase(path) {
   const database = new DatabaseSync(path, { timeout: 5000 });
@@ -28,7 +52,7 @@ export async function createAuth({ databasePath, baseURL, secret, production = p
     appName: "Отголосок", baseURL, basePath: "/api/auth", database,
     secret: secret || "development-only-better-auth-secret-32",
     trustedOrigins: [baseURL],
-    plugins: [createTelegramAuthPlugin(telegram, telegramDependencies)],
+    plugins: [createTelegramAuthPlugin(telegram, telegramDependencies), createMobileSessionPlugin()],
     account: { accountLinking: { enabled: false }, encryptOAuthTokens: true },
     hooks: { before: createAuthMiddleware(async ctx => {
       // OAuth login CSRF must also be rejected before the first session exists.
@@ -66,7 +90,9 @@ export async function createAuth({ databasePath, baseURL, secret, production = p
       return { data: { ...user, termsVersion: TERMS_VERSION, termsAcceptedAt: new Date(evidence.acceptedAt) } };
     } } }, session: { create: { before: async (session, ctx) => ({ data: {
       ...session,
-      authProvider: ctx?.path === "/callback/:id" && ctx.params?.id === "telegram" ? "telegram" : "password",
+      // A mobile handoff carries the provider of the browser session it was issued from.
+      authProvider: ctx?.path === "/callback/:id" && ctx.params?.id === "telegram" ? "telegram"
+        : ctx?.path === MOBILE_SESSION_PATH && session.authProvider === "telegram" ? "telegram" : "password",
     } }) } }, account: {
       create: { before: discardTelegramIdToken },
       update: { before: discardTelegramIdToken },

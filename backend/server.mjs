@@ -33,6 +33,8 @@ import { openFoodIndex, isCellLat as isFoodCellLat, isCellLon as isFoodCellLon }
 import { createAuth, authRequestHandler, authSession, sessionCsrfToken, validSessionCsrf, verifySessionPassword, publicAccountUser, freshTelegramSession } from "./auth.mjs";
 import { favoriteSummary } from "./favorite-summary.mjs";
 import { createLegalConsentRoute } from "./legal-consent.mjs";
+import { createMobileAuthRoutes } from "./mobile-auth.mjs";
+import { LEGAL_READY, TERMS_VERSION } from "../legal/publication.mjs";
 import { loadTelegramAuthConfig, telegramEmail } from "./telegram-auth.mjs";
 import { createAccountStore } from "./account-store.mjs";
 import { createWalkLaunchRoutes } from "./walk-launch-routes.mjs";
@@ -155,10 +157,11 @@ export function parseUserDailyLimit(value) {
  * @property {ReturnType<typeof createReviewRateLimiter>} [improvementLimiter] improvement request writes per account or client IP
  * @property {ReturnType<typeof createReviewRateLimiter>} [launchLimiter] walk launch reports per account or client IP
  * @property {ReturnType<typeof createReviewRateLimiter>} [launchWalkLimiter] counted launches of one walk per client IP
+ * @property {ReturnType<typeof createReviewRateLimiter>} [mobileAuthLimiter] mobile sign-in code exchanges per client IP
  */
 
 /** @param {CreateAppOptions} options */
-export function createApp({store,provider,osmGeocoder=null,foodIndex=null,parkingIndex=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,wikimapia=createWikimapiaClient({apiKey:process.env.WIKIMAPIA_API_KEY||"example"}),staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,planCarWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),improvementLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000})}) {
+export function createApp({store,provider,osmGeocoder=null,foodIndex=null,parkingIndex=null,yandexTts=null,elevenLabsTts=null,origin,audioDirectory,imageDirectory,placeImages=null,wikimapia=createWikimapiaClient({apiKey:process.env.WIKIMAPIA_API_KEY||"example"}),staticDirectory,workerEnabled=true,localTts=loadLocalTtsConfig({}),ttsApiClient=null,resolvePlace=createPlaceResolver(),planWalk=null,planCarWalk=null,discoverResearch,planResearchWalk,adminToken=process.env.ADMIN_TOKEN,allowLegacyAdminToken,workerToken=process.env.WORKER_API_TOKEN,promoWalksToken=process.env.PROMO_WALKS_TOKEN,logs=null,audioIngest=ingestAudio,auth=null,authSecret="",accountStore=null,closeAuth=async()=>{},userDailyLimit=6,shutdownGraceMs=20000,reviewLimiter=createReviewRateLimiter(),improvementLimiter=createReviewRateLimiter(),launchLimiter=createReviewRateLimiter({limit:60}),launchWalkLimiter=createReviewRateLimiter({limit:30,windowMs:86_400_000}),mobileAuthLimiter=createReviewRateLimiter({limit:20,windowMs:60_000})}) {
   const walkPlanner=planWalk??createWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[]});
   const carWalkPlanner=planCarWalk??createCarWalkPlanner({candidateProvider:query=>store.listWalkCandidates?.(query)??[],parkingIndex});
   const speechProviders={openai:provider,yandex:yandexTts,elevenlabs:elevenLabsTts};
@@ -195,13 +198,21 @@ export function createApp({store,provider,osmGeocoder=null,foodIndex=null,parkin
   const topWalks=accountStore?createTopWalks({accountStore,store,builtinRoutes}):null;
   const nearbyWalks=accountStore?createNearbyWalks({accountStore,store,builtinRoutes}):null;
   const walkMap=accountStore?createWalkMap({accountStore,store,builtinRoutes}):null;
+  const mobileAuth=createMobileAuthRoutes({auth,accountStore,origin,authSecret,json,body,limiter:mobileAuthLimiter});
   const legalConsent=createLegalConsentRoute({store:accountStore?.legalConsents,origin,secret:authSecret,json,body});
   const legacyAdminEnabled=allowLegacyAdminToken??(!auth||process.env.ALLOW_LEGACY_ADMIN_TOKEN==="true");
   const server=httpServer(async(req,res)=>{
     try {
       const url=new URL(req.url,"http://localhost");
       if(await legalConsent(req,res,url))return;
+      // The mobile app reads which terms version a sign-up must accept.
+      if(url.pathname==="/api/legal/publication") {
+        if(!["GET","HEAD"].includes(req.method)){res.setHeader("Allow","GET, HEAD");json(res,405,{error:{code:"METHOD_NOT_ALLOWED",message:"Method not allowed."}});return;}
+        res.writeHead(200,{"Content-Type":"application/json; charset=utf-8","Cache-Control":"public, max-age=300","X-Content-Type-Options":"nosniff"});
+        res.end(req.method==="HEAD"?undefined:JSON.stringify({ready:LEGAL_READY,termsVersion:TERMS_VERSION}));return;
+      }
       const session=auth?await authSession(auth,req):null;
+      if(await mobileAuth(req,res,url,session))return;
       if(auth&&url.pathname==="/api/auth/session") {json(res,200,{user:session?publicAccountUser(session.user,session.session,accountStore,true):null,csrfToken:session?sessionCsrfToken(authSecret,session.session.id):null});return;}
       if(auth&&url.pathname.startsWith("/api/auth/")){await authRequestHandler(auth)(req,res);return;}
       if(url.pathname==="/api/auth/session"&&!auth){json(res,200,{user:null});return;}
