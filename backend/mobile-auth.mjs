@@ -62,7 +62,8 @@ const INVALID = { error: { code: "HANDOFF_INVALID", message: "Ссылка дл�
 
 /**
  * POST /api/mobile-auth/handoff {challenge} → {code}: signed-in browser, same origin, CSRF.
- * POST /api/mobile-auth/exchange {code, verifier} → {user, csrfToken} and the session cookie.
+ * POST /api/mobile-auth/exchange {code, verifier} → {user, csrfToken} and the session cookie; the
+ * session the app presented (if any) is revoked.
  */
 export function createMobileAuthRoutes({ auth, accountStore, origin, authSecret, json, body,
   limiter = createReviewRateLimiter({ limit: 20, windowMs: 60_000 }),
@@ -118,7 +119,7 @@ export function createMobileAuthRoutes({ auth, accountStore, origin, authSecret,
     }
     let issued;
     try {
-      issued = await auth.api.issueMobileSession({ body: redeemed, headers, returnHeaders: true });
+      issued = await auth.api.issueMobileSession({ body: { ...redeemed, replaceToken: session?.session.token }, headers, returnHeaders: true });
     } catch (error) {
       // The user was deleted between handoff and exchange.
       if (error instanceof APIError && error.status === "BAD_REQUEST") { json(res, 400, INVALID); return true; }

@@ -16,14 +16,18 @@ export const SESSION_AUTH_PROVIDERS = ["password", "telegram"];
 function createMobileSessionPlugin() {
   return { id: "otgolosok-mobile-session", endpoints: {
     issueMobileSession: createAuthEndpoint(MOBILE_SESSION_PATH, { method: "POST", metadata: { SERVER_ONLY: true } }, async ctx => {
-      const input = /** @type {{userId?: unknown, authProvider?: unknown} | undefined} */ (ctx.body);
+      const input = /** @type {{userId?: unknown, authProvider?: unknown, replaceToken?: unknown} | undefined} */ (ctx.body);
       if (typeof input?.userId !== "string" || !SESSION_AUTH_PROVIDERS.includes(/** @type {string} */ (input.authProvider))) throw new APIError("BAD_REQUEST");
+      if (input.replaceToken !== undefined && typeof input.replaceToken !== "string") throw new APIError("BAD_REQUEST");
       const user = await ctx.context.internalAdapter.findUserById(input.userId);
       if (!user) throw new APIError("BAD_REQUEST");
       // overrideAll: the provider must survive the default session fields; the session
       // create hook below accepts it only on this server-only path.
       const session = await ctx.context.internalAdapter.createSession(user.id, false, { authProvider: input.authProvider }, true);
       if (!session) throw new APIError("INTERNAL_SERVER_ERROR");
+      // The app's cookie is replaced by the new session, so the one it presented is revoked
+      // instead of staying valid until it expires (e.g. Telegram re-authentication before deletion).
+      if (input.replaceToken) await ctx.context.internalAdapter.deleteSession(input.replaceToken);
       await setSessionCookie(ctx, { session, user });
       return ctx.json({ session, user });
     }),

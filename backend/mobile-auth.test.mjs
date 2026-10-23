@@ -162,6 +162,23 @@ test("a fresh Telegram app session can delete the account; it then becomes stale
   assert.equal(f.runtime.accountDatabase.prepare("SELECT COUNT(*) AS count FROM mobile_auth_handoff").get().count, 0);
 });
 
+test("exchange revokes the session the app presented, so a re-authentication leaves no live orphan", async t => {
+  const f = await fixture(t, { production: false });
+  const first = pkce();
+  const browser = await f.telegramLogin("telegram-reauth", first.challenge);
+  const firstCode = /** @type {any} */ (await (await f.handoff(browser, first.challenge)).json()).code;
+  const oldApp = cookieOf(await f.exchange({ code: firstCode, verifier: first.verifier }));
+  const userId = (await f.session(oldApp)).user.id;
+  const second = pkce();
+  const secondCode = /** @type {any} */ (await (await f.handoff(browser, second.challenge)).json()).code;
+  const response = await f.exchange({ code: secondCode, verifier: second.verifier }, { Cookie: oldApp });
+  assert.equal(response.status, 200);
+  assert.equal((await f.session(cookieOf(response))).user.id, userId);
+  assert.equal((await f.session(oldApp)).user, null);
+  assert.equal((await f.session(browser)).user.id, userId);
+  assert.equal(f.runtime.database.prepare("SELECT COUNT(*) AS count FROM session").get().count, 2);
+});
+
 test("password and stale Telegram browser sessions hand off a password-marked session", async t => {
   const f = await fixture(t, { production: false });
   const password = pkce();
