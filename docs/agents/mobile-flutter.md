@@ -128,3 +128,10 @@ npx vitest run -u mobile-export
   - поведение Doze и OEM-оптимизаций батареи;
   - Live Update на Android 16;
   - Fused против LocationManager на телефонах без Google Play.
+
+## Внешнее ревью через Codex CLI (профиль AI Router)
+
+- MCP airouter даёт только чат без доступа к репозиторию; ревью и QA запускаются через Codex CLI с `CODEX_HOME=%USERPROFILE%\.codex-airouter\coding`, ключ расшифровывается из `api-key.dpapi` только в окружение процесса.
+- `codex exec resume <id>` не принимает `-s` и `-C`: песочница задаётся через `-c sandbox_mode="..."`, папка — через `cd` перед запуском.
+- Роутер отвечает 429 на два параллельных запуска `cx/*`; длинная QA-сессия на `cx/gpt-6.1-sol` упиралась в 429 и после последовательных повторов, так что такие проверки лучше дробить на короткие.
+- При `font_scale 1.3` стандартная высота AppBar обрезает двухстрочный заголовок; для двух строк высоту считать от `MediaQuery.textScalerOf`.
