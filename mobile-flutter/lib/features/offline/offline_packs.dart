@@ -67,7 +67,8 @@ class OfflinePackError implements UserFacingError {
 }
 
 final _sha256 = RegExp(r'^[a-f0-9]{64}$');
-final _cellKey = RegExp(r'^-?\d{1,3}(?:\.\d{1,6})?:-?\d{1,3}(?:\.\d{1,6})?$');
+// Food cells are keyed by `floor(coordinate * 20)` (site `foodCellKey`): `1115:752` in Moscow.
+final _cellKey = RegExp(r'^(?:0|-?[1-9]\d{0,3}):(?:0|-?[1-9]\d{0,3})$');
 
 @immutable
 class OfflineAudio {

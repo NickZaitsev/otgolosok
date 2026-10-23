@@ -221,14 +221,14 @@ void main() {
           manifestBody: '{"cells":[]}',
           sourceEditedAt: '2026-09-01T00:00:00Z',
           attribution: '© OpenStreetMap',
-          cells: [OfflineFoodCell(key: '55.75:37.59', etag: 'e1', body: '{"places":[]}', bytes: declared ?? 13)],
+          cells: [OfflineFoodCell(key: '1115:752', etag: 'e1', body: '{"places":[]}', bytes: declared ?? 13)],
         );
 
     test('saved cells are seeded into the store when the walk opens from the copy', () async {
       final food = _Food(OfflineFoodDownload(bundle: bundle(), warning: false));
       final packs = manager(food: food);
       final result = await packs.save(sampleView(audio: audio), catalog);
-      expect(result.manifest.food!.cells.single.key, '55.75:37.59');
+      expect(result.manifest.food!.cells.single.key, '1115:752');
       await packs.load(catalog);
       expect(food.seeded, isEmpty, reason: 'a status check does not seed');
       await packs.load(catalog, seedFood: true);
@@ -247,7 +247,7 @@ void main() {
       final food = _Food(OfflineFoodDownload(bundle: bundle(), warning: false));
       final packs = manager(food: food);
       await packs.save(sampleView(audio: audio), catalog);
-      final cell = files().firstWhere((file) => file.endsWith('55.75_37.59.json'));
+      final cell = files().firstWhere((file) => file.endsWith('1115_752.json'));
       File('${root.path}/$cell').writeAsStringSync('{"places":[1]}');
       expect(await packs.load(catalog, seedFood: true), isNotNull);
       expect(food.seeded, isEmpty);
