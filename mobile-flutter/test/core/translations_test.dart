@@ -6,7 +6,10 @@ import 'package:otgolosok/core/i18n/translations.dart';
 
 void main() {
   final site = Translations.parse(File('assets/i18n/translations.json').readAsStringSync());
-  final app = Translations.parse(File('assets/i18n/app.json').readAsStringSync());
+  final app = Translations.merge([
+    for (final file in Directory('assets/i18n/app').listSync().whereType<File>().where((f) => f.path.endsWith('.json')))
+      Translations.parse(file.readAsStringSync()),
+  ]);
   final all = Translations.merge([site, app]);
 
   test('translate falls back to Russian and fills placeholders like the site', () {

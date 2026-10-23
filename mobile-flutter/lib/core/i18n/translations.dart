@@ -42,14 +42,20 @@ class Translations {
   /// Generated from the site dictionaries (src/lib/i18n/mobile-export.test.ts).
   static const siteAsset = 'assets/i18n/translations.json';
 
-  /// Strings only the app shows (permissions, the walk service); same shape, edited by hand.
-  static const appAsset = 'assets/i18n/app.json';
+  /// Strings only the app shows (permissions, the walk service): one hand-edited file per area.
+  static const appDirectory = 'assets/i18n/app/';
   static final _placeholder = RegExp(r'\{([a-zA-Z][a-zA-Z0-9_]*)\}');
 
   final Map<String, (String, String)> _entries;
 
-  static Future<Translations> load(AssetBundle bundle) async =>
-      merge([parse(await bundle.loadString(siteAsset)), parse(await bundle.loadString(appAsset))]);
+  static Future<Translations> load(AssetBundle bundle) async {
+    final manifest = await AssetManifest.loadFromAssetBundle(bundle);
+    final appFiles = manifest.listAssets().where((path) => path.startsWith(appDirectory) && path.endsWith('.json')).toList()..sort();
+    return merge([
+      parse(await bundle.loadString(siteAsset)),
+      for (final path in appFiles) parse(await bundle.loadString(path)),
+    ]);
+  }
 
   /// Validates one dictionary file; a malformed asset is a build defect and fails loudly.
   static Translations parse(String source) {
