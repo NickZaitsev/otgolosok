@@ -18,6 +18,8 @@ export function stableJson(value: unknown): string {
 export type Verdict = { name: string; input: unknown; valid: true; result: unknown } | { name: string; input: unknown; valid: false };
 
 export function verdict(name: string, input: unknown, validate: (value: unknown) => unknown): Verdict {
+  // Samples may share nested objects that a later case mutates: record this case's input as it is now.
+  input = structuredClone(input);
   try {
     const result = validate(input);
     return { name, input, valid: true, result: result === undefined ? null : result };

@@ -5,13 +5,13 @@ import { validateTopWalkPage } from "./top-model";
 
 // The Dart port (mobile-flutter/lib/core/api/walk_cards.dart) must accept and reject exactly these samples.
 const uuid = "11111111-1111-4111-8111-111111111111";
-const line = { id: "1", name: "Сокольническая", color: "#D41317" };
+const line = () => ({ id: "1", name: "Сокольническая", color: "#D41317" });
 const card = () => ({ kind: "catalog", id: "arbat", title: "Арбат", walkingMinutes: 30, distanceM: 2100, stopCount: 6, rating: { average: 4.5, count: 2 } });
 const topWalk = () => ({ ...card(), rank: 1, preview: [[0, 0], [50, 100]],
   mapPreview: { zoom: 15, tiles: [{ x: 19805, y: 10244, left: -12.5, top: 3 }], points: [[10, 10], [200, 120]] },
-  startMetro: { name: "Арбатская", distanceM: 300, lines: [line] }, endMetro: null });
+  startMetro: { name: "Арбатская", distanceM: 300, lines: [line()] }, endMetro: null });
 const page = () => ({ walks: [topWalk(), { ...topWalk(), kind: "shared", id: uuid, rank: 2, preview: null, mapPreview: null, startMetro: null }],
-  total: 30, nextOffset: 20, filters: { starts: ["Арбатская"], ends: [], stations: [{ name: "Арбатская", lines: [line], insideCircle: true }] } });
+  total: 30, nextOffset: 20, filters: { starts: ["Арбатская"], ends: [], stations: [{ name: "Арбатская", lines: [line()], insideCircle: true }] } });
 const nearby = () => ({ ...card(), startDistanceM: 120, finish: "Москва, Арбат, 40", entryStopId: "stop-2", audioMinutes: 12, audioComplete: false });
 
 
