@@ -63,7 +63,8 @@ internal object WalkSessionManager {
         val existing = core
         if (existing != null) {
             if (!existing.foregroundActive) throw WalkErrors.invalidArgument("Прогулка уже запускается.")
-            val types = service?.updateForeground(existing.foregroundTypes()) ?: existing.foregroundTypes()
+            val wanted = existing.foregroundTypes(config)
+            val types = service?.updateForeground(wanted) ?: wanted
             existing.reconfigure(config, types)
             return
         }

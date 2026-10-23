@@ -3,6 +3,7 @@ package online.otgolosok.walk_service
 import android.Manifest
 import android.app.Application
 import android.content.Intent
+import android.location.LocationManager
 import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.CoroutineScope
@@ -137,6 +138,41 @@ class WalkServiceForegroundTest {
         )
         assertEquals(LocationStatus.PERMISSION_DENIED, events.statuses.first().first)
         assertTrue(events.statuses.last().first != LocationStatus.PERMISSION_DENIED)
+    }
+
+    @Test
+    fun `a walk started over a running story switches the service to location and starts tracking`() {
+        shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val service = startSession(Fixtures.config(kind = SessionKind.LISTEN, tracking = false))
+
+        var result: Result<Unit>? = null
+        scope.launch { result = runCatching { WalkSessionManager.start(app, Fixtures.config()) } }
+        shadowOf(Looper.getMainLooper()).idle()
+
+        assertTrue("restart failed: ${result?.exceptionOrNull()}", result?.isSuccess == true)
+        assertEquals(
+            ForegroundPolicy.TYPE_LOCATION or ForegroundPolicy.TYPE_MEDIA_PLAYBACK,
+            service.foregroundServiceType,
+        )
+        assertTrue(WalkSessionManager.core!!.tracking)
+    }
+
+    @Test
+    fun `starting again after the location source gave up starts a new one`() {
+        shadowOf(app).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val manager = shadowOf(app.getSystemService(LocationManager::class.java))
+        manager.removeProvider(LocationManager.GPS_PROVIDER)
+        manager.removeProvider(LocationManager.NETWORK_PROVIDER)
+        startSession()
+        assertEquals(LocationStatus.UNAVAILABLE to "no_provider", events.statuses.last())
+        manager.setProviderEnabled(LocationManager.GPS_PROVIDER, true)
+
+        var result: Result<Unit>? = null
+        scope.launch { result = runCatching { WalkSessionManager.start(app, Fixtures.config()) } }
+        shadowOf(Looper.getMainLooper()).idle()
+
+        assertTrue("restart failed: ${result?.exceptionOrNull()}", result?.isSuccess == true)
+        assertEquals(LocationStatus.ACTIVE to null, events.statuses.last())
     }
 
     @Test

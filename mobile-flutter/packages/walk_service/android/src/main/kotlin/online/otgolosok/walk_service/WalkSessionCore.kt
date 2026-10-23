@@ -101,8 +101,12 @@ internal class WalkSessionCore(
     }
 
     /** Foreground service types for this session (location only when it can be tracked). */
-    fun foregroundTypes(): Int =
-        ForegroundPolicy.serviceTypes(config.kind, config.tracking, Permissions.locationGranted(context))
+    /** The service types [next] needs: a walk switching from a story needs `location` before it starts. */
+    fun foregroundTypes(next: SessionConfig = config): Int =
+        ForegroundPolicy.serviceTypes(next.kind, next.tracking, Permissions.locationGranted(context))
+
+    /** Whether a location source is running. */
+    internal val tracking: Boolean get() = location != null
 
     /** Called by the service right after `startForeground`. */
     fun onForegroundStarted(types: Int) {
@@ -122,7 +126,8 @@ internal class WalkSessionCore(
         contentIntent = buildContentIntent(newConfig.contentRoute)
         contentIntent?.let(mediaSession::setSessionActivity)
         mediaSession.setMediaButtonPreferences(mediaButtons(newConfig.texts))
-        if (trackingChanged) {
+        // A source that gave up stays silent; the user's «Check again» has to start a new one.
+        if (trackingChanged || sourceGaveUp()) {
             location?.stop()
             location = null
             lastLocationStatus = null
@@ -200,6 +205,13 @@ internal class WalkSessionCore(
         override fun onStatus(status: LocationStatus, code: String?) {
             if (!released) reportLocationStatus(status, code)
         }
+    }
+
+    /** The source stopped requesting fixes: the request failed, was denied or had no provider. */
+    private fun sourceGaveUp(): Boolean {
+        val (status, code) = lastLocationStatus ?: return false
+        return status == LocationStatus.ERROR || status == LocationStatus.PERMISSION_DENIED ||
+            code == LocationStatusCodes.NO_PROVIDER
     }
 
     private fun reportLocationStatus(status: LocationStatus, code: String?) {
