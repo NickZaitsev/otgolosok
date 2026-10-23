@@ -1,8 +1,26 @@
 # Plan: Flutter mobile app (Android first) with screen-off walks and a live walk card
 
-Status: in progress since 2026-10-23.
+Status: implemented 2026-10-23 in branch `feat/promo-walks-stories-only`. Caveats: Steps 0, 9 and 10 were not done (they need real phones and store accounts); the app was verified on an Android 37 emulator only. See «As built» below.
 
 > Note for agents: this plan is a point-in-time snapshot — its "codebase facts" describe the code as of the date above and may be outdated. Do NOT treat it as current architecture docs; verify every fact against the actual code before relying on it.
+
+## As built (divergences from the steps below)
+
+- **Step 0** was skipped at the user's request («всё подряд без гейта»); the screen-off checks remain open in `docs/agents/mobile-flutter.md` («Что не проверено»). **Steps 9 and 10** were not done.
+- **Step 2:** the map style keeps the site's glyph host (versatiles) instead of the configured origin. The pixel ratio of the exported map icons on a real phone is unverified.
+- **Step 3:** besides the exported site `translations.json`, the app's own UI strings live in per-area dictionaries (`assets/i18n/app/*.json`). `?lang=` is added only to requests marked `localized` (content endpoints, as on the site), not to every request.
+- **Step 4:** `startSession` is an `@async` Pigeon method.
+- **Step 5:** the walk screen is a light island in the app theme, not the site's dark listening screen. The route map shows the leg to walk now, highlighted, with the rest dimmed. It frames that leg once with the walker's first fix and, before the start, the start, the first leg and the first stop (`route-legs.ts` port in `lib/walk_engine/route_legs.dart`). It has no direction chevrons and no «Поесть рядом» layer. Taps on the car walk map do nothing, as on the site.
+- **Step 6:**
+  - The nav item is «Тренды», not «История».
+  - Explore has no food or parking layers, no house lookup or story generation, no «Создать прогулку отсюда» and no video.
+  - Places have no favourites (the site has none either). The map draws its own blue user dot.
+  - Offline packs have no food source.
+  - The legal links leave out the analytics and cookie documents.
+  - The builder adds «Сохранить в личном кабинете» and has no food layer.
+  - «Мои прогулки» reuses the library view.
+  - The review form only sends reviews; there is no delete.
+- All services are overridden in one root `ProviderContainer` (`lib/app/app_container.dart`). A child container resolved unoverridden providers in the root and crashed the app on start.
 
 ## Context
 
@@ -178,7 +196,7 @@ Service `WalkService : MediaSessionService` (Media3 `media3-session` + `media3-e
 2. Explore map: MapLibre with `assets/map/style.json` and exported icons; map cells with on-disk ETag cache (revalidate after 5 min, ≤4 parallel fetches, as `cell-store.ts`); clustering visually equivalent to `map-clusters.ts` (port the algorithm or use a GeoJSON cluster source — compare screenshots); «Моё местоположение» with the `locate.ts` semantics (coarse then refine, 6 s window, 20 s timeout after permission) and the three-state locate icon; nearby stories; nearby walks; walks overview on the map.
 3. Place card and story: text, facts and sources (no third-party sources inside narrated text — content is shown as served), photo with attribution, story audio through the walk service in `kind=listen`, share via the Android share sheet using `placeShareUrl` semantics, favourite, place feedback.
 4. Walk library («История»), top walks with filters (duration buckets, city), trends, my walks; walk card actions (open, share link copy, visibility).
-5. Walk screen: load by catalogue slug / share token / account id / local walk; 410 `WALK_MOVED` → open the share; offline copy notice; reviews and improvement requests; reverse direction before start; start from a stop; route map with highlighted leg; car-copy action where the site offers it.
+5. Walk screen: load by catalogue slug / share token / account id / local walk; 410 `WALK_MOVED` → open the share; offline copy notice; reviews and improvement requests; reverse direction before start; start from a stop; route map with highlighted leg (see «As built»); car-copy action where the site offers it.
 6. Offline copies: port `offline.ts` semantics into app files dir (`walk-packs/<scope>/<walkId>[/<locale>]/` with staging dir, sha256-verified audio, 60 MB budget, food data ≤4 MB, atomic pointer file, orphan cleanup); same fallback conditions; account scopes deleted on sign-out; the player prefers local files.
 7. Walk builder: start point via map tap / «где я» / address search (`/api/story-place`, client-side throttle ≥1.1 s, 429 `PLACE_BUSY` shown as «Подождите секунду»); mode loop/open, 30/60/90 min walking or 60/120/180 car; destination and stops; food and parking layers; research jobs with consent and recovery token; story jobs (session required, quota 6/day); guest local walks stored in app storage (no import from the site's localStorage); save to account with `idempotencyKey`; sharing visibility.
 8. Car walks: `driving_plan.dart` reducer + UI; audio only while visiting, via `kind=listen` (no GPS trigger, as on the site).
