@@ -19,6 +19,11 @@ import 'core/settings/settings_store.dart';
 import 'core/storage/pending_sign_out.dart';
 import 'core/storage/review_key.dart';
 import 'core/storage/secure_cookie_storage.dart';
+import 'features/walk_builder/builder_storage.dart';
+import 'features/offline/offline_providers.dart';
+import 'features/places/story_audio.dart';
+import 'features/player/providers.dart';
+import 'features/walks/local_walks.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,8 +46,18 @@ Future<void> main() async {
     dio: dio,
   );
   session.attach(api);
-  final app = ProviderContainer(parent: container, overrides: [apiProvider.overrideWithValue(api)]);
+  final app = ProviderContainer(parent: container, overrides: [
+    apiProvider.overrideWithValue(api),
+    // Guest walks: the builder writes them, the library and the walk screen read them.
+    localWalkStoreProvider.overrideWith((ref) => ref.watch(deviceLocalWalkStoreProvider)),
+    // Place stories play through the walk service, one recording at a time app-wide.
+    storyAudioControllerProvider.overrideWith((ref) => ref.watch(storyListenControllerProvider)),
+  ]);
   app.read(localeProvider.notifier).adoptDevice(AppLocale.fromDevice(PlatformDispatcher.instance.locales));
+  // Remembers the account owning offline copies and deletes its private copies on sign-out.
+  wireOfflinePacks(session, app.read(offlinePacksProvider), settings);
+  // A service left running by a previous Dart instance has no owner here: stop it.
+  unawaited(app.read(walkServiceHubProvider).reconcile());
   unawaited(session.load());
   runApp(UncontrolledProviderScope(container: app, child: const OtgolosokApp()));
 }

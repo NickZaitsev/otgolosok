@@ -34,6 +34,24 @@ class LocaleController extends Notifier<AppLocale> {
   }
 }
 
+/// Whether the walk with this document id is walked from its end; the intro toggles it and the
+/// player rebuilds with the new direction.
+final walkReversedProvider = NotifierProvider.family<WalkReversedController, bool, String>(WalkReversedController.new);
+
+class WalkReversedController extends Notifier<bool> {
+  WalkReversedController(this.walkId);
+
+  final String walkId;
+
+  @override
+  bool build() => ref.watch(settingsProvider).reversed(walkId);
+
+  Future<void> set(bool reversed) async {
+    await ref.read(settingsProvider).setReversed(walkId, reversed);
+    state = reversed;
+  }
+}
+
 /// The signed-in user; rebuilt whenever [SessionStore] changes.
 final authUserProvider = NotifierProvider<AuthUserController, AuthUser?>(AuthUserController.new);
 

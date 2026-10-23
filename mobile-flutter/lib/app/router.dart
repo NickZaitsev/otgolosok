@@ -46,7 +46,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(routes: [
             GoRoute(path: '/', builder: (context, state) => ExploreScreen(placeId: _placeParam(state.uri))),
           ]),
-          StatefulShellBranch(routes: [GoRoute(path: '/builder', builder: (context, state) => const BuilderScreen())]),
+          StatefulShellBranch(routes: [GoRoute(path: '/builder', builder: (context, state) => BuilderScreen(query: state.uri.queryParameters))]),
           StatefulShellBranch(routes: [GoRoute(path: '/trends', builder: (context, state) => const TrendsScreen())]),
           StatefulShellBranch(routes: [
             GoRoute(
