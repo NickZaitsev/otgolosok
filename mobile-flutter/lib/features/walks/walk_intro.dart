@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,8 +64,12 @@ class WalkReadyView extends ConsumerWidget {
       if (walk.savedAt case final savedAt?) offlineNotice(context, savedAt),
       if (link.fromStop case final fromStop?) startNotice(context, view, fromStop),
     ];
+    // Two title lines with the user's font size: the standard bar cuts them at large text.
+    final titleStyle = Theme.of(context).textTheme.titleLarge!;
+    final titleLines = MediaQuery.textScalerOf(context).scale(titleStyle.fontSize!) * (titleStyle.height ?? 1.2) * 2;
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: math.max(kToolbarHeight, titleLines + 8),
         title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
         actions: [
           _WalkMenu(
