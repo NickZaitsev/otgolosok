@@ -11,7 +11,8 @@ import '../../core/i18n/i18n.dart';
 enum LegalDocument {
   terms('terms'),
   privacy('privacy'),
-  cookies('cookies');
+  cookies('cookies'),
+  analyticsConsent('analytics-consent');
 
   const LegalDocument(this.slug);
 
@@ -38,8 +39,8 @@ Future<void> openUrl(BuildContext context, Uri url, {bool external = false}) asy
 Future<void> openLegalDocument(BuildContext context, WidgetRef ref, LegalDocument document) =>
     openUrl(context, ref.read(configProvider).siteUrl(document.path));
 
-/// The legal footer of the site's `LegalLinks`, without the cookie settings: the app sets no
-/// analytics or advertising cookies, so it has nothing to consent to.
+/// The legal footer of the site's `LegalLinks`, without the cookie settings button: the app sets no
+/// analytics or advertising cookies, so it has nothing to consent to, but the documents stay readable.
 class LegalLinks extends ConsumerWidget {
   const LegalLinks({super.key});
 
@@ -49,6 +50,7 @@ class LegalLinks extends ConsumerWidget {
       LegalDocument.terms: context.t('Условия использования'),
       LegalDocument.privacy: context.t('Политика обработки данных'),
       LegalDocument.cookies: context.t('О cookie'),
+      LegalDocument.analyticsConsent: context.t('Согласие на аналитику'),
     };
     return Semantics(
       container: true,
