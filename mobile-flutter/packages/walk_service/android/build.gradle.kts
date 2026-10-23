@@ -52,6 +52,11 @@ android {
         unitTests {
             isIncludeAndroidResources = true
             all {
+                // Robolectric with Android 16 (SDK 36) on JDK 17+ reads FileDescriptor internals.
+                it.jvmArgs(
+                    "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
+                    "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+                )
                 it.outputs.upToDateWhen { false }
                 it.testLogging {
                     events("passed", "skipped", "failed")
@@ -72,7 +77,10 @@ dependencies {
     implementation("androidx.media3:media3-session:1.11.1")
     implementation("androidx.media3:media3-exoplayer:1.11.1")
     implementation("androidx.media3:media3-datasource:1.11.1")
+    implementation("androidx.media3:media3-database:1.11.1")
     implementation("com.google.android.gms:play-services-location:21.4.0")
+    // Pigeon 29 generates suspend functions; Dispatchers.Main needs the Android artifact.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.robolectric:robolectric:4.17")

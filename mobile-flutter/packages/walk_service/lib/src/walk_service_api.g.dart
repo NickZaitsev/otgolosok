@@ -827,6 +827,8 @@ class WalkServiceHostApi {
 
 
   /// Must be called from a visible activity (a tap): Android 14+ refuses a background start.
+  /// Completes once the service is in the foreground (async on the host: the refusal arrives
+  /// from the service a moment after the start request).
   Future<void> startSession(SessionConfig config) async {
     final pigeonVar_channelName = 'dev.flutter.pigeon.walk_service.WalkServiceHostApi.startSession$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(

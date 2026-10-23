@@ -887,8 +887,12 @@ private open class WalkServiceApiPigeonCodec : StandardMessageCodec() {
  * Generated interface from Pigeon that represents a handler of messages from Flutter.
  */
 interface WalkServiceHostApi {
-  /** Must be called from a visible activity (a tap): Android 14+ refuses a background start. */
-  fun startSession(config: SessionConfig)
+  /**
+   * Must be called from a visible activity (a tap): Android 14+ refuses a background start.
+   * Completes once the service is in the foreground (async on the host: the refusal arrives
+   * from the service a moment after the start request).
+   */
+  suspend fun startSession(config: SessionConfig)
   fun stopSession()
   fun isSessionActive(): Boolean
   fun play(track: Track)
@@ -918,13 +922,15 @@ interface WalkServiceHostApi {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
             val configArg = args[0] as SessionConfig
-            val wrapped: List<Any?> = try {
-              api.startSession(configArg)
-              listOf(null)
-            } catch (exception: Throwable) {
-              WalkServiceApiPigeonUtils.wrapError(exception)
+            CoroutineScope(Dispatchers.Main).launch {
+              val wrapped: List<Any?> = try {
+                api.startSession(configArg)
+                listOf(null)
+              } catch (exception: Throwable) {
+                WalkServiceApiPigeonUtils.wrapError(exception)
+              }
+              reply.reply(wrapped)
             }
-            reply.reply(wrapped)
           }
         } else {
           channel.setMessageHandler(null)

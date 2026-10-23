@@ -1,3 +1,35 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="online.otgolosok.walk_service">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Android 16 Live Updates (promoted ongoing notifications). -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
+    <!-- ExoPlayer WAKE_MODE_NETWORK. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- No ACCESS_BACKGROUND_LOCATION: the service is started from a visible tap, so its
+         location access counts as foreground (plan 2026-10-23, decision 8). -->
+
+    <application>
+        <!-- Started only by WalkServicePlugin.startSession; keeps the walk alive with the screen off
+             and after the task is swiped away from Recents. -->
+        <service
+            android:name=".WalkService"
+            android:exported="true"
+            android:foregroundServiceType="location|mediaPlayback"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
+
+        <!-- Buttons of the media notification below Android 13. -->
+        <receiver
+            android:name=".WalkActionReceiver"
+            android:exported="false" />
+    </application>
 </manifest>

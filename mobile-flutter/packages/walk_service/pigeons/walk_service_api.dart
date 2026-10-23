@@ -176,6 +176,9 @@ class MediaCommand {
 @HostApi()
 abstract class WalkServiceHostApi {
   /// Must be called from a visible activity (a tap): Android 14+ refuses a background start.
+  /// Completes once the service is in the foreground (async on the host: the refusal arrives
+  /// from the service a moment after the start request).
+  @async
   void startSession(SessionConfig config);
   void stopSession();
   bool isSessionActive();

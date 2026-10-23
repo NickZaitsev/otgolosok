@@ -24,6 +24,10 @@ val releaseKeyPassword = signingValue("keyPassword", "OTGOLOSOK_KEY_PASSWORD")
 val releaseSigningReady = listOf(releaseStoreFile, releaseStorePassword, releaseKeyAlias, releaseKeyPassword).all { it != null }
 
 android {
+    buildFeatures {
+        resValues = true
+    }
+
     namespace = "online.otgolosok.app"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
