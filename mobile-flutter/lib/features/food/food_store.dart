@@ -14,6 +14,9 @@ import 'route_proximity.dart';
 
 const foodCacheName = 'food-cells-v1';
 
+/// The «Еда» toggle of the explore map (site `FOOD_TOGGLE_KEY`).
+const foodToggleKey = 'otgolosok:around:food:v1';
+
 /// The manifest holder of [foodStoreProvider]: the card shows its attribution and date.
 final foodCellsProvider = Provider<FoodCells>((ref) => FoodCells());
 

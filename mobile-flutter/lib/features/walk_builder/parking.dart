@@ -17,6 +17,9 @@ const parkingManifestPath = '/api/parking/cells';
 /// The parking layer is drawn from this MapLibre zoom (512 px tiles) on: the site's Leaflet z14.
 const parkingMinZoom = 13.0;
 
+/// The «Парковки» toggle of the explore map; without a choice it follows «Как передвигаемся».
+const parkingToggleKey = 'otgolosok:parking-layer';
+
 const _invalid = FormatException('Некорректные данные парковок.');
 final _parkingId = RegExp(r'^osm:(node|way|relation):\d+$');
 

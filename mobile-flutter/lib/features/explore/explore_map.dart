@@ -23,6 +23,8 @@ const _styleAsset = 'assets/map/style.json';
 const _styleIcons = [
   'poi-church', 'poi-orthodox', 'poi-synagogue', 'poi-mosque', 'poi-theatre', 'poi-viewpoint', //
   'poi-monument', 'poi-memorial', 'poi-toilets', 'poi-water', 'poi-station',
+  // Food markers of the explore layer and the walk screen.
+  'poi-foodCoffee', 'poi-foodMeal', 'poi-foodSnack', 'poi-foodBar',
 ];
 
 /// Leaflet z19 of the site is MapLibre z18.
@@ -41,6 +43,9 @@ class ExploreMap extends StatefulWidget {
     required this.onClusterTap,
     required this.onWalksTap,
     required this.onMapTap,
+    this.onMarkerTap,
+    this.markers = const [],
+    this.selectedMarkerKey,
     this.selectedPlaceId,
     this.selectedWalks = const {},
     this.userPosition,
@@ -66,6 +71,11 @@ class ExploreMap extends StatefulWidget {
   final ValueChanged<List<String>> onWalksTap;
   final ValueChanged<GeoPoint> onMapTap;
 
+  /// Food places, parking and the picked house; story pins stay above them.
+  final List<MapMarker> markers;
+  final String? selectedMarkerKey;
+  final ValueChanged<MapMarker>? onMarkerTap;
+
   @override
   State<ExploreMap> createState() => ExploreMapState();
 }
@@ -85,11 +95,13 @@ class ExploreMapState extends State<ExploreMap> {
     if (!identical(oldWidget.clusters, widget.clusters) || oldWidget.selectedPlaceId != widget.selectedPlaceId) _mark(placesSourceId);
     if (!identical(oldWidget.walks, widget.walks) || !setEquals(oldWidget.selectedWalks, widget.selectedWalks)) _mark(walksSourceId);
     if (oldWidget.userPosition != widget.userPosition || oldWidget.userAccuracyM != widget.userAccuracyM) _mark(userSourceId);
+    if (!identical(oldWidget.markers, widget.markers) || oldWidget.selectedMarkerKey != widget.selectedMarkerKey) _mark(markersSourceId);
   }
 
   Map<String, Object?> _data(String source) => switch (source) {
         placesSourceId => placesGeoJson(widget.clusters, selectedId: widget.selectedPlaceId),
         walksSourceId => walksGeoJson(widget.walks, selected: widget.selectedWalks),
+        markersSourceId => markersGeoJson(widget.markers, selectedKey: widget.selectedMarkerKey),
         _ => userGeoJson(widget.userPosition, widget.userAccuracyM),
       };
 
@@ -123,6 +135,7 @@ class ExploreMapState extends State<ExploreMap> {
     try {
       await _addIcons(controller);
       await controller.addGeoJsonSource(walksSourceId, _data(walksSourceId));
+      await controller.addGeoJsonSource(markersSourceId, _data(markersSourceId));
       await controller.addGeoJsonSource(userSourceId, _data(userSourceId));
       await controller.addGeoJsonSource(placesSourceId, _data(placesSourceId));
       await _addLayers(controller);
@@ -133,7 +146,7 @@ class ExploreMapState extends State<ExploreMap> {
     }
     if (!mounted) return;
     _styleReady = true;
-    _dirty.addAll(const [placesSourceId, walksSourceId, userSourceId]);
+    _dirty.addAll(const [placesSourceId, walksSourceId, markersSourceId, userSourceId]);
     await _flush();
     _reportViewport();
   }
@@ -176,6 +189,7 @@ class ExploreMapState extends State<ExploreMap> {
       filter: ['==', ['get', 'selected'], true],
       enableInteraction: false,
     );
+    await _addMarkerLayers(controller, island);
     final user = _hex(TokenColors.userPosition);
     await controller.addFillLayer(
       userSourceId,
@@ -227,6 +241,56 @@ class ExploreMapState extends State<ExploreMap> {
     );
   }
 
+  /// Parking squares (site `.parkingMarker`), food icons above them (22 px, 36 px selected) and the picked house.
+  Future<void> _addMarkerLayers(MapLibreMapController controller, String island) async {
+    final selected = ['==', ['get', 'selected'], true];
+    await controller.addCircleLayer(
+      markersSourceId,
+      'otg-parking',
+      CircleLayerProperties(
+        circleRadius: ['case', selected, 17, 14],
+        circleColor: _hex(TokenColors.mapGreen),
+        circleStrokeWidth: 2,
+        circleStrokeColor: island,
+      ),
+      filter: ['==', ['get', 'kind'], 'parking'],
+      enableInteraction: false,
+    );
+    await controller.addSymbolLayer(
+      markersSourceId,
+      'otg-parking-label',
+      SymbolLayerProperties(
+        textField: 'P',
+        textFont: const ['noto_sans_regular'],
+        textSize: TokenSizes.textSecondary,
+        textColor: island,
+        textAllowOverlap: true,
+        textIgnorePlacement: true,
+      ),
+      filter: ['==', ['get', 'kind'], 'parking'],
+      enableInteraction: false,
+    );
+    await controller.addSymbolLayer(
+      markersSourceId,
+      'otg-food',
+      SymbolLayerProperties(
+        iconImage: ['get', 'icon'],
+        iconSize: ['case', selected, 1.5, 0.92],
+        iconAllowOverlap: true,
+        iconIgnorePlacement: true,
+      ),
+      filter: ['==', ['get', 'kind'], 'food'],
+      enableInteraction: false,
+    );
+    await controller.addCircleLayer(
+      markersSourceId,
+      'otg-picked',
+      CircleLayerProperties(circleRadius: 9, circleColor: _hex(TokenColors.focus), circleStrokeWidth: 3, circleStrokeColor: island),
+      filter: ['==', ['get', 'kind'], 'picked'],
+      enableInteraction: false,
+    );
+  }
+
   CameraPosition? get _camera => _controller?.cameraPosition;
 
   void _reportViewport() {
@@ -251,6 +315,14 @@ class ExploreMapState extends State<ExploreMap> {
     if (cluster != null) {
       widget.onClusterTap(cluster);
       return;
+    }
+    final onMarker = widget.onMarkerTap;
+    if (onMarker != null) {
+      final marker = markerAt(tap, widget.markers, zoom);
+      if (marker != null) {
+        onMarker(marker);
+        return;
+      }
     }
     if (widget.walks.isNotEmpty) {
       final hits = walksAt(tap, widget.walks, zoom);

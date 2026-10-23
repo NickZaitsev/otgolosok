@@ -159,11 +159,13 @@ MapCellStore createMapCellStore({required CellFetch fetch, required CellStorage 
 
 /// Status of an area: loading or error only for its cells without any copy; revalidating cached data is silent.
 /// An area crossing a cell line stays loading until every cell is ready, so nothing is computed from half of it.
-CellStatus areaStatus(CellSnapshot<Object?> snapshot, CatalogBounds bounds) {
+/// [select] picks the cells under the area; another cell grid (food, parking) passes its own.
+CellStatus areaStatus(CellSnapshot<Object?> snapshot, CatalogBounds bounds,
+    {List<String> Function(Iterable<String> keys, CatalogBounds bounds) select = cellsFor}) {
   final keys = snapshot.manifestKeys;
   if (keys == null) return snapshot.manifestStatus == ManifestStatus.error ? CellStatus.error : CellStatus.loading;
   var result = CellStatus.ready;
-  for (final key in cellsFor(keys, bounds)) {
+  for (final key in select(keys, bounds)) {
     if (snapshot.loadedKeys.contains(key)) continue;
     if (snapshot.cellStatus[key] == CellStatus.error) return CellStatus.error;
     result = CellStatus.loading;

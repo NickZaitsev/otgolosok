@@ -89,6 +89,31 @@ void main() {
     });
   });
 
+  group('layer markers', () {
+    final parking = MapMarker(id: 'osm:node:7', kind: MapMarkerKind.parking, location: _base);
+    final food = MapMarker(id: 'osm:node:7', kind: MapMarkerKind.food, location: _base, icon: 'poi-foodCoffee');
+    final picked = MapMarker(id: 'picked', kind: MapMarkerKind.picked, location: _offset(5, 0));
+
+    test('a food place and a parking with one OSM id stay apart, and only the chosen one is selected', () {
+      final features = (markersGeoJson([parking, food], selectedKey: food.key)['features']! as List<Object?>).cast<Map<String, Object?>>();
+      expect(features.map((feature) => feature['id']), ['parking:osm:node:7', 'food:osm:node:7']);
+      expect(features.map((feature) => feature['properties']), [
+        {'kind': 'parking', 'icon': null, 'selected': false},
+        {'kind': 'food', 'icon': 'poi-foodCoffee', 'selected': true},
+      ]);
+    });
+
+    test('a tap picks food over the parking under it and never the picked house', () {
+      expect(markerAt(_offset(3, 0), [parking, food, picked], _zoom), same(food));
+      expect(markerAt(_offset(5, 0), [picked], _zoom), isNull);
+    });
+
+    test('a tap beyond the touch target hits nothing', () {
+      expect(markerAt(_offset(0, 30), [parking], _zoom), isNull);
+      expect(markerAt(_offset(0, 20), [parking], _zoom), same(parking));
+    });
+  });
+
   test('boundsOf encloses every point', () {
     expect(boundsOf(const []), isNull);
     expect(

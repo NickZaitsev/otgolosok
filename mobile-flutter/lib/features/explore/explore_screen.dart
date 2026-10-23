@@ -1,5 +1,5 @@
 /// «Рядом»: the map of ready stories, walks drawn on it, the stories near the user and the place card
-/// (port of `src/features/explore/around-screen.tsx` without the story-preparation and food/parking layers).
+/// with the optional food and parking layers (port of `src/features/explore/around-screen.tsx` without story preparation).
 library;
 
 import 'dart:async';
@@ -15,20 +15,31 @@ import '../../app/theme/tokens.g.dart';
 import '../../core/api/api_error.dart';
 import '../../core/i18n/i18n.dart';
 import '../../core/location/locate.dart';
+import '../../walk_engine/car_route.dart' show ParkingPlace;
 import '../../walk_engine/cities.dart';
 import '../../walk_engine/distance.dart';
 import '../../walk_engine/nearby_stories.dart';
+import '../food/food_card.dart';
+import '../food/food_kinds.dart';
+import '../food/food_model.dart';
+import '../food/food_store.dart';
+import '../food/food_viewport.dart';
+import '../food/opening_hours.dart';
 import '../places/place_sheet.dart';
 import '../places/place_story.dart';
+import '../walk_builder/parking.dart';
 import '../walks/current_city.dart';
 import 'catalog_bounds.dart';
+import 'cell_layer.dart';
 import 'cell_store.dart';
 import 'explore_map.dart';
 import 'explore_providers.dart';
 import 'explore_sheets.dart';
 import 'map_cells.dart';
 import 'map_clusters.dart';
+import 'map_layers.dart';
 import 'nearby_walks.dart';
+import 'parking_sheet.dart';
 import 'walk_overview.dart';
 
 /// Above this accuracy the position is shown as weak (site `geoControlState`).
@@ -78,6 +89,18 @@ class _ClusterPanel extends _Panel {
   final List<String> ids;
 }
 
+class _FoodPanel extends _Panel {
+  const _FoodPanel(this.id);
+
+  final String id;
+}
+
+class _ParkingPanel extends _Panel {
+  const _ParkingPanel(this.id);
+
+  final String id;
+}
+
 enum _Geo { idle, locating, ready, error, denied }
 
 class ExploreScreen extends ConsumerStatefulWidget {
@@ -99,6 +122,21 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     services: ref.read(locationServicesProvider),
     source: ref.read(locationFixSourceProvider),
   );
+  late final CellLayer<FoodPlace> _food = CellLayer(
+    store: ref.read(foodStoreProvider),
+    settings: ref.read(settingsProvider),
+    toggleKey: foodToggleKey,
+    minZoom: foodMinZoom,
+    eagerManifest: true,
+  );
+  late final CellLayer<ParkingPlace> _parking = CellLayer(
+    store: ref.read(parkingStoreProvider),
+    settings: ref.read(settingsProvider),
+    toggleKey: parkingToggleKey,
+    minZoom: parkingMinZoom,
+    enabledByDefault: ref.read(settingsProvider).prefersDriving,
+  );
+  final _hours = FoodHoursCache();
   late final AppLifecycleListener _lifecycle;
   late final GeoPoint _initialCenter;
   late final double _initialZoom;
@@ -131,6 +169,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
   Timer? _maintenanceTimer;
   List<MapCluster> _clusters = const [];
+  List<MapMarker> _markers = const [];
+  Object? _markerInput;
   ({List<CatalogPoint> points, int level, CatalogBounds? area, LocatedFix? user})? _clusterInput;
 
   @override
@@ -144,6 +184,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     if (settings.readString(geoPromptDismissedKey) != '1') _panel = const _PromptPanel();
     _cells.addListener(_cellsChanged);
     _overview.addListener(_overviewChanged);
+    _food.addListener(_overviewChanged);
+    _parking.addListener(_overviewChanged);
     _lifecycle = AppLifecycleListener(onResume: _resumed);
     _openLinked(widget.placeId);
   }
@@ -163,6 +205,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     _cells.removeListener(_cellsChanged);
     _overview.removeListener(_overviewChanged);
     _overview.cancel();
+    _food.dispose();
+    _parking.dispose();
     super.dispose();
   }
 
@@ -203,12 +247,16 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     // Back in the app: a stale manifest is revalidated on the next look at the area.
     _ensureCells();
     if (_walksEnabled && _viewport != null) unawaited(_overview.ensure(_viewport!.required));
+    _food.resume();
+    _parking.resume();
   }
 
   void _onViewport(MapViewport viewport) {
     _viewport = viewport;
     _ensureCells();
     if (_walksEnabled) unawaited(_overview.ensure(viewport.required));
+    _food.onViewport(viewport);
+    _parking.onViewport(viewport);
     _recluster();
     setState(() {});
   }
@@ -240,6 +288,42 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       visible.sort((a, b) => distanceMeters(here, a.location).compareTo(distanceMeters(here, b.location)));
     }
     _clusters = clusterPoints([for (final point in visible) ClusterInput(point.id, point.location)], viewport.zoom);
+  }
+
+  /// Food over parking, the nearest [foodMarkerLimit] places; rebuilt only when an input changes.
+  List<MapMarker> get _layerMarkers {
+    final viewport = _viewport;
+    final food = _food.showing ? _food.store.snapshot.points : null;
+    final parking = _parking.showing ? _parking.store.snapshot.points : null;
+    final input = (viewport, food, parking);
+    if (input == _markerInput) return _markers;
+    _markerInput = input;
+    return _markers = [
+      if (viewport != null) ...[
+        for (final place in _parking.visible((place) => place.location))
+          MapMarker(id: place.id, kind: MapMarkerKind.parking, location: place.location),
+        if (food != null)
+          for (final place in visibleFoodPlaces(food, bounds: viewport.required, center: viewport.center, zoom: viewport.zoom))
+            MapMarker(id: place.id, kind: MapMarkerKind.food, location: place.location, icon: foodGroup(place.kind).mapImage),
+      ],
+    ];
+  }
+
+  void _onMarkerTap(MapMarker marker) {
+    switch (marker.kind) {
+      case MapMarkerKind.food:
+        _show(_FoodPanel(marker.id));
+      case MapMarkerKind.parking:
+        _show(_ParkingPanel(marker.id));
+      case MapMarkerKind.picked:
+        return;
+    }
+    unawaited(_map.currentState?.focus(marker.location));
+  }
+
+  Future<void> _toggleLayer(CellLayer<Object?> layer) async {
+    if ((identical(layer, _food) && _panel is _FoodPanel) || (identical(layer, _parking) && _panel is _ParkingPanel)) _close();
+    await layer.toggle();
   }
 
   CatalogPoint? _point(String id) {
@@ -565,6 +649,32 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     );
   }
 
+  Widget? _foodNotice(BuildContext context) => switch (_food.notice) {
+        CellLayerNotice.zoomIn => ExploreNotice(message: context.t('Приблизьте карту, чтобы увидеть заведения')),
+        CellLayerNotice.loading => ExploreNotice(message: context.t('Загружаем заведения…')),
+        CellLayerNotice.error => ExploreNotice(
+            message: context.t('Не удалось загрузить заведения'),
+            alert: true,
+            retryLabel: context.t('Повторить загрузку заведений'),
+            onRetry: _food.retry,
+          ),
+        // Without a food index the toggle is hidden, as on the site.
+        CellLayerNotice.unavailable || null => null,
+      };
+
+  Widget? _parkingNotice(BuildContext context) => switch (_parking.notice) {
+        CellLayerNotice.unavailable => ExploreNotice(message: context.t('Парковки пока недоступны. Попробуйте позже.')),
+        CellLayerNotice.zoomIn => ExploreNotice(message: context.t('Приблизьте карту, чтобы увидеть парковки')),
+        CellLayerNotice.loading => ExploreNotice(message: context.t('Загружаем парковки…')),
+        CellLayerNotice.error => ExploreNotice(
+            message: context.t('Не удалось загрузить парковки'),
+            alert: true,
+            retryLabel: context.t('Повторить загрузку парковок'),
+            onRetry: _parking.retry,
+          ),
+        null => null,
+      };
+
   List<MapWalk> get _visibleWalks {
     if (!_walksEnabled) return const [];
     final snapshot = _overview.snapshot;
@@ -649,6 +759,27 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
         final points = [for (final id in ids) ?_point(id)];
         if (points.isEmpty) return null;
         return ClusterListSheet(points: points, onSelect: (point) => _selectPlace(point.id), onClose: _close);
+      case _FoodPanel(:final id):
+        final place = _food.enabled ? _food.store.snapshot.points.where((place) => place.id == id).firstOrNull : null;
+        final manifest = ref.read(foodCellsProvider).manifest;
+        if (place == null || manifest == null) return null;
+        final user = _user;
+        return ExplorePanel(
+          child: FoodSheet(
+            key: ValueKey('food:$id'),
+            place: place,
+            manifest: manifest,
+            hours: _hours,
+            distanceM: user == null ? null : distanceMeters(GeoPoint(user.lat, user.lon), place.location),
+            onClose: _close,
+          ),
+        );
+      case _ParkingPanel(:final id):
+        final place = _parking.enabled ? _parking.store.snapshot.points.where((place) => place.id == id).firstOrNull : null;
+        if (place == null) return null;
+        return ExplorePanel(
+          child: ParkingSheet(key: ValueKey('parking:$id'), place: place, attribution: ref.read(parkingCellsProvider).attribution, onClose: _close),
+        );
     }
   }
 
@@ -663,12 +794,19 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       _WalksPanel(:final keys, :final selected) => selected != null ? {selected} : keys.toSet(),
       _ => const <String>{},
     };
+    final selectedMarker = switch (_panel) {
+      _FoodPanel(:final id) => MapMarker(id: id, kind: MapMarkerKind.food, location: _initialCenter).key,
+      _ParkingPanel(:final id) => MapMarker(id: id, kind: MapMarkerKind.parking, location: _initialCenter).key,
+      _ => null,
+    };
     final walksAvailable = !_overview.snapshot.unavailable;
     final notices = [
       _linkNoticeWidget(context),
       _geoNotice(context),
       _catalogNotice(context),
       _walksNotice(context),
+      _parkingNotice(context),
+      _foodNotice(context),
     ].whereType<Widget>().toList();
     final sheet = _sheet(context);
     final user = _user;
@@ -685,6 +823,9 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               selectedPlaceId: selectedPlace,
               walks: _visibleWalks,
               selectedWalks: selectedWalks,
+              markers: _layerMarkers,
+              selectedMarkerKey: selectedMarker,
+              onMarkerTap: _onMarkerTap,
               // The coarse fix shows at once and the dot moves as it is refined.
               userPosition: user != null ? GeoPoint(user.lat, user.lon) : null,
               userAccuracyM: user?.accuracyM,
@@ -723,6 +864,22 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                         icon: Icons.route,
                         selected: _walksEnabled,
                         onPressed: () => unawaited(_toggleWalks()),
+                      ),
+                    ],
+                    const SizedBox(height: TokenSizes.spaceXs),
+                    _MapButton(
+                      tooltip: context.t('Парковки'),
+                      icon: Icons.local_parking,
+                      selected: _parking.enabled,
+                      onPressed: () => unawaited(_toggleLayer(_parking)),
+                    ),
+                    if (_food.available) ...[
+                      const SizedBox(height: TokenSizes.spaceXs),
+                      _MapButton(
+                        tooltip: context.t('Еда'),
+                        icon: Icons.local_cafe,
+                        selected: _food.enabled,
+                        onPressed: () => unawaited(_toggleLayer(_food)),
                       ),
                     ],
                   ]),

@@ -6,6 +6,8 @@ library;
 
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
+
 import '../../walk_engine/distance.dart';
 import 'catalog_bounds.dart';
 import 'map_clusters.dart';
@@ -14,6 +16,7 @@ import 'walk_overview.dart';
 const placesSourceId = 'otg-places';
 const walksSourceId = 'otg-walks';
 const userSourceId = 'otg-user';
+const markersSourceId = 'otg-markers';
 
 /// Half of the 48 dp touch target around a pin or a group.
 const double pinHitTolerancePx = 24;
@@ -39,6 +42,52 @@ Map<String, Object?> placesGeoJson(List<MapCluster> clusters, {String? selectedI
           },
         },
     ]);
+
+enum MapMarkerKind { food, parking, picked }
+
+/// A point of an optional layer: a food place, a parking or the house picked on the map.
+@immutable
+class MapMarker {
+  const MapMarker({required this.id, required this.kind, required this.location, this.icon});
+
+  final String id;
+  final MapMarkerKind kind;
+  final GeoPoint location;
+
+  /// The image a food marker is drawn with (`poi-foodCoffee`…).
+  final String? icon;
+
+  /// Unique across the layers: a food place and a parking may share an OSM id.
+  String get key => '${kind.name}:$id';
+}
+
+/// Food icons, parking squares and the picked house; the one whose [MapMarker.key] is [selectedKey] is drawn larger.
+Map<String, Object?> markersGeoJson(List<MapMarker> markers, {String? selectedKey}) => _collection([
+      for (final marker in markers)
+        {
+          'type': 'Feature',
+          'id': marker.key,
+          'geometry': _point(marker.location),
+          'properties': {'kind': marker.kind.name, 'icon': marker.icon, 'selected': marker.key == selectedKey},
+        },
+    ]);
+
+/// The tappable marker nearest to [tap] within [tolerance] logical pixels; the picked house is not tappable.
+MapMarker? markerAt(GeoPoint tap, List<MapMarker> markers, double zoom, {double tolerance = pinHitTolerancePx}) {
+  final origin = project(tap, zoom);
+  MapMarker? best;
+  var bestDistance = tolerance;
+  for (final marker in markers) {
+    if (marker.kind == MapMarkerKind.picked) continue;
+    final distance = project(marker.location, zoom).distanceTo(origin);
+    // Food is drawn over parking, so it wins a tie.
+    if (distance < bestDistance || (distance == bestDistance && marker.kind == MapMarkerKind.food)) {
+      bestDistance = distance;
+      best = marker;
+    }
+  }
+  return best;
+}
 
 /// Overview lines with their stable colour (1..6) and whether they are among the selected walks.
 Map<String, Object?> walksGeoJson(List<MapWalk> walks, {Set<String> selected = const {}}) => _collection([
