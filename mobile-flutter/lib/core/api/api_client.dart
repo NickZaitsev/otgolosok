@@ -103,12 +103,15 @@ class ApiClient {
       );
 
   /// `GET` with `If-None-Match`; a 304 returns [Conditional.notModified].
-  Future<Conditional<T>> getConditional<T>(String path, Validator<T> validate, {String? etag, CancelToken? cancel}) async {
+  /// [noRetryStatuses] are answers that mean "not now" for the whole feature, such as a missing index.
+  Future<Conditional<T>> getConditional<T>(String path, Validator<T> validate,
+      {String? etag, CancelToken? cancel, Set<int> noRetryStatuses = const {}}) async {
     Conditional<T>? result;
     await _send<void>(
       _Request('GET', path, null, null, false, false, etag: etag),
       (_) {},
       retried: true,
+      noRetryStatuses: noRetryStatuses,
       cancel: cancel,
       onResponse: (response, json) {
         final newEtag = response.headers.value('etag');
@@ -156,7 +159,7 @@ class ApiClient {
   }
 
   Future<T> _send<T>(_Request request, Validator<T> validate,
-      {required bool retried, CancelToken? cancel, void Function(Response<String>, Object?)? onResponse}) async {
+      {required bool retried, Set<int> noRetryStatuses = const {}, CancelToken? cancel, void Function(Response<String>, Object?)? onResponse}) async {
     var csrfRefreshed = false;
     for (var attempt = 0;; attempt++) {
       try {
@@ -201,7 +204,7 @@ class ApiClient {
         if (delay == null) throw mapped;
         await _sleep(delay);
       } on ApiError catch (error) {
-        final delay = retried ? retry.delayAfter(attempt, error) : null;
+        final delay = retried && !noRetryStatuses.contains(error.status) ? retry.delayAfter(attempt, error) : null;
         if (delay == null) rethrow;
         await _sleep(delay);
       }

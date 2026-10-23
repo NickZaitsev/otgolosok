@@ -64,9 +64,9 @@ class CellResponse {
 /// `GET path` with `If-None-Match: etag`; throws on failure (the API client already retried).
 typedef CellFetch = Future<CellResponse> Function(String path, {String? etag});
 
-/// The conditional fetch through the app's API client.
-CellFetch apiCellFetch(ApiClient api) => (path, {etag}) async {
-      final response = await api.getConditional<Object?>(path, (json) => json, etag: etag);
+/// The conditional fetch through the app's API client; [noRetryStatuses] fail at once.
+CellFetch apiCellFetch(ApiClient api, {Set<int> noRetryStatuses = const {}}) => (path, {etag}) async {
+      final response = await api.getConditional<Object?>(path, (json) => json, etag: etag, noRetryStatuses: noRetryStatuses);
       return response.notModified ? CellResponse.notModified(response.etag) : CellResponse(response.value, response.etag);
     };
 
@@ -451,6 +451,24 @@ class CellStore<T> extends ChangeNotifier {
   Future<void> ensureArea(List<CatalogBounds> bounds) {
     _remember(bounds);
     return _ensureAreas(bounds);
+  }
+
+  /// Puts cells saved with an offline copy into the store. Everything is validated first, so a damaged
+  /// package never half-replaces the store; the manifest is due for revalidation once online again.
+  void seedOffline(Object? manifest, List<({String key, String etag, Object? body})> cells) {
+    final parsed = [for (final cell in cells) (cell: cell, points: parseCell(cell.body, cell.key))];
+    final next = parseManifest(manifest);
+    for (final (:cell, points: _) in parsed) {
+      if (next[cell.key]?.etag != bareEtag(cell.etag)) throw const FormatException('Некорректная офлайн-область карты.');
+    }
+    _replaceManifest(null, next, DateTime.fromMillisecondsSinceEpoch(0));
+    for (final (:cell, :points) in parsed) {
+      _setCell(cell.key, bareEtag(cell.etag) ?? '', points);
+      _status[cell.key] = CellStatus.ready;
+    }
+    _manifestStatus = ManifestStatus.ready;
+    _maintenance = false;
+    _emit();
   }
 
   /// Forces a manifest revalidation, e.g. after a published story turned out to be gone.

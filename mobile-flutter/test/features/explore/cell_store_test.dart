@@ -224,4 +224,31 @@ void main() {
     await Future.wait([first, second]);
     expect(server.to(mapCellPath(moscow)), hasLength(1));
   });
+
+  test('cells of an offline copy serve at once and the manifest is rechecked online', () async {
+    store.seedOffline(_manifest({moscow: _etag('a')}), [(key: moscow, etag: '"${_etag('a')}"', body: _cell(moscow, ['p1']))]);
+    expect(store.snapshot.points.map((point) => point.id), ['p1']);
+    expect(store.snapshot.manifestStatus, ManifestStatus.ready);
+
+    answerManifest({moscow: _etag('a')});
+    await store.ensureArea([_inside(moscow)]);
+    expect(server.calls.map((call) => call.path), [mapCellsManifestPath]);
+  });
+
+  test('a damaged offline copy leaves the store as it was', () async {
+    answerManifest({moscow: _etag('a')});
+    answerCell(moscow, ['p1'], _etag('a'));
+    await store.ensureArea([_inside(moscow)]);
+
+    final seeds = [
+      // The cell does not match the saved manifest.
+      () => store.seedOffline(_manifest({moscow: _etag('b')}), [(key: moscow, etag: _etag('a'), body: _cell(moscow, ['p2']))]),
+      // The cell body is broken.
+      () => store.seedOffline(_manifest({moscow: _etag('b')}), [(key: moscow, etag: _etag('b'), body: {'lat': 1})]),
+    ];
+    for (final seed in seeds) {
+      expect(seed, throwsFormatException);
+    }
+    expect(store.snapshot.points.map((point) => point.id), ['p1']);
+  });
 }

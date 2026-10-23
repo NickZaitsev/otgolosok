@@ -189,6 +189,12 @@ void main() {
     expect(fresh.etag, '"b"');
   });
 
+  test('a conditional get gives up at once on a status the feature treats as unavailable', () async {
+    final api = client([const _Reply(503, {'error': 'FOOD_INDEX_UNAVAILABLE'}), const _Reply(200, {'v': 1})]);
+    await expectLater(api.getConditional('/api/food/cells', identity, noRetryStatuses: {503}), throwsA(isA<ApiError>().having((e) => e.status, 'status', 503)));
+    expect(adapter.requests, hasLength(1));
+  });
+
   test('log redaction hides credentials and one-time codes', () {
     expect(RedactingLogInterceptor.redactUrl('https://x/a?code=abc&lang=en&verifier=zzz'), 'https://x/a?code=***&lang=en&verifier=***');
     expect(RedactingLogInterceptor.redactHeaders({'Cookie': 'a', 'X-CSRF-Token': 'b', 'Origin': 'o'}), {'Cookie': '***', 'X-CSRF-Token': '***', 'Origin': 'o'});
