@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import '../../walk_engine/walk_session.dart';
 import '../../walk_engine/walk_settings.dart';
 import '../../walk_engine/walk_view.dart';
 import '../walks/launches.dart';
+import '../walks/route_map.dart';
 import '../walks/walk_link.dart';
 import '../walks/walk_screen.dart' show reviewTargetOf;
 import 'audio_controls.dart';
@@ -24,32 +26,37 @@ import 'permission_sheet.dart';
 import 'providers.dart';
 import 'replay_source.dart';
 import 'takeover_dialog.dart';
+import 'walk_map_framing.dart';
 import 'walk_drawers.dart';
 import 'walk_player_controller.dart';
 
 /// The listening panel of a loaded walk: binds the walk engine to the native walk service.
 /// A car walk gets its own panel (parkings, stories only after parking).
 class WalkPlayerPanel extends StatelessWidget {
-  const WalkPlayerPanel({required this.view, required this.link, this.localAudio = const {}, super.key});
+  const WalkPlayerPanel({required this.view, required this.link, this.localAudio = const {}, this.intro, super.key});
 
   final WalkView view;
   final WalkLink link;
+
+  /// The walk's summary and tools, shown under the map before the start.
+  final Widget? intro;
 
   /// Saved recordings by chapter id or site-relative URL (`file://`); preferred over streaming.
   final Map<String, Uri> localAudio;
 
   @override
   Widget build(BuildContext context) => view.document.driving
-      ? CarWalkPanel(view: view, link: link, localAudio: localAudio)
-      : _WalkPanel(view: view, link: link, localAudio: localAudio);
+      ? CarWalkPanel(view: view, link: link, localAudio: localAudio, intro: intro)
+      : _WalkPanel(view: view, link: link, localAudio: localAudio, intro: intro);
 }
 
 class _WalkPanel extends ConsumerStatefulWidget {
-  const _WalkPanel({required this.view, required this.link, required this.localAudio});
+  const _WalkPanel({required this.view, required this.link, required this.localAudio, required this.intro});
 
   final WalkView view;
   final WalkLink link;
   final Map<String, Uri> localAudio;
+  final Widget? intro;
 
   @override
   ConsumerState<_WalkPanel> createState() => _WalkPanelState();
@@ -60,6 +67,7 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
   late WalkLaunchReporter _reporter;
   late ProviderContainer _container;
   late AppLocale _locale;
+  late WalkMapFraming _framing;
 
   @override
   void initState() {
@@ -70,6 +78,7 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
   }
 
   void _create() {
+    _framing = WalkMapFraming();
     _reporter = WalkLaunchReporter(ref.read(apiProvider), reviewTargetOf(widget.link));
     _controller = WalkPlayerController(
       view: widget.view,
@@ -154,6 +163,35 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
     if (await confirmStopWalk(context)) _controller.stop();
   }
 
+  /// A stop tapped on the map: during the walk it becomes the current stop, before the start
+  /// «Остановки» opens (site `WalkSession` map `onSelect`).
+  void _selectOnMap(String id) {
+    final controller = _controller;
+    final index = controller.chapters.indexWhere((chapter) => chapter.id == id);
+    if (index < 0) return;
+    if (controller.state.active) {
+      controller.selectChapter(index);
+    } else {
+      unawaited(showStopsDrawer(context, controller));
+    }
+  }
+
+  Widget _map(BuildContext context) {
+    final controller = _controller;
+    final fromStop = widget.link.fromStop;
+    final view = _framing.view(
+      route: controller.route,
+      chapters: controller.chapters,
+      state: controller.state,
+      openingIndex: fromStop == null ? 0 : math.max(0, controller.chapters.indexWhere((chapter) => chapter.id == fromStop)),
+      t: (source, values) => context.t(source, values),
+    );
+    return ref.watch(walkRouteMapProvider)(
+      context,
+      WalkMapProps(view: view, onSelect: _selectOnMap, label: context.t('Карта прогулки: пешеходный маршрут и остановки')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // The controller reads the direction itself; this only redraws «Продолжить прогулку» and the stops.
@@ -169,11 +207,18 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
           onPopInvokedWithResult: (didPop, _) {
             if (!didPop) unawaited(_confirmStop());
           },
-          child: state.active
-              ? _ActiveWalk(controller: controller, onStop: _confirmStop)
-              : state.completed
-                  ? const _Completed()
-                  : _BeforeStart(controller: controller, onStart: _start),
+          child: LayoutBuilder(
+            builder: (context, constraints) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              SizedBox(height: (constraints.maxHeight * 0.42).clamp(160.0, 420.0), child: _map(context)),
+              Expanded(
+                child: state.active
+                    ? _ActiveWalk(controller: controller, onStop: _confirmStop)
+                    : state.completed
+                        ? const _Completed()
+                        : _BeforeStart(controller: controller, onStart: _start, intro: widget.intro),
+              ),
+            ]),
+          ),
         );
       },
     );
@@ -181,10 +226,11 @@ class _WalkPanelState extends ConsumerState<_WalkPanel> {
 }
 
 class _BeforeStart extends StatelessWidget {
-  const _BeforeStart({required this.controller, required this.onStart});
+  const _BeforeStart({required this.controller, required this.onStart, required this.intro});
 
   final WalkPlayerController controller;
   final Future<void> Function({int? index, bool resume}) onStart;
+  final Widget? intro;
 
   @override
   Widget build(BuildContext context) {
@@ -194,6 +240,7 @@ class _BeforeStart extends StatelessWidget {
     final resumeIndex = controller.resumeIndex;
     final chapters = controller.chapters;
     return ListView(padding: const EdgeInsets.all(TokenSizes.spaceMd), children: [
+      if (intro case final intro?) ...[intro, const SizedBox(height: TokenSizes.spaceSm)],
       if (!state.canStart)
         Semantics(
           liveRegion: true,

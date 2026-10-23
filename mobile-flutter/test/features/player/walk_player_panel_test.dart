@@ -17,10 +17,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:walk_service/walk_service.dart' as ws;
 
 import '../auth/harness.dart';
+import '../walks/map_stand_in.dart';
 import 'fake_host.dart';
 
 class _App {
   final host = FakeHost();
+  final map = WalkMapStandIn();
   final auth = Harness();
   late ProviderContainer container;
   late SettingsStore settings;
@@ -45,6 +47,7 @@ class _App {
       translationsProvider.overrideWithValue(translations),
       configProvider.overrideWithValue(auth.config),
       walkServiceHostApiProvider.overrideWithValue(host),
+      map.override,
     ]);
     addTearDown(container.dispose);
     final router = GoRouter(initialLocation: '/walk', routes: [

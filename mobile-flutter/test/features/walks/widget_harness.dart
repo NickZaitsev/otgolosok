@@ -14,6 +14,7 @@ import 'package:otgolosok/walk_engine/walk_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../auth/harness.dart';
+import 'map_stand_in.dart';
 
 /// Guest walks kept in memory.
 class MemoryLocalWalks implements LocalWalkStore {
@@ -86,6 +87,7 @@ class MemoryPacks extends OfflinePackManager {
 /// offline copies and guest walks in memory.
 class WalksHarness {
   final auth = Harness();
+  final map = WalkMapStandIn();
   final local = MemoryLocalWalks();
   final packs = MemoryPacks();
   late SettingsStore settings;
@@ -130,6 +132,7 @@ class WalksHarness {
         configProvider.overrideWithValue(auth.config),
         offlinePacksProvider.overrideWithValue(packs),
         localWalkStoreProvider.overrideWithValue(local),
+        map.override,
       ],
       child: MaterialApp.router(
         routerConfig: router,

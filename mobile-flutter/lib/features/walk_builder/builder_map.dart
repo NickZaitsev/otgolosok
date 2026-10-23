@@ -1,7 +1,6 @@
 // The builder map: the start, stops and finish, the built route and, for car walks, parking. The
 // MapLibre widget sits behind [builderMapProvider] so widget tests draw a plain stand-in.
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +10,7 @@ import '../../app/theme/tokens.g.dart';
 import '../../walk_engine/car_route.dart';
 import '../../walk_engine/distance.dart';
 import '../explore/catalog_bounds.dart';
+import '../walks/route_map.dart' show routeLineFeatures;
 import 'model.dart';
 
 @immutable
@@ -75,37 +75,13 @@ const _moscow = GeoPoint(55.7539, 37.6208);
 
 String _hex(Color color) => '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
 
-List<List<double>> _line(Iterable<GeoPoint> points) => [for (final point in points) [point.lon, point.lat]];
-
 Map<String, Object?> _feature(String id, Map<String, Object?> geometry, Map<String, Object?> properties) =>
     {'type': 'Feature', 'id': id, 'geometry': geometry, 'properties': properties};
 
 /// The route as GeoJSON lines; covered stretches of a walking route are marked `tunnel`.
 @visibleForTesting
-Map<String, Object?> routeFeatures(BuilderMapView view) {
-  final features = <Map<String, Object?>>[];
-  final geometry = view.geometry;
-  if (geometry != null && geometry.length > 1) {
-    final tunnels = [...?view.tunnels]..sort((a, b) => a.$1.compareTo(b.$1));
-    var from = 0;
-    void add(int start, int end, bool tunnel) {
-      if (end <= start) return;
-      features.add(_feature('route-${features.length}', {'type': 'LineString', 'coordinates': _line(geometry.sublist(start, end + 1))}, {'kind': tunnel ? 'tunnel' : 'walk'}));
-    }
-
-    for (final (start, end) in tunnels) {
-      add(from, start, false);
-      add(start, end, true);
-      from = math.max(from, end);
-    }
-    add(from, geometry.length - 1, false);
-  }
-  for (final segment in view.segments) {
-    if (segment.geometry.length < 2) continue;
-    features.add(_feature('route-${features.length}', {'type': 'LineString', 'coordinates': _line(segment.geometry)}, {'kind': segment.driving ? 'drive' : 'walk'}));
-  }
-  return {'type': 'FeatureCollection', 'features': features};
-}
+Map<String, Object?> routeFeatures(BuilderMapView view) =>
+    routeLineFeatures(geometry: view.geometry, tunnels: view.tunnels, segments: view.segments);
 
 Map<String, Object?> _points(BuilderMapView view) => {
       'type': 'FeatureCollection',
@@ -151,7 +127,7 @@ class _BuilderMapState extends State<BuilderMap> {
       'builder-route',
       'builder-route-line',
       LineLayerProperties(lineColor: route, lineWidth: 5, lineOpacity: 0.9, lineJoin: 'round', lineCap: 'round'),
-      filter: ['==', ['get', 'kind'], 'walk'],
+      filter: ['in', ['get', 'kind'], ['literal', ['walk', 'foot']]],
       enableInteraction: false,
     );
     await controller.addLineLayer(

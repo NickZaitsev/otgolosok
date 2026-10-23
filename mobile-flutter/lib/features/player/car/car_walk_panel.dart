@@ -14,12 +14,14 @@ import '../../../walk_engine/driving_plan.dart';
 import '../../../walk_engine/js_json.dart';
 import '../../../walk_engine/walk_view.dart';
 import '../../walks/launches.dart';
+import '../../walks/route_map.dart';
 import '../../walks/walk_link.dart';
 import '../../walks/walk_screen.dart' show reviewTargetOf;
 import '../audio_controls.dart';
 import '../providers.dart';
 import '../story_view.dart';
 import '../takeover_dialog.dart';
+import '../walk_map_framing.dart';
 import 'car_walk_controller.dart';
 
 /// Site `yandexNavigationUrl`: a route to [target] by car (`auto`) or on foot (`pd`).
@@ -37,11 +39,14 @@ String parkingFeeLabel(bool? fee) => switch (fee) {
 
 /// A car walk: parkings, drives and stories on foot (site `DrivingSheet`).
 class CarWalkPanel extends ConsumerStatefulWidget {
-  const CarWalkPanel({super.key, required this.view, required this.link, this.localAudio = const {}});
+  const CarWalkPanel({super.key, required this.view, required this.link, this.localAudio = const {}, this.intro});
 
   final WalkView view;
   final WalkLink link;
   final Map<String, Uri> localAudio;
+
+  /// The walk's summary and tools, shown under the map at the overview.
+  final Widget? intro;
 
   @override
   ConsumerState<CarWalkPanel> createState() => _CarWalkPanelState();
@@ -53,6 +58,7 @@ class _CarWalkPanelState extends ConsumerState<CarWalkPanel> {
   late ProviderContainer _container;
   late AppLocale _locale;
   bool _linkFailed = false;
+  late CarMapFraming _framing;
 
   @override
   void initState() {
@@ -63,6 +69,7 @@ class _CarWalkPanelState extends ConsumerState<CarWalkPanel> {
   }
 
   void _create() {
+    _framing = CarMapFraming();
     _reporter = WalkLaunchReporter(ref.read(apiProvider), reviewTargetOf(widget.link));
     _controller = CarWalkController(
       view: widget.view,
@@ -278,22 +285,35 @@ class _CarWalkPanelState extends ConsumerState<CarWalkPanel> {
       body.add(Semantics(liveRegion: true, child: Text(context.t('Не удалось открыть ссылку.'), style: theme.textTheme.bodySmall)));
     }
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Expanded(
-        child: ListView(padding: const EdgeInsets.all(TokenSizes.spaceMd), children: [
-          Text(eyebrow, style: theme.textTheme.bodySmall),
-          Semantics(header: true, child: Text(heading, style: theme.textTheme.headlineSmall)),
-          const SizedBox(height: TokenSizes.spaceSm),
-          ...body,
-        ]),
+    final map = ref.watch(walkRouteMapProvider)(
+      context,
+      WalkMapProps(
+        view: _framing.view(car: car, stops: document.stops, state: state, visit: visit, t: (source, values) => context.t(source, values)),
+        onSelect: (_) {},
+        label: context.t('Карта автомобильной прогулки: автомобильные переезды, пешие участки, парковки и истории'),
       ),
-      Material(
-        color: TokenColors.raised,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(TokenSizes.spaceMd, TokenSizes.spaceXs, TokenSizes.spaceMd, TokenSizes.spaceSm),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: footer),
+    );
+    final intro = widget.intro;
+    return LayoutBuilder(
+      builder: (context, constraints) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        SizedBox(height: (constraints.maxHeight * 0.42).clamp(160.0, 420.0), child: map),
+        Expanded(
+          child: ListView(padding: const EdgeInsets.all(TokenSizes.spaceMd), children: [
+            if (state is DrivingOverview && intro != null) ...[intro, const SizedBox(height: TokenSizes.spaceSm)],
+            Text(eyebrow, style: theme.textTheme.bodySmall),
+            Semantics(header: true, child: Text(heading, style: theme.textTheme.headlineSmall)),
+            const SizedBox(height: TokenSizes.spaceSm),
+            ...body,
+          ]),
         ),
-      ),
-    ]);
+        Material(
+          color: TokenColors.raised,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(TokenSizes.spaceMd, TokenSizes.spaceXs, TokenSizes.spaceMd, TokenSizes.spaceSm),
+            child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: footer),
+          ),
+        ),
+      ]),
+    );
   }
 }

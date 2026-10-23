@@ -85,15 +85,14 @@ class WalkReadyView extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Semantics(liveRegion: true, child: Text(notices.join(' '), style: const TextStyle(color: TokenColors.alertInk))),
             ),
-          if (!active)
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.42),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                child: WalkIntro(link: link, walk: walk, reviews: reviews, offline: offline),
-              ),
+          Expanded(
+            child: WalkPlayerSlot(
+              view: view,
+              link: link,
+              localAudio: localAudio,
+              intro: active ? null : WalkIntro(link: link, walk: walk, reviews: reviews, offline: offline),
             ),
-          Expanded(child: WalkPlayerSlot(view: view, link: link, localAudio: localAudio)),
+          ),
         ]),
       ),
     );
