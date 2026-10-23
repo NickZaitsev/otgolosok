@@ -698,7 +698,19 @@ class BuilderController extends ChangeNotifier {
 
   /// Saves the walk to the account (site `saveToAccount`).
   Future<SaveOutcome> saveToAccount() async {
-    if (_user == null) return SaveOutcome.login;
+    // The user may have signed in on another tab since restore(): ask the session again.
+    if (_user == null) {
+      try {
+        _user = await _services.session();
+      } catch (caught) {
+        if (_disposed) return SaveOutcome.failed;
+        error = ErrorText(caught, 'Не удалось проверить вход. Попробуйте ещё раз.');
+        _changed();
+        return SaveOutcome.failed;
+      }
+      if (_disposed) return SaveOutcome.failed;
+      if (_user == null) return SaveOutcome.login;
+    }
     if (_saving) return SaveOutcome.failed;
     _saving = true;
     busy = const Phrase('Сохраняем прогулку…');

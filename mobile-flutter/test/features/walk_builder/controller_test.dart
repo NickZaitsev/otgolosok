@@ -297,6 +297,22 @@ void main() {
       expect(setup.server.sent, isEmpty);
     });
 
+    test('a guest who signed in after opening the builder saves without a second sign-in', () async {
+      final setup = await _opened(draft: builtDraft());
+      setup.user = user;
+      setup.server.on('POST /api/me/walks', Reply(201, {'walk': accountWalkJson(snapshot: draftToWalkDocument(builtDraft(), walkId))}));
+      expect(await setup.controller.saveToAccount(), SaveOutcome.saved);
+      expect(setup.controller.signedIn, isTrue);
+    });
+
+    test('a failed sign-in check on save shows an error instead of the sign-in screen', () async {
+      final setup = await _opened(draft: builtDraft());
+      setup.sessionFails = true;
+      expect(await setup.controller.saveToAccount(), SaveOutcome.failed);
+      expect(shown(setup.controller.error), 'Не удалось проверить вход. Попробуйте ещё раз.');
+      expect(setup.server.sent, isEmpty);
+    });
+
     test('a repeated save after a lost answer reuses the idempotency key, then edits by revision', () async {
       final setup = await _opened(user: user, draft: builtDraft());
       final c = setup.controller;

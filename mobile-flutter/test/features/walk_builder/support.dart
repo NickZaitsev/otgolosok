@@ -81,10 +81,10 @@ class Setup {
   final harness = Harness();
   final clock = FakeClock();
   final MemoryBuilderStorage storage;
-  final bool sessionFails;
+  bool sessionFails;
 
   /// The signed-in user the session check answers.
-  final AuthUser? user;
+  AuthUser? user;
   late final DeviceLocalWalkStore walks;
   late final BuilderController controller;
   int _uuids = 0;
