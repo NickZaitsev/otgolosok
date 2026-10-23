@@ -21,7 +21,9 @@
     "auth:set-editor": "node scripts/set-editor.mjs",
     "test:e2e": "playwright test",
     "mobile:sync": "cap sync android",
-    "mobile:android": "cap open android"
+    "mobile:android": "cap open android",
+    "mobile-flutter:check": "cd mobile-flutter && flutter analyze && flutter test",
+    "mobile-flutter:run": "cd mobile-flutter && flutter run"
   },
   "dependencies": {
     "@capacitor-community/keep-awake": "8.0.1",

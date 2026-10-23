@@ -87,3 +87,18 @@ compose.override.yaml
 
 # Отчёты утренней проверки (make morning-check)
 .logs/
+
+# Flutter app (mobile-flutter/.gitignore covers the rest)
+/mobile-flutter/build/
+/mobile-flutter/.dart_tool/
+/mobile-flutter/.flutter-plugins
+/mobile-flutter/.flutter-plugins-dependencies
+/mobile-flutter/**/.dart_tool/
+/mobile-flutter/**/build/
+/mobile-flutter/**/.idea/
+/mobile-flutter/**/*.iml
+/mobile-flutter/android/.gradle/
+/mobile-flutter/android/.kotlin/
+/mobile-flutter/android/local.properties
+/mobile-flutter/android/key.properties
+/mobile-flutter/packages/walk_service/android/local.properties

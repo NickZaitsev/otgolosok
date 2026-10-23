@@ -23,6 +23,8 @@ const eslintConfig = defineConfig([
     "playwright-report/**",
     // Generated native project: Capacitor copies its own bridge JS into the app assets.
     "mobile/android/**",
+    // Flutter app: Dart sources, Gradle and build output; checked by `pnpm mobile-flutter:check`.
+    "mobile-flutter/**",
   ]),
 ]);
 

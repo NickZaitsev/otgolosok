@@ -1,10 +1,14 @@
 // Rasterizes src/app/icon.svg into the PNG icons that installed apps need:
 // iOS ignores SVG touch icons, and maskable icons must be full-bleed because
 // the launcher applies its own mask. Also writes the Android app launcher icons
-// and splash screens (mobile/android). Run after changing the logo:
+// and splash screens (mobile/android), the same set for the Flutter app (mobile-flutter/android),
+// the walk-service notification icon and the basemap icons of the Flutter map
+// (mobile-flutter/assets/map/icons, drawn from map-icons.ts exactly like the site draws them).
+// Run after changing the logo or MAP_ICONS:
 //   node scripts/build-app-icons.mjs
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { chromium } from "@playwright/test";
+import { MAP_ICONS } from "../src/features/explore/map-icons.ts";
 
 const source = await readFile(new URL("../src/app/icon.svg", import.meta.url), "utf8");
 const rounded = /\s*<rect width="512" height="512" rx="\d+" fill="([^"]+)"\/>/i;
@@ -15,8 +19,15 @@ const fullBleed = source.replace(/\srx="\d+"/, "");
 const adaptiveForeground = source.replace(rounded, "").replace(/viewBox="[^"]*"/, 'viewBox="-128 -128 768 768"');
 const roundIcon = source.replace(rounded, `<circle cx="256" cy="256" r="256" fill="${background[1]}"/>`);
 
+// Status-bar icons are white silhouettes: the rings and the dot without the background.
+const notificationIcon = source.replace(rounded, "")
+  .replace(/stroke="#[0-9a-f]{6}"/gi, 'stroke="#ffffff"').replace(/fill="#b84b2c"/gi, 'fill="#ffffff"');
+
 const splashBackground = "#eee9df";
 const androidRes = "../mobile/android/app/src/main/res/";
+const flutterRes = "../mobile-flutter/android/app/src/main/res/";
+const walkServiceRes = "../mobile-flutter/packages/walk_service/android/src/main/res/";
+const flutterMapIcons = "../mobile-flutter/assets/map/icons/";
 const densities = [
   { name: "mdpi", scale: 1 },
   { name: "hdpi", scale: 1.5 },
@@ -40,7 +51,21 @@ const icons = [
     { file: `${androidRes}drawable-port-${name}/splash.png`, width: 320 * scale, height: 480 * scale, splash: true },
   ]),
   { file: `${androidRes}drawable/splash.png`, width: 320, height: 480, splash: true },
+  // Flutter app: launcher icons only; Android 12+ draws its own splash from the launch theme.
+  ...densities.flatMap(({ name, scale }) => [
+    { file: `${flutterRes}mipmap-${name}/ic_launcher.png`, size: 48 * scale, svg: source },
+    { file: `${flutterRes}mipmap-${name}/ic_launcher_round.png`, size: 48 * scale, svg: roundIcon },
+    { file: `${flutterRes}mipmap-${name}/ic_launcher_foreground.png`, size: 108 * scale, svg: adaptiveForeground },
+    { file: `${flutterRes}drawable-${name}/splash_logo.png`, size: 96 * scale, svg: source },
+    { file: `${walkServiceRes}drawable-${name}/ic_stat_otgolosok.png`, size: 24 * scale, svg: notificationIcon },
+  ]),
 ];
+
+// Flutter resolution-aware assets: 1x in the folder itself, 2x and 3x in "2.0x" and "3.0x".
+const mapIconScales = [{ dir: "", scale: 1 }, { dir: "2.0x/", scale: 2 }, { dir: "3.0x/", scale: 3 }];
+const mapIcons = Object.entries(MAP_ICONS).flatMap(([name, icon]) => mapIconScales.map(({ dir, scale }) => ({
+  file: `${flutterMapIcons}${dir}poi-${name}.png`, size: 24 * scale, svg: mapIconSvg(icon) })));
+icons.push(...mapIcons);
 
 const browser = await chromium.launch();
 try {
@@ -63,6 +88,14 @@ try {
 function iconHtml(svg, size) {
   const sized = svg.replace("<svg ", `<svg width="${size}" height="${size}" `);
   return `<style>*{margin:0}svg{display:block}</style>${sized}`;
+}
+
+/** The same picture drawMapIcon paints on a canvas: a white glyph on a coloured disc with a white border. */
+function mapIconSvg({ color, glyph }) {
+  const border = 1.5;
+  const offset = (24 - 13) / 2;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="${12 - border}" fill="${color}" stroke="#ffffff" stroke-width="${border}"/>`
+    + `<path transform="translate(${offset} ${offset}) scale(${13 / 15})" fill="#ffffff" d="${glyph}"/></svg>`;
 }
 
 function splashHtml(width, height) {
